@@ -79,7 +79,9 @@ func Test_Transport_retries_429_with_retry_after_when_present(t *testing.T) {
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, 2, requests)
-	require.Equal(t, "user-id", response.Data.(*testGraphQLData).Viewer.ID)
+	data, ok := response.Data.(*testGraphQLData)
+	require.True(t, ok)
+	require.Equal(t, "user-id", data.Viewer.ID)
 }
 
 func Test_Transport_uses_bearer_prefix_for_oauth_tokens(t *testing.T) {

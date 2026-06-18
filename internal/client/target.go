@@ -55,7 +55,10 @@ type ResolvedProject struct {
 // ResolveTarget resolves viewer, organization, team, and optional project from the token.
 func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected config.Target) (ResolvedTarget, error) {
 	if expected.OrgID == "" || expected.TeamID == "" || expected.TeamKey == "" {
-		return ResolvedTarget{}, fmt.Errorf("%w: expected org_id, team_id, and team_key are required", ErrTargetMismatch)
+		return ResolvedTarget{}, fmt.Errorf(
+			"%w: expected org_id, team_id, and team_key are required",
+			ErrTargetMismatch,
+		)
 	}
 
 	viewer, err := Viewer(ctx, graphqlClient)
