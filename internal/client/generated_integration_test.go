@@ -104,7 +104,7 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	name := "linctl-it-" + time.Now().UTC().Format("20060102T150405")
 
 	// When
-	listed, listErr := ListProjectsByTeam(ctx, transport, fixture.TeamID, 10)
+	listed, listErr := ListProjectsByTeam(ctx, transport, fixture.TeamID, 100)
 	created, createErr := CreateProject(ctx, transport, target, ProjectCreateRequest{
 		Name:        name,
 		Description: "created by linctl integration test",
