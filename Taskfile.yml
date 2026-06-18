@@ -1,0 +1,39 @@
+version: "3"
+
+vars:
+  BINARY: linctl
+  PKG: ./cmd/linctl
+
+tasks:
+  default:
+    deps: [ci]
+
+  fmt:
+    desc: Format Go files
+    cmds:
+      - gofumpt -w .
+      - goimports -w -local "$(go list -m)" .
+
+  lint:
+    desc: Run linters
+    cmds:
+      - golangci-lint run --timeout 5m ./...
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -race -shuffle=on -count=1 ./...
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
+
+  build:
+    desc: Build linctl
+    cmds:
+      - go build -trimpath -ldflags="-s -w" -o bin/{{.BINARY}} {{.PKG}}
+
+  ci:
+    desc: Run the local CI gate
+    deps: [vet, test, build]

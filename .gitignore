@@ -1,0 +1,11 @@
+bin/
+dist/
+coverage.out
+coverage.html
+*.test
+*.prof
+.env
+.env.local
+.linctl.toml
+*.pem
+*.key

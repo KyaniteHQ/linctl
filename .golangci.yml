@@ -1,0 +1,115 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: none
+  enable:
+    - govet
+    - staticcheck
+    - errcheck
+    - errorlint
+    - nilerr
+    - nilnil
+    - bodyclose
+    - contextcheck
+    - fatcontext
+    - copyloopvar
+    - intrange
+    - usetesting
+    - testifylint
+    - whitespace
+    - misspell
+    - unconvert
+    - unparam
+    - ineffassign
+    - dupword
+    - gocognit
+    - gocyclo
+    - funlen
+    - lll
+    - nestif
+    - dupl
+    - revive
+    - unused
+    - exhaustive
+    - gosec
+    - perfsprint
+    - prealloc
+    - makezero
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    enable-all: true
+    settings:
+      shadow:
+        strict: true
+  gocognit:
+    min-complexity: 25
+  gocyclo:
+    min-complexity: 15
+  funlen:
+    lines: 90
+    statements: 60
+    ignore-comments: true
+  lll:
+    line-length: 120
+    tab-width: 4
+  nestif:
+    min-complexity: 4
+  exhaustive:
+    default-signifies-exhaustive: false
+    check:
+      - switch
+      - map
+  gosec:
+    excludes:
+      - G104
+      - G304
+  testifylint:
+    enable-all: true
+    disable:
+      - require-error
+  revive:
+    severity: warning
+    rules:
+      - name: var-naming
+      - name: package-comments
+      - name: exported
+      - name: error-return
+      - name: error-naming
+      - name: errorf
+      - name: if-return
+      - name: indent-error-flow
+      - name: range-val-in-closure
+      - name: redefines-builtin-id
+      - name: superfluous-else
+      - name: unhandled-error
+        arguments:
+          - "fmt.Print.*"
+          - "fmt.Fprint.*"
+  perfsprint:
+    integer-format: true
+    error-format: true
+    bool-format: true
+    string-format: true
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - funlen
+        - lll
+        - dupl
+        - gosec
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports

@@ -1,0 +1,77 @@
+version: 2
+
+project_name: linctl
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: linctl
+    main: ./cmd/linctl
+    binary: linctl
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Version }}
+      - -X main.commit={{ .Commit }}
+      - -X main.date={{ .CommitDate }}
+
+archives:
+  - id: linctl
+    ids:
+      - linctl
+    formats:
+      - tar.gz
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  github:
+    owner: KyaniteHQ
+    name: linctl
+
+homebrew_casks:
+  - name: linctl
+    ids:
+      - linctl
+    repository:
+      owner: KyaniteHQ
+      name: homebrew-linctl
+      token: "{{ .Env.GH_PAT }}"
+    homepage: https://github.com/KyaniteHQ/linctl
+    description: Schema-aligned Linear CLI with fail-closed target-pinned writes.
+    license: MIT
+    binaries:
+      - linctl

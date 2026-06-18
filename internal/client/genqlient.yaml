@@ -1,0 +1,22 @@
+schema: schema.graphql
+operations:
+  - operations/*.graphql
+generated: generated.go
+optional: pointer
+bindings:
+  CommentCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearCommentCreateInput
+  DateTime:
+    type: string
+  IssueCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueCreateInput
+  IssueUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueUpdateInput
+  JSON:
+    type: encoding/json.RawMessage
+  ProjectCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectCreateInput
+  ProjectUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectUpdateInput
+  TimelessDate:
+    type: string

@@ -1,0 +1,268 @@
+query Viewer {
+  viewer {
+    id
+    name
+    displayName
+    email
+    organization {
+      id
+      name
+      urlKey
+    }
+  }
+}
+
+query Organization {
+  organization {
+    id
+    name
+    urlKey
+  }
+}
+
+query Teams($first: Int, $after: String, $includeArchived: Boolean) {
+  teams(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      id
+      key
+      name
+      organization {
+        id
+        name
+        urlKey
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query TargetProject($id: String!) {
+  project(id: $id) {
+    id
+    name
+    teams(first: 50) {
+      nodes {
+        id
+        key
+        name
+        organization {
+          id
+          name
+          urlKey
+        }
+      }
+    }
+  }
+}
+
+query IssuesByTeam($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssueByID($id: String!) {
+  issue(id: $id) {
+    description
+    ...IssueSummaryFields
+    projectMilestone {
+      id
+      name
+    }
+  }
+}
+
+query CompletedWorkflowStates($teamId: ID!, $first: Int) {
+  workflowStates(filter: { team: { id: { eq: $teamId } }, type: { eq: "completed" } }, first: $first) {
+    nodes {
+      id
+      name
+      type
+      position
+    }
+  }
+}
+
+mutation IssueCreate($input: IssueCreateInput!) {
+  issueCreate(input: $input) {
+    success
+    issue {
+      ...IssueSummaryFields
+    }
+  }
+}
+
+mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
+  issueUpdate(id: $id, input: $input) {
+    success
+    issue {
+      ...IssueSummaryFields
+    }
+  }
+}
+
+mutation IssueCommentCreate($input: CommentCreateInput!) {
+  commentCreate(input: $input) {
+    success
+    comment {
+      id
+      body
+      url
+      issue {
+        ...IssueSummaryFields
+      }
+    }
+  }
+}
+
+mutation IssueClose($id: String!, $input: IssueUpdateInput!) {
+  issueUpdate(id: $id, input: $input) {
+    success
+    issue {
+      ...IssueSummaryFields
+    }
+  }
+}
+
+mutation IssueArchive($id: String!, $trash: Boolean) {
+  issueArchive(id: $id, trash: $trash) {
+    success
+    entity {
+      ...IssueSummaryFields
+    }
+  }
+}
+
+query Projects($teamId: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $teamId) {
+    projects(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query ProjectByID($id: String!) {
+  project(id: $id) {
+    ...ProjectSummaryFields
+  }
+}
+
+query ProjectMembers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    members(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        name
+        displayName
+        email
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+mutation ProjectCreate($input: ProjectCreateInput!) {
+  projectCreate(input: $input) {
+    success
+    project {
+      ...ProjectSummaryFields
+    }
+  }
+}
+
+mutation ProjectUpdate($id: String!, $input: ProjectUpdateInput!) {
+  projectUpdate(id: $id, input: $input) {
+    success
+    project {
+      ...ProjectSummaryFields
+    }
+  }
+}
+
+mutation ProjectArchive($id: String!, $trash: Boolean) {
+  projectArchive(id: $id, trash: $trash) {
+    success
+    entity {
+      ...ProjectSummaryFields
+    }
+  }
+}
+
+fragment IssueSummaryFields on Issue {
+  id
+  identifier
+  title
+  url
+  priority
+  priorityLabel
+  team {
+    id
+    key
+    name
+  }
+  state {
+    id
+    name
+    type
+  }
+  assignee {
+    id
+    name
+    displayName
+  }
+  project {
+    id
+    name
+  }
+}
+
+fragment ProjectSummaryFields on Project {
+  id
+  name
+  description
+  slugId
+  url
+  priority
+  status {
+    id
+    name
+    type
+  }
+  lead {
+    id
+    name
+    displayName
+  }
+  teams(first: 50) {
+    nodes {
+      id
+      key
+      name
+    }
+  }
+}
