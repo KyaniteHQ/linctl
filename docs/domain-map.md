@@ -54,7 +54,7 @@ Planned commands:
 | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` |
 | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes |
 
-S6a implements this domain first as the template for later domains.
+Project is the first implemented PM domain; later domains should reuse its target-comparison vocabulary.
 
 ## Cycle
 

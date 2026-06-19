@@ -19,15 +19,6 @@ type Env interface {
 // ErrProfileNotFound marks an explicitly requested profile that does not exist.
 var ErrProfileNotFound = errors.New("profile not found")
 
-// StaticEnv is an in-memory environment for tests.
-type StaticEnv map[string]string
-
-// Lookup returns a configured environment variable value.
-func (env StaticEnv) Lookup(key string) (string, bool) {
-	value, ok := env[key]
-	return value, ok
-}
-
 // Target is the pinned Linear write target.
 type Target struct {
 	OrgID     string `toml:"org_id"`

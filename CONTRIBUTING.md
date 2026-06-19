@@ -15,7 +15,7 @@ go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run --timeo
 go run github.com/go-task/task/v3/cmd/task@latest ci
 ```
 
-Run live integration tests only with a disposable Linear workspace token:
+Run live integration tests only with a disposable Linear API token:
 
 ```bash
 LINCTL_TEST_TOKEN=<token> go test -count=1 -tags=integration ./internal/client

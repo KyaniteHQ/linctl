@@ -75,7 +75,7 @@ func Test_Usage_prints_domain_usage_when_called_from_domain(t *testing.T) {
 
 	// Then
 	require.NoError(t, err)
-	require.Contains(t, stdout.String(), "project commands are the template")
+	require.Contains(t, stdout.String(), "project commands cover the safe Linear project loop")
 	require.Contains(t, stdout.String(), "project archive PROJECT_ID")
 }
 

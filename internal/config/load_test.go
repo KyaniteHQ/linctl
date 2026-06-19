@@ -9,6 +9,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type staticEnv map[string]string
+
+func (env staticEnv) Lookup(key string) (string, bool) {
+	value, ok := env[key]
+	return value, ok
+}
+
 func Test_Load_resolves_repo_profile_and_env_token_when_present(t *testing.T) {
 	// Given
 	root := t.TempDir()
@@ -42,7 +49,7 @@ project_id = "repo-project"
 	resolved, err := Load(context.Background(), LoadRequest{
 		GlobalPath: globalPath,
 		RepoPath:   repoPath,
-		Env: StaticEnv{
+		Env: staticEnv{
 			"LINCTL_TOKEN": "env-token",
 		},
 	})
@@ -90,7 +97,7 @@ team_id = "other-team"
 		TargetOverride: Target{
 			ProjectID: "override-project",
 		},
-		Env: StaticEnv{},
+		Env: staticEnv{},
 	})
 
 	// Then
@@ -105,7 +112,7 @@ team_id = "other-team"
 	}, resolved.Target)
 }
 
-func Test_Load_keeps_profile_targets_separate_when_multiple_workspaces_exist(t *testing.T) {
+func Test_Load_keeps_profile_targets_separate_when_multiple_targets_exist(t *testing.T) {
 	// Given
 	root := t.TempDir()
 	configPath := filepath.Join(root, "config.toml")
@@ -132,7 +139,7 @@ project_id = "work-project"
 	resolved, err := Load(context.Background(), LoadRequest{
 		GlobalPath:      configPath,
 		ProfileOverride: "work",
-		Env: StaticEnv{
+		Env: staticEnv{
 			"LINCTL_TOKEN": "env-token",
 		},
 	})
@@ -162,7 +169,7 @@ token = "default-token"
 	_, err := Load(context.Background(), LoadRequest{
 		GlobalPath:      configPath,
 		ProfileOverride: "missing",
-		Env:             StaticEnv{},
+		Env:             staticEnv{},
 	})
 
 	// Then

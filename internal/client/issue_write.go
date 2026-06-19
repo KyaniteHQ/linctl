@@ -199,19 +199,6 @@ func CloseIssue(
 	return issueSummaryFromFields(closed.IssueUpdate.Issue.IssueSummaryFields), nil
 }
 
-// ArchiveIssue archives an issue for integration cleanup after the write surface is verified.
-func ArchiveIssue(ctx context.Context, graphqlClient graphql.Client, issueID string) (IssueSummary, error) {
-	archived, err := IssueArchive(ctx, graphqlClient, issueID, boolPtr(false))
-	if err != nil {
-		return IssueSummary{}, fmt.Errorf("archive issue %s: %w", issueID, err)
-	}
-	if !archived.IssueArchive.Success || archived.IssueArchive.Entity == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issueArchive returned no issue", ErrMutationFailed)
-	}
-
-	return issueSummaryFromFields(archived.IssueArchive.Entity.IssueSummaryFields), nil
-}
-
 func firstCompletedStateID(ctx context.Context, graphqlClient graphql.Client, teamID string) (string, error) {
 	states, err := CompletedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
 	if err != nil {

@@ -65,7 +65,7 @@ func Test_Integration_issueWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	})
 	require.NoError(t, createErr)
 	defer func() {
-		_, err := ArchiveIssue(context.Background(), transport, created.ID)
+		_, err := archiveIntegrationIssue(context.Background(), transport, created.ID)
 		require.NoError(t, err)
 	}()
 	read, readErr := GetIssueByID(ctx, transport, created.Identifier)
@@ -174,6 +174,18 @@ func newLiveIntegrationTransport(t *testing.T, timeout time.Duration) *Transport
 		Timeout:    timeout,
 		MaxRetries: 1,
 	})
+}
+
+func archiveIntegrationIssue(ctx context.Context, transport *Transport, issueID string) (IssueSummary, error) {
+	archived, err := IssueArchive(ctx, transport, issueID, boolPtr(false))
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	if !archived.IssueArchive.Success || archived.IssueArchive.Entity == nil {
+		return IssueSummary{}, ErrMutationFailed
+	}
+
+	return issueSummaryFromFields(archived.IssueArchive.Entity.IssueSummaryFields), nil
 }
 
 func containsTeamID(teams []TeamsTeamsTeamConnectionNodesTeam, teamID string) bool {

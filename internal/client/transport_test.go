@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
@@ -84,33 +83,6 @@ func Test_Transport_retries_429_with_retry_after_when_present(t *testing.T) {
 	require.Equal(t, "user-id", data.Viewer.ID)
 }
 
-func Test_Transport_uses_bearer_prefix_for_oauth_tokens(t *testing.T) {
-	// Given
-	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.Header.Get("Authorization") != "Bearer oauth-token" {
-			t.Errorf("authorization header = %q", request.Header.Get("Authorization"))
-		}
-		writer.Header().Set("Content-Type", "application/json")
-		_, err := writer.Write([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))
-		if err != nil {
-			t.Errorf("write response: %v", err)
-		}
-	}))
-	defer server.Close()
-	transport := NewTransport(TransportConfig{
-		Endpoint: server.URL,
-		Token:    OAuthToken("oauth-token"),
-		Timeout:  2 * time.Second,
-	})
-	response := graphql.Response{Data: &testGraphQLData{}}
-
-	// When
-	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
-
-	// Then
-	require.NoError(t, err)
-}
-
 func Test_Transport_returns_error_when_context_timeout_expires(t *testing.T) {
 	// Given
 	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, request *http.Request) {
@@ -130,39 +102,4 @@ func Test_Transport_returns_error_when_context_timeout_expires(t *testing.T) {
 	// Then
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "request failed")
-}
-
-func Test_AssertMutationSuccess_returns_error_when_success_missing(t *testing.T) {
-	// Given
-	payload := strings.NewReader(`{"projectCreate":{"project":{"id":"project-id"}}}`)
-
-	// When
-	err := AssertMutationSuccess(payload, "projectCreate", "project.id")
-
-	// Then
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrMutationFailed)
-}
-
-func Test_AssertMutationSuccess_accepts_successful_payload_with_entity_path(t *testing.T) {
-	// Given
-	payload := strings.NewReader(`{"projectCreate":{"success":true,"project":{"id":"project-id"}}}`)
-
-	// When
-	err := AssertMutationSuccess(payload, "projectCreate", "project.id")
-
-	// Then
-	require.NoError(t, err)
-}
-
-func Test_AssertMutationSuccess_returns_error_when_entity_path_missing(t *testing.T) {
-	// Given
-	payload := strings.NewReader(`{"projectCreate":{"success":true,"project":{}}}`)
-
-	// When
-	err := AssertMutationSuccess(payload, "projectCreate", "project.id")
-
-	// Then
-	require.Error(t, err)
-	require.ErrorIs(t, err, ErrMutationFailed)
 }

@@ -60,7 +60,7 @@ var usageTopics = map[string]usagePayload{
 	},
 	"project": {
 		Topic: "project",
-		Text: "project commands are the template for the broader PM surface. " +
+		Text: "project commands cover the safe Linear project loop. " +
 			"Use linctl project list --limit 50 to list projects attached to the resolved team, " +
 			"linctl project get PROJECT_ID to inspect one project, and linctl project members PROJECT_ID to " +
 			"list current " +
