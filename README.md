@@ -7,6 +7,26 @@ token and fail closed unless the resolved org/team/project matches the pinned ta
 
 ## Install
 
+### Clean Linux Machine
+
+These commands start from a fresh Ubuntu 24.04 environment with no project tools installed:
+
+```bash
+apt-get update
+apt-get install -y ca-certificates curl git tar
+
+curl -fsSL https://go.dev/dl/go1.26.4.linux-amd64.tar.gz -o /tmp/go.tar.gz
+rm -rf /usr/local/go
+tar -C /usr/local -xzf /tmp/go.tar.gz
+export PATH="/usr/local/go/bin:$PATH"
+
+git clone https://github.com/KyaniteHQ/linctl.git
+cd linctl
+
+go run ./cmd/linctl usage
+go run ./cmd/linctl --version
+```
+
 From source:
 
 ```bash
@@ -48,9 +68,12 @@ updates and archives resolve the resource first and compare the pinned project w
 
 ## Development
 
+After following the clean-machine setup above:
+
 ```bash
 go generate ./...
 git diff --exit-code -- internal/client/generated.go
+go build ./...
 go vet ./...
 go test -race -shuffle=on -count=1 ./...
 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run --timeout 5m ./...
