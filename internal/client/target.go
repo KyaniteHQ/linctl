@@ -54,11 +54,8 @@ type ResolvedProject struct {
 
 // ResolveTarget resolves viewer, organization, team, and optional project from the token.
 func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected config.Target) (ResolvedTarget, error) {
-	if expected.OrgID == "" || expected.TeamID == "" || expected.TeamKey == "" {
-		return ResolvedTarget{}, fmt.Errorf(
-			"%w: expected org_id, team_id, and team_key are required",
-			ErrTargetMismatch,
-		)
+	if err := requireExpectedTarget(expected); err != nil {
+		return ResolvedTarget{}, err
 	}
 
 	viewer, err := Viewer(ctx, graphqlClient)
@@ -85,20 +82,51 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 		return ResolvedTarget{}, err
 	}
 
+	resolved := resolvedTargetConfig(viewer.Viewer.Organization.Id, resolvedTeam, project, hasProject, expected)
+	if err := requireTargetMatch(expected, resolved); err != nil {
+		return ResolvedTarget{}, err
+	}
+
+	return newResolvedTarget(viewer.Viewer, resolvedTeam, project, hasProject, expected, resolved), nil
+}
+
+func requireExpectedTarget(expected config.Target) error {
+	if expected.OrgID == "" || expected.TeamID == "" || expected.TeamKey == "" {
+		return fmt.Errorf(
+			"%w: expected org_id, team_id, and team_key are required",
+			ErrTargetMismatch,
+		)
+	}
+
+	return nil
+}
+
+func resolvedTargetConfig(
+	orgID string,
+	team TeamsTeamsTeamConnectionNodesTeam,
+	project ResolvedProject,
+	hasProject bool,
+	expected config.Target,
+) config.Target {
 	resolved := config.Target{
-		OrgID:     viewer.Viewer.Organization.Id,
-		TeamKey:   resolvedTeam.Key,
-		TeamID:    resolvedTeam.Id,
+		OrgID:     orgID,
+		TeamKey:   team.Key,
+		TeamID:    team.Id,
 		ProjectID: expected.ProjectID,
 	}
 	if hasProject {
 		resolved.ProjectID = project.ID
 	}
-	if resolved.OrgID != expected.OrgID || resolved.TeamID != expected.TeamID || resolved.TeamKey != expected.TeamKey {
-		return ResolvedTarget{}, fmt.Errorf("%w: expected=%+v resolved=%+v", ErrTargetMismatch, expected, resolved)
+
+	return resolved
+}
+
+func requireTargetMatch(expected config.Target, resolved config.Target) error {
+	if resolved.OrgID == expected.OrgID && resolved.TeamID == expected.TeamID && resolved.TeamKey == expected.TeamKey {
+		return nil
 	}
 
-	return newResolvedTarget(viewer.Viewer, resolvedTeam, project, hasProject, expected, resolved), nil
+	return fmt.Errorf("%w: expected=%+v resolved=%+v", ErrTargetMismatch, expected, resolved)
 }
 
 func newResolvedTarget(

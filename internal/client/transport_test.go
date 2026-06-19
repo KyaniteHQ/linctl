@@ -143,3 +143,26 @@ func Test_AssertMutationSuccess_returns_error_when_success_missing(t *testing.T)
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
+
+func Test_AssertMutationSuccess_accepts_successful_payload_with_entity_path(t *testing.T) {
+	// Given
+	payload := strings.NewReader(`{"projectCreate":{"success":true,"project":{"id":"project-id"}}}`)
+
+	// When
+	err := AssertMutationSuccess(payload, "projectCreate", "project.id")
+
+	// Then
+	require.NoError(t, err)
+}
+
+func Test_AssertMutationSuccess_returns_error_when_entity_path_missing(t *testing.T) {
+	// Given
+	payload := strings.NewReader(`{"projectCreate":{"success":true,"project":{}}}`)
+
+	// When
+	err := AssertMutationSuccess(payload, "projectCreate", "project.id")
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrMutationFailed)
+}

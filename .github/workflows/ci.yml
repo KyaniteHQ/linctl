@@ -16,6 +16,10 @@ jobs:
           cache: true
       - name: Verify dependencies
         run: go mod download
+      - name: Verify generated client
+        run: |
+          go generate ./...
+          git diff --exit-code -- internal/client/generated.go
       - name: Build
         run: go build ./...
       - name: Vet

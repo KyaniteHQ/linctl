@@ -3,6 +3,7 @@ version: "3"
 vars:
   BINARY: linctl
   PKG: ./cmd/linctl
+  GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 
 tasks:
   default:
@@ -17,7 +18,13 @@ tasks:
   lint:
     desc: Run linters
     cmds:
-      - golangci-lint run --timeout 5m ./...
+      - go run {{.GOLANGCI_LINT}} run --timeout 5m ./...
+
+  generate-check:
+    desc: Regenerate GraphQL client and verify it is committed
+    cmds:
+      - go generate ./...
+      - git diff --exit-code -- internal/client/generated.go
 
   test:
     desc: Run tests
@@ -36,4 +43,9 @@ tasks:
 
   ci:
     desc: Run the local CI gate
-    deps: [vet, test, build]
+    cmds:
+      - task: generate-check
+      - task: vet
+      - task: test
+      - go build ./...
+      - task: lint

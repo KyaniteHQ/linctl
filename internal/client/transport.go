@@ -92,26 +92,48 @@ func (transport *Transport) MakeRequest(
 		if err != nil {
 			return err
 		}
-		if statusCode == http.StatusTooManyRequests && attempt < transport.maxRetries {
-			if err := waitForRetry(ctx, retryDelay(header.Get("Retry-After"), attempt)); err != nil {
-				return err
-			}
+		retry, err := waitForRateLimitRetry(ctx, statusCode, header, attempt, transport.maxRetries)
+		if err != nil {
+			return err
+		}
+		if retry {
 			continue
 		}
-		if statusCode < http.StatusOK || statusCode >= http.StatusMultipleChoices {
-			return fmt.Errorf("graphql http status %d: %s", statusCode, strings.TrimSpace(string(body)))
-		}
-		if err := json.Unmarshal(body, response); err != nil {
-			return fmt.Errorf("decode graphql response: %w", err)
-		}
-		if len(response.Errors) > 0 {
-			return formatGraphQLErrors(response.Errors)
-		}
-
-		return nil
+		return decodeGraphQLResponse(body, statusCode, response)
 	}
 
 	return fmt.Errorf("graphql retry loop exhausted: %w", ErrGraphQL)
+}
+
+func waitForRateLimitRetry(
+	ctx context.Context,
+	statusCode int,
+	header http.Header,
+	attempt int,
+	maxRetries int,
+) (bool, error) {
+	if statusCode != http.StatusTooManyRequests || attempt >= maxRetries {
+		return false, nil
+	}
+	if err := waitForRetry(ctx, retryDelay(header.Get("Retry-After"), attempt)); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func decodeGraphQLResponse(body []byte, statusCode int, response *graphql.Response) error {
+	if statusCode < http.StatusOK || statusCode >= http.StatusMultipleChoices {
+		return fmt.Errorf("graphql http status %d: %s", statusCode, strings.TrimSpace(string(body)))
+	}
+	if err := json.Unmarshal(body, response); err != nil {
+		return fmt.Errorf("decode graphql response: %w", err)
+	}
+	if len(response.Errors) > 0 {
+		return formatGraphQLErrors(response.Errors)
+	}
+
+	return nil
 }
 
 // AssertMutationSuccess checks a mutation payload for success and returned entity id.
