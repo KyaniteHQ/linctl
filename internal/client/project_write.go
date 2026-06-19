@@ -46,7 +46,7 @@ func CreateProject(
 	if request.Name == "" {
 		return ProjectSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
 	}
-	target, err := ResolveTarget(ctx, graphqlClient, expected)
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
 	if err != nil {
 		return ProjectSummary{}, err
 	}
@@ -54,7 +54,7 @@ func CreateProject(
 	created, err := ProjectCreate(ctx, graphqlClient, LinearProjectCreateInput{
 		Name:        request.Name,
 		Description: optionalString(request.Description),
-		TeamIDs:     []string{target.Team.ID},
+		TeamIDs:     []string{guard.target.Team.ID},
 	})
 	if err != nil {
 		return ProjectSummary{}, fmt.Errorf("create project: %w", err)
@@ -76,7 +76,11 @@ func UpdateProject(
 	if err := validateProjectUpdateRequest(request); err != nil {
 		return ProjectSummary{}, err
 	}
-	if err := guardProjectWrite(ctx, graphqlClient, expected, request.ID); err != nil {
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectSummary{}, err
+	}
+	if err := guard.requireProject(ctx, graphqlClient, request.ID); err != nil {
 		return ProjectSummary{}, err
 	}
 
@@ -101,7 +105,11 @@ func ArchiveProject(
 	expected config.Target,
 	projectID string,
 ) (ProjectSummary, error) {
-	if err := guardProjectWrite(ctx, graphqlClient, expected, projectID); err != nil {
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectSummary{}, err
+	}
+	if err := guard.requireProject(ctx, graphqlClient, projectID); err != nil {
 		return ProjectSummary{}, err
 	}
 
@@ -114,50 +122,6 @@ func ArchiveProject(
 	}
 
 	return projectSummaryFromFields(archived.ProjectArchive.Entity.ProjectSummaryFields), nil
-}
-
-func guardProjectWrite(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	expected config.Target,
-	projectID string,
-) error {
-	target, err := ResolveTarget(ctx, graphqlClient, expected)
-	if err != nil {
-		return err
-	}
-	project, err := GetProjectByID(ctx, graphqlClient, projectID)
-	if err != nil {
-		return err
-	}
-	if target.Project != nil && project.ID != target.Project.ID {
-		return fmt.Errorf(
-			"%w: expected project_id=%s resolved project_id=%s",
-			ErrTargetMismatch,
-			target.Project.ID,
-			project.ID,
-		)
-	}
-	if !projectHasTeam(project, target.Team.ID, target.Team.Key) {
-		return fmt.Errorf(
-			"%w: expected team_id=%s team_key=%s",
-			ErrTargetMismatch,
-			target.Team.ID,
-			target.Team.Key,
-		)
-	}
-
-	return nil
-}
-
-func projectHasTeam(project ProjectSummary, teamID string, teamKey string) bool {
-	for _, team := range project.Teams {
-		if team.ID == teamID && team.Key == teamKey {
-			return true
-		}
-	}
-
-	return false
 }
 
 func validateProjectUpdateRequest(request ProjectUpdateRequest) error {

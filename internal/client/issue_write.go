@@ -67,7 +67,7 @@ func CreateIssue(
 	if request.Title == "" {
 		return IssueSummary{}, fmt.Errorf("%w: title is required", ErrWriteInvalid)
 	}
-	target, err := ResolveTarget(ctx, graphqlClient, expected)
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -75,10 +75,10 @@ func CreateIssue(
 	input := LinearIssueCreateInput{
 		Title:       stringPtr(request.Title),
 		Description: optionalString(request.Description),
-		TeamID:      target.Team.ID,
+		TeamID:      guard.target.Team.ID,
 	}
-	if target.Project != nil {
-		input.ProjectID = stringPtr(target.Project.ID)
+	if guard.target.Project != nil {
+		input.ProjectID = stringPtr(guard.target.Project.ID)
 	}
 	created, err := IssueCreate(ctx, graphqlClient, input)
 	if err != nil {
@@ -104,7 +104,11 @@ func UpdateIssue(
 	if request.Title == "" && request.Description == "" {
 		return IssueSummary{}, fmt.Errorf("%w: title or description is required", ErrWriteInvalid)
 	}
-	if _, err := guardIssueWrite(ctx, graphqlClient, expected, request.ID); err != nil {
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	if _, err := guard.requireIssue(ctx, graphqlClient, request.ID); err != nil {
 		return IssueSummary{}, err
 	}
 
@@ -135,7 +139,11 @@ func CommentOnIssue(
 	if request.Body == "" {
 		return IssueCommentResult{}, fmt.Errorf("%w: body is required", ErrWriteInvalid)
 	}
-	if _, err := guardIssueWrite(ctx, graphqlClient, expected, request.ID); err != nil {
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueCommentResult{}, err
+	}
+	if _, err := guard.requireIssue(ctx, graphqlClient, request.ID); err != nil {
 		return IssueCommentResult{}, err
 	}
 
@@ -165,7 +173,11 @@ func CloseIssue(
 	expected config.Target,
 	issueID string,
 ) (IssueSummary, error) {
-	issue, err := guardIssueWrite(ctx, graphqlClient, expected, issueID)
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	issue, err := guard.requireIssue(ctx, graphqlClient, issueID)
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -198,42 +210,6 @@ func ArchiveIssue(ctx context.Context, graphqlClient graphql.Client, issueID str
 	}
 
 	return issueSummaryFromFields(archived.IssueArchive.Entity.IssueSummaryFields), nil
-}
-
-func guardIssueWrite(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	expected config.Target,
-	issueID string,
-) (IssueSummary, error) {
-	target, err := ResolveTarget(ctx, graphqlClient, expected)
-	if err != nil {
-		return IssueSummary{}, err
-	}
-	issue, err := GetIssueByID(ctx, graphqlClient, issueID)
-	if err != nil {
-		return IssueSummary{}, err
-	}
-	if issue.TeamID != target.Team.ID || issue.Team != target.Team.Key {
-		return IssueSummary{}, fmt.Errorf(
-			"%w: expected team_id=%s team_key=%s resolved issue team_id=%s team_key=%s",
-			ErrTargetMismatch,
-			target.Team.ID,
-			target.Team.Key,
-			issue.TeamID,
-			issue.Team,
-		)
-	}
-	if target.Project != nil && issue.ProjectID != target.Project.ID {
-		return IssueSummary{}, fmt.Errorf(
-			"%w: expected project_id=%s resolved issue project_id=%s",
-			ErrTargetMismatch,
-			target.Project.ID,
-			issue.ProjectID,
-		)
-	}
-
-	return issue, nil
 }
 
 func firstCompletedStateID(ctx context.Context, graphqlClient graphql.Client, teamID string) (string, error) {
