@@ -15,7 +15,7 @@ func addTargetCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 		Short: "Print the resolved Linear target",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -46,7 +46,7 @@ func addWhoamiCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 		Short: "Print the authenticated Linear user",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}

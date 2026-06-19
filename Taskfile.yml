@@ -31,6 +31,16 @@ tasks:
     cmds:
       - go test -race -shuffle=on -count=1 ./...
 
+  coverage:
+    desc: Run statement coverage for hand-written code
+    cmds:
+      - bash scripts/coverage.sh
+
+  live-smoke:
+    desc: Run opt-in live smoke tests against disposable Linear resources
+    cmds:
+      - bash scripts/live-smoke.sh
+
   vet:
     desc: Run go vet
     cmds:

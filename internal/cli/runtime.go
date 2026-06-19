@@ -6,14 +6,18 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Khan/genqlient/graphql"
+
 	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 type commandRuntime struct {
 	config        config.Resolved
-	graphqlClient *client.Transport
+	graphqlClient graphql.Client
 }
+
+var buildCommandRuntime = newCommandRuntime
 
 func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
 	override := targetOverride(options)

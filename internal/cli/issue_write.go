@@ -16,7 +16,7 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "Create an issue in the pinned target",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -40,7 +40,7 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "Update an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -65,7 +65,7 @@ func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *r
 		Short: "Comment on an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -91,7 +91,7 @@ func addIssueCloseCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Move an issue to the completed workflow state",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}

@@ -21,6 +21,12 @@ Run live integration tests only with a disposable Linear API token:
 LINCTL_TEST_TOKEN=<token> go test -count=1 -tags=integration ./internal/client
 ```
 
+The full live smoke harness is:
+
+```bash
+task live-smoke
+```
+
 Never run write tests against real project data. Test resources must use a `linctl-it-<runid>` prefix and
 be archived during cleanup.
 

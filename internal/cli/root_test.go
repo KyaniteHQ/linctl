@@ -47,6 +47,14 @@ func Test_Execute_prints_version_when_version_flag_is_set(t *testing.T) {
 	require.Empty(t, stderr.String())
 }
 
+func Test_Execute_runs_root_command_without_args(t *testing.T) {
+	// When
+	err := Execute(context.Background(), BuildInfo{})
+
+	// Then
+	require.NoError(t, err)
+}
+
 func Test_Usage_prints_overview_when_called(t *testing.T) {
 	// Given
 	stdout := bytes.Buffer{}

@@ -31,7 +31,7 @@ func addProjectListCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "List projects for the resolved team",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -65,7 +65,7 @@ func addProjectGetCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Get one project by id or slug",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -86,7 +86,7 @@ func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options 
 		Short: "List project members",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}

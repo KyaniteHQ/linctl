@@ -85,3 +85,12 @@ The temporary integration fixture is configured in `test/integration-config.json
 ```bash
 LINCTL_TEST_TOKEN=<token> go test -count=1 -tags=integration ./internal/client
 ```
+
+Or run the complete live smoke harness:
+
+```bash
+task live-smoke
+```
+
+The smoke harness builds a temporary CLI binary, runs read-only CLI checks, then runs the integration-tagged
+client round trips. Write checks must use disposable `linctl-it-<runid>` resources and archive them during cleanup.

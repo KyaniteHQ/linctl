@@ -15,7 +15,7 @@ func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *
 		Short: "Create a project in the pinned team",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -54,7 +54,7 @@ func addProjectArchiveCommand(ctx context.Context, root *cobra.Command, options 
 		Short: "Archive a project after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -74,7 +74,7 @@ func runProjectUpdateCommand(
 	options *rootOptions,
 	request client.ProjectUpdateRequest,
 ) error {
-	runtime, err := newCommandRuntime(ctx, options)
+	runtime, err := buildCommandRuntime(ctx, options)
 	if err != nil {
 		return err
 	}

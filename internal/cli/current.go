@@ -20,7 +20,7 @@ func addCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 			if err != nil {
 				return err
 			}
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}

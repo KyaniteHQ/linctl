@@ -31,7 +31,7 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 		Short: "List issues for the resolved team",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
@@ -60,7 +60,7 @@ func addIssueGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 		Short: "Get one issue by id or identifier",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := newCommandRuntime(ctx, options)
+			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}

@@ -30,20 +30,22 @@ type AuthToken struct {
 
 // TransportConfig configures the Linear GraphQL transport.
 type TransportConfig struct {
-	Client     *http.Client
-	Endpoint   string
-	Token      AuthToken
-	Timeout    time.Duration
-	MaxRetries int
+	Client           *http.Client
+	DiagnosticWriter io.Writer
+	Endpoint         string
+	Token            AuthToken
+	Timeout          time.Duration
+	MaxRetries       int
 }
 
 // Transport implements genqlient's GraphQL client interface.
 type Transport struct {
-	httpClient *http.Client
-	endpoint   string
-	token      AuthToken
-	timeout    time.Duration
-	maxRetries int
+	httpClient       *http.Client
+	diagnosticWriter io.Writer
+	endpoint         string
+	token            AuthToken
+	timeout          time.Duration
+	maxRetries       int
 }
 
 // PersonalAPIToken sends a raw Linear personal API key.
@@ -61,11 +63,12 @@ func NewTransport(config TransportConfig) *Transport {
 	}
 
 	return &Transport{
-		httpClient: httpClient,
-		endpoint:   firstNonEmpty(config.Endpoint, "https://api.linear.app/graphql"),
-		token:      config.Token,
-		timeout:    defaultDuration(config.Timeout, 30*time.Second),
-		maxRetries: defaultRetries(config.MaxRetries),
+		httpClient:       httpClient,
+		diagnosticWriter: config.DiagnosticWriter,
+		endpoint:         firstNonEmpty(config.Endpoint, "https://api.linear.app/graphql"),
+		token:            config.Token,
+		timeout:          defaultDuration(config.Timeout, 30*time.Second),
+		maxRetries:       defaultRetries(config.MaxRetries),
 	}
 }
 
@@ -80,22 +83,41 @@ func (transport *Transport) MakeRequest(
 		return fmt.Errorf("encode graphql request: %w", err)
 	}
 
-	for attempt := range transport.maxRetries + 1 {
+	for attempt := 0; ; attempt++ {
+		transport.log("graphql_request attempt=%d", attempt+1)
 		body, statusCode, header, err := transport.send(ctx, payload)
 		if err != nil {
+			transport.log("graphql_request_failed attempt=%d error=%q", attempt+1, err.Error())
 			return err
 		}
+		transport.log("graphql_response attempt=%d status=%d", attempt+1, statusCode)
 		retry, err := waitForRateLimitRetry(ctx, statusCode, header, attempt, transport.maxRetries)
 		if err != nil {
+			transport.log("graphql_retry_failed attempt=%d error=%q", attempt+1, err.Error())
 			return err
 		}
 		if retry {
+			transport.log("graphql_retry attempt=%d status=%d", attempt+1, statusCode)
 			continue
 		}
-		return decodeGraphQLResponse(body, statusCode, response)
+		if err := decodeGraphQLResponse(body, statusCode, response); err != nil {
+			transport.log("graphql_decode_failed attempt=%d status=%d", attempt+1, statusCode)
+			return err
+		}
+		transport.log("graphql_request_ok attempt=%d status=%d", attempt+1, statusCode)
+		return nil
+	}
+}
+
+func (transport *Transport) log(format string, args ...any) {
+	if transport.diagnosticWriter == nil {
+		return
 	}
 
-	return fmt.Errorf("graphql retry loop exhausted: %w", ErrGraphQL)
+	_, err := fmt.Fprintf(transport.diagnosticWriter, format+"\n", args...)
+	if err != nil {
+		return
+	}
 }
 
 func waitForRateLimitRetry(
