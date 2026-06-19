@@ -58,3 +58,37 @@ Gap:
 Fix:
 
 - Added `build-essential` to the clean Linux prerequisite install command.
+
+## Attempt 3
+
+Environment: fresh `ubuntu:24.04` container.
+
+Command:
+
+```bash
+apt-get update
+apt-get install -y build-essential ca-certificates curl git tar
+curl -fsSL https://go.dev/dl/go1.26.4.linux-amd64.tar.gz -o /tmp/go.tar.gz
+rm -rf /usr/local/go
+tar -C /usr/local -xzf /tmp/go.tar.gz
+export PATH="/usr/local/go/bin:$PATH"
+git clone https://github.com/KyaniteHQ/linctl.git
+cd linctl
+go run ./cmd/linctl usage
+go run ./cmd/linctl --version
+go generate ./...
+git diff --exit-code -- internal/client/generated.go
+go build ./...
+go vet ./...
+go test -race -shuffle=on -count=1 ./...
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run --timeout 5m ./...
+```
+
+Gap:
+
+- The clean run passed, but the lint command used `@latest`, which quietly made the documented gate depend
+  on whatever golangci-lint version is current at execution time.
+
+Fix:
+
+- Pinned the README lint command and CI lint action to golangci-lint `v2.12.2`.
