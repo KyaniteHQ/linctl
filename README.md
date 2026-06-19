@@ -13,7 +13,7 @@ These commands start from a fresh Ubuntu 24.04 environment with no project tools
 
 ```bash
 apt-get update
-apt-get install -y ca-certificates curl git tar
+apt-get install -y build-essential ca-certificates curl git tar
 
 curl -fsSL https://go.dev/dl/go1.26.4.linux-amd64.tar.gz -o /tmp/go.tar.gz
 rm -rf /usr/local/go
