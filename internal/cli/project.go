@@ -35,7 +35,7 @@ func addProjectListCommand(ctx context.Context, root *cobra.Command, options *ro
 			if err != nil {
 				return err
 			}
-			target, err := client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
+			target, err := runtime.resolveTarget(ctx)
 			if err != nil {
 				return err
 			}

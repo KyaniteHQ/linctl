@@ -11,17 +11,17 @@ import (
 )
 
 type commandRuntime struct {
-	config         config.Resolved
-	graphqlClient  *client.Transport
-	targetOverride config.Target
+	config        config.Resolved
+	graphqlClient *client.Transport
 }
 
 func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
+	override := targetOverride(options)
 	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
 		GlobalPath:      defaultGlobalConfigPath(),
 		RepoPath:        ".linctl.toml",
 		ProfileOverride: options.profile,
-		TargetOverride:  targetOverride(options),
+		TargetOverride:  override,
 	})
 	if err != nil {
 		return commandRuntime{}, err
@@ -36,8 +36,11 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 			Token:   client.PersonalAPIToken(resolvedConfig.Token),
 			Timeout: options.timeout,
 		}),
-		targetOverride: targetOverride(options),
 	}, nil
+}
+
+func (runtime commandRuntime) resolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
+	return client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
 }
 
 func defaultGlobalConfigPath() string {
