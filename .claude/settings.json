@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{ f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.go) (command -v gofumpt >/dev/null 2>&1 && gofumpt -w \"$f\" || go run mvdan.cc/gofumpt@latest -w \"$f\") && (command -v goimports >/dev/null 2>&1 && goimports -w -local github.com/KyaniteHQ/linctl \"$f\" || go run golang.org/x/tools/cmd/goimports@latest -w -local github.com/KyaniteHQ/linctl \"$f\") ;; esac ; } 2>/dev/null || true",
+            "statusMessage": "Formatting Go (gofumpt + goimports)"
+          }
+        ]
+      }
+    ]
+  }
+}
