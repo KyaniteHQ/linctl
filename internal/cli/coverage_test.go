@@ -64,6 +64,11 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		DisplayName: "Omer",
 		Email:       "omer@example.com",
 	}
+	comment := client.CommentSummary{
+		ID:          "comment-id",
+		Body:        "First comment",
+		DisplayName: "Omer",
+	}
 	workflowState := client.WorkflowStateSummary{
 		ID:   "workflow-state-id",
 		Name: "Started",
@@ -83,13 +88,14 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeLabel(textCommand, &textOptions, label))
 	require.NoError(t, writeTeam(textCommand, &textOptions, team))
 	require.NoError(t, writeUser(textCommand, &textOptions, user))
+	require.NoError(t, writeComment(textCommand, &textOptions, comment))
 	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
 	require.Equal(
 		t,
 		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
 			"project-id Coverage [Backlog]\nproject-milestone-id Launch milestone [next]\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
-			"user-id Omer <omer@example.com>\nworkflow-state-id Started [started]\n",
+			"user-id Omer <omer@example.com>\ncomment-id Omer First comment\nworkflow-state-id Started [started]\n",
 		textOut.String(),
 	)
 
@@ -106,6 +112,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeLabel(jsonCommand, &jsonOptions, label))
 	require.NoError(t, writeTeam(jsonCommand, &jsonOptions, team))
 	require.NoError(t, writeUser(jsonCommand, &jsonOptions, user))
+	require.NoError(t, writeComment(jsonCommand, &jsonOptions, comment))
 	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
@@ -115,6 +122,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"color": "#ff0000"`)
 	require.Contains(t, jsonOut.String(), `"key": "LIT"`)
 	require.Contains(t, jsonOut.String(), `"email": "omer@example.com"`)
+	require.Contains(t, jsonOut.String(), `"body": "First comment"`)
 	require.Contains(t, jsonOut.String(), `"type": "started"`)
 }
 
@@ -173,6 +181,11 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		DisplayName: "Omer",
 		Email:       "omer@example.com",
 	}
+	comment := client.CommentSummary{
+		ID:          "comment-id",
+		Body:        "First comment",
+		DisplayName: "Omer",
+	}
 	workflowState := client.WorkflowStateSummary{
 		ID:   "workflow-state-id",
 		Name: "Started",
@@ -194,6 +207,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeLabel(command, &rootOptions{idOnly: true}, label))
 	require.NoError(t, writeTeam(command, &rootOptions{idOnly: true}, team))
 	require.NoError(t, writeUser(command, &rootOptions{idOnly: true}, user))
+	require.NoError(t, writeComment(command, &rootOptions{idOnly: true}, comment))
 	require.NoError(t, writeWorkflowState(command, &rootOptions{idOnly: true}, workflowState))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
@@ -206,6 +220,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "label-id")
 	require.Contains(t, output.String(), "team-id")
 	require.Contains(t, output.String(), "user-id")
+	require.Contains(t, output.String(), "comment-id")
 	require.Contains(t, output.String(), "workflow-state-id")
 	require.Equal(t, "-", emptyDash(""))
 
@@ -220,6 +235,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeLabel(quietCommand, &rootOptions{quiet: true}, label))
 	require.NoError(t, writeTeam(quietCommand, &rootOptions{quiet: true}, team))
 	require.NoError(t, writeUser(quietCommand, &rootOptions{quiet: true}, user))
+	require.NoError(t, writeComment(quietCommand, &rootOptions{quiet: true}, comment))
 	require.NoError(t, writeWorkflowState(quietCommand, &rootOptions{quiet: true}, workflowState))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")

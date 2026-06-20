@@ -46,6 +46,27 @@ Planned commands:
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
 
+## Comment
+
+Schema backing:
+
+- Types: `Comment`, `CommentConnection`
+- Reads: `Query.comments`, `Query.comment`, `Issue.comments`
+- Writes: `Mutation.commentCreate`, `Mutation.commentResolve`, `Mutation.commentUnresolve`
+- Inputs: `CommentCreateInput`
+- Relevant fields: `Comment.id`, `Comment.body`, `Comment.url`, `Comment.createdAt`, `Comment.updatedAt`, `Comment.parentId`, `Comment.issueId`, `Comment.projectId`, `Comment.projectUpdateId`, `Comment.initiativeId`, `Comment.initiativeUpdateId`, `Comment.documentContentId`, `Comment.user`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `comment list` | `Query.comments` | Read-only |
+| `comment get` | `Query.comment` | Read-only |
+| `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope |
+| `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope |
+
+Only `comment list` and `comment get` are implemented in the current CLI. Issue-scoped comment creation and replies remain under the guarded `issue comment` and `issue reply` commands.
+
 ## Project
 
 Schema backing:

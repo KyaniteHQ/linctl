@@ -69,6 +69,8 @@ linctl issue branch LIT-123
 linctl issue deps LIT-123 --limit 20
 linctl issue pr LIT-123
 linctl issue comments LIT-123 --limit 20
+linctl comment list --limit 20
+linctl comment get comment-id
 linctl issue start LIT-123
 linctl issue reply LIT-123 comment-id --body "thread reply"
 linctl issue usage
@@ -139,6 +141,8 @@ printf 'progress note\n' | linctl issue comment LIT-123 --body -
 linctl issue comment LIT-123 --body-file ./comment.md
 linctl issue reply LIT-123 comment-id --body "thread reply"
 linctl issue reply LIT-123 comment-id --body-file ./reply.md
+linctl comment list --limit 20
+linctl comment get comment-id
 linctl project-milestone create project-id --name "Launch milestone"
 linctl project-milestone update project-milestone-id --name "Renamed milestone"
 linctl document list --limit 20
@@ -153,7 +157,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Document, label, team, user, and workflow-state commands are read-only in the current CLI.
+when configured. Comment, document, label, team, user, and workflow-state commands are read-only in the current CLI.
 
 ## Development
 

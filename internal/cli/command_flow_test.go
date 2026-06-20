@@ -57,6 +57,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue comment", args: []string{"issue", "comment", "LIT-1", "--body", "Looks good"}, contains: "comment comment-id on LIT-1"},
 		{name: "issue reply", args: []string{"issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"}, contains: "comment comment-id on LIT-1", fake: commandFlowFakeClient{expectedCommentBody: "Reply body", expectedCommentParentID: "comment-id"}},
 		{name: "issue comments", args: []string{"issue", "comments", "LIT-1", "--limit", "1"}, contains: "comment-id Omer First comment"},
+		{name: "comment list", args: []string{"comment", "list", "--limit", "1"}, contains: "comment-id Omer First comment"},
+		{name: "comment get", args: []string{"comment", "get", "comment-id"}, contains: "comment-id Omer First comment"},
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, contains: "LIT-1 Closed issue [Done]"},
 		{name: "project list", args: []string{"project", "list", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, contains: "project-id Detail project [Backlog]"},
@@ -611,6 +613,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "comment", "LIT-1", "--body", "Looks good"},
 		{"--json", "issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"},
 		{"--json", "--fields", "id,display_name", "issue", "comments", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,display_name", "comment", "list", "--limit", "1"},
+		{"--json", "comment", "get", "comment-id"},
 		{"--json", "project", "list", "--limit", "1"},
 		{"--json", "project", "members", "project-id", "--limit", "1"},
 		{"--json", "--fields", "id,health,display_name", "project", "updates", "project-id", "--limit", "1"},
@@ -990,6 +994,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue start update", args: []string{"issue", "start", "LIT-1"}, operation: "IssueUpdate", contains: "start issue LIT-1"},
 		{name: "issue comment", args: []string{"issue", "comment", "LIT-1", "--body", "Looks good"}, operation: "IssueCommentCreate", contains: "comment on issue LIT-1"},
 		{name: "issue reply", args: []string{"issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"}, operation: "IssueCommentCreate", contains: "comment on issue LIT-1"},
+		{name: "comment list", args: []string{"comment", "list"}, operation: "comments", contains: "list comments"},
+		{name: "comment get", args: []string{"comment", "get", "comment-id"}, operation: "comment", contains: "get comment comment-id"},
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, operation: "IssueClose", contains: "close issue LIT-1"},
 		{name: "project list target resolve", args: []string{"project", "list"}, operation: "Teams", contains: "resolve teams"},
 		{name: "project list", args: []string{"project", "list"}, operation: "Projects", contains: "list projects"},
@@ -1304,6 +1310,10 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 		return `{"workflowStates":{"nodes":[` + commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "workflowState":
 		return `{"workflowState":` + commandWorkflowStateJSON() + `}`, true
+	case "comments":
+		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "comment":
+		return `{"comment":` + commandTopLevelCommentJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -1693,6 +1703,26 @@ func commandWorkflowStateJSON() string {
 		"color":"#f2c94c",
 		"position":2,
 		"team":{"id":"team-id","key":"LIT","name":"linctl"}
+	}`
+}
+
+func commandTopLevelCommentJSON() string {
+	return `{
+		"id":"comment-id",
+		"body":"First comment",
+		"url":"https://linear.app/comment/comment-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"editedAt":null,
+		"resolvedAt":null,
+		"parentId":null,
+		"issueId":"issue-id",
+		"projectId":null,
+		"projectUpdateId":null,
+		"initiativeId":null,
+		"initiativeUpdateId":null,
+		"documentContentId":null,
+		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
 	}`
 }
 

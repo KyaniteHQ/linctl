@@ -10,49 +10,18 @@ import (
 )
 
 func addWorkflowStateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	workflowStateCommand := &cobra.Command{
-		Use:   "workflow-state",
-		Short: "Read Linear workflow states",
-	}
-
-	listCommand := &cobra.Command{
-		Use:   "list",
-		Short: "List visible workflow states",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadWorkflowStateList,
-				workflowStatePageWithItems,
-				writeWorkflowState,
-			)
-		},
-	}
-	listCommand.Flags().IntVar(&limit, "limit", limit, "maximum workflow states to return")
-	getCommand := &cobra.Command{
-		Use:   "get WORKFLOW_STATE_ID",
-		Short: "Get one workflow state by id",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			state, err := client.GetWorkflowStateByID(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeWorkflowState(command, options, state)
-		},
-	}
-	workflowStateCommand.AddCommand(listCommand, getCommand)
-	root.AddCommand(workflowStateCommand)
+	addReadListGetCommand(ctx, root, options, readListGetSpec[client.WorkflowStateList, client.WorkflowStateSummary]{
+		Use:           "workflow-state",
+		Short:         "Read Linear workflow states",
+		ListShort:     "List visible workflow states",
+		LimitHelp:     "maximum workflow states to return",
+		GetUse:        "get WORKFLOW_STATE_ID",
+		GetShort:      "Get one workflow state by id",
+		LoadList:      loadWorkflowStateList,
+		PageWithItems: workflowStatePageWithItems,
+		LoadGet:       loadWorkflowState,
+		WriteItem:     writeWorkflowState,
+	})
 }
 
 func writeWorkflowState(
@@ -81,6 +50,14 @@ func loadWorkflowStateList(
 ) (client.WorkflowStateList, []client.WorkflowStateSummary, error) {
 	states, err := client.ListWorkflowStates(ctx, runtime.graphqlClient, limit)
 	return states, states.WorkflowStates, err
+}
+
+func loadWorkflowState(
+	ctx context.Context,
+	runtime commandRuntime,
+	id string,
+) (client.WorkflowStateSummary, error) {
+	return client.GetWorkflowStateByID(ctx, runtime.graphqlClient, id)
 }
 
 func workflowStatePageWithItems(

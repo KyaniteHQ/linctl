@@ -173,6 +173,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"ProjectMilestones":    `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"ProjectMilestoneByID": `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
 		"IssueComments":        `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"comments":             `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"comment":              `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
 		"Documents":            `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"DocumentByID":         `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
 		"IssueLabels":          `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -233,6 +235,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	projectMilestone, err := GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
 	require.NoError(t, err)
 	comments, err := ListIssueComments(context.Background(), graphqlClient, "LIT-12", 2)
+	require.NoError(t, err)
+	topLevelComments, err := ListComments(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	topLevelComment, err := GetCommentByID(context.Background(), graphqlClient, "comment-id")
 	require.NoError(t, err)
 	documents, err := ListDocuments(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -310,6 +316,16 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Omer", comments.Comments[0].DisplayName)
 	require.Empty(t, comments.Comments[1].UserID)
 	require.Empty(t, comments.Comments[1].ParentID)
+	require.True(t, topLevelComments.HasNextPage)
+	require.Equal(t, &endCursor, topLevelComments.EndCursor)
+	require.Equal(t, "parent-id", topLevelComments.Comments[0].ParentID)
+	require.Equal(t, "issue-id", topLevelComments.Comments[0].IssueID)
+	require.Equal(t, "Omer", topLevelComments.Comments[0].DisplayName)
+	require.Equal(t, "project-id", topLevelComments.Comments[1].ProjectID)
+	require.Empty(t, topLevelComments.Comments[1].UserID)
+	require.Equal(t, "comment-id", topLevelComment.ID)
+	require.Equal(t, "issue-id", topLevelComment.IssueID)
+	require.Equal(t, "Omer", topLevelComment.DisplayName)
 	require.True(t, documents.HasNextPage)
 	require.Equal(t, "project", documents.Documents[0].ParentType)
 	require.Equal(t, "Team note", document.Title)
@@ -716,6 +732,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListIssueComments(context.Background(), graphqlClient, "LIT-1", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list issue comments LIT-1")
+
+		_, err = ListComments(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list comments")
+
+		_, err = GetCommentByID(context.Background(), graphqlClient, "comment-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get comment comment-id")
 
 		_, err = ListDocuments(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

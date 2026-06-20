@@ -1,0 +1,39 @@
+query comments($first: Int, $after: String, $includeArchived: Boolean) {
+  comments(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...TopLevelCommentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query comment($id: String, $hash: String) {
+  comment(id: $id, hash: $hash) {
+    ...TopLevelCommentSummaryFields
+  }
+}
+
+fragment TopLevelCommentSummaryFields on Comment {
+  id
+  body
+  url
+  createdAt
+  updatedAt
+  editedAt
+  resolvedAt
+  parentId
+  issueId
+  projectId
+  projectUpdateId
+  initiativeId
+  initiativeUpdateId
+  documentContentId
+  user {
+    id
+    name
+    displayName
+  }
+}

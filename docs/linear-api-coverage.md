@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 31 | 458 |
-| Upstream Query root fields | 158 | 19 | 158 |
+| Upstream SDK root methods | 458 | 33 | 458 |
+| Upstream Query root fields | 158 | 21 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 56 | 56 | 56 |
-| Domain-map commands | 64 | 50 | 64 |
+| Local generated Go operations | 58 | 58 | 58 |
+| Domain-map commands | 68 | 52 | 68 |
 
 ## Upstream SDK Root Methods
 
@@ -74,10 +74,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `auditEntryTypes` | getter | safe_candidate | read operation may fit future CLI coverage |
 | `authenticationSessions` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | getter | accepted_gap | repo-planned or likely useful CLI domain |
-| `comment` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `commentResolve` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `commentUnresolve` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `comments` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `comment` | method | implemented | local operation or command exists |
+| `commentResolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
+| `commentUnresolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
+| `comments` | method | implemented | local operation or command exists |
 | `constructor` | method | safe_candidate | read operation may fit future CLI coverage |
 | `createAgentActivity` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createAgentSkill` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -510,8 +510,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `auditEntryTypes` | `[AuditEntryType!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | `AuthResolverResponse!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `comment` | `Comment!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `comments` | `CommentConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `comment` | `Comment!` | implemented | root field used by local GraphQL operation |
+| `comments` | `CommentConnection!` | implemented | root field used by local GraphQL operation |
 | `customView` | `CustomView!` | safe_candidate | read operation may fit future CLI coverage |
 | `customViewDetailsSuggestion` | `CustomViewSuggestionPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `customViewHasSubscribers` | `CustomViewHasSubscribersPayload!` | safe_candidate | read operation may fit future CLI coverage |
@@ -682,8 +682,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentUpdate` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `commentCreate` | `CommentPayload!` | implemented | root field used by local GraphQL operation |
 | `commentDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `commentResolve` | `CommentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `commentUnresolve` | `CommentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `commentResolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
+| `commentUnresolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
 | `commentUpdate` | `CommentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `contactCreate` | `ContactPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `contactSalesCreate` | `ContactPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -1075,6 +1075,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `Users` | query | `users` | implemented | `internal/client/generated.go` |
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `ViewerUser` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `comment` | query | `comment` | implemented | `internal/client/generated.go` |
+| `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
 | `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 
@@ -1103,6 +1105,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Comment | `comment list` | `Query.comments` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Comment | `comment get` | `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
+| Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
 | Project | `project list` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project get` | `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | implemented | `linctl --help` / public CLI tests |

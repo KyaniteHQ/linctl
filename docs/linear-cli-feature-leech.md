@@ -226,11 +226,13 @@ Useful evidence:
 - `--body -` to read from stdin.
 - `issue update --append FILE_OR_TEXT` for progress notes without replacing the
   description.
-- Prefer issue discussion commands over a separate top-level comments domain.
+- Use issue discussion commands for guarded issue writes; use the top-level comment domain for read-only cross-parent inspection.
 
 Implemented slice:
 - `issue comment ISSUE --body -` reads the full command stdin as the comment body before running the guarded write.
 - `issue comments ISSUE --limit N` lists issue discussion comments.
+- `comment list --limit N` lists visible comments across parent entity types.
+- `comment get COMMENT_ID` reads one comment by id.
 - `issue reply ISSUE COMMENT --body TEXT` creates a threaded reply with `CommentCreateInput.parentId` after the same issue target comparison.
 - `issue update ISSUE --append TEXT` reads the existing description, appends text with a blank-line separator, and writes the combined description through the guarded issue update path.
 - `issue create --description-file FILE`, `issue update --description-file FILE`, `issue update --append-file FILE`, `issue comment --body-file FILE`, and `issue reply --body-file FILE` read file content before the existing guarded write path.

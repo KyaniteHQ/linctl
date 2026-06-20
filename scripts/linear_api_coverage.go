@@ -687,6 +687,8 @@ func commandImplemented(command string) bool {
 		"issue reply":              true,
 		"issue close":              true,
 		"issue comments":           true,
+		"comment list":             true,
+		"comment get":              true,
 		"cycle list":               true,
 		"cycle get":                true,
 		"cycle create":             true,
@@ -725,6 +727,8 @@ func domainCommandBlocked(command string) bool {
 	blocked := map[string]bool{
 		"document create":        true,
 		"document update":        true,
+		"comment resolve":        true,
+		"comment unresolve":      true,
 		"label create":           true,
 		"label update":           true,
 		"team create":            true,
@@ -772,6 +776,8 @@ func classifyLoose(name string, kind string) (string, string) {
 		return "intentionally_excluded", "admin/auth/internal integration surface outside ordinary agent CLI"
 	case hasWritePrefix(lower):
 		return "blocked_needs_design", "write operation needs guarded target semantics before exposure"
+	case strings.Contains(lower, "resolve"):
+		return "blocked_needs_design", "state-changing operation needs guarded target semantics before exposure"
 	case strings.Contains(lower, "issue"),
 		strings.Contains(lower, "project"),
 		strings.Contains(lower, "cycle"),
