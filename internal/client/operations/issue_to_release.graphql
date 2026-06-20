@@ -1,0 +1,30 @@
+query issueToReleases($first: Int, $after: String, $includeArchived: Boolean) {
+  issueToReleases(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueToReleaseSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query issueToRelease($id: String!) {
+  issueToRelease(id: $id) {
+    ...IssueToReleaseSummaryFields
+  }
+}
+
+fragment IssueToReleaseSummaryFields on IssueToRelease {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  issue {
+    id
+  }
+  release {
+    id
+  }
+}

@@ -5944,6 +5944,83 @@ func (v *IssueSummaryFieldsTeam) GetKey() string { return v.Key }
 // GetName returns IssueSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
 func (v *IssueSummaryFieldsTeam) GetName() string { return v.Name }
 
+// IssueToReleaseSummaryFields includes the GraphQL fields of IssueToRelease requested by the fragment IssueToReleaseSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A join entity linking an issue to a release for release tracking. Each record
+// represents an association between a single issue and a single release, along
+// with metadata about the source of the link (e.g., which pull requests connected
+// the issue to the release). Creating or deleting these associations automatically
+// records the change in issue history.
+type IssueToReleaseSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The issue that is linked to the release.
+	Issue IssueToReleaseSummaryFieldsIssue `json:"issue"`
+	// The release that the issue is linked to.
+	Release IssueToReleaseSummaryFieldsRelease `json:"release"`
+}
+
+// GetId returns IssueToReleaseSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns IssueToReleaseSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns IssueToReleaseSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns IssueToReleaseSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetIssue returns IssueToReleaseSummaryFields.Issue, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFields) GetIssue() IssueToReleaseSummaryFieldsIssue { return v.Issue }
+
+// GetRelease returns IssueToReleaseSummaryFields.Release, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFields) GetRelease() IssueToReleaseSummaryFieldsRelease {
+	return v.Release
+}
+
+// IssueToReleaseSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type IssueToReleaseSummaryFieldsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns IssueToReleaseSummaryFieldsIssue.Id, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFieldsIssue) GetId() string { return v.Id }
+
+// IssueToReleaseSummaryFieldsRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type IssueToReleaseSummaryFieldsRelease struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns IssueToReleaseSummaryFieldsRelease.Id, and is useful for accessing the field via an interface.
+func (v *IssueToReleaseSummaryFieldsRelease) GetId() string { return v.Id }
+
 // IssueUpdateIssueUpdateIssuePayload includes the requested fields of the GraphQL type IssuePayload.
 // The GraphQL type's documentation follows.
 //
@@ -17454,6 +17531,30 @@ func (v *__issueSearchInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __issueSearchInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueSearchInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issueToReleaseInput is used internally by genqlient
+type __issueToReleaseInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __issueToReleaseInput.Id, and is useful for accessing the field via an interface.
+func (v *__issueToReleaseInput) GetId() string { return v.Id }
+
+// __issueToReleasesInput is used internally by genqlient
+type __issueToReleasesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __issueToReleasesInput.First, and is useful for accessing the field via an interface.
+func (v *__issueToReleasesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueToReleasesInput.After, and is useful for accessing the field via an interface.
+func (v *__issueToReleasesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueToReleasesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueToReleasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __issue_commentsInput is used internally by genqlient
 type __issue_commentsInput struct {
 	Id              string  `json:"id"`
@@ -25783,6 +25884,263 @@ type issueSearchResponse struct {
 // GetIssueSearch returns issueSearchResponse.IssueSearch, and is useful for accessing the field via an interface.
 func (v *issueSearchResponse) GetIssueSearch() issueSearchIssueSearchIssueConnection {
 	return v.IssueSearch
+}
+
+// issueToReleaseIssueToRelease includes the requested fields of the GraphQL type IssueToRelease.
+// The GraphQL type's documentation follows.
+//
+// A join entity linking an issue to a release for release tracking. Each record
+// represents an association between a single issue and a single release, along
+// with metadata about the source of the link (e.g., which pull requests connected
+// the issue to the release). Creating or deleting these associations automatically
+// records the change in issue history.
+type issueToReleaseIssueToRelease struct {
+	IssueToReleaseSummaryFields `json:"-"`
+}
+
+// GetId returns issueToReleaseIssueToRelease.Id, and is useful for accessing the field via an interface.
+func (v *issueToReleaseIssueToRelease) GetId() string { return v.IssueToReleaseSummaryFields.Id }
+
+// GetCreatedAt returns issueToReleaseIssueToRelease.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueToReleaseIssueToRelease) GetCreatedAt() string {
+	return v.IssueToReleaseSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueToReleaseIssueToRelease.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueToReleaseIssueToRelease) GetUpdatedAt() string {
+	return v.IssueToReleaseSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns issueToReleaseIssueToRelease.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueToReleaseIssueToRelease) GetArchivedAt() *string {
+	return v.IssueToReleaseSummaryFields.ArchivedAt
+}
+
+// GetIssue returns issueToReleaseIssueToRelease.Issue, and is useful for accessing the field via an interface.
+func (v *issueToReleaseIssueToRelease) GetIssue() IssueToReleaseSummaryFieldsIssue {
+	return v.IssueToReleaseSummaryFields.Issue
+}
+
+// GetRelease returns issueToReleaseIssueToRelease.Release, and is useful for accessing the field via an interface.
+func (v *issueToReleaseIssueToRelease) GetRelease() IssueToReleaseSummaryFieldsRelease {
+	return v.IssueToReleaseSummaryFields.Release
+}
+
+func (v *issueToReleaseIssueToRelease) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueToReleaseIssueToRelease
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueToReleaseIssueToRelease = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueToReleaseSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueToReleaseIssueToRelease struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue IssueToReleaseSummaryFieldsIssue `json:"issue"`
+
+	Release IssueToReleaseSummaryFieldsRelease `json:"release"`
+}
+
+func (v *issueToReleaseIssueToRelease) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueToReleaseIssueToRelease) __premarshalJSON() (*__premarshalissueToReleaseIssueToRelease, error) {
+	var retval __premarshalissueToReleaseIssueToRelease
+
+	retval.Id = v.IssueToReleaseSummaryFields.Id
+	retval.CreatedAt = v.IssueToReleaseSummaryFields.CreatedAt
+	retval.UpdatedAt = v.IssueToReleaseSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.IssueToReleaseSummaryFields.ArchivedAt
+	retval.Issue = v.IssueToReleaseSummaryFields.Issue
+	retval.Release = v.IssueToReleaseSummaryFields.Release
+	return &retval, nil
+}
+
+// issueToReleaseResponse is returned by issueToRelease on success.
+type issueToReleaseResponse struct {
+	// One specific issue-to-release association, looked up by its unique identifier.
+	IssueToRelease issueToReleaseIssueToRelease `json:"issueToRelease"`
+}
+
+// GetIssueToRelease returns issueToReleaseResponse.IssueToRelease, and is useful for accessing the field via an interface.
+func (v *issueToReleaseResponse) GetIssueToRelease() issueToReleaseIssueToRelease {
+	return v.IssueToRelease
+}
+
+// issueToReleasesIssueToReleasesIssueToReleaseConnection includes the requested fields of the GraphQL type IssueToReleaseConnection.
+type issueToReleasesIssueToReleasesIssueToReleaseConnection struct {
+	Nodes    []issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease `json:"nodes"`
+	PageInfo issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns issueToReleasesIssueToReleasesIssueToReleaseConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnection) GetNodes() []issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueToReleasesIssueToReleasesIssueToReleaseConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnection) GetPageInfo() issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease includes the requested fields of the GraphQL type IssueToRelease.
+// The GraphQL type's documentation follows.
+//
+// A join entity linking an issue to a release for release tracking. Each record
+// represents an association between a single issue and a single release, along
+// with metadata about the source of the link (e.g., which pull requests connected
+// the issue to the release). Creating or deleting these associations automatically
+// records the change in issue history.
+type issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease struct {
+	IssueToReleaseSummaryFields `json:"-"`
+}
+
+// GetId returns issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease.Id, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) GetId() string {
+	return v.IssueToReleaseSummaryFields.Id
+}
+
+// GetCreatedAt returns issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) GetCreatedAt() string {
+	return v.IssueToReleaseSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) GetUpdatedAt() string {
+	return v.IssueToReleaseSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) GetArchivedAt() *string {
+	return v.IssueToReleaseSummaryFields.ArchivedAt
+}
+
+// GetIssue returns issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease.Issue, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) GetIssue() IssueToReleaseSummaryFieldsIssue {
+	return v.IssueToReleaseSummaryFields.Issue
+}
+
+// GetRelease returns issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease.Release, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) GetRelease() IssueToReleaseSummaryFieldsRelease {
+	return v.IssueToReleaseSummaryFields.Release
+}
+
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueToReleaseSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue IssueToReleaseSummaryFieldsIssue `json:"issue"`
+
+	Release IssueToReleaseSummaryFieldsRelease `json:"release"`
+}
+
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease) __premarshalJSON() (*__premarshalissueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease, error) {
+	var retval __premarshalissueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease
+
+	retval.Id = v.IssueToReleaseSummaryFields.Id
+	retval.CreatedAt = v.IssueToReleaseSummaryFields.CreatedAt
+	retval.UpdatedAt = v.IssueToReleaseSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.IssueToReleaseSummaryFields.ArchivedAt
+	retval.Issue = v.IssueToReleaseSummaryFields.Issue
+	retval.Release = v.IssueToReleaseSummaryFields.Release
+	return &retval, nil
+}
+
+// issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueToReleasesResponse is returned by issueToReleases on success.
+type issueToReleasesResponse struct {
+	// All issue-to-release associations. Returns a paginated list of all
+	// issue-to-release links visible to the authenticated user.
+	IssueToReleases issueToReleasesIssueToReleasesIssueToReleaseConnection `json:"issueToReleases"`
+}
+
+// GetIssueToReleases returns issueToReleasesResponse.IssueToReleases, and is useful for accessing the field via an interface.
+func (v *issueToReleasesResponse) GetIssueToReleases() issueToReleasesIssueToReleasesIssueToReleaseConnection {
+	return v.IssueToReleases
 }
 
 // issue_commentsIssue includes the requested fields of the GraphQL type Issue.
@@ -48992,6 +49350,108 @@ func issueSearch(
 	}
 
 	data_ = &issueSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueToRelease.
+const issueToRelease_Operation = `
+query issueToRelease ($id: String!) {
+	issueToRelease(id: $id) {
+		... IssueToReleaseSummaryFields
+	}
+}
+fragment IssueToReleaseSummaryFields on IssueToRelease {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+	}
+	release {
+		id
+	}
+}
+`
+
+func issueToRelease(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *issueToReleaseResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueToRelease",
+		Query:  issueToRelease_Operation,
+		Variables: &__issueToReleaseInput{
+			Id: id,
+		},
+	}
+
+	data_ = &issueToReleaseResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueToReleases.
+const issueToReleases_Operation = `
+query issueToReleases ($first: Int, $after: String, $includeArchived: Boolean) {
+	issueToReleases(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... IssueToReleaseSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment IssueToReleaseSummaryFields on IssueToRelease {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+	}
+	release {
+		id
+	}
+}
+`
+
+func issueToReleases(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueToReleasesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueToReleases",
+		Query:  issueToReleases_Operation,
+		Variables: &__issueToReleasesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueToReleasesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

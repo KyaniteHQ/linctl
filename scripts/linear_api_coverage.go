@@ -666,6 +666,8 @@ func commandImplemented(command string) bool {
 		"issue branch":                           true,
 		"issue-relation list":                    true,
 		"issue-relation get":                     true,
+		"issue-to-release list":                  true,
+		"issue-to-release get":                   true,
 		"issue pr":                               true,
 		"next --dry-run":                         true,
 		"done":                                   true,

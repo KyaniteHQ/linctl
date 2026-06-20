@@ -75,6 +75,11 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		IssueIdentifier:        "LIT-1",
 		RelatedIssueIdentifier: "LIT-2",
 	}
+	issueToRelease := client.IssueToReleaseSummary{
+		ID:        "issue-to-release-id",
+		IssueID:   "issue-id",
+		ReleaseID: "release-id",
+	}
 	document := client.DocumentSummary{
 		ID:         "document-id",
 		Title:      "Spec",
@@ -374,6 +379,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectLabel(textCommand, &textOptions, projectLabel))
 	require.NoError(t, writeProjectRelation(textCommand, &textOptions, projectRelation))
 	require.NoError(t, writeIssueRelation(textCommand, &textOptions, issueRelation))
+	require.NoError(t, writeIssueToRelease(textCommand, &textOptions, issueToRelease))
 	require.NoError(t, writeDocument(textCommand, &textOptions, document))
 	require.NoError(t, writeLabel(textCommand, &textOptions, label))
 	require.NoError(t, writeTeam(textCommand, &textOptions, team))
@@ -430,6 +436,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-label-id Roadmap #f2c94c\n"+
 			"project-relation-id blocks Pinned project -> Related project\n"+
 			"issue-relation-id blocks LIT-1 -> LIT-2\n"+
+			"issue-to-release-id issue issue-id -> release release-id\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"team-membership-id LIT Omer owner true order 1.50\n"+
 			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
@@ -488,6 +495,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectLabel(jsonCommand, &jsonOptions, projectLabel))
 	require.NoError(t, writeProjectRelation(jsonCommand, &jsonOptions, projectRelation))
 	require.NoError(t, writeIssueRelation(jsonCommand, &jsonOptions, issueRelation))
+	require.NoError(t, writeIssueToRelease(jsonCommand, &jsonOptions, issueToRelease))
 	require.NoError(t, writeDocument(jsonCommand, &jsonOptions, document))
 	require.NoError(t, writeLabel(jsonCommand, &jsonOptions, label))
 	require.NoError(t, writeTeam(jsonCommand, &jsonOptions, team))
@@ -647,6 +655,11 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Type:                   "blocks",
 		IssueIdentifier:        "LIT-1",
 		RelatedIssueIdentifier: "LIT-2",
+	}
+	issueToRelease := client.IssueToReleaseSummary{
+		ID:        "issue-to-release-id",
+		IssueID:   "issue-id",
+		ReleaseID: "release-id",
 	}
 	document := client.DocumentSummary{
 		ID:         "document-id",
@@ -927,6 +940,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Error(t, writeProjectLabel(command, &rootOptions{format: "wide"}, projectLabel))
 	require.NoError(t, writeProjectRelation(command, &rootOptions{idOnly: true}, projectRelation))
 	require.NoError(t, writeIssueRelation(command, &rootOptions{idOnly: true}, issueRelation))
+	require.NoError(t, writeIssueToRelease(command, &rootOptions{idOnly: true}, issueToRelease))
 	require.NoError(t, writeTeamMembership(command, &rootOptions{idOnly: true}, teamMembership))
 	require.NoError(t, writeDocument(command, &rootOptions{idOnly: true}, document))
 	require.NoError(t, writeLabel(command, &rootOptions{idOnly: true}, label))
@@ -1031,6 +1045,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectLabel(quietCommand, &rootOptions{quiet: true}, projectLabel))
 	require.NoError(t, writeProjectRelation(quietCommand, &rootOptions{quiet: true}, projectRelation))
 	require.NoError(t, writeIssueRelation(quietCommand, &rootOptions{quiet: true}, issueRelation))
+	require.NoError(t, writeIssueToRelease(quietCommand, &rootOptions{quiet: true}, issueToRelease))
 	require.NoError(t, writeTeamMembership(quietCommand, &rootOptions{quiet: true}, teamMembership))
 	require.NoError(t, writeDocument(quietCommand, &rootOptions{quiet: true}, document))
 	require.NoError(t, writeLabel(quietCommand, &rootOptions{quiet: true}, label))

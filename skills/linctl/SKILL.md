@@ -87,6 +87,8 @@ linctl release links RELEASE_ID --json --limit 20
 linctl external-link get EXTERNAL_LINK_ID --json
 linctl release-note list --json --limit 20
 linctl release-note get RELEASE_NOTE_ID --json
+linctl issue-to-release list --json --limit 20
+linctl issue-to-release get ISSUE_TO_RELEASE_ID --json
 linctl current --json
 linctl next --dry-run
 linctl issue id

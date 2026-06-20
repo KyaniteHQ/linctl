@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 105 | 458 |
-| Upstream Query root fields | 158 | 93 | 158 |
+| Upstream SDK root methods | 458 | 107 | 458 |
+| Upstream Query root fields | 158 | 95 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 163 | 163 | 163 |
-| Domain-map commands | 275 | 143 | 275 |
+| Local generated Go operations | 165 | 165 | 165 |
+| Domain-map commands | 277 | 145 | 277 |
 
 ## Upstream SDK Root Methods
 
@@ -302,9 +302,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueShare` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueSubscribe` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueTitleSuggestionFromCustomerRequest` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueToRelease` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueToRelease` | method | implemented | local operation or command exists |
 | `issueToReleaseDeleteByIssueAndRelease` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueToReleases` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueToReleases` | method | implemented | local operation or command exists |
 | `issueUnshare` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueUnsubscribe` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueVcsBranchSearch` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -569,8 +569,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueSearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueToRelease` | `IssueToRelease!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueToReleases` | `IssueToReleaseConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueToRelease` | `IssueToRelease!` | implemented | root field used by local GraphQL operation |
+| `issueToReleases` | `IssueToReleaseConnection!` | implemented | root field used by local GraphQL operation |
 | `issueVcsBranchSearch` | `Issue` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issues` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
@@ -1111,6 +1111,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueRelation` | query | `issueRelation` | implemented | `internal/client/generated.go` |
 | `issueRelations` | query | `issueRelations` | implemented | `internal/client/generated.go` |
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
+| `issueToRelease` | query | `issueToRelease` | implemented | `internal/client/generated.go` |
+| `issueToReleases` | query | `issueToReleases` | implemented | `internal/client/generated.go` |
 | `issue_comments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issues` | query | `issues` | implemented | `internal/client/generated.go` |
 | `notification` | query | `notification` | implemented | `internal/client/generated.go` |
@@ -1224,6 +1226,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `external-link get` | `Query.entityExternalLink` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-note list` | `Query.releaseNotes` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-note get` | `Query.releaseNote` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `issue-to-release list` | `Query.issueToReleases` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `issue-to-release get` | `Query.issueToRelease` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | Release | `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Release | `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |

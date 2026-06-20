@@ -51,6 +51,7 @@ PY
   "$binary" issue usage >/dev/null
   "$binary" issue list --json --limit 5 >/dev/null
   "$binary" issue-relation list --json --limit 5 >/dev/null
+  "$binary" issue-to-release list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null
   "$binary" project list --json --limit 5 >/dev/null
   "$binary" project-status list --json --limit 5 >/dev/null

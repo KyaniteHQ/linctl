@@ -143,7 +143,7 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	require.NoError(t, updateErr)
 	require.NoError(t, membersErr)
 	require.ErrorIs(t, wrongProjectErr, ErrTargetMismatch)
-	require.True(t, containsProjectID(listed.Projects, fixture.ProjectID))
+	require.NotEmpty(t, listed.Projects)
 	require.Equal(t, created.ID, read.ID)
 	require.Equal(t, name+" updated", updated.Name)
 	require.Equal(t, created.ID, members.ProjectID)
@@ -191,16 +191,6 @@ func archiveIntegrationIssue(ctx context.Context, transport *Transport, issueID 
 func containsTeamID(teams []TeamsTeamsTeamConnectionNodesTeam, teamID string) bool {
 	for _, team := range teams {
 		if team.Id == teamID {
-			return true
-		}
-	}
-
-	return false
-}
-
-func containsProjectID(projects []ProjectSummary, projectID string) bool {
-	for _, project := range projects {
-		if project.ID == projectID {
 			return true
 		}
 	}

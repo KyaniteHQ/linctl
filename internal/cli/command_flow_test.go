@@ -64,6 +64,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "external link get", args: []string{"external-link", "get", "release-link-id"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
 		{name: "release note list", args: []string{"release-note", "list", "--limit", "1"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
 		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
+		{name: "issue to release list", args: []string{"issue-to-release", "list", "--limit", "1"}, contains: "issue-to-release-id issue issue-id -> release release-id"},
+		{name: "issue to release get", args: []string{"issue-to-release", "get", "issue-to-release-id"}, contains: "issue-to-release-id issue issue-id -> release release-id"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
 		{name: "issue list", args: []string{"issue", "list", "--limit", "1"}, contains: "LIT-1 Listed issue [Todo]"},
 		{name: "issue list state filter", args: []string{"issue", "list", "--state", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
@@ -832,6 +834,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "deps", "LIT-1", "--limit", "2"},
 		{"--json", "--fields", "id,type,issue_identifier,related_issue_identifier", "issue-relation", "list", "--limit", "1"},
 		{"--json", "issue-relation", "get", "issue-relation-id"},
+		{"--json", "--fields", "id,issue_id,release_id", "issue-to-release", "list", "--limit", "1"},
+		{"--json", "issue-to-release", "get", "issue-to-release-id"},
 		{"--json", "issue", "pr", "LIT-1"},
 		{"--json", "issue", "start", "LIT-1"},
 		{"--json", "issue", "comment", "LIT-1", "--body", "Looks good"},
@@ -1386,6 +1390,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "external link get", args: []string{"external-link", "get", "release-link-id"}, operation: "entityExternalLink", contains: "get external link release-link-id"},
 		{name: "release note list", args: []string{"release-note", "list"}, operation: "releaseNotes", contains: "list release notes"},
 		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, operation: "releaseNote", contains: "get release note release-note-id"},
+		{name: "issue to release list", args: []string{"issue-to-release", "list"}, operation: "issueToReleases", contains: "list issue to releases"},
+		{name: "issue to release get", args: []string{"issue-to-release", "get", "issue-to-release-id"}, operation: "issueToRelease", contains: "get issue to release issue-to-release-id"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
 		{name: "next issues", args: []string{"next", "--dry-run"}, operation: "NextIssuesByTeam", contains: "list next issues"},
 		{name: "issue list target resolve", args: []string{"issue", "list"}, operation: "Teams", contains: "resolve teams"},
@@ -2031,6 +2037,10 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"releaseNotes":{"nodes":[` + commandReleaseNoteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseNote":
 		return `{"releaseNote":` + commandReleaseNoteJSON() + `}`, true
+	case "issueToReleases":
+		return `{"issueToReleases":{"nodes":[` + commandIssueToReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "issueToRelease":
+		return `{"issueToRelease":` + commandIssueToReleaseJSON() + `}`, true
 	case "timeSchedules":
 		return `{"timeSchedules":{"nodes":[` + commandTimeScheduleJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "timeSchedule":
@@ -2439,6 +2449,17 @@ func commandIssueRelationJSON() string {
 		"archivedAt":null,
 		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},
 		"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}
+	}`
+}
+
+func commandIssueToReleaseJSON() string {
+	return `{
+		"id":"issue-to-release-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"issue":{"id":"issue-id"},
+		"release":{"id":"release-id"}
 	}`
 }
 

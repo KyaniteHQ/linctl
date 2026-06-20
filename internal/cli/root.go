@@ -88,6 +88,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addReleaseCommand(ctx, command, options)
 	addExternalLinkCommand(ctx, command, options)
 	addReleaseNoteCommand(ctx, command, options)
+	addIssueToReleaseCommand(ctx, command, options)
 	addIssueCommand(ctx, command, options)
 	addIssueRelationCommand(ctx, command, options)
 	addNextCommand(ctx, command, options)
