@@ -3,8 +3,9 @@ set -euo pipefail
 
 profile="${1:-/tmp/linctl.cover}"
 filtered="${profile%.cover}.handwritten.cover"
+mapfile -t packages < <(bash scripts/go-packages.sh)
 
-go test -count=1 -coverprofile="$profile" ./...
+go test -count=1 -coverprofile="$profile" "${packages[@]}"
 grep -v '/internal/client/generated.go:' "$profile" |
   grep -v '/cmd/linctl/main.go:' |
   grep -v '/scripts/' > "$filtered"
