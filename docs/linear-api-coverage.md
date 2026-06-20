@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 78 | 458 |
-| Upstream Query root fields | 158 | 66 | 158 |
+| Upstream SDK root methods | 458 | 80 | 458 |
+| Upstream Query root fields | 158 | 68 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 116 | 116 | 116 |
-| Domain-map commands | 193 | 98 | 193 |
+| Local generated Go operations | 118 | 118 | 118 |
+| Domain-map commands | 198 | 100 | 198 |
 
 ## Upstream SDK Root Methods
 
@@ -212,7 +212,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `documents` | method | implemented | local operation or command exists |
 | `emailIntakeAddress` | method | safe_candidate | read operation may fit future CLI coverage |
 | `emailIntakeAddressRefreshSesDomainStatus` | method | safe_candidate | read operation may fit future CLI coverage |
-| `emailIntakeAddressRotate` | method | safe_candidate | read operation may fit future CLI coverage |
+| `emailIntakeAddressRotate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `emailUnsubscribe` | method | safe_candidate | read operation may fit future CLI coverage |
 | `emailUserAccountAuthChallenge` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -230,8 +230,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiative` | method | implemented | local operation or command exists |
 | `initiativeRelation` | method | implemented | local operation or command exists |
 | `initiativeRelations` | method | implemented | local operation or command exists |
-| `initiativeToProject` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeToProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeToProject` | method | implemented | local operation or command exists |
+| `initiativeToProjects` | method | implemented | local operation or command exists |
 | `initiativeUpdate` | method | implemented | local operation or command exists |
 | `initiativeUpdates` | method | implemented | local operation or command exists |
 | `initiatives` | method | implemented | local operation or command exists |
@@ -544,8 +544,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiative` | `Initiative!` | implemented | root field used by local GraphQL operation |
 | `initiativeRelation` | `InitiativeRelation!` | implemented | root field used by local GraphQL operation |
 | `initiativeRelations` | `InitiativeRelationConnection!` | implemented | root field used by local GraphQL operation |
-| `initiativeToProject` | `InitiativeToProject!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeToProjects` | `InitiativeToProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeToProject` | `InitiativeToProject!` | implemented | root field used by local GraphQL operation |
+| `initiativeToProjects` | `InitiativeToProjectConnection!` | implemented | root field used by local GraphQL operation |
 | `initiativeUpdate` | `InitiativeUpdate!` | implemented | root field used by local GraphQL operation |
 | `initiativeUpdates` | `InitiativeUpdateConnection!` | implemented | root field used by local GraphQL operation |
 | `initiatives` | `InitiativeConnection!` | implemented | root field used by local GraphQL operation |
@@ -652,7 +652,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Field | Return type | Status | Evidence |
 | --- | --- | --- | --- |
-| `agentActivityCreate` | `AgentActivityPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `agentActivityCreate` | `AgentActivityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `agentActivityCreatePrompt` | `AgentActivityPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `agentActivityDeleteQueued` | `AgentActivityPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `agentActivitySendQueued` | `AgentActivityPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -661,11 +661,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSessionCreateOnIssue` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdate` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdateExternalUrl` | `AgentSessionPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSkillCreate` | `AgentSkillPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `agentSkillCreate` | `AgentSkillPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `agentSkillDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `agentSkillUpdate` | `AgentSkillPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `agentSkillUpdate` | `AgentSkillPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `airbyteIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `attachmentCreate` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `attachmentCreate` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachmentDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `attachmentLinkDiscord` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkFront` | `FrontAttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -679,92 +679,92 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentLinkURL` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkZendesk` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentSyncToSlack` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentUpdate` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `attachmentUpdate` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `commentCreate` | `CommentPayload!` | implemented | root field used by local GraphQL operation |
 | `commentDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `commentResolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
 | `commentUnresolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
-| `commentUpdate` | `CommentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `contactCreate` | `ContactPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `contactSalesCreate` | `ContactPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `commentUpdate` | `CommentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `contactCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `contactSalesCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCsvExportReport` | `CreateCsvExportReportPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeUpdateReminder` | `InitiativeUpdateReminderPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createOrganizationFromOnboarding` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createProjectUpdateReminder` | `ProjectUpdateReminderPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `customViewCreate` | `CustomViewPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customViewCreate` | `CustomViewPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customViewDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `customViewUpdate` | `CustomViewPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `customerCreate` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customViewUpdate` | `CustomViewPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `customerCreate` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `customerMerge` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `customerNeedArchive` | `CustomerNeedArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `customerNeedCreate` | `CustomerNeedPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerNeedArchive` | `CustomerNeedArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `customerNeedCreate` | `CustomerNeedPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerNeedCreateFromAttachment` | `CustomerNeedPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `customerNeedDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `customerNeedUnarchive` | `CustomerNeedArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `customerNeedUpdate` | `CustomerNeedUpdatePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `customerStatusCreate` | `CustomerStatusPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerNeedUnarchive` | `CustomerNeedArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `customerNeedUpdate` | `CustomerNeedUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `customerStatusCreate` | `CustomerStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerStatusDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `customerStatusUpdate` | `CustomerStatusPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `customerTierCreate` | `CustomerTierPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerStatusUpdate` | `CustomerStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `customerTierCreate` | `CustomerTierPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerTierDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `customerTierUpdate` | `CustomerTierPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerTierUpdate` | `CustomerTierPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerUnsync` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `customerUpdate` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `customerUpdate` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerUpsert` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `cycleArchive` | `CycleArchivePayload!` | implemented | root field used by local GraphQL operation |
 | `cycleCreate` | `CyclePayload!` | implemented | root field used by local GraphQL operation |
 | `cycleShiftAll` | `CyclePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `cycleStartUpcomingCycleToday` | `CyclePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `cycleUpdate` | `CyclePayload!` | implemented | root field used by local GraphQL operation |
-| `documentCreate` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `documentCreate` | `DocumentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `documentDelete` | `DocumentArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `documentUnarchive` | `DocumentArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `documentUpdate` | `DocumentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `emailIntakeAddressCreate` | `EmailIntakeAddressPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `documentUnarchive` | `DocumentArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `documentUpdate` | `DocumentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `emailIntakeAddressCreate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `emailIntakeAddressRefreshSesDomainStatus` | `EmailIntakeAddressRefreshSesDomainStatusPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `emailIntakeAddressRotate` | `EmailIntakeAddressPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `emailIntakeAddressUpdate` | `EmailIntakeAddressPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `emailIntakeAddressRotate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `emailIntakeAddressUpdate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailTokenUserAccountAuth` | `AuthResolverResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `emailUnsubscribe` | `EmailUnsubscribePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `emailUserAccountAuthChallenge` | `EmailUserAccountAuthChallengeResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `emojiCreate` | `EmojiPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `emojiCreate` | `EmojiPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emojiDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `entityExternalLinkCreate` | `EntityExternalLinkPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `entityExternalLinkCreate` | `EntityExternalLinkPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `entityExternalLinkDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `entityExternalLinkUpdate` | `EntityExternalLinkPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `favoriteCreate` | `FavoritePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `entityExternalLinkUpdate` | `EntityExternalLinkPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `favoriteCreate` | `FavoritePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `favoriteDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `favoriteUpdate` | `FavoritePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `favoriteUpdate` | `FavoritePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `fileUpload` | `UploadPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `fileUploadDangerouslyDelete` | `FileUploadDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `gitAutomationStateCreate` | `GitAutomationStatePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `gitAutomationStateCreate` | `GitAutomationStatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `gitAutomationStateDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `gitAutomationStateUpdate` | `GitAutomationStatePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `gitAutomationTargetBranchCreate` | `GitAutomationTargetBranchPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `gitAutomationStateUpdate` | `GitAutomationStatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `gitAutomationTargetBranchCreate` | `GitAutomationTargetBranchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `gitAutomationTargetBranchDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `gitAutomationTargetBranchUpdate` | `GitAutomationTargetBranchPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `gitAutomationTargetBranchUpdate` | `GitAutomationTargetBranchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `googleUserAccountAuth` | `AuthResolverResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `imageUploadFromUrl` | `ImageUploadFromUrlPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `importFileUpload` | `UploadPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `initiativeAddLabel` | `InitiativePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeArchive` | `InitiativeArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `initiativeCreate` | `InitiativePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `initiativeArchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeCreate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `initiativeRelationCreate` | `InitiativeRelationPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `initiativeRelationCreate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `initiativeRelationUpdate` | `InitiativeRelationPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `initiativeRelationUpdate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRemoveLabel` | `InitiativePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `initiativeToProjectCreate` | `InitiativeToProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeToProjectCreate` | `InitiativeToProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeToProjectDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `initiativeToProjectUpdate` | `InitiativeToProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeUnarchive` | `InitiativeArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `initiativeUpdate` | `InitiativePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `initiativeUpdateArchive` | `InitiativeUpdateArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `initiativeUpdateCreate` | `InitiativeUpdatePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `initiativeUpdateUnarchive` | `InitiativeUpdateArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `initiativeUpdateUpdate` | `InitiativeUpdatePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `initiativeToProjectUpdate` | `InitiativeToProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeUnarchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeUpdate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeUpdateArchive` | `InitiativeUpdateArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeUpdateCreate` | `InitiativeUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeUpdateUnarchive` | `InitiativeUpdateArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeUpdateUpdate` | `InitiativeUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `integrationArchive` | `DeletePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationAsksConnectChannel` | `AsksChannelConnectPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationCustomerDataAttributesRefresh` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -828,8 +828,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `integrationsSettingsUpdate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `issueAddLabel` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueArchive` | `IssueArchivePayload!` | implemented | root field used by local GraphQL operation |
-| `issueBatchCreate` | `IssueBatchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueBatchUpdate` | `IssueBatchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueBatchCreate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `issueBatchUpdate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueCreate` | `IssuePayload!` | implemented | root field used by local GraphQL operation |
 | `issueDelete` | `IssueArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueDescriptionUpdateFromFront` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -842,23 +842,23 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueImportCreateLinearV2` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueImportDelete` | `IssueImportDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueImportProcess` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportUpdate` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueLabelCreate` | `IssueLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueImportUpdate` | `IssueImportPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `issueLabelCreate` | `IssueLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueLabelRestore` | `IssueLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueLabelRetire` | `IssueLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueLabelUpdate` | `IssueLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueRelationCreate` | `IssueRelationPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueLabelUpdate` | `IssueLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `issueRelationCreate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueRelationUpdate` | `IssueRelationPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueRelationUpdate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueReminder` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueRemoveLabel` | `IssuePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueShare` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueSubscribe` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueToReleaseCreate` | `IssueToReleasePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueToReleaseCreate` | `IssueToReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueToReleaseDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueToReleaseDeleteByIssueAndRelease` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueUnarchive` | `IssueArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueUnarchive` | `IssueArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueUnshare` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueUnsubscribe` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueUpdate` | `IssuePayload!` | implemented | root field used by local GraphQL operation |
@@ -869,18 +869,18 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `logoutAllSessions` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutSession` | `LogoutResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `notificationArchive` | `NotificationArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationArchive` | `NotificationArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationArchiveAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `notificationCategoryChannelSubscriptionUpdate` | `UserSettingsPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationCategoryChannelSubscriptionUpdate` | `UserSettingsPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationMarkReadAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `notificationMarkUnreadAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `notificationSnoozeAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `notificationSubscriptionCreate` | `NotificationSubscriptionPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationSubscriptionCreate` | `NotificationSubscriptionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationSubscriptionDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `notificationSubscriptionUpdate` | `NotificationSubscriptionPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `notificationUnarchive` | `NotificationArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationSubscriptionUpdate` | `NotificationSubscriptionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `notificationUnarchive` | `NotificationArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `notificationUnsnoozeAll` | `NotificationBatchActionPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `notificationUpdate` | `NotificationPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `notificationUpdate` | `NotificationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `oauthApplicationArchive` | `OAuthApplicationArchivePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplicationCreate` | `OAuthApplicationCreatePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplicationRotateSecret` | `OAuthApplicationRotateSecretPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -890,16 +890,16 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organizationDelete` | `OrganizationDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationDeleteChallenge` | `OrganizationDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationDomainClaim` | `OrganizationDomainSimplePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `organizationDomainCreate` | `OrganizationDomainPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationDomainCreate` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationDomainDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationDomainUpdate` | `OrganizationDomainPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationDomainUpdate` | `OrganizationDomainPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationDomainVerify` | `OrganizationDomainPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `organizationInviteCreate` | `OrganizationInvitePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationInviteCreate` | `OrganizationInvitePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationInviteDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationInviteUpdate` | `OrganizationInvitePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationInviteUpdate` | `OrganizationInvitePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `organizationStartTrial` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `organizationStartTrialForPlan` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `projectAddLabel` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -908,114 +908,114 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectCreateSlackChannel` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectExternalSyncDisable` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabelCreate` | `ProjectLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectLabelCreate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectLabelRestore` | `ProjectLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectLabelRetire` | `ProjectLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabelUpdate` | `ProjectLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectLabelUpdate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestoneCreate` | `ProjectMilestonePayload!` | implemented | root field used by local GraphQL operation |
 | `projectMilestoneDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectMilestoneMove` | `ProjectMilestoneMovePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectMilestoneMove` | `ProjectMilestoneMovePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestoneUpdate` | `ProjectMilestonePayload!` | implemented | root field used by local GraphQL operation |
 | `projectReassignStatus` | `SuccessPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectRelationCreate` | `ProjectRelationPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectRelationCreate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectRelationUpdate` | `ProjectRelationPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectRelationUpdate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectRemoveLabel` | `ProjectPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectStatusArchive` | `ProjectStatusArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectStatusCreate` | `ProjectStatusPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectStatusUnarchive` | `ProjectStatusArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectStatusUpdate` | `ProjectStatusPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectUnarchive` | `ProjectArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectStatusArchive` | `ProjectStatusArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectStatusCreate` | `ProjectStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectStatusUnarchive` | `ProjectStatusArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectStatusUpdate` | `ProjectStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectUnarchive` | `ProjectArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectUpdate` | `ProjectPayload!` | implemented | root field used by local GraphQL operation |
-| `projectUpdateArchive` | `ProjectUpdateArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectUpdateCreate` | `ProjectUpdatePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectUpdateArchive` | `ProjectUpdateArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectUpdateCreate` | `ProjectUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectUpdateDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectUpdateUnarchive` | `ProjectUpdateArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectUpdateUpdate` | `ProjectUpdatePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `pushSubscriptionCreate` | `PushSubscriptionPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `projectUpdateUnarchive` | `ProjectUpdateArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectUpdateUpdate` | `ProjectUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `pushSubscriptionCreate` | `PushSubscriptionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `pushSubscriptionDelete` | `PushSubscriptionPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `reactionCreate` | `ReactionPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `reactionCreate` | `ReactionPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `reactionDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `refreshGoogleSheetsData` | `IntegrationPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseArchive` | `ReleaseArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseArchive` | `ReleaseArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseComplete` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `releaseCompleteByAccessKey` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseCreate` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseCreate` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseDelete` | `ReleaseArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `releaseNoteCreate` | `ReleaseNotePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseNoteCreate` | `ReleaseNotePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseNoteDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `releaseNoteUpdate` | `ReleaseNotePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releasePipelineArchive` | `ReleasePipelineArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releasePipelineCreate` | `ReleasePipelinePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseNoteUpdate` | `ReleaseNotePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releasePipelineArchive` | `ReleasePipelineArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releasePipelineCreate` | `ReleasePipelinePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releasePipelineDelete` | `ReleasePipelineArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `releasePipelineUnarchive` | `ReleasePipelineArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releasePipelineUpdate` | `ReleasePipelinePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseStageArchive` | `ReleaseStageArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseStageCreate` | `ReleaseStagePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseStageUnarchive` | `ReleaseStageArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseStageUpdate` | `ReleaseStagePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releasePipelineUnarchive` | `ReleasePipelineArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releasePipelineUpdate` | `ReleasePipelinePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseStageArchive` | `ReleaseStageArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseStageCreate` | `ReleaseStagePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseStageUnarchive` | `ReleaseStageArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseStageUpdate` | `ReleaseStagePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseSync` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `releaseSyncByAccessKey` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseUnarchive` | `ReleaseArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `releaseUpdate` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `releaseUnarchive` | `ReleaseArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `releaseUpdate` | `ReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `releaseUpdateByPipeline` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `releaseUpdateByPipelineByAccessKey` | `ReleasePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `resendOrganizationInvite` | `DeletePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `resendOrganizationInviteByEmail` | `DeletePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `roadmapArchive` | `RoadmapArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `roadmapCreate` | `RoadmapPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `roadmapArchive` | `RoadmapArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `roadmapCreate` | `RoadmapPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `roadmapDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `roadmapToProjectCreate` | `RoadmapToProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `roadmapToProjectCreate` | `RoadmapToProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `roadmapToProjectDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `roadmapToProjectUpdate` | `RoadmapToProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `roadmapUnarchive` | `RoadmapArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `roadmapUpdate` | `RoadmapPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `roadmapToProjectUpdate` | `RoadmapToProjectPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `roadmapUnarchive` | `RoadmapArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `roadmapUpdate` | `RoadmapPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `samlTokenUserAccountAuth` | `AuthResolverResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `teamCreate` | `TeamPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `teamCreate` | `TeamPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `teamCyclesDelete` | `TeamPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `teamDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `teamKeyDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `teamMembershipCreate` | `TeamMembershipPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `teamMembershipCreate` | `TeamMembershipPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `teamMembershipDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `teamMembershipUpdate` | `TeamMembershipPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `teamUnarchive` | `TeamArchivePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `teamUpdate` | `TeamPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `templateCreate` | `TemplatePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `teamMembershipUpdate` | `TeamMembershipPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `teamUnarchive` | `TeamArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `teamUpdate` | `TeamPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `templateCreate` | `TemplatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `templateDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `templateUpdate` | `TemplatePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `timeScheduleCreate` | `TimeSchedulePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `templateUpdate` | `TemplatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `timeScheduleCreate` | `TimeSchedulePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `timeScheduleDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `timeScheduleRefreshIntegrationSchedule` | `TimeSchedulePayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `timeScheduleUpdate` | `TimeSchedulePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `timeScheduleUpdate` | `TimeSchedulePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `timeScheduleUpsertExternal` | `TimeSchedulePayload!` | blocked_needs_design | mutation needs product and safety design |
 | `trackAnonymousEvent` | `EventTrackingPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `triageResponsibilityCreate` | `TriageResponsibilityPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `triageResponsibilityCreate` | `TriageResponsibilityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `triageResponsibilityDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `triageResponsibilityUpdate` | `TriageResponsibilityPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `triageResponsibilityUpdate` | `TriageResponsibilityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateIntegrationSlackScopes` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `userChangeRole` | `UserAdminPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `userDiscordConnect` | `UserPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `userExternalUserDisconnect` | `UserPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `userFlagUpdate` | `UserSettingsFlagPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `userFlagUpdate` | `UserSettingsFlagPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `userRevokeAllSessions` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userRevokeSession` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userSettingsFlagsReset` | `UserSettingsFlagsResetPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `userSettingsUpdate` | `UserSettingsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `userSettingsUpdate` | `UserSettingsPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `userSuspend` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userUnlinkFromIdentityProvider` | `UserAdminPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `userUnsuspend` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `userUpdate` | `UserPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `viewPreferencesCreate` | `ViewPreferencesPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `userUpdate` | `UserPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `viewPreferencesCreate` | `ViewPreferencesPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `viewPreferencesDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `viewPreferencesUpdate` | `ViewPreferencesPayload!` | blocked_needs_design | mutation needs product and safety design |
+| `viewPreferencesUpdate` | `ViewPreferencesPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `webhookCreate` | `WebhookPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhookDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `webhookRotateSecret` | `WebhookRotateSecretPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhookUpdate` | `WebhookPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `workflowStateArchive` | `WorkflowStateArchivePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `workflowStateCreate` | `WorkflowStatePayload!` | blocked_needs_design | mutation needs product and safety design |
-| `workflowStateUpdate` | `WorkflowStatePayload!` | blocked_needs_design | mutation needs product and safety design |
+| `workflowStateArchive` | `WorkflowStateArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `workflowStateCreate` | `WorkflowStatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `workflowStateUpdate` | `WorkflowStatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 
 ## Local Generated Go Operations
 
@@ -1086,6 +1086,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiative` | query | `initiative` | implemented | `internal/client/generated.go` |
 | `initiativeRelation` | query | `initiativeRelation` | implemented | `internal/client/generated.go` |
 | `initiativeRelations` | query | `initiativeRelations` | implemented | `internal/client/generated.go` |
+| `initiativeToProject` | query | `initiativeToProject` | implemented | `internal/client/generated.go` |
+| `initiativeToProjects` | query | `initiativeToProjects` | implemented | `internal/client/generated.go` |
 | `initiativeUpdate` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
 | `initiativeUpdates` | query | `initiativeUpdates` | implemented | `internal/client/generated.go` |
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
@@ -1268,6 +1270,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | InitiativeRelation | `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | InitiativeRelation | `initiative-relation update` | `Mutation.initiativeRelationUpdate` | Blocked: update must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | InitiativeRelation | `initiative-relation delete` | `Mutation.initiativeRelationDelete` | Blocked: destructive command needs explicit hierarchy safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| InitiativeToProject | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeToProject | `initiative-to-project get` | `Query.initiativeToProject` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeToProject | `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeToProject | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeToProject | `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | write command needs explicit target and safety semantics |

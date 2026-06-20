@@ -105,6 +105,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative relation list", args: []string{"initiative-relation", "list", "--limit", "1"}, contains: "initiative-relation-id Platform -> Child initiative order 1.50"},
 		{name: "initiative relation get", args: []string{"initiative-relation", "get", "initiative-relation-id"}, contains: "initiative-relation-id Platform -> Child initiative order 1.50"},
+		{name: "initiative to project list", args: []string{"initiative-to-project", "list", "--limit", "1"}, contains: "initiative-to-project-id Platform -> Pinned project order 1"},
+		{name: "initiative to project get", args: []string{"initiative-to-project", "get", "initiative-to-project-id"}, contains: "initiative-to-project-id Platform -> Pinned project order 1"},
 		{name: "initiative update list", args: []string{"initiative-update", "list", "--limit", "1"}, contains: "initiative-update-id onTrack Omer First initiative update"},
 		{name: "initiative update get", args: []string{"initiative-update", "get", "initiative-update-id"}, contains: "initiative-update-id onTrack Omer First initiative update"},
 		{name: "roadmap list", args: []string{"roadmap", "list", "--limit", "1"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
@@ -726,6 +728,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "initiative", "get", "initiative-id"},
 		{"--json", "--fields", "id,parent_initiative_id,related_initiative_id", "initiative-relation", "list", "--limit", "1"},
 		{"--json", "initiative-relation", "get", "initiative-relation-id"},
+		{"--json", "--fields", "id,initiative_id,project_id", "initiative-to-project", "list", "--limit", "1"},
+		{"--json", "initiative-to-project", "get", "initiative-to-project-id"},
 		{"--json", "--fields", "id,health,initiative_id", "initiative-update", "list", "--limit", "1"},
 		{"--json", "initiative-update", "get", "initiative-update-id"},
 		{"--json", "roadmap", "list", "--limit", "1"},
@@ -1169,6 +1173,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
 		{name: "initiative relation list", args: []string{"initiative-relation", "list"}, operation: "initiativeRelations", contains: "list initiative relations"},
 		{name: "initiative relation get", args: []string{"initiative-relation", "get", "initiative-relation-id"}, operation: "initiativeRelation", contains: "get initiative relation initiative-relation-id"},
+		{name: "initiative to project list", args: []string{"initiative-to-project", "list"}, operation: "initiativeToProjects", contains: "list initiative to projects"},
+		{name: "initiative to project get", args: []string{"initiative-to-project", "get", "initiative-to-project-id"}, operation: "initiativeToProject", contains: "get initiative to project initiative-to-project-id"},
 		{name: "initiative update list", args: []string{"initiative-update", "list"}, operation: "initiativeUpdates", contains: "list initiative updates"},
 		{name: "initiative update get", args: []string{"initiative-update", "get", "initiative-update-id"}, operation: "initiativeUpdate", contains: "get initiative update initiative-update-id"},
 		{name: "roadmap list", args: []string{"roadmap", "list"}, operation: "roadmaps", contains: "list roadmaps"},
@@ -1528,6 +1534,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"initiativeRelations":{"nodes":[` + commandInitiativeRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeRelation":
 		return `{"initiativeRelation":` + commandInitiativeRelationJSON() + `}`, true
+	case "initiativeToProjects":
+		return `{"initiativeToProjects":{"nodes":[` + commandInitiativeToProjectJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "initiativeToProject":
+		return `{"initiativeToProject":` + commandInitiativeToProjectJSON() + `}`, true
 	case "initiativeUpdates":
 		return `{"initiativeUpdates":{"nodes":[` + commandInitiativeUpdateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeUpdate":
@@ -1975,6 +1985,18 @@ func commandInitiativeRelationJSON() string {
 		"initiative":{"id":"initiative-id","name":"Platform"},
 		"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},
 		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func commandInitiativeToProjectJSON() string {
+	return `{
+		"id":"initiative-to-project-id",
+		"sortOrder":"1",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"initiative":{"id":"initiative-id","name":"Platform"},
+		"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}
 	}`
 }
 

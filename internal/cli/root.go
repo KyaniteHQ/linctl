@@ -94,6 +94,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addTimeScheduleCommand(ctx, command, &options)
 	addInitiativeCommand(ctx, command, &options)
 	addInitiativeRelationCommand(ctx, command, &options)
+	addInitiativeToProjectCommand(ctx, command, &options)
 	addInitiativeUpdateCommand(ctx, command, &options)
 	addRoadmapCommand(ctx, command, &options)
 	addCustomViewCommand(ctx, command, &options)

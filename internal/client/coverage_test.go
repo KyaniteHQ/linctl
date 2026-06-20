@@ -219,6 +219,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"initiative":               `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
 		"initiativeRelations":      `{"initiativeRelations":{"nodes":[{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"initiative-relation-no-user","sortOrder":2,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"other-child-initiative-id","name":"Other child"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiativeRelation":       `{"initiativeRelation":{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"initiativeToProjects":     `{"initiativeToProjects":{"nodes":[{"id":"initiative-to-project-id","sortOrder":"1","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiativeToProject":      `{"initiativeToProject":{"id":"initiative-to-project-id","sortOrder":"1","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}}}`,
 		"initiativeUpdates":        `{"initiativeUpdates":{"nodes":[{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiativeUpdate":         `{"initiativeUpdate":{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
 		"roadmaps":                 `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -368,6 +370,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	initiativeRelations, err := ListInitiativeRelations(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	initiativeRelation, err := GetInitiativeRelationByID(context.Background(), graphqlClient, "initiative-relation-id")
+	require.NoError(t, err)
+	initiativeToProjects, err := ListInitiativeToProjects(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	initiativeToProject, err := GetInitiativeToProjectByID(context.Background(), graphqlClient, "initiative-to-project-id")
 	require.NoError(t, err)
 	initiativeUpdates, err := ListInitiativeUpdates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -580,6 +586,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Empty(t, initiativeRelations.Relations[1].DisplayName)
 	require.Equal(t, "initiative-relation-id", initiativeRelation.ID)
 	require.InEpsilon(t, 1.5, initiativeRelation.SortOrder, 0)
+	require.True(t, initiativeToProjects.HasNextPage)
+	require.Equal(t, &endCursor, initiativeToProjects.EndCursor)
+	require.Equal(t, "initiative-to-project-id", initiativeToProjects.Associations[0].ID)
+	require.Equal(t, "Platform", initiativeToProjects.Associations[0].InitiativeName)
+	require.Equal(t, "Pinned project", initiativeToProjects.Associations[0].ProjectName)
+	require.Equal(t, "initiative-to-project-id", initiativeToProject.ID)
+	require.Equal(t, "project-id", initiativeToProject.ProjectID)
 	require.True(t, initiativeUpdates.HasNextPage)
 	require.Equal(t, &endCursor, initiativeUpdates.EndCursor)
 	require.Equal(t, "initiative-update-id", initiativeUpdates.Updates[0].ID)
@@ -1150,6 +1163,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetInitiativeRelationByID(context.Background(), graphqlClient, "initiative-relation-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get initiative relation initiative-relation-id")
+
+		_, err = ListInitiativeToProjects(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list initiative to projects")
+
+		_, err = GetInitiativeToProjectByID(context.Background(), graphqlClient, "initiative-to-project-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get initiative to project initiative-to-project-id")
 
 		_, err = ListInitiativeUpdates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

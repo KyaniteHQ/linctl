@@ -1,0 +1,35 @@
+query initiativeToProjects($first: Int, $after: String, $includeArchived: Boolean) {
+  initiativeToProjects(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...InitiativeToProjectSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query initiativeToProject($id: String!) {
+  initiativeToProject(id: $id) {
+    ...InitiativeToProjectSummaryFields
+  }
+}
+
+fragment InitiativeToProjectSummaryFields on InitiativeToProject {
+  id
+  sortOrder
+  createdAt
+  updatedAt
+  archivedAt
+  initiative {
+    id
+    name
+  }
+  project {
+    id
+    name
+    slugId
+    url
+  }
+}

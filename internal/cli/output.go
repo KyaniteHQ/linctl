@@ -171,6 +171,7 @@ func jsonRoundTrip(value any) (map[string]any, error) {
 func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bool, error) {
 	for _, key := range []string{
 		"issues",
+		"associations",
 		"projects",
 		"members",
 		"comments",

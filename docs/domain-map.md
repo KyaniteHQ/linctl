@@ -440,6 +440,30 @@ Command status:
 
 Only `initiative-relation list` and `initiative-relation get` are implemented in the current CLI. InitiativeRelation writes are deferred until their hierarchy guard model is explicit.
 
+## InitiativeToProject
+
+Use `InitiativeToProject` for Linear associations between Initiatives and Projects.
+
+Schema backing:
+
+- Types: `InitiativeToProject`, `InitiativeToProjectConnection`
+- Reads: `Query.initiativeToProjects`, `Query.initiativeToProject`
+- Writes: `Mutation.initiativeToProjectCreate`, `Mutation.initiativeToProjectUpdate`, `Mutation.initiativeToProjectDelete`
+- Inputs: `InitiativeToProjectCreateInput`, `InitiativeToProjectUpdateInput`
+- Relevant fields: `InitiativeToProject.id`, `InitiativeToProject.initiative`, `InitiativeToProject.project`, `InitiativeToProject.sortOrder`, `InitiativeToProject.createdAt`, `InitiativeToProject.updatedAt`, `InitiativeToProject.archivedAt`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `initiative-to-project list` | `Query.initiativeToProjects` | Read-only |
+| `initiative-to-project get` | `Query.initiativeToProject` | Read-only |
+| `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation |
+| `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation |
+| `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics |
+
+Only `initiative-to-project list` and `initiative-to-project get` are implemented in the current CLI. InitiativeToProject writes are deferred until their endpoint guard model is explicit.
+
 ## InitiativeUpdate
 
 Use `InitiativeUpdate` for Linear initiative status updates. Avoid calling these generic comments or notes.

@@ -696,6 +696,8 @@ func commandImplemented(command string) bool {
 		"initiative get":                 true,
 		"initiative-relation list":       true,
 		"initiative-relation get":        true,
+		"initiative-to-project list":     true,
+		"initiative-to-project get":      true,
 		"initiative-update list":         true,
 		"initiative-update get":          true,
 		"roadmap list":                   true,
@@ -723,96 +725,100 @@ func commandImplemented(command string) bool {
 	return implemented[command]
 }
 
+var blockedDomainCommands = map[string]bool{
+	"document create":                                   true,
+	"document update":                                   true,
+	"comment resolve":                                   true,
+	"comment unresolve":                                 true,
+	"project-update create":                             true,
+	"project-update update":                             true,
+	"project-update archive":                            true,
+	"label create":                                      true,
+	"label update":                                      true,
+	"team create":                                       true,
+	"team update":                                       true,
+	"workflow-state create":                             true,
+	"workflow-state update":                             true,
+	"workflow-state archive":                            true,
+	"time-schedule create":                              true,
+	"time-schedule update":                              true,
+	"time-schedule delete":                              true,
+	"time-schedule upsert-external":                     true,
+	"initiative-relation create":                        true,
+	"initiative-relation update":                        true,
+	"initiative-relation delete":                        true,
+	"initiative-to-project create":                      true,
+	"initiative-to-project update":                      true,
+	"initiative-to-project delete":                      true,
+	"initiative-update create":                          true,
+	"initiative-update update":                          true,
+	"initiative-update archive":                         true,
+	"initiative-update unarchive":                       true,
+	"initiative create":                                 true,
+	"initiative update":                                 true,
+	"initiative archive":                                true,
+	"roadmap create":                                    true,
+	"roadmap update":                                    true,
+	"roadmap archive":                                   true,
+	"roadmap delete":                                    true,
+	"custom-view create":                                true,
+	"custom-view update":                                true,
+	"customer create":                                   true,
+	"customer update":                                   true,
+	"customer archive":                                  true,
+	"customer-need create":                              true,
+	"customer-need update":                              true,
+	"customer-need archive":                             true,
+	"customer-need delete":                              true,
+	"customer-status create":                            true,
+	"customer-status update":                            true,
+	"customer-status delete":                            true,
+	"customer-tier create":                              true,
+	"customer-tier update":                              true,
+	"customer-tier delete":                              true,
+	"favorite create":                                   true,
+	"favorite update":                                   true,
+	"emoji create":                                      true,
+	"attachment create":                                 true,
+	"attachment update":                                 true,
+	"notification archive":                              true,
+	"notification archive all":                          true,
+	"notification update":                               true,
+	"notification mark read all":                        true,
+	"notification mark unread all":                      true,
+	"notification snooze all":                           true,
+	"notification unsnooze all":                         true,
+	"notification category channel subscription update": true,
+	"notification subscription create":                  true,
+	"notification subscription update":                  true,
+	"notification subscription delete":                  true,
+	"release-pipeline create":                           true,
+	"release-pipeline update":                           true,
+	"release-pipeline archive":                          true,
+	"release-pipeline unarchive":                        true,
+	"release-pipeline delete":                           true,
+	"release-stage create":                              true,
+	"release-stage update":                              true,
+	"release-stage archive":                             true,
+	"release-stage unarchive":                           true,
+	"release create":                                    true,
+	"release update":                                    true,
+	"release archive":                                   true,
+	"release unarchive":                                 true,
+	"release delete":                                    true,
+	"release complete":                                  true,
+	"release sync":                                      true,
+	"release-note create":                               true,
+	"release-note update":                               true,
+	"release-note archive":                              true,
+	"release-note delete":                               true,
+	"issue-to-release create":                           true,
+	"issue-to-release update":                           true,
+	"issue-to-release delete":                           true,
+}
+
 func domainCommandBlocked(command string) bool {
-	blocked := map[string]bool{
-		"document create":                                   true,
-		"document update":                                   true,
-		"comment resolve":                                   true,
-		"comment unresolve":                                 true,
-		"project-update create":                             true,
-		"project-update update":                             true,
-		"project-update archive":                            true,
-		"label create":                                      true,
-		"label update":                                      true,
-		"team create":                                       true,
-		"team update":                                       true,
-		"workflow-state create":                             true,
-		"workflow-state update":                             true,
-		"workflow-state archive":                            true,
-		"time-schedule create":                              true,
-		"time-schedule update":                              true,
-		"time-schedule delete":                              true,
-		"time-schedule upsert-external":                     true,
-		"initiative-relation create":                        true,
-		"initiative-relation update":                        true,
-		"initiative-relation delete":                        true,
-		"initiative-update create":                          true,
-		"initiative-update update":                          true,
-		"initiative-update archive":                         true,
-		"initiative-update unarchive":                       true,
-		"initiative create":                                 true,
-		"initiative update":                                 true,
-		"initiative archive":                                true,
-		"roadmap create":                                    true,
-		"roadmap update":                                    true,
-		"roadmap archive":                                   true,
-		"roadmap delete":                                    true,
-		"custom-view create":                                true,
-		"custom-view update":                                true,
-		"customer create":                                   true,
-		"customer update":                                   true,
-		"customer archive":                                  true,
-		"customer-need create":                              true,
-		"customer-need update":                              true,
-		"customer-need archive":                             true,
-		"customer-need delete":                              true,
-		"customer-status create":                            true,
-		"customer-status update":                            true,
-		"customer-status delete":                            true,
-		"customer-tier create":                              true,
-		"customer-tier update":                              true,
-		"customer-tier delete":                              true,
-		"favorite create":                                   true,
-		"favorite update":                                   true,
-		"emoji create":                                      true,
-		"attachment create":                                 true,
-		"attachment update":                                 true,
-		"notification archive":                              true,
-		"notification archive all":                          true,
-		"notification update":                               true,
-		"notification mark read all":                        true,
-		"notification mark unread all":                      true,
-		"notification snooze all":                           true,
-		"notification unsnooze all":                         true,
-		"notification category channel subscription update": true,
-		"notification subscription create":                  true,
-		"notification subscription update":                  true,
-		"notification subscription delete":                  true,
-		"release-pipeline create":                           true,
-		"release-pipeline update":                           true,
-		"release-pipeline archive":                          true,
-		"release-pipeline unarchive":                        true,
-		"release-pipeline delete":                           true,
-		"release-stage create":                              true,
-		"release-stage update":                              true,
-		"release-stage archive":                             true,
-		"release-stage unarchive":                           true,
-		"release create":                                    true,
-		"release update":                                    true,
-		"release archive":                                   true,
-		"release unarchive":                                 true,
-		"release delete":                                    true,
-		"release complete":                                  true,
-		"release sync":                                      true,
-		"release-note create":                               true,
-		"release-note update":                               true,
-		"release-note archive":                              true,
-		"release-note delete":                               true,
-		"issue-to-release create":                           true,
-		"issue-to-release update":                           true,
-		"issue-to-release delete":                           true,
-	}
-	return blocked[command]
+	return blockedDomainCommands[command]
 }
 
 func classifyName(
@@ -891,12 +897,11 @@ func countImplementedSDK(methods []sdkMethod, implementedRoots map[string]bool) 
 }
 
 func sdkImplemented(name string, implementedRoots map[string]bool) bool {
-	kind := "query"
-	if likelyMutationRoot(name) {
-		kind = "mutation"
+	if implementedRoots[rootKey("query", name)] || implementedRoots[rootKey("mutation", name)] {
+		return true
 	}
-	for _, candidate := range sdkRootCandidates(name) {
-		if implementedRoots[rootKey(kind, candidate)] {
+	for _, candidate := range sdkMutationRootCandidates(name) {
+		if implementedRoots[rootKey("mutation", candidate)] {
 			return true
 		}
 	}
@@ -907,18 +912,8 @@ func rootKey(kind string, name string) string {
 	return strings.ToLower(kind) + ":" + name
 }
 
-func likelyMutationRoot(name string) bool {
-	lower := strings.ToLower(name)
-	return hasWritePrefix(lower) ||
-		strings.Contains(lower, "delete") ||
-		strings.Contains(lower, "remove") ||
-		strings.Contains(lower, "revoke") ||
-		strings.Contains(lower, "resolve") ||
-		strings.Contains(lower, "suspend")
-}
-
-func sdkRootCandidates(name string) []string {
-	candidates := []string{name}
+func sdkMutationRootCandidates(name string) []string {
+	candidates := []string{}
 	for _, prefix := range []string{"create", "update", "archive", "delete", "unarchive", "cancel"} {
 		if strings.HasPrefix(name, prefix) && len(name) > len(prefix) {
 			entity := lowerFirst(strings.TrimPrefix(name, prefix))
@@ -940,7 +935,7 @@ func hasWritePrefix(lowerName string) bool {
 		"move",
 		"rotate",
 	} {
-		if strings.HasPrefix(lowerName, prefix) {
+		if strings.HasPrefix(lowerName, prefix) || strings.HasSuffix(lowerName, prefix) {
 			return true
 		}
 	}
