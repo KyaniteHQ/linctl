@@ -403,8 +403,8 @@ Use the schema name `Initiative` in code and docs. It is Linear's strategic grou
 
 Schema backing:
 
-- Types: `Initiative`, `InitiativeConnection`
-- Reads: `Query.initiatives`, `Query.initiative`
+- Types: `Initiative`, `InitiativeConnection`, `InitiativeHistory`, `InitiativeUpdate`, `EntityExternalLink`
+- Reads: `Query.initiatives`, `Query.initiative`, `Initiative.history`, `Initiative.links`, `Initiative.subInitiatives`, `Initiative.initiativeUpdates`
 - Writes: `Mutation.createInitiative`, `Mutation.updateInitiative`, `Mutation.archiveInitiative`, `Mutation.deleteInitiative`
 - Inputs: `InitiativeCreateInput`, `InitiativeUpdateInput`
 - Relevant fields: `Initiative.id`, `Initiative.name`, `Initiative.description`, `Initiative.status`, `Initiative.priority`, `Initiative.targetDate`, `Initiative.slugId`, `Initiative.url`
@@ -415,11 +415,15 @@ Planned commands:
 | --- | --- | --- |
 | `initiative list` | `Query.initiatives` | Read-only |
 | `initiative get` | `Query.initiative` | Read-only |
+| `initiative history` | `Initiative.history` via `Query.initiative` | Read-only |
+| `initiative links` | `Initiative.links` via `Query.initiative` | Read-only |
+| `initiative sub-initiatives` | `Initiative.subInitiatives` via `Query.initiative` | Read-only |
+| `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only |
 | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model |
 | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation |
 | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics |
 
-Only `initiative list` and `initiative get` are implemented in the current CLI. Initiative writes are deferred as organization-scoped planning surface.
+Initiative writes are deferred as organization-scoped planning surface.
 
 ## InitiativeRelation
 

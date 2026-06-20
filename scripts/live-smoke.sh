@@ -64,6 +64,14 @@ PY
   fi
   "$binary" release-note list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null
+  initiative_json="$("$binary" initiative list --json --limit 5)"
+  initiative_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("initiatives", []); print(items[0]["id"] if items else "")' <<<"$initiative_json")"
+  if [[ -n "$initiative_id" ]]; then
+    "$binary" initiative history "$initiative_id" --json --limit 5 >/dev/null
+    "$binary" initiative links "$initiative_id" --json --limit 5 >/dev/null
+    "$binary" initiative sub-initiatives "$initiative_id" --json --limit 5 >/dev/null
+    "$binary" initiative updates "$initiative_id" --json --limit 5 >/dev/null
+  fi
   "$binary" initiative-relation list --json --limit 5 >/dev/null
   "$binary" initiative-to-project list --json --limit 5 >/dev/null
   "$binary" initiative-update list --json --limit 5 >/dev/null

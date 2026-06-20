@@ -16,6 +16,62 @@ query initiative($id: String!) {
   }
 }
 
+query initiative_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  initiative(id: $id) {
+    history(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...InitiativeHistorySummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query initiative_links($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  initiative(id: $id) {
+    links(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...EntityExternalLinkSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query initiative_subInitiatives($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  initiative(id: $id) {
+    subInitiatives(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...InitiativeSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query initiative_initiativeUpdates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  initiative(id: $id) {
+    initiativeUpdates(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...InitiativeUpdateSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment InitiativeSummaryFields on Initiative {
   id
   name
@@ -25,4 +81,15 @@ fragment InitiativeSummaryFields on Initiative {
   targetDate
   slugId
   url
+}
+
+fragment InitiativeHistorySummaryFields on InitiativeHistory {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  entries
+  initiative {
+    id
+  }
 }

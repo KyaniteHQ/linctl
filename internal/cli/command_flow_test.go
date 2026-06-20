@@ -108,6 +108,10 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, contains: "time-schedule-id Primary on-call entries 1"},
 		{name: "initiative list", args: []string{"initiative", "list", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
+		{name: "initiative history", args: []string{"initiative", "history", "initiative-id", "--limit", "1"}, contains: "initiative-history-id initiative initiative-id entries 1"},
+		{name: "initiative links", args: []string{"initiative", "links", "initiative-id", "--limit", "1"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
+		{name: "initiative sub-initiatives", args: []string{"initiative", "sub-initiatives", "initiative-id", "--limit", "1"}, contains: "child-initiative-id Child platform [Planned]"},
+		{name: "initiative updates", args: []string{"initiative", "updates", "initiative-id", "--limit", "1"}, contains: "initiative-update-id onTrack Omer First initiative update"},
 		{name: "initiative relation list", args: []string{"initiative-relation", "list", "--limit", "1"}, contains: "initiative-relation-id Platform -> Child initiative order 1.50"},
 		{name: "initiative relation get", args: []string{"initiative-relation", "get", "initiative-relation-id"}, contains: "initiative-relation-id Platform -> Child initiative order 1.50"},
 		{name: "initiative to project list", args: []string{"initiative-to-project", "list", "--limit", "1"}, contains: "initiative-to-project-id Platform -> Pinned project order 1"},
@@ -736,6 +740,10 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "time-schedule", "get", "time-schedule-id"},
 		{"--json", "initiative", "list", "--limit", "1"},
 		{"--json", "initiative", "get", "initiative-id"},
+		{"--json", "--fields", "id,initiative_id,entry_count", "initiative", "history", "initiative-id", "--limit", "1"},
+		{"--json", "--fields", "id,label,url", "initiative", "links", "initiative-id", "--limit", "1"},
+		{"--json", "--fields", "id,name,status", "initiative", "sub-initiatives", "initiative-id", "--limit", "1"},
+		{"--json", "--fields", "id,health,initiative_id", "initiative", "updates", "initiative-id", "--limit", "1"},
 		{"--json", "--fields", "id,parent_initiative_id,related_initiative_id", "initiative-relation", "list", "--limit", "1"},
 		{"--json", "initiative-relation", "get", "initiative-relation-id"},
 		{"--json", "--fields", "id,initiative_id,project_id", "initiative-to-project", "list", "--limit", "1"},
@@ -1186,6 +1194,10 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, operation: "timeSchedule", contains: "get time schedule time-schedule-id"},
 		{name: "initiative list", args: []string{"initiative", "list"}, operation: "initiatives", contains: "list initiatives"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
+		{name: "initiative history", args: []string{"initiative", "history", "initiative-id"}, operation: "initiative_history", contains: "list initiative history initiative-id"},
+		{name: "initiative links", args: []string{"initiative", "links", "initiative-id"}, operation: "initiative_links", contains: "list initiative links initiative-id"},
+		{name: "initiative sub-initiatives", args: []string{"initiative", "sub-initiatives", "initiative-id"}, operation: "initiative_subInitiatives", contains: "list initiative sub-initiatives initiative-id"},
+		{name: "initiative updates", args: []string{"initiative", "updates", "initiative-id"}, operation: "initiative_initiativeUpdates", contains: "list initiative updates initiative-id"},
 		{name: "initiative relation list", args: []string{"initiative-relation", "list"}, operation: "initiativeRelations", contains: "list initiative relations"},
 		{name: "initiative relation get", args: []string{"initiative-relation", "get", "initiative-relation-id"}, operation: "initiativeRelation", contains: "get initiative relation initiative-relation-id"},
 		{name: "initiative to project list", args: []string{"initiative-to-project", "list"}, operation: "initiativeToProjects", contains: "list initiative to projects"},
@@ -1541,10 +1553,25 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"workflowStates":{"nodes":[` + commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "workflowState":
 		return `{"workflowState":` + commandWorkflowStateJSON() + `}`, true
+	}
+
+	return commandFlowInitiativePayload(operation)
+}
+
+func commandFlowInitiativePayload(operation string) (string, bool) {
+	switch operation {
 	case "initiatives":
 		return `{"initiatives":{"nodes":[` + commandInitiativeJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiative":
 		return `{"initiative":` + commandInitiativeJSON() + `}`, true
+	case "initiative_history":
+		return `{"initiative":{"history":{"nodes":[` + commandInitiativeHistoryJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "initiative_links":
+		return `{"initiative":{"links":{"nodes":[` + commandEntityExternalLinkJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "initiative_subInitiatives":
+		return `{"initiative":{"subInitiatives":{"nodes":[` + commandSubInitiativeJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "initiative_initiativeUpdates":
+		return `{"initiative":{"initiativeUpdates":{"nodes":[` + commandInitiativeUpdateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "initiativeRelations":
 		return `{"initiativeRelations":{"nodes":[` + commandInitiativeRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeRelation":
@@ -2113,6 +2140,30 @@ func commandInitiativeJSON() string {
 		"targetDate":"2026-12-31",
 		"slugId":"platform-init",
 		"url":"https://linear.app/kyanite/initiative/platform-init"
+	}`
+}
+
+func commandSubInitiativeJSON() string {
+	return `{
+		"id":"child-initiative-id",
+		"name":"Child platform",
+		"description":"Child initiative",
+		"status":"Planned",
+		"priority":1,
+		"targetDate":"2026-11-30",
+		"slugId":"child-platform",
+		"url":"https://linear.app/kyanite/initiative/child-platform"
+	}`
+}
+
+func commandInitiativeHistoryJSON() string {
+	return `{
+		"id":"initiative-history-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"entries":[{"type":"status","from":"Planned","to":"Active"}],
+		"initiative":{"id":"initiative-id"}
 	}`
 }
 

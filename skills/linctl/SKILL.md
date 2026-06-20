@@ -129,6 +129,10 @@ linctl time-schedule list --json --limit 20
 linctl time-schedule get TIME_SCHEDULE_ID --json
 linctl initiative list --json --limit 20
 linctl initiative get INITIATIVE_ID --json
+linctl initiative history INITIATIVE_ID --json --limit 20
+linctl initiative links INITIATIVE_ID --json --limit 20
+linctl initiative sub-initiatives INITIATIVE_ID --json --limit 20
+linctl initiative updates INITIATIVE_ID --json --limit 20
 linctl initiative-relation list --json --limit 20
 linctl initiative-relation get INITIATIVE_RELATION_ID --json
 linctl initiative-to-project list --json --limit 20

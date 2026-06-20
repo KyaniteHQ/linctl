@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 80 | 458 |
 | Upstream Query root fields | 158 | 68 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 123 | 123 | 123 |
-| Domain-map commands | 203 | 105 | 203 |
+| Local generated Go operations | 127 | 127 | 127 |
+| Domain-map commands | 207 | 109 | 207 |
 
 ## Upstream SDK Root Methods
 
@@ -1090,6 +1090,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiativeToProjects` | query | `initiativeToProjects` | implemented | `internal/client/generated.go` |
 | `initiativeUpdate` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
 | `initiativeUpdates` | query | `initiativeUpdates` | implemented | `internal/client/generated.go` |
+| `initiative_history` | query | `initiative` | implemented | `internal/client/generated.go` |
+| `initiative_initiativeUpdates` | query | `initiative` | implemented | `internal/client/generated.go` |
+| `initiative_links` | query | `initiative` | implemented | `internal/client/generated.go` |
+| `initiative_subInitiatives` | query | `initiative` | implemented | `internal/client/generated.go` |
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
@@ -1272,6 +1276,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Initiative | `initiative history` | `Initiative.history` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Initiative | `initiative links` | `Initiative.links` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Initiative | `initiative sub-initiatives` | `Initiative.subInitiatives` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Initiative | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |

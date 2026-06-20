@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
@@ -24,6 +25,24 @@ type InitiativeList struct {
 	Initiatives []InitiativeSummary `json:"initiatives"`
 	HasNextPage bool                `json:"has_next_page"`
 	EndCursor   *string             `json:"end_cursor,omitempty"`
+}
+
+// InitiativeHistorySummary is the compact initiative history model used by read-only commands.
+type InitiativeHistorySummary struct {
+	ID           string          `json:"id"`
+	InitiativeID string          `json:"initiative_id"`
+	EntryCount   int             `json:"entry_count"`
+	Entries      json.RawMessage `json:"entries"`
+	CreatedAt    string          `json:"created_at"`
+	UpdatedAt    string          `json:"updated_at"`
+	ArchivedAt   string          `json:"archived_at,omitempty"`
+}
+
+// InitiativeHistoryList is a page of Linear initiative history records.
+type InitiativeHistoryList struct {
+	History     []InitiativeHistorySummary `json:"history"`
+	HasNextPage bool                       `json:"has_next_page"`
+	EndCursor   *string                    `json:"end_cursor,omitempty"`
 }
 
 // ListInitiatives returns visible initiatives.
@@ -59,6 +78,102 @@ func GetInitiativeByID(
 	return initiativeSummary(result.Initiative.InitiativeSummaryFields), nil
 }
 
+// ListInitiativeHistory returns history records associated with one initiative.
+func ListInitiativeHistory(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (InitiativeHistoryList, error) {
+	result, err := initiative_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return InitiativeHistoryList{}, fmt.Errorf("list initiative history %s: %w", id, err)
+	}
+
+	history := make([]InitiativeHistorySummary, 0, len(result.Initiative.History.Nodes))
+	for _, node := range result.Initiative.History.Nodes {
+		history = append(history, initiativeHistorySummary(node.InitiativeHistorySummaryFields))
+	}
+
+	return InitiativeHistoryList{
+		History:     history,
+		HasNextPage: result.Initiative.History.PageInfo.HasNextPage,
+		EndCursor:   result.Initiative.History.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListInitiativeLinks returns external links associated with one initiative.
+func ListInitiativeLinks(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (EntityExternalLinkList, error) {
+	result, err := initiative_links(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return EntityExternalLinkList{}, fmt.Errorf("list initiative links %s: %w", id, err)
+	}
+
+	links := make([]EntityExternalLinkSummary, 0, len(result.Initiative.Links.Nodes))
+	for _, node := range result.Initiative.Links.Nodes {
+		links = append(links, entityExternalLinkSummary(node.EntityExternalLinkSummaryFields))
+	}
+
+	return EntityExternalLinkList{
+		Links:       links,
+		HasNextPage: result.Initiative.Links.PageInfo.HasNextPage,
+		EndCursor:   result.Initiative.Links.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListSubInitiatives returns child initiatives associated with one initiative.
+func ListSubInitiatives(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (InitiativeList, error) {
+	result, err := initiative_subInitiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return InitiativeList{}, fmt.Errorf("list initiative sub-initiatives %s: %w", id, err)
+	}
+
+	initiatives := make([]InitiativeSummary, 0, len(result.Initiative.SubInitiatives.Nodes))
+	for _, node := range result.Initiative.SubInitiatives.Nodes {
+		initiatives = append(initiatives, initiativeSummary(node.InitiativeSummaryFields))
+	}
+
+	return InitiativeList{
+		Initiatives: initiatives,
+		HasNextPage: result.Initiative.SubInitiatives.PageInfo.HasNextPage,
+		EndCursor:   result.Initiative.SubInitiatives.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListInitiativeUpdatesForInitiative returns status updates associated with one initiative.
+func ListInitiativeUpdatesForInitiative(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (InitiativeUpdateList, error) {
+	result, err := initiative_initiativeUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return InitiativeUpdateList{}, fmt.Errorf("list initiative updates %s: %w", id, err)
+	}
+
+	updates := make([]InitiativeUpdateSummary, 0, len(result.Initiative.InitiativeUpdates.Nodes))
+	for _, node := range result.Initiative.InitiativeUpdates.Nodes {
+		updates = append(updates, initiativeUpdateSummary(node.InitiativeUpdateSummaryFields))
+	}
+
+	return InitiativeUpdateList{
+		Updates:     updates,
+		HasNextPage: result.Initiative.InitiativeUpdates.PageInfo.HasNextPage,
+		EndCursor:   result.Initiative.InitiativeUpdates.PageInfo.EndCursor,
+	}, nil
+}
+
 func initiativeSummary(fields InitiativeSummaryFields) InitiativeSummary {
 	return InitiativeSummary{
 		ID:          fields.Id,
@@ -69,5 +184,23 @@ func initiativeSummary(fields InitiativeSummaryFields) InitiativeSummary {
 		TargetDate:  stringValue(fields.TargetDate),
 		SlugID:      fields.SlugId,
 		URL:         fields.Url,
+	}
+}
+
+func initiativeHistorySummary(fields InitiativeHistorySummaryFields) InitiativeHistorySummary {
+	entryCount := 0
+	var entries []json.RawMessage
+	if err := json.Unmarshal(fields.Entries, &entries); err == nil {
+		entryCount = len(entries)
+	}
+
+	return InitiativeHistorySummary{
+		ID:           fields.Id,
+		InitiativeID: fields.Initiative.Id,
+		EntryCount:   entryCount,
+		Entries:      fields.Entries,
+		CreatedAt:    fields.CreatedAt,
+		UpdatedAt:    fields.UpdatedAt,
+		ArchivedAt:   stringValue(fields.ArchivedAt),
 	}
 }
