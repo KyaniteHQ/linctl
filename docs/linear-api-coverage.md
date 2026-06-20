@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 82 | 458 |
-| Upstream Query root fields | 158 | 70 | 158 |
+| Upstream SDK root methods | 458 | 83 | 458 |
+| Upstream Query root fields | 158 | 71 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 129 | 129 | 129 |
-| Domain-map commands | 212 | 111 | 212 |
+| Local generated Go operations | 130 | 130 | 130 |
+| Domain-map commands | 213 | 112 | 213 |
 
 ## Upstream SDK Root Methods
 
@@ -218,7 +218,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `emailUserAccountAuthChallenge` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `emoji` | method | implemented | local operation or command exists |
 | `emojis` | method | implemented | local operation or command exists |
-| `entityExternalLink` | method | safe_candidate | read operation may fit future CLI coverage |
+| `entityExternalLink` | method | implemented | local operation or command exists |
 | `externalUser` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `externalUsers` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `favorite` | method | implemented | local operation or command exists |
@@ -534,7 +534,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `emailIntakeAddress` | `EmailIntakeAddress!` | safe_candidate | read operation may fit future CLI coverage |
 | `emoji` | `Emoji!` | implemented | root field used by local GraphQL operation |
 | `emojis` | `EmojiConnection!` | implemented | root field used by local GraphQL operation |
-| `entityExternalLink` | `EntityExternalLink!` | safe_candidate | read operation may fit future CLI coverage |
+| `entityExternalLink` | `EntityExternalLink!` | implemented | root field used by local GraphQL operation |
 | `externalUser` | `ExternalUser!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `externalUsers` | `ExternalUserConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `failuresForOauthWebhooks` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -1080,6 +1080,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
 | `emoji` | query | `emoji` | implemented | `internal/client/generated.go` |
 | `emojis` | query | `emojis` | implemented | `internal/client/generated.go` |
+| `entityExternalLink` | query | `entityExternalLink` | implemented | `internal/client/generated.go` |
 | `favorite` | query | `favorite` | implemented | `internal/client/generated.go` |
 | `favorite_children` | query | `favorite` | implemented | `internal/client/generated.go` |
 | `favorites` | query | `favorites` | implemented | `internal/client/generated.go` |
@@ -1175,6 +1176,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `release get` | `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release history` | `Release.history` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release links` | `Release.links` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `external-link get` | `Query.entityExternalLink` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-note list` | `Query.releaseNotes` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-note get` | `Query.releaseNote` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |

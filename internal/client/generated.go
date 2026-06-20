@@ -14634,6 +14634,14 @@ func (v *__emojisInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __emojisInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__emojisInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __entityExternalLinkInput is used internally by genqlient
+type __entityExternalLinkInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __entityExternalLinkInput.Id, and is useful for accessing the field via an interface.
+func (v *__entityExternalLinkInput) GetId() string { return v.Id }
+
 // __favoriteInput is used internally by genqlient
 type __favoriteInput struct {
 	Id string `json:"id"`
@@ -18209,6 +18217,150 @@ type emojisResponse struct {
 
 // GetEmojis returns emojisResponse.Emojis, and is useful for accessing the field via an interface.
 func (v *emojisResponse) GetEmojis() emojisEmojisEmojiConnection { return v.Emojis }
+
+// entityExternalLinkEntityExternalLink includes the requested fields of the GraphQL type EntityExternalLink.
+// The GraphQL type's documentation follows.
+//
+// An external link attached to a Linear entity such as an initiative, project,
+// team, release, or cycle. External links provide a way to reference related
+// resources outside of Linear (e.g., documentation, design files, dashboards)
+// directly from the entity's resources section. Each link has a URL, display
+// label, and sort order within its parent entity.
+type entityExternalLinkEntityExternalLink struct {
+	EntityExternalLinkSummaryFields `json:"-"`
+}
+
+// GetId returns entityExternalLinkEntityExternalLink.Id, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetId() string {
+	return v.EntityExternalLinkSummaryFields.Id
+}
+
+// GetCreatedAt returns entityExternalLinkEntityExternalLink.CreatedAt, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetCreatedAt() string {
+	return v.EntityExternalLinkSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns entityExternalLinkEntityExternalLink.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetUpdatedAt() string {
+	return v.EntityExternalLinkSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns entityExternalLinkEntityExternalLink.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetArchivedAt() *string {
+	return v.EntityExternalLinkSummaryFields.ArchivedAt
+}
+
+// GetUrl returns entityExternalLinkEntityExternalLink.Url, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetUrl() string {
+	return v.EntityExternalLinkSummaryFields.Url
+}
+
+// GetLabel returns entityExternalLinkEntityExternalLink.Label, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetLabel() string {
+	return v.EntityExternalLinkSummaryFields.Label
+}
+
+// GetSortOrder returns entityExternalLinkEntityExternalLink.SortOrder, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetSortOrder() float64 {
+	return v.EntityExternalLinkSummaryFields.SortOrder
+}
+
+// GetCreator returns entityExternalLinkEntityExternalLink.Creator, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetCreator() *EntityExternalLinkSummaryFieldsCreatorUser {
+	return v.EntityExternalLinkSummaryFields.Creator
+}
+
+// GetInitiative returns entityExternalLinkEntityExternalLink.Initiative, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetInitiative() *EntityExternalLinkSummaryFieldsInitiative {
+	return v.EntityExternalLinkSummaryFields.Initiative
+}
+
+// GetProject returns entityExternalLinkEntityExternalLink.Project, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkEntityExternalLink) GetProject() *EntityExternalLinkSummaryFieldsProject {
+	return v.EntityExternalLinkSummaryFields.Project
+}
+
+func (v *entityExternalLinkEntityExternalLink) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*entityExternalLinkEntityExternalLink
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.entityExternalLinkEntityExternalLink = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.EntityExternalLinkSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalentityExternalLinkEntityExternalLink struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Url string `json:"url"`
+
+	Label string `json:"label"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	Creator *EntityExternalLinkSummaryFieldsCreatorUser `json:"creator"`
+
+	Initiative *EntityExternalLinkSummaryFieldsInitiative `json:"initiative"`
+
+	Project *EntityExternalLinkSummaryFieldsProject `json:"project"`
+}
+
+func (v *entityExternalLinkEntityExternalLink) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *entityExternalLinkEntityExternalLink) __premarshalJSON() (*__premarshalentityExternalLinkEntityExternalLink, error) {
+	var retval __premarshalentityExternalLinkEntityExternalLink
+
+	retval.Id = v.EntityExternalLinkSummaryFields.Id
+	retval.CreatedAt = v.EntityExternalLinkSummaryFields.CreatedAt
+	retval.UpdatedAt = v.EntityExternalLinkSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.EntityExternalLinkSummaryFields.ArchivedAt
+	retval.Url = v.EntityExternalLinkSummaryFields.Url
+	retval.Label = v.EntityExternalLinkSummaryFields.Label
+	retval.SortOrder = v.EntityExternalLinkSummaryFields.SortOrder
+	retval.Creator = v.EntityExternalLinkSummaryFields.Creator
+	retval.Initiative = v.EntityExternalLinkSummaryFields.Initiative
+	retval.Project = v.EntityExternalLinkSummaryFields.Project
+	return &retval, nil
+}
+
+// entityExternalLinkResponse is returned by entityExternalLink on success.
+type entityExternalLinkResponse struct {
+	// Retrieves a single entity external link by its identifier.
+	EntityExternalLink entityExternalLinkEntityExternalLink `json:"entityExternalLink"`
+}
+
+// GetEntityExternalLink returns entityExternalLinkResponse.EntityExternalLink, and is useful for accessing the field via an interface.
+func (v *entityExternalLinkResponse) GetEntityExternalLink() entityExternalLinkEntityExternalLink {
+	return v.EntityExternalLink
+}
 
 // favoriteFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
@@ -39325,6 +39477,61 @@ func emojis(
 	}
 
 	data_ = &emojisResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by entityExternalLink.
+const entityExternalLink_Operation = `
+query entityExternalLink ($id: String!) {
+	entityExternalLink(id: $id) {
+		... EntityExternalLinkSummaryFields
+	}
+}
+fragment EntityExternalLinkSummaryFields on EntityExternalLink {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	url
+	label
+	sortOrder
+	creator {
+		id
+		displayName
+	}
+	initiative {
+		id
+		name
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func entityExternalLink(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *entityExternalLinkResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "entityExternalLink",
+		Query:  entityExternalLink_Operation,
+		Variables: &__entityExternalLinkInput{
+			Id: id,
+		},
+	}
+
+	data_ = &entityExternalLinkResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

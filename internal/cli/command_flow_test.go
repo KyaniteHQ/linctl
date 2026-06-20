@@ -49,6 +49,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "release get", args: []string{"release", "get", "release-id"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
 		{name: "release history", args: []string{"release", "history", "release-id", "--limit", "1"}, contains: "release-history-id release release-id entries 1"},
 		{name: "release links", args: []string{"release", "links", "release-id", "--limit", "1"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
+		{name: "external link get", args: []string{"external-link", "get", "release-link-id"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
 		{name: "release note list", args: []string{"release-note", "list", "--limit", "1"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
 		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
@@ -508,6 +509,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"release", "list"},
 			{"release", "search", "mobile"},
 			{"release", "get", "release-id"},
+			{"external-link", "get", "release-link-id"},
 			{"release-note", "list"},
 			{"release-note", "get", "release-note-id"},
 			{"next", "--dry-run"},
@@ -714,6 +716,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "release", "get", "release-id"},
 		{"--json", "--fields", "id,release_id,entry_count", "release", "history", "release-id", "--limit", "1"},
 		{"--json", "--fields", "id,label,url", "release", "links", "release-id", "--limit", "1"},
+		{"--json", "--fields", "id,label,url", "external-link", "get", "release-link-id"},
 		{"--json", "release-note", "list", "--limit", "1"},
 		{"--json", "release-note", "get", "release-note-id"},
 		{"--json", "next", "--dry-run"},
@@ -1136,6 +1139,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "release get", args: []string{"release", "get", "release-id"}, operation: "release", contains: "get release release-id"},
 		{name: "release history", args: []string{"release", "history", "release-id"}, operation: "release_history", contains: "list release history release-id"},
 		{name: "release links", args: []string{"release", "links", "release-id"}, operation: "release_links", contains: "list release links release-id"},
+		{name: "external link get", args: []string{"external-link", "get", "release-link-id"}, operation: "entityExternalLink", contains: "get external link release-link-id"},
 		{name: "release note list", args: []string{"release-note", "list"}, operation: "releaseNotes", contains: "list release notes"},
 		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, operation: "releaseNote", contains: "get release note release-note-id"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
@@ -1634,6 +1638,8 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"release":{"history":{"nodes":[` + commandReleaseHistoryJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "release_links":
 		return `{"release":{"links":{"nodes":[` + commandEntityExternalLinkJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "entityExternalLink":
+		return `{"entityExternalLink":` + commandEntityExternalLinkJSON() + `}`, true
 	case "releaseNotes":
 		return `{"releaseNotes":{"nodes":[` + commandReleaseNoteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseNote":

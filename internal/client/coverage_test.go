@@ -209,6 +209,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"releaseSearch":                `{"releaseSearch":[` + releaseJSON() + `]}`,
 		"release_history":              `{"release":{"history":{"nodes":[` + releaseHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"release_links":                `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"entityExternalLink":           `{"entityExternalLink":` + entityExternalLinkJSON() + `}`,
 		"releaseNotes":                 `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releaseNote":                  `{"releaseNote":` + releaseNoteJSON() + `}`,
 		"team":                         `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
@@ -359,6 +360,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	releaseHistory, err := ListReleaseHistory(context.Background(), graphqlClient, "release-id", 2)
 	require.NoError(t, err)
 	releaseLinks, err := ListReleaseLinks(context.Background(), graphqlClient, "release-id", 2)
+	require.NoError(t, err)
+	externalLink, err := GetEntityExternalLinkByID(context.Background(), graphqlClient, "release-link-id")
 	require.NoError(t, err)
 	releaseSearch, err := SearchReleases(context.Background(), graphqlClient, "mobile", 2)
 	require.NoError(t, err)
@@ -611,6 +614,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Platform", releaseLinks.Links[1].InitiativeName)
 	require.Equal(t, "project-id", releaseLinks.Links[1].ProjectID)
 	require.Equal(t, "Pinned project", releaseLinks.Links[1].ProjectName)
+	require.Equal(t, "release-link-id", externalLink.ID)
+	require.Equal(t, "Runbook", externalLink.Label)
+	require.Equal(t, "https://example.com/runbook", externalLink.URL)
 	require.Equal(t, "release-id", releaseSearch.Releases[0].ID)
 	require.True(t, releaseNotes.HasNextPage)
 	require.Equal(t, &endCursor, releaseNotes.EndCursor)
@@ -1431,6 +1437,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListReleaseLinks(context.Background(), graphqlClient, "release-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list release links release-id")
+
+		_, err = GetEntityExternalLinkByID(context.Background(), graphqlClient, "release-link-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get external link release-link-id")
 
 		_, err = SearchReleases(context.Background(), graphqlClient, "mobile", 1)
 		require.Error(t, err)

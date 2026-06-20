@@ -50,6 +50,12 @@ query releaseSearch($term: String, $first: Int) {
   }
 }
 
+query entityExternalLink($id: String!) {
+  entityExternalLink(id: $id) {
+    ...EntityExternalLinkSummaryFields
+  }
+}
+
 query releaseNotes($first: Int, $after: String, $includeArchived: Boolean) {
   releaseNotes(first: $first, after: $after, includeArchived: $includeArchived) {
     nodes {

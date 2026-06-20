@@ -50,11 +50,11 @@ Only `notification list`, `notification get`, `notification subscription list`, 
 
 Schema backing:
 
-- Types: `Release`, `ReleasePipeline`, `ReleaseStage`, `ReleaseNote`, `IssueToRelease`
-- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `ReleasePipeline.releases`, `ReleasePipeline.stages`, `Query.releaseStages`, `Query.releaseStage`, `ReleaseStage.releases`, `Query.releases`, `Query.release`, `Release.history`, `Release.links`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`
+- Types: `Release`, `ReleasePipeline`, `ReleaseStage`, `ReleaseNote`, `EntityExternalLink`, `IssueToRelease`
+- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `ReleasePipeline.releases`, `ReleasePipeline.stages`, `Query.releaseStages`, `Query.releaseStage`, `ReleaseStage.releases`, `Query.releases`, `Query.release`, `Release.history`, `Release.links`, `Query.entityExternalLink`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`
 - Deferred reads: nested release documents/issues and access-key release reads
 - Writes: `Mutation.releasePipelineCreate`, `Mutation.releasePipelineUpdate`, `Mutation.releasePipelineArchive`, `Mutation.releasePipelineDelete`, `Mutation.releaseStageCreate`, `Mutation.releaseStageUpdate`, `Mutation.releaseStageArchive`, `Mutation.releaseStageUnarchive`, plus Release/ReleaseNote/IssueToRelease create/update/archive/delete/sync/complete mutations
-- Relevant fields: `Release.id`, `Release.name`, `Release.slugId`, `Release.version`, `Release.pipeline`, `Release.stage`, `Release.issueCount`, `ReleaseNote.id`, `ReleaseNote.title`, `ReleaseNote.slugId`, `ReleaseNote.pipeline`, `ReleaseNote.releaseCount`, `ReleasePipeline.id`, `ReleasePipeline.name`, `ReleasePipeline.slugId`, `ReleasePipeline.type`, `ReleasePipeline.isProduction`, `ReleasePipeline.approximateReleaseCount`, `ReleaseStage.id`, `ReleaseStage.name`, `ReleaseStage.type`, `ReleaseStage.pipeline`
+- Relevant fields: `Release.id`, `Release.name`, `Release.slugId`, `Release.version`, `Release.pipeline`, `Release.stage`, `Release.issueCount`, `ReleaseNote.id`, `ReleaseNote.title`, `ReleaseNote.slugId`, `ReleaseNote.pipeline`, `ReleaseNote.releaseCount`, `ReleasePipeline.id`, `ReleasePipeline.name`, `ReleasePipeline.slugId`, `ReleasePipeline.type`, `ReleasePipeline.isProduction`, `ReleasePipeline.approximateReleaseCount`, `ReleaseStage.id`, `ReleaseStage.name`, `ReleaseStage.type`, `ReleaseStage.pipeline`, `EntityExternalLink.id`, `EntityExternalLink.label`, `EntityExternalLink.url`, `EntityExternalLink.sortOrder`, `EntityExternalLink.creator`, `EntityExternalLink.initiative`, `EntityExternalLink.project`
 
 Planned commands:
 
@@ -72,6 +72,7 @@ Planned commands:
 | `release get` | `Query.release` | Read-only |
 | `release history` | `Release.history` via `Query.release` | Read-only |
 | `release links` | `Release.links` via `Query.release` | Read-only |
+| `external-link get` | `Query.entityExternalLink` | Read-only |
 | `release-note list` | `Query.releaseNotes` | Read-only |
 | `release-note get` | `Query.releaseNote` | Read-only |
 | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics |
@@ -98,7 +99,7 @@ Planned commands:
 | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation |
 | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics |
 
-Release, ReleasePipeline, ReleaseStage, and ReleaseNote read commands are implemented in the current CLI. IssueToRelease, sync, complete, access-key, and association commands remain deferred until their control-surface shape and guard model are explicit.
+Release, ReleasePipeline, ReleaseStage, ReleaseNote, and EntityExternalLink read commands are implemented in the current CLI. IssueToRelease, sync, complete, access-key, and association commands remain deferred until their control-surface shape and guard model are explicit.
 
 ## Issue
 

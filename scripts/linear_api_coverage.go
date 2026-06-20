@@ -641,6 +641,7 @@ func commandImplemented(command string) bool {
 		"release get":                    true,
 		"release history":                true,
 		"release links":                  true,
+		"external-link get":              true,
 		"release-note list":              true,
 		"release-note get":               true,
 		"issue list":                     true,

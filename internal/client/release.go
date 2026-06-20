@@ -193,6 +193,20 @@ func ListReleaseLinks(
 	}, nil
 }
 
+// GetEntityExternalLinkByID returns one Linear external link by id.
+func GetEntityExternalLinkByID(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (EntityExternalLinkSummary, error) {
+	result, err := entityExternalLink(ctx, graphqlClient, id)
+	if err != nil {
+		return EntityExternalLinkSummary{}, fmt.Errorf("get external link %s: %w", id, err)
+	}
+
+	return entityExternalLinkSummary(result.EntityExternalLink.EntityExternalLinkSummaryFields), nil
+}
+
 // SearchReleases returns Linear releases matching a term.
 func SearchReleases(ctx context.Context, graphqlClient graphql.Client, term string, limit int) (ReleaseList, error) {
 	result, err := releaseSearch(ctx, graphqlClient, stringPtr(term), intPtr(limit))

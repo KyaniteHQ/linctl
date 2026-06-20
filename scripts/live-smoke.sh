@@ -60,7 +60,11 @@ PY
   release_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("releases", []); print(items[0]["id"] if items else "")' <<<"$release_json")"
   if [[ -n "$release_id" ]]; then
     "$binary" release history "$release_id" --json --limit 5 >/dev/null
-    "$binary" release links "$release_id" --json --limit 5 >/dev/null
+    release_links_json="$("$binary" release links "$release_id" --json --limit 5)"
+    external_link_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("links", []); print(items[0]["id"] if items else "")' <<<"$release_links_json")"
+    if [[ -n "$external_link_id" ]]; then
+      "$binary" external-link get "$external_link_id" --json >/dev/null
+    fi
   fi
   "$binary" release-note list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null
