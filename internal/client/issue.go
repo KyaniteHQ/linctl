@@ -73,20 +73,20 @@ type IssueListFilters struct {
 
 // ListIssues returns issues across every visible Linear team for broad read-only inspection.
 func ListIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	issues, err := AllTeamIssues(ctx, graphqlClient, &limit, nil, boolPtr(true))
+	issuePage, err := issues(ctx, graphqlClient, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
+	summaries := make([]IssueSummary, 0, len(issuePage.Issues.Nodes))
+	for _, issue := range issuePage.Issues.Nodes {
 		summaries = append(summaries, allTeamIssueSummary(issue))
 	}
 
 	return IssueList{
 		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
+		HasNextPage: issuePage.Issues.PageInfo.HasNextPage,
+		EndCursor:   issuePage.Issues.PageInfo.EndCursor,
 	}, nil
 }
 
@@ -479,7 +479,7 @@ func GetIssueDetail(ctx context.Context, graphqlClient graphql.Client, id string
 	return detailIssue(issueResult.Issue), nil
 }
 
-func allTeamIssueSummary(issue AllTeamIssuesIssuesIssueConnectionNodesIssue) IssueSummary {
+func allTeamIssueSummary(issue issuesIssuesIssueConnectionNodesIssue) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 

@@ -1021,7 +1021,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Operation | Kind | Root fields | Status | Evidence |
 | --- | --- | --- | --- | --- |
-| `AllTeamIssues` | query | `issues` | implemented | `internal/client/generated.go` |
 | `CompletedWorkflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 | `CycleArchive` | mutation | `cycleArchive` | implemented | `internal/client/generated.go` |
 | `CycleCreate` | mutation | `cycleCreate` | implemented | `internal/client/generated.go` |
@@ -1071,6 +1070,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
+| `issues` | query | `issues` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |

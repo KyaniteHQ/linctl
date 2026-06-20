@@ -19,7 +19,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	// Given
 	endCursor := "cursor-1"
 	graphqlClient := fakeGraphQLClient{
-		"AllTeamIssues": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+		"issues": `{"issues":{"nodes":[` + issueJSON(issueFixture{
 			Identifier: "LIT-20",
 			Title:      "all-team issue",
 			StateID:    "todo",

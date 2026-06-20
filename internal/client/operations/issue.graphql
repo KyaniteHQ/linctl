@@ -1,4 +1,4 @@
-query AllTeamIssues($first: Int, $after: String, $includeArchived: Boolean) {
+query issues($first: Int, $after: String, $includeArchived: Boolean) {
   issues(first: $first, after: $after, includeArchived: $includeArchived) {
     nodes {
       ...IssueSummaryFields

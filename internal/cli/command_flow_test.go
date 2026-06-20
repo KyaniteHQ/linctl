@@ -986,7 +986,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue list has blockers filter", args: []string{"issue", "list", "--has-blockers"}, operation: "IssuesByTeamHasBlockers", contains: "list issues"},
 		{name: "issue list blocks filter", args: []string{"issue", "list", "--blocks"}, operation: "IssuesByTeamBlocks", contains: "list issues"},
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1"}, operation: "IssueBlockedIssues", contains: "list issues"},
-		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams"}, operation: "AllTeamIssues", contains: "list issues"},
+		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams"}, operation: "issues", contains: "list issues"},
 		{name: "issue search target resolve", args: []string{"issue", "search", "needle"}, operation: "Teams", contains: "resolve teams"},
 		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "IssueSearch", contains: "search issues"},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
@@ -1457,7 +1457,7 @@ func commandFlowDependencyIssueListPayload(operation string, fake commandFlowFak
 
 func commandFlowBroadIssueListPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
-	case "AllTeamIssues":
+	case "issues":
 		if fake.emptyIssueAllTeams {
 			return emptyCommandIssuesPayload(), true
 		}
