@@ -160,6 +160,13 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		SLAType:    "all",
 		RemovesSLA: false,
 	}
+	semanticSearchResult := client.SemanticSearchResultSummary{
+		Type:  "issue",
+		ID:    "issue-id",
+		Key:   "LIT-3",
+		Title: "Search result",
+		URL:   "https://linear.app/kyanite/issue/LIT-3",
+	}
 	customer := client.CustomerSummary{
 		ID:                   "customer-id",
 		Name:                 "Acme",
@@ -455,6 +462,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeNotificationSubscription(jsonCommand, &jsonOptions, notificationSubscription))
 	require.NoError(t, writeTriageResponsibility(jsonCommand, &jsonOptions, triageResponsibility))
 	require.NoError(t, writeTriageResponsibilityManualSelection(jsonCommand, &jsonOptions, triageManualSelection))
+	require.NoError(t, writeSemanticSearchResult(jsonCommand, &jsonOptions, semanticSearchResult))
 	require.NoError(t, writeReleasePipeline(jsonCommand, &jsonOptions, releasePipeline))
 	require.NoError(t, writeReleaseStage(jsonCommand, &jsonOptions, releaseStage))
 	require.NoError(t, writeRelease(jsonCommand, &jsonOptions, release))
@@ -466,6 +474,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
 	require.Contains(t, jsonOut.String(), `"body": "First update"`)
 	require.Contains(t, jsonOut.String(), `"name": "Launch milestone"`)
+	require.Contains(t, jsonOut.String(), `"key": "LIT-3"`)
 	require.Contains(t, jsonOut.String(), `"title": "Spec"`)
 	require.Contains(t, jsonOut.String(), `"color": "#ff0000"`)
 	require.Contains(t, jsonOut.String(), `"key": "LIT"`)

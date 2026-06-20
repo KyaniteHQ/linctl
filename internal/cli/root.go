@@ -106,6 +106,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addTimeScheduleCommand(ctx, command, options)
 	addTriageResponsibilityCommand(ctx, command, options)
 	addSLAConfigurationCommand(ctx, command, options)
+	addSemanticSearchCommand(ctx, command, options)
 	addTemplateCommand(ctx, command, options)
 	addInitiativeCommand(ctx, command, options)
 	addInitiativeRelationCommand(ctx, command, options)

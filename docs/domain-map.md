@@ -504,6 +504,25 @@ Command status:
 
 Only `sla-configuration list` is implemented in the current CLI. SLA rule changes remain part of team/admin workflow configuration and do not have a guarded write surface.
 
+## SemanticSearch
+
+Use the command name `semantic-search` for Linear's semantic search query. It searches visible issues, projects, initiatives, and documents and returns compact references only.
+
+Schema backing:
+
+- Types: `SemanticSearchPayload`, `SemanticSearchResult`, `SemanticSearchResultType`
+- Reads: `Query.semanticSearch`
+- Writes: no write operation exists
+- Relevant fields: `SemanticSearchResult.type`, `SemanticSearchResult.id`, and compact reference fields from `Issue`, `Project`, `Initiative`, and `Document`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `semantic-search` | `Query.semanticSearch` | Read-only |
+
+Only `semantic-search` is implemented in the current CLI. Results intentionally omit body/content snippets so the command stays a compact reference lookup.
+
 ## Template
 
 Use the schema name `Template` in code and docs. It is Linear's reusable issue, project, document, and release-note template entity.

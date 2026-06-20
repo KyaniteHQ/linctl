@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for Application, AgentActivity, AgentSkill, AuditEntry, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, TriageResponsibility, SLA configuration, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for Application, AgentActivity, AgentSkill, AuditEntry, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, SemanticSearch, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, TriageResponsibility, SLA configuration, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -71,6 +71,7 @@ linctl triage-responsibility list --json --limit 20
 linctl triage-responsibility get TRIAGE_RESPONSIBILITY_ID --json
 linctl triage-responsibility manual-selection TRIAGE_RESPONSIBILITY_ID --json
 linctl sla-configuration list TEAM_ID_OR_KEY --json
+linctl semantic-search QUERY --json --limit 20
 linctl release-pipeline list --json --limit 20
 linctl release-pipeline get RELEASE_PIPELINE_ID --json
 linctl release-pipeline releases RELEASE_PIPELINE_ID --json --limit 20

@@ -640,6 +640,7 @@ func commandImplemented(command string) bool {
 		"triage-responsibility get":              true,
 		"triage-responsibility manual-selection": true,
 		"sla-configuration list":                 true,
+		"semantic-search":                        true,
 		"release-pipeline list":                  true,
 		"release-pipeline get":                   true,
 		"release-pipeline releases":              true,

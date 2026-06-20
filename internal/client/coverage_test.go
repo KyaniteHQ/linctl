@@ -210,11 +210,18 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			notificationSubscriptionTargetJSON("TeamNotificationSubscription", "team", `{"id":"team-id","key":"LIT","name":"linctl"}`, true, false),
 			notificationSubscriptionTargetJSON("UserNotificationSubscription", "user", `{"id":"target-user-id","displayName":"Ada"}`, false, true),
 		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"notificationSubscription":               `{"notificationSubscription":` + notificationSubscriptionJSON() + `}`,
-		"triageResponsibilities":                 `{"triageResponsibilities":{"nodes":[` + triageResponsibilityJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"triageResponsibility":                   `{"triageResponsibility":` + triageResponsibilityJSON() + `}`,
-		"triageResponsibility_manualSelection":   `{"triageResponsibility":{"id":"triage-responsibility-id","manualSelection":{"userIds":["user-id","other-user-id"]}}}`,
-		"slaConfigurations":                      `{"slaConfigurations":[` + slaConfigurationJSON() + `]}`,
+		"notificationSubscription":             `{"notificationSubscription":` + notificationSubscriptionJSON() + `}`,
+		"triageResponsibilities":               `{"triageResponsibilities":{"nodes":[` + triageResponsibilityJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"triageResponsibility":                 `{"triageResponsibility":` + triageResponsibilityJSON() + `}`,
+		"triageResponsibility_manualSelection": `{"triageResponsibility":{"id":"triage-responsibility-id","manualSelection":{"userIds":["user-id","other-user-id"]}}}`,
+		"slaConfigurations":                    `{"slaConfigurations":[` + slaConfigurationJSON() + `]}`,
+		"semanticSearch": `{"semanticSearch":{"results":[` + strings.Join([]string{
+			semanticSearchResultJSON("issue"),
+			semanticSearchResultJSON("project"),
+			semanticSearchResultJSON("initiative"),
+			semanticSearchResultJSON("document"),
+			semanticSearchResultJSON("unknown"),
+		}, ",") + `]}}`,
 		"releasePipelines":                       `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releasePipeline":                        `{"releasePipeline":` + releasePipelineJSON() + `}`,
 		"releasePipeline_releases":               `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
@@ -388,6 +395,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	)
 	require.NoError(t, err)
 	slaConfigurations, err := ListSLAConfigurations(context.Background(), graphqlClient, "team-id")
+	require.NoError(t, err)
+	semanticSearch, err := SearchSemantic(context.Background(), graphqlClient, "agent search", 2)
 	require.NoError(t, err)
 	releasePipelines, err := ListReleasePipelines(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -674,6 +683,19 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.InDelta(t, 3600000, slaConfigurations.SLAConfigurations[0].SLA, 0)
 	require.Equal(t, "all", slaConfigurations.SLAConfigurations[0].SLAType)
 	require.False(t, slaConfigurations.SLAConfigurations[0].RemovesSLA)
+	require.Len(t, semanticSearch.Results, 5)
+	require.Equal(t, "issue", semanticSearch.Results[0].Type)
+	require.Equal(t, "issue-id", semanticSearch.Results[0].ID)
+	require.Equal(t, "LIT-3", semanticSearch.Results[0].Key)
+	require.Equal(t, "Search result", semanticSearch.Results[0].Title)
+	require.Equal(t, "project", semanticSearch.Results[1].Type)
+	require.Equal(t, "Search project", semanticSearch.Results[1].Title)
+	require.Equal(t, "initiative", semanticSearch.Results[2].Type)
+	require.Equal(t, "Search initiative", semanticSearch.Results[2].Title)
+	require.Equal(t, "document", semanticSearch.Results[3].Type)
+	require.Equal(t, "Search document", semanticSearch.Results[3].Title)
+	require.Equal(t, "unknown-id", semanticSearch.Results[4].ID)
+	require.Empty(t, semanticSearch.Results[4].Title)
 	require.True(t, releasePipelines.HasNextPage)
 	require.Equal(t, &endCursor, releasePipelines.EndCursor)
 	require.Equal(t, "Production", releasePipelines.ReleasePipelines[0].Name)
@@ -1574,6 +1596,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListSLAConfigurations(context.Background(), graphqlClient, "team-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list SLA configurations team-id")
+
+		_, err = SearchSemantic(context.Background(), graphqlClient, "agent search", 2)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "semantic search")
 
 		_, err = ListReleasePipelines(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -2586,6 +2612,56 @@ func slaConfigurationJSON() string {
 		"slaType":"all",
 		"removesSla":false
 	}`
+}
+
+func semanticSearchResultJSON(resultType string) string {
+	switch resultType {
+	case "issue":
+		return `{
+			"id":"issue-id",
+			"type":"issue",
+			"issue":{"id":"issue-id","identifier":"LIT-3","title":"Search result","url":"https://linear.app/kyanite/issue/LIT-3"},
+			"project":null,
+			"initiative":null,
+			"document":null
+		}`
+	case "project":
+		return `{
+			"id":"project-id",
+			"type":"project",
+			"issue":null,
+			"project":{"id":"project-id","name":"Search project","url":"https://linear.app/kyanite/project/search-project"},
+			"initiative":null,
+			"document":null
+		}`
+	case "initiative":
+		return `{
+			"id":"initiative-id",
+			"type":"initiative",
+			"issue":null,
+			"project":null,
+			"initiative":{"id":"initiative-id","name":"Search initiative","url":"https://linear.app/kyanite/initiative/search-initiative"},
+			"document":null
+		}`
+	case "document":
+		return `{
+			"id":"document-id",
+			"type":"document",
+			"issue":null,
+			"project":null,
+			"initiative":null,
+			"document":{"id":"document-id","title":"Search document","url":"https://linear.app/kyanite/document/search-document"}
+		}`
+	default:
+		return `{
+			"id":"unknown-id",
+			"type":"issue",
+			"issue":null,
+			"project":null,
+			"initiative":null,
+			"document":null
+		}`
+	}
 }
 
 func releasePipelineJSON() string {

@@ -48,6 +48,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "triage responsibility get", args: []string{"triage-responsibility", "get", "triage-responsibility-id"}, contains: "triage-responsibility-id team LIT action notify current Omer"},
 		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, contains: "triage-responsibility-id manual users user-id,other-user-id"},
 		{name: "SLA configuration list", args: []string{"sla-configuration", "list", "team-id"}, contains: "sla-configuration-id First response sla 3600000 type all removes false"},
+		{name: "semantic search", args: []string{"semantic-search", "agent search", "--limit", "2"}, contains: "issue issue-id LIT-3 Search result", fake: commandFlowFakeClient{expectedSemanticSearchQuery: "agent search"}},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
@@ -529,6 +530,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"triage-responsibility", "get", "triage-responsibility-id"},
 			{"triage-responsibility", "manual-selection", "triage-responsibility-id"},
 			{"organization", "exists", "kyanite"},
+			{"semantic-search", "agent search"},
 			{"rate-limit", "status"},
 			{"release", "list"},
 			{"release", "search", "mobile"},
@@ -722,6 +724,31 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		require.Contains(t, err.Error(), `sort field "missing" is not present`)
 	})
 
+	t.Run("semantic search returns writer errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(commandFailingWriter{})
+		command.SetArgs([]string{"semantic-search", "agent search"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("semantic search reports sort errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--sort", "missing", "semantic-search", "agent search"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	})
+
 	t.Run("document list returns writer errors", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{})
 		defer restore()
@@ -783,6 +810,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,title,shared", "agent-skill", "list", "--limit", "1"},
 		{"--json", "agent-skill", "get", "agent-skill-id"},
 		{"--json", "--fields", "type,description", "audit-entry", "types"},
+		{"--json", "--fields", "type,id,key,title", "semantic-search", "agent search", "--limit", "2"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1036,6 +1064,44 @@ func Test_CommandFlows_fail_on_empty_sla_configurations_when_fail_on_empty_flag_
 	require.Contains(t, err.Error(), "empty result")
 }
 
+func Test_CommandFlows_fail_on_empty_semantic_search_when_fail_on_empty_flag_is_set(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{emptySemanticSearch: true})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"--fail-on-empty", "semantic-search", "agent search"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "empty result")
+}
+
+func Test_CommandFlows_semantic_search_honors_id_only_and_quiet(t *testing.T) {
+	tests := []struct {
+		name   string
+		args   []string
+		output string
+	}{
+		{name: "id only", args: []string{"--id-only", "semantic-search", "agent search"}, output: "issue-id\n"},
+		{name: "quiet", args: []string{"--quiet", "semantic-search", "agent search"}, output: ""},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Equal(t, test.output, output.String())
+		})
+	}
+}
+
 func Test_CommandFlows_get_project_milestone(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
@@ -1219,6 +1285,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "triage responsibility get", args: []string{"triage-responsibility", "get", "triage-responsibility-id"}, operation: "triageResponsibility", contains: "get triage responsibility triage-responsibility-id"},
 		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, operation: "triageResponsibility_manualSelection", contains: "get triage responsibility manual selection triage-responsibility-id"},
 		{name: "SLA configuration list", args: []string{"sla-configuration", "list", "team-id"}, operation: "slaConfigurations", contains: "list SLA configurations team-id"},
+		{name: "semantic search", args: []string{"semantic-search", "agent search"}, operation: "semanticSearch", contains: "semantic search"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list"}, operation: "releasePipelines", contains: "list release pipelines"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id"}, operation: "releasePipeline_releases", contains: "list release pipeline releases release-pipeline-id"},
@@ -1428,11 +1495,13 @@ type commandFlowFakeClient struct {
 	expectedIssueDeps           string
 	expectedSearchQuery         string
 	expectedReleaseSearchTerm   string
+	expectedSemanticSearchQuery string
 	emptyProjectList            bool
 	emptyProjectMembers         bool
 	emptyProjectUpdates         bool
 	emptyProjectMilestones      bool
 	emptySLAConfigurations      bool
+	emptySemanticSearch         bool
 	expectedCommentBody         string
 	expectedCommentParentID     string
 	expectedCreateDescription   string
@@ -1517,6 +1586,9 @@ func (client commandFlowFakeClient) requireExpectedSearchVariables(request *grap
 	}
 	if client.expectedReleaseSearchTerm != "" && request.OpName == "releaseSearch" {
 		return requireRequestVariable(request, []string{"term"}, client.expectedReleaseSearchTerm, "release search term")
+	}
+	if client.expectedSemanticSearchQuery != "" && request.OpName == "semanticSearch" {
+		return requireRequestVariable(request, []string{"query"}, client.expectedSemanticSearchQuery, "semantic search query")
 	}
 	if client.expectedIssueDeps != "" && request.OpName == "IssueDependencies" {
 		return requireRequestVariable(request, []string{"id"}, client.expectedIssueDeps, "issue deps id")
@@ -1787,6 +1859,11 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 			return `{"slaConfigurations":[]}`, true
 		}
 		return `{"slaConfigurations":[` + commandSLAConfigurationJSON() + `]}`, true
+	case "semanticSearch":
+		if fake.emptySemanticSearch {
+			return `{"semanticSearch":{"results":[]}}`, true
+		}
+		return `{"semanticSearch":{"results":[` + commandSemanticSearchResultJSON() + `]}}`, true
 	case "releasePipelines":
 		return `{"releasePipelines":{"nodes":[` + commandReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releasePipeline":
@@ -2626,6 +2703,17 @@ func commandSLAConfigurationJSON() string {
 		"sla":3600000,
 		"slaType":"all",
 		"removesSla":false
+	}`
+}
+
+func commandSemanticSearchResultJSON() string {
+	return `{
+		"id":"issue-id",
+		"type":"issue",
+		"issue":{"id":"issue-id","identifier":"LIT-3","title":"Search result","url":"https://linear.app/kyanite/issue/LIT-3"},
+		"project":null,
+		"initiative":null,
+		"document":null
 	}`
 }
 

@@ -1,0 +1,33 @@
+query semanticSearch($query: String!, $maxResults: Int, $includeArchived: Boolean) {
+  semanticSearch(query: $query, maxResults: $maxResults, includeArchived: $includeArchived) {
+    results {
+      ...SemanticSearchResultSummaryFields
+    }
+  }
+}
+
+fragment SemanticSearchResultSummaryFields on SemanticSearchResult {
+  id
+  type
+  issue {
+    id
+    identifier
+    title
+    url
+  }
+  project {
+    id
+    name
+    url
+  }
+  initiative {
+    id
+    name
+    url
+  }
+  document {
+    id
+    title
+    url
+  }
+}

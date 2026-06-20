@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 92 | 458 |
-| Upstream Query root fields | 158 | 80 | 158 |
+| Upstream SDK root methods | 458 | 93 | 458 |
+| Upstream Query root fields | 158 | 81 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 147 | 147 | 147 |
-| Domain-map commands | 238 | 127 | 238 |
+| Local generated Go operations | 148 | 148 | 148 |
+| Domain-map commands | 239 | 128 | 239 |
 
 ## Upstream SDK Root Methods
 
@@ -379,7 +379,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `searchDocuments` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `searchIssues` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `searchProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `semanticSearch` | method | safe_candidate | read operation may fit future CLI coverage |
+| `semanticSearch` | method | implemented | local operation or command exists |
 | `slaConfigurations` | method | implemented | local operation or command exists |
 | `ssoUrlFromEmail` | method | safe_candidate | read operation may fit future CLI coverage |
 | `suspendUser` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -623,7 +623,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `searchDocuments` | `DocumentSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `searchIssues` | `IssueSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `searchProjects` | `ProjectSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `semanticSearch` | `SemanticSearchPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `semanticSearch` | `SemanticSearchPayload!` | implemented | root field used by local GraphQL operation |
 | `slaConfigurations` | `[SlaConfiguration!]!` | implemented | root field used by local GraphQL operation |
 | `ssoUrlFromEmail` | `SsoUrlFromEmailResponse!` | safe_candidate | read operation may fit future CLI coverage |
 | `team` | `Team!` | implemented | root field used by local GraphQL operation |
@@ -1139,6 +1139,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releases` | query | `releases` | implemented | `internal/client/generated.go` |
 | `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
+| `semanticSearch` | query | `semanticSearch` | implemented | `internal/client/generated.go` |
 | `slaConfigurations` | query | `slaConfigurations` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
@@ -1314,6 +1315,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | TriageResponsibility | `triage-responsibility update` | `Mutation.triageResponsibilityUpdate` | Blocked: update must resolve and compare the owning team before mutation | accepted_gap | planned in `docs/domain-map.md` |
 | TriageResponsibility | `triage-responsibility delete` | `Mutation.triageResponsibilityDelete` | Blocked: destructive team triage configuration command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | SLA Configuration | `sla-configuration list` | `Query.slaConfigurations` | Read-only | implemented | `linctl --help` / public CLI tests |
+| SemanticSearch | `semantic-search` | `Query.semanticSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |

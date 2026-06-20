@@ -13883,6 +13883,175 @@ var AllSLADayCountType = []SLADayCountType{
 	SLADayCountTypeOnlybusinessdays,
 }
 
+// SemanticSearchResultSummaryFields includes the GraphQL fields of SemanticSearchResult requested by the fragment SemanticSearchResultSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A reference to an entity returned by semantic search, containing its type and
+// ID. Resolve the specific entity using the type-specific field resolvers (issue,
+// project, initiative, document).
+type SemanticSearchResultSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The type of the semantic search result.
+	Type SemanticSearchResultType `json:"type"`
+	// The issue entity, if this search result is of type Issue. Null for other result types.
+	Issue *SemanticSearchResultSummaryFieldsIssue `json:"issue"`
+	// The project entity, if this search result is of type Project. Null for other result types.
+	Project *SemanticSearchResultSummaryFieldsProject `json:"project"`
+	// The initiative entity, if this search result is of type Initiative. Null for other result types.
+	Initiative *SemanticSearchResultSummaryFieldsInitiative `json:"initiative"`
+	// The document entity, if this search result is of type Document. Null for other result types.
+	Document *SemanticSearchResultSummaryFieldsDocument `json:"document"`
+}
+
+// GetId returns SemanticSearchResultSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFields) GetId() string { return v.Id }
+
+// GetType returns SemanticSearchResultSummaryFields.Type, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFields) GetType() SemanticSearchResultType { return v.Type }
+
+// GetIssue returns SemanticSearchResultSummaryFields.Issue, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFields) GetIssue() *SemanticSearchResultSummaryFieldsIssue {
+	return v.Issue
+}
+
+// GetProject returns SemanticSearchResultSummaryFields.Project, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFields) GetProject() *SemanticSearchResultSummaryFieldsProject {
+	return v.Project
+}
+
+// GetInitiative returns SemanticSearchResultSummaryFields.Initiative, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFields) GetInitiative() *SemanticSearchResultSummaryFieldsInitiative {
+	return v.Initiative
+}
+
+// GetDocument returns SemanticSearchResultSummaryFields.Document, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFields) GetDocument() *SemanticSearchResultSummaryFieldsDocument {
+	return v.Document
+}
+
+// SemanticSearchResultSummaryFieldsDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type SemanticSearchResultSummaryFieldsDocument struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The title of the document. An empty string indicates an untitled document.
+	Title string `json:"title"`
+	// The canonical url for the document.
+	Url string `json:"url"`
+}
+
+// GetId returns SemanticSearchResultSummaryFieldsDocument.Id, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsDocument) GetId() string { return v.Id }
+
+// GetTitle returns SemanticSearchResultSummaryFieldsDocument.Title, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsDocument) GetTitle() string { return v.Title }
+
+// GetUrl returns SemanticSearchResultSummaryFieldsDocument.Url, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsDocument) GetUrl() string { return v.Url }
+
+// SemanticSearchResultSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business
+// goal. Initiatives can contain multiple projects, have their own status updates
+// and health tracking, and can be organized hierarchically with parent-child relationships.
+type SemanticSearchResultSummaryFieldsInitiative struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the initiative.
+	Name string `json:"name"`
+	// Initiative URL.
+	Url string `json:"url"`
+}
+
+// GetId returns SemanticSearchResultSummaryFieldsInitiative.Id, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsInitiative) GetId() string { return v.Id }
+
+// GetName returns SemanticSearchResultSummaryFieldsInitiative.Name, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsInitiative) GetName() string { return v.Name }
+
+// GetUrl returns SemanticSearchResultSummaryFieldsInitiative.Url, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsInitiative) GetUrl() string { return v.Url }
+
+// SemanticSearchResultSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type SemanticSearchResultSummaryFieldsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// The issue's title. This is the primary human-readable summary of the work item.
+	Title string `json:"title"`
+	// Issue URL.
+	Url string `json:"url"`
+}
+
+// GetId returns SemanticSearchResultSummaryFieldsIssue.Id, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns SemanticSearchResultSummaryFieldsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetTitle returns SemanticSearchResultSummaryFieldsIssue.Title, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsIssue) GetTitle() string { return v.Title }
+
+// GetUrl returns SemanticSearchResultSummaryFieldsIssue.Url, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsIssue) GetUrl() string { return v.Url }
+
+// SemanticSearchResultSummaryFieldsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type SemanticSearchResultSummaryFieldsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+	// Project URL.
+	Url string `json:"url"`
+}
+
+// GetId returns SemanticSearchResultSummaryFieldsProject.Id, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsProject) GetId() string { return v.Id }
+
+// GetName returns SemanticSearchResultSummaryFieldsProject.Name, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsProject) GetName() string { return v.Name }
+
+// GetUrl returns SemanticSearchResultSummaryFieldsProject.Url, and is useful for accessing the field via an interface.
+func (v *SemanticSearchResultSummaryFieldsProject) GetUrl() string { return v.Url }
+
+// The type of the semantic search result.
+type SemanticSearchResultType string
+
+const (
+	SemanticSearchResultTypeIssue      SemanticSearchResultType = "issue"
+	SemanticSearchResultTypeProject    SemanticSearchResultType = "project"
+	SemanticSearchResultTypeInitiative SemanticSearchResultType = "initiative"
+	SemanticSearchResultTypeDocument   SemanticSearchResultType = "document"
+)
+
+var AllSemanticSearchResultType = []SemanticSearchResultType{
+	SemanticSearchResultTypeIssue,
+	SemanticSearchResultTypeProject,
+	SemanticSearchResultTypeInitiative,
+	SemanticSearchResultTypeDocument,
+}
+
 // SlaConfigurationSummaryFields includes the GraphQL fields of SlaConfiguration requested by the fragment SlaConfigurationSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -16720,6 +16889,22 @@ func (v *__roadmapsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __roadmapsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__roadmapsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __semanticSearchInput is used internally by genqlient
+type __semanticSearchInput struct {
+	Query           string `json:"query"`
+	MaxResults      *int   `json:"maxResults"`
+	IncludeArchived *bool  `json:"includeArchived"`
+}
+
+// GetQuery returns __semanticSearchInput.Query, and is useful for accessing the field via an interface.
+func (v *__semanticSearchInput) GetQuery() string { return v.Query }
+
+// GetMaxResults returns __semanticSearchInput.MaxResults, and is useful for accessing the field via an interface.
+func (v *__semanticSearchInput) GetMaxResults() *int { return v.MaxResults }
+
+// GetIncludeArchived returns __semanticSearchInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__semanticSearchInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __slaConfigurationsInput is used internally by genqlient
 type __slaConfigurationsInput struct {
@@ -37761,6 +37946,133 @@ func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetHasNextPage() bool { retu
 // GetEndCursor returns roadmapsRoadmapsRoadmapConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// semanticSearchResponse is returned by semanticSearch on success.
+type semanticSearchResponse struct {
+	// Search for issues, projects, initiatives, and documents using natural
+	// language. Uses vector-based semantic search with optional full-text search and
+	// reranking. Results can be filtered by type and by entity-specific filters.
+	// Rate-limited to 30 requests per minute.
+	SemanticSearch semanticSearchSemanticSearchSemanticSearchPayload `json:"semanticSearch"`
+}
+
+// GetSemanticSearch returns semanticSearchResponse.SemanticSearch, and is useful for accessing the field via an interface.
+func (v *semanticSearchResponse) GetSemanticSearch() semanticSearchSemanticSearchSemanticSearchPayload {
+	return v.SemanticSearch
+}
+
+// semanticSearchSemanticSearchSemanticSearchPayload includes the requested fields of the GraphQL type SemanticSearchPayload.
+// The GraphQL type's documentation follows.
+//
+// The payload returned by the semantic search query, containing the list of matching results.
+type semanticSearchSemanticSearchSemanticSearchPayload struct {
+	// The list of matching search results, ordered by relevance score.
+	Results []semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult `json:"results"`
+}
+
+// GetResults returns semanticSearchSemanticSearchSemanticSearchPayload.Results, and is useful for accessing the field via an interface.
+func (v *semanticSearchSemanticSearchSemanticSearchPayload) GetResults() []semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult {
+	return v.Results
+}
+
+// semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult includes the requested fields of the GraphQL type SemanticSearchResult.
+// The GraphQL type's documentation follows.
+//
+// A reference to an entity returned by semantic search, containing its type and
+// ID. Resolve the specific entity using the type-specific field resolvers (issue,
+// project, initiative, document).
+type semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult struct {
+	SemanticSearchResultSummaryFields `json:"-"`
+}
+
+// GetId returns semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult.Id, and is useful for accessing the field via an interface.
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) GetId() string {
+	return v.SemanticSearchResultSummaryFields.Id
+}
+
+// GetType returns semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult.Type, and is useful for accessing the field via an interface.
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) GetType() SemanticSearchResultType {
+	return v.SemanticSearchResultSummaryFields.Type
+}
+
+// GetIssue returns semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult.Issue, and is useful for accessing the field via an interface.
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) GetIssue() *SemanticSearchResultSummaryFieldsIssue {
+	return v.SemanticSearchResultSummaryFields.Issue
+}
+
+// GetProject returns semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult.Project, and is useful for accessing the field via an interface.
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) GetProject() *SemanticSearchResultSummaryFieldsProject {
+	return v.SemanticSearchResultSummaryFields.Project
+}
+
+// GetInitiative returns semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult.Initiative, and is useful for accessing the field via an interface.
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) GetInitiative() *SemanticSearchResultSummaryFieldsInitiative {
+	return v.SemanticSearchResultSummaryFields.Initiative
+}
+
+// GetDocument returns semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult.Document, and is useful for accessing the field via an interface.
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) GetDocument() *SemanticSearchResultSummaryFieldsDocument {
+	return v.SemanticSearchResultSummaryFields.Document
+}
+
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.SemanticSearchResultSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalsemanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult struct {
+	Id string `json:"id"`
+
+	Type SemanticSearchResultType `json:"type"`
+
+	Issue *SemanticSearchResultSummaryFieldsIssue `json:"issue"`
+
+	Project *SemanticSearchResultSummaryFieldsProject `json:"project"`
+
+	Initiative *SemanticSearchResultSummaryFieldsInitiative `json:"initiative"`
+
+	Document *SemanticSearchResultSummaryFieldsDocument `json:"document"`
+}
+
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult) __premarshalJSON() (*__premarshalsemanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult, error) {
+	var retval __premarshalsemanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult
+
+	retval.Id = v.SemanticSearchResultSummaryFields.Id
+	retval.Type = v.SemanticSearchResultSummaryFields.Type
+	retval.Issue = v.SemanticSearchResultSummaryFields.Issue
+	retval.Project = v.SemanticSearchResultSummaryFields.Project
+	retval.Initiative = v.SemanticSearchResultSummaryFields.Initiative
+	retval.Document = v.SemanticSearchResultSummaryFields.Document
+	return &retval, nil
+}
+
 // slaConfigurationsResponse is returned by slaConfigurations on success.
 type slaConfigurationsResponse struct {
 	// Active SLA configurations that can apply to the requested team.
@@ -46990,6 +47302,71 @@ func roadmaps(
 	}
 
 	data_ = &roadmapsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by semanticSearch.
+const semanticSearch_Operation = `
+query semanticSearch ($query: String!, $maxResults: Int, $includeArchived: Boolean) {
+	semanticSearch(query: $query, maxResults: $maxResults, includeArchived: $includeArchived) {
+		results {
+			... SemanticSearchResultSummaryFields
+		}
+	}
+}
+fragment SemanticSearchResultSummaryFields on SemanticSearchResult {
+	id
+	type
+	issue {
+		id
+		identifier
+		title
+		url
+	}
+	project {
+		id
+		name
+		url
+	}
+	initiative {
+		id
+		name
+		url
+	}
+	document {
+		id
+		title
+		url
+	}
+}
+`
+
+func semanticSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	query string,
+	maxResults *int,
+	includeArchived *bool,
+) (data_ *semanticSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "semanticSearch",
+		Query:  semanticSearch_Operation,
+		Variables: &__semanticSearchInput{
+			Query:           query,
+			MaxResults:      maxResults,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &semanticSearchResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
