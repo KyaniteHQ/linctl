@@ -12,7 +12,7 @@ query Projects($teamId: String!, $first: Int, $after: String, $includeArchived: 
   }
 }
 
-query ProjectByID($id: String!) {
+query project($id: String!) {
   project(id: $id) {
     ...ProjectSummaryFields
   }

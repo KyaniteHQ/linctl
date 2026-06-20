@@ -14,7 +14,7 @@ query ProjectMilestones($id: String!, $first: Int, $after: String, $includeArchi
   }
 }
 
-query ProjectMilestoneByID($id: String!) {
+query projectMilestone($id: String!) {
   projectMilestone(id: $id) {
     ...ProjectMilestoneSummaryFields
     project {

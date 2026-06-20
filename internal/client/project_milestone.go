@@ -133,7 +133,7 @@ func GetProjectMilestoneDetail(
 	graphqlClient graphql.Client,
 	id string,
 ) (ProjectMilestoneDetail, error) {
-	milestone, err := ProjectMilestoneByID(ctx, graphqlClient, id)
+	milestone, err := projectMilestone(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectMilestoneDetail{}, fmt.Errorf("get project milestone %s: %w", id, err)
 	}

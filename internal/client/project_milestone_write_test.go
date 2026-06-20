@@ -12,7 +12,7 @@ import (
 
 func Test_CreateProjectMilestone_returns_created_milestone_when_target_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"ProjectByID": `{"project":` + projectJSON(projectFixture{
+		"project": `{"project":` + projectJSON(projectFixture{
 			ID:     "project-id",
 			Name:   "fixture",
 			Status: "Backlog",
@@ -41,7 +41,7 @@ func Test_CreateProjectMilestone_returns_created_milestone_when_target_matches(t
 
 func Test_UpdateProjectMilestone_returns_updated_milestone_when_target_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"ProjectMilestoneByID": `{"projectMilestone":` +
+		"projectMilestone": `{"projectMilestone":` +
 			projectMilestoneJSON("Launch milestone", "next", "project-id") + `}`,
 		"ProjectMilestoneUpdate": `{"projectMilestoneUpdate":{"success":true,"projectMilestone":` +
 			projectMilestoneJSON("Updated milestone", "done", "project-id") + `}}`,
@@ -66,7 +66,7 @@ func Test_UpdateProjectMilestone_returns_updated_milestone_when_target_matches(t
 
 func Test_UpdateProjectMilestone_refuses_when_pinned_project_differs(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"ProjectMilestoneByID": `{"projectMilestone":` +
+		"projectMilestone": `{"projectMilestone":` +
 			projectMilestoneJSON("Wrong project milestone", "next", "other-project") + `}`,
 	})
 
@@ -86,7 +86,7 @@ func Test_UpdateProjectMilestone_refuses_when_pinned_project_differs(t *testing.
 
 func Test_UpdateProjectMilestone_refuses_when_project_team_differs(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"ProjectMilestoneByID": `{"projectMilestone":` +
+		"projectMilestone": `{"projectMilestone":` +
 			projectMilestoneJSONWithTeam("Wrong team milestone", "next", "other-project", "other-team", "OTHER") + `}`,
 	})
 

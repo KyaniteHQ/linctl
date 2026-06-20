@@ -108,12 +108,12 @@ func ListProjectsByTeam(
 
 // GetProjectByID returns a project by Linear id or slug.
 func GetProjectByID(ctx context.Context, graphqlClient graphql.Client, id string) (ProjectSummary, error) {
-	project, err := ProjectByID(ctx, graphqlClient, id)
+	projectResult, err := project(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectSummary{}, fmt.Errorf("get project %s: %w", id, err)
 	}
 
-	return projectSummaryFromFields(project.Project.ProjectSummaryFields), nil
+	return projectSummaryFromFields(projectResult.Project.ProjectSummaryFields), nil
 }
 
 // ListProjectMembers returns members for one project.

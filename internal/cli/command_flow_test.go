@@ -1003,13 +1003,13 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, operation: "IssueClose", contains: "close issue LIT-1"},
 		{name: "project list target resolve", args: []string{"project", "list"}, operation: "Teams", contains: "resolve teams"},
 		{name: "project list", args: []string{"project", "list"}, operation: "Projects", contains: "list projects"},
-		{name: "project get", args: []string{"project", "get", "project-id"}, operation: "ProjectByID", contains: "get project project-id"},
+		{name: "project get", args: []string{"project", "get", "project-id"}, operation: "project", contains: "get project project-id"},
 		{name: "project members", args: []string{"project", "members", "project-id"}, operation: "ProjectMembers", contains: "list project members project-id"},
 		{name: "project updates", args: []string{"project", "updates", "project-id"}, operation: "ProjectUpdates", contains: "list project updates project-id"},
 		{name: "project update list", args: []string{"project-update", "list"}, operation: "projectUpdates", contains: "list project updates"},
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, operation: "projectUpdate", contains: "get project update project-update-id"},
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id"}, operation: "ProjectMilestones", contains: "list project milestones project-id"},
-		{name: "project milestone get", args: []string{"project-milestone", "get", "project-milestone-id"}, operation: "ProjectMilestoneByID", contains: "get project milestone project-milestone-id"},
+		{name: "project milestone get", args: []string{"project-milestone", "get", "project-milestone-id"}, operation: "projectMilestone", contains: "get project milestone project-milestone-id"},
 		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, operation: "ProjectMilestoneCreate", contains: "create project milestone"},
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, operation: "ProjectMilestoneUpdate", contains: "update project milestone project-milestone-id"},
 		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, operation: "ProjectCreate", contains: "create project"},
@@ -1536,7 +1536,7 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 			return `{"team":{"projects":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"team":{"projects":{"nodes":[` + commandProjectJSON("Listed project", "Backlog", "backlog") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
-	case "ProjectByID":
+	case "project":
 		return `{"project":` + commandProjectJSON("Detail project", "Backlog", "backlog") + `}`, true
 	case "ProjectMembers":
 		if fake.emptyProjectMembers {
@@ -1560,7 +1560,7 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 			return `{"project":{"id":"project-id","name":"Detail project","projectMilestones":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"project":{"id":"project-id","name":"Detail project","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
-	case "ProjectMilestoneByID":
+	case "projectMilestone":
 		return `{"projectMilestone":` + commandProjectMilestoneJSON("Launch milestone", "next") + `}`, true
 	default:
 		return "", false

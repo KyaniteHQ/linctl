@@ -1053,10 +1053,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `NextIssuesByTeam` | query | `issues` | implemented | `internal/client/generated.go` |
 | `Organization` | query | `organization` | implemented | `internal/client/generated.go` |
 | `ProjectArchive` | mutation | `projectArchive` | implemented | `internal/client/generated.go` |
-| `ProjectByID` | query | `project` | implemented | `internal/client/generated.go` |
 | `ProjectCreate` | mutation | `projectCreate` | implemented | `internal/client/generated.go` |
 | `ProjectMembers` | query | `project` | implemented | `internal/client/generated.go` |
-| `ProjectMilestoneByID` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | implemented | `internal/client/generated.go` |
 | `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | implemented | `internal/client/generated.go` |
 | `ProjectMilestones` | query | `project` | implemented | `internal/client/generated.go` |
@@ -1073,6 +1071,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
+| `project` | query | `project` | implemented | `internal/client/generated.go` |
+| `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |

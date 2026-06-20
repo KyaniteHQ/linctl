@@ -34,7 +34,7 @@ func Test_CreateProject_returns_created_project_when_target_matches(t *testing.T
 func Test_UpdateProject_refuses_when_pinned_project_differs(t *testing.T) {
 	// Given
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"ProjectByID": `{"project":` + projectJSON(projectFixture{
+		"project": `{"project":` + projectJSON(projectFixture{
 			ID:     "other-project",
 			Name:   "other",
 			Status: "Backlog",
