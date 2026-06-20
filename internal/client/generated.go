@@ -14826,6 +14826,180 @@ type TargetProjectResponse struct {
 // GetProject returns TargetProjectResponse.Project, and is useful for accessing the field via an interface.
 func (v *TargetProjectResponse) GetProject() TargetProjectProject { return v.Project }
 
+// TeamMembershipSummaryFields includes the GraphQL fields of TeamMembership requested by the fragment TeamMembershipSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A join entity that defines a user's membership in a team. Each membership record
+// links a user to a team and tracks whether the user is a team owner. Users can be
+// members of multiple teams, and their memberships determine which teams' issues
+// and resources they can access.
+type TeamMembershipSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// Whether the user is an owner of the team. Team owners have elevated
+	// permissions for managing team settings, members, and resources.
+	Owner bool `json:"owner"`
+	// The sort order of this team in the user's personal team list. Lower values appear first.
+	SortOrder float64 `json:"sortOrder"`
+	// The user that the membership is associated with.
+	User TeamMembershipSummaryFieldsUser `json:"user"`
+	// The team that the membership is associated with.
+	Team TeamMembershipSummaryFieldsTeam `json:"team"`
+}
+
+// GetId returns TeamMembershipSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns TeamMembershipSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns TeamMembershipSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns TeamMembershipSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetOwner returns TeamMembershipSummaryFields.Owner, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetOwner() bool { return v.Owner }
+
+// GetSortOrder returns TeamMembershipSummaryFields.SortOrder, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetSortOrder() float64 { return v.SortOrder }
+
+// GetUser returns TeamMembershipSummaryFields.User, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetUser() TeamMembershipSummaryFieldsUser { return v.User }
+
+// GetTeam returns TeamMembershipSummaryFields.Team, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFields) GetTeam() TeamMembershipSummaryFieldsTeam { return v.Team }
+
+// TeamMembershipSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TeamMembershipSummaryFieldsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns TeamMembershipSummaryFieldsTeam.Id, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsTeam) GetId() string { return v.Id }
+
+// GetKey returns TeamMembershipSummaryFieldsTeam.Key, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsTeam) GetKey() string { return v.Key }
+
+// GetName returns TeamMembershipSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsTeam) GetName() string { return v.Name }
+
+// TeamMembershipSummaryFieldsUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type TeamMembershipSummaryFieldsUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns TeamMembershipSummaryFieldsUser.Id, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsUser) GetId() string { return v.UserSummaryFields.Id }
+
+// GetName returns TeamMembershipSummaryFieldsUser.Name, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsUser) GetName() string { return v.UserSummaryFields.Name }
+
+// GetDisplayName returns TeamMembershipSummaryFieldsUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsUser) GetDisplayName() string {
+	return v.UserSummaryFields.DisplayName
+}
+
+// GetEmail returns TeamMembershipSummaryFieldsUser.Email, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsUser) GetEmail() string { return v.UserSummaryFields.Email }
+
+// GetActive returns TeamMembershipSummaryFieldsUser.Active, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsUser) GetActive() bool { return v.UserSummaryFields.Active }
+
+// GetGuest returns TeamMembershipSummaryFieldsUser.Guest, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsUser) GetGuest() bool { return v.UserSummaryFields.Guest }
+
+// GetAdmin returns TeamMembershipSummaryFieldsUser.Admin, and is useful for accessing the field via an interface.
+func (v *TeamMembershipSummaryFieldsUser) GetAdmin() bool { return v.UserSummaryFields.Admin }
+
+func (v *TeamMembershipSummaryFieldsUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*TeamMembershipSummaryFieldsUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.TeamMembershipSummaryFieldsUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalTeamMembershipSummaryFieldsUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *TeamMembershipSummaryFieldsUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *TeamMembershipSummaryFieldsUser) __premarshalJSON() (*__premarshalTeamMembershipSummaryFieldsUser, error) {
+	var retval __premarshalTeamMembershipSummaryFieldsUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
 // TeamSummaryFields includes the GraphQL fields of Team requested by the fragment TeamSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -17601,6 +17775,30 @@ type __teamInput struct {
 
 // GetId returns __teamInput.Id, and is useful for accessing the field via an interface.
 func (v *__teamInput) GetId() string { return v.Id }
+
+// __teamMembershipInput is used internally by genqlient
+type __teamMembershipInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __teamMembershipInput.Id, and is useful for accessing the field via an interface.
+func (v *__teamMembershipInput) GetId() string { return v.Id }
+
+// __teamMembershipsInput is used internally by genqlient
+type __teamMembershipsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __teamMembershipsInput.First, and is useful for accessing the field via an interface.
+func (v *__teamMembershipsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __teamMembershipsInput.After, and is useful for accessing the field via an interface.
+func (v *__teamMembershipsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __teamMembershipsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__teamMembershipsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __team_membersInput is used internally by genqlient
 type __team_membersInput struct {
@@ -40245,6 +40443,290 @@ func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) __premarshalJSON() 
 	return &retval, nil
 }
 
+// teamMembershipResponse is returned by teamMembership on success.
+type teamMembershipResponse struct {
+	// Fetches a specific team membership by its ID.
+	TeamMembership teamMembershipTeamMembership `json:"teamMembership"`
+}
+
+// GetTeamMembership returns teamMembershipResponse.TeamMembership, and is useful for accessing the field via an interface.
+func (v *teamMembershipResponse) GetTeamMembership() teamMembershipTeamMembership {
+	return v.TeamMembership
+}
+
+// teamMembershipTeamMembership includes the requested fields of the GraphQL type TeamMembership.
+// The GraphQL type's documentation follows.
+//
+// A join entity that defines a user's membership in a team. Each membership record
+// links a user to a team and tracks whether the user is a team owner. Users can be
+// members of multiple teams, and their memberships determine which teams' issues
+// and resources they can access.
+type teamMembershipTeamMembership struct {
+	TeamMembershipSummaryFields `json:"-"`
+}
+
+// GetId returns teamMembershipTeamMembership.Id, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetId() string { return v.TeamMembershipSummaryFields.Id }
+
+// GetCreatedAt returns teamMembershipTeamMembership.CreatedAt, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetCreatedAt() string {
+	return v.TeamMembershipSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns teamMembershipTeamMembership.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetUpdatedAt() string {
+	return v.TeamMembershipSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns teamMembershipTeamMembership.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetArchivedAt() *string {
+	return v.TeamMembershipSummaryFields.ArchivedAt
+}
+
+// GetOwner returns teamMembershipTeamMembership.Owner, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetOwner() bool { return v.TeamMembershipSummaryFields.Owner }
+
+// GetSortOrder returns teamMembershipTeamMembership.SortOrder, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetSortOrder() float64 {
+	return v.TeamMembershipSummaryFields.SortOrder
+}
+
+// GetUser returns teamMembershipTeamMembership.User, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetUser() TeamMembershipSummaryFieldsUser {
+	return v.TeamMembershipSummaryFields.User
+}
+
+// GetTeam returns teamMembershipTeamMembership.Team, and is useful for accessing the field via an interface.
+func (v *teamMembershipTeamMembership) GetTeam() TeamMembershipSummaryFieldsTeam {
+	return v.TeamMembershipSummaryFields.Team
+}
+
+func (v *teamMembershipTeamMembership) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*teamMembershipTeamMembership
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.teamMembershipTeamMembership = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamMembershipSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteamMembershipTeamMembership struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Owner bool `json:"owner"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	User TeamMembershipSummaryFieldsUser `json:"user"`
+
+	Team TeamMembershipSummaryFieldsTeam `json:"team"`
+}
+
+func (v *teamMembershipTeamMembership) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *teamMembershipTeamMembership) __premarshalJSON() (*__premarshalteamMembershipTeamMembership, error) {
+	var retval __premarshalteamMembershipTeamMembership
+
+	retval.Id = v.TeamMembershipSummaryFields.Id
+	retval.CreatedAt = v.TeamMembershipSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TeamMembershipSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TeamMembershipSummaryFields.ArchivedAt
+	retval.Owner = v.TeamMembershipSummaryFields.Owner
+	retval.SortOrder = v.TeamMembershipSummaryFields.SortOrder
+	retval.User = v.TeamMembershipSummaryFields.User
+	retval.Team = v.TeamMembershipSummaryFields.Team
+	return &retval, nil
+}
+
+// teamMembershipsResponse is returned by teamMemberships on success.
+type teamMembershipsResponse struct {
+	// All team memberships in the workspace.
+	TeamMemberships teamMembershipsTeamMembershipsTeamMembershipConnection `json:"teamMemberships"`
+}
+
+// GetTeamMemberships returns teamMembershipsResponse.TeamMemberships, and is useful for accessing the field via an interface.
+func (v *teamMembershipsResponse) GetTeamMemberships() teamMembershipsTeamMembershipsTeamMembershipConnection {
+	return v.TeamMemberships
+}
+
+// teamMembershipsTeamMembershipsTeamMembershipConnection includes the requested fields of the GraphQL type TeamMembershipConnection.
+type teamMembershipsTeamMembershipsTeamMembershipConnection struct {
+	Nodes    []teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership `json:"nodes"`
+	PageInfo teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns teamMembershipsTeamMembershipsTeamMembershipConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnection) GetNodes() []teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership {
+	return v.Nodes
+}
+
+// GetPageInfo returns teamMembershipsTeamMembershipsTeamMembershipConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnection) GetPageInfo() teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo {
+	return v.PageInfo
+}
+
+// teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
+// The GraphQL type's documentation follows.
+//
+// A join entity that defines a user's membership in a team. Each membership record
+// links a user to a team and tracks whether the user is a team owner. Users can be
+// members of multiple teams, and their memberships determine which teams' issues
+// and resources they can access.
+type teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	TeamMembershipSummaryFields `json:"-"`
+}
+
+// GetId returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Id, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetId() string {
+	return v.TeamMembershipSummaryFields.Id
+}
+
+// GetCreatedAt returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.CreatedAt, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetCreatedAt() string {
+	return v.TeamMembershipSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUpdatedAt() string {
+	return v.TeamMembershipSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetArchivedAt() *string {
+	return v.TeamMembershipSummaryFields.ArchivedAt
+}
+
+// GetOwner returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Owner, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetOwner() bool {
+	return v.TeamMembershipSummaryFields.Owner
+}
+
+// GetSortOrder returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.SortOrder, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetSortOrder() float64 {
+	return v.TeamMembershipSummaryFields.SortOrder
+}
+
+// GetUser returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.User, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUser() TeamMembershipSummaryFieldsUser {
+	return v.TeamMembershipSummaryFields.User
+}
+
+// GetTeam returns teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Team, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetTeam() TeamMembershipSummaryFieldsTeam {
+	return v.TeamMembershipSummaryFields.Team
+}
+
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamMembershipSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Owner bool `json:"owner"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	User TeamMembershipSummaryFieldsUser `json:"user"`
+
+	Team TeamMembershipSummaryFieldsTeam `json:"team"`
+}
+
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) __premarshalJSON() (*__premarshalteamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership, error) {
+	var retval __premarshalteamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+	retval.Id = v.TeamMembershipSummaryFields.Id
+	retval.CreatedAt = v.TeamMembershipSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TeamMembershipSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TeamMembershipSummaryFields.ArchivedAt
+	retval.Owner = v.TeamMembershipSummaryFields.Owner
+	retval.SortOrder = v.TeamMembershipSummaryFields.SortOrder
+	retval.User = v.TeamMembershipSummaryFields.User
+	retval.Team = v.TeamMembershipSummaryFields.Team
+	return &retval, nil
+}
+
+// teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *teamMembershipsTeamMembershipsTeamMembershipConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // teamResponse is returned by team on success.
 type teamResponse struct {
 	// Fetches a specific team by its ID.
@@ -50220,6 +50702,134 @@ func team(
 	}
 
 	data_ = &teamResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by teamMembership.
+const teamMembership_Operation = `
+query teamMembership ($id: String!) {
+	teamMembership(id: $id) {
+		... TeamMembershipSummaryFields
+	}
+}
+fragment TeamMembershipSummaryFields on TeamMembership {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	owner
+	sortOrder
+	user {
+		... UserSummaryFields
+	}
+	team {
+		id
+		key
+		name
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func teamMembership(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *teamMembershipResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "teamMembership",
+		Query:  teamMembership_Operation,
+		Variables: &__teamMembershipInput{
+			Id: id,
+		},
+	}
+
+	data_ = &teamMembershipResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by teamMemberships.
+const teamMemberships_Operation = `
+query teamMemberships ($first: Int, $after: String, $includeArchived: Boolean) {
+	teamMemberships(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... TeamMembershipSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment TeamMembershipSummaryFields on TeamMembership {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	owner
+	sortOrder
+	user {
+		... UserSummaryFields
+	}
+	team {
+		id
+		key
+		name
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func teamMemberships(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *teamMembershipsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "teamMemberships",
+		Query:  teamMemberships_Operation,
+		Variables: &__teamMembershipsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &teamMembershipsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

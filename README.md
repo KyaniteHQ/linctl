@@ -136,6 +136,8 @@ linctl label get label-id
 linctl team list --limit 20
 linctl team get team-id
 linctl team members team-id --limit 20
+linctl team-membership list --limit 20
+linctl team-membership get team-membership-id
 linctl user list --limit 20
 linctl user get user-id
 linctl user me
@@ -276,6 +278,8 @@ linctl project-relation get project-relation-id
 linctl document list --limit 20
 linctl label list --limit 20
 linctl team members team-id --limit 20
+linctl team-membership list --limit 20
+linctl team-membership get team-membership-id
 linctl user me
 linctl user drafts --limit 20
 linctl workflow-state list --limit 20
@@ -327,7 +331,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Application, AgentActivity, AgentSkill, AuditEntry, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, semantic-search, comment, ProjectUpdate, ProjectRelation, document, label, team, user, workflow-state, time-schedule, TriageResponsibility, SLA configuration, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Application, AgentActivity, AgentSkill, AuditEntry, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, semantic-search, comment, ProjectUpdate, ProjectRelation, document, label, team, TeamMembership, user, workflow-state, time-schedule, TriageResponsibility, SLA configuration, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

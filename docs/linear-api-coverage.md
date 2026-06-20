@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 99 | 458 |
-| Upstream Query root fields | 158 | 87 | 158 |
+| Upstream SDK root methods | 458 | 101 | 458 |
+| Upstream Query root fields | 158 | 89 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 157 | 157 | 157 |
-| Domain-map commands | 260 | 137 | 260 |
+| Local generated Go operations | 159 | 159 | 159 |
+| Domain-map commands | 265 | 139 | 265 |
 
 ## Upstream SDK Root Methods
 
@@ -384,8 +384,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `ssoUrlFromEmail` | method | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
 | `suspendUser` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `team` | method | implemented | local operation or command exists |
-| `teamMembership` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `teamMemberships` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `teamMembership` | method | implemented | local operation or command exists |
+| `teamMemberships` | method | implemented | local operation or command exists |
 | `teams` | method | implemented | local operation or command exists |
 | `template` | method | implemented | local operation or command exists |
 | `templates` | getter | implemented | local operation or command exists |
@@ -627,8 +627,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `slaConfigurations` | `[SlaConfiguration!]!` | implemented | root field used by local GraphQL operation |
 | `ssoUrlFromEmail` | `SsoUrlFromEmailResponse!` | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
 | `team` | `Team!` | implemented | root field used by local GraphQL operation |
-| `teamMembership` | `TeamMembership!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `teamMemberships` | `TeamMembershipConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `teamMembership` | `TeamMembership!` | implemented | root field used by local GraphQL operation |
+| `teamMemberships` | `TeamMembershipConnection!` | implemented | root field used by local GraphQL operation |
 | `teams` | `TeamConnection!` | implemented | root field used by local GraphQL operation |
 | `template` | `Template!` | implemented | root field used by local GraphQL operation |
 | `templates` | `[Template!]!` | implemented | root field used by local GraphQL operation |
@@ -1150,6 +1150,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `semanticSearch` | query | `semanticSearch` | implemented | `internal/client/generated.go` |
 | `slaConfigurations` | query | `slaConfigurations` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
+| `teamMembership` | query | `teamMembership` | implemented | `internal/client/generated.go` |
+| `teamMemberships` | query | `teamMemberships` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
 | `template` | query | `template` | implemented | `internal/client/generated.go` |
 | `templates` | query | `templates` | implemented | `internal/client/generated.go` |
@@ -1323,6 +1325,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | write command needs explicit target and safety semantics |
 | Team | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Team | `team members` | `Team.members` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team-membership list` | `Query.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team-membership get` | `Query.teamMembership` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Team | `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Team | `team-membership delete` | `Mutation.teamMembershipDelete` | Blocked: destructive membership command needs explicit admin safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | User | `user list` | `Query.users` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user get` | `Query.user` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |

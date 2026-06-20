@@ -104,6 +104,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addDocumentCommand(ctx, command, options)
 	addLabelCommand(ctx, command, options)
 	addTeamCommand(ctx, command, options)
+	addTeamMembershipCommand(ctx, command, options)
 	addUserCommand(ctx, command, options)
 	addWorkflowStateCommand(ctx, command, options)
 	addTimeScheduleCommand(ctx, command, options)

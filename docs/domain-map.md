@@ -449,11 +449,11 @@ Only `label list` and `label get` are implemented in the current CLI. Label writ
 
 Schema backing:
 
-- Types: `Team`, `TeamConnection`, `TeamMembership`
-- Reads: `Query.teams`, `Query.team`, `Team.members`, `Team.issues`, `Team.cycles`, `Team.projects`
+- Types: `Team`, `TeamConnection`, `TeamMembership`, `TeamMembershipConnection`
+- Reads: `Query.teams`, `Query.team`, `Team.members`, `Query.teamMemberships`, `Query.teamMembership`, `Team.issues`, `Team.cycles`, `Team.projects`
 - Writes: `Mutation.teamCreate`, `Mutation.teamUpdate`, `Mutation.teamDelete`, `Mutation.teamMembershipCreate`, `Mutation.teamMembershipUpdate`, `Mutation.teamMembershipDelete`
 - Inputs: `TeamCreateInput`, `TeamUpdateInput`
-- Relevant fields: `Team.id`, `Team.name`, `Team.key`, `Team.description`, `Team.archivedAt`, `Team.issues`, `Team.cycles`, `Team.members`, `Team.projects`
+- Relevant fields: `Team.id`, `Team.name`, `Team.key`, `Team.description`, `Team.archivedAt`, `Team.issues`, `Team.cycles`, `Team.members`, `Team.projects`, `TeamMembership.id`, `TeamMembership.user`, `TeamMembership.team`, `TeamMembership.owner`, `TeamMembership.sortOrder`, `TeamMembership.archivedAt`
 
 Planned commands:
 
@@ -465,8 +465,13 @@ Planned commands:
 | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison |
 | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics |
 | `team members` | `Team.members` | Read-only |
+| `team-membership list` | `Query.teamMemberships` | Read-only |
+| `team-membership get` | `Query.teamMembership` | Read-only |
+| `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model |
+| `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation |
+| `team-membership delete` | `Mutation.teamMembershipDelete` | Blocked: destructive membership command needs explicit admin safety semantics |
 
-Only `team list`, `team get`, and `team members` are implemented in the current CLI. Team creation, metadata mutation, and membership writes are deferred as organization/admin surface.
+Only `team list`, `team get`, `team members`, `team-membership list`, and `team-membership get` are implemented in the current CLI. Team creation, metadata mutation, and membership writes are deferred as organization/admin surface.
 
 ## User
 

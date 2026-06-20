@@ -120,6 +120,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "team list", args: []string{"team", "list", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, contains: "team-id LIT linctl"},
 		{name: "team members", args: []string{"team", "members", "team-id", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
+		{name: "team membership list", args: []string{"team-membership", "list", "--limit", "1"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
+		{name: "team membership get", args: []string{"team-membership", "get", "team-membership-id"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
 		{name: "user list", args: []string{"user", "list", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user me", args: []string{"user", "me"}, contains: "user-id Omer <omer@example.com>"},
@@ -848,6 +850,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,name,color", "label", "list", "--limit", "1"},
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
 		{"--json", "--fields", "id,display_name,email", "team", "members", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,team_key,user_id,owner", "team-membership", "list", "--limit", "1"},
+		{"--json", "team-membership", "get", "team-membership-id"},
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
 		{"--json", "time-schedule", "list", "--limit", "1"},
 		{"--json", "time-schedule", "get", "time-schedule-id"},
@@ -1745,29 +1749,12 @@ func requireRequestVariable(request *graphql.Request, keys []string, expected st
 }
 
 func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, error) {
-	switch operation {
-	case "Viewer":
-		return `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`, nil
-	case "Teams":
-		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, nil
-	case "TargetProject":
-		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, nil
-	case "organizationExists":
-		return `{"organizationExists":{"success":true,"exists":true}}`, nil
-	case "applicationInfo":
-		return commandApplicationInfoPayload(), nil
-	case "agentActivities":
-		return `{"agentActivities":{"nodes":[` + commandAgentActivityJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, nil
-	case "agentActivity":
-		return `{"agentActivity":` + commandAgentActivityJSON() + `}`, nil
-	case "agentSkills":
-		return `{"agentSkills":{"nodes":[` + commandAgentSkillJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, nil
-	case "agentSkill":
-		return `{"agentSkill":` + commandAgentSkillJSON() + `}`, nil
-	case "organization_templates":
-		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, nil
-	case "rateLimitStatus":
-		return commandRateLimitStatusPayload(), nil
+	if payload, ok := commandFlowBasePayload(operation); ok {
+		return payload, nil
+	}
+
+	if payload, ok := commandFlowTeamMembershipPayload(operation); ok {
+		return payload, nil
 	}
 	if payload, ok := commandFlowIssuePayload(operation, fake); ok {
 		return payload, nil
@@ -1782,12 +1769,65 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 	return "", errors.New("missing fake response for " + operation)
 }
 
+func commandFlowBasePayload(operation string) (string, bool) {
+	switch operation {
+	case "Viewer":
+		return `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`, true
+	case "Teams":
+		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "TargetProject":
+		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, true
+	case "organizationExists":
+		return `{"organizationExists":{"success":true,"exists":true}}`, true
+	case "applicationInfo":
+		return commandApplicationInfoPayload(), true
+	case "agentActivities":
+		return `{"agentActivities":{"nodes":[` + commandAgentActivityJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "agentActivity":
+		return `{"agentActivity":` + commandAgentActivityJSON() + `}`, true
+	case "agentSkills":
+		return `{"agentSkills":{"nodes":[` + commandAgentSkillJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "agentSkill":
+		return `{"agentSkill":` + commandAgentSkillJSON() + `}`, true
+	case "organization_templates":
+		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "rateLimitStatus":
+		return commandRateLimitStatusPayload(), true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowTeamMembershipPayload(operation string) (string, bool) {
+	switch operation {
+	case "teamMemberships":
+		return `{"teamMemberships":{"nodes":[` + commandTeamMembershipJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "teamMembership":
+		return `{"teamMembership":` + commandTeamMembershipJSON() + `}`, true
+	default:
+		return "", false
+	}
+}
+
 func commandRateLimitStatusPayload() string {
 	return `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`
 }
 
 func commandApplicationInfoPayload() string {
 	return `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`
+}
+
+func commandTeamMembershipJSON() string {
+	return `{
+		"id":"team-membership-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"owner":true,
+		"sortOrder":1.5,
+		"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},
+		"team":{"id":"team-id","key":"LIT","name":"linctl"}
+	}`
 }
 
 func commandAgentActivityJSON() string {

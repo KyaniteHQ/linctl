@@ -195,6 +195,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"IssueLabels":      `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"issueLabel":       `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
 		"Teams":            `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"teamMemberships":  `{"teamMemberships":{"nodes":[{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"teamMembership":   `{"teamMembership":{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 		"agentActivities": `{"agentActivities":{"nodes":[` + strings.Join([]string{
 			agentActivityJSON("action"),
 			agentActivityJSON("elicitation"),
@@ -402,6 +404,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	label, err := GetLabelByID(context.Background(), graphqlClient, "label-id")
 	require.NoError(t, err)
 	teams, err := ListTeams(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	teamMemberships, err := ListTeamMemberships(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	teamMembership, err := GetTeamMembershipByID(context.Background(), graphqlClient, "team-membership-id")
 	require.NoError(t, err)
 	organizationExists, err := CheckOrganizationExists(context.Background(), graphqlClient, "kyanite")
 	require.NoError(t, err)
@@ -713,6 +719,17 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "label-id", label.ID)
 	require.Empty(t, label.Description)
 	require.True(t, teams.HasNextPage)
+	require.True(t, teamMemberships.HasNextPage)
+	require.Equal(t, &endCursor, teamMemberships.EndCursor)
+	require.Equal(t, "team-membership-id", teamMemberships.Memberships[0].ID)
+	require.Equal(t, "team-id", teamMemberships.Memberships[0].TeamID)
+	require.Equal(t, "LIT", teamMemberships.Memberships[0].TeamKey)
+	require.Equal(t, "user-id", teamMemberships.Memberships[0].UserID)
+	require.Equal(t, "Omer", teamMemberships.Memberships[0].DisplayName)
+	require.True(t, teamMemberships.Memberships[0].Owner)
+	require.InEpsilon(t, 1.5, teamMemberships.Memberships[0].SortOrder, 0)
+	require.Equal(t, "team-membership-id", teamMembership.ID)
+	require.Equal(t, "omer@example.com", teamMembership.Email)
 	require.Equal(t, "LIT", teams.Teams[0].Key)
 	require.Equal(t, "kyanite", organizationExists.URLKey)
 	require.True(t, organizationExists.Success)
@@ -1439,6 +1456,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetProjectRelationByID(context.Background(), graphqlClient, "project-relation-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get project relation project-relation-id")
+
+		_, err = ListTeamMemberships(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team memberships")
+
+		_, err = GetTeamMembershipByID(context.Background(), graphqlClient, "team-membership-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get team membership team-membership-id")
 
 		_, err = GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
 		require.Error(t, err)

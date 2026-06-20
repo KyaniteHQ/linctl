@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for Application, AgentActivity, AgentSkill, AuditEntry, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, SemanticSearch, issue, comment, project, ProjectUpdate, ProjectStatus, ProjectLabel, ProjectRelation, Cycle, ProjectMilestone, document, label, team, user, Draft, WorkflowState, TimeSchedule, TriageResponsibility, SLA configuration, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for Application, AgentActivity, AgentSkill, AuditEntry, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, SemanticSearch, issue, comment, project, ProjectUpdate, ProjectStatus, ProjectLabel, ProjectRelation, Cycle, ProjectMilestone, document, label, team, TeamMembership, user, Draft, WorkflowState, TimeSchedule, TriageResponsibility, SLA configuration, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -141,6 +141,8 @@ linctl label get LABEL_ID --json
 linctl team list --json --limit 20
 linctl team get TEAM_ID --json
 linctl team members TEAM_ID --json --limit 20
+linctl team-membership list --json --limit 20
+linctl team-membership get TEAM_MEMBERSHIP_ID --json
 linctl user list --json --limit 20
 linctl user get USER_ID --json
 linctl user me --json
@@ -219,7 +221,7 @@ linctl project-milestone create PROJECT_ID --name "..." --json
 linctl project-milestone update PROJECT_MILESTONE_ID --name "..." --json
 ```
 
-Unsupported writes: Notification archive/update/read-state/snooze/subscription/preference changes; ReleasePipeline and ReleaseStage configuration writes; Release, ReleaseNote, EntityExternalLink, IssueToRelease, release sync, and release complete writes; comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; ProjectLabel create/update/delete/retire/restore; ProjectRelation create/update/delete; Document, label, team, user, WorkflowState, TimeSchedule, SLA configuration, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Favorite, Emoji, and Attachment writes. Report the limit instead of bypassing `linctl`.
+Unsupported writes: Notification archive/update/read-state/snooze/subscription/preference changes; ReleasePipeline and ReleaseStage configuration writes; Release, ReleaseNote, EntityExternalLink, IssueToRelease, release sync, and release complete writes; comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; ProjectLabel create/update/delete/retire/restore; ProjectRelation create/update/delete; Document, label, team, TeamMembership, user, WorkflowState, TimeSchedule, SLA configuration, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Favorite, Emoji, and Attachment writes. Report the limit instead of bypassing `linctl`.
 
 Completion criterion: the selected command exists above and matches the requested domain.
 

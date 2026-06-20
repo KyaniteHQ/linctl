@@ -784,9 +784,19 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_relation_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+144. TeamMembership list
+   - Success: `linctl team-membership list --limit N` lists visible TeamMemberships through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_membership_list`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+145. TeamMembership get
+   - Success: `linctl team-membership get TEAM_MEMBERSHIP_ID` reads one TeamMembership by id.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_membership_get`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
-All one hundred forty-three local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All one hundred forty-five local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

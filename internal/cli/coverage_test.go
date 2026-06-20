@@ -84,6 +84,14 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Key:  "LIT",
 		Name: "linctl",
 	}
+	teamMembership := client.TeamMembershipSummary{
+		ID:          "team-membership-id",
+		UserID:      "user-id",
+		DisplayName: "Omer",
+		TeamKey:     "LIT",
+		Owner:       true,
+		SortOrder:   1.5,
+	}
 	user := client.UserSummary{
 		ID:          "user-id",
 		DisplayName: "Omer",
@@ -356,6 +364,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeDocument(textCommand, &textOptions, document))
 	require.NoError(t, writeLabel(textCommand, &textOptions, label))
 	require.NoError(t, writeTeam(textCommand, &textOptions, team))
+	require.NoError(t, writeTeamMembership(textCommand, &textOptions, teamMembership))
 	require.NoError(t, writeUser(textCommand, &textOptions, user))
 	require.NoError(t, writeDraft(textCommand, &textOptions, draft))
 	require.NoError(t, writeComment(textCommand, &textOptions, comment))
@@ -407,6 +416,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-label-id Roadmap #f2c94c\n"+
 			"project-relation-id blocks Pinned project -> Related project\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
+			"team-membership-id LIT Omer owner true order 1.50\n"+
 			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
 			"comment-id Omer First comment\nworkflow-state-id Started [started]\n"+
 			"time-schedule-id Primary on-call entries 1\n"+
@@ -628,6 +638,14 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		ID:   "team-id",
 		Key:  "LIT",
 		Name: "linctl",
+	}
+	teamMembership := client.TeamMembershipSummary{
+		ID:          "team-membership-id",
+		UserID:      "user-id",
+		DisplayName: "Omer",
+		TeamKey:     "LIT",
+		Owner:       true,
+		SortOrder:   1.5,
 	}
 	user := client.UserSummary{
 		ID:          "user-id",
@@ -878,6 +896,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectLabel(command, &rootOptions{idOnly: true}, projectLabel))
 	require.Error(t, writeProjectLabel(command, &rootOptions{format: "wide"}, projectLabel))
 	require.NoError(t, writeProjectRelation(command, &rootOptions{idOnly: true}, projectRelation))
+	require.NoError(t, writeTeamMembership(command, &rootOptions{idOnly: true}, teamMembership))
 	require.NoError(t, writeDocument(command, &rootOptions{idOnly: true}, document))
 	require.NoError(t, writeLabel(command, &rootOptions{idOnly: true}, label))
 	require.NoError(t, writeTeam(command, &rootOptions{idOnly: true}, team))
@@ -977,6 +996,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectStatus(quietCommand, &rootOptions{quiet: true}, projectStatus))
 	require.NoError(t, writeProjectLabel(quietCommand, &rootOptions{quiet: true}, projectLabel))
 	require.NoError(t, writeProjectRelation(quietCommand, &rootOptions{quiet: true}, projectRelation))
+	require.NoError(t, writeTeamMembership(quietCommand, &rootOptions{quiet: true}, teamMembership))
 	require.NoError(t, writeDocument(quietCommand, &rootOptions{quiet: true}, document))
 	require.NoError(t, writeLabel(quietCommand, &rootOptions{quiet: true}, label))
 	require.NoError(t, writeTeam(quietCommand, &rootOptions{quiet: true}, team))

@@ -1,0 +1,34 @@
+query teamMemberships($first: Int, $after: String, $includeArchived: Boolean) {
+  teamMemberships(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...TeamMembershipSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query teamMembership($id: String!) {
+  teamMembership(id: $id) {
+    ...TeamMembershipSummaryFields
+  }
+}
+
+fragment TeamMembershipSummaryFields on TeamMembership {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  owner
+  sortOrder
+  user {
+    ...UserSummaryFields
+  }
+  team {
+    id
+    key
+    name
+  }
+}
