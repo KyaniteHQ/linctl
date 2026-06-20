@@ -108,6 +108,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project label get", args: []string{"project-label", "get", "project-label-id"}, contains: "project-label-id Roadmap #f2c94c"},
 		{name: "project label children", args: []string{"project-label", "children", "project-label-id", "--limit", "1"}, contains: "child-project-label-id Mobile #56ccf2"},
 		{name: "project label projects", args: []string{"project-label", "projects", "project-label-id", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
+		{name: "project relation list", args: []string{"project-relation", "list", "--limit", "1"}, contains: "project-relation-id blocks Pinned project -> Related project"},
+		{name: "project relation get", args: []string{"project-relation", "get", "project-relation-id"}, contains: "project-relation-id blocks Pinned project -> Related project"},
 		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, contains: "project-id Created project [Backlog]"},
 		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, contains: "project-id Updated project [Started]"},
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, contains: "project-id Archived project [Canceled]"},
@@ -840,6 +842,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "project-label", "list", "--limit", "1"},
 		{"--json", "project-label", "children", "project-label-id", "--limit", "1"},
 		{"--json", "project-label", "projects", "project-label-id", "--limit", "1"},
+		{"--json", "--fields", "id,type,project_id,related_project_id", "project-relation", "list", "--limit", "1"},
+		{"--json", "project-relation", "get", "project-relation-id"},
 		{"--json", "--fields", "id,title,parent_type", "document", "list", "--limit", "1"},
 		{"--json", "--fields", "id,name,color", "label", "list", "--limit", "1"},
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
@@ -2236,6 +2240,9 @@ func commandFlowProjectPayload(operation string, fake commandFlowFakeClient) (st
 	if payload, ok := commandFlowProjectLabelPayload(operation); ok {
 		return payload, true
 	}
+	if payload, ok := commandFlowProjectRelationPayload(operation); ok {
+		return payload, true
+	}
 	if payload, ok := commandFlowProjectReadPayload(operation, fake); ok {
 		return payload, true
 	}
@@ -2310,6 +2317,19 @@ func commandFlowProjectLabelPayload(operation string) (string, bool) {
 		return `{"projectLabel":{"id":"project-label-id","name":"Roadmap","projects":{"nodes":[` +
 			commandProjectJSON("Listed project", "Backlog", "backlog") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowProjectRelationPayload(operation string) (string, bool) {
+	switch operation {
+	case "projectRelations":
+		return `{"projectRelations":{"nodes":[` +
+			commandProjectRelationJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "projectRelation":
+		return `{"projectRelation":` + commandProjectRelationJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -2429,6 +2449,23 @@ func commandProjectLabelJSON(id string, name string, color string) string {
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:00:00Z",
 		"parent":null
+	}`
+}
+
+func commandProjectRelationJSON() string {
+	return `{
+		"id":"project-relation-id",
+		"type":"blocks",
+		"anchorType":"project",
+		"relatedAnchorType":"project",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"project":{"id":"project-id","name":"Pinned project"},
+		"projectMilestone":null,
+		"relatedProject":{"id":"related-project-id","name":"Related project"},
+		"relatedProjectMilestone":null,
+		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
 	}`
 }
 

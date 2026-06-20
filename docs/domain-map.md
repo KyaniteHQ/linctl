@@ -315,6 +315,30 @@ Planned commands:
 
 Only `project-label list`, `project-label get`, `project-label children`, and `project-label projects` are implemented in the current CLI. ProjectLabel writes are deferred as workspace/admin configuration surface.
 
+## ProjectRelation
+
+Use `ProjectRelation` for Linear dependency relations between Projects. It is project graph metadata, not issue dependency state.
+
+Schema backing:
+
+- Types: `ProjectRelation`, `ProjectRelationConnection`
+- Reads: `Query.projectRelations`, `Query.projectRelation`
+- Writes: `Mutation.projectRelationCreate`, `Mutation.projectRelationUpdate`, `Mutation.projectRelationDelete`
+- Inputs: `ProjectRelationCreateInput`, `ProjectRelationUpdateInput`
+- Relevant fields: `ProjectRelation.id`, `ProjectRelation.type`, `ProjectRelation.project`, `ProjectRelation.projectMilestone`, `ProjectRelation.anchorType`, `ProjectRelation.relatedProject`, `ProjectRelation.relatedProjectMilestone`, `ProjectRelation.relatedAnchorType`, `ProjectRelation.createdAt`, `ProjectRelation.updatedAt`, `ProjectRelation.archivedAt`, `ProjectRelation.user`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `project-relation list` | `Query.projectRelations` | Read-only |
+| `project-relation get` | `Query.projectRelation` | Read-only |
+| `project-relation create` | `Mutation.projectRelationCreate` | Blocked: create must resolve and compare both project dependency endpoints before mutation |
+| `project-relation update` | `Mutation.projectRelationUpdate` | Blocked: update must resolve and compare both project dependency endpoints before mutation |
+| `project-relation delete` | `Mutation.projectRelationDelete` | Blocked: destructive command needs explicit project dependency safety semantics |
+
+Only `project-relation list` and `project-relation get` are implemented in the current CLI. ProjectRelation writes are deferred until their endpoint guard model is explicit.
+
 ## Cycle
 
 Schema backing:

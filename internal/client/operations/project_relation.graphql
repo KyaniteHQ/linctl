@@ -1,0 +1,48 @@
+query projectRelations($first: Int, $after: String, $includeArchived: Boolean) {
+  projectRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ProjectRelationSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query projectRelation($id: String!) {
+  projectRelation(id: $id) {
+    ...ProjectRelationSummaryFields
+  }
+}
+
+fragment ProjectRelationSummaryFields on ProjectRelation {
+  id
+  type
+  anchorType
+  relatedAnchorType
+  createdAt
+  updatedAt
+  archivedAt
+  project {
+    id
+    name
+  }
+  projectMilestone {
+    id
+    name
+  }
+  relatedProject {
+    id
+    name
+  }
+  relatedProjectMilestone {
+    id
+    name
+  }
+  user {
+    id
+    name
+    displayName
+  }
+}

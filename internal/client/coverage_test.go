@@ -184,15 +184,17 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "listed",
 			Status: "Backlog",
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"applicationInfo": `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
-		"issue_comments":  `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"comments":        `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"comment":         `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"Documents":       `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"document":        `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
-		"IssueLabels":     `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"issueLabel":      `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
-		"Teams":           `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectRelations": `{"projectRelations":{"nodes":[{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"project-relation-no-user","type":"relates","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone"},"relatedProject":{"id":"other-related-project-id","name":"Other related"},"relatedProjectMilestone":{"id":"related-project-milestone-id","name":"Related milestone"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectRelation":  `{"projectRelation":{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"applicationInfo":  `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
+		"issue_comments":   `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"comments":         `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"comment":          `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"Documents":        `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"document":         `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
+		"IssueLabels":      `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issueLabel":       `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
+		"Teams":            `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"agentActivities": `{"agentActivities":{"nodes":[` + strings.Join([]string{
 			agentActivityJSON("action"),
 			agentActivityJSON("elicitation"),
@@ -368,6 +370,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	projectLabelChildren, err := ListProjectLabelChildren(context.Background(), graphqlClient, "project-label-id", 2)
 	require.NoError(t, err)
 	projectLabelProjects, err := ListProjectLabelProjects(context.Background(), graphqlClient, "project-label-id", 2)
+	require.NoError(t, err)
+	projectRelations, err := ListProjectRelations(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	projectRelation, err := GetProjectRelationByID(context.Background(), graphqlClient, "project-relation-id")
 	require.NoError(t, err)
 	application, err := GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
 	require.NoError(t, err)
@@ -643,6 +649,18 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "project-label-id", projectLabelChildren.ProjectLabelID)
 	require.Equal(t, "child-project-label-id", projectLabelChildren.ProjectLabels[0].ID)
 	require.Equal(t, "project-id", projectLabelProjects.Projects[0].ID)
+	require.True(t, projectRelations.HasNextPage)
+	require.Equal(t, &endCursor, projectRelations.EndCursor)
+	require.Equal(t, "project-relation-id", projectRelations.Relations[0].ID)
+	require.Equal(t, "blocks", projectRelations.Relations[0].Type)
+	require.Equal(t, "Pinned project", projectRelations.Relations[0].ProjectName)
+	require.Equal(t, "Related project", projectRelations.Relations[0].RelatedProjectName)
+	require.Equal(t, "Omer", projectRelations.Relations[0].DisplayName)
+	require.Equal(t, "project-milestone-id", projectRelations.Relations[1].ProjectMilestoneID)
+	require.Equal(t, "related-project-milestone-id", projectRelations.Relations[1].RelatedProjectMilestoneID)
+	require.Empty(t, projectRelations.Relations[1].DisplayName)
+	require.Equal(t, "project-relation-id", projectRelation.ID)
+	require.Equal(t, "blocks", projectRelation.Type)
 	require.Equal(t, "app-id", application.ID)
 	require.Equal(t, "app-client-id", application.ClientID)
 	require.Equal(t, "Demo App", application.Name)
@@ -1413,6 +1431,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListProjectLabelProjects(context.Background(), graphqlClient, "project-label-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project label projects project-label-id")
+
+		_, err = ListProjectRelations(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project relations")
+
+		_, err = GetProjectRelationByID(context.Background(), graphqlClient, "project-relation-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get project relation project-relation-id")
 
 		_, err = GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
 		require.Error(t, err)

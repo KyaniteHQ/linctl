@@ -54,6 +54,7 @@ PY
   "$binary" project list --json --limit 5 >/dev/null
   "$binary" project-status list --json --limit 5 >/dev/null
   "$binary" project-label list --json --limit 5 >/dev/null
+  "$binary" project-relation list --json --limit 5 >/dev/null
   "$binary" notification list --json --limit 5 >/dev/null
   "$binary" notification subscription list --json --limit 5 >/dev/null
   triage_responsibility_json="$("$binary" triage-responsibility list --json --limit 5)"

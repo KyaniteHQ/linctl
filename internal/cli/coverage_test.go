@@ -63,6 +63,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Color:      "#f2c94c",
 		ParentName: "Parent",
 	}
+	projectRelation := client.ProjectRelationSummary{
+		ID:                 "project-relation-id",
+		Type:               "blocks",
+		ProjectName:        "Pinned project",
+		RelatedProjectName: "Related project",
+	}
 	document := client.DocumentSummary{
 		ID:         "document-id",
 		Title:      "Spec",
@@ -346,6 +352,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectMilestone(textCommand, &textOptions, milestone))
 	require.NoError(t, writeProjectStatus(textCommand, &textOptions, projectStatus))
 	require.NoError(t, writeProjectLabel(textCommand, &textOptions, projectLabel))
+	require.NoError(t, writeProjectRelation(textCommand, &textOptions, projectRelation))
 	require.NoError(t, writeDocument(textCommand, &textOptions, document))
 	require.NoError(t, writeLabel(textCommand, &textOptions, label))
 	require.NoError(t, writeTeam(textCommand, &textOptions, team))
@@ -398,6 +405,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-milestone-id Launch milestone [next]\n"+
 			"project-status-id Backlog [backlog] #bec2c8\n"+
 			"project-label-id Roadmap #f2c94c\n"+
+			"project-relation-id blocks Pinned project -> Related project\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
 			"comment-id Omer First comment\nworkflow-state-id Started [started]\n"+
@@ -452,6 +460,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectMilestone(jsonCommand, &jsonOptions, milestone))
 	require.NoError(t, writeProjectStatus(jsonCommand, &jsonOptions, projectStatus))
 	require.NoError(t, writeProjectLabel(jsonCommand, &jsonOptions, projectLabel))
+	require.NoError(t, writeProjectRelation(jsonCommand, &jsonOptions, projectRelation))
 	require.NoError(t, writeDocument(jsonCommand, &jsonOptions, document))
 	require.NoError(t, writeLabel(jsonCommand, &jsonOptions, label))
 	require.NoError(t, writeTeam(jsonCommand, &jsonOptions, team))
@@ -598,6 +607,12 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Name:       "Roadmap",
 		Color:      "#f2c94c",
 		ParentName: "Parent",
+	}
+	projectRelation := client.ProjectRelationSummary{
+		ID:                 "project-relation-id",
+		Type:               "blocks",
+		ProjectName:        "Pinned project",
+		RelatedProjectName: "Related project",
 	}
 	document := client.DocumentSummary{
 		ID:         "document-id",
@@ -862,6 +877,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectLabel(command, &rootOptions{format: "full"}, projectLabel))
 	require.NoError(t, writeProjectLabel(command, &rootOptions{idOnly: true}, projectLabel))
 	require.Error(t, writeProjectLabel(command, &rootOptions{format: "wide"}, projectLabel))
+	require.NoError(t, writeProjectRelation(command, &rootOptions{idOnly: true}, projectRelation))
 	require.NoError(t, writeDocument(command, &rootOptions{idOnly: true}, document))
 	require.NoError(t, writeLabel(command, &rootOptions{idOnly: true}, label))
 	require.NoError(t, writeTeam(command, &rootOptions{idOnly: true}, team))
@@ -960,6 +976,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectMilestone(quietCommand, &rootOptions{quiet: true}, milestone))
 	require.NoError(t, writeProjectStatus(quietCommand, &rootOptions{quiet: true}, projectStatus))
 	require.NoError(t, writeProjectLabel(quietCommand, &rootOptions{quiet: true}, projectLabel))
+	require.NoError(t, writeProjectRelation(quietCommand, &rootOptions{quiet: true}, projectRelation))
 	require.NoError(t, writeDocument(quietCommand, &rootOptions{quiet: true}, document))
 	require.NoError(t, writeLabel(quietCommand, &rootOptions{quiet: true}, label))
 	require.NoError(t, writeTeam(quietCommand, &rootOptions{quiet: true}, team))
