@@ -183,7 +183,7 @@ func Test_CycleCommandFlows_report_current_sprint_edges(t *testing.T) {
 		},
 		{
 			name:        "list operation",
-			fake:        cycleCommandFlowFakeClient{failOperation: "CyclesByTeam"},
+			fake:        cycleCommandFlowFakeClient{failOperation: "cycles"},
 			wantMessage: "current sprint: list cycles",
 		},
 	}
@@ -484,8 +484,8 @@ func Test_CycleCommandFlows_report_cycle_list_edges(t *testing.T) {
 		{
 			name:        "list operation",
 			args:        []string{"cycle", "list"},
-			fake:        cycleCommandFlowFakeClient{failOperation: "CyclesByTeam"},
-			wantMessage: "cyclesbyteam failed",
+			fake:        cycleCommandFlowFakeClient{failOperation: "cycles"},
+			wantMessage: "cycles failed",
 		},
 	}
 
@@ -581,7 +581,7 @@ func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport boo
 		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "TargetProject":
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, true
-	case "CyclesByTeam":
+	case "cycles":
 		if emptyCycles {
 			return `{"cycles":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 		}

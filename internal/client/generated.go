@@ -915,168 +915,6 @@ func (v *CycleUpdateResponse) GetCycleUpdate() CycleUpdateCycleUpdateCyclePayloa
 	return v.CycleUpdate
 }
 
-// CyclesByTeamCyclesCycleConnection includes the requested fields of the GraphQL type CycleConnection.
-type CyclesByTeamCyclesCycleConnection struct {
-	Nodes    []CyclesByTeamCyclesCycleConnectionNodesCycle `json:"nodes"`
-	PageInfo CyclesByTeamCyclesCycleConnectionPageInfo     `json:"pageInfo"`
-}
-
-// GetNodes returns CyclesByTeamCyclesCycleConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnection) GetNodes() []CyclesByTeamCyclesCycleConnectionNodesCycle {
-	return v.Nodes
-}
-
-// GetPageInfo returns CyclesByTeamCyclesCycleConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnection) GetPageInfo() CyclesByTeamCyclesCycleConnectionPageInfo {
-	return v.PageInfo
-}
-
-// CyclesByTeamCyclesCycleConnectionNodesCycle includes the requested fields of the GraphQL type Cycle.
-// The GraphQL type's documentation follows.
-//
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
-type CyclesByTeamCyclesCycleConnectionNodesCycle struct {
-	CycleSummaryFields `json:"-"`
-}
-
-// GetId returns CyclesByTeamCyclesCycleConnectionNodesCycle.Id, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetId() string { return v.CycleSummaryFields.Id }
-
-// GetNumber returns CyclesByTeamCyclesCycleConnectionNodesCycle.Number, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetNumber() float64 {
-	return v.CycleSummaryFields.Number
-}
-
-// GetName returns CyclesByTeamCyclesCycleConnectionNodesCycle.Name, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetName() *string {
-	return v.CycleSummaryFields.Name
-}
-
-// GetDescription returns CyclesByTeamCyclesCycleConnectionNodesCycle.Description, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetDescription() *string {
-	return v.CycleSummaryFields.Description
-}
-
-// GetStartsAt returns CyclesByTeamCyclesCycleConnectionNodesCycle.StartsAt, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetStartsAt() string {
-	return v.CycleSummaryFields.StartsAt
-}
-
-// GetEndsAt returns CyclesByTeamCyclesCycleConnectionNodesCycle.EndsAt, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetEndsAt() string {
-	return v.CycleSummaryFields.EndsAt
-}
-
-// GetCompletedAt returns CyclesByTeamCyclesCycleConnectionNodesCycle.CompletedAt, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetCompletedAt() *string {
-	return v.CycleSummaryFields.CompletedAt
-}
-
-// GetProgress returns CyclesByTeamCyclesCycleConnectionNodesCycle.Progress, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetProgress() float64 {
-	return v.CycleSummaryFields.Progress
-}
-
-// GetTeam returns CyclesByTeamCyclesCycleConnectionNodesCycle.Team, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) GetTeam() CycleSummaryFieldsTeam {
-	return v.CycleSummaryFields.Team
-}
-
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*CyclesByTeamCyclesCycleConnectionNodesCycle
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.CyclesByTeamCyclesCycleConnectionNodesCycle = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.CycleSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalCyclesByTeamCyclesCycleConnectionNodesCycle struct {
-	Id string `json:"id"`
-
-	Number float64 `json:"number"`
-
-	Name *string `json:"name"`
-
-	Description *string `json:"description"`
-
-	StartsAt string `json:"startsAt"`
-
-	EndsAt string `json:"endsAt"`
-
-	CompletedAt *string `json:"completedAt"`
-
-	Progress float64 `json:"progress"`
-
-	Team CycleSummaryFieldsTeam `json:"team"`
-}
-
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *CyclesByTeamCyclesCycleConnectionNodesCycle) __premarshalJSON() (*__premarshalCyclesByTeamCyclesCycleConnectionNodesCycle, error) {
-	var retval __premarshalCyclesByTeamCyclesCycleConnectionNodesCycle
-
-	retval.Id = v.CycleSummaryFields.Id
-	retval.Number = v.CycleSummaryFields.Number
-	retval.Name = v.CycleSummaryFields.Name
-	retval.Description = v.CycleSummaryFields.Description
-	retval.StartsAt = v.CycleSummaryFields.StartsAt
-	retval.EndsAt = v.CycleSummaryFields.EndsAt
-	retval.CompletedAt = v.CycleSummaryFields.CompletedAt
-	retval.Progress = v.CycleSummaryFields.Progress
-	retval.Team = v.CycleSummaryFields.Team
-	return &retval, nil
-}
-
-// CyclesByTeamCyclesCycleConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-type CyclesByTeamCyclesCycleConnectionPageInfo struct {
-	// Indicates if there are more results when paginating forward.
-	HasNextPage bool `json:"hasNextPage"`
-	// Cursor representing the last result in the paginated results.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns CyclesByTeamCyclesCycleConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
-
-// GetEndCursor returns CyclesByTeamCyclesCycleConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamCyclesCycleConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
-
-// CyclesByTeamResponse is returned by CyclesByTeam on success.
-type CyclesByTeamResponse struct {
-	// All cycles accessible to the user.
-	Cycles CyclesByTeamCyclesCycleConnection `json:"cycles"`
-}
-
-// GetCycles returns CyclesByTeamResponse.Cycles, and is useful for accessing the field via an interface.
-func (v *CyclesByTeamResponse) GetCycles() CyclesByTeamCyclesCycleConnection { return v.Cycles }
-
 // DocumentSummaryFields includes the GraphQL fields of Document requested by the fragment DocumentSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -8829,26 +8667,6 @@ func (v *__CycleUpdateInput) GetId() string { return v.Id }
 // GetInput returns __CycleUpdateInput.Input, and is useful for accessing the field via an interface.
 func (v *__CycleUpdateInput) GetInput() LinearCycleUpdateInput { return v.Input }
 
-// __CyclesByTeamInput is used internally by genqlient
-type __CyclesByTeamInput struct {
-	TeamId          string  `json:"teamId"`
-	First           *int    `json:"first"`
-	After           *string `json:"after"`
-	IncludeArchived *bool   `json:"includeArchived"`
-}
-
-// GetTeamId returns __CyclesByTeamInput.TeamId, and is useful for accessing the field via an interface.
-func (v *__CyclesByTeamInput) GetTeamId() string { return v.TeamId }
-
-// GetFirst returns __CyclesByTeamInput.First, and is useful for accessing the field via an interface.
-func (v *__CyclesByTeamInput) GetFirst() *int { return v.First }
-
-// GetAfter returns __CyclesByTeamInput.After, and is useful for accessing the field via an interface.
-func (v *__CyclesByTeamInput) GetAfter() *string { return v.After }
-
-// GetIncludeArchived returns __CyclesByTeamInput.IncludeArchived, and is useful for accessing the field via an interface.
-func (v *__CyclesByTeamInput) GetIncludeArchived() *bool { return v.IncludeArchived }
-
 // __DocumentsInput is used internally by genqlient
 type __DocumentsInput struct {
 	First           *int    `json:"first"`
@@ -9464,6 +9282,26 @@ type __cycleInput struct {
 
 // GetId returns __cycleInput.Id, and is useful for accessing the field via an interface.
 func (v *__cycleInput) GetId() string { return v.Id }
+
+// __cyclesInput is used internally by genqlient
+type __cyclesInput struct {
+	TeamId          string  `json:"teamId"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetTeamId returns __cyclesInput.TeamId, and is useful for accessing the field via an interface.
+func (v *__cyclesInput) GetTeamId() string { return v.TeamId }
+
+// GetFirst returns __cyclesInput.First, and is useful for accessing the field via an interface.
+func (v *__cyclesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __cyclesInput.After, and is useful for accessing the field via an interface.
+func (v *__cyclesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __cyclesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__cyclesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __documentInput is used internally by genqlient
 type __documentInput struct {
@@ -10118,6 +9956,166 @@ type cycleResponse struct {
 
 // GetCycle returns cycleResponse.Cycle, and is useful for accessing the field via an interface.
 func (v *cycleResponse) GetCycle() cycleCycle { return v.Cycle }
+
+// cyclesCyclesCycleConnection includes the requested fields of the GraphQL type CycleConnection.
+type cyclesCyclesCycleConnection struct {
+	Nodes    []cyclesCyclesCycleConnectionNodesCycle `json:"nodes"`
+	PageInfo cyclesCyclesCycleConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns cyclesCyclesCycleConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnection) GetNodes() []cyclesCyclesCycleConnectionNodesCycle {
+	return v.Nodes
+}
+
+// GetPageInfo returns cyclesCyclesCycleConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnection) GetPageInfo() cyclesCyclesCycleConnectionPageInfo {
+	return v.PageInfo
+}
+
+// cyclesCyclesCycleConnectionNodesCycle includes the requested fields of the GraphQL type Cycle.
+// The GraphQL type's documentation follows.
+//
+// A time-boxed iteration (similar to a sprint) used for planning and tracking
+// work. Cycles belong to a team and have defined start and end dates. Issues are
+// assigned to cycles for time-based planning, and progress is tracked via
+// completed, in-progress, and total scope. Cycles are automatically completed when
+// their end date passes, and uncompleted issues can be carried over to the next cycle.
+type cyclesCyclesCycleConnectionNodesCycle struct {
+	CycleSummaryFields `json:"-"`
+}
+
+// GetId returns cyclesCyclesCycleConnectionNodesCycle.Id, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetId() string { return v.CycleSummaryFields.Id }
+
+// GetNumber returns cyclesCyclesCycleConnectionNodesCycle.Number, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetNumber() float64 {
+	return v.CycleSummaryFields.Number
+}
+
+// GetName returns cyclesCyclesCycleConnectionNodesCycle.Name, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetName() *string { return v.CycleSummaryFields.Name }
+
+// GetDescription returns cyclesCyclesCycleConnectionNodesCycle.Description, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetDescription() *string {
+	return v.CycleSummaryFields.Description
+}
+
+// GetStartsAt returns cyclesCyclesCycleConnectionNodesCycle.StartsAt, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetStartsAt() string {
+	return v.CycleSummaryFields.StartsAt
+}
+
+// GetEndsAt returns cyclesCyclesCycleConnectionNodesCycle.EndsAt, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetEndsAt() string {
+	return v.CycleSummaryFields.EndsAt
+}
+
+// GetCompletedAt returns cyclesCyclesCycleConnectionNodesCycle.CompletedAt, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetCompletedAt() *string {
+	return v.CycleSummaryFields.CompletedAt
+}
+
+// GetProgress returns cyclesCyclesCycleConnectionNodesCycle.Progress, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetProgress() float64 {
+	return v.CycleSummaryFields.Progress
+}
+
+// GetTeam returns cyclesCyclesCycleConnectionNodesCycle.Team, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionNodesCycle) GetTeam() CycleSummaryFieldsTeam {
+	return v.CycleSummaryFields.Team
+}
+
+func (v *cyclesCyclesCycleConnectionNodesCycle) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*cyclesCyclesCycleConnectionNodesCycle
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.cyclesCyclesCycleConnectionNodesCycle = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CycleSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcyclesCyclesCycleConnectionNodesCycle struct {
+	Id string `json:"id"`
+
+	Number float64 `json:"number"`
+
+	Name *string `json:"name"`
+
+	Description *string `json:"description"`
+
+	StartsAt string `json:"startsAt"`
+
+	EndsAt string `json:"endsAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	Progress float64 `json:"progress"`
+
+	Team CycleSummaryFieldsTeam `json:"team"`
+}
+
+func (v *cyclesCyclesCycleConnectionNodesCycle) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *cyclesCyclesCycleConnectionNodesCycle) __premarshalJSON() (*__premarshalcyclesCyclesCycleConnectionNodesCycle, error) {
+	var retval __premarshalcyclesCyclesCycleConnectionNodesCycle
+
+	retval.Id = v.CycleSummaryFields.Id
+	retval.Number = v.CycleSummaryFields.Number
+	retval.Name = v.CycleSummaryFields.Name
+	retval.Description = v.CycleSummaryFields.Description
+	retval.StartsAt = v.CycleSummaryFields.StartsAt
+	retval.EndsAt = v.CycleSummaryFields.EndsAt
+	retval.CompletedAt = v.CycleSummaryFields.CompletedAt
+	retval.Progress = v.CycleSummaryFields.Progress
+	retval.Team = v.CycleSummaryFields.Team
+	return &retval, nil
+}
+
+// cyclesCyclesCycleConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type cyclesCyclesCycleConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns cyclesCyclesCycleConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns cyclesCyclesCycleConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *cyclesCyclesCycleConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// cyclesResponse is returned by cycles on success.
+type cyclesResponse struct {
+	// All cycles accessible to the user.
+	Cycles cyclesCyclesCycleConnection `json:"cycles"`
+}
+
+// GetCycles returns cyclesResponse.Cycles, and is useful for accessing the field via an interface.
+func (v *cyclesResponse) GetCycles() cyclesCyclesCycleConnection { return v.Cycles }
 
 // documentDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
@@ -12476,67 +12474,6 @@ func CycleUpdate(
 	}
 
 	data_ = &CycleUpdateResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by CyclesByTeam.
-const CyclesByTeam_Operation = `
-query CyclesByTeam ($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
-	cycles(filter: {team:{id:{eq:$teamId}}}, first: $first, after: $after, includeArchived: $includeArchived) {
-		nodes {
-			... CycleSummaryFields
-		}
-		pageInfo {
-			hasNextPage
-			endCursor
-		}
-	}
-}
-fragment CycleSummaryFields on Cycle {
-	id
-	number
-	name
-	description
-	startsAt
-	endsAt
-	completedAt
-	progress
-	team {
-		id
-		key
-		name
-	}
-}
-`
-
-func CyclesByTeam(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	teamId string,
-	first *int,
-	after *string,
-	includeArchived *bool,
-) (data_ *CyclesByTeamResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "CyclesByTeam",
-		Query:  CyclesByTeam_Operation,
-		Variables: &__CyclesByTeamInput{
-			TeamId:          teamId,
-			First:           first,
-			After:           after,
-			IncludeArchived: includeArchived,
-		},
-	}
-
-	data_ = &CyclesByTeamResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -15111,6 +15048,67 @@ func cycle(
 	}
 
 	data_ = &cycleResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by cycles.
+const cycles_Operation = `
+query cycles ($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+	cycles(filter: {team:{id:{eq:$teamId}}}, first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... CycleSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment CycleSummaryFields on Cycle {
+	id
+	number
+	name
+	description
+	startsAt
+	endsAt
+	completedAt
+	progress
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func cycles(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamId string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *cyclesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "cycles",
+		Query:  cycles_Operation,
+		Variables: &__cyclesInput{
+			TeamId:          teamId,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &cyclesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

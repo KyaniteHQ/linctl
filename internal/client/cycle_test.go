@@ -11,7 +11,7 @@ import (
 func Test_ListCyclesByTeam_returns_cycle_page(t *testing.T) {
 	endCursor := "cursor-1"
 	graphqlClient := fakeGraphQLClient{
-		"CyclesByTeam": `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":null,"description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}},{"id":"named-cycle-id","number":13,"name":"Named cycle","description":null,"startsAt":"2026-01-01T00:00:00Z","endsAt":"2026-02-01T00:00:00Z","completedAt":"2026-01-30T00:00:00Z","progress":1,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"cycles": `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":null,"description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}},{"id":"named-cycle-id","number":13,"name":"Named cycle","description":null,"startsAt":"2026-01-01T00:00:00Z","endsAt":"2026-02-01T00:00:00Z","completedAt":"2026-01-30T00:00:00Z","progress":1,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 	}
 
 	cycles, err := ListCyclesByTeam(context.Background(), graphqlClient, "team-id", 1)
@@ -61,7 +61,7 @@ func Test_GetCycleByID_wraps_graphql_errors(t *testing.T) {
 
 func Test_CurrentCycleByTeam_returns_active_cycle(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
-		"CyclesByTeam": `{"cycles":{"nodes":[{"id":"future-cycle-id","number":13,"name":"Future cycle","description":null,"startsAt":"2099-01-01T00:00:00Z","endsAt":"2099-02-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}},{"id":"cycle-id","number":12,"name":"Current sprint","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"cycles": `{"cycles":{"nodes":[{"id":"future-cycle-id","number":13,"name":"Future cycle","description":null,"startsAt":"2099-01-01T00:00:00Z","endsAt":"2099-02-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}},{"id":"cycle-id","number":12,"name":"Current sprint","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
 	}
 
 	cycle, err := CurrentCycleByTeam(context.Background(), graphqlClient, "team-id")
@@ -74,7 +74,7 @@ func Test_CurrentCycleByTeam_returns_active_cycle(t *testing.T) {
 
 func Test_CurrentCycleByTeam_reports_empty_active_cycle(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
-		"CyclesByTeam": `{"cycles":{"nodes":[{"id":"future-cycle-id","number":13,"name":"Future cycle","description":null,"startsAt":"2099-01-01T00:00:00Z","endsAt":"2099-02-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"cycles": `{"cycles":{"nodes":[{"id":"future-cycle-id","number":13,"name":"Future cycle","description":null,"startsAt":"2099-01-01T00:00:00Z","endsAt":"2099-02-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
 	}
 
 	_, err := CurrentCycleByTeam(context.Background(), graphqlClient, "team-id")

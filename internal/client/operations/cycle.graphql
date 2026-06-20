@@ -1,4 +1,4 @@
-query CyclesByTeam($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+query cycles($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
   cycles(
     filter: { team: { id: { eq: $teamId } } }
     first: $first

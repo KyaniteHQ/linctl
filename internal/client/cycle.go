@@ -86,20 +86,20 @@ func ListCyclesByTeam(
 	teamID string,
 	limit int,
 ) (CycleList, error) {
-	cycles, err := CyclesByTeam(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
+	cyclePage, err := cycles(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CycleList{}, fmt.Errorf("list cycles: %w", err)
 	}
 
-	summaries := make([]CycleSummary, 0, len(cycles.Cycles.Nodes))
-	for _, cycle := range cycles.Cycles.Nodes {
+	summaries := make([]CycleSummary, 0, len(cyclePage.Cycles.Nodes))
+	for _, cycle := range cyclePage.Cycles.Nodes {
 		summaries = append(summaries, cycleSummary(cycle.CycleSummaryFields))
 	}
 
 	return CycleList{
 		Cycles:      summaries,
-		HasNextPage: cycles.Cycles.PageInfo.HasNextPage,
-		EndCursor:   cycles.Cycles.PageInfo.EndCursor,
+		HasNextPage: cyclePage.Cycles.PageInfo.HasNextPage,
+		EndCursor:   cyclePage.Cycles.PageInfo.EndCursor,
 	}, nil
 }
 
