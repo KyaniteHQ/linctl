@@ -1781,6 +1781,125 @@ func (v *FavoriteSummaryFields) GetFolderName() *string { return v.FolderName }
 // GetUrl returns FavoriteSummaryFields.Url, and is useful for accessing the field via an interface.
 func (v *FavoriteSummaryFields) GetUrl() *string { return v.Url }
 
+// InitiativeRelationSummaryFields includes the GraphQL fields of InitiativeRelation requested by the fragment InitiativeRelationSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A parent-child relation between two initiatives, forming a hierarchy. The
+// initiative field is the parent and relatedInitiative is the child. Cycles and
+// excessive nesting depth are prevented.
+type InitiativeRelationSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The sort order of the child initiative within its parent initiative.
+	SortOrder float64 `json:"sortOrder"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The parent initiative in this hierarchical relation.
+	Initiative InitiativeRelationSummaryFieldsInitiative `json:"initiative"`
+	// The child initiative in this hierarchical relation.
+	RelatedInitiative InitiativeRelationSummaryFieldsRelatedInitiative `json:"relatedInitiative"`
+	// The user who last created or modified the relation. Null if the user has been deleted.
+	User *InitiativeRelationSummaryFieldsUser `json:"user"`
+}
+
+// GetId returns InitiativeRelationSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetId() string { return v.Id }
+
+// GetSortOrder returns InitiativeRelationSummaryFields.SortOrder, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetSortOrder() float64 { return v.SortOrder }
+
+// GetCreatedAt returns InitiativeRelationSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns InitiativeRelationSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns InitiativeRelationSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetInitiative returns InitiativeRelationSummaryFields.Initiative, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetInitiative() InitiativeRelationSummaryFieldsInitiative {
+	return v.Initiative
+}
+
+// GetRelatedInitiative returns InitiativeRelationSummaryFields.RelatedInitiative, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetRelatedInitiative() InitiativeRelationSummaryFieldsRelatedInitiative {
+	return v.RelatedInitiative
+}
+
+// GetUser returns InitiativeRelationSummaryFields.User, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFields) GetUser() *InitiativeRelationSummaryFieldsUser {
+	return v.User
+}
+
+// InitiativeRelationSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business
+// goal. Initiatives can contain multiple projects, have their own status updates
+// and health tracking, and can be organized hierarchically with parent-child relationships.
+type InitiativeRelationSummaryFieldsInitiative struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the initiative.
+	Name string `json:"name"`
+}
+
+// GetId returns InitiativeRelationSummaryFieldsInitiative.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFieldsInitiative) GetId() string { return v.Id }
+
+// GetName returns InitiativeRelationSummaryFieldsInitiative.Name, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFieldsInitiative) GetName() string { return v.Name }
+
+// InitiativeRelationSummaryFieldsRelatedInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business
+// goal. Initiatives can contain multiple projects, have their own status updates
+// and health tracking, and can be organized hierarchically with parent-child relationships.
+type InitiativeRelationSummaryFieldsRelatedInitiative struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the initiative.
+	Name string `json:"name"`
+}
+
+// GetId returns InitiativeRelationSummaryFieldsRelatedInitiative.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFieldsRelatedInitiative) GetId() string { return v.Id }
+
+// GetName returns InitiativeRelationSummaryFieldsRelatedInitiative.Name, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFieldsRelatedInitiative) GetName() string { return v.Name }
+
+// InitiativeRelationSummaryFieldsUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type InitiativeRelationSummaryFieldsUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's full name.
+	Name string `json:"name"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns InitiativeRelationSummaryFieldsUser.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFieldsUser) GetId() string { return v.Id }
+
+// GetName returns InitiativeRelationSummaryFieldsUser.Name, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFieldsUser) GetName() string { return v.Name }
+
+// GetDisplayName returns InitiativeRelationSummaryFieldsUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *InitiativeRelationSummaryFieldsUser) GetDisplayName() string { return v.DisplayName }
+
 type InitiativeStatus string
 
 const (
@@ -14043,6 +14162,30 @@ type __initiativeInput struct {
 // GetId returns __initiativeInput.Id, and is useful for accessing the field via an interface.
 func (v *__initiativeInput) GetId() string { return v.Id }
 
+// __initiativeRelationInput is used internally by genqlient
+type __initiativeRelationInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __initiativeRelationInput.Id, and is useful for accessing the field via an interface.
+func (v *__initiativeRelationInput) GetId() string { return v.Id }
+
+// __initiativeRelationsInput is used internally by genqlient
+type __initiativeRelationsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __initiativeRelationsInput.First, and is useful for accessing the field via an interface.
+func (v *__initiativeRelationsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __initiativeRelationsInput.After, and is useful for accessing the field via an interface.
+func (v *__initiativeRelationsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __initiativeRelationsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__initiativeRelationsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __initiativeUpdateInput is used internally by genqlient
 type __initiativeUpdateInput struct {
 	Id string `json:"id"`
@@ -17788,6 +17931,292 @@ func (v *initiativeInitiative) __premarshalJSON() (*__premarshalinitiativeInitia
 	retval.SlugId = v.InitiativeSummaryFields.SlugId
 	retval.Url = v.InitiativeSummaryFields.Url
 	return &retval, nil
+}
+
+// initiativeRelationInitiativeRelation includes the requested fields of the GraphQL type InitiativeRelation.
+// The GraphQL type's documentation follows.
+//
+// A parent-child relation between two initiatives, forming a hierarchy. The
+// initiative field is the parent and relatedInitiative is the child. Cycles and
+// excessive nesting depth are prevented.
+type initiativeRelationInitiativeRelation struct {
+	InitiativeRelationSummaryFields `json:"-"`
+}
+
+// GetId returns initiativeRelationInitiativeRelation.Id, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetId() string {
+	return v.InitiativeRelationSummaryFields.Id
+}
+
+// GetSortOrder returns initiativeRelationInitiativeRelation.SortOrder, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetSortOrder() float64 {
+	return v.InitiativeRelationSummaryFields.SortOrder
+}
+
+// GetCreatedAt returns initiativeRelationInitiativeRelation.CreatedAt, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetCreatedAt() string {
+	return v.InitiativeRelationSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns initiativeRelationInitiativeRelation.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetUpdatedAt() string {
+	return v.InitiativeRelationSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns initiativeRelationInitiativeRelation.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetArchivedAt() *string {
+	return v.InitiativeRelationSummaryFields.ArchivedAt
+}
+
+// GetInitiative returns initiativeRelationInitiativeRelation.Initiative, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetInitiative() InitiativeRelationSummaryFieldsInitiative {
+	return v.InitiativeRelationSummaryFields.Initiative
+}
+
+// GetRelatedInitiative returns initiativeRelationInitiativeRelation.RelatedInitiative, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetRelatedInitiative() InitiativeRelationSummaryFieldsRelatedInitiative {
+	return v.InitiativeRelationSummaryFields.RelatedInitiative
+}
+
+// GetUser returns initiativeRelationInitiativeRelation.User, and is useful for accessing the field via an interface.
+func (v *initiativeRelationInitiativeRelation) GetUser() *InitiativeRelationSummaryFieldsUser {
+	return v.InitiativeRelationSummaryFields.User
+}
+
+func (v *initiativeRelationInitiativeRelation) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*initiativeRelationInitiativeRelation
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.initiativeRelationInitiativeRelation = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.InitiativeRelationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalinitiativeRelationInitiativeRelation struct {
+	Id string `json:"id"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Initiative InitiativeRelationSummaryFieldsInitiative `json:"initiative"`
+
+	RelatedInitiative InitiativeRelationSummaryFieldsRelatedInitiative `json:"relatedInitiative"`
+
+	User *InitiativeRelationSummaryFieldsUser `json:"user"`
+}
+
+func (v *initiativeRelationInitiativeRelation) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *initiativeRelationInitiativeRelation) __premarshalJSON() (*__premarshalinitiativeRelationInitiativeRelation, error) {
+	var retval __premarshalinitiativeRelationInitiativeRelation
+
+	retval.Id = v.InitiativeRelationSummaryFields.Id
+	retval.SortOrder = v.InitiativeRelationSummaryFields.SortOrder
+	retval.CreatedAt = v.InitiativeRelationSummaryFields.CreatedAt
+	retval.UpdatedAt = v.InitiativeRelationSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.InitiativeRelationSummaryFields.ArchivedAt
+	retval.Initiative = v.InitiativeRelationSummaryFields.Initiative
+	retval.RelatedInitiative = v.InitiativeRelationSummaryFields.RelatedInitiative
+	retval.User = v.InitiativeRelationSummaryFields.User
+	return &retval, nil
+}
+
+// initiativeRelationResponse is returned by initiativeRelation on success.
+type initiativeRelationResponse struct {
+	// Returns a single initiative relation by its identifier.
+	InitiativeRelation initiativeRelationInitiativeRelation `json:"initiativeRelation"`
+}
+
+// GetInitiativeRelation returns initiativeRelationResponse.InitiativeRelation, and is useful for accessing the field via an interface.
+func (v *initiativeRelationResponse) GetInitiativeRelation() initiativeRelationInitiativeRelation {
+	return v.InitiativeRelation
+}
+
+// initiativeRelationsInitiativeRelationsInitiativeRelationConnection includes the requested fields of the GraphQL type InitiativeRelationConnection.
+type initiativeRelationsInitiativeRelationsInitiativeRelationConnection struct {
+	Nodes    []initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation `json:"nodes"`
+	PageInfo initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo                  `json:"pageInfo"`
+}
+
+// GetNodes returns initiativeRelationsInitiativeRelationsInitiativeRelationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnection) GetNodes() []initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation {
+	return v.Nodes
+}
+
+// GetPageInfo returns initiativeRelationsInitiativeRelationsInitiativeRelationConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnection) GetPageInfo() initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo {
+	return v.PageInfo
+}
+
+// initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation includes the requested fields of the GraphQL type InitiativeRelation.
+// The GraphQL type's documentation follows.
+//
+// A parent-child relation between two initiatives, forming a hierarchy. The
+// initiative field is the parent and relatedInitiative is the child. Cycles and
+// excessive nesting depth are prevented.
+type initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation struct {
+	InitiativeRelationSummaryFields `json:"-"`
+}
+
+// GetId returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.Id, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetId() string {
+	return v.InitiativeRelationSummaryFields.Id
+}
+
+// GetSortOrder returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.SortOrder, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetSortOrder() float64 {
+	return v.InitiativeRelationSummaryFields.SortOrder
+}
+
+// GetCreatedAt returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.CreatedAt, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetCreatedAt() string {
+	return v.InitiativeRelationSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetUpdatedAt() string {
+	return v.InitiativeRelationSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetArchivedAt() *string {
+	return v.InitiativeRelationSummaryFields.ArchivedAt
+}
+
+// GetInitiative returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.Initiative, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetInitiative() InitiativeRelationSummaryFieldsInitiative {
+	return v.InitiativeRelationSummaryFields.Initiative
+}
+
+// GetRelatedInitiative returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.RelatedInitiative, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetRelatedInitiative() InitiativeRelationSummaryFieldsRelatedInitiative {
+	return v.InitiativeRelationSummaryFields.RelatedInitiative
+}
+
+// GetUser returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation.User, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) GetUser() *InitiativeRelationSummaryFieldsUser {
+	return v.InitiativeRelationSummaryFields.User
+}
+
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.InitiativeRelationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalinitiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation struct {
+	Id string `json:"id"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Initiative InitiativeRelationSummaryFieldsInitiative `json:"initiative"`
+
+	RelatedInitiative InitiativeRelationSummaryFieldsRelatedInitiative `json:"relatedInitiative"`
+
+	User *InitiativeRelationSummaryFieldsUser `json:"user"`
+}
+
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation) __premarshalJSON() (*__premarshalinitiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation, error) {
+	var retval __premarshalinitiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation
+
+	retval.Id = v.InitiativeRelationSummaryFields.Id
+	retval.SortOrder = v.InitiativeRelationSummaryFields.SortOrder
+	retval.CreatedAt = v.InitiativeRelationSummaryFields.CreatedAt
+	retval.UpdatedAt = v.InitiativeRelationSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.InitiativeRelationSummaryFields.ArchivedAt
+	retval.Initiative = v.InitiativeRelationSummaryFields.Initiative
+	retval.RelatedInitiative = v.InitiativeRelationSummaryFields.RelatedInitiative
+	retval.User = v.InitiativeRelationSummaryFields.User
+	return &retval, nil
+}
+
+// initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// initiativeRelationsResponse is returned by initiativeRelations on success.
+type initiativeRelationsResponse struct {
+	// Returns all initiative parent-child relations in the workspace.
+	InitiativeRelations initiativeRelationsInitiativeRelationsInitiativeRelationConnection `json:"initiativeRelations"`
+}
+
+// GetInitiativeRelations returns initiativeRelationsResponse.InitiativeRelations, and is useful for accessing the field via an interface.
+func (v *initiativeRelationsResponse) GetInitiativeRelations() initiativeRelationsInitiativeRelationsInitiativeRelationConnection {
+	return v.InitiativeRelations
 }
 
 // initiativeResponse is returned by initiative on success.
@@ -35888,6 +36317,124 @@ func initiative(
 	}
 
 	data_ = &initiativeResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by initiativeRelation.
+const initiativeRelation_Operation = `
+query initiativeRelation ($id: String!) {
+	initiativeRelation(id: $id) {
+		... InitiativeRelationSummaryFields
+	}
+}
+fragment InitiativeRelationSummaryFields on InitiativeRelation {
+	id
+	sortOrder
+	createdAt
+	updatedAt
+	archivedAt
+	initiative {
+		id
+		name
+	}
+	relatedInitiative {
+		id
+		name
+	}
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func initiativeRelation(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *initiativeRelationResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "initiativeRelation",
+		Query:  initiativeRelation_Operation,
+		Variables: &__initiativeRelationInput{
+			Id: id,
+		},
+	}
+
+	data_ = &initiativeRelationResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by initiativeRelations.
+const initiativeRelations_Operation = `
+query initiativeRelations ($first: Int, $after: String, $includeArchived: Boolean) {
+	initiativeRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... InitiativeRelationSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment InitiativeRelationSummaryFields on InitiativeRelation {
+	id
+	sortOrder
+	createdAt
+	updatedAt
+	archivedAt
+	initiative {
+		id
+		name
+	}
+	relatedInitiative {
+		id
+		name
+	}
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func initiativeRelations(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *initiativeRelationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "initiativeRelations",
+		Query:  initiativeRelations_Operation,
+		Variables: &__initiativeRelationsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &initiativeRelationsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

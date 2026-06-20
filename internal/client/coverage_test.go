@@ -217,6 +217,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"timeSchedule":             `{"timeSchedule":{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}}`,
 		"initiatives":              `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiative":               `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
+		"initiativeRelations":      `{"initiativeRelations":{"nodes":[{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"initiative-relation-no-user","sortOrder":2,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"other-child-initiative-id","name":"Other child"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiativeRelation":       `{"initiativeRelation":{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
 		"initiativeUpdates":        `{"initiativeUpdates":{"nodes":[{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiativeUpdate":         `{"initiativeUpdate":{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
 		"roadmaps":                 `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -362,6 +364,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	initiatives, err := ListInitiatives(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	initiative, err := GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
+	require.NoError(t, err)
+	initiativeRelations, err := ListInitiativeRelations(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	initiativeRelation, err := GetInitiativeRelationByID(context.Background(), graphqlClient, "initiative-relation-id")
 	require.NoError(t, err)
 	initiativeUpdates, err := ListInitiativeUpdates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -565,6 +571,15 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "2026-12-31", initiatives.Initiatives[0].TargetDate)
 	require.Equal(t, "initiative-id", initiative.ID)
 	require.Equal(t, "Platform initiative", initiative.Description)
+	require.True(t, initiativeRelations.HasNextPage)
+	require.Equal(t, &endCursor, initiativeRelations.EndCursor)
+	require.Equal(t, "initiative-relation-id", initiativeRelations.Relations[0].ID)
+	require.Equal(t, "Platform", initiativeRelations.Relations[0].ParentInitiativeName)
+	require.Equal(t, "Child initiative", initiativeRelations.Relations[0].RelatedInitiativeName)
+	require.Equal(t, "Omer", initiativeRelations.Relations[0].DisplayName)
+	require.Empty(t, initiativeRelations.Relations[1].DisplayName)
+	require.Equal(t, "initiative-relation-id", initiativeRelation.ID)
+	require.InEpsilon(t, 1.5, initiativeRelation.SortOrder, 0)
 	require.True(t, initiativeUpdates.HasNextPage)
 	require.Equal(t, &endCursor, initiativeUpdates.EndCursor)
 	require.Equal(t, "initiative-update-id", initiativeUpdates.Updates[0].ID)
@@ -1127,6 +1142,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get initiative initiative-id")
+
+		_, err = ListInitiativeRelations(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list initiative relations")
+
+		_, err = GetInitiativeRelationByID(context.Background(), graphqlClient, "initiative-relation-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get initiative relation initiative-relation-id")
 
 		_, err = ListInitiativeUpdates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

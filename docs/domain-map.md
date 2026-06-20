@@ -416,6 +416,30 @@ Planned commands:
 
 Only `initiative list` and `initiative get` are implemented in the current CLI. Initiative writes are deferred as organization-scoped planning surface.
 
+## InitiativeRelation
+
+Use `InitiativeRelation` for Linear parent-child Initiative hierarchy edges.
+
+Schema backing:
+
+- Types: `InitiativeRelation`, `InitiativeRelationConnection`
+- Reads: `Query.initiativeRelations`, `Query.initiativeRelation`
+- Writes: `Mutation.initiativeRelationCreate`, `Mutation.initiativeRelationUpdate`, `Mutation.initiativeRelationDelete`
+- Inputs: `InitiativeRelationCreateInput`, `InitiativeRelationUpdateInput`
+- Relevant fields: `InitiativeRelation.id`, `InitiativeRelation.initiative`, `InitiativeRelation.relatedInitiative`, `InitiativeRelation.sortOrder`, `InitiativeRelation.createdAt`, `InitiativeRelation.updatedAt`, `InitiativeRelation.archivedAt`, `InitiativeRelation.user`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `initiative-relation list` | `Query.initiativeRelations` | Read-only |
+| `initiative-relation get` | `Query.initiativeRelation` | Read-only |
+| `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation |
+| `initiative-relation update` | `Mutation.initiativeRelationUpdate` | Blocked: update must resolve and compare both Initiative hierarchy endpoints before mutation |
+| `initiative-relation delete` | `Mutation.initiativeRelationDelete` | Blocked: destructive command needs explicit hierarchy safety semantics |
+
+Only `initiative-relation list` and `initiative-relation get` are implemented in the current CLI. InitiativeRelation writes are deferred until their hierarchy guard model is explicit.
+
 ## InitiativeUpdate
 
 Use `InitiativeUpdate` for Linear initiative status updates. Avoid calling these generic comments or notes.

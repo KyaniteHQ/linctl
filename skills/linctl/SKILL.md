@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, initiative, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, initiative, InitiativeRelation, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -124,6 +124,8 @@ linctl time-schedule list --json --limit 20
 linctl time-schedule get TIME_SCHEDULE_ID --json
 linctl initiative list --json --limit 20
 linctl initiative get INITIATIVE_ID --json
+linctl initiative-relation list --json --limit 20
+linctl initiative-relation get INITIATIVE_RELATION_ID --json
 linctl initiative-update list --json --limit 20
 linctl initiative-update get INITIATIVE_UPDATE_ID --json
 linctl roadmap list --json --limit 20
@@ -178,7 +180,7 @@ linctl project-milestone create PROJECT_ID --name "..." --json
 linctl project-milestone update PROJECT_MILESTONE_ID --name "..." --json
 ```
 
-Unsupported writes: Notification archive/update/read-state/snooze/subscription/preference changes; ReleasePipeline and ReleaseStage configuration writes; Release, ReleaseNote, IssueToRelease, release sync, and release complete writes; comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; Document, label, team, user, WorkflowState, TimeSchedule, initiative, InitiativeUpdate, Roadmap, CustomView, Favorite, Emoji, and Attachment writes. Report the limit instead of bypassing `linctl`.
+Unsupported writes: Notification archive/update/read-state/snooze/subscription/preference changes; ReleasePipeline and ReleaseStage configuration writes; Release, ReleaseNote, IssueToRelease, release sync, and release complete writes; comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; Document, label, team, user, WorkflowState, TimeSchedule, initiative, InitiativeRelation, InitiativeUpdate, Roadmap, CustomView, Favorite, Emoji, and Attachment writes. Report the limit instead of bypassing `linctl`.
 
 Completion criterion: the selected command exists above and matches the requested domain.
 

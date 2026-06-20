@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 76 | 458 |
-| Upstream Query root fields | 158 | 64 | 158 |
+| Upstream SDK root methods | 458 | 78 | 458 |
+| Upstream Query root fields | 158 | 66 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 114 | 114 | 114 |
-| Domain-map commands | 188 | 96 | 188 |
+| Local generated Go operations | 116 | 116 | 116 |
+| Domain-map commands | 193 | 98 | 193 |
 
 ## Upstream SDK Root Methods
 
@@ -228,8 +228,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `imageUploadFromUrl` | method | safe_candidate | read operation may fit future CLI coverage |
 | `importFileUpload` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiative` | method | implemented | local operation or command exists |
-| `initiativeRelation` | method | safe_candidate | read operation may fit future CLI coverage |
-| `initiativeRelations` | method | safe_candidate | read operation may fit future CLI coverage |
+| `initiativeRelation` | method | implemented | local operation or command exists |
+| `initiativeRelations` | method | implemented | local operation or command exists |
 | `initiativeToProject` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeToProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeUpdate` | method | implemented | local operation or command exists |
@@ -542,8 +542,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `favorites` | `FavoriteConnection!` | implemented | root field used by local GraphQL operation |
 | `fetchData` | `FetchDataPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiative` | `Initiative!` | implemented | root field used by local GraphQL operation |
-| `initiativeRelation` | `InitiativeRelation!` | safe_candidate | read operation may fit future CLI coverage |
-| `initiativeRelations` | `InitiativeRelationConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `initiativeRelation` | `InitiativeRelation!` | implemented | root field used by local GraphQL operation |
+| `initiativeRelations` | `InitiativeRelationConnection!` | implemented | root field used by local GraphQL operation |
 | `initiativeToProject` | `InitiativeToProject!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeToProjects` | `InitiativeToProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeUpdate` | `InitiativeUpdate!` | implemented | root field used by local GraphQL operation |
@@ -1084,6 +1084,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `favorite_children` | query | `favorite` | implemented | `internal/client/generated.go` |
 | `favorites` | query | `favorites` | implemented | `internal/client/generated.go` |
 | `initiative` | query | `initiative` | implemented | `internal/client/generated.go` |
+| `initiativeRelation` | query | `initiativeRelation` | implemented | `internal/client/generated.go` |
+| `initiativeRelations` | query | `initiativeRelations` | implemented | `internal/client/generated.go` |
 | `initiativeUpdate` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
 | `initiativeUpdates` | query | `initiativeUpdates` | implemented | `internal/client/generated.go` |
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
@@ -1261,6 +1263,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeRelation | `initiative-relation list` | `Query.initiativeRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeRelation | `initiative-relation get` | `Query.initiativeRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeRelation | `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeRelation | `initiative-relation update` | `Mutation.initiativeRelationUpdate` | Blocked: update must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeRelation | `initiative-relation delete` | `Mutation.initiativeRelationDelete` | Blocked: destructive command needs explicit hierarchy safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | write command needs explicit target and safety semantics |

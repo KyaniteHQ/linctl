@@ -1,0 +1,38 @@
+query initiativeRelations($first: Int, $after: String, $includeArchived: Boolean) {
+  initiativeRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...InitiativeRelationSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query initiativeRelation($id: String!) {
+  initiativeRelation(id: $id) {
+    ...InitiativeRelationSummaryFields
+  }
+}
+
+fragment InitiativeRelationSummaryFields on InitiativeRelation {
+  id
+  sortOrder
+  createdAt
+  updatedAt
+  archivedAt
+  initiative {
+    id
+    name
+  }
+  relatedInitiative {
+    id
+    name
+  }
+  user {
+    id
+    name
+    displayName
+  }
+}

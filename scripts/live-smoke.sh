@@ -50,6 +50,7 @@ PY
   "$binary" release list --json --limit 5 >/dev/null
   "$binary" release-note list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null
+  "$binary" initiative-relation list --json --limit 5 >/dev/null
   "$binary" initiative-update list --json --limit 5 >/dev/null
   "$binary" roadmap list --json --limit 5 >/dev/null
   "$binary" customer list --json --limit 5 >/dev/null
