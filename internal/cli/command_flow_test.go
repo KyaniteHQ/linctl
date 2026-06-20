@@ -84,6 +84,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "user me", args: []string{"user", "me"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "workflow state list", args: []string{"workflow-state", "list", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
+		{name: "initiative list", args: []string{"initiative", "list", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
+		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
 	}
 
 	for _, test := range tests {
@@ -628,6 +630,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
 		{"--json", "--fields", "id,display_name,email", "team", "members", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
+		{"--json", "initiative", "list", "--limit", "1"},
+		{"--json", "initiative", "get", "initiative-id"},
 	}
 
 	for _, args := range tests {
@@ -1027,6 +1031,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "user me", args: []string{"user", "me"}, operation: "viewer", contains: "get viewer user"},
 		{name: "workflow state list", args: []string{"workflow-state", "list"}, operation: "workflowStates", contains: "list workflow states"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
+		{name: "initiative list", args: []string{"initiative", "list"}, operation: "initiatives", contains: "list initiatives"},
+		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
 	}
 
 	for _, test := range tests {
@@ -1312,10 +1318,21 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 		return `{"user":` + commandUserJSON() + `}`, true
 	case "viewer":
 		return `{"viewer":` + commandUserJSON() + `}`, true
+	}
+
+	return commandFlowStateAndCommentPayload(operation)
+}
+
+func commandFlowStateAndCommentPayload(operation string) (string, bool) {
+	switch operation {
 	case "workflowStates":
 		return `{"workflowStates":{"nodes":[` + commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "workflowState":
 		return `{"workflowState":` + commandWorkflowStateJSON() + `}`, true
+	case "initiatives":
+		return `{"initiatives":{"nodes":[` + commandInitiativeJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "initiative":
+		return `{"initiative":` + commandInitiativeJSON() + `}`, true
 	case "comments":
 		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "comment":
@@ -1729,6 +1746,19 @@ func commandWorkflowStateJSON() string {
 		"color":"#f2c94c",
 		"position":2,
 		"team":{"id":"team-id","key":"LIT","name":"linctl"}
+	}`
+}
+
+func commandInitiativeJSON() string {
+	return `{
+		"id":"initiative-id",
+		"name":"Platform",
+		"description":"Platform initiative",
+		"status":"Active",
+		"priority":2,
+		"targetDate":"2026-12-31",
+		"slugId":"platform-init",
+		"url":"https://linear.app/kyanite/initiative/platform-init"
 	}`
 }
 

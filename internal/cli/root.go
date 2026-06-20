@@ -84,6 +84,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addTeamCommand(ctx, command, &options)
 	addUserCommand(ctx, command, &options)
 	addWorkflowStateCommand(ctx, command, &options)
+	addInitiativeCommand(ctx, command, &options)
 	command.SetContext(ctx)
 
 	return command

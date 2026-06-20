@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 35 | 458 |
-| Upstream Query root fields | 158 | 23 | 158 |
+| Upstream SDK root methods | 458 | 37 | 458 |
+| Upstream Query root fields | 158 | 25 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 60 | 60 | 60 |
-| Domain-map commands | 73 | 54 | 73 |
+| Local generated Go operations | 62 | 62 | 62 |
+| Domain-map commands | 78 | 56 | 78 |
 
 ## Upstream SDK Root Methods
 
@@ -227,14 +227,14 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `googleUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `imageUploadFromUrl` | method | safe_candidate | read operation may fit future CLI coverage |
 | `importFileUpload` | method | safe_candidate | read operation may fit future CLI coverage |
-| `initiative` | method | safe_candidate | read operation may fit future CLI coverage |
+| `initiative` | method | implemented | local operation or command exists |
 | `initiativeRelation` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeRelations` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeToProject` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeToProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeUpdate` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeUpdates` | method | safe_candidate | read operation may fit future CLI coverage |
-| `initiatives` | method | safe_candidate | read operation may fit future CLI coverage |
+| `initiatives` | method | implemented | local operation or command exists |
 | `integration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationAsksConnectChannel` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationDiscord` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -541,14 +541,14 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `favorite` | `Favorite!` | safe_candidate | read operation may fit future CLI coverage |
 | `favorites` | `FavoriteConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `fetchData` | `FetchDataPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `initiative` | `Initiative!` | safe_candidate | read operation may fit future CLI coverage |
+| `initiative` | `Initiative!` | implemented | root field used by local GraphQL operation |
 | `initiativeRelation` | `InitiativeRelation!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeRelations` | `InitiativeRelationConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeToProject` | `InitiativeToProject!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeToProjects` | `InitiativeToProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeUpdate` | `InitiativeUpdate!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeUpdates` | `InitiativeUpdateConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `initiatives` | `InitiativeConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `initiatives` | `InitiativeConnection!` | implemented | root field used by local GraphQL operation |
 | `integration` | `Integration!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationHasScopes` | `IntegrationHasScopesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplate` | `IntegrationTemplate!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -1064,6 +1064,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
+| `initiative` | query | `initiative` | implemented | `internal/client/generated.go` |
+| `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
@@ -1159,4 +1161,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 

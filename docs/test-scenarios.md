@@ -316,9 +316,20 @@ Success is pass/fail:
    - Success: `linctl issue create --description-file FILE`, `linctl issue update --append-file FILE`, `linctl issue comment --body-file FILE`, and `linctl issue reply --body-file FILE` read local file contents before the existing guarded write path.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_read_issue_text_from_files`.
 
+61. Initiative list
+   - Success: `linctl initiative list --limit N` lists visible Initiatives through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/initiative_list`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+62. Initiative get
+   - Success: `linctl initiative get INITIATIVE_ID` reads one Initiative by id or slug.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/initiative_get`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
-All sixty local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All sixty-two local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

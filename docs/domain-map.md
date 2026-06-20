@@ -284,3 +284,27 @@ Planned commands:
 | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics |
 
 Only `workflow-state list` and `workflow-state get` are implemented in the current CLI. WorkflowState writes are deferred as team/admin configuration surface.
+
+## Initiative
+
+Use the schema name `Initiative` in code and docs. It is Linear's strategic grouping of projects toward a goal.
+
+Schema backing:
+
+- Types: `Initiative`, `InitiativeConnection`
+- Reads: `Query.initiatives`, `Query.initiative`
+- Writes: `Mutation.createInitiative`, `Mutation.updateInitiative`, `Mutation.archiveInitiative`, `Mutation.deleteInitiative`
+- Inputs: `InitiativeCreateInput`, `InitiativeUpdateInput`
+- Relevant fields: `Initiative.id`, `Initiative.name`, `Initiative.description`, `Initiative.status`, `Initiative.priority`, `Initiative.targetDate`, `Initiative.slugId`, `Initiative.url`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `initiative list` | `Query.initiatives` | Read-only |
+| `initiative get` | `Query.initiative` | Read-only |
+| `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model |
+| `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation |
+| `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics |
+
+Only `initiative list` and `initiative get` are implemented in the current CLI. Initiative writes are deferred as organization-scoped planning surface.

@@ -674,6 +674,8 @@ func commandImplemented(command string) bool {
 		"user me":                  true,
 		"workflow-state list":      true,
 		"workflow-state get":       true,
+		"initiative list":          true,
+		"initiative get":           true,
 	}
 	return implemented[command]
 }
@@ -694,6 +696,9 @@ func domainCommandBlocked(command string) bool {
 		"workflow-state create":  true,
 		"workflow-state update":  true,
 		"workflow-state archive": true,
+		"initiative create":      true,
+		"initiative update":      true,
+		"initiative archive":     true,
 	}
 	return blocked[command]
 }

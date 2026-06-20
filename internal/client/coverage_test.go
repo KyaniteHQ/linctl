@@ -189,6 +189,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"viewer":            `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
 		"workflowStates":    `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"workflowState":     `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
+		"initiatives":       `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiative":        `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
 	}
 
 	// When
@@ -269,6 +271,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	workflowStates, err := ListWorkflowStates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	workflowState, err := GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
+	require.NoError(t, err)
+	initiatives, err := ListInitiatives(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	initiative, err := GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
 	require.NoError(t, err)
 
 	// Then
@@ -362,6 +368,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "LIT", workflowStates.WorkflowStates[0].TeamKey)
 	require.Equal(t, "started", workflowState.Type)
 	require.Equal(t, "linctl", workflowState.TeamName)
+	require.True(t, initiatives.HasNextPage)
+	require.Equal(t, &endCursor, initiatives.EndCursor)
+	require.Equal(t, "Platform", initiatives.Initiatives[0].Name)
+	require.Equal(t, "Active", initiatives.Initiatives[0].Status)
+	require.Equal(t, "2026-12-31", initiatives.Initiatives[0].TargetDate)
+	require.Equal(t, "initiative-id", initiative.ID)
+	require.Equal(t, "Platform initiative", initiative.Description)
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
@@ -808,6 +821,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get workflow state workflow-state-id")
+
+		_, err = ListInitiatives(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list initiatives")
+
+		_, err = GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get initiative initiative-id")
 	})
 
 	t.Run("issue mutations fail when payload omits entity", func(t *testing.T) {
