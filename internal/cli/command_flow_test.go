@@ -988,7 +988,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1"}, operation: "IssueBlockedIssues", contains: "list issues"},
 		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams"}, operation: "issues", contains: "list issues"},
 		{name: "issue search target resolve", args: []string{"issue", "search", "needle"}, operation: "Teams", contains: "resolve teams"},
-		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "IssueSearch", contains: "search issues"},
+		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "issueSearch", contains: "search issues"},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1"}, operation: "IssueDependencies", contains: "get issue dependencies LIT-1"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
@@ -1191,7 +1191,7 @@ func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Re
 	if err := client.requireExpectedIssueListVariables(request); err != nil {
 		return err
 	}
-	if client.expectedSearchQuery != "" && request.OpName == "IssueSearch" {
+	if client.expectedSearchQuery != "" && request.OpName == "issueSearch" {
 		return requireRequestVariable(request, []string{"query"}, client.expectedSearchQuery, "search query")
 	}
 	if client.expectedIssueDeps != "" && request.OpName == "IssueDependencies" {
@@ -1339,11 +1339,11 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 	}
 
 	switch operation {
-	case "IssueSearch":
+	case "issueSearch":
 		if fake.emptyIssueSearch {
-			return `{"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+			return `{"issueSearch":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 		}
-		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-3", "Search result", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		return `{"issueSearch":{"nodes":[` + commandIssueJSON("LIT-3", "Search result", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "NextIssuesByTeam":
 		if fake.emptyNextIssues {
 			return emptyCommandIssuesPayload(), true

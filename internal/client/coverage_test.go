@@ -144,7 +144,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			StateType:  "unstarted",
 		}) + `}],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 		}}`,
-		"IssueSearch": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+		"issueSearch": `{"issueSearch":{"nodes":[` + issueJSON(issueFixture{
 			Identifier: "LIT-13",
 			Title:      "search result",
 			StateID:    "todo",

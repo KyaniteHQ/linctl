@@ -16,8 +16,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 34 | 458 |
-| Upstream Query root fields | 158 | 22 | 158 |
+| Upstream SDK root methods | 458 | 35 | 458 |
+| Upstream Query root fields | 158 | 23 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
 | Local generated Go operations | 60 | 60 | 60 |
 | Domain-map commands | 73 | 54 | 73 |
@@ -567,7 +567,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueRelation` | `IssueRelation!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueRelations` | `IssueRelationConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueSearch` | `IssueConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueSearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueToRelease` | `IssueToRelease!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueToReleases` | `IssueToReleaseConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1036,7 +1036,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `IssueCreate` | mutation | `issueCreate` | implemented | `internal/client/generated.go` |
 | `IssueDependencies` | query | `issue` | implemented | `internal/client/generated.go` |
 | `IssueLabels` | query | `issueLabels` | implemented | `internal/client/generated.go` |
-| `IssueSearch` | query | `issues` | implemented | `internal/client/generated.go` |
 | `IssueUpdate` | mutation | `issueUpdate` | implemented | `internal/client/generated.go` |
 | `IssuesByTeam` | query | `issues` | implemented | `internal/client/generated.go` |
 | `IssuesByTeamAssignee` | query | `issues` | implemented | `internal/client/generated.go` |
@@ -1070,6 +1069,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
+| `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
 | `issues` | query | `issues` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |

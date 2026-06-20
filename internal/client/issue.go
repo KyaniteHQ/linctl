@@ -442,20 +442,20 @@ func SearchIssuesByTeam(
 	query string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := IssueSearch(ctx, graphqlClient, teamID, query, &limit, nil, boolPtr(true))
+	issues, err := issueSearch(ctx, graphqlClient, teamID, query, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("search issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
+	summaries := make([]IssueSummary, 0, len(issues.IssueSearch.Nodes))
+	for _, issue := range issues.IssueSearch.Nodes {
 		summaries = append(summaries, searchIssueSummary(issue))
 	}
 
 	return IssueList{
 		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
+		HasNextPage: issues.IssueSearch.PageInfo.HasNextPage,
+		EndCursor:   issues.IssueSearch.PageInfo.EndCursor,
 	}, nil
 }
 
@@ -628,7 +628,7 @@ func issueDependencyHasNextPage(issue IssueDependenciesIssue) bool {
 		issue.InverseRelations.PageInfo.HasNextPage
 }
 
-func searchIssueSummary(issue IssueSearchIssuesIssueConnectionNodesIssue) IssueSummary {
+func searchIssueSummary(issue issueSearchIssueSearchIssueConnectionNodesIssue) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 

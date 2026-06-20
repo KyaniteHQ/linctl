@@ -290,9 +290,10 @@ query IssueDependencies($id: String!, $first: Int, $after: String, $includeArchi
   }
 }
 
-query IssueSearch($teamId: ID!, $query: String!, $first: Int, $after: String, $includeArchived: Boolean) {
-  issues(
+query issueSearch($teamId: ID!, $query: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueSearch(
     filter: { team: { id: { eq: $teamId } }, searchableContent: { contains: $query } }
+    query: $query
     first: $first
     after: $after
     includeArchived: $includeArchived
