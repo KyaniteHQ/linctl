@@ -1065,7 +1065,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `Projects` | query | `team` | implemented | `internal/client/generated.go` |
 | `StartedWorkflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 | `TargetProject` | query | `project` | implemented | `internal/client/generated.go` |
-| `TeamByID` | query | `team` | implemented | `internal/client/generated.go` |
 | `TeamMembers` | query | `team` | implemented | `internal/client/generated.go` |
 | `Teams` | query | `teams` | implemented | `internal/client/generated.go` |
 | `UserByID` | query | `user` | implemented | `internal/client/generated.go` |
@@ -1079,6 +1078,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
+| `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
 | `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 

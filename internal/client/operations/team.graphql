@@ -1,4 +1,4 @@
-query TeamByID($id: String!) {
+query team($id: String!) {
   team(id: $id) {
     ...TeamSummaryFields
   }

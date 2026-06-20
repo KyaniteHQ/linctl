@@ -8935,106 +8935,6 @@ type TargetProjectResponse struct {
 // GetProject returns TargetProjectResponse.Project, and is useful for accessing the field via an interface.
 func (v *TargetProjectResponse) GetProject() TargetProjectProject { return v.Project }
 
-// TeamByIDResponse is returned by TeamByID on success.
-type TeamByIDResponse struct {
-	// Fetches a specific team by its ID.
-	Team TeamByIDTeam `json:"team"`
-}
-
-// GetTeam returns TeamByIDResponse.Team, and is useful for accessing the field via an interface.
-func (v *TeamByIDResponse) GetTeam() TeamByIDTeam { return v.Team }
-
-// TeamByIDTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
-type TeamByIDTeam struct {
-	TeamSummaryFields `json:"-"`
-}
-
-// GetId returns TeamByIDTeam.Id, and is useful for accessing the field via an interface.
-func (v *TeamByIDTeam) GetId() string { return v.TeamSummaryFields.Id }
-
-// GetKey returns TeamByIDTeam.Key, and is useful for accessing the field via an interface.
-func (v *TeamByIDTeam) GetKey() string { return v.TeamSummaryFields.Key }
-
-// GetName returns TeamByIDTeam.Name, and is useful for accessing the field via an interface.
-func (v *TeamByIDTeam) GetName() string { return v.TeamSummaryFields.Name }
-
-// GetDescription returns TeamByIDTeam.Description, and is useful for accessing the field via an interface.
-func (v *TeamByIDTeam) GetDescription() *string { return v.TeamSummaryFields.Description }
-
-// GetArchivedAt returns TeamByIDTeam.ArchivedAt, and is useful for accessing the field via an interface.
-func (v *TeamByIDTeam) GetArchivedAt() *string { return v.TeamSummaryFields.ArchivedAt }
-
-// GetOrganization returns TeamByIDTeam.Organization, and is useful for accessing the field via an interface.
-func (v *TeamByIDTeam) GetOrganization() TeamSummaryFieldsOrganization {
-	return v.TeamSummaryFields.Organization
-}
-
-func (v *TeamByIDTeam) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*TeamByIDTeam
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.TeamByIDTeam = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.TeamSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalTeamByIDTeam struct {
-	Id string `json:"id"`
-
-	Key string `json:"key"`
-
-	Name string `json:"name"`
-
-	Description *string `json:"description"`
-
-	ArchivedAt *string `json:"archivedAt"`
-
-	Organization TeamSummaryFieldsOrganization `json:"organization"`
-}
-
-func (v *TeamByIDTeam) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *TeamByIDTeam) __premarshalJSON() (*__premarshalTeamByIDTeam, error) {
-	var retval __premarshalTeamByIDTeam
-
-	retval.Id = v.TeamSummaryFields.Id
-	retval.Key = v.TeamSummaryFields.Key
-	retval.Name = v.TeamSummaryFields.Name
-	retval.Description = v.TeamSummaryFields.Description
-	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
-	retval.Organization = v.TeamSummaryFields.Organization
-	return &retval, nil
-}
-
 // TeamMembersResponse is returned by TeamMembers on success.
 type TeamMembersResponse struct {
 	// Fetches a specific team by its ID.
@@ -10796,14 +10696,6 @@ type __TargetProjectInput struct {
 // GetId returns __TargetProjectInput.Id, and is useful for accessing the field via an interface.
 func (v *__TargetProjectInput) GetId() string { return v.Id }
 
-// __TeamByIDInput is used internally by genqlient
-type __TeamByIDInput struct {
-	Id string `json:"id"`
-}
-
-// GetId returns __TeamByIDInput.Id, and is useful for accessing the field via an interface.
-func (v *__TeamByIDInput) GetId() string { return v.Id }
-
 // __TeamMembersInput is used internally by genqlient
 type __TeamMembersInput struct {
 	Id              string  `json:"id"`
@@ -10943,6 +10835,14 @@ func (v *__projectUpdatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __projectUpdatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__projectUpdatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __teamInput is used internally by genqlient
+type __teamInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __teamInput.Id, and is useful for accessing the field via an interface.
+func (v *__teamInput) GetId() string { return v.Id }
 
 // __workflowStateInput is used internally by genqlient
 type __workflowStateInput struct {
@@ -11951,6 +11851,106 @@ type projectUpdatesResponse struct {
 // GetProjectUpdates returns projectUpdatesResponse.ProjectUpdates, and is useful for accessing the field via an interface.
 func (v *projectUpdatesResponse) GetProjectUpdates() projectUpdatesProjectUpdatesProjectUpdateConnection {
 	return v.ProjectUpdates
+}
+
+// teamResponse is returned by team on success.
+type teamResponse struct {
+	// Fetches a specific team by its ID.
+	Team teamTeam `json:"team"`
+}
+
+// GetTeam returns teamResponse.Team, and is useful for accessing the field via an interface.
+func (v *teamResponse) GetTeam() teamTeam { return v.Team }
+
+// teamTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type teamTeam struct {
+	TeamSummaryFields `json:"-"`
+}
+
+// GetId returns teamTeam.Id, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetId() string { return v.TeamSummaryFields.Id }
+
+// GetKey returns teamTeam.Key, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetKey() string { return v.TeamSummaryFields.Key }
+
+// GetName returns teamTeam.Name, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetName() string { return v.TeamSummaryFields.Name }
+
+// GetDescription returns teamTeam.Description, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetDescription() *string { return v.TeamSummaryFields.Description }
+
+// GetArchivedAt returns teamTeam.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetArchivedAt() *string { return v.TeamSummaryFields.ArchivedAt }
+
+// GetOrganization returns teamTeam.Organization, and is useful for accessing the field via an interface.
+func (v *teamTeam) GetOrganization() TeamSummaryFieldsOrganization {
+	return v.TeamSummaryFields.Organization
+}
+
+func (v *teamTeam) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*teamTeam
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.teamTeam = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteamTeam struct {
+	Id string `json:"id"`
+
+	Key string `json:"key"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Organization TeamSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *teamTeam) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *teamTeam) __premarshalJSON() (*__premarshalteamTeam, error) {
+	var retval __premarshalteamTeam
+
+	retval.Id = v.TeamSummaryFields.Id
+	retval.Key = v.TeamSummaryFields.Key
+	retval.Name = v.TeamSummaryFields.Name
+	retval.Description = v.TeamSummaryFields.Description
+	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
 }
 
 // workflowStateResponse is returned by workflowState on success.
@@ -15157,52 +15157,6 @@ func TargetProject(
 	return data_, err_
 }
 
-// The query executed by TeamByID.
-const TeamByID_Operation = `
-query TeamByID ($id: String!) {
-	team(id: $id) {
-		... TeamSummaryFields
-	}
-}
-fragment TeamSummaryFields on Team {
-	id
-	key
-	name
-	description
-	archivedAt
-	organization {
-		id
-		name
-		urlKey
-	}
-}
-`
-
-func TeamByID(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-) (data_ *TeamByIDResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "TeamByID",
-		Query:  TeamByID_Operation,
-		Variables: &__TeamByIDInput{
-			Id: id,
-		},
-	}
-
-	data_ = &TeamByIDResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The query executed by TeamMembers.
 const TeamMembers_Operation = `
 query TeamMembers ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -15866,6 +15820,52 @@ func projectUpdates(
 	}
 
 	data_ = &projectUpdatesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team.
+const team_Operation = `
+query team ($id: String!) {
+	team(id: $id) {
+		... TeamSummaryFields
+	}
+}
+fragment TeamSummaryFields on Team {
+	id
+	key
+	name
+	description
+	archivedAt
+	organization {
+		id
+		name
+		urlKey
+	}
+}
+`
+
+func team(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *teamResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team",
+		Query:  team_Operation,
+		Variables: &__teamInput{
+			Id: id,
+		},
+	}
+
+	data_ = &teamResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
