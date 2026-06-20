@@ -19,7 +19,7 @@ var usageTopics = map[string]usagePayload{
 		Text: "linctl is a schema-aligned Linear CLI for safe daily coordination. " +
 			"Configure a pinned target with org_id, team_key, team_id, and optional project_id in .linctl.toml, " +
 			"then use reads freely and writes fail-closed against that target. " +
-			"Core commands: target, whoami, current, next, done, issue, cycle, sprint, project, " +
+			"Core commands: target, doctor, whoami, current, next, done, issue, cycle, sprint, project, " +
 			"project-milestone, document, label, team, user. " +
 			"Use --json for structured output, --profile for named configs, --org/--team/--project for explicit " +
 			"target overrides, and --timeout for request bounds. " +
@@ -32,8 +32,9 @@ var usageTopics = map[string]usagePayload{
 			"Start every unfamiliar repo with linctl target --json so the active token, org, team, and project " +
 			"are visible " +
 			"before work starts. " +
-			"Use linctl current when the branch carries an issue key, and linctl next --dry-run to preview " +
-			"the next unblocked issue without creating a branch or worktree. " +
+			"Use linctl current when the branch carries an issue key, linctl doctor to check config/token/target " +
+			"health, and linctl next --dry-run to preview the top-ranked unblocked issue without creating a " +
+			"branch or worktree. " +
 			"Use domain guidance before writes: linctl issue usage or linctl project usage. " +
 			"For test runs, create namespaced throwaway resources and archive them after the observable check.",
 	},
@@ -58,12 +59,14 @@ var usageTopics = map[string]usagePayload{
 			"linctl issue pr ISSUE to print a gh pr create title/body plan, " +
 			"and linctl issue get LIT-123 to read one " +
 			"issue by identifier or id. " +
-			"Writes require a pinned org/team target: linctl issue create --title \"...\" --description \"...\"; " +
+			"Writes require a pinned org/team target: linctl issue create --title \"...\" --description \"...\" " +
+			"or --description-file FILE; " +
 			"linctl issue update LIT-123 --title \"...\" --description \"...\"; " +
-			"linctl issue update LIT-123 --append \"progress note\"; " +
+			"linctl issue update LIT-123 --append \"progress note\" or --append-file FILE; " +
 			"linctl issue start LIT-123 to assign the issue to you and move it to started; " +
-			"linctl issue comment LIT-123 --body \"...\"; " +
-			"linctl issue reply LIT-123 COMMENT_ID --body \"...\"; linctl issue close LIT-123. " +
+			"linctl issue comment LIT-123 --body \"...\" or --body-file FILE; " +
+			"linctl issue reply LIT-123 COMMENT_ID --body \"...\" or --body-file FILE; " +
+			"linctl issue close LIT-123. " +
 			"If .linctl.toml also pins project_id, writes to existing issues compare the issue's resolved project " +
 			"before " +
 			"mutating, so same-team wrong-project writes are refused. " +

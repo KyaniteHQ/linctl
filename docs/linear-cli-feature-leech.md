@@ -1,7 +1,10 @@
 # Linear CLI Feature Leech Notes
 
 This file is a repo-grounded feature extraction from comparable GitHub Linear CLI
-projects cloned into `/tmp/linctl-linear-cli-research` on 2026-06-19.
+projects. The first pass cloned focused candidates into `/tmp/linctl-linear-cli-research`
+on 2026-06-19. The redo pass cloned 115 broader candidates into
+`/tmp/linctl-linear-cli-research-20260620` on 2026-06-20 and wrote the full list
+to `/tmp/linctl-linear-cli-research-20260620/RESEARCH.md`.
 
 `linctl`'s existing differentiator is target-pinned writes: writes resolve the
 active Linear org, team, and optional project before mutating data. Borrow
@@ -27,6 +30,29 @@ features below only when they preserve that fail-closed model.
 | `rubyists/linear-cli` | `/tmp/linctl-linear-cli-research/rubyists__linear-cli` | Ruby | OCI container install path, wrapper alias script, strong aliases (`lcls`, `lcomment`, `lclose`), multi-issue update/comment/close, semantic PR title workflow. |
 | `AdiKsOnDev/linear-cli` | `/tmp/linctl-linear-cli-research/AdiKsOnDev__linear-cli` | Python | OAuth plus API-key auth, keyring storage, YAML output, project health updates, project update history, advanced search, shell completion. |
 | `danielrearden/linear-cli` | `/tmp/linctl-linear-cli-research/danielrearden__linear-cli` | Node | Simple interactive create/status flows, keychain storage, branch checkout by issue, cached org-specific metadata with clear command. |
+
+## 2026-06-20 Redo Finds
+
+The broader GitHub pass found useful repos that the first list missed:
+
+| Repo | Local clone | Stack | Good features to leech |
+| --- | --- | --- | --- |
+| `dorkitude/linctl` | `/tmp/linctl-linear-cli-research-20260620/dorkitude__linctl` | Go | Closest Go/Cobra comparator: relation commands, attachments, delegate/agent support, raw GraphQL, dynamic MCP namespace, and `doctor`-style smoke/readiness commands. |
+| `tdwells90/lncli` | `/tmp/linctl-linear-cli-research-20260620/tdwells90__lncli` | Rust | TOON/token-efficient output, mandatory field filtering, and structured agent error envelopes. |
+| `0x80/pick-linear-ticket` | `/tmp/linctl-linear-cli-research-20260620/0x80__pick-linear-ticket` | TypeScript | Ranked next-work picker: active Cycle/Todo eligibility, active blocker exclusion, unblock-count priority, priority tie-break, age tie-break, branchName JSON. |
+| `alleneubank/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/alleneubank__linear-cli` | Zig | Config hygiene: 0600 config, redacted auth show, auth test, endpoint override, retries, cursor/page controls, and temp-config live QA. |
+| `aliou/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/aliou__linear-cli` | TypeScript | Multi-profile auth, local profile selection, delegate/agent assignment, stdin/file inputs, arbitrary GraphQL, and shell completions. |
+| `TrevorS/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/TrevorS__linear-cli` | Rust | Markdown/frontmatter issue creation, dry-run create, browser open, YAML output, and shell completions. |
+| `wiseiodev/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/wiseiodev__linear-cli` | TypeScript | Bundled skills, TUI, `prep`, `pr-ready`, and `bulk-update --dry-run --json`. |
+| `anoncam/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/anoncam__linear-cli` | JavaScript | Kanban/reporting and AI-assisted label cleanup workflow. |
+| `rinadelph/clinear` | `/tmp/linctl-linear-cli-research-20260620/rinadelph__clinear` | Python | Pydantic/Typer validation shape for a type-safe CLI. |
+| `ChuckMayo/linear-multi-workspace-cli` | `/tmp/linctl-linear-cli-research-20260620/ChuckMayo__linear-multi-workspace-cli` | TypeScript | Agent-runtime-agnostic multi-workspace surface; useful as contrast to `linctl`'s pinned target model. |
+
+Implemented from the redo pass:
+
+- `next --dry-run` now ranks candidate issues by active unblock count, priority, then created date after filtering to unstarted and unblocked issues.
+- `doctor` reports config load, token presence, and target confirmation without printing tokens.
+- `issue create --description-file`, `issue update --description-file`, `issue update --append-file`, `issue comment --body-file`, and `issue reply --body-file` support file-backed agent handoffs.
 
 ## Highest-Value Features For `linctl`
 
@@ -109,13 +135,15 @@ Implemented slice:
 - `done` closes the Current Issue from the checkout after the same target comparison as `issue close`.
 - `issue pr [ISSUE]` reads either an explicit issue or the Current Issue and prints a local `gh pr create` title/body plan without calling GitHub.
 - `next --dry-run` resolves the target, reads unstarted issues with no blocking relations, and prints the first candidate without creating a branch or worktree.
+- `next --dry-run` now ranks those candidates by active unblock count, then Linear priority, then age before printing the selected issue.
 - Evidence: `go test ./internal/cli`, especially the `Test_CommandFlows_print_current_issue_*`
   tests, `Test_CommandFlows_print_issue_branch_from_issue_branch`, and
   `Test_CommandFlows_execute_read_and_write_commands/issue_start`, plus
   `Test_CommandFlows_close_current_issue_from_done`,
   `Test_CommandFlows_execute_read_and_write_commands/issue_pr`, and
   `Test_CommandFlows_print_issue_pr_from_current_branch`, plus
-  `Test_CommandFlows_execute_read_and_write_commands/next_dry_run`.
+  `Test_CommandFlows_execute_read_and_write_commands/next_dry_run`, and
+  `Test_CommandFlows_rank_next_issue_candidates`.
 
 Useful evidence:
 - `schpet__linear-cli/README.md`
@@ -205,11 +233,13 @@ Implemented slice:
 - `issue comments ISSUE --limit N` lists issue discussion comments.
 - `issue reply ISSUE COMMENT --body TEXT` creates a threaded reply with `CommentCreateInput.parentId` after the same issue target comparison.
 - `issue update ISSUE --append TEXT` reads the existing description, appends text with a blank-line separator, and writes the combined description through the guarded issue update path.
-- Edit/delete comment flows and file-backed append remain future work.
+- `issue create --description-file FILE`, `issue update --description-file FILE`, `issue update --append-file FILE`, `issue comment --body-file FILE`, and `issue reply --body-file FILE` read file content before the existing guarded write path.
+- Edit/delete comment flows remain future work.
 - Evidence: `go test ./internal/cli`, especially `Test_CommandFlows_read_issue_comment_body_from_stdin`,
   `Test_CommandFlows_execute_read_and_write_commands/issue_comments`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_reply`, and
-  `Test_CommandFlows_execute_read_and_write_commands/issue_update_append`.
+  `Test_CommandFlows_execute_read_and_write_commands/issue_reply`,
+  `Test_CommandFlows_execute_read_and_write_commands/issue_update_append`, and
+  `Test_CommandFlows_read_issue_text_from_files`.
 
 Useful evidence:
 - `linearis-oss__linearis/README.md`
@@ -297,6 +327,10 @@ preserving `linctl`'s secret rules:
 - Add `cache status|clear` if schema/name resolution caching arrives.
 - Keep `.linctl.toml` scoped to org/team/project, not loose workspace defaults.
 
+Implemented slice:
+- `doctor` resolves the active runtime and target, reports config `ok`, token `set`, and target `confirmed`, and never prints token values.
+- Evidence: `go test ./internal/cli`, especially `Test_CommandFlows_execute_read_and_write_commands/doctor`.
+
 Useful evidence:
 - `Finesssee__linear-cli/README.md`
 - `frr149__lql/README.md`
@@ -330,20 +364,20 @@ Useful evidence:
 
 ### P1: Agent daily-driver slice
 
-1. Improve `usage` and generated `skills/linctl/SKILL.md`.
-2. Add `--fields`, `--compact`, `--id-only`, `--quiet`, `--fail-on-empty`.
-3. Add `issue search` plus `issue list` filters: `--state`, `--project`.
-4. Add branch helpers around existing `current`: `issue id`, `issue title`,
-   `issue url`, `issue branch`, `issue start`, `done`.
-5. Add `issue comments`, `issue reply`, and stdin body support.
+Implemented:
+- Compact `usage`, global machine output controls, broad issue list/search filters, branch helpers, `issue start`, `done`, comments/replies, stdin bodies, file-backed issue text, ranked `next --dry-run`, and `doctor`.
+
+Remaining:
+- Generate `skills/linctl/SKILL.md` from command help and add a drift check.
+- Add stronger tolerant aliases and wrong-flag suggestions.
 
 ### P2: Coordination layer
 
-1. Add dependency graph read commands and relation writes.
-2. Add project updates and project milestones.
-3. Add cycle current/report analytics.
-4. Add document create/read/update and issue export.
-5. Add template-driven issue create with dry-run.
+Implemented:
+- Dependency graph reads, project updates, ProjectMilestone list/get/create/update, Cycle commands, Sprint report aliases, Document reads, labels, teams, and users.
+
+Remaining:
+- Relation writes, project update writes, ProjectMilestone delete safety design, document writes, issue export, and template-driven issue create with dry-run.
 
 ### P3: Power-user automation
 

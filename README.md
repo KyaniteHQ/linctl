@@ -58,6 +58,7 @@ Inject credentials with `LINCTL_TOKEN` or `LINEAR_API_KEY`; do not commit tokens
 ```bash
 linctl usage
 linctl target --json
+linctl doctor
 linctl current --json
 linctl next --dry-run
 linctl done
@@ -128,10 +129,14 @@ linctl sprint report cycle-id --limit 20
 linctl issue start LIT-123
 linctl done
 linctl --id-only issue create --title "small task"
+linctl issue create --title "small task" --description-file ./issue.md
 linctl --quiet issue update LIT-123 --title "retitled"
 linctl issue update LIT-123 --append "progress note"
+linctl issue update LIT-123 --append-file ./progress.md
 printf 'progress note\n' | linctl issue comment LIT-123 --body -
+linctl issue comment LIT-123 --body-file ./comment.md
 linctl issue reply LIT-123 comment-id --body "thread reply"
+linctl issue reply LIT-123 comment-id --body-file ./reply.md
 linctl project-milestone create project-id --name "Launch milestone"
 linctl project-milestone update project-milestone-id --name "Renamed milestone"
 linctl document list --limit 20

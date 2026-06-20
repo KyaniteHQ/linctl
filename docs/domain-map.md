@@ -9,6 +9,7 @@ Command names below are either implemented CLI surface or intentionally deferred
 | --- | --- | --- |
 | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. |
 | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. |
+| `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. |
 
 The target vocabulary is `org_id`, `team_key`, `team_id`, and optional `project_id`. Do not introduce `workspace` as a flag or JSON key synonym.
 
@@ -35,13 +36,13 @@ Planned commands:
 | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
 | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only |
 | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only |
-| `next --dry-run` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; emits the first candidate without checkout/worktree creation | Read-only |
+| `next --dry-run` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age before printing one candidate without checkout/worktree creation | Read-only |
 | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
-| `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId` | Team-scoped unless `projectId` is set |
-| `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--append` first reads `Issue.description` and appends text before sending `description` | Resource-scoped when a project target is involved |
+| `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation | Team-scoped unless `projectId` is set |
+| `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description` | Resource-scoped when a project target is involved |
 | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved |
-| `issue comment` | `Mutation.commentCreate` | Resource-scoped to the issue's resolved team/project |
-| `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId` | Resource-scoped to the issue's resolved team/project |
+| `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project |
+| `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project |
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
 
