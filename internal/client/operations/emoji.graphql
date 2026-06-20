@@ -1,0 +1,24 @@
+query emojis($first: Int, $after: String, $includeArchived: Boolean) {
+  emojis(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...EmojiSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query emoji($id: String!) {
+  emoji(id: $id) {
+    ...EmojiSummaryFields
+  }
+}
+
+fragment EmojiSummaryFields on Emoji {
+  id
+  name
+  url
+  source
+}

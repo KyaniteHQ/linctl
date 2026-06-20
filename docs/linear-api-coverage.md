@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 41 | 458 |
-| Upstream Query root fields | 158 | 29 | 158 |
+| Upstream SDK root methods | 458 | 43 | 458 |
+| Upstream Query root fields | 158 | 31 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 66 | 66 | 66 |
-| Domain-map commands | 88 | 60 | 88 |
+| Local generated Go operations | 68 | 68 | 68 |
+| Domain-map commands | 92 | 62 | 92 |
 
 ## Upstream SDK Root Methods
 
@@ -216,8 +216,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `emailTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `emailUnsubscribe` | method | safe_candidate | read operation may fit future CLI coverage |
 | `emailUserAccountAuthChallenge` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `emoji` | method | safe_candidate | read operation may fit future CLI coverage |
-| `emojis` | method | safe_candidate | read operation may fit future CLI coverage |
+| `emoji` | method | implemented | local operation or command exists |
+| `emojis` | method | implemented | local operation or command exists |
 | `entityExternalLink` | method | safe_candidate | read operation may fit future CLI coverage |
 | `externalUser` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `externalUsers` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -532,8 +532,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `documentContentHistoryTimeline` | `DocumentContentHistoryTimelinePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `documents` | `DocumentConnection!` | implemented | root field used by local GraphQL operation |
 | `emailIntakeAddress` | `EmailIntakeAddress!` | safe_candidate | read operation may fit future CLI coverage |
-| `emoji` | `Emoji!` | safe_candidate | read operation may fit future CLI coverage |
-| `emojis` | `EmojiConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `emoji` | `Emoji!` | implemented | root field used by local GraphQL operation |
+| `emojis` | `EmojiConnection!` | implemented | root field used by local GraphQL operation |
 | `entityExternalLink` | `EntityExternalLink!` | safe_candidate | read operation may fit future CLI coverage |
 | `externalUser` | `ExternalUser!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `externalUsers` | `ExternalUserConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1066,6 +1066,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
+| `emoji` | query | `emoji` | implemented | `internal/client/generated.go` |
+| `emojis` | query | `emojis` | implemented | `internal/client/generated.go` |
 | `favorite` | query | `favorite` | implemented | `internal/client/generated.go` |
 | `favorites` | query | `favorites` | implemented | `internal/client/generated.go` |
 | `initiative` | query | `initiative` | implemented | `internal/client/generated.go` |
@@ -1180,4 +1182,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Favorite | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Favorite | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Favorite | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Emoji | `emoji list` | `Query.emojis` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Emoji | `emoji get` | `Query.emoji` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 

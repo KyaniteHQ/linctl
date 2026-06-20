@@ -1268,6 +1268,35 @@ type DocumentsResponse struct {
 // GetDocuments returns DocumentsResponse.Documents, and is useful for accessing the field via an interface.
 func (v *DocumentsResponse) GetDocuments() DocumentsDocumentsDocumentConnection { return v.Documents }
 
+// EmojiSummaryFields includes the GraphQL fields of Emoji requested by the fragment EmojiSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A custom emoji defined in the workspace. Custom emojis are uploaded by users and
+// can be used in reactions and other places where standard emojis are supported.
+// Each emoji has a unique name within the workspace.
+type EmojiSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The unique name of the custom emoji within the workspace.
+	Name string `json:"name"`
+	// The URL of the uploaded image for this custom emoji.
+	Url string `json:"url"`
+	// The source of the emoji, indicating how it was created (e.g., uploaded by a user or imported).
+	Source string `json:"source"`
+}
+
+// GetId returns EmojiSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *EmojiSummaryFields) GetId() string { return v.Id }
+
+// GetName returns EmojiSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *EmojiSummaryFields) GetName() string { return v.Name }
+
+// GetUrl returns EmojiSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *EmojiSummaryFields) GetUrl() string { return v.Url }
+
+// GetSource returns EmojiSummaryFields.Source, and is useful for accessing the field via an interface.
+func (v *EmojiSummaryFields) GetSource() string { return v.Source }
+
 // FavoriteSummaryFields includes the GraphQL fields of Favorite requested by the fragment FavoriteSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -9002,6 +9031,30 @@ type __documentInput struct {
 // GetId returns __documentInput.Id, and is useful for accessing the field via an interface.
 func (v *__documentInput) GetId() string { return v.Id }
 
+// __emojiInput is used internally by genqlient
+type __emojiInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __emojiInput.Id, and is useful for accessing the field via an interface.
+func (v *__emojiInput) GetId() string { return v.Id }
+
+// __emojisInput is used internally by genqlient
+type __emojisInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __emojisInput.First, and is useful for accessing the field via an interface.
+func (v *__emojisInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __emojisInput.After, and is useful for accessing the field via an interface.
+func (v *__emojisInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __emojisInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__emojisInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __favoriteInput is used internally by genqlient
 type __favoriteInput struct {
 	Id string `json:"id"`
@@ -10287,6 +10340,206 @@ type documentResponse struct {
 
 // GetDocument returns documentResponse.Document, and is useful for accessing the field via an interface.
 func (v *documentResponse) GetDocument() documentDocument { return v.Document }
+
+// emojiEmoji includes the requested fields of the GraphQL type Emoji.
+// The GraphQL type's documentation follows.
+//
+// A custom emoji defined in the workspace. Custom emojis are uploaded by users and
+// can be used in reactions and other places where standard emojis are supported.
+// Each emoji has a unique name within the workspace.
+type emojiEmoji struct {
+	EmojiSummaryFields `json:"-"`
+}
+
+// GetId returns emojiEmoji.Id, and is useful for accessing the field via an interface.
+func (v *emojiEmoji) GetId() string { return v.EmojiSummaryFields.Id }
+
+// GetName returns emojiEmoji.Name, and is useful for accessing the field via an interface.
+func (v *emojiEmoji) GetName() string { return v.EmojiSummaryFields.Name }
+
+// GetUrl returns emojiEmoji.Url, and is useful for accessing the field via an interface.
+func (v *emojiEmoji) GetUrl() string { return v.EmojiSummaryFields.Url }
+
+// GetSource returns emojiEmoji.Source, and is useful for accessing the field via an interface.
+func (v *emojiEmoji) GetSource() string { return v.EmojiSummaryFields.Source }
+
+func (v *emojiEmoji) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*emojiEmoji
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.emojiEmoji = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.EmojiSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalemojiEmoji struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Url string `json:"url"`
+
+	Source string `json:"source"`
+}
+
+func (v *emojiEmoji) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *emojiEmoji) __premarshalJSON() (*__premarshalemojiEmoji, error) {
+	var retval __premarshalemojiEmoji
+
+	retval.Id = v.EmojiSummaryFields.Id
+	retval.Name = v.EmojiSummaryFields.Name
+	retval.Url = v.EmojiSummaryFields.Url
+	retval.Source = v.EmojiSummaryFields.Source
+	return &retval, nil
+}
+
+// emojiResponse is returned by emoji on success.
+type emojiResponse struct {
+	// A specific custom emoji by ID or name.
+	Emoji emojiEmoji `json:"emoji"`
+}
+
+// GetEmoji returns emojiResponse.Emoji, and is useful for accessing the field via an interface.
+func (v *emojiResponse) GetEmoji() emojiEmoji { return v.Emoji }
+
+// emojisEmojisEmojiConnection includes the requested fields of the GraphQL type EmojiConnection.
+type emojisEmojisEmojiConnection struct {
+	Nodes    []emojisEmojisEmojiConnectionNodesEmoji `json:"nodes"`
+	PageInfo emojisEmojisEmojiConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns emojisEmojisEmojiConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnection) GetNodes() []emojisEmojisEmojiConnectionNodesEmoji {
+	return v.Nodes
+}
+
+// GetPageInfo returns emojisEmojisEmojiConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnection) GetPageInfo() emojisEmojisEmojiConnectionPageInfo {
+	return v.PageInfo
+}
+
+// emojisEmojisEmojiConnectionNodesEmoji includes the requested fields of the GraphQL type Emoji.
+// The GraphQL type's documentation follows.
+//
+// A custom emoji defined in the workspace. Custom emojis are uploaded by users and
+// can be used in reactions and other places where standard emojis are supported.
+// Each emoji has a unique name within the workspace.
+type emojisEmojisEmojiConnectionNodesEmoji struct {
+	EmojiSummaryFields `json:"-"`
+}
+
+// GetId returns emojisEmojisEmojiConnectionNodesEmoji.Id, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnectionNodesEmoji) GetId() string { return v.EmojiSummaryFields.Id }
+
+// GetName returns emojisEmojisEmojiConnectionNodesEmoji.Name, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnectionNodesEmoji) GetName() string { return v.EmojiSummaryFields.Name }
+
+// GetUrl returns emojisEmojisEmojiConnectionNodesEmoji.Url, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnectionNodesEmoji) GetUrl() string { return v.EmojiSummaryFields.Url }
+
+// GetSource returns emojisEmojisEmojiConnectionNodesEmoji.Source, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnectionNodesEmoji) GetSource() string {
+	return v.EmojiSummaryFields.Source
+}
+
+func (v *emojisEmojisEmojiConnectionNodesEmoji) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*emojisEmojisEmojiConnectionNodesEmoji
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.emojisEmojisEmojiConnectionNodesEmoji = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.EmojiSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalemojisEmojisEmojiConnectionNodesEmoji struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Url string `json:"url"`
+
+	Source string `json:"source"`
+}
+
+func (v *emojisEmojisEmojiConnectionNodesEmoji) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *emojisEmojisEmojiConnectionNodesEmoji) __premarshalJSON() (*__premarshalemojisEmojisEmojiConnectionNodesEmoji, error) {
+	var retval __premarshalemojisEmojisEmojiConnectionNodesEmoji
+
+	retval.Id = v.EmojiSummaryFields.Id
+	retval.Name = v.EmojiSummaryFields.Name
+	retval.Url = v.EmojiSummaryFields.Url
+	retval.Source = v.EmojiSummaryFields.Source
+	return &retval, nil
+}
+
+// emojisEmojisEmojiConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type emojisEmojisEmojiConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns emojisEmojisEmojiConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns emojisEmojisEmojiConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *emojisEmojisEmojiConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// emojisResponse is returned by emojis on success.
+type emojisResponse struct {
+	// All custom emojis in the workspace.
+	Emojis emojisEmojisEmojiConnection `json:"emojis"`
+}
+
+// GetEmojis returns emojisResponse.Emojis, and is useful for accessing the field via an interface.
+func (v *emojisResponse) GetEmojis() emojisEmojisEmojiConnection { return v.Emojis }
 
 // favoriteFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
@@ -16055,6 +16308,96 @@ func document(
 	}
 
 	data_ = &documentResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by emoji.
+const emoji_Operation = `
+query emoji ($id: String!) {
+	emoji(id: $id) {
+		... EmojiSummaryFields
+	}
+}
+fragment EmojiSummaryFields on Emoji {
+	id
+	name
+	url
+	source
+}
+`
+
+func emoji(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *emojiResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "emoji",
+		Query:  emoji_Operation,
+		Variables: &__emojiInput{
+			Id: id,
+		},
+	}
+
+	data_ = &emojiResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by emojis.
+const emojis_Operation = `
+query emojis ($first: Int, $after: String, $includeArchived: Boolean) {
+	emojis(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... EmojiSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment EmojiSummaryFields on Emoji {
+	id
+	name
+	url
+	source
+}
+`
+
+func emojis(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *emojisResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "emojis",
+		Query:  emojis_Operation,
+		Variables: &__emojisInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &emojisResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

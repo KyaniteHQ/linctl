@@ -680,6 +680,8 @@ func commandImplemented(command string) bool {
 		"custom-view get":          true,
 		"favorite list":            true,
 		"favorite get":             true,
+		"emoji list":               true,
+		"emoji get":                true,
 	}
 	return implemented[command]
 }
@@ -707,6 +709,7 @@ func domainCommandBlocked(command string) bool {
 		"custom-view update":     true,
 		"favorite create":        true,
 		"favorite update":        true,
+		"emoji create":           true,
 	}
 	return blocked[command]
 }

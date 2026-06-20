@@ -90,6 +90,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "favorite list", args: []string{"favorite", "list", "--limit", "1"}, contains: "favorite-id [issue]"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, contains: "favorite-id [issue]"},
+		{name: "emoji list", args: []string{"emoji", "list", "--limit", "1"}, contains: "emoji-id party [custom]"},
+		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, contains: "emoji-id party [custom]"},
 	}
 
 	for _, test := range tests {
@@ -640,6 +642,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "custom-view", "get", "custom-view-id"},
 		{"--json", "favorite", "list", "--limit", "1"},
 		{"--json", "favorite", "get", "favorite-id"},
+		{"--json", "emoji", "list", "--limit", "1"},
+		{"--json", "emoji", "get", "emoji-id"},
 	}
 
 	for _, args := range tests {
@@ -1045,6 +1049,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
 		{name: "favorite list", args: []string{"favorite", "list"}, operation: "favorites", contains: "list favorites"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, operation: "favorite", contains: "get favorite favorite-id"},
+		{name: "emoji list", args: []string{"emoji", "list"}, operation: "emojis", contains: "list emojis"},
+		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, operation: "emoji", contains: "get emoji emoji-id"},
 	}
 
 	for _, test := range tests {
@@ -1357,6 +1363,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"favorites":{"nodes":[` + commandFavoriteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "favorite":
 		return `{"favorite":` + commandFavoriteJSON() + `}`, true
+	case "emojis":
+		return `{"emojis":{"nodes":[` + commandEmojiJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "emoji":
+		return `{"emoji":` + commandEmojiJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -1800,6 +1810,15 @@ func commandFavoriteJSON() string {
 		"type":"issue",
 		"folderName":null,
 		"url":"https://linear.app/kyanite/issue/LIT-1"
+	}`
+}
+
+func commandEmojiJSON() string {
+	return `{
+		"id":"emoji-id",
+		"name":"party",
+		"url":"https://linear.app/kyanite/emoji/party.png",
+		"source":"custom"
 	}`
 }
 

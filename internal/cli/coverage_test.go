@@ -95,6 +95,11 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Type: "issue",
 		URL:  "https://linear.app/kyanite/issue/LIT-1",
 	}
+	emoji := client.EmojiSummary{
+		ID:     "emoji-id",
+		Name:   "party",
+		Source: "custom",
+	}
 
 	textOut := bytes.Buffer{}
 	textCommand := &cobra.Command{}
@@ -115,6 +120,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeInitiative(textCommand, &textOptions, initiative))
 	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
 	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
+	require.NoError(t, writeEmoji(textCommand, &textOptions, emoji))
 	require.Equal(
 		t,
 		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
@@ -123,7 +129,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"user-id Omer <omer@example.com>\ncomment-id Omer First comment\nworkflow-state-id Started [started]\n"+
 			"initiative-id Platform [Active]\ncustom-view-id My issues [Issue]\n"+
-			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\n",
+			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n",
 		textOut.String(),
 	)
 
@@ -146,6 +152,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeInitiative(jsonCommand, &jsonOptions, initiative))
 	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
 	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
+	require.NoError(t, writeEmoji(jsonCommand, &jsonOptions, emoji))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
@@ -160,6 +167,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"status": "Active"`)
 	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
 	require.Contains(t, jsonOut.String(), `"type": "issue"`)
+	require.Contains(t, jsonOut.String(), `"source": "custom"`)
 }
 
 func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
@@ -248,6 +256,11 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Type: "issue",
 		URL:  "https://linear.app/kyanite/issue/LIT-1",
 	}
+	emoji := client.EmojiSummary{
+		ID:     "emoji-id",
+		Name:   "party",
+		Source: "custom",
+	}
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
@@ -270,6 +283,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeInitiative(command, &rootOptions{idOnly: true}, initiative))
 	require.NoError(t, writeCustomView(command, &rootOptions{idOnly: true}, customView))
 	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
+	require.NoError(t, writeEmoji(command, &rootOptions{idOnly: true}, emoji))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
 	require.Contains(t, output.String(), "starts_at=2026-07-01T00:00:00Z")
@@ -287,6 +301,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "initiative-id")
 	require.Contains(t, output.String(), "custom-view-id")
 	require.Contains(t, output.String(), "favorite-id")
+	require.Contains(t, output.String(), "emoji-id")
 	require.Equal(t, "-", emptyDash(""))
 
 	quietOutput := bytes.Buffer{}
@@ -306,6 +321,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeInitiative(quietCommand, &rootOptions{quiet: true}, initiative))
 	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
 	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
+	require.NoError(t, writeEmoji(quietCommand, &rootOptions{quiet: true}, emoji))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")
 	require.NoError(t, err)

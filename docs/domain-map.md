@@ -356,3 +356,26 @@ Planned commands:
 | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics |
 
 Only `favorite list` and `favorite get` are implemented in the current CLI. Favorite writes are deferred as viewer-scoped personalization surface.
+
+## Emoji
+
+Use the schema name `Emoji` in code and docs. It is a workspace custom emoji.
+
+Schema backing:
+
+- Types: `Emoji`, `EmojiConnection`
+- Reads: `Query.emojis`, `Query.emoji`
+- Writes: `Mutation.createEmoji`, `Mutation.deleteEmoji`
+- Inputs: `EmojiCreateInput`
+- Relevant fields: `Emoji.id`, `Emoji.name`, `Emoji.url`, `Emoji.source`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `emoji list` | `Query.emojis` | Read-only |
+| `emoji get` | `Query.emoji` | Read-only |
+| `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model |
+| `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics |
+
+Only `emoji list` and `emoji get` are implemented in the current CLI. Emoji writes are deferred as organization-scoped asset surface.
