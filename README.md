@@ -61,6 +61,10 @@ linctl target --json
 linctl doctor
 linctl organization exists kyanite
 linctl rate-limit status
+linctl notification list --limit 20
+linctl notification get notification-id
+linctl notification subscription list --limit 20
+linctl notification subscription get notification-subscription-id
 linctl current --json
 linctl next --dry-run
 linctl done
@@ -154,6 +158,10 @@ linctl issue pr LIT-123
 linctl next --dry-run
 linctl organization exists kyanite
 linctl rate-limit status
+linctl notification list --limit 20
+linctl notification get notification-id
+linctl notification subscription list --limit 20
+linctl notification subscription get notification-subscription-id
 linctl cycle list --limit 20
 linctl cycle get cycle-id
 linctl cycle create --starts-at 2026-07-01T00:00:00Z --ends-at 2026-07-15T00:00:00Z --name "Planning"
@@ -215,7 +223,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Organization, rate-limit, comment, ProjectUpdate, document, label, team, user, workflow-state, time-schedule, initiative, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Organization, rate-limit, notification, comment, ProjectUpdate, document, label, team, user, workflow-state, time-schedule, initiative, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

@@ -43,6 +43,8 @@ PY
   "$binary" issue list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null
   "$binary" project list --json --limit 5 >/dev/null
+  "$binary" notification list --json --limit 5 >/dev/null
+  "$binary" notification subscription list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null
   "$binary" roadmap list --json --limit 5 >/dev/null
   "$binary" customer list --json --limit 5 >/dev/null

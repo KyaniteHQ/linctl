@@ -71,6 +71,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addWhoamiCommand(ctx, command, &options)
 	addOrganizationCommand(ctx, command, &options)
 	addRateLimitCommand(ctx, command, &options)
+	addNotificationCommand(ctx, command, &options)
 	addIssueCommand(ctx, command, &options)
 	addNextCommand(ctx, command, &options)
 	addCurrentCommand(ctx, command, &options)

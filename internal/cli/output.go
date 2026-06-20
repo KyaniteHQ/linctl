@@ -180,6 +180,8 @@ func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bo
 		"labels",
 		"teams",
 		"users",
+		"notifications",
+		"notification_subscriptions",
 		"customers",
 		"customer_needs",
 		"customer_statuses",

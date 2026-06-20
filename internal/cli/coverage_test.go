@@ -162,6 +162,18 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Title:      "Linked PR",
 		SourceType: "github",
 	}
+	notification := client.NotificationSummary{
+		ID:       "notification-id",
+		Type:     "issueMention",
+		Category: "mentions",
+		Title:    "Mentioned you",
+	}
+	notificationSubscription := client.NotificationSubscriptionSummary{
+		ID:         "notification-subscription-id",
+		Active:     true,
+		TargetType: "project",
+		TargetName: "Roadmap",
+	}
 
 	textOut := bytes.Buffer{}
 	textCommand := &cobra.Command{}
@@ -193,6 +205,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
 	require.NoError(t, writeEmoji(textCommand, &textOptions, emoji))
 	require.NoError(t, writeAttachment(textCommand, &textOptions, attachment))
+	require.NoError(t, writeNotification(textCommand, &textOptions, notification))
+	require.NoError(t, writeNotificationSubscription(textCommand, &textOptions, notificationSubscription))
 	require.Equal(
 		t,
 		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
@@ -211,7 +225,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"kyanite exists true success true\n"+
 			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
 			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
-			"attachment-id Linked PR [github]\n",
+			"attachment-id Linked PR [github]\n"+
+			"notification-id issueMention [mentions] Mentioned you\n"+
+			"notification-subscription-id project Roadmap active true\n",
 		textOut.String(),
 	)
 
@@ -245,6 +261,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
 	require.NoError(t, writeEmoji(jsonCommand, &jsonOptions, emoji))
 	require.NoError(t, writeAttachment(jsonCommand, &jsonOptions, attachment))
+	require.NoError(t, writeNotification(jsonCommand, &jsonOptions, notification))
+	require.NoError(t, writeNotificationSubscription(jsonCommand, &jsonOptions, notificationSubscription))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
@@ -270,6 +288,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"type": "issue"`)
 	require.Contains(t, jsonOut.String(), `"source": "custom"`)
 	require.Contains(t, jsonOut.String(), `"source_type": "github"`)
+	require.Contains(t, jsonOut.String(), `"category": "mentions"`)
+	require.Contains(t, jsonOut.String(), `"target_type": "project"`)
 }
 
 func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
@@ -418,6 +438,18 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Title:      "Linked PR",
 		SourceType: "github",
 	}
+	notification := client.NotificationSummary{
+		ID:       "notification-id",
+		Type:     "issueMention",
+		Category: "mentions",
+		Title:    "Mentioned you",
+	}
+	notificationSubscription := client.NotificationSubscriptionSummary{
+		ID:         "notification-subscription-id",
+		Active:     true,
+		TargetType: "project",
+		TargetName: "Roadmap",
+	}
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
@@ -449,6 +481,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
 	require.NoError(t, writeEmoji(command, &rootOptions{idOnly: true}, emoji))
 	require.NoError(t, writeAttachment(command, &rootOptions{idOnly: true}, attachment))
+	require.NoError(t, writeNotification(command, &rootOptions{idOnly: true}, notification))
+	require.NoError(t, writeNotificationSubscription(command, &rootOptions{idOnly: true}, notificationSubscription))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
 	require.Contains(t, output.String(), "starts_at=2026-07-01T00:00:00Z")
@@ -474,6 +508,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "favorite-id")
 	require.Contains(t, output.String(), "emoji-id")
 	require.Contains(t, output.String(), "attachment-id")
+	require.Contains(t, output.String(), "notification-id")
+	require.Contains(t, output.String(), "notification-subscription-id")
 	require.Equal(t, "-", emptyDash(""))
 
 	quietOutput := bytes.Buffer{}
@@ -504,6 +540,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
 	require.NoError(t, writeEmoji(quietCommand, &rootOptions{quiet: true}, emoji))
 	require.NoError(t, writeAttachment(quietCommand, &rootOptions{quiet: true}, attachment))
+	require.NoError(t, writeNotification(quietCommand, &rootOptions{quiet: true}, notification))
+	require.NoError(t, writeNotificationSubscription(quietCommand, &rootOptions{quiet: true}, notificationSubscription))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")
 	require.NoError(t, err)
@@ -588,6 +626,30 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, map[string]any{
 		"time_schedules": []any{map[string]any{"id": "time-schedule-id", "entry_count": float64(1)}},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"notifications": []any{map[string]any{"id": "notification-id", "category": "mentions"}}},
+		"id,category",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"notifications": []any{map[string]any{"id": "notification-id", "category": "mentions"}},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{
+			"notification_subscriptions": []any{
+				map[string]any{"id": "notification-subscription-id", "target_type": "project"},
+			},
+		},
+		"id,target_type",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"notification_subscriptions": []any{
+			map[string]any{"id": "notification-subscription-id", "target_type": "project"},
+		},
 	}, projected)
 
 	projected, err = projectJSONFields(

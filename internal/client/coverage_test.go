@@ -168,22 +168,35 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "detail",
 			Status: "Started",
 		}) + `}`,
-		"project_members":          `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"ProjectUpdates":           `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectUpdates":           `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"projectUpdate":            `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"ProjectMilestones":        `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectMilestone":         `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
-		"issue_comments":           `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"comments":                 `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"comment":                  `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"Documents":                `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"document":                 `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
-		"IssueLabels":              `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"issueLabel":               `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
-		"Teams":                    `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"organizationExists":       `{"organizationExists":{"success":true,"exists":true}}`,
-		"rateLimitStatus":          `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
+		"project_members":    `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"ProjectUpdates":     `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectUpdates":     `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectUpdate":      `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"ProjectMilestones":  `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectMilestone":   `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
+		"issue_comments":     `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"comments":           `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"comment":            `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"Documents":          `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"document":           `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
+		"IssueLabels":        `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issueLabel":         `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
+		"Teams":              `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"organizationExists": `{"organizationExists":{"success":true,"exists":true}}`,
+		"rateLimitStatus":    `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
+		"notifications":      `{"notifications":{"nodes":[` + notificationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"notification":       `{"notification":` + notificationJSON() + `}`,
+		"notificationSubscriptions": `{"notificationSubscriptions":{"nodes":[` + strings.Join([]string{
+			notificationSubscriptionJSON(),
+			notificationSubscriptionTargetJSON("CustomerNotificationSubscription", "customer", `{"id":"customer-id","name":"Acme"}`, false, false),
+			notificationSubscriptionTargetJSON("CustomViewNotificationSubscription", "customView", `{"id":"custom-view-id","name":"My issues"}`, false, false),
+			notificationSubscriptionTargetJSON("CycleNotificationSubscription", "cycle", `{"id":"cycle-id","name":"Cycle 7"}`, false, false),
+			notificationSubscriptionTargetJSON("InitiativeNotificationSubscription", "initiative", `{"id":"initiative-id","name":"Platform"}`, false, false),
+			notificationSubscriptionTargetJSON("LabelNotificationSubscription", "label", `{"id":"label-id","name":"Bug"}`, false, false),
+			notificationSubscriptionTargetJSON("TeamNotificationSubscription", "team", `{"id":"team-id","key":"LIT","name":"linctl"}`, true, false),
+			notificationSubscriptionTargetJSON("UserNotificationSubscription", "user", `{"id":"target-user-id","displayName":"Ada"}`, false, true),
+		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"notificationSubscription": `{"notificationSubscription":` + notificationSubscriptionJSON() + `}`,
 		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
 		"team_members":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"users":                    `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -286,6 +299,18 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	organizationExists, err := CheckOrganizationExists(context.Background(), graphqlClient, "kyanite")
 	require.NoError(t, err)
 	rateLimitStatus, err := GetRateLimitStatus(context.Background(), graphqlClient)
+	require.NoError(t, err)
+	notifications, err := ListNotifications(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	notification, err := GetNotificationByID(context.Background(), graphqlClient, "notification-id")
+	require.NoError(t, err)
+	notificationSubscriptions, err := ListNotificationSubscriptions(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	notificationSubscription, err := GetNotificationSubscriptionByID(
+		context.Background(),
+		graphqlClient,
+		"notification-subscription-id",
+	)
 	require.NoError(t, err)
 	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
 	require.NoError(t, err)
@@ -437,6 +462,26 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "api", rateLimitStatus.Kind)
 	require.Equal(t, "complexity", rateLimitStatus.Limits[0].Type)
 	require.InDelta(t, 900, rateLimitStatus.Limits[0].RemainingAmount, 0)
+	require.True(t, notifications.HasNextPage)
+	require.Equal(t, &endCursor, notifications.EndCursor)
+	require.Equal(t, "Mentioned you", notifications.Notifications[0].Title)
+	require.Equal(t, "mentions", notifications.Notifications[0].Category)
+	require.Equal(t, "actor-id", notifications.Notifications[0].ActorID)
+	require.Equal(t, "external-user-id", notification.ExternalUserActorID)
+	require.True(t, notificationSubscriptions.HasNextPage)
+	require.Equal(t, &endCursor, notificationSubscriptions.EndCursor)
+	require.Equal(t, "project", notificationSubscriptions.Subscriptions[0].TargetType)
+	require.Equal(t, "Roadmap", notificationSubscriptions.Subscriptions[0].TargetName)
+	require.Equal(t, "customer", notificationSubscriptions.Subscriptions[1].TargetType)
+	require.Equal(t, "custom_view", notificationSubscriptions.Subscriptions[2].TargetType)
+	require.Equal(t, "Cycle 7", notificationSubscriptions.Subscriptions[3].TargetName)
+	require.Equal(t, "initiative", notificationSubscriptions.Subscriptions[4].TargetType)
+	require.Equal(t, "label", notificationSubscriptions.Subscriptions[5].TargetType)
+	require.Equal(t, "backlog", notificationSubscriptions.Subscriptions[6].ContextViewType)
+	require.Equal(t, "LIT", notificationSubscriptions.Subscriptions[6].TargetName)
+	require.Equal(t, "assigned", notificationSubscriptions.Subscriptions[7].UserContextViewType)
+	require.Equal(t, "Ada", notificationSubscriptions.Subscriptions[7].TargetName)
+	require.Equal(t, "project-id", notificationSubscription.TargetID)
 	require.Equal(t, "team body", team.Description)
 	require.Equal(t, "Omer", teamMembers.Members[0].DisplayName)
 	require.Equal(t, &endCursor, teamMembers.EndCursor)
@@ -1073,6 +1118,22 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetEmojiByID(context.Background(), graphqlClient, "emoji-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get emoji emoji-id")
+
+		_, err = ListNotifications(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list notifications")
+
+		_, err = GetNotificationByID(context.Background(), graphqlClient, "notification-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get notification notification-id")
+
+		_, err = ListNotificationSubscriptions(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list notification subscriptions")
+
+		_, err = GetNotificationSubscriptionByID(context.Background(), graphqlClient, "notification-subscription-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get notification subscription notification-subscription-id")
 
 		_, err = ListAttachments(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -1726,4 +1787,88 @@ func issueIdentifiers(issues []IssueSummary) []string {
 
 func projectJSONWithLead(project projectFixture, lead string) string {
 	return strings.Replace(projectJSON(project), `"lead":null`, `"lead":{"id":"user-id","name":"omer","displayName":"`+lead+`"}`, 1)
+}
+
+func notificationJSON() string {
+	return `{
+		"__typename":"IssueNotification",
+		"id":"notification-id",
+		"type":"issueMention",
+		"category":"mentions",
+		"title":"Mentioned you",
+		"subtitle":"LIT-1",
+		"url":"https://linear.app/kyanite/issue/LIT-1",
+		"inboxUrl":"https://linear.app/kyanite/inbox/notification-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"readAt":null,
+		"emailedAt":null,
+		"snoozedUntilAt":null,
+		"unsnoozedAt":null,
+		"user":{"id":"user-id","displayName":"Omer"},
+		"actor":{"id":"actor-id","displayName":"Ada"},
+		"externalUserActor":{"id":"external-user-id"}
+	}`
+}
+
+func notificationSubscriptionJSON() string {
+	return `{
+		"__typename":"ProjectNotificationSubscription",
+		"id":"notification-subscription-id",
+		"active":true,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"contextViewType":null,
+		"userContextViewType":null,
+		"subscriber":{"id":"user-id","displayName":"Omer"},
+		"customer":null,
+		"customView":null,
+		"cycle":null,
+		"initiative":null,
+		"label":null,
+		"project":{"id":"project-id","name":"Roadmap"},
+		"team":null,
+		"user":null
+	}`
+}
+
+func notificationSubscriptionTargetJSON(
+	typename string,
+	targetField string,
+	targetPayload string,
+	withContextView bool,
+	withUserContextView bool,
+) string {
+	contextViewType := "null"
+	if withContextView {
+		contextViewType = `"backlog"`
+	}
+	userContextViewType := "null"
+	if withUserContextView {
+		userContextViewType = `"assigned"`
+	}
+
+	payload := `{
+		"__typename":"` + typename + `",
+		"id":"notification-subscription-id",
+		"active":true,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"contextViewType":` + contextViewType + `,
+		"userContextViewType":` + userContextViewType + `,
+		"subscriber":{"id":"user-id","displayName":"Omer"},
+		"customer":null,
+		"customView":null,
+		"cycle":null,
+		"initiative":null,
+		"label":null,
+		"project":null,
+		"team":null,
+		"user":null
+	}`
+
+	return strings.Replace(payload, `"`+targetField+`":null`, `"`+targetField+`":`+targetPayload, 1)
 }

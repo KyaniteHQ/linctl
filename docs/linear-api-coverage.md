@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 61 | 458 |
-| Upstream Query root fields | 158 | 49 | 158 |
+| Upstream SDK root methods | 458 | 65 | 458 |
+| Upstream Query root fields | 158 | 53 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 87 | 87 | 87 |
-| Domain-map commands | 135 | 81 | 135 |
+| Local generated Go operations | 103 | 103 | 103 |
+| Domain-map commands | 150 | 85 | 150 |
 
 ## Upstream SDK Root Methods
 
@@ -314,15 +314,15 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `logoutAllSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutSession` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `notification` | method | safe_candidate | read operation may fit future CLI coverage |
+| `notification` | method | implemented | local operation or command exists |
 | `notificationArchiveAll` | method | safe_candidate | read operation may fit future CLI coverage |
 | `notificationMarkReadAll` | method | safe_candidate | read operation may fit future CLI coverage |
 | `notificationMarkUnreadAll` | method | safe_candidate | read operation may fit future CLI coverage |
 | `notificationSnoozeAll` | method | safe_candidate | read operation may fit future CLI coverage |
-| `notificationSubscription` | method | safe_candidate | read operation may fit future CLI coverage |
-| `notificationSubscriptions` | method | safe_candidate | read operation may fit future CLI coverage |
+| `notificationSubscription` | method | implemented | local operation or command exists |
+| `notificationSubscriptions` | method | implemented | local operation or command exists |
 | `notificationUnsnoozeAll` | method | safe_candidate | read operation may fit future CLI coverage |
-| `notifications` | method | safe_candidate | read operation may fit future CLI coverage |
+| `notifications` | method | implemented | local operation or command exists |
 | `organization` | getter | implemented | local operation or command exists |
 | `organizationDeleteChallenge` | getter | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationExists` | method | implemented | local operation or command exists |
@@ -575,10 +575,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issues` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `latestReleaseByAccessKey` | `Release` | safe_candidate | read operation may fit future CLI coverage |
 | `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `notification` | `Notification!` | safe_candidate | read operation may fit future CLI coverage |
-| `notificationSubscription` | `NotificationSubscription!` | safe_candidate | read operation may fit future CLI coverage |
-| `notificationSubscriptions` | `NotificationSubscriptionConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `notifications` | `NotificationConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `notification` | `Notification!` | implemented | root field used by local GraphQL operation |
+| `notificationSubscription` | `NotificationSubscription!` | implemented | root field used by local GraphQL operation |
+| `notificationSubscriptions` | `NotificationSubscriptionConnection!` | implemented | root field used by local GraphQL operation |
+| `notifications` | `NotificationConnection!` | implemented | root field used by local GraphQL operation |
 | `notificationsUnreadCount` | `Int!` | safe_candidate | read operation may fit future CLI coverage |
 | `oauthApplication` | `OAuthApplication!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplications` | `[OAuthApplication!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -1090,6 +1090,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
 | `issue_comments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issues` | query | `issues` | implemented | `internal/client/generated.go` |
+| `notification` | query | `notification` | implemented | `internal/client/generated.go` |
+| `notificationSubscription` | query | `notificationSubscription` | implemented | `internal/client/generated.go` |
+| `notificationSubscriptions` | query | `notificationSubscriptions` | implemented | `internal/client/generated.go` |
+| `notifications` | query | `notifications` | implemented | `internal/client/generated.go` |
 | `organizationExists` | query | `organizationExists` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
@@ -1118,6 +1122,21 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
 | Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |
+| Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Notification | `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification archive all` | `Mutation.notificationArchiveAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification update` | `Mutation.notificationUpdate` | Blocked: direct inbox-state mutation needs an explicit viewer-state safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification mark read all` | `Mutation.notificationMarkReadAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification mark unread all` | `Mutation.notificationMarkUnreadAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification snooze all` | `Mutation.notificationSnoozeAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification unsnooze all` | `Mutation.notificationUnsnoozeAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification category channel subscription update` | `Mutation.notificationCategoryChannelSubscriptionUpdate` | Blocked: viewer notification preference mutation needs an explicit consent model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification subscription create` | `Mutation.notificationSubscriptionCreate` | Blocked: subscription writes can target several entity types and need explicit target-resolution semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |

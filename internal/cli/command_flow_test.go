@@ -33,6 +33,10 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "whoami", args: []string{"whoami"}, contains: "Omer <omer@example.com>"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, contains: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000"},
+		{name: "notification list", args: []string{"notification", "list", "--limit", "1"}, contains: "notification-id issueMention [mentions] Mentioned you"},
+		{name: "notification get", args: []string{"notification", "get", "notification-id"}, contains: "notification-id issueMention [mentions] Mentioned you"},
+		{name: "notification subscription list", args: []string{"notification", "subscription", "list", "--limit", "1"}, contains: "notification-subscription-id project Roadmap active true"},
+		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, contains: "notification-subscription-id project Roadmap active true"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
 		{name: "issue list", args: []string{"issue", "list", "--limit", "1"}, contains: "LIT-1 Listed issue [Todo]"},
 		{name: "issue list state filter", args: []string{"issue", "list", "--state", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
@@ -638,6 +642,10 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "whoami"},
 		{"--json", "organization", "exists", "kyanite"},
 		{"--json", "rate-limit", "status"},
+		{"--json", "notification", "list", "--limit", "1"},
+		{"--json", "notification", "get", "notification-id"},
+		{"--json", "notification", "subscription", "list", "--limit", "1"},
+		{"--json", "notification", "subscription", "get", "notification-subscription-id"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1030,6 +1038,10 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "whoami resolve", args: []string{"whoami"}, operation: "Viewer", contains: "resolve viewer"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, operation: "rateLimitStatus", contains: "operation failed"},
+		{name: "notification list", args: []string{"notification", "list"}, operation: "notifications", contains: "list notifications"},
+		{name: "notification get", args: []string{"notification", "get", "notification-id"}, operation: "notification", contains: "get notification notification-id"},
+		{name: "notification subscription list", args: []string{"notification", "subscription", "list"}, operation: "notificationSubscriptions", contains: "list notification subscriptions"},
+		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, operation: "notificationSubscription", contains: "get notification subscription notification-subscription-id"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
 		{name: "next issues", args: []string{"next", "--dry-run"}, operation: "NextIssuesByTeam", contains: "list next issues"},
 		{name: "issue list target resolve", args: []string{"issue", "list"}, operation: "Teams", contains: "resolve teams"},
@@ -1443,6 +1455,14 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 //nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
 func commandFlowExtraReadPayload(operation string) (string, bool) {
 	switch operation {
+	case "notifications":
+		return `{"notifications":{"nodes":[` + commandNotificationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "notification":
+		return `{"notification":` + commandNotificationJSON() + `}`, true
+	case "notificationSubscriptions":
+		return `{"notificationSubscriptions":{"nodes":[` + commandNotificationSubscriptionJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "notificationSubscription":
+		return `{"notificationSubscription":` + commandNotificationSubscriptionJSON() + `}`, true
 	case "timeSchedules":
 		return `{"timeSchedules":{"nodes":[` + commandTimeScheduleJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "timeSchedule":
@@ -2049,6 +2069,51 @@ func commandAttachmentJSON() string {
 		"subtitle":"feat: add thing",
 		"url":"https://github.com/kyanite/linctl/pull/1",
 		"sourceType":"github"
+	}`
+}
+
+func commandNotificationJSON() string {
+	return `{
+		"__typename":"IssueNotification",
+		"id":"notification-id",
+		"type":"issueMention",
+		"category":"mentions",
+		"title":"Mentioned you",
+		"subtitle":"LIT-1",
+		"url":"https://linear.app/kyanite/issue/LIT-1",
+		"inboxUrl":"https://linear.app/kyanite/inbox/notification-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"readAt":null,
+		"emailedAt":null,
+		"snoozedUntilAt":null,
+		"unsnoozedAt":null,
+		"user":{"id":"user-id","displayName":"Omer"},
+		"actor":{"id":"actor-id","displayName":"Ada"},
+		"externalUserActor":null
+	}`
+}
+
+func commandNotificationSubscriptionJSON() string {
+	return `{
+		"__typename":"ProjectNotificationSubscription",
+		"id":"notification-subscription-id",
+		"active":true,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"contextViewType":null,
+		"userContextViewType":null,
+		"subscriber":{"id":"user-id","displayName":"Omer"},
+		"customer":null,
+		"customView":null,
+		"cycle":null,
+		"initiative":null,
+		"label":null,
+		"project":{"id":"project-id","name":"Roadmap"},
+		"team":null,
+		"user":null
 	}`
 }
 

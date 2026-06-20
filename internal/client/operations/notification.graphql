@@ -1,0 +1,110 @@
+query notifications($first: Int, $after: String, $includeArchived: Boolean) {
+  notifications(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...NotificationSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query notification($id: String!) {
+  notification(id: $id) {
+    ...NotificationSummaryFields
+  }
+}
+
+query notificationSubscriptions($first: Int, $after: String, $includeArchived: Boolean) {
+  notificationSubscriptions(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...NotificationSubscriptionSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query notificationSubscription($id: String!) {
+  notificationSubscription(id: $id) {
+    ...NotificationSubscriptionSummaryFields
+  }
+}
+
+fragment NotificationSummaryFields on Notification {
+  id
+  type
+  category
+  title
+  subtitle
+  url
+  inboxUrl
+  createdAt
+  updatedAt
+  archivedAt
+  readAt
+  emailedAt
+  snoozedUntilAt
+  unsnoozedAt
+  user {
+    id
+    displayName
+  }
+  actor {
+    id
+    displayName
+  }
+  externalUserActor {
+    id
+  }
+}
+
+fragment NotificationSubscriptionSummaryFields on NotificationSubscription {
+  id
+  active
+  createdAt
+  updatedAt
+  archivedAt
+  contextViewType
+  userContextViewType
+  subscriber {
+    id
+    displayName
+  }
+  customer {
+    id
+    name
+  }
+  customView {
+    id
+    name
+  }
+  cycle {
+    id
+    name
+  }
+  initiative {
+    id
+    name
+  }
+  label {
+    id
+    name
+  }
+  project {
+    id
+    name
+  }
+  team {
+    id
+    key
+    name
+  }
+  user {
+    id
+    displayName
+  }
+}
