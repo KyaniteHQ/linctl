@@ -1,0 +1,54 @@
+fragment IssueSummaryFields on Issue {
+  id
+  identifier
+  title
+  branchName
+  url
+  priority
+  priorityLabel
+  team {
+    id
+    key
+    name
+  }
+  state {
+    id
+    name
+    type
+  }
+  assignee {
+    id
+    name
+    displayName
+  }
+  project {
+    id
+    name
+  }
+}
+
+fragment ProjectSummaryFields on Project {
+  id
+  name
+  description
+  slugId
+  url
+  priority
+  status {
+    id
+    name
+    type
+  }
+  lead {
+    id
+    name
+    displayName
+  }
+  teams(first: 50) {
+    nodes {
+      id
+      key
+      name
+    }
+  }
+}

@@ -6,7 +6,8 @@ filtered="${profile%.cover}.handwritten.cover"
 
 go test -count=1 -coverprofile="$profile" ./...
 grep -v '/internal/client/generated.go:' "$profile" |
-  grep -v '/cmd/linctl/main.go:' > "$filtered"
+  grep -v '/cmd/linctl/main.go:' |
+  grep -v '/scripts/' > "$filtered"
 
 coverage_output="$(go tool cover -func="$filtered")"
 printf '%s\n' "$coverage_output"

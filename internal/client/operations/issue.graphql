@@ -1,0 +1,404 @@
+query AllTeamIssues($first: Int, $after: String, $includeArchived: Boolean) {
+  issues(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeam($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamState($teamId: ID!, $stateType: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, state: { type: { eq: $stateType } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamProject($teamId: ID!, $projectID: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, project: { id: { eq: $projectID } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamAssignee($teamId: ID!, $assigneeID: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, assignee: { id: { eq: $assigneeID } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamLabel($teamId: ID!, $labelID: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, labels: { some: { id: { eq: $labelID } } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamCycle($teamId: ID!, $cycleID: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, cycle: { id: { eq: $cycleID } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamCreatedAfter(
+  $teamId: ID!
+  $createdAfter: DateTimeOrDuration!
+  $first: Int
+  $after: String
+  $includeArchived: Boolean
+) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, createdAt: { gte: $createdAfter } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamCreatedBefore(
+  $teamId: ID!
+  $createdBefore: DateTimeOrDuration!
+  $first: Int
+  $after: String
+  $includeArchived: Boolean
+) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, createdAt: { lte: $createdBefore } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamHasBlockers($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, hasBlockedByRelations: { eq: true } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssuesByTeamBlocks($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, hasBlockingRelations: { eq: true } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query NextIssuesByTeam($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: {
+      team: { id: { eq: $teamId } }
+      state: { type: { eq: "unstarted" } }
+      hasBlockedByRelations: { eq: false }
+    }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssueBlockedIssues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    id
+    identifier
+    relations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        type
+        relatedIssue {
+          ...IssueSummaryFields
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query IssueDependencies($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    id
+    identifier
+    parent {
+      ...IssueSummaryFields
+    }
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+    relations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        type
+        relatedIssue {
+          ...IssueSummaryFields
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        type
+        issue {
+          ...IssueSummaryFields
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query IssueSearch($teamId: ID!, $query: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issues(
+    filter: { team: { id: { eq: $teamId } }, searchableContent: { contains: $query } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssueByID($id: String!) {
+  issue(id: $id) {
+    description
+    ...IssueSummaryFields
+    projectMilestone {
+      id
+      name
+    }
+  }
+}
+
+query IssueComments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    id
+    identifier
+    comments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        body
+        url
+        createdAt
+        parentId
+        user {
+          id
+          name
+          displayName
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query CompletedWorkflowStates($teamId: ID!, $first: Int) {
+  workflowStates(filter: { team: { id: { eq: $teamId } }, type: { eq: "completed" } }, first: $first) {
+    nodes {
+      id
+      name
+      type
+      position
+    }
+  }
+}
+
+query StartedWorkflowStates($teamId: ID!, $first: Int) {
+  workflowStates(filter: { team: { id: { eq: $teamId } }, type: { eq: "started" } }, first: $first) {
+    nodes {
+      id
+      name
+      type
+      position
+    }
+  }
+}
+
+mutation IssueCreate($input: IssueCreateInput!) {
+  issueCreate(input: $input) {
+    success
+    issue {
+      ...IssueSummaryFields
+    }
+  }
+}
+
+mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
+  issueUpdate(id: $id, input: $input) {
+    success
+    issue {
+      ...IssueSummaryFields
+    }
+  }
+}
+
+mutation IssueCommentCreate($input: CommentCreateInput!) {
+  commentCreate(input: $input) {
+    success
+    comment {
+      id
+      body
+      url
+      issue {
+        ...IssueSummaryFields
+      }
+    }
+  }
+}
+
+mutation IssueClose($id: String!, $input: IssueUpdateInput!) {
+  issueUpdate(id: $id, input: $input) {
+    success
+    issue {
+      ...IssueSummaryFields
+    }
+  }
+}
+
+mutation IssueArchive($id: String!, $trash: Boolean) {
+  issueArchive(id: $id, trash: $trash) {
+    success
+    entity {
+      ...IssueSummaryFields
+    }
+  }
+}

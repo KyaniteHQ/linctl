@@ -58,6 +58,28 @@ type ProjectMemberList struct {
 	EndCursor   *string         `json:"end_cursor,omitempty"`
 }
 
+// ProjectUpdateSummary is one project status update.
+type ProjectUpdateSummary struct {
+	ID          string `json:"id"`
+	Body        string `json:"body"`
+	Health      string `json:"health"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+	URL         string `json:"url"`
+	UserID      string `json:"user_id"`
+	Name        string `json:"name"`
+	DisplayName string `json:"display_name"`
+}
+
+// ProjectUpdateList is a page of project status updates.
+type ProjectUpdateList struct {
+	ProjectID   string                 `json:"project_id"`
+	ProjectName string                 `json:"project_name"`
+	Updates     []ProjectUpdateSummary `json:"updates"`
+	HasNextPage bool                   `json:"has_next_page"`
+	EndCursor   *string                `json:"end_cursor,omitempty"`
+}
+
 // ListProjectsByTeam returns projects scoped to a resolved team.
 func ListProjectsByTeam(
 	ctx context.Context,
@@ -120,6 +142,42 @@ func ListProjectMembers(
 		Members:     members,
 		HasNextPage: project.Project.Members.PageInfo.HasNextPage,
 		EndCursor:   project.Project.Members.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListProjectUpdates returns status updates for one project.
+func ListProjectUpdates(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ProjectUpdateList, error) {
+	project, err := ProjectUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectUpdateList{}, fmt.Errorf("list project updates %s: %w", id, err)
+	}
+
+	updates := make([]ProjectUpdateSummary, 0, len(project.Project.ProjectUpdates.Nodes))
+	for _, update := range project.Project.ProjectUpdates.Nodes {
+		updates = append(updates, ProjectUpdateSummary{
+			ID:          update.Id,
+			Body:        update.Body,
+			Health:      string(update.Health),
+			CreatedAt:   update.CreatedAt,
+			UpdatedAt:   update.UpdatedAt,
+			URL:         update.Url,
+			UserID:      update.User.Id,
+			Name:        update.User.Name,
+			DisplayName: update.User.DisplayName,
+		})
+	}
+
+	return ProjectUpdateList{
+		ProjectID:   project.Project.Id,
+		ProjectName: project.Project.Name,
+		Updates:     updates,
+		HasNextPage: project.Project.ProjectUpdates.PageInfo.HasNextPage,
+		EndCursor:   project.Project.ProjectUpdates.PageInfo.EndCursor,
 	}, nil
 }
 

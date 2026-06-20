@@ -80,6 +80,7 @@ func (transport *Transport) MakeRequest(
 ) error {
 	payload, err := json.Marshal(request)
 	if err != nil {
+		transport.log("graphql_encode_failed error=%q", err.Error())
 		return fmt.Errorf("encode graphql request: %w", err)
 	}
 

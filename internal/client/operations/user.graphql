@@ -1,0 +1,33 @@
+query Users($first: Int, $after: String, $includeArchived: Boolean, $includeDisabled: Boolean) {
+  users(first: $first, after: $after, includeArchived: $includeArchived, includeDisabled: $includeDisabled) {
+    nodes {
+      ...UserSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query UserByID($id: String!) {
+  user(id: $id) {
+    ...UserSummaryFields
+  }
+}
+
+query ViewerUser {
+  viewer {
+    ...UserSummaryFields
+  }
+}
+
+fragment UserSummaryFields on User {
+  id
+  name
+  displayName
+  email
+  active
+  guest
+  admin
+}

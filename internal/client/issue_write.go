@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/Khan/genqlient/graphql"
 
@@ -20,12 +21,14 @@ type IssueUpdateRequest struct {
 	ID          string
 	Title       string
 	Description string
+	Append      string
 }
 
 // IssueCommentRequest describes a guarded issue comment.
 type IssueCommentRequest struct {
-	ID   string
-	Body string
+	ID       string
+	Body     string
+	ParentID string
 }
 
 // IssueCommentResult is the created comment plus its issue.
@@ -48,13 +51,15 @@ type LinearIssueCreateInput struct {
 type LinearIssueUpdateInput struct {
 	Title       *string `json:"title,omitempty"`
 	Description *string `json:"description,omitempty"`
+	AssigneeID  *string `json:"assigneeId,omitempty"`
 	StateID     *string `json:"stateId,omitempty"`
 }
 
 // LinearCommentCreateInput is the sparse Linear commentCreate payload linctl supports.
 type LinearCommentCreateInput struct {
-	Body    *string `json:"body,omitempty"`
-	IssueID *string `json:"issueId,omitempty"`
+	Body     *string `json:"body,omitempty"`
+	IssueID  *string `json:"issueId,omitempty"`
+	ParentID *string `json:"parentId,omitempty"`
 }
 
 // CreateIssue creates an issue after resolving and comparing the pinned write target.
@@ -101,20 +106,28 @@ func UpdateIssue(
 	if request.ID == "" {
 		return IssueSummary{}, fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
 	}
-	if request.Title == "" && request.Description == "" {
+	if request.Title == "" && request.Description == "" && request.Append == "" {
 		return IssueSummary{}, fmt.Errorf("%w: title or description is required", ErrWriteInvalid)
+	}
+	if request.Description != "" && request.Append != "" {
+		return IssueSummary{}, fmt.Errorf("%w: description and append are mutually exclusive", ErrWriteInvalid)
 	}
 	guard, err := newWriteGuard(ctx, graphqlClient, expected)
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	if _, err := guard.requireIssue(ctx, graphqlClient, request.ID); err != nil {
+	issue, err := guard.requireIssueDetail(ctx, graphqlClient, request.ID)
+	if err != nil {
 		return IssueSummary{}, err
+	}
+	description := request.Description
+	if request.Append != "" {
+		description = appendIssueDescription(issue.Description, request.Append)
 	}
 
 	updated, err := IssueUpdate(ctx, graphqlClient, request.ID, LinearIssueUpdateInput{
 		Title:       optionalString(request.Title),
-		Description: optionalString(request.Description),
+		Description: optionalString(description),
 	})
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("update issue %s: %w", request.ID, err)
@@ -124,6 +137,48 @@ func UpdateIssue(
 	}
 
 	return issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields), nil
+}
+
+func appendIssueDescription(description string, note string) string {
+	if strings.TrimSpace(description) == "" {
+		return note
+	}
+
+	return strings.TrimRight(description, "\n") + "\n\n" + note
+}
+
+// StartIssue assigns an issue to the viewer and moves it to the team's started workflow state.
+func StartIssue(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+	issueID string,
+) (IssueSummary, error) {
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	issue, err := guard.requireIssue(ctx, graphqlClient, issueID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	stateID, err := firstStartedStateID(ctx, graphqlClient, issue.TeamID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	started, err := IssueUpdate(ctx, graphqlClient, issueID, LinearIssueUpdateInput{
+		AssigneeID: stringPtr(guard.target.Viewer.ID),
+		StateID:    stringPtr(stateID),
+	})
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("start issue %s: %w", issueID, err)
+	}
+	if !started.IssueUpdate.Success || started.IssueUpdate.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issue start returned no issue", ErrMutationFailed)
+	}
+
+	return issueSummaryFromFields(started.IssueUpdate.Issue.IssueSummaryFields), nil
 }
 
 // CommentOnIssue adds a comment after resolving and comparing the pinned write target.
@@ -148,8 +203,9 @@ func CommentOnIssue(
 	}
 
 	comment, err := IssueCommentCreate(ctx, graphqlClient, LinearCommentCreateInput{
-		Body:    stringPtr(request.Body),
-		IssueID: stringPtr(request.ID),
+		Body:     stringPtr(request.Body),
+		IssueID:  stringPtr(request.ID),
+		ParentID: optionalString(request.ParentID),
 	})
 	if err != nil {
 		return IssueCommentResult{}, fmt.Errorf("comment on issue %s: %w", request.ID, err)
@@ -206,6 +262,25 @@ func firstCompletedStateID(ctx context.Context, graphqlClient graphql.Client, te
 	}
 	if len(states.WorkflowStates.Nodes) == 0 {
 		return "", fmt.Errorf("%w: completed workflow state missing for team_id=%s", ErrWriteInvalid, teamID)
+	}
+
+	state := states.WorkflowStates.Nodes[0]
+	for _, candidate := range states.WorkflowStates.Nodes[1:] {
+		if candidate.Position < state.Position {
+			state = candidate
+		}
+	}
+
+	return state.Id, nil
+}
+
+func firstStartedStateID(ctx context.Context, graphqlClient graphql.Client, teamID string) (string, error) {
+	states, err := StartedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
+	if err != nil {
+		return "", fmt.Errorf("list started workflow states: %w", err)
+	}
+	if len(states.WorkflowStates.Nodes) == 0 {
+		return "", fmt.Errorf("%w: started workflow state missing for team_id=%s", ErrWriteInvalid, teamID)
 	}
 
 	state := states.WorkflowStates.Nodes[0]

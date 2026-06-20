@@ -18,6 +18,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	// Given
 	endCursor := "cursor-1"
 	graphqlClient := fakeGraphQLClient{
+		"AllTeamIssues": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-20",
+			Title:      "all-team issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
 		"IssuesByTeam": `{"issues":{"nodes":[` + issueJSON(issueFixture{
 			Identifier: "LIT-10",
 			Title:      "listed issue",
@@ -25,6 +32,124 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"IssuesByTeamState": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-12",
+			Title:      "started issue",
+			StateID:    "started",
+			State:      "Started",
+			StateType:  "started",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamProject": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-14",
+			Title:      "project issue",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamAssignee": `{"issues":{"nodes":[` + issueJSONWithAssignee(issueFixture{
+			Identifier: "LIT-15",
+			Title:      "mine issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}, "Omer") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamLabel": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-16",
+			Title:      "labeled issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamCycle": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-17",
+			Title:      "cycle issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamCreatedAfter": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-18",
+			Title:      "recent issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamCreatedBefore": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-19",
+			Title:      "older issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamHasBlockers": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-21",
+			Title:      "blocked issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssuesByTeamBlocks": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-22",
+			Title:      "blocking issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"NextIssuesByTeam": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-27",
+			Title:      "next issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"IssueBlockedIssues": `{"issue":{"id":"issue-id","identifier":"LIT-1","relations":{"nodes":[{"id":"relation-id","type":"blocks","relatedIssue":` + issueJSON(issueFixture{
+			Identifier: "LIT-23",
+			Title:      "blocked by issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`,
+		"IssueDependencies": `{"issue":{
+			"id":"issue-id",
+			"identifier":"LIT-1",
+			"parent":` + issueJSON(issueFixture{
+			Identifier: "LIT-25",
+			Title:      "parent issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `,
+			"children":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-26",
+			Title:      "child issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}},
+			"relations":{"nodes":[{"id":"blocks-relation","type":"blocks","relatedIssue":` + issueJSON(issueFixture{
+			Identifier: "LIT-23",
+			Title:      "blocked issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+			"inverseRelations":{"nodes":[{"id":"blocked-by-relation","type":"blocks","issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-24",
+			Title:      "blocker issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+		}}`,
+		"IssueSearch": `{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-13",
+			Title:      "search result",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
 		"IssueByID": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-11",
 			Title:      "detail issue",
@@ -42,11 +167,53 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "detail",
 			Status: "Started",
 		}) + `}`,
-		"ProjectMembers": `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"ProjectMembers":       `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"ProjectUpdates":       `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"ProjectMilestones":    `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"ProjectMilestoneByID": `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
+		"IssueComments":        `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"Documents":            `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"DocumentByID":         `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
+		"IssueLabels":          `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"IssueLabelByID":       `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
+		"Teams":                `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"TeamByID":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
+		"TeamMembers":          `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"Users":                `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"UserByID":             `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"ViewerUser":           `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
 	}
 
 	// When
-	issues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2)
+	allTeamIssues, err := ListIssues(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	issues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{})
+	require.NoError(t, err)
+	startedIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{StateType: "started"})
+	require.NoError(t, err)
+	projectIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{ProjectID: "project-id"})
+	require.NoError(t, err)
+	mineIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{AssigneeID: "user-id"})
+	require.NoError(t, err)
+	labelIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{LabelID: "label-id"})
+	require.NoError(t, err)
+	cycleIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{CycleID: "cycle-id"})
+	require.NoError(t, err)
+	recentIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{CreatedAfter: "2026-06-01"})
+	require.NoError(t, err)
+	olderIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{CreatedBefore: "2026-06-30"})
+	require.NoError(t, err)
+	blockedIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{HasBlockers: true})
+	require.NoError(t, err)
+	blockingIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{Blocks: true})
+	require.NoError(t, err)
+	nextIssues, err := ListNextIssuesByTeam(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	blockedByIssues, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 2, IssueListFilters{BlockedBy: "LIT-1"})
+	require.NoError(t, err)
+	dependencies, err := GetIssueDependencies(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	searchIssues, err := SearchIssuesByTeam(context.Background(), graphqlClient, "team-id", "needle", 2)
 	require.NoError(t, err)
 	issue, err := GetIssueByID(context.Background(), graphqlClient, "LIT-11")
 	require.NoError(t, err)
@@ -56,16 +223,104 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	members, err := ListProjectMembers(context.Background(), graphqlClient, "project-id", 2)
 	require.NoError(t, err)
+	projectUpdates, err := ListProjectUpdates(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectMilestones, err := ListProjectMilestones(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectMilestone, err := GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
+	require.NoError(t, err)
+	comments, err := ListIssueComments(context.Background(), graphqlClient, "LIT-12", 2)
+	require.NoError(t, err)
+	documents, err := ListDocuments(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	document, err := GetDocumentByID(context.Background(), graphqlClient, "document-id")
+	require.NoError(t, err)
+	labels, err := ListLabels(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	label, err := GetLabelByID(context.Background(), graphqlClient, "label-id")
+	require.NoError(t, err)
+	teams, err := ListTeams(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
+	require.NoError(t, err)
+	teamMembers, err := ListTeamMembers(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	users, err := ListUsers(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	user, err := GetUserByID(context.Background(), graphqlClient, "user-id")
+	require.NoError(t, err)
+	viewerUser, err := GetViewerUser(context.Background(), graphqlClient)
+	require.NoError(t, err)
 
 	// Then
+	require.Equal(t, "LIT-20", allTeamIssues.Issues[0].Identifier)
 	require.True(t, issues.HasNextPage)
 	require.Equal(t, "LIT-10", issues.Issues[0].Identifier)
+	require.False(t, startedIssues.HasNextPage)
+	require.Equal(t, "started", startedIssues.Issues[0].StateType)
+	require.Equal(t, "project-id", projectIssues.Issues[0].ProjectID)
+	require.Equal(t, "Omer", mineIssues.Issues[0].Assignee)
+	require.Equal(t, "LIT-16", labelIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-17", cycleIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-18", recentIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-19", olderIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-21", blockedIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-22", blockingIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-27", nextIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-23", blockedByIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-1", dependencies.Identifier)
+	require.Equal(t, "LIT-25", dependencies.Parent.Identifier)
+	require.Equal(t, "LIT-26", dependencies.Children[0].Identifier)
+	require.Equal(t, "LIT-23", dependencies.Blocks[0].Identifier)
+	require.Equal(t, "LIT-24", dependencies.BlockedBy[0].Identifier)
+	require.True(t, dependencies.HasNextPage)
+	require.Equal(t, "LIT-13", searchIssues.Issues[0].Identifier)
 	require.Equal(t, "LIT-11", issue.Identifier)
 	require.True(t, projects.HasNextPage)
 	require.Equal(t, "listed", projects.Projects[0].Name)
 	require.Equal(t, "detail", project.Name)
 	require.Equal(t, "Omer", members.Members[0].DisplayName)
 	require.Equal(t, &endCursor, members.EndCursor)
+	require.True(t, projectUpdates.HasNextPage)
+	require.Equal(t, "project-update-id", projectUpdates.Updates[0].ID)
+	require.Equal(t, "onTrack", projectUpdates.Updates[0].Health)
+	require.Equal(t, "Omer", projectUpdates.Updates[0].DisplayName)
+	require.Equal(t, &endCursor, projectUpdates.EndCursor)
+	require.True(t, projectMilestones.HasNextPage)
+	require.Equal(t, "project-milestone-id", projectMilestones.Milestones[0].ID)
+	require.Equal(t, "Launch milestone", projectMilestones.Milestones[0].Name)
+	require.Equal(t, "milestone body", projectMilestones.Milestones[0].Description)
+	require.Equal(t, "2026-06-30", projectMilestones.Milestones[0].TargetDate)
+	require.Equal(t, "next", projectMilestones.Milestones[0].Status)
+	require.Equal(t, &endCursor, projectMilestones.EndCursor)
+	require.Equal(t, "project-milestone-id", projectMilestone.ID)
+	require.Equal(t, "Launch milestone", projectMilestone.Name)
+	require.Equal(t, "next", projectMilestone.Status)
+	require.Equal(t, "LIT-12", comments.Identifier)
+	require.True(t, comments.HasNextPage)
+	require.Equal(t, &endCursor, comments.EndCursor)
+	require.Equal(t, "parent-id", comments.Comments[0].ParentID)
+	require.Equal(t, "Omer", comments.Comments[0].DisplayName)
+	require.Empty(t, comments.Comments[1].UserID)
+	require.Empty(t, comments.Comments[1].ParentID)
+	require.True(t, documents.HasNextPage)
+	require.Equal(t, "project", documents.Documents[0].ParentType)
+	require.Equal(t, "Team note", document.Title)
+	require.Equal(t, "team", document.ParentType)
+	require.True(t, labels.HasNextPage)
+	require.Equal(t, "Bug", labels.Labels[0].Name)
+	require.Equal(t, "LIT", labels.Labels[0].TeamKey)
+	require.Equal(t, "label-id", label.ID)
+	require.Empty(t, label.Description)
+	require.True(t, teams.HasNextPage)
+	require.Equal(t, "LIT", teams.Teams[0].Key)
+	require.Equal(t, "team body", team.Description)
+	require.Equal(t, "Omer", teamMembers.Members[0].DisplayName)
+	require.Equal(t, &endCursor, teamMembers.EndCursor)
+	require.True(t, users.HasNextPage)
+	require.True(t, users.Users[0].Admin)
+	require.Equal(t, "Omer", user.DisplayName)
+	require.Equal(t, "Omer", viewerUser.DisplayName)
 }
 
 func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
@@ -79,6 +334,13 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 		_, err = UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{ID: "LIT-1"})
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
+		_, err = UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+			ID:          "LIT-1",
+			Description: "description",
+			Append:      "append",
+		})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
 		_, err = UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{Title: "missing id"})
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
@@ -88,6 +350,9 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 		_, err = CommentOnIssue(context.Background(), graphqlClient, matchingTarget(), IssueCommentRequest{Body: "body"})
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
+		_, err = StartIssue(context.Background(), graphqlClient, matchingTarget(), "")
+		require.Error(t, err)
+
 		_, err = CloseIssue(context.Background(), graphqlClient, matchingTarget(), "")
 		require.Error(t, err)
 
@@ -95,6 +360,40 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 		require.ErrorIs(t, err, ErrWriteInvalid)
 
 		_, err = UpdateProject(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateRequest{ID: "project-id"})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = CreateProjectMilestone(context.Background(), graphqlClient, matchingTarget(), ProjectMilestoneCreateRequest{
+			Name: "name",
+		})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = CreateProjectMilestone(context.Background(), graphqlClient, matchingTarget(), ProjectMilestoneCreateRequest{
+			ProjectID: "project-id",
+		})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = UpdateProjectMilestone(
+			context.Background(),
+			graphqlClient,
+			matchingTarget(),
+			ProjectMilestoneUpdateRequest{ID: "project-milestone-id"},
+		)
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = CreateCycle(context.Background(), graphqlClient, matchingTarget(), CycleCreateRequest{
+			EndsAt: "2026-07-15T00:00:00Z",
+		})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = CreateCycle(context.Background(), graphqlClient, matchingTarget(), CycleCreateRequest{
+			StartsAt: "2026-07-01T00:00:00Z",
+		})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = UpdateCycle(context.Background(), graphqlClient, matchingTarget(), CycleUpdateRequest{ID: "cycle-id"})
+		require.ErrorIs(t, err, ErrWriteInvalid)
+
+		_, err = ArchiveCycle(context.Background(), graphqlClient, matchingTarget(), "")
 		require.ErrorIs(t, err, ErrWriteInvalid)
 	})
 
@@ -161,6 +460,39 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 		require.Equal(t, "updated", issue.Title)
 	})
 
+	t.Run("issue update appends to description", func(t *testing.T) {
+		graphqlClient := issueWriteFakeClient(map[string]string{
+			"IssueByID": `{"issue":` + issueJSONWithDescription(issueFixture{
+				Identifier: "LIT-22",
+				Title:      "append target",
+				ProjectID:  "project-id",
+				Project:    "fixture",
+				StateID:    "todo",
+				State:      "Todo",
+				StateType:  "unstarted",
+			}, "Existing description") + `}`,
+			"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
+				Identifier: "LIT-22",
+				Title:      "append target",
+				ProjectID:  "project-id",
+				Project:    "fixture",
+				StateID:    "todo",
+				State:      "Todo",
+				StateType:  "unstarted",
+			}) + `}}`,
+		})
+
+		issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+			ID:     "LIT-22",
+			Append: "Progress note",
+		})
+
+		require.NoError(t, err)
+		require.Equal(t, "append target", issue.Title)
+		require.Equal(t, "Progress note", appendIssueDescription("", "Progress note"))
+		require.Equal(t, "Existing description\n\nProgress note", appendIssueDescription("Existing description\n", "Progress note"))
+	})
+
 	t.Run("project update and archive succeed", func(t *testing.T) {
 		graphqlClient := projectWriteFakeClient(map[string]string{
 			"ProjectByID": `{"project":` + projectJSON(projectFixture{
@@ -220,17 +552,107 @@ func Test_SummaryMappingScenarios_preserve_optional_people(t *testing.T) {
 	require.Equal(t, "Omer", project.Lead)
 }
 
+func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"DocumentByID": `{"document":{
+			"id":"document-id",
+			"title":"Cycle spec",
+			"slugId":"cycle-spec",
+			"archivedAt":"2026-06-19T12:00:00Z",
+			"project":{"id":"project-id","name":"Pinned project"},
+			"team":{"id":"team-id","key":"LIT","name":"linctl"},
+			"issue":{"id":"issue-id","identifier":"LIT-1","title":"Issue"},
+			"cycle":{"id":"cycle-id","number":7,"name":"Planning"}
+		}}`,
+		"TeamByID": `{"team":{
+			"id":"team-id",
+			"key":"LIT",
+			"name":"linctl",
+			"description":null,
+			"archivedAt":"2026-06-19T12:00:00Z",
+			"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}
+		}}`,
+	}
+
+	document, err := GetDocumentByID(context.Background(), graphqlClient, "document-id")
+	require.NoError(t, err)
+	require.Equal(t, "2026-06-19T12:00:00Z", document.ArchivedAt)
+	require.Equal(t, "cycle", document.ParentType)
+	require.Equal(t, "Planning", document.ParentName)
+
+	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
+	require.NoError(t, err)
+	require.Empty(t, team.Description)
+	require.Equal(t, "2026-06-19T12:00:00Z", team.ArchivedAt)
+}
+
 func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 	t.Run("read operations wrap graphql errors", func(t *testing.T) {
 		graphqlClient := errorGraphQLClient{err: errors.New("network down")}
 
-		_, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1)
+		_, err := ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssues(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{StateType: "started"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{ProjectID: "project-id"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{AssigneeID: "user-id"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{LabelID: "label-id"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{CycleID: "cycle-id"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{CreatedAfter: "2026-06-01"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{CreatedBefore: "2026-06-30"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{HasBlockers: true})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{Blocks: true})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = ListNextIssuesByTeam(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list next issues")
+
+		_, err = ListIssuesByTeam(context.Background(), graphqlClient, "team-id", 1, IssueListFilters{BlockedBy: "LIT-1"})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issues")
+
+		_, err = SearchIssuesByTeam(context.Background(), graphqlClient, "team-id", "needle", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "search issues")
 
 		_, err = GetIssueByID(context.Background(), graphqlClient, "LIT-1")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get issue LIT-1")
+
+		_, err = GetIssueDependencies(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue dependencies LIT-1")
 
 		_, err = ListProjectsByTeam(context.Background(), graphqlClient, "team-id", 1)
 		require.Error(t, err)
@@ -243,6 +665,62 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListProjectMembers(context.Background(), graphqlClient, "project-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project members project-id")
+
+		_, err = ListProjectUpdates(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project updates project-id")
+
+		_, err = ListProjectMilestones(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project milestones project-id")
+
+		_, err = GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get project milestone project-milestone-id")
+
+		_, err = ListIssueComments(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue comments LIT-1")
+
+		_, err = ListDocuments(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list documents")
+
+		_, err = GetDocumentByID(context.Background(), graphqlClient, "document-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get document document-id")
+
+		_, err = ListLabels(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list labels")
+
+		_, err = GetLabelByID(context.Background(), graphqlClient, "label-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get label label-id")
+
+		_, err = ListTeams(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list teams")
+
+		_, err = GetTeamByID(context.Background(), graphqlClient, "team-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get team team-id")
+
+		_, err = ListTeamMembers(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team members team-id")
+
+		_, err = ListUsers(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list users")
+
+		_, err = GetUserByID(context.Background(), graphqlClient, "user-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get user user-id")
+
+		_, err = GetViewerUser(context.Background(), graphqlClient)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get viewer user")
 	})
 
 	t.Run("issue mutations fail when payload omits entity", func(t *testing.T) {
@@ -262,6 +740,9 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 			"CompletedWorkflowStates": `{"workflowStates":{"nodes":[
 				{"id":"done-state","name":"Done","type":"completed","position":1}
 			]}}`,
+			"StartedWorkflowStates": `{"workflowStates":{"nodes":[
+				{"id":"started-state","name":"Started","type":"started","position":1}
+			]}}`,
 			"IssueClose": `{"issueUpdate":{"success":false,"issue":null}}`,
 		})
 
@@ -272,6 +753,9 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.ErrorIs(t, err, ErrMutationFailed)
 
 		_, err = CommentOnIssue(context.Background(), graphqlClient, matchingTarget(), IssueCommentRequest{ID: "LIT-20", Body: "body"})
+		require.ErrorIs(t, err, ErrMutationFailed)
+
+		_, err = StartIssue(context.Background(), graphqlClient, matchingTarget(), "LIT-20")
 		require.ErrorIs(t, err, ErrMutationFailed)
 
 		_, err = CloseIssue(context.Background(), graphqlClient, matchingTarget(), "LIT-20")
@@ -297,6 +781,61 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.ErrorIs(t, err, ErrMutationFailed)
 
 		_, err = ArchiveProject(context.Background(), graphqlClient, matchingTarget(), "project-id")
+		require.ErrorIs(t, err, ErrMutationFailed)
+
+		_, err = CreateProjectMilestone(
+			context.Background(),
+			projectWriteFakeClient(map[string]string{
+				"ProjectByID":            `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
+				"ProjectMilestoneCreate": `{"projectMilestoneCreate":{"success":false,"projectMilestone":null}}`,
+			}),
+			matchingTarget(),
+			ProjectMilestoneCreateRequest{ProjectID: "project-id", Name: "name"},
+		)
+		require.ErrorIs(t, err, ErrMutationFailed)
+
+		_, err = UpdateProjectMilestone(
+			context.Background(),
+			projectWriteFakeClient(map[string]string{
+				"ProjectMilestoneByID": `{"projectMilestone":` +
+					projectMilestoneJSON("Launch milestone", "next", "project-id") + `}`,
+				"ProjectMilestoneUpdate": `{"projectMilestoneUpdate":{"success":false,"projectMilestone":null}}`,
+			}),
+			matchingTarget(),
+			ProjectMilestoneUpdateRequest{ID: "project-milestone-id", Name: "name"},
+		)
+		require.ErrorIs(t, err, ErrMutationFailed)
+
+		_, err = CreateCycle(
+			context.Background(),
+			projectWriteFakeClient(map[string]string{
+				"CycleCreate": `{"cycleCreate":{"success":false,"cycle":null}}`,
+			}),
+			matchingTarget(),
+			CycleCreateRequest{StartsAt: "2026-07-01T00:00:00Z", EndsAt: "2026-07-15T00:00:00Z"},
+		)
+		require.ErrorIs(t, err, ErrMutationFailed)
+
+		_, err = UpdateCycle(
+			context.Background(),
+			projectWriteFakeClient(map[string]string{
+				"CycleByID":   `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+				"CycleUpdate": `{"cycleUpdate":{"success":false,"cycle":null}}`,
+			}),
+			matchingTarget(),
+			CycleUpdateRequest{ID: "cycle-id", Name: "name"},
+		)
+		require.ErrorIs(t, err, ErrMutationFailed)
+
+		_, err = ArchiveCycle(
+			context.Background(),
+			projectWriteFakeClient(map[string]string{
+				"CycleByID":    `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+				"CycleArchive": `{"cycleArchive":{"success":false,"entity":null}}`,
+			}),
+			matchingTarget(),
+			"cycle-id",
+		)
 		require.ErrorIs(t, err, ErrMutationFailed)
 	})
 
@@ -339,6 +878,22 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.ErrorIs(t, err, operationErr)
 		require.Contains(t, err.Error(), "comment on issue LIT-40")
 
+		_, err = StartIssue(context.Background(), issueWriteFakeClient(map[string]string{
+			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+				Identifier: "LIT-40",
+				Title:      "target",
+				ProjectID:  "project-id",
+				Project:    "fixture",
+				StateID:    "todo",
+				State:      "Todo",
+				StateType:  "unstarted",
+			}) + `}`,
+			"StartedWorkflowStates": `{"workflowStates":{"nodes":[{"id":"started-state","name":"Started","type":"started","position":1}]}}`,
+			"IssueUpdate":           "",
+		}).withError(operationErr), matchingTarget(), "LIT-40")
+		require.ErrorIs(t, err, operationErr)
+		require.Contains(t, err.Error(), "start issue LIT-40")
+
 		_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
 			"IssueByID": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-40",
@@ -374,6 +929,44 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		}).withError(operationErr), matchingTarget(), "project-id")
 		require.ErrorIs(t, err, operationErr)
 		require.Contains(t, err.Error(), "archive project project-id")
+
+		_, err = CreateProjectMilestone(context.Background(), projectWriteFakeClient(map[string]string{
+			"ProjectByID":            `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
+			"ProjectMilestoneCreate": "",
+		}).withError(operationErr), matchingTarget(), ProjectMilestoneCreateRequest{ProjectID: "project-id", Name: "name"})
+		require.ErrorIs(t, err, operationErr)
+		require.Contains(t, err.Error(), "create project milestone")
+
+		_, err = UpdateProjectMilestone(context.Background(), projectWriteFakeClient(map[string]string{
+			"ProjectMilestoneByID": `{"projectMilestone":` +
+				projectMilestoneJSON("Launch milestone", "next", "project-id") + `}`,
+			"ProjectMilestoneUpdate": "",
+		}).withError(operationErr), matchingTarget(), ProjectMilestoneUpdateRequest{ID: "project-milestone-id", Name: "name"})
+		require.ErrorIs(t, err, operationErr)
+		require.Contains(t, err.Error(), "update project milestone project-milestone-id")
+
+		_, err = CreateCycle(context.Background(), projectWriteFakeClient(map[string]string{
+			"CycleCreate": "",
+		}).withError(operationErr), matchingTarget(), CycleCreateRequest{
+			StartsAt: "2026-07-01T00:00:00Z",
+			EndsAt:   "2026-07-15T00:00:00Z",
+		})
+		require.ErrorIs(t, err, operationErr)
+		require.Contains(t, err.Error(), "create cycle")
+
+		_, err = UpdateCycle(context.Background(), projectWriteFakeClient(map[string]string{
+			"CycleByID":   `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+			"CycleUpdate": "",
+		}).withError(operationErr), matchingTarget(), CycleUpdateRequest{ID: "cycle-id", Name: "name"})
+		require.ErrorIs(t, err, operationErr)
+		require.Contains(t, err.Error(), "update cycle cycle-id")
+
+		_, err = ArchiveCycle(context.Background(), projectWriteFakeClient(map[string]string{
+			"CycleByID":    `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+			"CycleArchive": "",
+		}).withError(operationErr), matchingTarget(), "cycle-id")
+		require.ErrorIs(t, err, operationErr)
+		require.Contains(t, err.Error(), "archive cycle cycle-id")
 	})
 
 	t.Run("write operations return guard read errors", func(t *testing.T) {
@@ -388,6 +981,26 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 			"IssueByID": "",
 		}).withError(operationErr), matchingTarget(), IssueCommentRequest{ID: "LIT-50", Body: "body"})
 		require.ErrorIs(t, err, operationErr)
+
+		_, err = StartIssue(context.Background(), issueWriteFakeClient(map[string]string{
+			"IssueByID": "",
+		}).withError(operationErr), matchingTarget(), "LIT-50")
+		require.ErrorIs(t, err, operationErr)
+
+		_, err = StartIssue(context.Background(), issueWriteFakeClient(map[string]string{
+			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+				Identifier: "LIT-51",
+				Title:      "target",
+				ProjectID:  "project-id",
+				Project:    "fixture",
+				StateID:    "todo",
+				State:      "Todo",
+				StateType:  "unstarted",
+			}) + `}`,
+			"StartedWorkflowStates": "",
+		}).withError(operationErr), matchingTarget(), "LIT-51")
+		require.ErrorIs(t, err, operationErr)
+		require.Contains(t, err.Error(), "list started workflow states")
 
 		_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
 			"IssueByID": "",
@@ -418,6 +1031,26 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 			"ProjectByID": "",
 		}).withError(operationErr), matchingTarget(), "project-id")
 		require.ErrorIs(t, err, operationErr)
+
+		_, err = CreateProjectMilestone(context.Background(), projectWriteFakeClient(map[string]string{
+			"ProjectByID": "",
+		}).withError(operationErr), matchingTarget(), ProjectMilestoneCreateRequest{ProjectID: "project-id", Name: "name"})
+		require.ErrorIs(t, err, operationErr)
+
+		_, err = UpdateProjectMilestone(context.Background(), projectWriteFakeClient(map[string]string{
+			"ProjectMilestoneByID": "",
+		}).withError(operationErr), matchingTarget(), ProjectMilestoneUpdateRequest{ID: "project-milestone-id", Name: "name"})
+		require.ErrorIs(t, err, operationErr)
+
+		_, err = UpdateCycle(context.Background(), projectWriteFakeClient(map[string]string{
+			"CycleByID": "",
+		}).withError(operationErr), matchingTarget(), CycleUpdateRequest{ID: "cycle-id", Name: "name"})
+		require.ErrorIs(t, err, operationErr)
+
+		_, err = ArchiveCycle(context.Background(), projectWriteFakeClient(map[string]string{
+			"CycleByID": "",
+		}).withError(operationErr), matchingTarget(), "cycle-id")
+		require.ErrorIs(t, err, operationErr)
 	})
 
 	t.Run("write operations refuse unpinned targets", func(t *testing.T) {
@@ -433,6 +1066,9 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = CommentOnIssue(context.Background(), graphqlClient, emptyTarget, IssueCommentRequest{ID: "LIT-1", Body: "body"})
 		require.ErrorIs(t, err, ErrTargetMismatch)
 
+		_, err = StartIssue(context.Background(), graphqlClient, emptyTarget, "LIT-1")
+		require.ErrorIs(t, err, ErrTargetMismatch)
+
 		_, err = CloseIssue(context.Background(), graphqlClient, emptyTarget, "LIT-1")
 		require.ErrorIs(t, err, ErrTargetMismatch)
 
@@ -443,6 +1079,41 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.ErrorIs(t, err, ErrTargetMismatch)
 
 		_, err = ArchiveProject(context.Background(), graphqlClient, emptyTarget, "project-id")
+		require.ErrorIs(t, err, ErrTargetMismatch)
+
+		_, err = CreateProjectMilestone(
+			context.Background(),
+			graphqlClient,
+			emptyTarget,
+			ProjectMilestoneCreateRequest{ProjectID: "project-id", Name: "name"},
+		)
+		require.ErrorIs(t, err, ErrTargetMismatch)
+
+		_, err = UpdateProjectMilestone(
+			context.Background(),
+			graphqlClient,
+			emptyTarget,
+			ProjectMilestoneUpdateRequest{ID: "project-milestone-id", Name: "name"},
+		)
+		require.ErrorIs(t, err, ErrTargetMismatch)
+
+		_, err = CreateCycle(
+			context.Background(),
+			graphqlClient,
+			emptyTarget,
+			CycleCreateRequest{StartsAt: "2026-07-01T00:00:00Z", EndsAt: "2026-07-15T00:00:00Z"},
+		)
+		require.ErrorIs(t, err, ErrTargetMismatch)
+
+		_, err = UpdateCycle(
+			context.Background(),
+			graphqlClient,
+			emptyTarget,
+			CycleUpdateRequest{ID: "cycle-id", Name: "name"},
+		)
+		require.ErrorIs(t, err, ErrTargetMismatch)
+
+		_, err = ArchiveCycle(context.Background(), graphqlClient, emptyTarget, "cycle-id")
 		require.ErrorIs(t, err, ErrTargetMismatch)
 	})
 }
@@ -484,6 +1155,11 @@ func Test_TargetFailureScenarios_refuse_unpinned_or_mismatched_targets(t *testin
 
 	_, err = firstCompletedStateID(context.Background(), fakeGraphQLClient{
 		"CompletedWorkflowStates": `{"workflowStates":{"nodes":[]}}`,
+	}, "team-id")
+	require.ErrorIs(t, err, ErrWriteInvalid)
+
+	_, err = firstStartedStateID(context.Background(), fakeGraphQLClient{
+		"StartedWorkflowStates": `{"workflowStates":{"nodes":[]}}`,
 	}, "team-id")
 	require.ErrorIs(t, err, ErrWriteInvalid)
 
@@ -621,6 +1297,7 @@ func Test_TargetScenarios_allow_unpinned_project_and_matching_team(t *testing.T)
 	require.Equal(t, "value", *stringPtr("value"))
 	require.Equal(t, 7, *intPtr(7))
 	require.True(t, *boolPtr(true))
+	require.Nil(t, issueDependencyParent(nil))
 	require.True(t, projectHasTeam(ProjectSummary{Teams: []ProjectTeam{{ID: "team-id", Key: "LIT"}}}, "team-id", "LIT"))
 	require.False(t, projectHasTeam(ProjectSummary{Teams: []ProjectTeam{{ID: "team-id", Key: "ABC"}}}, "team-id", "LIT"))
 
@@ -635,10 +1312,20 @@ func Test_TargetScenarios_allow_unpinned_project_and_matching_team(t *testing.T)
 
 	err = validateProjectUpdateRequest(ProjectUpdateRequest{Name: "missing id"})
 	require.ErrorIs(t, err, ErrWriteInvalid)
+
+	err = validateProjectMilestoneUpdateRequest(ProjectMilestoneUpdateRequest{Name: "missing id"})
+	require.ErrorIs(t, err, ErrWriteInvalid)
+
+	err = validateCycleUpdateRequest(CycleUpdateRequest{Name: "missing id"})
+	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
 func issueJSONWithAssignee(issue issueFixture, assignee string) string {
 	return strings.ReplaceAll(issueJSON(issue), `"assignee":null`, `"assignee":{"id":"user-id","name":"omer","displayName":"`+assignee+`"}`)
+}
+
+func issueJSONWithDescription(issue issueFixture, description string) string {
+	return strings.Replace(issueJSON(issue), `"id":"issue-id",`, `"id":"issue-id","description":"`+description+`",`, 1)
 }
 
 func projectJSONWithLead(project projectFixture, lead string) string {

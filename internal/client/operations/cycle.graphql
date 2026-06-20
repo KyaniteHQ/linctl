@@ -1,0 +1,80 @@
+query CyclesByTeam($teamId: ID!, $first: Int, $after: String, $includeArchived: Boolean) {
+  cycles(
+    filter: { team: { id: { eq: $teamId } } }
+    first: $first
+    after: $after
+    includeArchived: $includeArchived
+  ) {
+    nodes {
+      ...CycleSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query CycleByID($id: String!) {
+  cycle(id: $id) {
+    ...CycleSummaryFields
+  }
+}
+
+query CycleReport($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  cycle(id: $id) {
+    ...CycleSummaryFields
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+mutation CycleCreate($input: CycleCreateInput!) {
+  cycleCreate(input: $input) {
+    success
+    cycle {
+      ...CycleSummaryFields
+    }
+  }
+}
+
+mutation CycleUpdate($id: String!, $input: CycleUpdateInput!) {
+  cycleUpdate(id: $id, input: $input) {
+    success
+    cycle {
+      ...CycleSummaryFields
+    }
+  }
+}
+
+mutation CycleArchive($id: String!) {
+  cycleArchive(id: $id) {
+    success
+    entity {
+      ...CycleSummaryFields
+    }
+  }
+}
+
+fragment CycleSummaryFields on Cycle {
+  id
+  number
+  name
+  description
+  startsAt
+  endsAt
+  completedAt
+  progress
+  team {
+    id
+    key
+    name
+  }
+}

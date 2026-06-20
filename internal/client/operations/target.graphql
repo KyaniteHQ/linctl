@@ -1,0 +1,59 @@
+query Viewer {
+  viewer {
+    id
+    name
+    displayName
+    email
+    organization {
+      id
+      name
+      urlKey
+    }
+  }
+}
+
+query Organization {
+  organization {
+    id
+    name
+    urlKey
+  }
+}
+
+query Teams($first: Int, $after: String, $includeArchived: Boolean) {
+  teams(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      id
+      key
+      name
+      organization {
+        id
+        name
+        urlKey
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query TargetProject($id: String!) {
+  project(id: $id) {
+    id
+    name
+    teams(first: 50) {
+      nodes {
+        id
+        key
+        name
+        organization {
+          id
+          name
+          urlKey
+        }
+      }
+    }
+  }
+}

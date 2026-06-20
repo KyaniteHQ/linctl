@@ -23,8 +23,11 @@ func addTargetCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 			if err != nil {
 				return err
 			}
+			if options.quiet {
+				return nil
+			}
 			if options.json {
-				return render.WriteJSON(command.OutOrStdout(), target)
+				return writeJSONValue(command, options, target)
 			}
 
 			return render.WriteLine(
@@ -54,8 +57,11 @@ func addWhoamiCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 			if err != nil {
 				return err
 			}
+			if options.quiet {
+				return nil
+			}
 			if options.json {
-				return render.WriteJSON(command.OutOrStdout(), target.Viewer)
+				return writeJSONValue(command, options, target.Viewer)
 			}
 
 			return render.WriteLine(command.OutOrStdout(), "%s <%s>", target.Viewer.Name, target.Viewer.Email)

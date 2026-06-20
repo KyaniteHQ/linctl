@@ -1,7 +1,7 @@
 # linctl domain map
 
 This map is derived from the vendored Linear schema at `internal/client/schema.graphql`.
-Command names below are planned names only; implementation slices must use GraphQL operations backed by these schema fields.
+Command names below are either implemented CLI surface or intentionally deferred surface. Implementation slices must use GraphQL operations backed by these schema fields.
 
 ## Core target
 
@@ -26,12 +26,24 @@ Planned commands:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `issue list` | `Query.issues` | Read-only |
+| `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only |
+| `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only |
 | `issue get` | `Query.issue` | Read-only |
+| `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only |
+| `issue id` | Current checkout issue identifier from git/jj context | Read-only |
+| `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
+| `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
+| `issue branch` | `Query.issue`, `Issue.branchName` | Read-only |
+| `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only |
+| `next --dry-run` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; emits the first candidate without checkout/worktree creation | Read-only |
+| `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId` | Team-scoped unless `projectId` is set |
-| `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput` | Resource-scoped when a project target is involved |
+| `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--append` first reads `Issue.description` and appends text before sending `description` | Resource-scoped when a project target is involved |
+| `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved |
 | `issue comment` | `Mutation.commentCreate` | Resource-scoped to the issue's resolved team/project |
+| `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId` | Resource-scoped to the issue's resolved team/project |
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
+| `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
 
 ## Project
 
@@ -53,6 +65,7 @@ Planned commands:
 | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` |
 | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` |
 | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes |
+| `project updates` | `Project.projectUpdates` | Read-only |
 
 Project is the first implemented PM domain; later domains should reuse its target-comparison vocabulary.
 
@@ -104,13 +117,13 @@ Schema backing:
 - Reads: `Query.projectMilestones`, `Query.projectMilestone`, `Project.projectMilestones`
 - Writes: `Mutation.projectMilestoneCreate`, `Mutation.projectMilestoneUpdate`, `Mutation.projectMilestoneDelete`
 - Inputs: `ProjectMilestoneCreateInput`, `ProjectMilestoneUpdateInput`
-- Relevant fields: `ProjectMilestone.id`, `ProjectMilestone.name`, `ProjectMilestone.description`, `ProjectMilestone.targetDate`, `ProjectMilestone.project`, `ProjectMilestone.sortOrder`, `ProjectMilestone.issues`
+- Relevant fields: `ProjectMilestone.id`, `ProjectMilestone.name`, `ProjectMilestone.description`, `ProjectMilestone.targetDate`, `ProjectMilestone.status`, `ProjectMilestone.project`, `ProjectMilestone.sortOrder`, `ProjectMilestone.issues`
 
 Planned commands:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `project-milestone list` | `Query.projectMilestones` | Read-only |
+| `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only |
 | `project-milestone get` | `Query.projectMilestone` | Read-only |
 | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` |
 | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project |
@@ -132,9 +145,11 @@ Planned commands:
 | --- | --- | --- |
 | `document list` | `Query.documents` | Read-only |
 | `document get` | `Query.document` | Read-only |
-| `document create` | `Mutation.documentCreate` with optional `projectId`, `teamId`, `issueId`, `cycleId` | Team-scoped or resource-scoped by target fields |
-| `document update` | `Mutation.documentUpdate` | Resource-scoped by resolved parent |
-| `document delete` | `Mutation.documentDelete` | Resource-scoped by resolved parent |
+| `document create` | `Mutation.documentCreate` with optional `projectId`, `teamId`, `issueId`, `cycleId` | Blocked: parent can be project, team, issue, or cycle; write guard needs explicit parent-resolution semantics |
+| `document update` | `Mutation.documentUpdate` | Blocked: update must resolve and compare the existing parent before changing content |
+| `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics |
+
+Only `document list` and `document get` are implemented in the current CLI. Document writes are deferred until the parent-resolution guard is designed.
 
 ## Label
 
@@ -154,9 +169,11 @@ Planned commands:
 | --- | --- | --- |
 | `label list` | `Query.issueLabels` | Read-only |
 | `label get` | `Query.issueLabel` | Read-only |
-| `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Team-scoped |
-| `label update` | `Mutation.issueLabelUpdate` | Team-scoped |
-| `label delete` | `Mutation.issueLabelDelete` | Team-scoped |
+| `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes |
+| `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation |
+| `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics |
+
+Only `label list` and `label get` are implemented in the current CLI. Label writes are deferred until the team-scope guard is designed.
 
 ## Team
 
@@ -174,10 +191,12 @@ Planned commands:
 | --- | --- | --- |
 | `team list` | `Query.teams` | Read-only |
 | `team get` | `Query.team` | Read-only |
-| `team create` | `Mutation.teamCreate` | Org-scoped, compare `org_id` |
-| `team update` | `Mutation.teamUpdate` | Team-scoped |
-| `team delete` | `Mutation.teamDelete` | Team-scoped |
-| `team members` | `Team.members` plus team membership mutations | Read-only for list, team-scoped for writes |
+| `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model |
+| `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison |
+| `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics |
+| `team members` | `Team.members` | Read-only |
+
+Only `team list`, `team get`, and `team members` are implemented in the current CLI. Team creation, metadata mutation, and membership writes are deferred as organization/admin surface.
 
 ## User
 

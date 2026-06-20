@@ -17,7 +17,7 @@ Guarded writes fail closed on Target Mismatch — a hard stop, never a soft warn
 `task` is not installed locally — run it via `go run github.com/go-task/task/v3/cmd/task@latest <task>`, or install go-task.
 
 - `task ci` — local gate before any PR: generate-check → vet → test → build → lint.
-- `task coverage` — enforces **100% hand-written statement coverage** (excludes `internal/client/generated.go` and `cmd/linctl/main.go`). Not part of `task ci`; run it separately and keep new code fully covered.
+- `task coverage` — enforces **100% hand-written statement coverage** for product code (excludes `internal/client/generated.go`, `cmd/linctl/main.go`, and repo maintenance scripts under `scripts/`). Not part of `task ci`; run it separately and keep new product code fully covered.
 - `task fmt` — gofumpt + goimports (NOT plain gofmt); both must be installed.
 - `task lint` — golangci-lint v2.12.2 (pinned; ~30 linters incl. gocognit/gocyclo/funlen/lll-120/gosec). Keep functions small and typed.
 

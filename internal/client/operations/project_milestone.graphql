@@ -1,0 +1,58 @@
+query ProjectMilestones($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    projectMilestones(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectMilestoneSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query ProjectMilestoneByID($id: String!) {
+  projectMilestone(id: $id) {
+    ...ProjectMilestoneSummaryFields
+    project {
+      ...ProjectSummaryFields
+    }
+  }
+}
+
+mutation ProjectMilestoneCreate($input: ProjectMilestoneCreateInput!) {
+  projectMilestoneCreate(input: $input) {
+    success
+    projectMilestone {
+      ...ProjectMilestoneSummaryFields
+      project {
+        ...ProjectSummaryFields
+      }
+    }
+  }
+}
+
+mutation ProjectMilestoneUpdate($id: String!, $input: ProjectMilestoneUpdateInput!) {
+  projectMilestoneUpdate(id: $id, input: $input) {
+    success
+    projectMilestone {
+      ...ProjectMilestoneSummaryFields
+      project {
+        ...ProjectSummaryFields
+      }
+    }
+  }
+}
+
+fragment ProjectMilestoneSummaryFields on ProjectMilestone {
+  id
+  name
+  description
+  targetDate
+  status
+  progress
+  sortOrder
+}

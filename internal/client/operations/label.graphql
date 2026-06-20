@@ -1,0 +1,30 @@
+query IssueLabels($first: Int, $after: String, $includeArchived: Boolean) {
+  issueLabels(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueLabelSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query IssueLabelByID($id: String!) {
+  issueLabel(id: $id) {
+    ...IssueLabelSummaryFields
+  }
+}
+
+fragment IssueLabelSummaryFields on IssueLabel {
+  id
+  name
+  description
+  color
+  isGroup
+  team {
+    id
+    key
+    name
+  }
+}

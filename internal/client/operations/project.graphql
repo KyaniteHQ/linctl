@@ -1,0 +1,91 @@
+query Projects($teamId: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $teamId) {
+    projects(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query ProjectByID($id: String!) {
+  project(id: $id) {
+    ...ProjectSummaryFields
+  }
+}
+
+query ProjectMembers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    members(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        name
+        displayName
+        email
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query ProjectUpdates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    projectUpdates(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        body
+        health
+        createdAt
+        updatedAt
+        url
+        user {
+          id
+          name
+          displayName
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+mutation ProjectCreate($input: ProjectCreateInput!) {
+  projectCreate(input: $input) {
+    success
+    project {
+      ...ProjectSummaryFields
+    }
+  }
+}
+
+mutation ProjectUpdate($id: String!, $input: ProjectUpdateInput!) {
+  projectUpdate(id: $id, input: $input) {
+    success
+    project {
+      ...ProjectSummaryFields
+    }
+  }
+}
+
+mutation ProjectArchive($id: String!, $trash: Boolean) {
+  projectArchive(id: $id, trash: $trash) {
+    success
+    entity {
+      ...ProjectSummaryFields
+    }
+  }
+}

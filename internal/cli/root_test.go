@@ -20,7 +20,22 @@ func Test_RootCommand_exposes_global_flags_when_created(t *testing.T) {
 	flags := command.PersistentFlags()
 
 	// Then
-	for _, flagName := range []string{"json", "profile", "org", "team", "project", "timeout"} {
+	for _, flagName := range []string{
+		"json",
+		"compact",
+		"fields",
+		"id-only",
+		"quiet",
+		"fail-on-empty",
+		"sort",
+		"order",
+		"format",
+		"profile",
+		"org",
+		"team",
+		"project",
+		"timeout",
+	} {
 		require.NotNil(t, flags.Lookup(flagName), "missing persistent flag %s", flagName)
 	}
 }

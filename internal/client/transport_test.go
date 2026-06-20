@@ -168,7 +168,11 @@ func Test_Transport_ignores_diagnostic_writer_failures(t *testing.T) {
 
 func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 	t.Run("unmarshalable variables", func(t *testing.T) {
-		transport := NewTransport(TransportConfig{Timeout: 2 * time.Second})
+		logs := bytes.Buffer{}
+		transport := NewTransport(TransportConfig{
+			DiagnosticWriter: &logs,
+			Timeout:          2 * time.Second,
+		})
 		response := graphql.Response{Data: &testGraphQLData{}}
 
 		err := transport.MakeRequest(context.Background(), &graphql.Request{
@@ -178,6 +182,8 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "encode graphql request")
+		require.Contains(t, logs.String(), "graphql_encode_failed")
+		require.NotContains(t, logs.String(), "query Test")
 	})
 
 	t.Run("invalid endpoint", func(t *testing.T) {
@@ -224,14 +230,48 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 	})
 }
 
+func Test_Transport_logs_terminal_http_failures_without_response_body(t *testing.T) {
+	// Given
+	logs := bytes.Buffer{}
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.Header.Get("Authorization") != "test-token" {
+			t.Errorf("authorization header = %q", request.Header.Get("Authorization"))
+		}
+		writer.WriteHeader(http.StatusInternalServerError)
+		_, err := writer.Write([]byte("sensitive outage detail"))
+		if err != nil {
+			t.Errorf("write response: %v", err)
+		}
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		DiagnosticWriter: &logs,
+		Endpoint:         server.URL,
+		Token:            PersonalAPIToken("test-token"),
+		Timeout:          2 * time.Second,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
+
+	// When
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+
+	// Then
+	require.Error(t, err)
+	require.Contains(t, logs.String(), "graphql_decode_failed attempt=1 status=500")
+	require.NotContains(t, logs.String(), "sensitive outage detail")
+	require.NotContains(t, logs.String(), "test-token")
+}
+
 func Test_Transport_returns_error_when_retry_wait_is_canceled(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
+	logs := bytes.Buffer{}
 	transport := NewTransport(TransportConfig{
 		Client: &http.Client{Transport: retryCancelTransport{
 			body: cancelAfterReadBody{cancel: cancel},
 		}},
-		Timeout:    2 * time.Second,
-		MaxRetries: 1,
+		DiagnosticWriter: &logs,
+		Timeout:          2 * time.Second,
+		MaxRetries:       1,
 	})
 	response := graphql.Response{Data: &testGraphQLData{}}
 
@@ -239,6 +279,40 @@ func Test_Transport_returns_error_when_retry_wait_is_canceled(t *testing.T) {
 
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "wait for retry")
+	require.Contains(t, logs.String(), "graphql_retry_failed attempt=1")
+}
+
+func Benchmark_Transport_make_request_diagnostics(b *testing.B) {
+	cases := []struct {
+		name             string
+		diagnosticWriter io.Writer
+	}{
+		{name: "disabled", diagnosticWriter: nil},
+		{name: "enabled", diagnosticWriter: io.Discard},
+	}
+
+	for _, testCase := range cases {
+		b.Run(testCase.name, func(b *testing.B) {
+			transport := NewTransport(TransportConfig{
+				Client:           &http.Client{Transport: staticResponseTransport{}},
+				DiagnosticWriter: testCase.diagnosticWriter,
+				Timeout:          2 * time.Second,
+			})
+
+			b.ReportAllocs()
+			for range b.N {
+				response := graphql.Response{Data: &testGraphQLData{}}
+				err := transport.MakeRequest(
+					context.Background(),
+					&graphql.Request{Query: "query Test { viewer { id } }"},
+					&response,
+				)
+				if err != nil {
+					b.Fatalf("make request: %v", err)
+				}
+			}
+		})
+	}
 }
 
 type retryCancelTransport struct {
@@ -270,6 +344,16 @@ type failingDiagnosticWriter struct{}
 
 func (writer failingDiagnosticWriter) Write(_ []byte) (int, error) {
 	return 0, errors.New("diagnostic sink closed")
+}
+
+type staticResponseTransport struct{}
+
+func (transport staticResponseTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
+	return &http.Response{
+		StatusCode: http.StatusOK,
+		Header:     http.Header{"Content-Type": []string{"application/json"}},
+		Body:       io.NopCloser(bytes.NewReader([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))),
+	}, nil
 }
 
 type bodyFailureTransport struct {

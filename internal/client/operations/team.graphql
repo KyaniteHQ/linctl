@@ -1,0 +1,35 @@
+query TeamByID($id: String!) {
+  team(id: $id) {
+    ...TeamSummaryFields
+  }
+}
+
+query TeamMembers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    members(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...UserSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+fragment TeamSummaryFields on Team {
+  id
+  key
+  name
+  description
+  archivedAt
+  organization {
+    id
+    name
+    urlKey
+  }
+}

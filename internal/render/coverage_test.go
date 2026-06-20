@@ -24,7 +24,7 @@ func Test_RenderScenarios_write_text_json_and_report_writer_errors(t *testing.T)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "write line")
 
-	err = WriteJSON(failingWriter{}, map[string]string{"hello": "Omer"})
+	err = WriteJSON(failingWriter{}, map[string]string{"hello": "Omer"}, false)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "write json")
 }

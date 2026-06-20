@@ -1,0 +1,43 @@
+query Documents($first: Int, $after: String, $includeArchived: Boolean) {
+  documents(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...DocumentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query DocumentByID($id: String!) {
+  document(id: $id) {
+    ...DocumentSummaryFields
+  }
+}
+
+fragment DocumentSummaryFields on Document {
+  id
+  title
+  slugId
+  archivedAt
+  project {
+    id
+    name
+  }
+  team {
+    id
+    key
+    name
+  }
+  issue {
+    id
+    identifier
+    title
+  }
+  cycle {
+    id
+    number
+    name
+  }
+}

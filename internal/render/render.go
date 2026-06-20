@@ -20,9 +20,11 @@ const (
 )
 
 // WriteJSON writes a JSON value.
-func WriteJSON(writer io.Writer, value any) error {
+func WriteJSON(writer io.Writer, value any, compact bool) error {
 	encoder := json.NewEncoder(writer)
-	encoder.SetIndent("", "  ")
+	if !compact {
+		encoder.SetIndent("", "  ")
+	}
 	if err := encoder.Encode(value); err != nil {
 		return fmt.Errorf("write json: %w", err)
 	}

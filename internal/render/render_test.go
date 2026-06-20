@@ -13,7 +13,7 @@ func Test_WriteJSON_writes_indented_json_when_value_is_structured(t *testing.T) 
 	value := map[string]string{"org_id": "org-id"}
 
 	// When
-	err := WriteJSON(&buffer, value)
+	err := WriteJSON(&buffer, value, false)
 
 	// Then
 	require.NoError(t, err)

@@ -18,12 +18,20 @@ type BuildInfo struct {
 }
 
 type rootOptions struct {
-	timeout time.Duration
-	json    bool
-	profile string
-	orgID   string
-	team    string
-	project string
+	timeout     time.Duration
+	json        bool
+	compact     bool
+	fields      string
+	idOnly      bool
+	quiet       bool
+	failOnEmpty bool
+	sortField   string
+	sortOrder   string
+	format      string
+	profile     string
+	orgID       string
+	team        string
+	project     string
 }
 
 // NewRootCommand builds the linctl root command.
@@ -43,6 +51,14 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 
 	flags := command.PersistentFlags()
 	flags.BoolVar(&options.json, "json", false, "emit JSON output")
+	flags.BoolVar(&options.compact, "compact", false, "emit compact JSON when --json is set")
+	flags.StringVar(&options.fields, "fields", "", "comma-separated JSON fields to emit")
+	flags.BoolVar(&options.idOnly, "id-only", false, "emit only Linear ids")
+	flags.BoolVar(&options.quiet, "quiet", false, "suppress successful output")
+	flags.BoolVar(&options.failOnEmpty, "fail-on-empty", false, "exit non-zero when a list result is empty")
+	flags.StringVar(&options.sortField, "sort", "", "JSON field to sort list output by")
+	flags.StringVar(&options.sortOrder, "order", "asc", "sort order: asc or desc")
+	flags.StringVar(&options.format, "format", "compact", "human output format: minimal, compact, or full")
 	flags.StringVar(&options.profile, "profile", "", "config profile to load")
 	flags.StringVar(&options.orgID, "org", "", "pinned Linear organization id")
 	flags.StringVar(&options.team, "team", "", "pinned Linear team key or id")
@@ -53,8 +69,17 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addTargetCommand(ctx, command, &options)
 	addWhoamiCommand(ctx, command, &options)
 	addIssueCommand(ctx, command, &options)
+	addNextCommand(ctx, command, &options)
 	addCurrentCommand(ctx, command, &options)
+	addDoneCommand(ctx, command, &options)
 	addProjectCommand(ctx, command, &options)
+	addProjectMilestoneCommand(ctx, command, &options)
+	addCycleCommand(ctx, command, &options)
+	addSprintCommand(ctx, command, &options)
+	addDocumentCommand(ctx, command, &options)
+	addLabelCommand(ctx, command, &options)
+	addTeamCommand(ctx, command, &options)
+	addUserCommand(ctx, command, &options)
 	command.SetContext(ctx)
 
 	return command

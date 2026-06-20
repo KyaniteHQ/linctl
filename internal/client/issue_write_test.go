@@ -61,6 +61,43 @@ func Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project(t
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
+func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_matches(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-5",
+			Title:      "start",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "todo-state",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+		"StartedWorkflowStates": `{"workflowStates":{"nodes":[
+			{"id":"later-started-state","name":"Later","type":"started","position":2},
+			{"id":"started-state","name":"Started","type":"started","position":1}
+		]}}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSONWithAssignee(issueFixture{
+			Identifier: "LIT-5",
+			Title:      "start",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "started-state",
+			State:      "Started",
+			StateType:  "started",
+		}, "Omer") + `}}`,
+	})
+
+	// When
+	issue, err := StartIssue(context.Background(), graphqlClient, matchingTarget(), "LIT-5")
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "started", issue.StateType)
+	require.Equal(t, "started-state", issue.StateID)
+	require.Equal(t, "Omer", issue.Assignee)
+}
+
 func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{

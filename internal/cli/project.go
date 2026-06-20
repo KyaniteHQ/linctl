@@ -17,6 +17,7 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addProjectListCommand(ctx, projectCommand, options)
 	addProjectGetCommand(ctx, projectCommand, options)
 	addProjectMembersCommand(ctx, projectCommand, options)
+	addProjectUpdatesCommand(ctx, projectCommand, options)
 	addProjectCreateCommand(ctx, projectCommand, options)
 	addProjectUpdateCommand(ctx, projectCommand, options)
 	addProjectArchiveCommand(ctx, projectCommand, options)
@@ -43,8 +44,15 @@ func addProjectListCommand(ctx context.Context, root *cobra.Command, options *ro
 			if err != nil {
 				return err
 			}
+			if err := ensureNonEmpty(options, len(projects.Projects)); err != nil {
+				return err
+			}
+			projects.Projects, err = sortByJSONField(projects.Projects, options.sortField, options.sortOrder)
+			if err != nil {
+				return err
+			}
 			if options.json {
-				return render.WriteJSON(command.OutOrStdout(), projects)
+				return writeJSONValue(command, options, projects)
 			}
 			for _, project := range projects.Projects {
 				if err := writeProject(command, options, project); err != nil {
@@ -94,8 +102,15 @@ func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options 
 			if err != nil {
 				return err
 			}
+			if err := ensureNonEmpty(options, len(members.Members)); err != nil {
+				return err
+			}
+			members.Members, err = sortByJSONField(members.Members, options.sortField, options.sortOrder)
+			if err != nil {
+				return err
+			}
 			if options.json {
-				return render.WriteJSON(command.OutOrStdout(), members)
+				return writeJSONValue(command, options, members)
 			}
 			for _, member := range members.Members {
 				if err := render.WriteLine(command.OutOrStdout(), "%s %s", member.ID, member.DisplayName); err != nil {
@@ -110,9 +125,78 @@ func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options 
 	root.AddCommand(command)
 }
 
+func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "updates PROJECT_ID",
+		Short: "List project status updates",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			updates, err := client.ListProjectUpdates(ctx, runtime.graphqlClient, args[0], limit)
+			if err != nil {
+				return err
+			}
+			if err := ensureNonEmpty(options, len(updates.Updates)); err != nil {
+				return err
+			}
+			updates.Updates, err = sortByJSONField(updates.Updates, options.sortField, options.sortOrder)
+			if err != nil {
+				return err
+			}
+			if options.json {
+				return writeJSONValue(command, options, updates)
+			}
+			for _, update := range updates.Updates {
+				if err := render.WriteLine(
+					command.OutOrStdout(),
+					"%s %s %s %s",
+					update.ID,
+					update.Health,
+					update.DisplayName,
+					update.Body,
+				); err != nil {
+					return err
+				}
+			}
+
+			return nil
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum project updates to return")
+	root.AddCommand(command)
+}
+
 func writeProject(command *cobra.Command, options *rootOptions, project client.ProjectSummary) error {
+	if wrote, err := writeIDOnly(command, options, project.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
 	if options.json {
-		return render.WriteJSON(command.OutOrStdout(), project)
+		return writeJSONValue(command, options, project)
+	}
+
+	format, err := normalizedHumanFormat(options)
+	if err != nil {
+		return err
+	}
+	if format == "minimal" {
+		return render.WriteLine(command.OutOrStdout(), "%s", project.ID)
+	}
+	if format == "full" {
+		return render.WriteLine(
+			command.OutOrStdout(),
+			"%s %s [%s] url=%s",
+			project.ID,
+			project.Name,
+			project.Status.Name,
+			project.URL,
+		)
 	}
 
 	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", project.ID, project.Name, project.Status.Name)
