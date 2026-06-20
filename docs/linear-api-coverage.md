@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 175 | 175 | 175 |
-| Domain-map commands | 287 | 155 | 287 |
+| Local generated Go operations | 185 | 185 | 185 |
+| Domain-map commands | 297 | 165 | 297 |
 
 ## Upstream SDK Root Methods
 
@@ -1177,9 +1177,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `triageResponsibility` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
 | `triageResponsibility_manualSelection` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
+| `user_assignedIssues` | query | `user` | implemented | `internal/client/generated.go` |
+| `user_createdIssues` | query | `user` | implemented | `internal/client/generated.go` |
+| `user_delegatedIssues` | query | `user` | implemented | `internal/client/generated.go` |
+| `user_teamMemberships` | query | `user` | implemented | `internal/client/generated.go` |
+| `user_teams` | query | `user` | implemented | `internal/client/generated.go` |
 | `users` | query | `users` | implemented | `internal/client/generated.go` |
 | `viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `viewer_assignedIssues` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `viewer_createdIssues` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `viewer_delegatedIssues` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `viewer_drafts` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `viewer_teamMemberships` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `viewer_teams` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
 | `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 
@@ -1367,6 +1377,16 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | User | `user get` | `Query.user` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user drafts` | `User.drafts` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user assigned-issues` | `User.assignedIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user created-issues` | `User.createdIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user delegated-issues` | `User.delegatedIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user team-memberships` | `User.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user teams` | `User.teams` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user my-assigned-issues` | `User.assignedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user my-created-issues` | `User.createdIssues` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user my-delegated-issues` | `User.delegatedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user my-team-memberships` | `User.teamMemberships` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user my-teams` | `User.teams` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |

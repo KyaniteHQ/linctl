@@ -156,6 +156,16 @@ linctl user list --limit 20
 linctl user get user-id
 linctl user me
 linctl user drafts --limit 20
+linctl user assigned-issues user-id --limit 20
+linctl user created-issues user-id --limit 20
+linctl user delegated-issues user-id --limit 20
+linctl user team-memberships user-id --limit 20
+linctl user teams user-id --limit 20
+linctl user my-assigned-issues --limit 20
+linctl user my-created-issues --limit 20
+linctl user my-delegated-issues --limit 20
+linctl user my-team-memberships --limit 20
+linctl user my-teams --limit 20
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
 linctl time-schedule list --limit 20
@@ -312,6 +322,16 @@ linctl team-membership list --limit 20
 linctl team-membership get team-membership-id
 linctl user me
 linctl user drafts --limit 20
+linctl user assigned-issues user-id --limit 20
+linctl user created-issues user-id --limit 20
+linctl user delegated-issues user-id --limit 20
+linctl user team-memberships user-id --limit 20
+linctl user teams user-id --limit 20
+linctl user my-assigned-issues --limit 20
+linctl user my-created-issues --limit 20
+linctl user my-delegated-issues --limit 20
+linctl user my-team-memberships --limit 20
+linctl user my-teams --limit 20
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
 linctl time-schedule list --limit 20

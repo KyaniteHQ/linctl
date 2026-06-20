@@ -140,6 +140,16 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "user get", args: []string{"user", "get", "user-id"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user me", args: []string{"user", "me"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user drafts", args: []string{"user", "drafts", "--limit", "1"}, contains: "draft-id issue LIT-3 Draft issue"},
+		{name: "user assigned issues", args: []string{"user", "assigned-issues", "user-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "user created issues", args: []string{"user", "created-issues", "user-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "user delegated issues", args: []string{"user", "delegated-issues", "user-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "user team memberships", args: []string{"user", "team-memberships", "user-id", "--limit", "1"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
+		{name: "user teams", args: []string{"user", "teams", "user-id", "--limit", "1"}, contains: "team-id LIT linctl"},
+		{name: "user my assigned issues", args: []string{"user", "my-assigned-issues", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "user my created issues", args: []string{"user", "my-created-issues", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "user my delegated issues", args: []string{"user", "my-delegated-issues", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "user my team memberships", args: []string{"user", "my-team-memberships", "--limit", "1"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
+		{name: "user my teams", args: []string{"user", "my-teams", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "workflow state list", args: []string{"workflow-state", "list", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
 		{name: "time schedule list", args: []string{"time-schedule", "list", "--limit", "1"}, contains: "time-schedule-id Primary on-call entries 1"},
@@ -599,6 +609,16 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"user", "list"},
 			{"user", "get", "user-id"},
 			{"user", "me"},
+			{"user", "assigned-issues", "user-id"},
+			{"user", "created-issues", "user-id"},
+			{"user", "delegated-issues", "user-id"},
+			{"user", "team-memberships", "user-id"},
+			{"user", "teams", "user-id"},
+			{"user", "my-assigned-issues"},
+			{"user", "my-created-issues"},
+			{"user", "my-delegated-issues"},
+			{"user", "my-team-memberships"},
+			{"user", "my-teams"},
 			{"custom-view", "subscribers", "custom-view-id"},
 			{"custom-view", "initiatives", "custom-view-id"},
 			{"custom-view", "organization-preferences", "custom-view-id"},
@@ -883,6 +903,16 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,team_key,user_id,owner", "team-membership", "list", "--limit", "1"},
 		{"--json", "team-membership", "get", "team-membership-id"},
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "user", "assigned-issues", "user-id", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "user", "created-issues", "user-id", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "user", "delegated-issues", "user-id", "--limit", "1"},
+		{"--json", "--fields", "id,team_key,user_id,owner", "user", "team-memberships", "user-id", "--limit", "1"},
+		{"--json", "--fields", "id,key,name", "user", "teams", "user-id", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "user", "my-assigned-issues", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "user", "my-created-issues", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "user", "my-delegated-issues", "--limit", "1"},
+		{"--json", "--fields", "id,team_key,user_id,owner", "user", "my-team-memberships", "--limit", "1"},
+		{"--json", "--fields", "id,key,name", "user", "my-teams", "--limit", "1"},
 		{"--json", "time-schedule", "list", "--limit", "1"},
 		{"--json", "time-schedule", "get", "time-schedule-id"},
 		{"--json", "--fields", "id,name,sla_type", "sla-configuration", "list", "team-id"},
@@ -1479,6 +1509,16 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "user", contains: "get user user-id"},
 		{name: "user me", args: []string{"user", "me"}, operation: "viewer", contains: "get viewer user"},
 		{name: "user drafts", args: []string{"user", "drafts"}, operation: "viewer_drafts", contains: "list viewer drafts"},
+		{name: "user assigned issues", args: []string{"user", "assigned-issues", "user-id"}, operation: "user_assignedIssues", contains: "list user assigned issues user-id"},
+		{name: "user created issues", args: []string{"user", "created-issues", "user-id"}, operation: "user_createdIssues", contains: "list user created issues user-id"},
+		{name: "user delegated issues", args: []string{"user", "delegated-issues", "user-id"}, operation: "user_delegatedIssues", contains: "list user delegated issues user-id"},
+		{name: "user team memberships", args: []string{"user", "team-memberships", "user-id"}, operation: "user_teamMemberships", contains: "list user team memberships user-id"},
+		{name: "user teams", args: []string{"user", "teams", "user-id"}, operation: "user_teams", contains: "list user teams user-id"},
+		{name: "user my assigned issues", args: []string{"user", "my-assigned-issues"}, operation: "viewer_assignedIssues", contains: "list viewer assigned issues"},
+		{name: "user my created issues", args: []string{"user", "my-created-issues"}, operation: "viewer_createdIssues", contains: "list viewer created issues"},
+		{name: "user my delegated issues", args: []string{"user", "my-delegated-issues"}, operation: "viewer_delegatedIssues", contains: "list viewer delegated issues"},
+		{name: "user my team memberships", args: []string{"user", "my-team-memberships"}, operation: "viewer_teamMemberships", contains: "list viewer team memberships"},
+		{name: "user my teams", args: []string{"user", "my-teams"}, operation: "viewer_teams", contains: "list viewer teams"},
 		{name: "workflow state list", args: []string{"workflow-state", "list"}, operation: "workflowStates", contains: "list workflow states"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
 		{name: "time schedule list", args: []string{"time-schedule", "list"}, operation: "timeSchedules", contains: "list time schedules"},
@@ -1975,6 +2015,9 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 	if payload, ok := commandFlowTeamChildPayload(operation); ok {
 		return payload, true
 	}
+	if payload, ok := commandFlowUserChildPayload(operation); ok {
+		return payload, true
+	}
 
 	switch operation {
 	case "Documents":
@@ -2009,6 +2052,33 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 	}
 
 	return commandFlowStateAndCommentPayload(operation, fake)
+}
+
+func commandFlowUserChildPayload(operation string) (string, bool) {
+	switch operation {
+	case "user_assignedIssues":
+		return commandFlowUserIssueListPayload("user", "assignedIssues"), true
+	case "user_createdIssues":
+		return commandFlowUserIssueListPayload("user", "createdIssues"), true
+	case "user_delegatedIssues":
+		return commandFlowUserIssueListPayload("user", "delegatedIssues"), true
+	case "user_teamMemberships":
+		return `{"user":{"teamMemberships":{"nodes":[` + commandTeamMembershipJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "user_teams":
+		return `{"user":{"teams":{"nodes":[` + commandTeamJSON(false) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "viewer_assignedIssues":
+		return commandFlowUserIssueListPayload("viewer", "assignedIssues"), true
+	case "viewer_createdIssues":
+		return commandFlowUserIssueListPayload("viewer", "createdIssues"), true
+	case "viewer_delegatedIssues":
+		return commandFlowUserIssueListPayload("viewer", "delegatedIssues"), true
+	case "viewer_teamMemberships":
+		return `{"viewer":{"teamMemberships":{"nodes":[` + commandTeamMembershipJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "viewer_teams":
+		return `{"viewer":{"teams":{"nodes":[` + commandTeamJSON(false) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	default:
+		return "", false
+	}
 }
 
 func commandFlowStateAndCommentPayload(operation string, fake commandFlowFakeClient) (string, bool) {
@@ -2795,6 +2865,12 @@ func commandDraftJSON() string {
 		"customerNeed":null,
 		"team":null
 	}`
+}
+
+func commandFlowUserIssueListPayload(parent string, field string) string {
+	return `{"` + parent + `":{"` + field + `":{"nodes":[` +
+		commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+		`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`
 }
 
 func commandWorkflowStateJSON() string {

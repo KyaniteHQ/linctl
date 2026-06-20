@@ -36,6 +36,146 @@ query viewer_drafts($first: Int, $after: String, $includeArchived: Boolean) {
   }
 }
 
+query user_assignedIssues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  user(id: $id) {
+    assignedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query user_createdIssues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  user(id: $id) {
+    createdIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query user_delegatedIssues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  user(id: $id) {
+    delegatedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query user_teamMemberships($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  user(id: $id) {
+    teamMemberships(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamMembershipSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query user_teams($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  user(id: $id) {
+    teams(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query viewer_assignedIssues($first: Int, $after: String, $includeArchived: Boolean) {
+  viewer {
+    assignedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query viewer_createdIssues($first: Int, $after: String, $includeArchived: Boolean) {
+  viewer {
+    createdIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query viewer_delegatedIssues($first: Int, $after: String, $includeArchived: Boolean) {
+  viewer {
+    delegatedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query viewer_teamMemberships($first: Int, $after: String, $includeArchived: Boolean) {
+  viewer {
+    teamMemberships(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamMembershipSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query viewer_teams($first: Int, $after: String, $includeArchived: Boolean) {
+  viewer {
+    teams(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment UserSummaryFields on User {
   id
   name

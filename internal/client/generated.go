@@ -18477,6 +18477,106 @@ type __userInput struct {
 // GetId returns __userInput.Id, and is useful for accessing the field via an interface.
 func (v *__userInput) GetId() string { return v.Id }
 
+// __user_assignedIssuesInput is used internally by genqlient
+type __user_assignedIssuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __user_assignedIssuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__user_assignedIssuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __user_assignedIssuesInput.First, and is useful for accessing the field via an interface.
+func (v *__user_assignedIssuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __user_assignedIssuesInput.After, and is useful for accessing the field via an interface.
+func (v *__user_assignedIssuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __user_assignedIssuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__user_assignedIssuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __user_createdIssuesInput is used internally by genqlient
+type __user_createdIssuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __user_createdIssuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__user_createdIssuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __user_createdIssuesInput.First, and is useful for accessing the field via an interface.
+func (v *__user_createdIssuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __user_createdIssuesInput.After, and is useful for accessing the field via an interface.
+func (v *__user_createdIssuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __user_createdIssuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__user_createdIssuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __user_delegatedIssuesInput is used internally by genqlient
+type __user_delegatedIssuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __user_delegatedIssuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__user_delegatedIssuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __user_delegatedIssuesInput.First, and is useful for accessing the field via an interface.
+func (v *__user_delegatedIssuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __user_delegatedIssuesInput.After, and is useful for accessing the field via an interface.
+func (v *__user_delegatedIssuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __user_delegatedIssuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__user_delegatedIssuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __user_teamMembershipsInput is used internally by genqlient
+type __user_teamMembershipsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __user_teamMembershipsInput.Id, and is useful for accessing the field via an interface.
+func (v *__user_teamMembershipsInput) GetId() string { return v.Id }
+
+// GetFirst returns __user_teamMembershipsInput.First, and is useful for accessing the field via an interface.
+func (v *__user_teamMembershipsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __user_teamMembershipsInput.After, and is useful for accessing the field via an interface.
+func (v *__user_teamMembershipsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __user_teamMembershipsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__user_teamMembershipsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __user_teamsInput is used internally by genqlient
+type __user_teamsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __user_teamsInput.Id, and is useful for accessing the field via an interface.
+func (v *__user_teamsInput) GetId() string { return v.Id }
+
+// GetFirst returns __user_teamsInput.First, and is useful for accessing the field via an interface.
+func (v *__user_teamsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __user_teamsInput.After, and is useful for accessing the field via an interface.
+func (v *__user_teamsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __user_teamsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__user_teamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __usersInput is used internally by genqlient
 type __usersInput struct {
 	First           *int    `json:"first"`
@@ -18497,6 +18597,54 @@ func (v *__usersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 // GetIncludeDisabled returns __usersInput.IncludeDisabled, and is useful for accessing the field via an interface.
 func (v *__usersInput) GetIncludeDisabled() *bool { return v.IncludeDisabled }
 
+// __viewer_assignedIssuesInput is used internally by genqlient
+type __viewer_assignedIssuesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __viewer_assignedIssuesInput.First, and is useful for accessing the field via an interface.
+func (v *__viewer_assignedIssuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __viewer_assignedIssuesInput.After, and is useful for accessing the field via an interface.
+func (v *__viewer_assignedIssuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __viewer_assignedIssuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__viewer_assignedIssuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __viewer_createdIssuesInput is used internally by genqlient
+type __viewer_createdIssuesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __viewer_createdIssuesInput.First, and is useful for accessing the field via an interface.
+func (v *__viewer_createdIssuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __viewer_createdIssuesInput.After, and is useful for accessing the field via an interface.
+func (v *__viewer_createdIssuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __viewer_createdIssuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__viewer_createdIssuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __viewer_delegatedIssuesInput is used internally by genqlient
+type __viewer_delegatedIssuesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __viewer_delegatedIssuesInput.First, and is useful for accessing the field via an interface.
+func (v *__viewer_delegatedIssuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __viewer_delegatedIssuesInput.After, and is useful for accessing the field via an interface.
+func (v *__viewer_delegatedIssuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __viewer_delegatedIssuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__viewer_delegatedIssuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __viewer_draftsInput is used internally by genqlient
 type __viewer_draftsInput struct {
 	First           *int    `json:"first"`
@@ -18512,6 +18660,38 @@ func (v *__viewer_draftsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __viewer_draftsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__viewer_draftsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __viewer_teamMembershipsInput is used internally by genqlient
+type __viewer_teamMembershipsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __viewer_teamMembershipsInput.First, and is useful for accessing the field via an interface.
+func (v *__viewer_teamMembershipsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __viewer_teamMembershipsInput.After, and is useful for accessing the field via an interface.
+func (v *__viewer_teamMembershipsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __viewer_teamMembershipsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__viewer_teamMembershipsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __viewer_teamsInput is used internally by genqlient
+type __viewer_teamsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __viewer_teamsInput.First, and is useful for accessing the field via an interface.
+func (v *__viewer_teamsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __viewer_teamsInput.After, and is useful for accessing the field via an interface.
+func (v *__viewer_teamsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __viewer_teamsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__viewer_teamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __workflowStateInput is used internally by genqlient
 type __workflowStateInput struct {
@@ -45411,6 +45591,939 @@ func (v *userUser) __premarshalJSON() (*__premarshaluserUser, error) {
 	return &retval, nil
 }
 
+// user_assignedIssuesResponse is returned by user_assignedIssues on success.
+type user_assignedIssuesResponse struct {
+	// Fetches a specific user by their ID.
+	User user_assignedIssuesUser `json:"user"`
+}
+
+// GetUser returns user_assignedIssuesResponse.User, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesResponse) GetUser() user_assignedIssuesUser { return v.User }
+
+// user_assignedIssuesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type user_assignedIssuesUser struct {
+	// Issues assigned to the user.
+	AssignedIssues user_assignedIssuesUserAssignedIssuesIssueConnection `json:"assignedIssues"`
+}
+
+// GetAssignedIssues returns user_assignedIssuesUser.AssignedIssues, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUser) GetAssignedIssues() user_assignedIssuesUserAssignedIssuesIssueConnection {
+	return v.AssignedIssues
+}
+
+// user_assignedIssuesUserAssignedIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type user_assignedIssuesUserAssignedIssuesIssueConnection struct {
+	Nodes    []user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns user_assignedIssuesUserAssignedIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnection) GetNodes() []user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns user_assignedIssuesUserAssignedIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnection) GetPageInfo() user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluser_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshaluser_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshaluser_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *user_assignedIssuesUserAssignedIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// user_createdIssuesResponse is returned by user_createdIssues on success.
+type user_createdIssuesResponse struct {
+	// Fetches a specific user by their ID.
+	User user_createdIssuesUser `json:"user"`
+}
+
+// GetUser returns user_createdIssuesResponse.User, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesResponse) GetUser() user_createdIssuesUser { return v.User }
+
+// user_createdIssuesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type user_createdIssuesUser struct {
+	// Issues created by the user.
+	CreatedIssues user_createdIssuesUserCreatedIssuesIssueConnection `json:"createdIssues"`
+}
+
+// GetCreatedIssues returns user_createdIssuesUser.CreatedIssues, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUser) GetCreatedIssues() user_createdIssuesUserCreatedIssuesIssueConnection {
+	return v.CreatedIssues
+}
+
+// user_createdIssuesUserCreatedIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type user_createdIssuesUserCreatedIssuesIssueConnection struct {
+	Nodes    []user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns user_createdIssuesUserCreatedIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnection) GetNodes() []user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns user_createdIssuesUserCreatedIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnection) GetPageInfo() user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluser_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshaluser_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshaluser_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *user_createdIssuesUserCreatedIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// user_delegatedIssuesResponse is returned by user_delegatedIssues on success.
+type user_delegatedIssuesResponse struct {
+	// Fetches a specific user by their ID.
+	User user_delegatedIssuesUser `json:"user"`
+}
+
+// GetUser returns user_delegatedIssuesResponse.User, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesResponse) GetUser() user_delegatedIssuesUser { return v.User }
+
+// user_delegatedIssuesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type user_delegatedIssuesUser struct {
+	// Issues delegated to this user.
+	DelegatedIssues user_delegatedIssuesUserDelegatedIssuesIssueConnection `json:"delegatedIssues"`
+}
+
+// GetDelegatedIssues returns user_delegatedIssuesUser.DelegatedIssues, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUser) GetDelegatedIssues() user_delegatedIssuesUserDelegatedIssuesIssueConnection {
+	return v.DelegatedIssues
+}
+
+// user_delegatedIssuesUserDelegatedIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type user_delegatedIssuesUserDelegatedIssuesIssueConnection struct {
+	Nodes    []user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns user_delegatedIssuesUserDelegatedIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnection) GetNodes() []user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns user_delegatedIssuesUserDelegatedIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnection) GetPageInfo() user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluser_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshaluser_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshaluser_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// user_teamMembershipsResponse is returned by user_teamMemberships on success.
+type user_teamMembershipsResponse struct {
+	// Fetches a specific user by their ID.
+	User user_teamMembershipsUser `json:"user"`
+}
+
+// GetUser returns user_teamMembershipsResponse.User, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsResponse) GetUser() user_teamMembershipsUser { return v.User }
+
+// user_teamMembershipsUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type user_teamMembershipsUser struct {
+	// Memberships associated with the user. For easier access of the same data, use `teams` query.
+	TeamMemberships user_teamMembershipsUserTeamMembershipsTeamMembershipConnection `json:"teamMemberships"`
+}
+
+// GetTeamMemberships returns user_teamMembershipsUser.TeamMemberships, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUser) GetTeamMemberships() user_teamMembershipsUserTeamMembershipsTeamMembershipConnection {
+	return v.TeamMemberships
+}
+
+// user_teamMembershipsUserTeamMembershipsTeamMembershipConnection includes the requested fields of the GraphQL type TeamMembershipConnection.
+type user_teamMembershipsUserTeamMembershipsTeamMembershipConnection struct {
+	Nodes    []user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership `json:"nodes"`
+	PageInfo user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnection) GetNodes() []user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership {
+	return v.Nodes
+}
+
+// GetPageInfo returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnection) GetPageInfo() user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo {
+	return v.PageInfo
+}
+
+// user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
+// The GraphQL type's documentation follows.
+//
+// A join entity that defines a user's membership in a team. Each membership record
+// links a user to a team and tracks whether the user is a team owner. Users can be
+// members of multiple teams, and their memberships determine which teams' issues
+// and resources they can access.
+type user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	TeamMembershipSummaryFields `json:"-"`
+}
+
+// GetId returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Id, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetId() string {
+	return v.TeamMembershipSummaryFields.Id
+}
+
+// GetCreatedAt returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.CreatedAt, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetCreatedAt() string {
+	return v.TeamMembershipSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUpdatedAt() string {
+	return v.TeamMembershipSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetArchivedAt() *string {
+	return v.TeamMembershipSummaryFields.ArchivedAt
+}
+
+// GetOwner returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Owner, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetOwner() bool {
+	return v.TeamMembershipSummaryFields.Owner
+}
+
+// GetSortOrder returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.SortOrder, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetSortOrder() float64 {
+	return v.TeamMembershipSummaryFields.SortOrder
+}
+
+// GetUser returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.User, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUser() TeamMembershipSummaryFieldsUser {
+	return v.TeamMembershipSummaryFields.User
+}
+
+// GetTeam returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Team, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetTeam() TeamMembershipSummaryFieldsTeam {
+	return v.TeamMembershipSummaryFields.Team
+}
+
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamMembershipSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluser_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Owner bool `json:"owner"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	User TeamMembershipSummaryFieldsUser `json:"user"`
+
+	Team TeamMembershipSummaryFieldsTeam `json:"team"`
+}
+
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) __premarshalJSON() (*__premarshaluser_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership, error) {
+	var retval __premarshaluser_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+	retval.Id = v.TeamMembershipSummaryFields.Id
+	retval.CreatedAt = v.TeamMembershipSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TeamMembershipSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TeamMembershipSummaryFields.ArchivedAt
+	retval.Owner = v.TeamMembershipSummaryFields.Owner
+	retval.SortOrder = v.TeamMembershipSummaryFields.SortOrder
+	retval.User = v.TeamMembershipSummaryFields.User
+	retval.Team = v.TeamMembershipSummaryFields.Team
+	return &retval, nil
+}
+
+// user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// user_teamsResponse is returned by user_teams on success.
+type user_teamsResponse struct {
+	// Fetches a specific user by their ID.
+	User user_teamsUser `json:"user"`
+}
+
+// GetUser returns user_teamsResponse.User, and is useful for accessing the field via an interface.
+func (v *user_teamsResponse) GetUser() user_teamsUser { return v.User }
+
+// user_teamsUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type user_teamsUser struct {
+	// Teams the user is a member of. Supports filtering by team properties.
+	Teams user_teamsUserTeamsTeamConnection `json:"teams"`
+}
+
+// GetTeams returns user_teamsUser.Teams, and is useful for accessing the field via an interface.
+func (v *user_teamsUser) GetTeams() user_teamsUserTeamsTeamConnection { return v.Teams }
+
+// user_teamsUserTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
+type user_teamsUserTeamsTeamConnection struct {
+	Nodes    []user_teamsUserTeamsTeamConnectionNodesTeam `json:"nodes"`
+	PageInfo user_teamsUserTeamsTeamConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns user_teamsUserTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnection) GetNodes() []user_teamsUserTeamsTeamConnectionNodesTeam {
+	return v.Nodes
+}
+
+// GetPageInfo returns user_teamsUserTeamsTeamConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnection) GetPageInfo() user_teamsUserTeamsTeamConnectionPageInfo {
+	return v.PageInfo
+}
+
+// user_teamsUserTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type user_teamsUserTeamsTeamConnectionNodesTeam struct {
+	TeamSummaryFields `json:"-"`
+}
+
+// GetId returns user_teamsUserTeamsTeamConnectionNodesTeam.Id, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetId() string { return v.TeamSummaryFields.Id }
+
+// GetKey returns user_teamsUserTeamsTeamConnectionNodesTeam.Key, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetKey() string { return v.TeamSummaryFields.Key }
+
+// GetName returns user_teamsUserTeamsTeamConnectionNodesTeam.Name, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetName() string {
+	return v.TeamSummaryFields.Name
+}
+
+// GetDescription returns user_teamsUserTeamsTeamConnectionNodesTeam.Description, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetDescription() *string {
+	return v.TeamSummaryFields.Description
+}
+
+// GetArchivedAt returns user_teamsUserTeamsTeamConnectionNodesTeam.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetArchivedAt() *string {
+	return v.TeamSummaryFields.ArchivedAt
+}
+
+// GetOrganization returns user_teamsUserTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
+	return v.TeamSummaryFields.Organization
+}
+
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*user_teamsUserTeamsTeamConnectionNodesTeam
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.user_teamsUserTeamsTeamConnectionNodesTeam = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluser_teamsUserTeamsTeamConnectionNodesTeam struct {
+	Id string `json:"id"`
+
+	Key string `json:"key"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Organization TeamSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *user_teamsUserTeamsTeamConnectionNodesTeam) __premarshalJSON() (*__premarshaluser_teamsUserTeamsTeamConnectionNodesTeam, error) {
+	var retval __premarshaluser_teamsUserTeamsTeamConnectionNodesTeam
+
+	retval.Id = v.TeamSummaryFields.Id
+	retval.Key = v.TeamSummaryFields.Key
+	retval.Name = v.TeamSummaryFields.Name
+	retval.Description = v.TeamSummaryFields.Description
+	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
+}
+
+// user_teamsUserTeamsTeamConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type user_teamsUserTeamsTeamConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns user_teamsUserTeamsTeamConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns user_teamsUserTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *user_teamsUserTeamsTeamConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
 // usersResponse is returned by users on success.
 type usersResponse struct {
 	// All users in the workspace. Supports filtering, sorting, and pagination.
@@ -45645,6 +46758,614 @@ func (v *viewerViewerUser) __premarshalJSON() (*__premarshalviewerViewerUser, er
 	return &retval, nil
 }
 
+// viewer_assignedIssuesResponse is returned by viewer_assignedIssues on success.
+type viewer_assignedIssuesResponse struct {
+	// The currently authenticated user making the API request.
+	Viewer viewer_assignedIssuesViewerUser `json:"viewer"`
+}
+
+// GetViewer returns viewer_assignedIssuesResponse.Viewer, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesResponse) GetViewer() viewer_assignedIssuesViewerUser { return v.Viewer }
+
+// viewer_assignedIssuesViewerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type viewer_assignedIssuesViewerUser struct {
+	// Issues assigned to the user.
+	AssignedIssues viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection `json:"assignedIssues"`
+}
+
+// GetAssignedIssues returns viewer_assignedIssuesViewerUser.AssignedIssues, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUser) GetAssignedIssues() viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection {
+	return v.AssignedIssues
+}
+
+// viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection struct {
+	Nodes    []viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection) GetNodes() []viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection) GetPageInfo() viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalviewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalviewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalviewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// viewer_createdIssuesResponse is returned by viewer_createdIssues on success.
+type viewer_createdIssuesResponse struct {
+	// The currently authenticated user making the API request.
+	Viewer viewer_createdIssuesViewerUser `json:"viewer"`
+}
+
+// GetViewer returns viewer_createdIssuesResponse.Viewer, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesResponse) GetViewer() viewer_createdIssuesViewerUser { return v.Viewer }
+
+// viewer_createdIssuesViewerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type viewer_createdIssuesViewerUser struct {
+	// Issues created by the user.
+	CreatedIssues viewer_createdIssuesViewerUserCreatedIssuesIssueConnection `json:"createdIssues"`
+}
+
+// GetCreatedIssues returns viewer_createdIssuesViewerUser.CreatedIssues, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUser) GetCreatedIssues() viewer_createdIssuesViewerUserCreatedIssuesIssueConnection {
+	return v.CreatedIssues
+}
+
+// viewer_createdIssuesViewerUserCreatedIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type viewer_createdIssuesViewerUserCreatedIssuesIssueConnection struct {
+	Nodes    []viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnection) GetNodes() []viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnection) GetPageInfo() viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalviewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalviewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalviewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// viewer_delegatedIssuesResponse is returned by viewer_delegatedIssues on success.
+type viewer_delegatedIssuesResponse struct {
+	// The currently authenticated user making the API request.
+	Viewer viewer_delegatedIssuesViewerUser `json:"viewer"`
+}
+
+// GetViewer returns viewer_delegatedIssuesResponse.Viewer, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesResponse) GetViewer() viewer_delegatedIssuesViewerUser {
+	return v.Viewer
+}
+
+// viewer_delegatedIssuesViewerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type viewer_delegatedIssuesViewerUser struct {
+	// Issues delegated to this user.
+	DelegatedIssues viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection `json:"delegatedIssues"`
+}
+
+// GetDelegatedIssues returns viewer_delegatedIssuesViewerUser.DelegatedIssues, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUser) GetDelegatedIssues() viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection {
+	return v.DelegatedIssues
+}
+
+// viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection struct {
+	Nodes    []viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection) GetNodes() []viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection) GetPageInfo() viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalviewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalviewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalviewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // viewer_draftsResponse is returned by viewer_drafts on success.
 type viewer_draftsResponse struct {
 	// The currently authenticated user making the API request.
@@ -45851,6 +47572,343 @@ func (v *viewer_draftsViewerUserDraftsDraftConnectionPageInfo) GetHasNextPage() 
 
 // GetEndCursor returns viewer_draftsViewerUserDraftsDraftConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *viewer_draftsViewerUserDraftsDraftConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// viewer_teamMembershipsResponse is returned by viewer_teamMemberships on success.
+type viewer_teamMembershipsResponse struct {
+	// The currently authenticated user making the API request.
+	Viewer viewer_teamMembershipsViewerUser `json:"viewer"`
+}
+
+// GetViewer returns viewer_teamMembershipsResponse.Viewer, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsResponse) GetViewer() viewer_teamMembershipsViewerUser {
+	return v.Viewer
+}
+
+// viewer_teamMembershipsViewerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type viewer_teamMembershipsViewerUser struct {
+	// Memberships associated with the user. For easier access of the same data, use `teams` query.
+	TeamMemberships viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection `json:"teamMemberships"`
+}
+
+// GetTeamMemberships returns viewer_teamMembershipsViewerUser.TeamMemberships, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUser) GetTeamMemberships() viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection {
+	return v.TeamMemberships
+}
+
+// viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection includes the requested fields of the GraphQL type TeamMembershipConnection.
+type viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection struct {
+	Nodes    []viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership `json:"nodes"`
+	PageInfo viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection) GetNodes() []viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership {
+	return v.Nodes
+}
+
+// GetPageInfo returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection) GetPageInfo() viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo {
+	return v.PageInfo
+}
+
+// viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
+// The GraphQL type's documentation follows.
+//
+// A join entity that defines a user's membership in a team. Each membership record
+// links a user to a team and tracks whether the user is a team owner. Users can be
+// members of multiple teams, and their memberships determine which teams' issues
+// and resources they can access.
+type viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	TeamMembershipSummaryFields `json:"-"`
+}
+
+// GetId returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Id, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetId() string {
+	return v.TeamMembershipSummaryFields.Id
+}
+
+// GetCreatedAt returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.CreatedAt, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetCreatedAt() string {
+	return v.TeamMembershipSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUpdatedAt() string {
+	return v.TeamMembershipSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetArchivedAt() *string {
+	return v.TeamMembershipSummaryFields.ArchivedAt
+}
+
+// GetOwner returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Owner, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetOwner() bool {
+	return v.TeamMembershipSummaryFields.Owner
+}
+
+// GetSortOrder returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.SortOrder, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetSortOrder() float64 {
+	return v.TeamMembershipSummaryFields.SortOrder
+}
+
+// GetUser returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.User, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUser() TeamMembershipSummaryFieldsUser {
+	return v.TeamMembershipSummaryFields.User
+}
+
+// GetTeam returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Team, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetTeam() TeamMembershipSummaryFieldsTeam {
+	return v.TeamMembershipSummaryFields.Team
+}
+
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamMembershipSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalviewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Owner bool `json:"owner"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	User TeamMembershipSummaryFieldsUser `json:"user"`
+
+	Team TeamMembershipSummaryFieldsTeam `json:"team"`
+}
+
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership) __premarshalJSON() (*__premarshalviewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership, error) {
+	var retval __premarshalviewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+	retval.Id = v.TeamMembershipSummaryFields.Id
+	retval.CreatedAt = v.TeamMembershipSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TeamMembershipSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TeamMembershipSummaryFields.ArchivedAt
+	retval.Owner = v.TeamMembershipSummaryFields.Owner
+	retval.SortOrder = v.TeamMembershipSummaryFields.SortOrder
+	retval.User = v.TeamMembershipSummaryFields.User
+	retval.Team = v.TeamMembershipSummaryFields.Team
+	return &retval, nil
+}
+
+// viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// viewer_teamsResponse is returned by viewer_teams on success.
+type viewer_teamsResponse struct {
+	// The currently authenticated user making the API request.
+	Viewer viewer_teamsViewerUser `json:"viewer"`
+}
+
+// GetViewer returns viewer_teamsResponse.Viewer, and is useful for accessing the field via an interface.
+func (v *viewer_teamsResponse) GetViewer() viewer_teamsViewerUser { return v.Viewer }
+
+// viewer_teamsViewerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type viewer_teamsViewerUser struct {
+	// Teams the user is a member of. Supports filtering by team properties.
+	Teams viewer_teamsViewerUserTeamsTeamConnection `json:"teams"`
+}
+
+// GetTeams returns viewer_teamsViewerUser.Teams, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUser) GetTeams() viewer_teamsViewerUserTeamsTeamConnection { return v.Teams }
+
+// viewer_teamsViewerUserTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
+type viewer_teamsViewerUserTeamsTeamConnection struct {
+	Nodes    []viewer_teamsViewerUserTeamsTeamConnectionNodesTeam `json:"nodes"`
+	PageInfo viewer_teamsViewerUserTeamsTeamConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns viewer_teamsViewerUserTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnection) GetNodes() []viewer_teamsViewerUserTeamsTeamConnectionNodesTeam {
+	return v.Nodes
+}
+
+// GetPageInfo returns viewer_teamsViewerUserTeamsTeamConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnection) GetPageInfo() viewer_teamsViewerUserTeamsTeamConnectionPageInfo {
+	return v.PageInfo
+}
+
+// viewer_teamsViewerUserTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type viewer_teamsViewerUserTeamsTeamConnectionNodesTeam struct {
+	TeamSummaryFields `json:"-"`
+}
+
+// GetId returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.Id, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetId() string {
+	return v.TeamSummaryFields.Id
+}
+
+// GetKey returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.Key, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetKey() string {
+	return v.TeamSummaryFields.Key
+}
+
+// GetName returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.Name, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetName() string {
+	return v.TeamSummaryFields.Name
+}
+
+// GetDescription returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.Description, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetDescription() *string {
+	return v.TeamSummaryFields.Description
+}
+
+// GetArchivedAt returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetArchivedAt() *string {
+	return v.TeamSummaryFields.ArchivedAt
+}
+
+// GetOrganization returns viewer_teamsViewerUserTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
+	return v.TeamSummaryFields.Organization
+}
+
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*viewer_teamsViewerUserTeamsTeamConnectionNodesTeam
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.viewer_teamsViewerUserTeamsTeamConnectionNodesTeam = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalviewer_teamsViewerUserTeamsTeamConnectionNodesTeam struct {
+	Id string `json:"id"`
+
+	Key string `json:"key"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Organization TeamSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *viewer_teamsViewerUserTeamsTeamConnectionNodesTeam) __premarshalJSON() (*__premarshalviewer_teamsViewerUserTeamsTeamConnectionNodesTeam, error) {
+	var retval __premarshalviewer_teamsViewerUserTeamsTeamConnectionNodesTeam
+
+	retval.Id = v.TeamSummaryFields.Id
+	retval.Key = v.TeamSummaryFields.Key
+	retval.Name = v.TeamSummaryFields.Name
+	retval.Description = v.TeamSummaryFields.Description
+	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
+}
+
+// viewer_teamsViewerUserTeamsTeamConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type viewer_teamsViewerUserTeamsTeamConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns viewer_teamsViewerUserTeamsTeamConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns viewer_teamsViewerUserTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *viewer_teamsViewerUserTeamsTeamConnectionPageInfo) GetEndCursor() *string {
 	return v.EndCursor
 }
 
@@ -55656,6 +57714,367 @@ func user(
 	return data_, err_
 }
 
+// The query executed by user_assignedIssues.
+const user_assignedIssues_Operation = `
+query user_assignedIssues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	user(id: $id) {
+		assignedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func user_assignedIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *user_assignedIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "user_assignedIssues",
+		Query:  user_assignedIssues_Operation,
+		Variables: &__user_assignedIssuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &user_assignedIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by user_createdIssues.
+const user_createdIssues_Operation = `
+query user_createdIssues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	user(id: $id) {
+		createdIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func user_createdIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *user_createdIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "user_createdIssues",
+		Query:  user_createdIssues_Operation,
+		Variables: &__user_createdIssuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &user_createdIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by user_delegatedIssues.
+const user_delegatedIssues_Operation = `
+query user_delegatedIssues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	user(id: $id) {
+		delegatedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func user_delegatedIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *user_delegatedIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "user_delegatedIssues",
+		Query:  user_delegatedIssues_Operation,
+		Variables: &__user_delegatedIssuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &user_delegatedIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by user_teamMemberships.
+const user_teamMemberships_Operation = `
+query user_teamMemberships ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	user(id: $id) {
+		teamMemberships(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TeamMembershipSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TeamMembershipSummaryFields on TeamMembership {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	owner
+	sortOrder
+	user {
+		... UserSummaryFields
+	}
+	team {
+		id
+		key
+		name
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func user_teamMemberships(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *user_teamMembershipsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "user_teamMemberships",
+		Query:  user_teamMemberships_Operation,
+		Variables: &__user_teamMembershipsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &user_teamMembershipsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by user_teams.
+const user_teams_Operation = `
+query user_teams ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	user(id: $id) {
+		teams(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TeamSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TeamSummaryFields on Team {
+	id
+	key
+	name
+	description
+	archivedAt
+	organization {
+		id
+		name
+		urlKey
+	}
+}
+`
+
+func user_teams(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *user_teamsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "user_teams",
+		Query:  user_teams_Operation,
+		Variables: &__user_teamsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &user_teamsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by users.
 const users_Operation = `
 query users ($first: Int, $after: String, $includeArchived: Boolean, $includeDisabled: Boolean) {
@@ -55750,6 +58169,228 @@ func viewer(
 	return data_, err_
 }
 
+// The query executed by viewer_assignedIssues.
+const viewer_assignedIssues_Operation = `
+query viewer_assignedIssues ($first: Int, $after: String, $includeArchived: Boolean) {
+	viewer {
+		assignedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func viewer_assignedIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *viewer_assignedIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "viewer_assignedIssues",
+		Query:  viewer_assignedIssues_Operation,
+		Variables: &__viewer_assignedIssuesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &viewer_assignedIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by viewer_createdIssues.
+const viewer_createdIssues_Operation = `
+query viewer_createdIssues ($first: Int, $after: String, $includeArchived: Boolean) {
+	viewer {
+		createdIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func viewer_createdIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *viewer_createdIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "viewer_createdIssues",
+		Query:  viewer_createdIssues_Operation,
+		Variables: &__viewer_createdIssuesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &viewer_createdIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by viewer_delegatedIssues.
+const viewer_delegatedIssues_Operation = `
+query viewer_delegatedIssues ($first: Int, $after: String, $includeArchived: Boolean) {
+	viewer {
+		delegatedIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func viewer_delegatedIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *viewer_delegatedIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "viewer_delegatedIssues",
+		Query:  viewer_delegatedIssues_Operation,
+		Variables: &__viewer_delegatedIssuesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &viewer_delegatedIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by viewer_drafts.
 const viewer_drafts_Operation = `
 query viewer_drafts ($first: Int, $after: String, $includeArchived: Boolean) {
@@ -55821,6 +58462,135 @@ func viewer_drafts(
 	}
 
 	data_ = &viewer_draftsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by viewer_teamMemberships.
+const viewer_teamMemberships_Operation = `
+query viewer_teamMemberships ($first: Int, $after: String, $includeArchived: Boolean) {
+	viewer {
+		teamMemberships(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TeamMembershipSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TeamMembershipSummaryFields on TeamMembership {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	owner
+	sortOrder
+	user {
+		... UserSummaryFields
+	}
+	team {
+		id
+		key
+		name
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func viewer_teamMemberships(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *viewer_teamMembershipsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "viewer_teamMemberships",
+		Query:  viewer_teamMemberships_Operation,
+		Variables: &__viewer_teamMembershipsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &viewer_teamMembershipsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by viewer_teams.
+const viewer_teams_Operation = `
+query viewer_teams ($first: Int, $after: String, $includeArchived: Boolean) {
+	viewer {
+		teams(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TeamSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TeamSummaryFields on Team {
+	id
+	key
+	name
+	description
+	archivedAt
+	organization {
+		id
+		name
+		urlKey
+	}
+}
+`
+
+func viewer_teams(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *viewer_teamsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "viewer_teams",
+		Query:  viewer_teams_Operation,
+		Variables: &__viewer_teamsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &viewer_teamsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

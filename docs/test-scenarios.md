@@ -744,139 +744,189 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_drafts`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-136. ProjectStatus list
+136. User assigned issues
+   - Success: `linctl user assigned-issues USER_ID --limit N` lists issues assigned to one User without issue body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_assigned_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+137. User created issues
+   - Success: `linctl user created-issues USER_ID --limit N` lists issues created by one User without issue body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_created_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+138. User delegated issues
+   - Success: `linctl user delegated-issues USER_ID --limit N` lists issues delegated to one User without issue body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_delegated_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+139. User team memberships
+   - Success: `linctl user team-memberships USER_ID --limit N` lists TeamMembership summaries for one User.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_team_memberships`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+140. User teams
+   - Success: `linctl user teams USER_ID --limit N` lists Teams for one User.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_teams`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+141. User my assigned issues
+   - Success: `linctl user my-assigned-issues --limit N` lists issues assigned to the authenticated User without issue body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_my_assigned_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+142. User my created issues
+   - Success: `linctl user my-created-issues --limit N` lists issues created by the authenticated User without issue body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_my_created_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+143. User my delegated issues
+   - Success: `linctl user my-delegated-issues --limit N` lists issues delegated to the authenticated User without issue body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_my_delegated_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+144. User my team memberships
+   - Success: `linctl user my-team-memberships --limit N` lists TeamMembership summaries for the authenticated User.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_my_team_memberships`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+145. User my teams
+   - Success: `linctl user my-teams --limit N` lists Teams for the authenticated User.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_my_teams`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+146. ProjectStatus list
    - Success: `linctl project-status list --limit N` lists visible ProjectStatuses through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-137. ProjectStatus get
+147. ProjectStatus get
    - Success: `linctl project-status get PROJECT_STATUS_ID` reads one ProjectStatus by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-138. ProjectLabel list
+148. ProjectLabel list
    - Success: `linctl project-label list --limit N` lists visible ProjectLabels through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-139. ProjectLabel get
+149. ProjectLabel get
    - Success: `linctl project-label get PROJECT_LABEL_ID` reads one ProjectLabel by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-140. ProjectLabel children
+150. ProjectLabel children
    - Success: `linctl project-label children PROJECT_LABEL_ID --limit N` lists child ProjectLabels without exposing unrelated project data.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_children`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-141. ProjectLabel projects
+151. ProjectLabel projects
    - Success: `linctl project-label projects PROJECT_LABEL_ID --limit N` lists projects associated with one ProjectLabel.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_label_projects`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-142. ProjectRelation list
+152. ProjectRelation list
    - Success: `linctl project-relation list --limit N` lists visible ProjectRelations through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_relation_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-143. ProjectRelation get
+153. ProjectRelation get
    - Success: `linctl project-relation get PROJECT_RELATION_ID` reads one ProjectRelation by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_relation_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-144. TeamMembership list
+154. TeamMembership list
    - Success: `linctl team-membership list --limit N` lists visible TeamMemberships through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_membership_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-145. TeamMembership get
+155. TeamMembership get
    - Success: `linctl team-membership get TEAM_MEMBERSHIP_ID` reads one TeamMembership by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_membership_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-146. RoadmapToProject list
+156. RoadmapToProject list
    - Success: `linctl roadmap-to-project list --limit N` lists visible RoadmapToProjects through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_to_project_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-147. RoadmapToProject get
+157. RoadmapToProject get
    - Success: `linctl roadmap-to-project get ROADMAP_TO_PROJECT_ID` reads one RoadmapToProject by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_to_project_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-148. IssueRelation list
+158. IssueRelation list
    - Success: `linctl issue-relation list --limit N` lists visible IssueRelations through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_relation_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-149. IssueRelation get
+159. IssueRelation get
    - Success: `linctl issue-relation get ISSUE_RELATION_ID` reads one IssueRelation by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_relation_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-150. IssueToRelease list
+160. IssueToRelease list
    - Success: `linctl issue-to-release list --limit N` lists visible IssueToReleases through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_to_release_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-151. IssueToRelease get
+161. IssueToRelease get
    - Success: `linctl issue-to-release get ISSUE_TO_RELEASE_ID` reads one IssueToRelease by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_to_release_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-152. ExternalUser list
+162. ExternalUser list
    - Success: `linctl external-user list --limit N` lists visible Linear ExternalUsers without selecting email through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/external_user_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-153. ExternalUser get
+163. ExternalUser get
    - Success: `linctl external-user get EXTERNAL_USER_ID` reads one Linear ExternalUser by id without selecting email.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/external_user_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-154. Team cycles
+164. Team cycles
    - Success: `linctl team cycles TEAM_ID --limit N` lists Cycles associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_cycles`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-155. Team issues
+165. Team issues
    - Success: `linctl team issues TEAM_ID --limit N` lists Issues associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_issues`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-156. Team labels
+166. Team labels
    - Success: `linctl team labels TEAM_ID --limit N` lists IssueLabels associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_labels`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-157. Team memberships
+167. Team memberships
    - Success: `linctl team memberships TEAM_ID --limit N` lists TeamMemberships associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_memberships`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-158. Team projects
+168. Team projects
    - Success: `linctl team projects TEAM_ID --limit N` lists Projects associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_projects`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-159. Team release pipelines
+169. Team release pipelines
    - Success: `linctl team release-pipelines TEAM_ID --limit N` lists ReleasePipelines associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_release_pipelines`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-160. Team states
+170. Team states
    - Success: `linctl team states TEAM_ID --limit N` lists WorkflowStates associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_states`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-161. Team templates
+171. Team templates
    - Success: `linctl team templates TEAM_ID --limit N` lists Templates associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_templates`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 ## Current Outcome
 
-All one hundred sixty-one local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All one hundred seventy-one local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

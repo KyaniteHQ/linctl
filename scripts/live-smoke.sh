@@ -46,8 +46,19 @@ PY
   "$binary" organization exists "$org_url_key" --json >/dev/null
   "$binary" organization templates --json --limit 5 >/dev/null
   "$binary" rate-limit status --json >/dev/null
-  "$binary" whoami --json >/dev/null
+  viewer_json="$("$binary" whoami --json)"
+  user_id="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["id"])' <<<"$viewer_json")"
   "$binary" user drafts --json --limit 5 >/dev/null
+  "$binary" user assigned-issues "$user_id" --json --limit 5 >/dev/null
+  "$binary" user created-issues "$user_id" --json --limit 5 >/dev/null
+  "$binary" user delegated-issues "$user_id" --json --limit 5 >/dev/null
+  "$binary" user team-memberships "$user_id" --json --limit 5 >/dev/null
+  "$binary" user teams "$user_id" --json --limit 5 >/dev/null
+  "$binary" user my-assigned-issues --json --limit 5 >/dev/null
+  "$binary" user my-created-issues --json --limit 5 >/dev/null
+  "$binary" user my-delegated-issues --json --limit 5 >/dev/null
+  "$binary" user my-team-memberships --json --limit 5 >/dev/null
+  "$binary" user my-teams --json --limit 5 >/dev/null
   "$binary" issue usage >/dev/null
   "$binary" issue list --json --limit 5 >/dev/null
   "$binary" issue-relation list --json --limit 5 >/dev/null

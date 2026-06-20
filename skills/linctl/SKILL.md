@@ -161,6 +161,16 @@ linctl user list --json --limit 20
 linctl user get USER_ID --json
 linctl user me --json
 linctl user drafts --json --limit 20
+linctl user assigned-issues USER_ID --json --limit 20
+linctl user created-issues USER_ID --json --limit 20
+linctl user delegated-issues USER_ID --json --limit 20
+linctl user team-memberships USER_ID --json --limit 20
+linctl user teams USER_ID --json --limit 20
+linctl user my-assigned-issues --json --limit 20
+linctl user my-created-issues --json --limit 20
+linctl user my-delegated-issues --json --limit 20
+linctl user my-team-memberships --json --limit 20
+linctl user my-teams --json --limit 20
 linctl workflow-state list --json --limit 20
 linctl workflow-state get WORKFLOW_STATE_ID --json
 linctl time-schedule list --json --limit 20

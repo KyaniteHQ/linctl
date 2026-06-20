@@ -530,7 +530,7 @@ Team list/get, the read-only Team child-list commands above, and `team-membershi
 Schema backing:
 
 - Types: `User`, `UserConnection`
-- Reads: `Query.users`, `Query.user`, `Query.viewer`, `User.drafts`, `Team.members`, `Project.members`
+- Reads: `Query.users`, `Query.user`, `Query.viewer`, `User.assignedIssues`, `User.createdIssues`, `User.delegatedIssues`, `User.teamMemberships`, `User.teams`, `User.drafts`, `Team.members`, `Project.members`
 - Relevant fields: `User.id`, `User.name`, `User.displayName`, `User.email`, `User.active`, `User.guest`, `User.admin`, `User.url`, `User.assignedIssues`, `User.teams`, `Draft.id`, `Draft.issue`, `Draft.project`, `Draft.projectUpdate`, `Draft.initiative`, `Draft.initiativeUpdate`, `Draft.parentComment`, `Draft.customerNeed`, `Draft.team`
 
 Planned commands:
@@ -541,8 +541,18 @@ Planned commands:
 | `user get` | `Query.user` | Read-only |
 | `user me` | `Query.viewer` | Read-only |
 | `user drafts` | `User.drafts` via `Query.viewer` | Read-only |
+| `user assigned-issues` | `User.assignedIssues` | Read-only |
+| `user created-issues` | `User.createdIssues` | Read-only |
+| `user delegated-issues` | `User.delegatedIssues` | Read-only |
+| `user team-memberships` | `User.teamMemberships` | Read-only |
+| `user teams` | `User.teams` | Read-only |
+| `user my-assigned-issues` | `User.assignedIssues` via `Query.viewer` | Read-only |
+| `user my-created-issues` | `User.createdIssues` via `Query.viewer` | Read-only |
+| `user my-delegated-issues` | `User.delegatedIssues` via `Query.viewer` | Read-only |
+| `user my-team-memberships` | `User.teamMemberships` via `Query.viewer` | Read-only |
+| `user my-teams` | `User.teams` via `Query.viewer` | Read-only |
 
-Only `user list`, `user get`, `user me`, and `user drafts` are implemented in the current CLI. Draft reads intentionally omit draft body/data and return parent metadata only. User writes are not part of the v1 PM command surface until a later slice proves the exact Linear mutation and safety semantics.
+The read-only user commands are implemented in the current CLI. Draft reads intentionally omit draft body/data and return parent metadata only. User issue-list commands use compact issue summaries and do not include body content. User writes are not part of the v1 PM command surface until a later slice proves the exact Linear mutation and safety semantics.
 
 ## WorkflowState
 

@@ -288,6 +288,52 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			draftJSON("team"),
 			draftJSON("unknown"),
 		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"user_assignedIssues": `{"user":{"assignedIssues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-41",
+			Title:      "User assigned issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"user_createdIssues": `{"user":{"createdIssues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-42",
+			Title:      "User created issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"user_delegatedIssues": `{"user":{"delegatedIssues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-43",
+			Title:      "User delegated issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"user_teamMemberships": `{"user":{"teamMemberships":{"nodes":[{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"user_teams":           `{"user":{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"viewer_assignedIssues": `{"viewer":{"assignedIssues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-44",
+			Title:      "Viewer assigned issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"viewer_createdIssues": `{"viewer":{"createdIssues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-45",
+			Title:      "Viewer created issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"viewer_delegatedIssues": `{"viewer":{"delegatedIssues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-46",
+			Title:      "Viewer delegated issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"viewer_teamMemberships":                 `{"viewer":{"teamMemberships":{"nodes":[{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"viewer_teams":                           `{"viewer":{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"workflowStates":                         `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"workflowState":                          `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 		"timeSchedules":                          `{"timeSchedules":{"nodes":[{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -535,6 +581,26 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	viewerUser, err := GetViewerUser(context.Background(), graphqlClient)
 	require.NoError(t, err)
 	drafts, err := ListViewerDrafts(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	userAssignedIssues, err := ListUserAssignedIssues(context.Background(), graphqlClient, "user-id", 2)
+	require.NoError(t, err)
+	userCreatedIssues, err := ListUserCreatedIssues(context.Background(), graphqlClient, "user-id", 2)
+	require.NoError(t, err)
+	userDelegatedIssues, err := ListUserDelegatedIssues(context.Background(), graphqlClient, "user-id", 2)
+	require.NoError(t, err)
+	userTeamMemberships, err := ListUserTeamMemberships(context.Background(), graphqlClient, "user-id", 2)
+	require.NoError(t, err)
+	userTeams, err := ListUserTeams(context.Background(), graphqlClient, "user-id", 2)
+	require.NoError(t, err)
+	viewerAssignedIssues, err := ListViewerAssignedIssues(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	viewerCreatedIssues, err := ListViewerCreatedIssues(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	viewerDelegatedIssues, err := ListViewerDelegatedIssues(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	viewerTeamMemberships, err := ListViewerTeamMemberships(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	viewerTeams, err := ListViewerTeams(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	workflowStates, err := ListWorkflowStates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -945,6 +1011,16 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "customer_need", drafts.Drafts[6].ParentType)
 	require.Equal(t, "team", drafts.Drafts[7].ParentType)
 	require.Equal(t, "unknown", drafts.Drafts[8].ParentType)
+	require.Equal(t, "LIT-41", userAssignedIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-42", userCreatedIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-43", userDelegatedIssues.Issues[0].Identifier)
+	require.Equal(t, "team-membership-id", userTeamMemberships.Memberships[0].ID)
+	require.Equal(t, "LIT", userTeams.Teams[0].Key)
+	require.Equal(t, "LIT-44", viewerAssignedIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-45", viewerCreatedIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-46", viewerDelegatedIssues.Issues[0].Identifier)
+	require.Equal(t, "team-membership-id", viewerTeamMemberships.Memberships[0].ID)
+	require.Equal(t, "LIT", viewerTeams.Teams[0].Key)
 	require.True(t, workflowStates.HasNextPage)
 	require.Equal(t, &endCursor, workflowStates.EndCursor)
 	require.Equal(t, "Started", workflowStates.WorkflowStates[0].Name)
@@ -1694,6 +1770,46 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListViewerDrafts(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list viewer drafts")
+
+		_, err = ListUserAssignedIssues(context.Background(), graphqlClient, "user-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list user assigned issues user-id")
+
+		_, err = ListUserCreatedIssues(context.Background(), graphqlClient, "user-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list user created issues user-id")
+
+		_, err = ListUserDelegatedIssues(context.Background(), graphqlClient, "user-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list user delegated issues user-id")
+
+		_, err = ListUserTeamMemberships(context.Background(), graphqlClient, "user-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list user team memberships user-id")
+
+		_, err = ListUserTeams(context.Background(), graphqlClient, "user-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list user teams user-id")
+
+		_, err = ListViewerAssignedIssues(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list viewer assigned issues")
+
+		_, err = ListViewerCreatedIssues(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list viewer created issues")
+
+		_, err = ListViewerDelegatedIssues(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list viewer delegated issues")
+
+		_, err = ListViewerTeamMemberships(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list viewer team memberships")
+
+		_, err = ListViewerTeams(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list viewer teams")
 
 		_, err = ListWorkflowStates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

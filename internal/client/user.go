@@ -102,6 +102,215 @@ func ListViewerDrafts(ctx context.Context, graphqlClient graphql.Client, limit i
 	}, nil
 }
 
+// ListUserAssignedIssues returns issues assigned to one User.
+func ListUserAssignedIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueList, error) {
+	result, err := user_assignedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list user assigned issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.User.AssignedIssues.Nodes))
+	for _, issue := range result.User.AssignedIssues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.User.AssignedIssues.PageInfo.HasNextPage,
+		EndCursor:   result.User.AssignedIssues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListUserCreatedIssues returns issues created by one User.
+func ListUserCreatedIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (IssueList, error) {
+	result, err := user_createdIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list user created issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.User.CreatedIssues.Nodes))
+	for _, issue := range result.User.CreatedIssues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.User.CreatedIssues.PageInfo.HasNextPage,
+		EndCursor:   result.User.CreatedIssues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListUserDelegatedIssues returns issues delegated to one User.
+func ListUserDelegatedIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueList, error) {
+	result, err := user_delegatedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list user delegated issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.User.DelegatedIssues.Nodes))
+	for _, issue := range result.User.DelegatedIssues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.User.DelegatedIssues.PageInfo.HasNextPage,
+		EndCursor:   result.User.DelegatedIssues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListUserTeamMemberships returns TeamMemberships associated with one User.
+func ListUserTeamMemberships(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (TeamMembershipList, error) {
+	result, err := user_teamMemberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return TeamMembershipList{}, fmt.Errorf("list user team memberships %s: %w", id, err)
+	}
+
+	memberships := make([]TeamMembershipSummary, 0, len(result.User.TeamMemberships.Nodes))
+	for _, membership := range result.User.TeamMemberships.Nodes {
+		memberships = append(memberships, teamMembershipSummary(membership.TeamMembershipSummaryFields))
+	}
+
+	return TeamMembershipList{
+		Memberships: memberships,
+		HasNextPage: result.User.TeamMemberships.PageInfo.HasNextPage,
+		EndCursor:   result.User.TeamMemberships.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListUserTeams returns Teams associated with one User.
+func ListUserTeams(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TeamList, error) {
+	result, err := user_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return TeamList{}, fmt.Errorf("list user teams %s: %w", id, err)
+	}
+
+	teams := make([]TeamSummary, 0, len(result.User.Teams.Nodes))
+	for _, team := range result.User.Teams.Nodes {
+		teams = append(teams, teamSummary(team.TeamSummaryFields))
+	}
+
+	return TeamList{
+		Teams:       teams,
+		HasNextPage: result.User.Teams.PageInfo.HasNextPage,
+		EndCursor:   result.User.Teams.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListViewerAssignedIssues returns issues assigned to the authenticated User.
+func ListViewerAssignedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
+	result, err := viewer_assignedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list viewer assigned issues: %w", err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.Viewer.AssignedIssues.Nodes))
+	for _, issue := range result.Viewer.AssignedIssues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.Viewer.AssignedIssues.PageInfo.HasNextPage,
+		EndCursor:   result.Viewer.AssignedIssues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListViewerCreatedIssues returns issues created by the authenticated User.
+func ListViewerCreatedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
+	result, err := viewer_createdIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list viewer created issues: %w", err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.Viewer.CreatedIssues.Nodes))
+	for _, issue := range result.Viewer.CreatedIssues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.Viewer.CreatedIssues.PageInfo.HasNextPage,
+		EndCursor:   result.Viewer.CreatedIssues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListViewerDelegatedIssues returns issues delegated to the authenticated User.
+func ListViewerDelegatedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
+	result, err := viewer_delegatedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list viewer delegated issues: %w", err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.Viewer.DelegatedIssues.Nodes))
+	for _, issue := range result.Viewer.DelegatedIssues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.Viewer.DelegatedIssues.PageInfo.HasNextPage,
+		EndCursor:   result.Viewer.DelegatedIssues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListViewerTeamMemberships returns TeamMemberships associated with the authenticated User.
+func ListViewerTeamMemberships(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	limit int,
+) (TeamMembershipList, error) {
+	result, err := viewer_teamMemberships(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return TeamMembershipList{}, fmt.Errorf("list viewer team memberships: %w", err)
+	}
+
+	memberships := make([]TeamMembershipSummary, 0, len(result.Viewer.TeamMemberships.Nodes))
+	for _, membership := range result.Viewer.TeamMemberships.Nodes {
+		memberships = append(memberships, teamMembershipSummary(membership.TeamMembershipSummaryFields))
+	}
+
+	return TeamMembershipList{
+		Memberships: memberships,
+		HasNextPage: result.Viewer.TeamMemberships.PageInfo.HasNextPage,
+		EndCursor:   result.Viewer.TeamMemberships.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListViewerTeams returns Teams associated with the authenticated User.
+func ListViewerTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
+	result, err := viewer_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return TeamList{}, fmt.Errorf("list viewer teams: %w", err)
+	}
+
+	teams := make([]TeamSummary, 0, len(result.Viewer.Teams.Nodes))
+	for _, team := range result.Viewer.Teams.Nodes {
+		teams = append(teams, teamSummary(team.TeamSummaryFields))
+	}
+
+	return TeamList{
+		Teams:       teams,
+		HasNextPage: result.Viewer.Teams.PageInfo.HasNextPage,
+		EndCursor:   result.Viewer.Teams.PageInfo.EndCursor,
+	}, nil
+}
+
 func userSummary(user UserSummaryFields) UserSummary {
 	return UserSummary{
 		ID:          user.Id,
