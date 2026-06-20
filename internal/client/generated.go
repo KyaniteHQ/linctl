@@ -13870,6 +13870,56 @@ func (v *RoadmapSummaryFieldsOwnerUser) GetId() string { return v.Id }
 // GetDisplayName returns RoadmapSummaryFieldsOwnerUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *RoadmapSummaryFieldsOwnerUser) GetDisplayName() string { return v.DisplayName }
 
+// Which day count to use for SLA calculations.
+type SLADayCountType string
+
+const (
+	SLADayCountTypeAll              SLADayCountType = "all"
+	SLADayCountTypeOnlybusinessdays SLADayCountType = "onlyBusinessDays"
+)
+
+var AllSLADayCountType = []SLADayCountType{
+	SLADayCountTypeAll,
+	SLADayCountTypeOnlybusinessdays,
+}
+
+// SlaConfigurationSummaryFields includes the GraphQL fields of SlaConfiguration requested by the fragment SlaConfigurationSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// An active SLA rule that can apply to a team.
+type SlaConfigurationSummaryFields struct {
+	// The identifier of the SLA rule.
+	Id string `json:"id"`
+	// The name of the SLA rule.
+	Name string `json:"name"`
+	// The workflow conditions that determine when this SLA rule applies.
+	Conditions json.RawMessage `json:"conditions"`
+	// The SLA value configured by the rule, expressed in milliseconds or business days depending on the day-count type.
+	Sla *float64 `json:"sla"`
+	// The SLA type used when the rule sets an SLA.
+	SlaType *SLADayCountType `json:"slaType"`
+	// Whether the rule removes an SLA instead of setting one.
+	RemovesSla bool `json:"removesSla"`
+}
+
+// GetId returns SlaConfigurationSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *SlaConfigurationSummaryFields) GetId() string { return v.Id }
+
+// GetName returns SlaConfigurationSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *SlaConfigurationSummaryFields) GetName() string { return v.Name }
+
+// GetConditions returns SlaConfigurationSummaryFields.Conditions, and is useful for accessing the field via an interface.
+func (v *SlaConfigurationSummaryFields) GetConditions() json.RawMessage { return v.Conditions }
+
+// GetSla returns SlaConfigurationSummaryFields.Sla, and is useful for accessing the field via an interface.
+func (v *SlaConfigurationSummaryFields) GetSla() *float64 { return v.Sla }
+
+// GetSlaType returns SlaConfigurationSummaryFields.SlaType, and is useful for accessing the field via an interface.
+func (v *SlaConfigurationSummaryFields) GetSlaType() *SLADayCountType { return v.SlaType }
+
+// GetRemovesSla returns SlaConfigurationSummaryFields.RemovesSla, and is useful for accessing the field via an interface.
+func (v *SlaConfigurationSummaryFields) GetRemovesSla() bool { return v.RemovesSla }
+
 // StartedWorkflowStatesResponse is returned by StartedWorkflowStates on success.
 type StartedWorkflowStatesResponse struct {
 	// All issue workflow states (issue statuses). Returns a paginated list of
@@ -16670,6 +16720,14 @@ func (v *__roadmapsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __roadmapsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__roadmapsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __slaConfigurationsInput is used internally by genqlient
+type __slaConfigurationsInput struct {
+	TeamId string `json:"teamId"`
+}
+
+// GetTeamId returns __slaConfigurationsInput.TeamId, and is useful for accessing the field via an interface.
+func (v *__slaConfigurationsInput) GetTeamId() string { return v.TeamId }
 
 // __teamInput is used internally by genqlient
 type __teamInput struct {
@@ -37703,6 +37761,114 @@ func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetHasNextPage() bool { retu
 // GetEndCursor returns roadmapsRoadmapsRoadmapConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// slaConfigurationsResponse is returned by slaConfigurations on success.
+type slaConfigurationsResponse struct {
+	// Active SLA configurations that can apply to the requested team.
+	SlaConfigurations []slaConfigurationsSlaConfigurationsSlaConfiguration `json:"slaConfigurations"`
+}
+
+// GetSlaConfigurations returns slaConfigurationsResponse.SlaConfigurations, and is useful for accessing the field via an interface.
+func (v *slaConfigurationsResponse) GetSlaConfigurations() []slaConfigurationsSlaConfigurationsSlaConfiguration {
+	return v.SlaConfigurations
+}
+
+// slaConfigurationsSlaConfigurationsSlaConfiguration includes the requested fields of the GraphQL type SlaConfiguration.
+// The GraphQL type's documentation follows.
+//
+// An active SLA rule that can apply to a team.
+type slaConfigurationsSlaConfigurationsSlaConfiguration struct {
+	SlaConfigurationSummaryFields `json:"-"`
+}
+
+// GetId returns slaConfigurationsSlaConfigurationsSlaConfiguration.Id, and is useful for accessing the field via an interface.
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) GetId() string {
+	return v.SlaConfigurationSummaryFields.Id
+}
+
+// GetName returns slaConfigurationsSlaConfigurationsSlaConfiguration.Name, and is useful for accessing the field via an interface.
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) GetName() string {
+	return v.SlaConfigurationSummaryFields.Name
+}
+
+// GetConditions returns slaConfigurationsSlaConfigurationsSlaConfiguration.Conditions, and is useful for accessing the field via an interface.
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) GetConditions() json.RawMessage {
+	return v.SlaConfigurationSummaryFields.Conditions
+}
+
+// GetSla returns slaConfigurationsSlaConfigurationsSlaConfiguration.Sla, and is useful for accessing the field via an interface.
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) GetSla() *float64 {
+	return v.SlaConfigurationSummaryFields.Sla
+}
+
+// GetSlaType returns slaConfigurationsSlaConfigurationsSlaConfiguration.SlaType, and is useful for accessing the field via an interface.
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) GetSlaType() *SLADayCountType {
+	return v.SlaConfigurationSummaryFields.SlaType
+}
+
+// GetRemovesSla returns slaConfigurationsSlaConfigurationsSlaConfiguration.RemovesSla, and is useful for accessing the field via an interface.
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) GetRemovesSla() bool {
+	return v.SlaConfigurationSummaryFields.RemovesSla
+}
+
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*slaConfigurationsSlaConfigurationsSlaConfiguration
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.slaConfigurationsSlaConfigurationsSlaConfiguration = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.SlaConfigurationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalslaConfigurationsSlaConfigurationsSlaConfiguration struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Conditions json.RawMessage `json:"conditions"`
+
+	Sla *float64 `json:"sla"`
+
+	SlaType *SLADayCountType `json:"slaType"`
+
+	RemovesSla bool `json:"removesSla"`
+}
+
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *slaConfigurationsSlaConfigurationsSlaConfiguration) __premarshalJSON() (*__premarshalslaConfigurationsSlaConfigurationsSlaConfiguration, error) {
+	var retval __premarshalslaConfigurationsSlaConfigurationsSlaConfiguration
+
+	retval.Id = v.SlaConfigurationSummaryFields.Id
+	retval.Name = v.SlaConfigurationSummaryFields.Name
+	retval.Conditions = v.SlaConfigurationSummaryFields.Conditions
+	retval.Sla = v.SlaConfigurationSummaryFields.Sla
+	retval.SlaType = v.SlaConfigurationSummaryFields.SlaType
+	retval.RemovesSla = v.SlaConfigurationSummaryFields.RemovesSla
+	return &retval, nil
+}
+
 // teamResponse is returned by team on success.
 type teamResponse struct {
 	// Fetches a specific team by its ID.
@@ -46824,6 +46990,48 @@ func roadmaps(
 	}
 
 	data_ = &roadmapsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by slaConfigurations.
+const slaConfigurations_Operation = `
+query slaConfigurations ($teamId: String!) {
+	slaConfigurations(teamId: $teamId) {
+		... SlaConfigurationSummaryFields
+	}
+}
+fragment SlaConfigurationSummaryFields on SlaConfiguration {
+	id
+	name
+	conditions
+	sla
+	slaType
+	removesSla
+}
+`
+
+func slaConfigurations(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamId string,
+) (data_ *slaConfigurationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "slaConfigurations",
+		Query:  slaConfigurations_Operation,
+		Variables: &__slaConfigurationsInput{
+			TeamId: teamId,
+		},
+	}
+
+	data_ = &slaConfigurationsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

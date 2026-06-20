@@ -485,6 +485,25 @@ Command status:
 
 Only `triage-responsibility list`, `triage-responsibility get`, and `triage-responsibility manual-selection` are implemented in the current CLI. TriageResponsibility writes are deferred as team/admin configuration surface.
 
+## SLA Configuration
+
+Use the command name `sla-configuration` for Linear's `SlaConfiguration` schema type. It is an active SLA rule that can apply to a team.
+
+Schema backing:
+
+- Types: `SlaConfiguration`
+- Reads: `Query.slaConfigurations`
+- Writes: no direct write operation is implemented in linctl
+- Relevant fields: `SlaConfiguration.id`, `SlaConfiguration.name`, `SlaConfiguration.conditions`, `SlaConfiguration.sla`, `SlaConfiguration.slaType`, `SlaConfiguration.removesSla`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `sla-configuration list` | `Query.slaConfigurations` | Read-only |
+
+Only `sla-configuration list` is implemented in the current CLI. SLA rule changes remain part of team/admin workflow configuration and do not have a guarded write surface.
+
 ## Template
 
 Use the schema name `Template` in code and docs. It is Linear's reusable issue, project, document, and release-note template entity.

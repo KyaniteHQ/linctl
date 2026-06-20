@@ -1,0 +1,14 @@
+query slaConfigurations($teamId: String!) {
+  slaConfigurations(teamId: $teamId) {
+    ...SlaConfigurationSummaryFields
+  }
+}
+
+fragment SlaConfigurationSummaryFields on SlaConfiguration {
+  id
+  name
+  conditions
+  sla
+  slaType
+  removesSla
+}

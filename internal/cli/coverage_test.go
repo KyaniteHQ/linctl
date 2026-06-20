@@ -153,6 +153,13 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		ViewOrdering:  "updatedAt",
 		HiddenColumns: []string{"column-id"},
 	}
+	slaConfiguration := client.SLAConfigurationSummary{
+		ID:         "sla-configuration-id",
+		Name:       "First response",
+		SLA:        3600000,
+		SLAType:    "all",
+		RemovesSLA: false,
+	}
 	customer := client.CustomerSummary{
 		ID:                   "customer-id",
 		Name:                 "Acme",
@@ -331,6 +338,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomViewPreferences(textCommand, &textOptions, customViewPreferences))
 	require.NoError(t, writeCustomViewPreferenceValues(textCommand, &textOptions, customViewPreferenceValues))
 	require.NoError(t, writeCustomViewPreferences(textCommand, &textOptions, client.CustomViewPreferences{CustomViewID: "empty-custom-view-id"}))
+	require.NoError(t, writeSLAConfiguration(textCommand, &textOptions, slaConfiguration))
+	require.NoError(t, writeSLAConfiguration(textCommand, &textOptions, client.SLAConfigurationSummary{ID: "sla-remove-id", Name: "Remove SLA", RemovesSLA: true}))
 	require.NoError(t, writeCustomer(textCommand, &textOptions, customer))
 	require.NoError(t, writeCustomerNeed(textCommand, &textOptions, customerNeed))
 	require.NoError(t, writeCustomerStatus(textCommand, &textOptions, customerStatus))
@@ -373,6 +382,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"custom-view-id organization preferences organization customView layout list\n"+
 			"custom-view-id preference values layout board ordering updatedAt\n"+
 			"empty-custom-view-id organization preferences -\n"+
+			"sla-configuration-id First response sla 3600000 type all removes false\n"+
+			"sla-remove-id Remove SLA sla - type - removes true\n"+
 			"customer-id Acme [Active] needs 3\n"+
 			"customer-need-id Acme LIT-1 priority 1\n"+
 			"customer-status-id Active #00ff00 1\n"+
@@ -426,6 +437,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomViewSubscriberStatus(jsonCommand, &jsonOptions, customViewSubscriberStatus))
 	require.NoError(t, writeCustomViewPreferences(jsonCommand, &jsonOptions, customViewPreferences))
 	require.NoError(t, writeCustomViewPreferenceValues(jsonCommand, &jsonOptions, customViewPreferenceValues))
+	require.NoError(t, writeSLAConfiguration(jsonCommand, &jsonOptions, slaConfiguration))
 	require.NoError(t, writeCustomer(jsonCommand, &jsonOptions, customer))
 	require.NoError(t, writeCustomerNeed(jsonCommand, &jsonOptions, customerNeed))
 	require.NoError(t, writeCustomerStatus(jsonCommand, &jsonOptions, customerStatus))
@@ -471,6 +483,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"has_subscribers": true`)
 	require.Contains(t, jsonOut.String(), `"view_ordering": "updatedAt"`)
 	require.Contains(t, jsonOut.String(), `"hidden_columns": [`)
+	require.Contains(t, jsonOut.String(), `"sla_type": "all"`)
 	require.Contains(t, jsonOut.String(), `"approximate_need_count": 3`)
 	require.Contains(t, jsonOut.String(), `"customer_name": "Acme"`)
 	require.Contains(t, jsonOut.String(), `"display_name": "Active"`)
@@ -632,6 +645,12 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	customViewPreferenceValues := client.CustomViewPreferencesValues{
 		CustomViewID: "custom-view-id",
 		Layout:       "board",
+	}
+	slaConfiguration := client.SLAConfigurationSummary{
+		ID:      "sla-configuration-id",
+		Name:    "First response",
+		SLA:     3600000,
+		SLAType: "all",
 	}
 	customer := client.CustomerSummary{
 		ID:                   "customer-id",
@@ -805,6 +824,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomViewSubscriberStatus(command, &rootOptions{idOnly: true}, customViewSubscriberStatus))
 	require.NoError(t, writeCustomViewPreferences(command, &rootOptions{idOnly: true}, customViewPreferences))
 	require.NoError(t, writeCustomViewPreferenceValues(command, &rootOptions{idOnly: true}, customViewPreferenceValues))
+	require.NoError(t, writeSLAConfiguration(command, &rootOptions{idOnly: true}, slaConfiguration))
 	require.NoError(t, writeCustomer(command, &rootOptions{idOnly: true}, customer))
 	require.NoError(t, writeCustomerNeed(command, &rootOptions{idOnly: true}, customerNeed))
 	require.NoError(t, writeCustomerStatus(command, &rootOptions{idOnly: true}, customerStatus))
@@ -849,6 +869,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "initiative-update-id")
 	require.Contains(t, output.String(), "roadmap-id")
 	require.Contains(t, output.String(), "custom-view-id")
+	require.Contains(t, output.String(), "sla-configuration-id")
 	require.Contains(t, output.String(), "customer-id")
 	require.Contains(t, output.String(), "customer-need-id")
 	require.Contains(t, output.String(), "customer-status-id")
@@ -897,6 +918,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomViewSubscriberStatus(quietCommand, &rootOptions{quiet: true}, customViewSubscriberStatus))
 	require.NoError(t, writeCustomViewPreferences(quietCommand, &rootOptions{quiet: true}, customViewPreferences))
 	require.NoError(t, writeCustomViewPreferenceValues(quietCommand, &rootOptions{quiet: true}, customViewPreferenceValues))
+	require.NoError(t, writeSLAConfiguration(quietCommand, &rootOptions{quiet: true}, slaConfiguration))
 	require.NoError(t, writeCustomer(quietCommand, &rootOptions{quiet: true}, customer))
 	require.NoError(t, writeCustomerNeed(quietCommand, &rootOptions{quiet: true}, customerNeed))
 	require.NoError(t, writeCustomerStatus(quietCommand, &rootOptions{quiet: true}, customerStatus))
@@ -1045,6 +1067,19 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.Equal(t, map[string]any{
 		"triage_responsibilities": []any{
 			map[string]any{"id": "triage-responsibility-id", "team_key": "LIT", "action": "notify"},
+		},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"sla_configurations": []any{
+			map[string]any{"id": "sla-configuration-id", "name": "First response", "sla_type": "all"},
+		}},
+		"id,name,sla_type",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"sla_configurations": []any{
+			map[string]any{"id": "sla-configuration-id", "name": "First response", "sla_type": "all"},
 		},
 	}, projected)
 

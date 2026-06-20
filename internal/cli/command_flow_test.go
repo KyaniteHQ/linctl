@@ -47,6 +47,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "triage responsibility list", args: []string{"triage-responsibility", "list", "--limit", "1"}, contains: "triage-responsibility-id team LIT action notify current Omer"},
 		{name: "triage responsibility get", args: []string{"triage-responsibility", "get", "triage-responsibility-id"}, contains: "triage-responsibility-id team LIT action notify current Omer"},
 		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, contains: "triage-responsibility-id manual users user-id,other-user-id"},
+		{name: "SLA configuration list", args: []string{"sla-configuration", "list", "team-id"}, contains: "sla-configuration-id First response sla 3600000 type all removes false"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
@@ -574,6 +575,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"custom-view", "organization-preferences", "custom-view-id"},
 			{"custom-view", "organization-preferences", "values", "custom-view-id"},
 			{"custom-view", "preference-values", "custom-view-id"},
+			{"sla-configuration", "list", "team-id"},
 		}
 		for _, args := range commands {
 			t.Run(strings.Join(args, " "), func(t *testing.T) {
@@ -695,6 +697,31 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		require.Contains(t, err.Error(), `sort field "missing" is not present`)
 	})
 
+	t.Run("SLA configuration list returns writer errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(commandFailingWriter{})
+		command.SetArgs([]string{"sla-configuration", "list", "team-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("SLA configuration list reports sort errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--sort", "missing", "sla-configuration", "list", "team-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	})
+
 	t.Run("document list returns writer errors", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{})
 		defer restore()
@@ -780,6 +807,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
 		{"--json", "time-schedule", "list", "--limit", "1"},
 		{"--json", "time-schedule", "get", "time-schedule-id"},
+		{"--json", "--fields", "id,name,sla_type", "sla-configuration", "list", "team-id"},
 		{"--json", "--fields", "id,name,type,team_key", "template", "list", "--limit", "1"},
 		{"--json", "template", "get", "template-id"},
 		{"--json", "initiative", "list", "--limit", "1"},
@@ -996,6 +1024,18 @@ func Test_CommandFlows_report_project_milestone_sort_errors(t *testing.T) {
 	require.Contains(t, err.Error(), `sort field "missing" is not present`)
 }
 
+func Test_CommandFlows_fail_on_empty_sla_configurations_when_fail_on_empty_flag_is_set(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{emptySLAConfigurations: true})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"--fail-on-empty", "sla-configuration", "list", "team-id"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "empty result")
+}
+
 func Test_CommandFlows_get_project_milestone(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
@@ -1178,6 +1218,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "triage responsibility list", args: []string{"triage-responsibility", "list"}, operation: "triageResponsibilities", contains: "list triage responsibilities"},
 		{name: "triage responsibility get", args: []string{"triage-responsibility", "get", "triage-responsibility-id"}, operation: "triageResponsibility", contains: "get triage responsibility triage-responsibility-id"},
 		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, operation: "triageResponsibility_manualSelection", contains: "get triage responsibility manual selection triage-responsibility-id"},
+		{name: "SLA configuration list", args: []string{"sla-configuration", "list", "team-id"}, operation: "slaConfigurations", contains: "list SLA configurations team-id"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list"}, operation: "releasePipelines", contains: "list release pipelines"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id"}, operation: "releasePipeline_releases", contains: "list release pipeline releases release-pipeline-id"},
@@ -1391,6 +1432,7 @@ type commandFlowFakeClient struct {
 	emptyProjectMembers         bool
 	emptyProjectUpdates         bool
 	emptyProjectMilestones      bool
+	emptySLAConfigurations      bool
 	expectedCommentBody         string
 	expectedCommentParentID     string
 	expectedCreateDescription   string
@@ -1586,7 +1628,7 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 	if payload, ok := commandFlowProjectPayload(operation, fake); ok {
 		return payload, nil
 	}
-	if payload, ok := commandFlowPeopleAndReferencePayload(operation); ok {
+	if payload, ok := commandFlowPeopleAndReferencePayload(operation, fake); ok {
 		return payload, nil
 	}
 
@@ -1644,7 +1686,7 @@ func commandAgentSkillJSON() string {
 	}`
 }
 
-func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
+func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "Documents":
 		return `{"documents":{"nodes":[` + commandDocumentJSON(
@@ -1672,10 +1714,10 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 		return `{"viewer":` + commandUserJSON() + `}`, true
 	}
 
-	return commandFlowStateAndCommentPayload(operation)
+	return commandFlowStateAndCommentPayload(operation, fake)
 }
 
-func commandFlowStateAndCommentPayload(operation string) (string, bool) {
+func commandFlowStateAndCommentPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "workflowStates":
 		return `{"workflowStates":{"nodes":[` + commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
@@ -1683,10 +1725,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"workflowState":` + commandWorkflowStateJSON() + `}`, true
 	}
 
-	return commandFlowInitiativePayload(operation)
+	return commandFlowInitiativePayload(operation, fake)
 }
 
-func commandFlowInitiativePayload(operation string) (string, bool) {
+func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "initiatives":
 		return `{"initiatives":{"nodes":[` + commandInitiativeJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
@@ -1718,11 +1760,11 @@ func commandFlowInitiativePayload(operation string) (string, bool) {
 		return `{"comment":` + commandTopLevelCommentJSON() + `}`, true
 	}
 
-	return commandFlowExtraReadPayload(operation)
+	return commandFlowExtraReadPayload(operation, fake)
 }
 
 //nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
-func commandFlowExtraReadPayload(operation string) (string, bool) {
+func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "auditEntryTypes":
 		return `{"auditEntryTypes":[{"type":"user_login","description":"User logged in"}]}`, true
@@ -1740,6 +1782,11 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"triageResponsibility":` + commandTriageResponsibilityJSON() + `}`, true
 	case "triageResponsibility_manualSelection":
 		return `{"triageResponsibility":{"id":"triage-responsibility-id","manualSelection":{"userIds":["user-id","other-user-id"]}}}`, true
+	case "slaConfigurations":
+		if fake.emptySLAConfigurations {
+			return `{"slaConfigurations":[]}`, true
+		}
+		return `{"slaConfigurations":[` + commandSLAConfigurationJSON() + `]}`, true
 	case "releasePipelines":
 		return `{"releasePipelines":{"nodes":[` + commandReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releasePipeline":
@@ -2568,6 +2615,17 @@ func commandTriageResponsibilityJSON() string {
 		"timeSchedule":{"id":"time-schedule-id","name":"Primary rotation"},
 		"currentUser":{"id":"user-id","displayName":"Omer"},
 		"manualSelection":{"userIds":["user-id","other-user-id"]}
+	}`
+}
+
+func commandSLAConfigurationJSON() string {
+	return `{
+		"id":"sla-configuration-id",
+		"name":"First response",
+		"conditions":{"priority":{"eq":1}},
+		"sla":3600000,
+		"slaType":"all",
+		"removesSla":false
 	}`
 }
 

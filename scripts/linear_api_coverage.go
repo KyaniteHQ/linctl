@@ -639,6 +639,7 @@ func commandImplemented(command string) bool {
 		"triage-responsibility list":             true,
 		"triage-responsibility get":              true,
 		"triage-responsibility manual-selection": true,
+		"sla-configuration list":                 true,
 		"release-pipeline list":                  true,
 		"release-pipeline get":                   true,
 		"release-pipeline releases":              true,

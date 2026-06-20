@@ -727,9 +727,15 @@ Success is pass/fail:
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+133. SLA configuration list
+   - Success: `linctl sla-configuration list TEAM_ID_OR_KEY` lists active Linear SLA configurations that can apply to a team.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/SLA_configuration_list`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
-All one hundred thirty-two local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All one hundred thirty-three local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

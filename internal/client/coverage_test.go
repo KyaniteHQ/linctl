@@ -214,6 +214,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"triageResponsibilities":                 `{"triageResponsibilities":{"nodes":[` + triageResponsibilityJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"triageResponsibility":                   `{"triageResponsibility":` + triageResponsibilityJSON() + `}`,
 		"triageResponsibility_manualSelection":   `{"triageResponsibility":{"id":"triage-responsibility-id","manualSelection":{"userIds":["user-id","other-user-id"]}}}`,
+		"slaConfigurations":                      `{"slaConfigurations":[` + slaConfigurationJSON() + `]}`,
 		"releasePipelines":                       `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releasePipeline":                        `{"releasePipeline":` + releasePipelineJSON() + `}`,
 		"releasePipeline_releases":               `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
@@ -385,6 +386,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		graphqlClient,
 		"triage-responsibility-id",
 	)
+	require.NoError(t, err)
+	slaConfigurations, err := ListSLAConfigurations(context.Background(), graphqlClient, "team-id")
 	require.NoError(t, err)
 	releasePipelines, err := ListReleasePipelines(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -666,6 +669,11 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Omer", triageResponsibilities.TriageResponsibilities[0].CurrentUserName)
 	require.Equal(t, []string{"user-id", "other-user-id"}, triageResponsibility.ManualUserIDs)
 	require.Equal(t, []string{"user-id", "other-user-id"}, triageManualSelection.UserIDs)
+	require.Equal(t, "team-id", slaConfigurations.TeamIDOrKey)
+	require.Equal(t, "First response", slaConfigurations.SLAConfigurations[0].Name)
+	require.InDelta(t, 3600000, slaConfigurations.SLAConfigurations[0].SLA, 0)
+	require.Equal(t, "all", slaConfigurations.SLAConfigurations[0].SLAType)
+	require.False(t, slaConfigurations.SLAConfigurations[0].RemovesSLA)
 	require.True(t, releasePipelines.HasNextPage)
 	require.Equal(t, &endCursor, releasePipelines.EndCursor)
 	require.Equal(t, "Production", releasePipelines.ReleasePipelines[0].Name)
@@ -1562,6 +1570,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetTriageResponsibilityManualSelection(context.Background(), graphqlClient, "triage-responsibility-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get triage responsibility manual selection triage-responsibility-id")
+
+		_, err = ListSLAConfigurations(context.Background(), graphqlClient, "team-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list SLA configurations team-id")
 
 		_, err = ListReleasePipelines(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -2562,6 +2574,17 @@ func agentActivityJSON(contentType string) string {
 		"sourceComment":{"id":"comment-id"},
 		"user":{"id":"user-id"},
 		"content":` + content + `
+	}`
+}
+
+func slaConfigurationJSON() string {
+	return `{
+		"id":"sla-configuration-id",
+		"name":"First response",
+		"conditions":{"priority":{"eq":1}},
+		"sla":3600000,
+		"slaType":"all",
+		"removesSla":false
 	}`
 }
 

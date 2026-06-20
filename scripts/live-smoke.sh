@@ -36,6 +36,7 @@ PY
   "$binary" usage >/dev/null
   target_json="$("$binary" target --json)"
   org_url_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["org"]["url_key"])' <<<"$target_json")"
+  team_id="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["team"]["id"])' <<<"$target_json")"
   if [[ -n "${LINCTL_APPLICATION_CLIENT_ID:-}" ]]; then
     "$binary" application info "$LINCTL_APPLICATION_CLIENT_ID" --json >/dev/null
   fi
@@ -58,6 +59,7 @@ PY
     "$binary" triage-responsibility get "$triage_responsibility_id" --json >/dev/null
     "$binary" triage-responsibility manual-selection "$triage_responsibility_id" --json >/dev/null
   fi
+  "$binary" sla-configuration list "$team_id" --json >/dev/null
   release_pipeline_json="$("$binary" release-pipeline list --json --limit 5)"
   release_pipeline_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("release_pipelines", []); print(items[0]["id"] if items else "")' <<<"$release_pipeline_json")"
   if [[ -n "$release_pipeline_id" ]]; then
