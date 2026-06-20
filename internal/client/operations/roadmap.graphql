@@ -1,0 +1,38 @@
+query roadmaps($first: Int, $after: String, $includeArchived: Boolean) {
+  roadmaps(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...RoadmapSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query roadmap($id: String!) {
+  roadmap(id: $id) {
+    ...RoadmapSummaryFields
+  }
+}
+
+fragment RoadmapSummaryFields on Roadmap {
+  id
+  name
+  description
+  color
+  slugId
+  sortOrder
+  archivedAt
+  createdAt
+  updatedAt
+  url
+  creator {
+    id
+    displayName
+  }
+  owner {
+    id
+    displayName
+  }
+}

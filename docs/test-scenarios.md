@@ -445,9 +445,20 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/customer_tier_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+84. Roadmap list
+   - Success: `linctl roadmap list --limit N` lists visible Linear Roadmaps through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_list`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+85. Roadmap get
+   - Success: `linctl roadmap get ROADMAP_ID` reads one Linear Roadmap by id.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_get`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
-All eighty-three local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All eighty-five local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

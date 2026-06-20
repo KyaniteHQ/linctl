@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 57 | 458 |
-| Upstream Query root fields | 158 | 45 | 158 |
+| Upstream SDK root methods | 458 | 59 | 458 |
+| Upstream Query root fields | 158 | 47 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 83 | 83 | 83 |
-| Domain-map commands | 123 | 77 | 123 |
+| Local generated Go operations | 85 | 85 | 85 |
+| Domain-map commands | 129 | 79 | 129 |
 
 ## Upstream SDK Root Methods
 
@@ -370,10 +370,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releases` | method | safe_candidate | read operation may fit future CLI coverage |
 | `resendOrganizationInvite` | method | safe_candidate | read operation may fit future CLI coverage |
 | `resendOrganizationInviteByEmail` | method | safe_candidate | read operation may fit future CLI coverage |
-| `roadmap` | method | safe_candidate | read operation may fit future CLI coverage |
+| `roadmap` | method | implemented | local operation or command exists |
 | `roadmapToProject` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `roadmapToProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `roadmaps` | method | safe_candidate | read operation may fit future CLI coverage |
+| `roadmaps` | method | implemented | local operation or command exists |
 | `rotateSecretWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `samlTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `searchDocuments` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -616,10 +616,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releaseStage` | `ReleaseStage!` | safe_candidate | read operation may fit future CLI coverage |
 | `releaseStages` | `ReleaseStageConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `releases` | `ReleaseConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `roadmap` | `Roadmap!` | safe_candidate | read operation may fit future CLI coverage |
+| `roadmap` | `Roadmap!` | implemented | root field used by local GraphQL operation |
 | `roadmapToProject` | `RoadmapToProject!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `roadmapToProjects` | `RoadmapToProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `roadmaps` | `RoadmapConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `roadmaps` | `RoadmapConnection!` | implemented | root field used by local GraphQL operation |
 | `searchDocuments` | `DocumentSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `searchIssues` | `IssueSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `searchProjects` | `ProjectSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1097,6 +1097,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
 | `project_members` | query | `project` | implemented | `internal/client/generated.go` |
 | `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
+| `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
+| `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
@@ -1189,6 +1191,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Roadmap | `roadmap list` | `Query.roadmaps` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Roadmap | `roadmap get` | `Query.roadmap` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Roadmap | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Roadmap | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Roadmap | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Roadmap | `roadmap delete` | `Mutation.roadmapDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | CustomView | `custom-view list` | `Query.customViews` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view get` | `Query.customView` | Read-only | implemented | `linctl --help` / public CLI tests |

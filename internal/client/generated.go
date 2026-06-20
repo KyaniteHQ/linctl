@@ -8065,6 +8065,115 @@ func (v *ProjectsTeamProjectsProjectConnectionPageInfo) GetHasNextPage() bool { 
 // GetEndCursor returns ProjectsTeamProjectsProjectConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *ProjectsTeamProjectsProjectConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// RoadmapSummaryFields includes the GraphQL fields of Roadmap requested by the fragment RoadmapSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
+// supersedes this entity and provides richer hierarchy and tracking capabilities.
+type RoadmapSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the roadmap.
+	Name string `json:"name"`
+	// The description of the roadmap.
+	Description *string `json:"description"`
+	// The roadmap's color.
+	Color *string `json:"color"`
+	// The roadmap's unique URL slug.
+	SlugId string `json:"slugId"`
+	// The sort order of the roadmap within the workspace.
+	SortOrder float64 `json:"sortOrder"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The canonical url for the roadmap.
+	Url string `json:"url"`
+	// The user who created the roadmap.
+	Creator RoadmapSummaryFieldsCreatorUser `json:"creator"`
+	// The user who owns the roadmap.
+	Owner *RoadmapSummaryFieldsOwnerUser `json:"owner"`
+}
+
+// GetId returns RoadmapSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetId() string { return v.Id }
+
+// GetName returns RoadmapSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetName() string { return v.Name }
+
+// GetDescription returns RoadmapSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetDescription() *string { return v.Description }
+
+// GetColor returns RoadmapSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetColor() *string { return v.Color }
+
+// GetSlugId returns RoadmapSummaryFields.SlugId, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetSlugId() string { return v.SlugId }
+
+// GetSortOrder returns RoadmapSummaryFields.SortOrder, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetSortOrder() float64 { return v.SortOrder }
+
+// GetArchivedAt returns RoadmapSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetCreatedAt returns RoadmapSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns RoadmapSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetUrl returns RoadmapSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetUrl() string { return v.Url }
+
+// GetCreator returns RoadmapSummaryFields.Creator, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetCreator() RoadmapSummaryFieldsCreatorUser { return v.Creator }
+
+// GetOwner returns RoadmapSummaryFields.Owner, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFields) GetOwner() *RoadmapSummaryFieldsOwnerUser { return v.Owner }
+
+// RoadmapSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type RoadmapSummaryFieldsCreatorUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns RoadmapSummaryFieldsCreatorUser.Id, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFieldsCreatorUser) GetId() string { return v.Id }
+
+// GetDisplayName returns RoadmapSummaryFieldsCreatorUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFieldsCreatorUser) GetDisplayName() string { return v.DisplayName }
+
+// RoadmapSummaryFieldsOwnerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type RoadmapSummaryFieldsOwnerUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns RoadmapSummaryFieldsOwnerUser.Id, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFieldsOwnerUser) GetId() string { return v.Id }
+
+// GetDisplayName returns RoadmapSummaryFieldsOwnerUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *RoadmapSummaryFieldsOwnerUser) GetDisplayName() string { return v.DisplayName }
+
 // StartedWorkflowStatesResponse is returned by StartedWorkflowStates on success.
 type StartedWorkflowStatesResponse struct {
 	// All issue workflow states (issue statuses). Returns a paginated list of
@@ -9845,6 +9954,30 @@ func (v *__project_membersInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __project_membersInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__project_membersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __roadmapInput is used internally by genqlient
+type __roadmapInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __roadmapInput.Id, and is useful for accessing the field via an interface.
+func (v *__roadmapInput) GetId() string { return v.Id }
+
+// __roadmapsInput is used internally by genqlient
+type __roadmapsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __roadmapsInput.First, and is useful for accessing the field via an interface.
+func (v *__roadmapsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __roadmapsInput.After, and is useful for accessing the field via an interface.
+func (v *__roadmapsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __roadmapsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__roadmapsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __teamInput is used internally by genqlient
 type __teamInput struct {
@@ -15011,6 +15144,326 @@ type rateLimitStatusResponse struct {
 func (v *rateLimitStatusResponse) GetRateLimitStatus() rateLimitStatusRateLimitStatusRateLimitPayload {
 	return v.RateLimitStatus
 }
+
+// roadmapResponse is returned by roadmap on success.
+type roadmapResponse struct {
+	// [Deprecated] Returns a single roadmap by its identifier. Use initiatives instead.
+	Roadmap roadmapRoadmap `json:"roadmap"`
+}
+
+// GetRoadmap returns roadmapResponse.Roadmap, and is useful for accessing the field via an interface.
+func (v *roadmapResponse) GetRoadmap() roadmapRoadmap { return v.Roadmap }
+
+// roadmapRoadmap includes the requested fields of the GraphQL type Roadmap.
+// The GraphQL type's documentation follows.
+//
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
+// supersedes this entity and provides richer hierarchy and tracking capabilities.
+type roadmapRoadmap struct {
+	RoadmapSummaryFields `json:"-"`
+}
+
+// GetId returns roadmapRoadmap.Id, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetId() string { return v.RoadmapSummaryFields.Id }
+
+// GetName returns roadmapRoadmap.Name, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetName() string { return v.RoadmapSummaryFields.Name }
+
+// GetDescription returns roadmapRoadmap.Description, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetDescription() *string { return v.RoadmapSummaryFields.Description }
+
+// GetColor returns roadmapRoadmap.Color, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetColor() *string { return v.RoadmapSummaryFields.Color }
+
+// GetSlugId returns roadmapRoadmap.SlugId, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetSlugId() string { return v.RoadmapSummaryFields.SlugId }
+
+// GetSortOrder returns roadmapRoadmap.SortOrder, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetSortOrder() float64 { return v.RoadmapSummaryFields.SortOrder }
+
+// GetArchivedAt returns roadmapRoadmap.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetArchivedAt() *string { return v.RoadmapSummaryFields.ArchivedAt }
+
+// GetCreatedAt returns roadmapRoadmap.CreatedAt, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetCreatedAt() string { return v.RoadmapSummaryFields.CreatedAt }
+
+// GetUpdatedAt returns roadmapRoadmap.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetUpdatedAt() string { return v.RoadmapSummaryFields.UpdatedAt }
+
+// GetUrl returns roadmapRoadmap.Url, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetUrl() string { return v.RoadmapSummaryFields.Url }
+
+// GetCreator returns roadmapRoadmap.Creator, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetCreator() RoadmapSummaryFieldsCreatorUser {
+	return v.RoadmapSummaryFields.Creator
+}
+
+// GetOwner returns roadmapRoadmap.Owner, and is useful for accessing the field via an interface.
+func (v *roadmapRoadmap) GetOwner() *RoadmapSummaryFieldsOwnerUser {
+	return v.RoadmapSummaryFields.Owner
+}
+
+func (v *roadmapRoadmap) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*roadmapRoadmap
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.roadmapRoadmap = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.RoadmapSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalroadmapRoadmap struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color *string `json:"color"`
+
+	SlugId string `json:"slugId"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Url string `json:"url"`
+
+	Creator RoadmapSummaryFieldsCreatorUser `json:"creator"`
+
+	Owner *RoadmapSummaryFieldsOwnerUser `json:"owner"`
+}
+
+func (v *roadmapRoadmap) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *roadmapRoadmap) __premarshalJSON() (*__premarshalroadmapRoadmap, error) {
+	var retval __premarshalroadmapRoadmap
+
+	retval.Id = v.RoadmapSummaryFields.Id
+	retval.Name = v.RoadmapSummaryFields.Name
+	retval.Description = v.RoadmapSummaryFields.Description
+	retval.Color = v.RoadmapSummaryFields.Color
+	retval.SlugId = v.RoadmapSummaryFields.SlugId
+	retval.SortOrder = v.RoadmapSummaryFields.SortOrder
+	retval.ArchivedAt = v.RoadmapSummaryFields.ArchivedAt
+	retval.CreatedAt = v.RoadmapSummaryFields.CreatedAt
+	retval.UpdatedAt = v.RoadmapSummaryFields.UpdatedAt
+	retval.Url = v.RoadmapSummaryFields.Url
+	retval.Creator = v.RoadmapSummaryFields.Creator
+	retval.Owner = v.RoadmapSummaryFields.Owner
+	return &retval, nil
+}
+
+// roadmapsResponse is returned by roadmaps on success.
+type roadmapsResponse struct {
+	// [Deprecated] Returns all roadmaps in the workspace. Use initiatives instead.
+	Roadmaps roadmapsRoadmapsRoadmapConnection `json:"roadmaps"`
+}
+
+// GetRoadmaps returns roadmapsResponse.Roadmaps, and is useful for accessing the field via an interface.
+func (v *roadmapsResponse) GetRoadmaps() roadmapsRoadmapsRoadmapConnection { return v.Roadmaps }
+
+// roadmapsRoadmapsRoadmapConnection includes the requested fields of the GraphQL type RoadmapConnection.
+type roadmapsRoadmapsRoadmapConnection struct {
+	Nodes    []roadmapsRoadmapsRoadmapConnectionNodesRoadmap `json:"nodes"`
+	PageInfo roadmapsRoadmapsRoadmapConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns roadmapsRoadmapsRoadmapConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnection) GetNodes() []roadmapsRoadmapsRoadmapConnectionNodesRoadmap {
+	return v.Nodes
+}
+
+// GetPageInfo returns roadmapsRoadmapsRoadmapConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnection) GetPageInfo() roadmapsRoadmapsRoadmapConnectionPageInfo {
+	return v.PageInfo
+}
+
+// roadmapsRoadmapsRoadmapConnectionNodesRoadmap includes the requested fields of the GraphQL type Roadmap.
+// The GraphQL type's documentation follows.
+//
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
+// supersedes this entity and provides richer hierarchy and tracking capabilities.
+type roadmapsRoadmapsRoadmapConnectionNodesRoadmap struct {
+	RoadmapSummaryFields `json:"-"`
+}
+
+// GetId returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.Id, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetId() string {
+	return v.RoadmapSummaryFields.Id
+}
+
+// GetName returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.Name, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetName() string {
+	return v.RoadmapSummaryFields.Name
+}
+
+// GetDescription returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.Description, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetDescription() *string {
+	return v.RoadmapSummaryFields.Description
+}
+
+// GetColor returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.Color, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetColor() *string {
+	return v.RoadmapSummaryFields.Color
+}
+
+// GetSlugId returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.SlugId, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetSlugId() string {
+	return v.RoadmapSummaryFields.SlugId
+}
+
+// GetSortOrder returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.SortOrder, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetSortOrder() float64 {
+	return v.RoadmapSummaryFields.SortOrder
+}
+
+// GetArchivedAt returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetArchivedAt() *string {
+	return v.RoadmapSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.CreatedAt, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetCreatedAt() string {
+	return v.RoadmapSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetUpdatedAt() string {
+	return v.RoadmapSummaryFields.UpdatedAt
+}
+
+// GetUrl returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.Url, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetUrl() string {
+	return v.RoadmapSummaryFields.Url
+}
+
+// GetCreator returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.Creator, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetCreator() RoadmapSummaryFieldsCreatorUser {
+	return v.RoadmapSummaryFields.Creator
+}
+
+// GetOwner returns roadmapsRoadmapsRoadmapConnectionNodesRoadmap.Owner, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) GetOwner() *RoadmapSummaryFieldsOwnerUser {
+	return v.RoadmapSummaryFields.Owner
+}
+
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*roadmapsRoadmapsRoadmapConnectionNodesRoadmap
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.roadmapsRoadmapsRoadmapConnectionNodesRoadmap = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.RoadmapSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalroadmapsRoadmapsRoadmapConnectionNodesRoadmap struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color *string `json:"color"`
+
+	SlugId string `json:"slugId"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Url string `json:"url"`
+
+	Creator RoadmapSummaryFieldsCreatorUser `json:"creator"`
+
+	Owner *RoadmapSummaryFieldsOwnerUser `json:"owner"`
+}
+
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *roadmapsRoadmapsRoadmapConnectionNodesRoadmap) __premarshalJSON() (*__premarshalroadmapsRoadmapsRoadmapConnectionNodesRoadmap, error) {
+	var retval __premarshalroadmapsRoadmapsRoadmapConnectionNodesRoadmap
+
+	retval.Id = v.RoadmapSummaryFields.Id
+	retval.Name = v.RoadmapSummaryFields.Name
+	retval.Description = v.RoadmapSummaryFields.Description
+	retval.Color = v.RoadmapSummaryFields.Color
+	retval.SlugId = v.RoadmapSummaryFields.SlugId
+	retval.SortOrder = v.RoadmapSummaryFields.SortOrder
+	retval.ArchivedAt = v.RoadmapSummaryFields.ArchivedAt
+	retval.CreatedAt = v.RoadmapSummaryFields.CreatedAt
+	retval.UpdatedAt = v.RoadmapSummaryFields.UpdatedAt
+	retval.Url = v.RoadmapSummaryFields.Url
+	retval.Creator = v.RoadmapSummaryFields.Creator
+	retval.Owner = v.RoadmapSummaryFields.Owner
+	return &retval, nil
+}
+
+// roadmapsRoadmapsRoadmapConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type roadmapsRoadmapsRoadmapConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns roadmapsRoadmapsRoadmapConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns roadmapsRoadmapsRoadmapConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
 // teamResponse is returned by team on success.
 type teamResponse struct {
@@ -20420,6 +20873,124 @@ func rateLimitStatus(
 	}
 
 	data_ = &rateLimitStatusResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by roadmap.
+const roadmap_Operation = `
+query roadmap ($id: String!) {
+	roadmap(id: $id) {
+		... RoadmapSummaryFields
+	}
+}
+fragment RoadmapSummaryFields on Roadmap {
+	id
+	name
+	description
+	color
+	slugId
+	sortOrder
+	archivedAt
+	createdAt
+	updatedAt
+	url
+	creator {
+		id
+		displayName
+	}
+	owner {
+		id
+		displayName
+	}
+}
+`
+
+func roadmap(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *roadmapResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "roadmap",
+		Query:  roadmap_Operation,
+		Variables: &__roadmapInput{
+			Id: id,
+		},
+	}
+
+	data_ = &roadmapResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by roadmaps.
+const roadmaps_Operation = `
+query roadmaps ($first: Int, $after: String, $includeArchived: Boolean) {
+	roadmaps(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... RoadmapSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment RoadmapSummaryFields on Roadmap {
+	id
+	name
+	description
+	color
+	slugId
+	sortOrder
+	archivedAt
+	createdAt
+	updatedAt
+	url
+	creator {
+		id
+		displayName
+	}
+	owner {
+		id
+		displayName
+	}
+}
+`
+
+func roadmaps(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *roadmapsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "roadmaps",
+		Query:  roadmaps_Operation,
+		Variables: &__roadmapsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &roadmapsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

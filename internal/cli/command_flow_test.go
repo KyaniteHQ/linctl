@@ -88,6 +88,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
 		{name: "initiative list", args: []string{"initiative", "list", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
+		{name: "roadmap list", args: []string{"roadmap", "list", "--limit", "1"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
+		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, contains: "custom-view-id has_subscribers true"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
@@ -658,6 +660,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
 		{"--json", "initiative", "list", "--limit", "1"},
 		{"--json", "initiative", "get", "initiative-id"},
+		{"--json", "roadmap", "list", "--limit", "1"},
+		{"--json", "roadmap", "get", "roadmap-id"},
 		{"--json", "custom-view", "list", "--limit", "1"},
 		{"--json", "custom-view", "subscribers", "custom-view-id"},
 		{"--json", "custom-view", "get", "custom-view-id"},
@@ -1080,6 +1084,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
 		{name: "initiative list", args: []string{"initiative", "list"}, operation: "initiatives", contains: "list initiatives"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
+		{name: "roadmap list", args: []string{"roadmap", "list"}, operation: "roadmaps", contains: "list roadmaps"},
+		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, operation: "roadmap", contains: "get roadmap roadmap-id"},
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, operation: "customViewHasSubscribers", contains: "get custom view subscribers custom-view-id"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
@@ -1431,6 +1437,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 //nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
 func commandFlowExtraReadPayload(operation string) (string, bool) {
 	switch operation {
+	case "roadmaps":
+		return `{"roadmaps":{"nodes":[` + commandRoadmapJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "roadmap":
+		return `{"roadmap":` + commandRoadmapJSON() + `}`, true
 	case "customViews":
 		return `{"customViews":{"nodes":[` + commandCustomViewJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customViewHasSubscribers":
@@ -1921,6 +1931,23 @@ func commandCustomerJSON() string {
 		"approximateNeedCount":3,
 		"slugId":"acme",
 		"url":"https://linear.app/kyanite/customer/acme"
+	}`
+}
+
+func commandRoadmapJSON() string {
+	return `{
+		"id":"roadmap-id",
+		"name":"Platform roadmap",
+		"description":"Roadmap body",
+		"color":"#5e6ad2",
+		"slugId":"platform-roadmap",
+		"sortOrder":1,
+		"archivedAt":null,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"url":"https://linear.app/kyanite/roadmap/platform-roadmap",
+		"creator":{"id":"user-id","displayName":"Omer"},
+		"owner":{"id":"owner-id","displayName":"Owner"}
 	}`
 }
 

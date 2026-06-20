@@ -193,6 +193,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"workflowState":            `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 		"initiatives":              `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiative":               `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
+		"roadmaps":                 `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"roadmap":                  `{"roadmap":{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}}`,
 		"customViews":              `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customViewHasSubscribers": `{"customViewHasSubscribers":{"hasSubscribers":true}}`,
 		"customView":               `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
@@ -300,6 +302,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	initiatives, err := ListInitiatives(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	initiative, err := GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
+	require.NoError(t, err)
+	roadmaps, err := ListRoadmaps(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	roadmap, err := GetRoadmapByID(context.Background(), graphqlClient, "roadmap-id")
 	require.NoError(t, err)
 	customViews, err := ListCustomViews(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -445,6 +451,11 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "2026-12-31", initiatives.Initiatives[0].TargetDate)
 	require.Equal(t, "initiative-id", initiative.ID)
 	require.Equal(t, "Platform initiative", initiative.Description)
+	require.True(t, roadmaps.HasNextPage)
+	require.Equal(t, &endCursor, roadmaps.EndCursor)
+	require.Equal(t, "Platform roadmap", roadmaps.Roadmaps[0].Name)
+	require.Equal(t, "roadmap-id", roadmap.ID)
+	require.Equal(t, "Owner", roadmap.OwnerDisplayName)
 	require.True(t, customViews.HasNextPage)
 	require.Equal(t, &endCursor, customViews.EndCursor)
 	require.Equal(t, "My issues", customViews.CustomViews[0].Name)
@@ -970,6 +981,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get initiative initiative-id")
+
+		_, err = ListRoadmaps(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list roadmaps")
+
+		_, err = GetRoadmapByID(context.Background(), graphqlClient, "roadmap-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get roadmap roadmap-id")
 
 		_, err = ListCustomViews(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

@@ -311,6 +311,31 @@ Planned commands:
 
 Only `initiative list` and `initiative get` are implemented in the current CLI. Initiative writes are deferred as organization-scoped planning surface.
 
+## Roadmap
+
+Use the schema name `Roadmap` in code and docs. It is Linear's deprecated roadmap grouping for projects; prefer `Initiative` for new planning workflows.
+
+Schema backing:
+
+- Types: `Roadmap`, `RoadmapConnection`
+- Reads: `Query.roadmaps`, `Query.roadmap`
+- Writes: `Mutation.roadmapCreate`, `Mutation.roadmapUpdate`, `Mutation.roadmapArchive`, `Mutation.roadmapDelete`
+- Inputs: `RoadmapCreateInput`, `RoadmapUpdateInput`
+- Relevant fields: `Roadmap.id`, `Roadmap.name`, `Roadmap.description`, `Roadmap.color`, `Roadmap.slugId`, `Roadmap.sortOrder`, `Roadmap.url`, `Roadmap.creator`, `Roadmap.owner`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `roadmap list` | `Query.roadmaps` | Read-only |
+| `roadmap get` | `Query.roadmap` | Read-only |
+| `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model |
+| `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
+| `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics |
+| `roadmap delete` | `Mutation.roadmapDelete` | Blocked: destructive command needs explicit safety semantics |
+
+Only `roadmap list` and `roadmap get` are implemented in the current CLI. Roadmap writes and roadmap-project associations are deferred; prefer Initiative commands for current Linear planning workflows.
+
 ## CustomView
 
 Use the schema name `CustomView` in code and docs. It is Linear's saved view over issues, projects, or initiatives.

@@ -184,6 +184,7 @@ func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bo
 		"customer_needs",
 		"customer_statuses",
 		"customer_tiers",
+		"roadmaps",
 	} {
 		items, ok := raw[key].([]any)
 		if !ok {
