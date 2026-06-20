@@ -85,6 +85,11 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Name:   "Platform",
 		Status: "Active",
 	}
+	customView := client.CustomViewSummary{
+		ID:        "custom-view-id",
+		Name:      "My issues",
+		ModelName: "Issue",
+	}
 
 	textOut := bytes.Buffer{}
 	textCommand := &cobra.Command{}
@@ -103,6 +108,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeComment(textCommand, &textOptions, comment))
 	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
 	require.NoError(t, writeInitiative(textCommand, &textOptions, initiative))
+	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
 	require.Equal(
 		t,
 		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
@@ -110,7 +116,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-milestone-id Launch milestone [next]\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"user-id Omer <omer@example.com>\ncomment-id Omer First comment\nworkflow-state-id Started [started]\n"+
-			"initiative-id Platform [Active]\n",
+			"initiative-id Platform [Active]\ncustom-view-id My issues [Issue]\n",
 		textOut.String(),
 	)
 
@@ -131,6 +137,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeComment(jsonCommand, &jsonOptions, comment))
 	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
 	require.NoError(t, writeInitiative(jsonCommand, &jsonOptions, initiative))
+	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
@@ -143,6 +150,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"body": "First comment"`)
 	require.Contains(t, jsonOut.String(), `"type": "started"`)
 	require.Contains(t, jsonOut.String(), `"status": "Active"`)
+	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
 }
 
 func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
@@ -221,6 +229,11 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Name:   "Platform",
 		Status: "Active",
 	}
+	customView := client.CustomViewSummary{
+		ID:        "custom-view-id",
+		Name:      "My issues",
+		ModelName: "Issue",
+	}
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
@@ -241,6 +254,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeComment(command, &rootOptions{idOnly: true}, comment))
 	require.NoError(t, writeWorkflowState(command, &rootOptions{idOnly: true}, workflowState))
 	require.NoError(t, writeInitiative(command, &rootOptions{idOnly: true}, initiative))
+	require.NoError(t, writeCustomView(command, &rootOptions{idOnly: true}, customView))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
 	require.Contains(t, output.String(), "starts_at=2026-07-01T00:00:00Z")
@@ -256,6 +270,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "comment-id")
 	require.Contains(t, output.String(), "workflow-state-id")
 	require.Contains(t, output.String(), "initiative-id")
+	require.Contains(t, output.String(), "custom-view-id")
 	require.Equal(t, "-", emptyDash(""))
 
 	quietOutput := bytes.Buffer{}
@@ -273,6 +288,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeComment(quietCommand, &rootOptions{quiet: true}, comment))
 	require.NoError(t, writeWorkflowState(quietCommand, &rootOptions{quiet: true}, workflowState))
 	require.NoError(t, writeInitiative(quietCommand, &rootOptions{quiet: true}, initiative))
+	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")
 	require.NoError(t, err)

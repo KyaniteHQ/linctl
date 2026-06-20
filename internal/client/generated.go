@@ -73,6 +73,55 @@ func (v *CompletedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkfl
 	return v.Position
 }
 
+// CustomViewSummaryFields includes the GraphQL fields of CustomView requested by the fragment CustomViewSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A custom view built from a saved filter, sort, and grouping configuration. Views
+// can be personal (visible only to the owner) or shared with the entire workspace.
+// They define which issues, projects, initiatives, or feed items are displayed and
+// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+type CustomViewSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the custom view, displayed in the sidebar and navigation.
+	Name string `json:"name"`
+	// The description of the custom view.
+	Description *string `json:"description"`
+	// The entity type this view displays. Determined by which filter is set:
+	// "Project" if projectFilterData is set, "Initiative" if initiativeFilterData is
+	// set, "FeedItem" if feedItemFilterData is set, or "Issue" by default.
+	ModelName string `json:"modelName"`
+	// Whether the custom view is shared with everyone in the organization. Shared
+	// views appear in the workspace sidebar for all members. Personal (non-shared)
+	// views are only visible to their owner.
+	Shared bool `json:"shared"`
+	// The hex color code of the custom view icon.
+	Color *string `json:"color"`
+	// The custom view's unique URL slug, used to construct human-readable URLs. Automatically generated on creation.
+	SlugId string `json:"slugId"`
+}
+
+// GetId returns CustomViewSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *CustomViewSummaryFields) GetId() string { return v.Id }
+
+// GetName returns CustomViewSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *CustomViewSummaryFields) GetName() string { return v.Name }
+
+// GetDescription returns CustomViewSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *CustomViewSummaryFields) GetDescription() *string { return v.Description }
+
+// GetModelName returns CustomViewSummaryFields.ModelName, and is useful for accessing the field via an interface.
+func (v *CustomViewSummaryFields) GetModelName() string { return v.ModelName }
+
+// GetShared returns CustomViewSummaryFields.Shared, and is useful for accessing the field via an interface.
+func (v *CustomViewSummaryFields) GetShared() bool { return v.Shared }
+
+// GetColor returns CustomViewSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *CustomViewSummaryFields) GetColor() *string { return v.Color }
+
+// GetSlugId returns CustomViewSummaryFields.SlugId, and is useful for accessing the field via an interface.
+func (v *CustomViewSummaryFields) GetSlugId() string { return v.SlugId }
+
 // CycleArchiveCycleArchiveCycleArchivePayload includes the requested fields of the GraphQL type CycleArchivePayload.
 // The GraphQL type's documentation follows.
 //
@@ -8859,6 +8908,30 @@ func (v *__commentsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __customViewInput is used internally by genqlient
+type __customViewInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __customViewInput.Id, and is useful for accessing the field via an interface.
+func (v *__customViewInput) GetId() string { return v.Id }
+
+// __customViewsInput is used internally by genqlient
+type __customViewsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __customViewsInput.First, and is useful for accessing the field via an interface.
+func (v *__customViewsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __customViewsInput.After, and is useful for accessing the field via an interface.
+func (v *__customViewsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __customViewsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__customViewsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __cycleInput is used internally by genqlient
 type __cycleInput struct {
 	Id string `json:"id"`
@@ -9508,6 +9581,263 @@ type commentsResponse struct {
 
 // GetComments returns commentsResponse.Comments, and is useful for accessing the field via an interface.
 func (v *commentsResponse) GetComments() commentsCommentsCommentConnection { return v.Comments }
+
+// customViewCustomView includes the requested fields of the GraphQL type CustomView.
+// The GraphQL type's documentation follows.
+//
+// A custom view built from a saved filter, sort, and grouping configuration. Views
+// can be personal (visible only to the owner) or shared with the entire workspace.
+// They define which issues, projects, initiatives, or feed items are displayed and
+// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+type customViewCustomView struct {
+	CustomViewSummaryFields `json:"-"`
+}
+
+// GetId returns customViewCustomView.Id, and is useful for accessing the field via an interface.
+func (v *customViewCustomView) GetId() string { return v.CustomViewSummaryFields.Id }
+
+// GetName returns customViewCustomView.Name, and is useful for accessing the field via an interface.
+func (v *customViewCustomView) GetName() string { return v.CustomViewSummaryFields.Name }
+
+// GetDescription returns customViewCustomView.Description, and is useful for accessing the field via an interface.
+func (v *customViewCustomView) GetDescription() *string { return v.CustomViewSummaryFields.Description }
+
+// GetModelName returns customViewCustomView.ModelName, and is useful for accessing the field via an interface.
+func (v *customViewCustomView) GetModelName() string { return v.CustomViewSummaryFields.ModelName }
+
+// GetShared returns customViewCustomView.Shared, and is useful for accessing the field via an interface.
+func (v *customViewCustomView) GetShared() bool { return v.CustomViewSummaryFields.Shared }
+
+// GetColor returns customViewCustomView.Color, and is useful for accessing the field via an interface.
+func (v *customViewCustomView) GetColor() *string { return v.CustomViewSummaryFields.Color }
+
+// GetSlugId returns customViewCustomView.SlugId, and is useful for accessing the field via an interface.
+func (v *customViewCustomView) GetSlugId() string { return v.CustomViewSummaryFields.SlugId }
+
+func (v *customViewCustomView) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customViewCustomView
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customViewCustomView = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomViewSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomViewCustomView struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ModelName string `json:"modelName"`
+
+	Shared bool `json:"shared"`
+
+	Color *string `json:"color"`
+
+	SlugId string `json:"slugId"`
+}
+
+func (v *customViewCustomView) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customViewCustomView) __premarshalJSON() (*__premarshalcustomViewCustomView, error) {
+	var retval __premarshalcustomViewCustomView
+
+	retval.Id = v.CustomViewSummaryFields.Id
+	retval.Name = v.CustomViewSummaryFields.Name
+	retval.Description = v.CustomViewSummaryFields.Description
+	retval.ModelName = v.CustomViewSummaryFields.ModelName
+	retval.Shared = v.CustomViewSummaryFields.Shared
+	retval.Color = v.CustomViewSummaryFields.Color
+	retval.SlugId = v.CustomViewSummaryFields.SlugId
+	return &retval, nil
+}
+
+// customViewResponse is returned by customView on success.
+type customViewResponse struct {
+	// One specific custom view, looked up by ID or slug.
+	CustomView customViewCustomView `json:"customView"`
+}
+
+// GetCustomView returns customViewResponse.CustomView, and is useful for accessing the field via an interface.
+func (v *customViewResponse) GetCustomView() customViewCustomView { return v.CustomView }
+
+// customViewsCustomViewsCustomViewConnection includes the requested fields of the GraphQL type CustomViewConnection.
+type customViewsCustomViewsCustomViewConnection struct {
+	Nodes    []customViewsCustomViewsCustomViewConnectionNodesCustomView `json:"nodes"`
+	PageInfo customViewsCustomViewsCustomViewConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns customViewsCustomViewsCustomViewConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnection) GetNodes() []customViewsCustomViewsCustomViewConnectionNodesCustomView {
+	return v.Nodes
+}
+
+// GetPageInfo returns customViewsCustomViewsCustomViewConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnection) GetPageInfo() customViewsCustomViewsCustomViewConnectionPageInfo {
+	return v.PageInfo
+}
+
+// customViewsCustomViewsCustomViewConnectionNodesCustomView includes the requested fields of the GraphQL type CustomView.
+// The GraphQL type's documentation follows.
+//
+// A custom view built from a saved filter, sort, and grouping configuration. Views
+// can be personal (visible only to the owner) or shared with the entire workspace.
+// They define which issues, projects, initiatives, or feed items are displayed and
+// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+type customViewsCustomViewsCustomViewConnectionNodesCustomView struct {
+	CustomViewSummaryFields `json:"-"`
+}
+
+// GetId returns customViewsCustomViewsCustomViewConnectionNodesCustomView.Id, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) GetId() string {
+	return v.CustomViewSummaryFields.Id
+}
+
+// GetName returns customViewsCustomViewsCustomViewConnectionNodesCustomView.Name, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) GetName() string {
+	return v.CustomViewSummaryFields.Name
+}
+
+// GetDescription returns customViewsCustomViewsCustomViewConnectionNodesCustomView.Description, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) GetDescription() *string {
+	return v.CustomViewSummaryFields.Description
+}
+
+// GetModelName returns customViewsCustomViewsCustomViewConnectionNodesCustomView.ModelName, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) GetModelName() string {
+	return v.CustomViewSummaryFields.ModelName
+}
+
+// GetShared returns customViewsCustomViewsCustomViewConnectionNodesCustomView.Shared, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) GetShared() bool {
+	return v.CustomViewSummaryFields.Shared
+}
+
+// GetColor returns customViewsCustomViewsCustomViewConnectionNodesCustomView.Color, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) GetColor() *string {
+	return v.CustomViewSummaryFields.Color
+}
+
+// GetSlugId returns customViewsCustomViewsCustomViewConnectionNodesCustomView.SlugId, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) GetSlugId() string {
+	return v.CustomViewSummaryFields.SlugId
+}
+
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customViewsCustomViewsCustomViewConnectionNodesCustomView
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customViewsCustomViewsCustomViewConnectionNodesCustomView = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomViewSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomViewsCustomViewsCustomViewConnectionNodesCustomView struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ModelName string `json:"modelName"`
+
+	Shared bool `json:"shared"`
+
+	Color *string `json:"color"`
+
+	SlugId string `json:"slugId"`
+}
+
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customViewsCustomViewsCustomViewConnectionNodesCustomView) __premarshalJSON() (*__premarshalcustomViewsCustomViewsCustomViewConnectionNodesCustomView, error) {
+	var retval __premarshalcustomViewsCustomViewsCustomViewConnectionNodesCustomView
+
+	retval.Id = v.CustomViewSummaryFields.Id
+	retval.Name = v.CustomViewSummaryFields.Name
+	retval.Description = v.CustomViewSummaryFields.Description
+	retval.ModelName = v.CustomViewSummaryFields.ModelName
+	retval.Shared = v.CustomViewSummaryFields.Shared
+	retval.Color = v.CustomViewSummaryFields.Color
+	retval.SlugId = v.CustomViewSummaryFields.SlugId
+	return &retval, nil
+}
+
+// customViewsCustomViewsCustomViewConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type customViewsCustomViewsCustomViewConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns customViewsCustomViewsCustomViewConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns customViewsCustomViewsCustomViewConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *customViewsCustomViewsCustomViewConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// customViewsResponse is returned by customViews on success.
+type customViewsResponse struct {
+	// All custom views accessible to the user, including personal views and shared
+	// workspace views. Excludes views scoped to a specific project or initiative.
+	CustomViews customViewsCustomViewsCustomViewConnection `json:"customViews"`
+}
+
+// GetCustomViews returns customViewsResponse.CustomViews, and is useful for accessing the field via an interface.
+func (v *customViewsResponse) GetCustomViews() customViewsCustomViewsCustomViewConnection {
+	return v.CustomViews
+}
 
 // cycleCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
@@ -15190,6 +15520,102 @@ func comments(
 	}
 
 	data_ = &commentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customView.
+const customView_Operation = `
+query customView ($id: String!) {
+	customView(id: $id) {
+		... CustomViewSummaryFields
+	}
+}
+fragment CustomViewSummaryFields on CustomView {
+	id
+	name
+	description
+	modelName
+	shared
+	color
+	slugId
+}
+`
+
+func customView(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *customViewResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customView",
+		Query:  customView_Operation,
+		Variables: &__customViewInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customViewResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customViews.
+const customViews_Operation = `
+query customViews ($first: Int, $after: String, $includeArchived: Boolean) {
+	customViews(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... CustomViewSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment CustomViewSummaryFields on CustomView {
+	id
+	name
+	description
+	modelName
+	shared
+	color
+	slugId
+}
+`
+
+func customViews(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *customViewsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customViews",
+		Query:  customViews_Operation,
+		Variables: &__customViewsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &customViewsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

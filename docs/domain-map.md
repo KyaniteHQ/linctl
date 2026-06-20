@@ -308,3 +308,27 @@ Planned commands:
 | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics |
 
 Only `initiative list` and `initiative get` are implemented in the current CLI. Initiative writes are deferred as organization-scoped planning surface.
+
+## CustomView
+
+Use the schema name `CustomView` in code and docs. It is Linear's saved view over issues, projects, or initiatives.
+
+Schema backing:
+
+- Types: `CustomView`, `CustomViewConnection`
+- Reads: `Query.customViews`, `Query.customView`
+- Writes: `Mutation.createCustomView`, `Mutation.updateCustomView`, `Mutation.deleteCustomView`
+- Inputs: `CustomViewCreateInput`, `CustomViewUpdateInput`
+- Relevant fields: `CustomView.id`, `CustomView.name`, `CustomView.description`, `CustomView.modelName`, `CustomView.shared`, `CustomView.color`, `CustomView.slugId`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `custom-view list` | `Query.customViews` | Read-only |
+| `custom-view get` | `Query.customView` | Read-only |
+| `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model |
+| `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation |
+| `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics |
+
+Only `custom-view list` and `custom-view get` are implemented in the current CLI. CustomView writes are deferred as organization-scoped view configuration surface.

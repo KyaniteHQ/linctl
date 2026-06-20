@@ -85,6 +85,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addUserCommand(ctx, command, &options)
 	addWorkflowStateCommand(ctx, command, &options)
 	addInitiativeCommand(ctx, command, &options)
+	addCustomViewCommand(ctx, command, &options)
 	command.SetContext(ctx)
 
 	return command

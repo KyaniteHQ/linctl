@@ -107,6 +107,8 @@ linctl workflow-state list --json --limit 20
 linctl workflow-state get WORKFLOW_STATE_ID --json
 linctl initiative list --json --limit 20
 linctl initiative get INITIATIVE_ID --json
+linctl custom-view list --json --limit 20
+linctl custom-view get CUSTOM_VIEW_ID --json
 ```
 
 `next --dry-run` is a ranked read-only picker: it considers unstarted issues with no active blockers, then ranks by active unblock count, priority, and age. It never creates a branch or worktree.

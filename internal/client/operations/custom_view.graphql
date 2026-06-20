@@ -1,0 +1,27 @@
+query customViews($first: Int, $after: String, $includeArchived: Boolean) {
+  customViews(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CustomViewSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query customView($id: String!) {
+  customView(id: $id) {
+    ...CustomViewSummaryFields
+  }
+}
+
+fragment CustomViewSummaryFields on CustomView {
+  id
+  name
+  description
+  modelName
+  shared
+  color
+  slugId
+}

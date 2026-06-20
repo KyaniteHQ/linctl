@@ -86,6 +86,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
 		{name: "initiative list", args: []string{"initiative", "list", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
+		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
+		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
 	}
 
 	for _, test := range tests {
@@ -632,6 +634,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
 		{"--json", "initiative", "list", "--limit", "1"},
 		{"--json", "initiative", "get", "initiative-id"},
+		{"--json", "custom-view", "list", "--limit", "1"},
+		{"--json", "custom-view", "get", "custom-view-id"},
 	}
 
 	for _, args := range tests {
@@ -1033,6 +1037,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
 		{name: "initiative list", args: []string{"initiative", "list"}, operation: "initiatives", contains: "list initiatives"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
+		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
+		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
 	}
 
 	for _, test := range tests {
@@ -1337,6 +1343,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "comment":
 		return `{"comment":` + commandTopLevelCommentJSON() + `}`, true
+	case "customViews":
+		return `{"customViews":{"nodes":[` + commandCustomViewJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "customView":
+		return `{"customView":` + commandCustomViewJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -1759,6 +1769,18 @@ func commandInitiativeJSON() string {
 		"targetDate":"2026-12-31",
 		"slugId":"platform-init",
 		"url":"https://linear.app/kyanite/initiative/platform-init"
+	}`
+}
+
+func commandCustomViewJSON() string {
+	return `{
+		"id":"custom-view-id",
+		"name":"My issues",
+		"description":"Saved issue view",
+		"modelName":"Issue",
+		"shared":true,
+		"color":"#5e6ad2",
+		"slugId":"my-issues"
 	}`
 }
 

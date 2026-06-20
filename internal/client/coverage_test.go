@@ -191,6 +191,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"workflowState":     `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 		"initiatives":       `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiative":        `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
+		"customViews":       `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customView":        `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
 	}
 
 	// When
@@ -275,6 +277,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	initiatives, err := ListInitiatives(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	initiative, err := GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
+	require.NoError(t, err)
+	customViews, err := ListCustomViews(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	customView, err := GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
 	require.NoError(t, err)
 
 	// Then
@@ -375,6 +381,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "2026-12-31", initiatives.Initiatives[0].TargetDate)
 	require.Equal(t, "initiative-id", initiative.ID)
 	require.Equal(t, "Platform initiative", initiative.Description)
+	require.True(t, customViews.HasNextPage)
+	require.Equal(t, &endCursor, customViews.EndCursor)
+	require.Equal(t, "My issues", customViews.CustomViews[0].Name)
+	require.Equal(t, "Issue", customViews.CustomViews[0].ModelName)
+	require.True(t, customViews.CustomViews[0].Shared)
+	require.Equal(t, "custom-view-id", customView.ID)
+	require.Equal(t, "Saved issue view", customView.Description)
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
@@ -829,6 +842,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get initiative initiative-id")
+
+		_, err = ListCustomViews(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list custom views")
+
+		_, err = GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get custom view custom-view-id")
 	})
 
 	t.Run("issue mutations fail when payload omits entity", func(t *testing.T) {

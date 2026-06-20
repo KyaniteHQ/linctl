@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 37 | 458 |
-| Upstream Query root fields | 158 | 25 | 158 |
+| Upstream SDK root methods | 458 | 39 | 458 |
+| Upstream Query root fields | 158 | 27 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 62 | 62 | 62 |
-| Domain-map commands | 78 | 56 | 78 |
+| Local generated Go operations | 64 | 64 | 64 |
+| Domain-map commands | 83 | 58 | 83 |
 
 ## Upstream SDK Root Methods
 
@@ -136,9 +136,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `createViewPreferences` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `createWorkflowState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `customView` | method | safe_candidate | read operation may fit future CLI coverage |
+| `customView` | method | implemented | local operation or command exists |
 | `customViewHasSubscribers` | method | safe_candidate | read operation may fit future CLI coverage |
-| `customViews` | method | safe_candidate | read operation may fit future CLI coverage |
+| `customViews` | method | implemented | local operation or command exists |
 | `customer` | method | safe_candidate | read operation may fit future CLI coverage |
 | `customerMerge` | method | safe_candidate | read operation may fit future CLI coverage |
 | `customerNeed` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -512,10 +512,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `availableUsers` | `AuthResolverResponse!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `comment` | `Comment!` | implemented | root field used by local GraphQL operation |
 | `comments` | `CommentConnection!` | implemented | root field used by local GraphQL operation |
-| `customView` | `CustomView!` | safe_candidate | read operation may fit future CLI coverage |
+| `customView` | `CustomView!` | implemented | root field used by local GraphQL operation |
 | `customViewDetailsSuggestion` | `CustomViewSuggestionPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `customViewHasSubscribers` | `CustomViewHasSubscribersPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `customViews` | `CustomViewConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `customViews` | `CustomViewConnection!` | implemented | root field used by local GraphQL operation |
 | `customer` | `Customer!` | safe_candidate | read operation may fit future CLI coverage |
 | `customerNeed` | `CustomerNeed!` | safe_candidate | read operation may fit future CLI coverage |
 | `customerNeeds` | `CustomerNeedConnection!` | safe_candidate | read operation may fit future CLI coverage |
@@ -1061,6 +1061,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
+| `customView` | query | `customView` | implemented | `internal/client/generated.go` |
+| `customViews` | query | `customViews` | implemented | `internal/client/generated.go` |
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
@@ -1166,4 +1168,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| CustomView | `custom-view list` | `Query.customViews` | Read-only | implemented | `linctl --help` / public CLI tests |
+| CustomView | `custom-view get` | `Query.customView` | Read-only | implemented | `linctl --help` / public CLI tests |
+| CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| CustomView | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 

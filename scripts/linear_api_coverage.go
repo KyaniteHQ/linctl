@@ -676,6 +676,8 @@ func commandImplemented(command string) bool {
 		"workflow-state get":       true,
 		"initiative list":          true,
 		"initiative get":           true,
+		"custom-view list":         true,
+		"custom-view get":          true,
 	}
 	return implemented[command]
 }
@@ -699,6 +701,8 @@ func domainCommandBlocked(command string) bool {
 		"initiative create":      true,
 		"initiative update":      true,
 		"initiative archive":     true,
+		"custom-view create":     true,
+		"custom-view update":     true,
 	}
 	return blocked[command]
 }
