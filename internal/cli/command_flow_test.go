@@ -86,6 +86,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "user me", args: []string{"user", "me"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "workflow state list", args: []string{"workflow-state", "list", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
+		{name: "time schedule list", args: []string{"time-schedule", "list", "--limit", "1"}, contains: "time-schedule-id Primary on-call entries 1"},
+		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, contains: "time-schedule-id Primary on-call entries 1"},
 		{name: "initiative list", args: []string{"initiative", "list", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
 		{name: "roadmap list", args: []string{"roadmap", "list", "--limit", "1"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
@@ -658,6 +660,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
 		{"--json", "--fields", "id,display_name,email", "team", "members", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
+		{"--json", "time-schedule", "list", "--limit", "1"},
+		{"--json", "time-schedule", "get", "time-schedule-id"},
 		{"--json", "initiative", "list", "--limit", "1"},
 		{"--json", "initiative", "get", "initiative-id"},
 		{"--json", "roadmap", "list", "--limit", "1"},
@@ -1082,6 +1086,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "user me", args: []string{"user", "me"}, operation: "viewer", contains: "get viewer user"},
 		{name: "workflow state list", args: []string{"workflow-state", "list"}, operation: "workflowStates", contains: "list workflow states"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
+		{name: "time schedule list", args: []string{"time-schedule", "list"}, operation: "timeSchedules", contains: "list time schedules"},
+		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, operation: "timeSchedule", contains: "get time schedule time-schedule-id"},
 		{name: "initiative list", args: []string{"initiative", "list"}, operation: "initiatives", contains: "list initiatives"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
 		{name: "roadmap list", args: []string{"roadmap", "list"}, operation: "roadmaps", contains: "list roadmaps"},
@@ -1437,6 +1443,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 //nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
 func commandFlowExtraReadPayload(operation string) (string, bool) {
 	switch operation {
+	case "timeSchedules":
+		return `{"timeSchedules":{"nodes":[` + commandTimeScheduleJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "timeSchedule":
+		return `{"timeSchedule":` + commandTimeScheduleJSON() + `}`, true
 	case "roadmaps":
 		return `{"roadmaps":{"nodes":[` + commandRoadmapJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "roadmap":
@@ -1948,6 +1958,20 @@ func commandRoadmapJSON() string {
 		"url":"https://linear.app/kyanite/roadmap/platform-roadmap",
 		"creator":{"id":"user-id","displayName":"Omer"},
 		"owner":{"id":"owner-id","displayName":"Owner"}
+	}`
+}
+
+func commandTimeScheduleJSON() string {
+	return `{
+		"id":"time-schedule-id",
+		"name":"Primary on-call",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"externalId":"pd-primary",
+		"externalUrl":"https://example.com/schedule",
+		"integration":{"id":"integration-id"},
+		"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]
 	}`
 }
 

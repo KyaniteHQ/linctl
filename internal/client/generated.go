@@ -8505,6 +8505,116 @@ func (v *TeamsTeamsTeamConnectionPageInfo) GetHasNextPage() bool { return v.HasN
 // GetEndCursor returns TeamsTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *TeamsTeamsTeamConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// TimeScheduleSummaryFields includes the GraphQL fields of TimeSchedule requested by the fragment TimeScheduleSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A time-based schedule defining on-call rotations or availability windows.
+// Schedules contain a series of time entries, each specifying a user and their
+// active period. They can be synced from external services (such as PagerDuty or
+// Opsgenie) via integrations, or created manually. Schedules are used by triage
+// responsibilities to determine who should be assigned or notified when issues enter triage.
+type TimeScheduleSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the schedule.
+	Name string `json:"name"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The identifier of the external schedule.
+	ExternalId *string `json:"externalId"`
+	// The URL to the external schedule.
+	ExternalUrl *string `json:"externalUrl"`
+	// The identifier of the Linear integration populating the schedule.
+	Integration *TimeScheduleSummaryFieldsIntegration `json:"integration"`
+	// The schedule entries.
+	Entries []TimeScheduleSummaryFieldsEntriesTimeScheduleEntry `json:"entries"`
+}
+
+// GetId returns TimeScheduleSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetId() string { return v.Id }
+
+// GetName returns TimeScheduleSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetName() string { return v.Name }
+
+// GetCreatedAt returns TimeScheduleSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns TimeScheduleSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns TimeScheduleSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetExternalId returns TimeScheduleSummaryFields.ExternalId, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetExternalId() *string { return v.ExternalId }
+
+// GetExternalUrl returns TimeScheduleSummaryFields.ExternalUrl, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetExternalUrl() *string { return v.ExternalUrl }
+
+// GetIntegration returns TimeScheduleSummaryFields.Integration, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetIntegration() *TimeScheduleSummaryFieldsIntegration {
+	return v.Integration
+}
+
+// GetEntries returns TimeScheduleSummaryFields.Entries, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFields) GetEntries() []TimeScheduleSummaryFieldsEntriesTimeScheduleEntry {
+	return v.Entries
+}
+
+// TimeScheduleSummaryFieldsEntriesTimeScheduleEntry includes the requested fields of the GraphQL type TimeScheduleEntry.
+// The GraphQL type's documentation follows.
+//
+// A single entry in a time schedule, defining a time range and the user responsible during that period.
+type TimeScheduleSummaryFieldsEntriesTimeScheduleEntry struct {
+	// The start time of the schedule entry in ISO 8601 date-time format.
+	StartsAt string `json:"startsAt"`
+	// The end time of the schedule entry in ISO 8601 date-time format.
+	EndsAt string `json:"endsAt"`
+	// The Linear user id of the user on schedule. If the user cannot be mapped to a
+	// Linear user then `userEmail` can be used as a reference.
+	UserId *string `json:"userId"`
+	// The email, name or reference to the user on schedule. This is used in case the
+	// external user could not be mapped to a Linear user id.
+	UserEmail *string `json:"userEmail"`
+}
+
+// GetStartsAt returns TimeScheduleSummaryFieldsEntriesTimeScheduleEntry.StartsAt, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFieldsEntriesTimeScheduleEntry) GetStartsAt() string { return v.StartsAt }
+
+// GetEndsAt returns TimeScheduleSummaryFieldsEntriesTimeScheduleEntry.EndsAt, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFieldsEntriesTimeScheduleEntry) GetEndsAt() string { return v.EndsAt }
+
+// GetUserId returns TimeScheduleSummaryFieldsEntriesTimeScheduleEntry.UserId, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFieldsEntriesTimeScheduleEntry) GetUserId() *string { return v.UserId }
+
+// GetUserEmail returns TimeScheduleSummaryFieldsEntriesTimeScheduleEntry.UserEmail, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFieldsEntriesTimeScheduleEntry) GetUserEmail() *string {
+	return v.UserEmail
+}
+
+// TimeScheduleSummaryFieldsIntegration includes the requested fields of the GraphQL type Integration.
+// The GraphQL type's documentation follows.
+//
+// An integration with an external service. Integrations connect Linear to tools
+// like Slack, GitHub, GitLab, Jira, Figma, Sentry, Zendesk, Intercom, Front,
+// PagerDuty, Opsgenie, Google Sheets, Microsoft Teams, Discord, Salesforce, and
+// others. Each integration record represents a single configured connection,
+// scoped to a workspace and optionally to a specific team, project, initiative, or
+// custom view. Personal integrations (e.g., Slack Personal, Jira Personal, GitHub
+// Personal) are scoped to the user who created them.
+type TimeScheduleSummaryFieldsIntegration struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns TimeScheduleSummaryFieldsIntegration.Id, and is useful for accessing the field via an interface.
+func (v *TimeScheduleSummaryFieldsIntegration) GetId() string { return v.Id }
+
 // TopLevelCommentSummaryFields includes the GraphQL fields of Comment requested by the fragment TopLevelCommentSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -10006,6 +10116,30 @@ func (v *__team_membersInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __team_membersInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__team_membersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __timeScheduleInput is used internally by genqlient
+type __timeScheduleInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __timeScheduleInput.Id, and is useful for accessing the field via an interface.
+func (v *__timeScheduleInput) GetId() string { return v.Id }
+
+// __timeSchedulesInput is used internally by genqlient
+type __timeSchedulesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __timeSchedulesInput.First, and is useful for accessing the field via an interface.
+func (v *__timeSchedulesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __timeSchedulesInput.After, and is useful for accessing the field via an interface.
+func (v *__timeSchedulesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __timeSchedulesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__timeSchedulesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __userInput is used internally by genqlient
 type __userInput struct {
@@ -15743,6 +15877,306 @@ func (v *team_membersTeamMembersUserConnectionPageInfo) GetHasNextPage() bool { 
 // GetEndCursor returns team_membersTeamMembersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *team_membersTeamMembersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// timeScheduleResponse is returned by timeSchedule on success.
+type timeScheduleResponse struct {
+	// A specific time schedule.
+	TimeSchedule timeScheduleTimeSchedule `json:"timeSchedule"`
+}
+
+// GetTimeSchedule returns timeScheduleResponse.TimeSchedule, and is useful for accessing the field via an interface.
+func (v *timeScheduleResponse) GetTimeSchedule() timeScheduleTimeSchedule { return v.TimeSchedule }
+
+// timeScheduleTimeSchedule includes the requested fields of the GraphQL type TimeSchedule.
+// The GraphQL type's documentation follows.
+//
+// A time-based schedule defining on-call rotations or availability windows.
+// Schedules contain a series of time entries, each specifying a user and their
+// active period. They can be synced from external services (such as PagerDuty or
+// Opsgenie) via integrations, or created manually. Schedules are used by triage
+// responsibilities to determine who should be assigned or notified when issues enter triage.
+type timeScheduleTimeSchedule struct {
+	TimeScheduleSummaryFields `json:"-"`
+}
+
+// GetId returns timeScheduleTimeSchedule.Id, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetId() string { return v.TimeScheduleSummaryFields.Id }
+
+// GetName returns timeScheduleTimeSchedule.Name, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetName() string { return v.TimeScheduleSummaryFields.Name }
+
+// GetCreatedAt returns timeScheduleTimeSchedule.CreatedAt, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetCreatedAt() string {
+	return v.TimeScheduleSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns timeScheduleTimeSchedule.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetUpdatedAt() string {
+	return v.TimeScheduleSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns timeScheduleTimeSchedule.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetArchivedAt() *string {
+	return v.TimeScheduleSummaryFields.ArchivedAt
+}
+
+// GetExternalId returns timeScheduleTimeSchedule.ExternalId, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetExternalId() *string {
+	return v.TimeScheduleSummaryFields.ExternalId
+}
+
+// GetExternalUrl returns timeScheduleTimeSchedule.ExternalUrl, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetExternalUrl() *string {
+	return v.TimeScheduleSummaryFields.ExternalUrl
+}
+
+// GetIntegration returns timeScheduleTimeSchedule.Integration, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetIntegration() *TimeScheduleSummaryFieldsIntegration {
+	return v.TimeScheduleSummaryFields.Integration
+}
+
+// GetEntries returns timeScheduleTimeSchedule.Entries, and is useful for accessing the field via an interface.
+func (v *timeScheduleTimeSchedule) GetEntries() []TimeScheduleSummaryFieldsEntriesTimeScheduleEntry {
+	return v.TimeScheduleSummaryFields.Entries
+}
+
+func (v *timeScheduleTimeSchedule) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*timeScheduleTimeSchedule
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.timeScheduleTimeSchedule = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TimeScheduleSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaltimeScheduleTimeSchedule struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ExternalId *string `json:"externalId"`
+
+	ExternalUrl *string `json:"externalUrl"`
+
+	Integration *TimeScheduleSummaryFieldsIntegration `json:"integration"`
+
+	Entries []TimeScheduleSummaryFieldsEntriesTimeScheduleEntry `json:"entries"`
+}
+
+func (v *timeScheduleTimeSchedule) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *timeScheduleTimeSchedule) __premarshalJSON() (*__premarshaltimeScheduleTimeSchedule, error) {
+	var retval __premarshaltimeScheduleTimeSchedule
+
+	retval.Id = v.TimeScheduleSummaryFields.Id
+	retval.Name = v.TimeScheduleSummaryFields.Name
+	retval.CreatedAt = v.TimeScheduleSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TimeScheduleSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TimeScheduleSummaryFields.ArchivedAt
+	retval.ExternalId = v.TimeScheduleSummaryFields.ExternalId
+	retval.ExternalUrl = v.TimeScheduleSummaryFields.ExternalUrl
+	retval.Integration = v.TimeScheduleSummaryFields.Integration
+	retval.Entries = v.TimeScheduleSummaryFields.Entries
+	return &retval, nil
+}
+
+// timeSchedulesResponse is returned by timeSchedules on success.
+type timeSchedulesResponse struct {
+	// All time schedules.
+	TimeSchedules timeSchedulesTimeSchedulesTimeScheduleConnection `json:"timeSchedules"`
+}
+
+// GetTimeSchedules returns timeSchedulesResponse.TimeSchedules, and is useful for accessing the field via an interface.
+func (v *timeSchedulesResponse) GetTimeSchedules() timeSchedulesTimeSchedulesTimeScheduleConnection {
+	return v.TimeSchedules
+}
+
+// timeSchedulesTimeSchedulesTimeScheduleConnection includes the requested fields of the GraphQL type TimeScheduleConnection.
+type timeSchedulesTimeSchedulesTimeScheduleConnection struct {
+	Nodes    []timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule `json:"nodes"`
+	PageInfo timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns timeSchedulesTimeSchedulesTimeScheduleConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnection) GetNodes() []timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule {
+	return v.Nodes
+}
+
+// GetPageInfo returns timeSchedulesTimeSchedulesTimeScheduleConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnection) GetPageInfo() timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo {
+	return v.PageInfo
+}
+
+// timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule includes the requested fields of the GraphQL type TimeSchedule.
+// The GraphQL type's documentation follows.
+//
+// A time-based schedule defining on-call rotations or availability windows.
+// Schedules contain a series of time entries, each specifying a user and their
+// active period. They can be synced from external services (such as PagerDuty or
+// Opsgenie) via integrations, or created manually. Schedules are used by triage
+// responsibilities to determine who should be assigned or notified when issues enter triage.
+type timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule struct {
+	TimeScheduleSummaryFields `json:"-"`
+}
+
+// GetId returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.Id, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetId() string {
+	return v.TimeScheduleSummaryFields.Id
+}
+
+// GetName returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.Name, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetName() string {
+	return v.TimeScheduleSummaryFields.Name
+}
+
+// GetCreatedAt returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.CreatedAt, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetCreatedAt() string {
+	return v.TimeScheduleSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetUpdatedAt() string {
+	return v.TimeScheduleSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetArchivedAt() *string {
+	return v.TimeScheduleSummaryFields.ArchivedAt
+}
+
+// GetExternalId returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.ExternalId, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetExternalId() *string {
+	return v.TimeScheduleSummaryFields.ExternalId
+}
+
+// GetExternalUrl returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.ExternalUrl, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetExternalUrl() *string {
+	return v.TimeScheduleSummaryFields.ExternalUrl
+}
+
+// GetIntegration returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.Integration, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetIntegration() *TimeScheduleSummaryFieldsIntegration {
+	return v.TimeScheduleSummaryFields.Integration
+}
+
+// GetEntries returns timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule.Entries, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) GetEntries() []TimeScheduleSummaryFieldsEntriesTimeScheduleEntry {
+	return v.TimeScheduleSummaryFields.Entries
+}
+
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TimeScheduleSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaltimeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ExternalId *string `json:"externalId"`
+
+	ExternalUrl *string `json:"externalUrl"`
+
+	Integration *TimeScheduleSummaryFieldsIntegration `json:"integration"`
+
+	Entries []TimeScheduleSummaryFieldsEntriesTimeScheduleEntry `json:"entries"`
+}
+
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule) __premarshalJSON() (*__premarshaltimeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule, error) {
+	var retval __premarshaltimeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule
+
+	retval.Id = v.TimeScheduleSummaryFields.Id
+	retval.Name = v.TimeScheduleSummaryFields.Name
+	retval.CreatedAt = v.TimeScheduleSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TimeScheduleSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TimeScheduleSummaryFields.ArchivedAt
+	retval.ExternalId = v.TimeScheduleSummaryFields.ExternalId
+	retval.ExternalUrl = v.TimeScheduleSummaryFields.ExternalUrl
+	retval.Integration = v.TimeScheduleSummaryFields.Integration
+	retval.Entries = v.TimeScheduleSummaryFields.Entries
+	return &retval, nil
+}
+
+// timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // userResponse is returned by user on success.
 type userResponse struct {
 	// Fetches a specific user by their ID.
@@ -21097,6 +21531,120 @@ func team_members(
 	}
 
 	data_ = &team_membersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by timeSchedule.
+const timeSchedule_Operation = `
+query timeSchedule ($id: String!) {
+	timeSchedule(id: $id) {
+		... TimeScheduleSummaryFields
+	}
+}
+fragment TimeScheduleSummaryFields on TimeSchedule {
+	id
+	name
+	createdAt
+	updatedAt
+	archivedAt
+	externalId
+	externalUrl
+	integration {
+		id
+	}
+	entries {
+		startsAt
+		endsAt
+		userId
+		userEmail
+	}
+}
+`
+
+func timeSchedule(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *timeScheduleResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "timeSchedule",
+		Query:  timeSchedule_Operation,
+		Variables: &__timeScheduleInput{
+			Id: id,
+		},
+	}
+
+	data_ = &timeScheduleResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by timeSchedules.
+const timeSchedules_Operation = `
+query timeSchedules ($first: Int, $after: String, $includeArchived: Boolean) {
+	timeSchedules(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... TimeScheduleSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment TimeScheduleSummaryFields on TimeSchedule {
+	id
+	name
+	createdAt
+	updatedAt
+	archivedAt
+	externalId
+	externalUrl
+	integration {
+		id
+	}
+	entries {
+		startsAt
+		endsAt
+		userId
+		userEmail
+	}
+}
+`
+
+func timeSchedules(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *timeSchedulesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "timeSchedules",
+		Query:  timeSchedules_Operation,
+		Variables: &__timeSchedulesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &timeSchedulesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

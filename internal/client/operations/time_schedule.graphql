@@ -1,0 +1,36 @@
+query timeSchedules($first: Int, $after: String, $includeArchived: Boolean) {
+  timeSchedules(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...TimeScheduleSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query timeSchedule($id: String!) {
+  timeSchedule(id: $id) {
+    ...TimeScheduleSummaryFields
+  }
+}
+
+fragment TimeScheduleSummaryFields on TimeSchedule {
+  id
+  name
+  createdAt
+  updatedAt
+  archivedAt
+  externalId
+  externalUrl
+  integration {
+    id
+  }
+  entries {
+    startsAt
+    endsAt
+    userId
+    userEmail
+  }
+}

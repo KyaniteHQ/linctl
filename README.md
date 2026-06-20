@@ -102,6 +102,8 @@ linctl user get user-id
 linctl user me
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
+linctl time-schedule list --limit 20
+linctl time-schedule get time-schedule-id
 linctl initiative list --limit 20
 linctl initiative get initiative-id
 linctl roadmap list --limit 20
@@ -182,6 +184,8 @@ linctl team members team-id --limit 20
 linctl user me
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
+linctl time-schedule list --limit 20
+linctl time-schedule get time-schedule-id
 linctl initiative list --limit 20
 linctl initiative get initiative-id
 linctl roadmap list --limit 20
@@ -211,7 +215,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Organization, rate-limit, comment, ProjectUpdate, document, label, team, user, workflow-state, initiative, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Organization, rate-limit, comment, ProjectUpdate, document, label, team, user, workflow-state, time-schedule, initiative, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

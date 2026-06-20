@@ -191,6 +191,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"viewer":                   `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
 		"workflowStates":           `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"workflowState":            `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
+		"timeSchedules":            `{"timeSchedules":{"nodes":[{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"timeSchedule":             `{"timeSchedule":{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}}`,
 		"initiatives":              `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiative":               `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
 		"roadmaps":                 `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -298,6 +300,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	workflowStates, err := ListWorkflowStates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	workflowState, err := GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
+	require.NoError(t, err)
+	timeSchedules, err := ListTimeSchedules(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	timeSchedule, err := GetTimeScheduleByID(context.Background(), graphqlClient, "time-schedule-id")
 	require.NoError(t, err)
 	initiatives, err := ListInitiatives(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -444,6 +450,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "LIT", workflowStates.WorkflowStates[0].TeamKey)
 	require.Equal(t, "started", workflowState.Type)
 	require.Equal(t, "linctl", workflowState.TeamName)
+	require.True(t, timeSchedules.HasNextPage)
+	require.Equal(t, &endCursor, timeSchedules.EndCursor)
+	require.Equal(t, "Primary on-call", timeSchedules.TimeSchedules[0].Name)
+	require.Equal(t, 1, timeSchedule.EntryCount)
+	require.Equal(t, "integration-id", timeSchedule.IntegrationID)
+	require.Equal(t, "omer@example.com", timeSchedule.Entries[0].UserEmail)
 	require.True(t, initiatives.HasNextPage)
 	require.Equal(t, &endCursor, initiatives.EndCursor)
 	require.Equal(t, "Platform", initiatives.Initiatives[0].Name)
@@ -973,6 +985,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get workflow state workflow-state-id")
+
+		_, err = ListTimeSchedules(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list time schedules")
+
+		_, err = GetTimeScheduleByID(context.Background(), graphqlClient, "time-schedule-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get time schedule time-schedule-id")
 
 		_, err = ListInitiatives(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

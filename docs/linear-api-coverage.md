@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 59 | 458 |
-| Upstream Query root fields | 158 | 47 | 158 |
+| Upstream SDK root methods | 458 | 61 | 458 |
+| Upstream Query root fields | 158 | 49 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 85 | 85 | 85 |
-| Domain-map commands | 129 | 79 | 129 |
+| Local generated Go operations | 87 | 87 | 87 |
+| Domain-map commands | 135 | 81 | 135 |
 
 ## Upstream SDK Root Methods
 
@@ -390,10 +390,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `template` | method | safe_candidate | read operation may fit future CLI coverage |
 | `templates` | getter | safe_candidate | read operation may fit future CLI coverage |
 | `templatesForIntegration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `timeSchedule` | method | safe_candidate | read operation may fit future CLI coverage |
+| `timeSchedule` | method | implemented | local operation or command exists |
 | `timeScheduleRefreshIntegrationSchedule` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeScheduleUpsertExternal` | method | safe_candidate | read operation may fit future CLI coverage |
-| `timeSchedules` | method | safe_candidate | read operation may fit future CLI coverage |
+| `timeSchedules` | method | implemented | local operation or command exists |
 | `trackAnonymousEvent` | method | safe_candidate | read operation may fit future CLI coverage |
 | `triageResponsibilities` | method | safe_candidate | read operation may fit future CLI coverage |
 | `triageResponsibility` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -633,8 +633,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `template` | `Template!` | safe_candidate | read operation may fit future CLI coverage |
 | `templates` | `[Template!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `templatesForIntegration` | `[Template!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `timeSchedule` | `TimeSchedule!` | safe_candidate | read operation may fit future CLI coverage |
-| `timeSchedules` | `TimeScheduleConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `timeSchedule` | `TimeSchedule!` | implemented | root field used by local GraphQL operation |
+| `timeSchedules` | `TimeScheduleConnection!` | implemented | root field used by local GraphQL operation |
 | `triageResponsibilities` | `TriageResponsibilityConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `triageResponsibility` | `TriageResponsibility!` | safe_candidate | read operation may fit future CLI coverage |
 | `user` | `User!` | implemented | root field used by local GraphQL operation |
@@ -1101,6 +1101,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
+| `timeSchedule` | query | `timeSchedule` | implemented | `internal/client/generated.go` |
+| `timeSchedules` | query | `timeSchedules` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
 | `users` | query | `users` | implemented | `internal/client/generated.go` |
 | `viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
@@ -1186,6 +1188,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| TimeSchedule | `time-schedule list` | `Query.timeSchedules` | Read-only | implemented | `linctl --help` / public CLI tests |
+| TimeSchedule | `time-schedule get` | `Query.timeSchedule` | Read-only | implemented | `linctl --help` / public CLI tests |
+| TimeSchedule | `time-schedule create` | `Mutation.timeScheduleCreate` | Blocked: schedule create needs explicit owner/admin safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| TimeSchedule | `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| TimeSchedule | `time-schedule delete` | `Mutation.timeScheduleDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |

@@ -287,6 +287,31 @@ Planned commands:
 
 Only `workflow-state list` and `workflow-state get` are implemented in the current CLI. WorkflowState writes are deferred as team/admin configuration surface.
 
+## TimeSchedule
+
+Use the schema name `TimeSchedule` in code and docs. It is Linear's on-call or availability schedule used by triage responsibilities.
+
+Schema backing:
+
+- Types: `TimeSchedule`, `TimeScheduleConnection`, `TimeScheduleEntry`
+- Reads: `Query.timeSchedules`, `Query.timeSchedule`
+- Writes: `Mutation.timeScheduleCreate`, `Mutation.timeScheduleUpdate`, `Mutation.timeScheduleDelete`, `Mutation.timeScheduleUpsertExternal`
+- Inputs: `TimeScheduleCreateInput`, `TimeScheduleUpdateInput`, `TimeScheduleEntryInput`
+- Relevant fields: `TimeSchedule.id`, `TimeSchedule.name`, `TimeSchedule.externalId`, `TimeSchedule.externalUrl`, `TimeSchedule.integration`, `TimeSchedule.entries`, `TimeSchedule.createdAt`, `TimeSchedule.updatedAt`, `TimeSchedule.archivedAt`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `time-schedule list` | `Query.timeSchedules` | Read-only |
+| `time-schedule get` | `Query.timeSchedule` | Read-only |
+| `time-schedule create` | `Mutation.timeScheduleCreate` | Blocked: schedule create needs explicit owner/admin safety semantics |
+| `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation |
+| `time-schedule delete` | `Mutation.timeScheduleDelete` | Blocked: destructive command needs explicit safety semantics |
+| `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow |
+
+Only `time-schedule list` and `time-schedule get` are implemented in the current CLI. TimeSchedule writes and external upserts are deferred as triage/admin configuration surface.
+
 ## Initiative
 
 Use the schema name `Initiative` in code and docs. It is Linear's strategic grouping of projects toward a goal.

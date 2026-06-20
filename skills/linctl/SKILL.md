@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for organization, rate-limit, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, initiative, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for organization, rate-limit, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, initiative, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -107,6 +107,8 @@ linctl user get USER_ID --json
 linctl user me --json
 linctl workflow-state list --json --limit 20
 linctl workflow-state get WORKFLOW_STATE_ID --json
+linctl time-schedule list --json --limit 20
+linctl time-schedule get TIME_SCHEDULE_ID --json
 linctl initiative list --json --limit 20
 linctl initiative get INITIATIVE_ID --json
 linctl roadmap list --json --limit 20
@@ -161,7 +163,7 @@ linctl project-milestone create PROJECT_ID --name "..." --json
 linctl project-milestone update PROJECT_MILESTONE_ID --name "..." --json
 ```
 
-Unsupported writes: comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; Document, label, team, user, WorkflowState, initiative, Roadmap, CustomView, Favorite, Emoji, and Attachment writes. Report the limit instead of bypassing `linctl`.
+Unsupported writes: comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; Document, label, team, user, WorkflowState, TimeSchedule, initiative, Roadmap, CustomView, Favorite, Emoji, and Attachment writes. Report the limit instead of bypassing `linctl`.
 
 Completion criterion: the selected command exists above and matches the requested domain.
 
