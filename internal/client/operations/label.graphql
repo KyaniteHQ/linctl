@@ -10,7 +10,7 @@ query IssueLabels($first: Int, $after: String, $includeArchived: Boolean) {
   }
 }
 
-query IssueLabelByID($id: String!) {
+query issueLabel($id: String!) {
   issueLabel(id: $id) {
     ...IssueLabelSummaryFields
   }

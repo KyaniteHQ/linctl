@@ -1038,7 +1038,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `IssueComments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `IssueCreate` | mutation | `issueCreate` | implemented | `internal/client/generated.go` |
 | `IssueDependencies` | query | `issue` | implemented | `internal/client/generated.go` |
-| `IssueLabelByID` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `IssueLabels` | query | `issueLabels` | implemented | `internal/client/generated.go` |
 | `IssueSearch` | query | `issues` | implemented | `internal/client/generated.go` |
 | `IssueUpdate` | mutation | `issueUpdate` | implemented | `internal/client/generated.go` |
@@ -1077,6 +1076,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
+| `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
 | `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |

@@ -1018,7 +1018,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "document list", args: []string{"document", "list"}, operation: "Documents", contains: "list documents"},
 		{name: "document get", args: []string{"document", "get", "document-id"}, operation: "document", contains: "get document document-id"},
 		{name: "label list", args: []string{"label", "list"}, operation: "IssueLabels", contains: "list labels"},
-		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "IssueLabelByID", contains: "get label label-id"},
+		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "issueLabel", contains: "get label label-id"},
 		{name: "team list", args: []string{"team", "list"}, operation: "Teams", contains: "list teams"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, operation: "TeamByID", contains: "get team team-id"},
 		{name: "team members", args: []string{"team", "members", "team-id"}, operation: "TeamMembers", contains: "list team members team-id"},
@@ -1300,7 +1300,7 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 		) + `}`, true
 	case "IssueLabels":
 		return `{"issueLabels":{"nodes":[` + commandLabelJSON("label body") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssueLabelByID":
+	case "issueLabel":
 		return `{"issueLabel":` + commandLabelJSON("") + `}`, true
 	case "TeamByID":
 		return `{"team":` + commandTeamJSON(true) + `}`, true

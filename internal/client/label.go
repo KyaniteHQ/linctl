@@ -47,7 +47,7 @@ func ListLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (L
 
 // GetLabelByID returns one IssueLabel by id.
 func GetLabelByID(ctx context.Context, graphqlClient graphql.Client, id string) (LabelSummary, error) {
-	label, err := IssueLabelByID(ctx, graphqlClient, id)
+	label, err := issueLabel(ctx, graphqlClient, id)
 	if err != nil {
 		return LabelSummary{}, fmt.Errorf("get label %s: %w", id, err)
 	}

@@ -3737,108 +3737,6 @@ type IssueDependenciesResponse struct {
 // GetIssue returns IssueDependenciesResponse.Issue, and is useful for accessing the field via an interface.
 func (v *IssueDependenciesResponse) GetIssue() IssueDependenciesIssue { return v.Issue }
 
-// IssueLabelByIDIssueLabel includes the requested fields of the GraphQL type IssueLabel.
-// The GraphQL type's documentation follows.
-//
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
-type IssueLabelByIDIssueLabel struct {
-	IssueLabelSummaryFields `json:"-"`
-}
-
-// GetId returns IssueLabelByIDIssueLabel.Id, and is useful for accessing the field via an interface.
-func (v *IssueLabelByIDIssueLabel) GetId() string { return v.IssueLabelSummaryFields.Id }
-
-// GetName returns IssueLabelByIDIssueLabel.Name, and is useful for accessing the field via an interface.
-func (v *IssueLabelByIDIssueLabel) GetName() string { return v.IssueLabelSummaryFields.Name }
-
-// GetDescription returns IssueLabelByIDIssueLabel.Description, and is useful for accessing the field via an interface.
-func (v *IssueLabelByIDIssueLabel) GetDescription() *string {
-	return v.IssueLabelSummaryFields.Description
-}
-
-// GetColor returns IssueLabelByIDIssueLabel.Color, and is useful for accessing the field via an interface.
-func (v *IssueLabelByIDIssueLabel) GetColor() string { return v.IssueLabelSummaryFields.Color }
-
-// GetIsGroup returns IssueLabelByIDIssueLabel.IsGroup, and is useful for accessing the field via an interface.
-func (v *IssueLabelByIDIssueLabel) GetIsGroup() bool { return v.IssueLabelSummaryFields.IsGroup }
-
-// GetTeam returns IssueLabelByIDIssueLabel.Team, and is useful for accessing the field via an interface.
-func (v *IssueLabelByIDIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
-	return v.IssueLabelSummaryFields.Team
-}
-
-func (v *IssueLabelByIDIssueLabel) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*IssueLabelByIDIssueLabel
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.IssueLabelByIDIssueLabel = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.IssueLabelSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalIssueLabelByIDIssueLabel struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	Description *string `json:"description"`
-
-	Color string `json:"color"`
-
-	IsGroup bool `json:"isGroup"`
-
-	Team *IssueLabelSummaryFieldsTeam `json:"team"`
-}
-
-func (v *IssueLabelByIDIssueLabel) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *IssueLabelByIDIssueLabel) __premarshalJSON() (*__premarshalIssueLabelByIDIssueLabel, error) {
-	var retval __premarshalIssueLabelByIDIssueLabel
-
-	retval.Id = v.IssueLabelSummaryFields.Id
-	retval.Name = v.IssueLabelSummaryFields.Name
-	retval.Description = v.IssueLabelSummaryFields.Description
-	retval.Color = v.IssueLabelSummaryFields.Color
-	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
-	retval.Team = v.IssueLabelSummaryFields.Team
-	return &retval, nil
-}
-
-// IssueLabelByIDResponse is returned by IssueLabelByID on success.
-type IssueLabelByIDResponse struct {
-	// One specific label, looked up by its unique identifier.
-	IssueLabel IssueLabelByIDIssueLabel `json:"issueLabel"`
-}
-
-// GetIssueLabel returns IssueLabelByIDResponse.IssueLabel, and is useful for accessing the field via an interface.
-func (v *IssueLabelByIDResponse) GetIssueLabel() IssueLabelByIDIssueLabel { return v.IssueLabel }
-
 // IssueLabelSummaryFields includes the GraphQL fields of IssueLabel requested by the fragment IssueLabelSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -10554,14 +10452,6 @@ func (v *__IssueDependenciesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __IssueDependenciesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__IssueDependenciesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
-// __IssueLabelByIDInput is used internally by genqlient
-type __IssueLabelByIDInput struct {
-	Id string `json:"id"`
-}
-
-// GetId returns __IssueLabelByIDInput.Id, and is useful for accessing the field via an interface.
-func (v *__IssueLabelByIDInput) GetId() string { return v.Id }
-
 // __IssueLabelsInput is used internally by genqlient
 type __IssueLabelsInput struct {
 	First           *int    `json:"first"`
@@ -11138,6 +11028,14 @@ type __documentInput struct {
 // GetId returns __documentInput.Id, and is useful for accessing the field via an interface.
 func (v *__documentInput) GetId() string { return v.Id }
 
+// __issueLabelInput is used internally by genqlient
+type __issueLabelInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __issueLabelInput.Id, and is useful for accessing the field via an interface.
+func (v *__issueLabelInput) GetId() string { return v.Id }
+
 // __projectUpdateInput is used internally by genqlient
 type __projectUpdateInput struct {
 	Id string `json:"id"`
@@ -11674,6 +11572,106 @@ type documentResponse struct {
 
 // GetDocument returns documentResponse.Document, and is useful for accessing the field via an interface.
 func (v *documentResponse) GetDocument() documentDocument { return v.Document }
+
+// issueLabelIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type issueLabelIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns issueLabelIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *issueLabelIssueLabel) GetId() string { return v.IssueLabelSummaryFields.Id }
+
+// GetName returns issueLabelIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *issueLabelIssueLabel) GetName() string { return v.IssueLabelSummaryFields.Name }
+
+// GetDescription returns issueLabelIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *issueLabelIssueLabel) GetDescription() *string { return v.IssueLabelSummaryFields.Description }
+
+// GetColor returns issueLabelIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *issueLabelIssueLabel) GetColor() string { return v.IssueLabelSummaryFields.Color }
+
+// GetIsGroup returns issueLabelIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *issueLabelIssueLabel) GetIsGroup() bool { return v.IssueLabelSummaryFields.IsGroup }
+
+// GetTeam returns issueLabelIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *issueLabelIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *issueLabelIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueLabelIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueLabelIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueLabelIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *issueLabelIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueLabelIssueLabel) __premarshalJSON() (*__premarshalissueLabelIssueLabel, error) {
+	var retval __premarshalissueLabelIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// issueLabelResponse is returned by issueLabel on success.
+type issueLabelResponse struct {
+	// One specific label, looked up by its unique identifier.
+	IssueLabel issueLabelIssueLabel `json:"issueLabel"`
+}
+
+// GetIssueLabel returns issueLabelResponse.IssueLabel, and is useful for accessing the field via an interface.
+func (v *issueLabelResponse) GetIssueLabel() issueLabelIssueLabel { return v.IssueLabel }
 
 // projectUpdateProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
@@ -13323,52 +13321,6 @@ func IssueDependencies(
 	}
 
 	data_ = &IssueDependenciesResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by IssueLabelByID.
-const IssueLabelByID_Operation = `
-query IssueLabelByID ($id: String!) {
-	issueLabel(id: $id) {
-		... IssueLabelSummaryFields
-	}
-}
-fragment IssueLabelSummaryFields on IssueLabel {
-	id
-	name
-	description
-	color
-	isGroup
-	team {
-		id
-		key
-		name
-	}
-}
-`
-
-func IssueLabelByID(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-) (data_ *IssueLabelByIDResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "IssueLabelByID",
-		Query:  IssueLabelByID_Operation,
-		Variables: &__IssueLabelByIDInput{
-			Id: id,
-		},
-	}
-
-	data_ = &IssueLabelByIDResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -15756,6 +15708,52 @@ func document(
 	}
 
 	data_ = &documentResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueLabel.
+const issueLabel_Operation = `
+query issueLabel ($id: String!) {
+	issueLabel(id: $id) {
+		... IssueLabelSummaryFields
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func issueLabel(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *issueLabelResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueLabel",
+		Query:  issueLabel_Operation,
+		Variables: &__issueLabelInput{
+			Id: id,
+		},
+	}
+
+	data_ = &issueLabelResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
