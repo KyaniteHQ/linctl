@@ -66,6 +66,8 @@ type ProjectUpdateSummary struct {
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
 	URL         string `json:"url"`
+	ProjectID   string `json:"project_id,omitempty"`
+	ProjectName string `json:"project_name,omitempty"`
 	UserID      string `json:"user_id"`
 	Name        string `json:"name"`
 	DisplayName string `json:"display_name"`
@@ -179,6 +181,55 @@ func ListProjectUpdates(
 		HasNextPage: project.Project.ProjectUpdates.PageInfo.HasNextPage,
 		EndCursor:   project.Project.ProjectUpdates.PageInfo.EndCursor,
 	}, nil
+}
+
+// ListAllProjectUpdates returns visible project status updates across projects.
+func ListAllProjectUpdates(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectUpdateList, error) {
+	updatesResponse, err := projectUpdates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectUpdateList{}, fmt.Errorf("list project updates: %w", err)
+	}
+
+	updates := make([]ProjectUpdateSummary, 0, len(updatesResponse.ProjectUpdates.Nodes))
+	for _, update := range updatesResponse.ProjectUpdates.Nodes {
+		updates = append(updates, projectUpdateSummary(update.TopLevelProjectUpdateSummaryFields))
+	}
+
+	return ProjectUpdateList{
+		Updates:     updates,
+		HasNextPage: updatesResponse.ProjectUpdates.PageInfo.HasNextPage,
+		EndCursor:   updatesResponse.ProjectUpdates.PageInfo.EndCursor,
+	}, nil
+}
+
+// GetProjectUpdateByID returns one project update by Linear id.
+func GetProjectUpdateByID(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (ProjectUpdateSummary, error) {
+	update, err := projectUpdate(ctx, graphqlClient, id)
+	if err != nil {
+		return ProjectUpdateSummary{}, fmt.Errorf("get project update %s: %w", id, err)
+	}
+
+	return projectUpdateSummary(update.ProjectUpdate.TopLevelProjectUpdateSummaryFields), nil
+}
+
+func projectUpdateSummary(update TopLevelProjectUpdateSummaryFields) ProjectUpdateSummary {
+	return ProjectUpdateSummary{
+		ID:          update.Id,
+		Body:        update.Body,
+		Health:      string(update.Health),
+		CreatedAt:   update.CreatedAt,
+		UpdatedAt:   update.UpdatedAt,
+		URL:         update.Url,
+		ProjectID:   update.Project.Id,
+		ProjectName: update.Project.Name,
+		UserID:      update.User.Id,
+		Name:        update.User.Name,
+		DisplayName: update.User.DisplayName,
+	}
 }
 
 func projectSummaryFromFields(project ProjectSummaryFields) ProjectSummary {

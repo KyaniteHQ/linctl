@@ -296,18 +296,29 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/comment_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-57. Doctor health check
+57. ProjectUpdate list
+   - Success: `linctl project-update list --limit N` lists visible ProjectUpdates through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_update_list`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+58. ProjectUpdate get
+   - Success: `linctl project-update get PROJECT_UPDATE_ID` reads one ProjectUpdate by id.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_update_get`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+59. Doctor health check
    - Success: `linctl doctor` reports config load, token presence, and target confirmation without printing token values.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/doctor`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands/--json/doctor`.
 
-58. File-backed issue text
+60. File-backed issue text
    - Success: `linctl issue create --description-file FILE`, `linctl issue update --append-file FILE`, `linctl issue comment --body-file FILE`, and `linctl issue reply --body-file FILE` read local file contents before the existing guarded write path.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_read_issue_text_from_files`.
 
 ## Current Outcome
 
-All fifty-eight local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All sixty local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

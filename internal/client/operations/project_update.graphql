@@ -1,0 +1,35 @@
+query projectUpdates($first: Int, $after: String, $includeArchived: Boolean) {
+  projectUpdates(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...TopLevelProjectUpdateSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query projectUpdate($id: String!) {
+  projectUpdate(id: $id) {
+    ...TopLevelProjectUpdateSummaryFields
+  }
+}
+
+fragment TopLevelProjectUpdateSummaryFields on ProjectUpdate {
+  id
+  body
+  health
+  createdAt
+  updatedAt
+  url
+  project {
+    id
+    name
+  }
+  user {
+    id
+    name
+    displayName
+  }
+}

@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for issue, comment, project, Cycle, ProjectMilestone, document, label, team, user, and WorkflowState work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, and WorkflowState work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -89,6 +89,8 @@ linctl project list --json --limit 20
 linctl project get PROJECT_ID --json
 linctl project members PROJECT_ID --json --limit 20
 linctl project updates PROJECT_ID --json --limit 20
+linctl project-update list --json --limit 20
+linctl project-update get PROJECT_UPDATE_ID --json
 linctl project-milestone list PROJECT_ID --json --limit 20
 linctl project-milestone get PROJECT_MILESTONE_ID --json
 linctl document list --json --limit 20
@@ -134,7 +136,7 @@ linctl project-milestone create PROJECT_ID --name "..." --json
 linctl project-milestone update PROJECT_MILESTONE_ID --name "..." --json
 ```
 
-Unsupported writes: comment resolve/unresolve/edit/delete; ProjectMilestone delete; Document, label, team, user, and WorkflowState writes. Report the limit instead of bypassing `linctl`.
+Unsupported writes: comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; Document, label, team, user, and WorkflowState writes. Report the limit instead of bypassing `linctl`.
 
 Completion criterion: the selected command exists above and matches the requested domain.
 

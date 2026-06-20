@@ -64,6 +64,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project get", args: []string{"project", "get", "project-id"}, contains: "project-id Detail project [Backlog]"},
 		{name: "project members", args: []string{"project", "members", "project-id", "--limit", "1"}, contains: "user-id Omer"},
 		{name: "project updates", args: []string{"project", "updates", "project-id", "--limit", "1"}, contains: "project-update-id onTrack Omer First update"},
+		{name: "project update list", args: []string{"project-update", "list", "--limit", "1"}, contains: "project-update-id onTrack Omer First update"},
+		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, contains: "project-update-id onTrack Omer First update"},
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id", "--limit", "1"}, contains: "project-milestone-id Launch milestone [next]"},
 		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, contains: "project-milestone-id Created milestone [next]"},
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, contains: "project-milestone-id Updated milestone [done]"},
@@ -618,6 +620,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "project", "list", "--limit", "1"},
 		{"--json", "project", "members", "project-id", "--limit", "1"},
 		{"--json", "--fields", "id,health,display_name", "project", "updates", "project-id", "--limit", "1"},
+		{"--json", "--fields", "id,health,project_id", "project-update", "list", "--limit", "1"},
+		{"--json", "project-update", "get", "project-update-id"},
 		{"--json", "--fields", "id,name,status", "project-milestone", "list", "project-id", "--limit", "1"},
 		{"--json", "--fields", "id,title,parent_type", "document", "list", "--limit", "1"},
 		{"--json", "--fields", "id,name,color", "label", "list", "--limit", "1"},
@@ -1002,6 +1006,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project get", args: []string{"project", "get", "project-id"}, operation: "ProjectByID", contains: "get project project-id"},
 		{name: "project members", args: []string{"project", "members", "project-id"}, operation: "ProjectMembers", contains: "list project members project-id"},
 		{name: "project updates", args: []string{"project", "updates", "project-id"}, operation: "ProjectUpdates", contains: "list project updates project-id"},
+		{name: "project update list", args: []string{"project-update", "list"}, operation: "projectUpdates", contains: "list project updates"},
+		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, operation: "projectUpdate", contains: "get project update project-update-id"},
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id"}, operation: "ProjectMilestones", contains: "list project milestones project-id"},
 		{name: "project milestone get", args: []string{"project-milestone", "get", "project-milestone-id"}, operation: "ProjectMilestoneByID", contains: "get project milestone project-milestone-id"},
 		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, operation: "ProjectMilestoneCreate", contains: "create project milestone"},
@@ -1542,6 +1548,13 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 			return `{"project":{"id":"project-id","name":"Detail project","projectUpdates":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"project":{"id":"project-id","name":"Detail project","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "projectUpdates":
+		if fake.emptyProjectUpdates {
+			return `{"projectUpdates":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		}
+		return `{"projectUpdates":{"nodes":[` + commandProjectUpdateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "projectUpdate":
+		return `{"projectUpdate":` + commandProjectUpdateJSON() + `}`, true
 	case "ProjectMilestones":
 		if fake.emptyProjectMilestones {
 			return `{"project":{"id":"project-id","name":"Detail project","projectMilestones":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
@@ -1625,6 +1638,19 @@ func commandProjectJSON(name string, status string, statusType string) string {
 		"status":{"id":"status-id","name":"` + status + `","type":"` + statusType + `"},
 		"lead":null,
 		"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl"}]}
+	}`
+}
+
+func commandProjectUpdateJSON() string {
+	return `{
+		"id":"project-update-id",
+		"body":"First update",
+		"health":"onTrack",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"url":"https://linear.app/project-update/project-update-id",
+		"project":{"id":"project-id","name":"Pinned project"},
+		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
 	}`
 }
 

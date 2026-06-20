@@ -75,6 +75,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addDoneCommand(ctx, command, &options)
 	addCommentCommand(ctx, command, &options)
 	addProjectCommand(ctx, command, &options)
+	addProjectUpdateReadCommand(ctx, command, &options)
 	addProjectMilestoneCommand(ctx, command, &options)
 	addCycleCommand(ctx, command, &options)
 	addSprintCommand(ctx, command, &options)

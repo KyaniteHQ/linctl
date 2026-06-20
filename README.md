@@ -82,6 +82,8 @@ linctl cycle archive cycle-id
 linctl sprint current
 linctl sprint report cycle-id --limit 20
 linctl project updates project-id --limit 20
+linctl project-update list --limit 20
+linctl project-update get project-update-id
 linctl project-milestone list project-id --limit 20
 linctl project-milestone get project-milestone-id
 linctl project-milestone create project-id --name "Launch milestone"
@@ -145,6 +147,8 @@ linctl comment list --limit 20
 linctl comment get comment-id
 linctl project-milestone create project-id --name "Launch milestone"
 linctl project-milestone update project-milestone-id --name "Renamed milestone"
+linctl project-update list --limit 20
+linctl project-update get project-update-id
 linctl document list --limit 20
 linctl label list --limit 20
 linctl team members team-id --limit 20
@@ -157,7 +161,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Comment, document, label, team, user, and workflow-state commands are read-only in the current CLI.
+when configured. Comment, ProjectUpdate, document, label, team, user, and workflow-state commands are read-only in the current CLI.
 
 ## Development
 

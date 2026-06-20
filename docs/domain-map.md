@@ -91,6 +91,29 @@ Planned commands:
 
 Project is the first implemented PM domain; later domains should reuse its target-comparison vocabulary.
 
+## ProjectUpdate
+
+Use `ProjectUpdate` for Linear project status updates. Avoid calling these generic comments or notes.
+
+Schema backing:
+
+- Types: `ProjectUpdate`, `ProjectUpdateConnection`
+- Reads: `Query.projectUpdates`, `Query.projectUpdate`, `Project.projectUpdates`
+- Writes: `Mutation.projectUpdateCreate`, `Mutation.projectUpdateUpdate`, `Mutation.projectUpdateArchive`
+- Relevant fields: `ProjectUpdate.id`, `ProjectUpdate.body`, `ProjectUpdate.health`, `ProjectUpdate.createdAt`, `ProjectUpdate.updatedAt`, `ProjectUpdate.url`, `ProjectUpdate.project`, `ProjectUpdate.user`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `project-update list` | `Query.projectUpdates` | Read-only |
+| `project-update get` | `Query.projectUpdate` | Read-only |
+| `project-update create` | `Mutation.projectUpdateCreate` | Blocked: create must resolve and compare the target project before posting |
+| `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation |
+| `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics |
+
+Only `project-update list` and `project-update get` are implemented in the current top-level CLI. `project updates PROJECT_ID` remains the project-scoped history view.
+
 ## Cycle
 
 Schema backing:
