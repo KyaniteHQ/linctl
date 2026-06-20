@@ -162,6 +162,197 @@ func (v *CustomViewSummaryFields) GetColor() *string { return v.Color }
 // GetSlugId returns CustomViewSummaryFields.SlugId, and is useful for accessing the field via an interface.
 func (v *CustomViewSummaryFields) GetSlugId() string { return v.SlugId }
 
+// CustomerNeedSummaryFields includes the GraphQL fields of CustomerNeed requested by the fragment CustomerNeedSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type CustomerNeedSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// Whether the customer need is important or not. 0 = Not important, 1 = Important.
+	Priority float64 `json:"priority"`
+	// The body content of the need in Markdown format. Used to capture manual input
+	// about needs that cannot be directly tied to an attachment. Null if the need's
+	// content comes from an attached source.
+	Body *string `json:"body"`
+	// The effective Markdown content shown for this customer need. Returns the
+	// manually stored body when present, otherwise falls back to content extracted
+	// from the source attachment. Null if no content is available.
+	Content *string `json:"content"`
+	// The URL of the source attachment linked to this need, if any. Returns the URL
+	// from either the issue attachment or project attachment. Null if the need has
+	// no attached source.
+	Url *string `json:"url"`
+	// The customer organization this need belongs to. Null if the need has not yet been associated with a customer.
+	Customer *CustomerNeedSummaryFieldsCustomer `json:"customer"`
+	// The issue this need is linked to. Either issueId or projectId must be set.
+	// When set, the need's projectId is denormalized from the issue's project.
+	Issue *CustomerNeedSummaryFieldsIssue `json:"issue"`
+	// The project this need is linked to. For issue-based needs, this is
+	// denormalized from the issue's project. For project-only needs, this is set directly.
+	Project *CustomerNeedSummaryFieldsProject `json:"project"`
+}
+
+// GetId returns CustomerNeedSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns CustomerNeedSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns CustomerNeedSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns CustomerNeedSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetPriority returns CustomerNeedSummaryFields.Priority, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetPriority() float64 { return v.Priority }
+
+// GetBody returns CustomerNeedSummaryFields.Body, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetBody() *string { return v.Body }
+
+// GetContent returns CustomerNeedSummaryFields.Content, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetContent() *string { return v.Content }
+
+// GetUrl returns CustomerNeedSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetUrl() *string { return v.Url }
+
+// GetCustomer returns CustomerNeedSummaryFields.Customer, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetCustomer() *CustomerNeedSummaryFieldsCustomer {
+	return v.Customer
+}
+
+// GetIssue returns CustomerNeedSummaryFields.Issue, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetIssue() *CustomerNeedSummaryFieldsIssue { return v.Issue }
+
+// GetProject returns CustomerNeedSummaryFields.Project, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFields) GetProject() *CustomerNeedSummaryFieldsProject { return v.Project }
+
+// CustomerNeedSummaryFieldsCustomer includes the requested fields of the GraphQL type Customer.
+// The GraphQL type's documentation follows.
+//
+// A customer organization tracked in Linear's customer management system.
+// Customers represent external companies or organizations whose product requests
+// and feedback are captured as customer needs, which can be linked to issues and
+// projects. Customers can be associated with domains, external system IDs, Slack
+// channels, and managed by integrations such as Intercom or Salesforce.
+type CustomerNeedSummaryFieldsCustomer struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The display name of the customer organization.
+	Name string `json:"name"`
+}
+
+// GetId returns CustomerNeedSummaryFieldsCustomer.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFieldsCustomer) GetId() string { return v.Id }
+
+// GetName returns CustomerNeedSummaryFieldsCustomer.Name, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFieldsCustomer) GetName() string { return v.Name }
+
+// CustomerNeedSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type CustomerNeedSummaryFieldsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// The issue's title. This is the primary human-readable summary of the work item.
+	Title string `json:"title"`
+}
+
+// GetId returns CustomerNeedSummaryFieldsIssue.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFieldsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns CustomerNeedSummaryFieldsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFieldsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetTitle returns CustomerNeedSummaryFieldsIssue.Title, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFieldsIssue) GetTitle() string { return v.Title }
+
+// CustomerNeedSummaryFieldsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type CustomerNeedSummaryFieldsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+}
+
+// GetId returns CustomerNeedSummaryFieldsProject.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFieldsProject) GetId() string { return v.Id }
+
+// GetName returns CustomerNeedSummaryFieldsProject.Name, and is useful for accessing the field via an interface.
+func (v *CustomerNeedSummaryFieldsProject) GetName() string { return v.Name }
+
+// CustomerStatusSummaryFields includes the GraphQL fields of CustomerStatus requested by the fragment CustomerStatusSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A workspace-defined lifecycle status for customers (e.g., Active, Churned,
+// Trial). Customer statuses are ordered by position and displayed with a color in
+// the UI. Every workspace has at least one status, and a default status is
+// assigned to new customers when none is specified.
+type CustomerStatusSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The internal name of the status. Used as the default display name if no displayName is explicitly set.
+	Name string `json:"name"`
+	// The user-facing display name of the status shown in the UI. Defaults to the internal name if not explicitly set.
+	DisplayName string `json:"displayName"`
+	// The color of the status indicator in the UI, as a HEX string (e.g., '#ff0000').
+	Color string `json:"color"`
+	// An optional description explaining what this status represents in the customer lifecycle.
+	Description *string `json:"description"`
+	// The sort position of the status in the workspace's customer lifecycle flow.
+	// Lower values appear first. Collisions are automatically resolved by
+	// redistributing positions.
+	Position float64 `json:"position"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+// GetId returns CustomerStatusSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *CustomerStatusSummaryFields) GetId() string { return v.Id }
+
+// GetName returns CustomerStatusSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *CustomerStatusSummaryFields) GetName() string { return v.Name }
+
+// GetDisplayName returns CustomerStatusSummaryFields.DisplayName, and is useful for accessing the field via an interface.
+func (v *CustomerStatusSummaryFields) GetDisplayName() string { return v.DisplayName }
+
+// GetColor returns CustomerStatusSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *CustomerStatusSummaryFields) GetColor() string { return v.Color }
+
+// GetDescription returns CustomerStatusSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *CustomerStatusSummaryFields) GetDescription() *string { return v.Description }
+
+// GetPosition returns CustomerStatusSummaryFields.Position, and is useful for accessing the field via an interface.
+func (v *CustomerStatusSummaryFields) GetPosition() float64 { return v.Position }
+
+// GetArchivedAt returns CustomerStatusSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *CustomerStatusSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
 // CustomerSummaryFields includes the GraphQL fields of Customer requested by the fragment CustomerSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -314,6 +505,53 @@ func (v *CustomerSummaryFieldsTierCustomerTier) GetId() string { return v.Id }
 
 // GetName returns CustomerSummaryFieldsTierCustomerTier.Name, and is useful for accessing the field via an interface.
 func (v *CustomerSummaryFieldsTierCustomerTier) GetName() string { return v.Name }
+
+// CustomerTierSummaryFields includes the GraphQL fields of CustomerTier requested by the fragment CustomerTierSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A workspace-defined tier or segment for categorizing customers (e.g.,
+// Enterprise, Pro, Free). Customer tiers are used for prioritization and
+// filtering, are ordered by position, and displayed with a color in the UI. Tier
+// names are unique within a workspace.
+type CustomerTierSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The internal name of the tier. Must be unique within the workspace. Used as
+	// the default display name if no displayName is explicitly set.
+	Name string `json:"name"`
+	// The user-facing display name of the tier shown in the UI. Defaults to the internal name if not explicitly set.
+	DisplayName string `json:"displayName"`
+	// The color of the tier indicator in the UI, as a HEX string (e.g., '#ff0000').
+	Color string `json:"color"`
+	// An optional description explaining what this tier represents and its intended use for customer segmentation.
+	Description *string `json:"description"`
+	// The sort position of the tier in the workspace's customer tier ordering. Lower
+	// values appear first. Collisions are automatically resolved by redistributing positions.
+	Position float64 `json:"position"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+// GetId returns CustomerTierSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *CustomerTierSummaryFields) GetId() string { return v.Id }
+
+// GetName returns CustomerTierSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *CustomerTierSummaryFields) GetName() string { return v.Name }
+
+// GetDisplayName returns CustomerTierSummaryFields.DisplayName, and is useful for accessing the field via an interface.
+func (v *CustomerTierSummaryFields) GetDisplayName() string { return v.DisplayName }
+
+// GetColor returns CustomerTierSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *CustomerTierSummaryFields) GetColor() string { return v.Color }
+
+// GetDescription returns CustomerTierSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *CustomerTierSummaryFields) GetDescription() *string { return v.Description }
+
+// GetPosition returns CustomerTierSummaryFields.Position, and is useful for accessing the field via an interface.
+func (v *CustomerTierSummaryFields) GetPosition() float64 { return v.Position }
+
+// GetArchivedAt returns CustomerTierSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *CustomerTierSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
 
 // CycleArchiveCycleArchiveCycleArchivePayload includes the requested fields of the GraphQL type CycleArchivePayload.
 // The GraphQL type's documentation follows.
@@ -9248,6 +9486,78 @@ type __customerInput struct {
 // GetId returns __customerInput.Id, and is useful for accessing the field via an interface.
 func (v *__customerInput) GetId() string { return v.Id }
 
+// __customerNeedInput is used internally by genqlient
+type __customerNeedInput struct {
+	Id *string `json:"id"`
+}
+
+// GetId returns __customerNeedInput.Id, and is useful for accessing the field via an interface.
+func (v *__customerNeedInput) GetId() *string { return v.Id }
+
+// __customerNeedsInput is used internally by genqlient
+type __customerNeedsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __customerNeedsInput.First, and is useful for accessing the field via an interface.
+func (v *__customerNeedsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __customerNeedsInput.After, and is useful for accessing the field via an interface.
+func (v *__customerNeedsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __customerNeedsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__customerNeedsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __customerStatusInput is used internally by genqlient
+type __customerStatusInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __customerStatusInput.Id, and is useful for accessing the field via an interface.
+func (v *__customerStatusInput) GetId() string { return v.Id }
+
+// __customerStatusesInput is used internally by genqlient
+type __customerStatusesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __customerStatusesInput.First, and is useful for accessing the field via an interface.
+func (v *__customerStatusesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __customerStatusesInput.After, and is useful for accessing the field via an interface.
+func (v *__customerStatusesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __customerStatusesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__customerStatusesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __customerTierInput is used internally by genqlient
+type __customerTierInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __customerTierInput.Id, and is useful for accessing the field via an interface.
+func (v *__customerTierInput) GetId() string { return v.Id }
+
+// __customerTiersInput is used internally by genqlient
+type __customerTiersInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __customerTiersInput.First, and is useful for accessing the field via an interface.
+func (v *__customerTiersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __customerTiersInput.After, and is useful for accessing the field via an interface.
+func (v *__customerTiersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __customerTiersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__customerTiersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __customersInput is used internally by genqlient
 type __customersInput struct {
 	First           *int    `json:"first"`
@@ -10786,6 +11096,332 @@ func (v *customerCustomer) __premarshalJSON() (*__premarshalcustomerCustomer, er
 	return &retval, nil
 }
 
+// customerNeedCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type customerNeedCustomerNeed struct {
+	CustomerNeedSummaryFields `json:"-"`
+}
+
+// GetId returns customerNeedCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetId() string { return v.CustomerNeedSummaryFields.Id }
+
+// GetCreatedAt returns customerNeedCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns customerNeedCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns customerNeedCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedSummaryFields.ArchivedAt
+}
+
+// GetPriority returns customerNeedCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetPriority() float64 { return v.CustomerNeedSummaryFields.Priority }
+
+// GetBody returns customerNeedCustomerNeed.Body, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetBody() *string { return v.CustomerNeedSummaryFields.Body }
+
+// GetContent returns customerNeedCustomerNeed.Content, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetContent() *string { return v.CustomerNeedSummaryFields.Content }
+
+// GetUrl returns customerNeedCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetUrl() *string { return v.CustomerNeedSummaryFields.Url }
+
+// GetCustomer returns customerNeedCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetCustomer() *CustomerNeedSummaryFieldsCustomer {
+	return v.CustomerNeedSummaryFields.Customer
+}
+
+// GetIssue returns customerNeedCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetIssue() *CustomerNeedSummaryFieldsIssue {
+	return v.CustomerNeedSummaryFields.Issue
+}
+
+// GetProject returns customerNeedCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *customerNeedCustomerNeed) GetProject() *CustomerNeedSummaryFieldsProject {
+	return v.CustomerNeedSummaryFields.Project
+}
+
+func (v *customerNeedCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customerNeedCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customerNeedCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomerNeedCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Body *string `json:"body"`
+
+	Content *string `json:"content"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedSummaryFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedSummaryFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedSummaryFieldsProject `json:"project"`
+}
+
+func (v *customerNeedCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customerNeedCustomerNeed) __premarshalJSON() (*__premarshalcustomerNeedCustomerNeed, error) {
+	var retval __premarshalcustomerNeedCustomerNeed
+
+	retval.Id = v.CustomerNeedSummaryFields.Id
+	retval.CreatedAt = v.CustomerNeedSummaryFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedSummaryFields.ArchivedAt
+	retval.Priority = v.CustomerNeedSummaryFields.Priority
+	retval.Body = v.CustomerNeedSummaryFields.Body
+	retval.Content = v.CustomerNeedSummaryFields.Content
+	retval.Url = v.CustomerNeedSummaryFields.Url
+	retval.Customer = v.CustomerNeedSummaryFields.Customer
+	retval.Issue = v.CustomerNeedSummaryFields.Issue
+	retval.Project = v.CustomerNeedSummaryFields.Project
+	return &retval, nil
+}
+
+// customerNeedResponse is returned by customerNeed on success.
+type customerNeedResponse struct {
+	// Retrieves a single customer need by ID or hash.
+	CustomerNeed customerNeedCustomerNeed `json:"customerNeed"`
+}
+
+// GetCustomerNeed returns customerNeedResponse.CustomerNeed, and is useful for accessing the field via an interface.
+func (v *customerNeedResponse) GetCustomerNeed() customerNeedCustomerNeed { return v.CustomerNeed }
+
+// customerNeedsCustomerNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
+type customerNeedsCustomerNeedsCustomerNeedConnection struct {
+	Nodes    []customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed `json:"nodes"`
+	PageInfo customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns customerNeedsCustomerNeedsCustomerNeedConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnection) GetNodes() []customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed {
+	return v.Nodes
+}
+
+// GetPageInfo returns customerNeedsCustomerNeedsCustomerNeedConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnection) GetPageInfo() customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo {
+	return v.PageInfo
+}
+
+// customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	CustomerNeedSummaryFields `json:"-"`
+}
+
+// GetId returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetId() string {
+	return v.CustomerNeedSummaryFields.Id
+}
+
+// GetCreatedAt returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedSummaryFields.ArchivedAt
+}
+
+// GetPriority returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetPriority() float64 {
+	return v.CustomerNeedSummaryFields.Priority
+}
+
+// GetBody returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Body, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetBody() *string {
+	return v.CustomerNeedSummaryFields.Body
+}
+
+// GetContent returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Content, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetContent() *string {
+	return v.CustomerNeedSummaryFields.Content
+}
+
+// GetUrl returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUrl() *string {
+	return v.CustomerNeedSummaryFields.Url
+}
+
+// GetCustomer returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCustomer() *CustomerNeedSummaryFieldsCustomer {
+	return v.CustomerNeedSummaryFields.Customer
+}
+
+// GetIssue returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetIssue() *CustomerNeedSummaryFieldsIssue {
+	return v.CustomerNeedSummaryFields.Issue
+}
+
+// GetProject returns customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) GetProject() *CustomerNeedSummaryFieldsProject {
+	return v.CustomerNeedSummaryFields.Project
+}
+
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Body *string `json:"body"`
+
+	Content *string `json:"content"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedSummaryFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedSummaryFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedSummaryFieldsProject `json:"project"`
+}
+
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed) __premarshalJSON() (*__premarshalcustomerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed, error) {
+	var retval __premarshalcustomerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed
+
+	retval.Id = v.CustomerNeedSummaryFields.Id
+	retval.CreatedAt = v.CustomerNeedSummaryFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedSummaryFields.ArchivedAt
+	retval.Priority = v.CustomerNeedSummaryFields.Priority
+	retval.Body = v.CustomerNeedSummaryFields.Body
+	retval.Content = v.CustomerNeedSummaryFields.Content
+	retval.Url = v.CustomerNeedSummaryFields.Url
+	retval.Customer = v.CustomerNeedSummaryFields.Customer
+	retval.Issue = v.CustomerNeedSummaryFields.Issue
+	retval.Project = v.CustomerNeedSummaryFields.Project
+	return &retval, nil
+}
+
+// customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *customerNeedsCustomerNeedsCustomerNeedConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// customerNeedsResponse is returned by customerNeeds on success.
+type customerNeedsResponse struct {
+	// All customer needs in the workspace, with optional filtering.
+	CustomerNeeds customerNeedsCustomerNeedsCustomerNeedConnection `json:"customerNeeds"`
+}
+
+// GetCustomerNeeds returns customerNeedsResponse.CustomerNeeds, and is useful for accessing the field via an interface.
+func (v *customerNeedsResponse) GetCustomerNeeds() customerNeedsCustomerNeedsCustomerNeedConnection {
+	return v.CustomerNeeds
+}
+
 // customerResponse is returned by customer on success.
 type customerResponse struct {
 	// Retrieves a single customer by ID or slug.
@@ -10794,6 +11430,534 @@ type customerResponse struct {
 
 // GetCustomer returns customerResponse.Customer, and is useful for accessing the field via an interface.
 func (v *customerResponse) GetCustomer() customerCustomer { return v.Customer }
+
+// customerStatusCustomerStatus includes the requested fields of the GraphQL type CustomerStatus.
+// The GraphQL type's documentation follows.
+//
+// A workspace-defined lifecycle status for customers (e.g., Active, Churned,
+// Trial). Customer statuses are ordered by position and displayed with a color in
+// the UI. Every workspace has at least one status, and a default status is
+// assigned to new customers when none is specified.
+type customerStatusCustomerStatus struct {
+	CustomerStatusSummaryFields `json:"-"`
+}
+
+// GetId returns customerStatusCustomerStatus.Id, and is useful for accessing the field via an interface.
+func (v *customerStatusCustomerStatus) GetId() string { return v.CustomerStatusSummaryFields.Id }
+
+// GetName returns customerStatusCustomerStatus.Name, and is useful for accessing the field via an interface.
+func (v *customerStatusCustomerStatus) GetName() string { return v.CustomerStatusSummaryFields.Name }
+
+// GetDisplayName returns customerStatusCustomerStatus.DisplayName, and is useful for accessing the field via an interface.
+func (v *customerStatusCustomerStatus) GetDisplayName() string {
+	return v.CustomerStatusSummaryFields.DisplayName
+}
+
+// GetColor returns customerStatusCustomerStatus.Color, and is useful for accessing the field via an interface.
+func (v *customerStatusCustomerStatus) GetColor() string { return v.CustomerStatusSummaryFields.Color }
+
+// GetDescription returns customerStatusCustomerStatus.Description, and is useful for accessing the field via an interface.
+func (v *customerStatusCustomerStatus) GetDescription() *string {
+	return v.CustomerStatusSummaryFields.Description
+}
+
+// GetPosition returns customerStatusCustomerStatus.Position, and is useful for accessing the field via an interface.
+func (v *customerStatusCustomerStatus) GetPosition() float64 {
+	return v.CustomerStatusSummaryFields.Position
+}
+
+// GetArchivedAt returns customerStatusCustomerStatus.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customerStatusCustomerStatus) GetArchivedAt() *string {
+	return v.CustomerStatusSummaryFields.ArchivedAt
+}
+
+func (v *customerStatusCustomerStatus) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customerStatusCustomerStatus
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customerStatusCustomerStatus = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerStatusSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomerStatusCustomerStatus struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Color string `json:"color"`
+
+	Description *string `json:"description"`
+
+	Position float64 `json:"position"`
+
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+func (v *customerStatusCustomerStatus) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customerStatusCustomerStatus) __premarshalJSON() (*__premarshalcustomerStatusCustomerStatus, error) {
+	var retval __premarshalcustomerStatusCustomerStatus
+
+	retval.Id = v.CustomerStatusSummaryFields.Id
+	retval.Name = v.CustomerStatusSummaryFields.Name
+	retval.DisplayName = v.CustomerStatusSummaryFields.DisplayName
+	retval.Color = v.CustomerStatusSummaryFields.Color
+	retval.Description = v.CustomerStatusSummaryFields.Description
+	retval.Position = v.CustomerStatusSummaryFields.Position
+	retval.ArchivedAt = v.CustomerStatusSummaryFields.ArchivedAt
+	return &retval, nil
+}
+
+// customerStatusResponse is returned by customerStatus on success.
+type customerStatusResponse struct {
+	// One specific customer status.
+	CustomerStatus customerStatusCustomerStatus `json:"customerStatus"`
+}
+
+// GetCustomerStatus returns customerStatusResponse.CustomerStatus, and is useful for accessing the field via an interface.
+func (v *customerStatusResponse) GetCustomerStatus() customerStatusCustomerStatus {
+	return v.CustomerStatus
+}
+
+// customerStatusesCustomerStatusesCustomerStatusConnection includes the requested fields of the GraphQL type CustomerStatusConnection.
+type customerStatusesCustomerStatusesCustomerStatusConnection struct {
+	Nodes    []customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus `json:"nodes"`
+	PageInfo customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns customerStatusesCustomerStatusesCustomerStatusConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnection) GetNodes() []customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus {
+	return v.Nodes
+}
+
+// GetPageInfo returns customerStatusesCustomerStatusesCustomerStatusConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnection) GetPageInfo() customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo {
+	return v.PageInfo
+}
+
+// customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus includes the requested fields of the GraphQL type CustomerStatus.
+// The GraphQL type's documentation follows.
+//
+// A workspace-defined lifecycle status for customers (e.g., Active, Churned,
+// Trial). Customer statuses are ordered by position and displayed with a color in
+// the UI. Every workspace has at least one status, and a default status is
+// assigned to new customers when none is specified.
+type customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus struct {
+	CustomerStatusSummaryFields `json:"-"`
+}
+
+// GetId returns customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus.Id, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) GetId() string {
+	return v.CustomerStatusSummaryFields.Id
+}
+
+// GetName returns customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus.Name, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) GetName() string {
+	return v.CustomerStatusSummaryFields.Name
+}
+
+// GetDisplayName returns customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus.DisplayName, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) GetDisplayName() string {
+	return v.CustomerStatusSummaryFields.DisplayName
+}
+
+// GetColor returns customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus.Color, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) GetColor() string {
+	return v.CustomerStatusSummaryFields.Color
+}
+
+// GetDescription returns customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus.Description, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) GetDescription() *string {
+	return v.CustomerStatusSummaryFields.Description
+}
+
+// GetPosition returns customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus.Position, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) GetPosition() float64 {
+	return v.CustomerStatusSummaryFields.Position
+}
+
+// GetArchivedAt returns customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) GetArchivedAt() *string {
+	return v.CustomerStatusSummaryFields.ArchivedAt
+}
+
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerStatusSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Color string `json:"color"`
+
+	Description *string `json:"description"`
+
+	Position float64 `json:"position"`
+
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus) __premarshalJSON() (*__premarshalcustomerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus, error) {
+	var retval __premarshalcustomerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus
+
+	retval.Id = v.CustomerStatusSummaryFields.Id
+	retval.Name = v.CustomerStatusSummaryFields.Name
+	retval.DisplayName = v.CustomerStatusSummaryFields.DisplayName
+	retval.Color = v.CustomerStatusSummaryFields.Color
+	retval.Description = v.CustomerStatusSummaryFields.Description
+	retval.Position = v.CustomerStatusSummaryFields.Position
+	retval.ArchivedAt = v.CustomerStatusSummaryFields.ArchivedAt
+	return &retval, nil
+}
+
+// customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *customerStatusesCustomerStatusesCustomerStatusConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// customerStatusesResponse is returned by customerStatuses on success.
+type customerStatusesResponse struct {
+	// All customer statuses defined in the workspace.
+	CustomerStatuses customerStatusesCustomerStatusesCustomerStatusConnection `json:"customerStatuses"`
+}
+
+// GetCustomerStatuses returns customerStatusesResponse.CustomerStatuses, and is useful for accessing the field via an interface.
+func (v *customerStatusesResponse) GetCustomerStatuses() customerStatusesCustomerStatusesCustomerStatusConnection {
+	return v.CustomerStatuses
+}
+
+// customerTierCustomerTier includes the requested fields of the GraphQL type CustomerTier.
+// The GraphQL type's documentation follows.
+//
+// A workspace-defined tier or segment for categorizing customers (e.g.,
+// Enterprise, Pro, Free). Customer tiers are used for prioritization and
+// filtering, are ordered by position, and displayed with a color in the UI. Tier
+// names are unique within a workspace.
+type customerTierCustomerTier struct {
+	CustomerTierSummaryFields `json:"-"`
+}
+
+// GetId returns customerTierCustomerTier.Id, and is useful for accessing the field via an interface.
+func (v *customerTierCustomerTier) GetId() string { return v.CustomerTierSummaryFields.Id }
+
+// GetName returns customerTierCustomerTier.Name, and is useful for accessing the field via an interface.
+func (v *customerTierCustomerTier) GetName() string { return v.CustomerTierSummaryFields.Name }
+
+// GetDisplayName returns customerTierCustomerTier.DisplayName, and is useful for accessing the field via an interface.
+func (v *customerTierCustomerTier) GetDisplayName() string {
+	return v.CustomerTierSummaryFields.DisplayName
+}
+
+// GetColor returns customerTierCustomerTier.Color, and is useful for accessing the field via an interface.
+func (v *customerTierCustomerTier) GetColor() string { return v.CustomerTierSummaryFields.Color }
+
+// GetDescription returns customerTierCustomerTier.Description, and is useful for accessing the field via an interface.
+func (v *customerTierCustomerTier) GetDescription() *string {
+	return v.CustomerTierSummaryFields.Description
+}
+
+// GetPosition returns customerTierCustomerTier.Position, and is useful for accessing the field via an interface.
+func (v *customerTierCustomerTier) GetPosition() float64 { return v.CustomerTierSummaryFields.Position }
+
+// GetArchivedAt returns customerTierCustomerTier.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customerTierCustomerTier) GetArchivedAt() *string {
+	return v.CustomerTierSummaryFields.ArchivedAt
+}
+
+func (v *customerTierCustomerTier) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customerTierCustomerTier
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customerTierCustomerTier = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerTierSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomerTierCustomerTier struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Color string `json:"color"`
+
+	Description *string `json:"description"`
+
+	Position float64 `json:"position"`
+
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+func (v *customerTierCustomerTier) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customerTierCustomerTier) __premarshalJSON() (*__premarshalcustomerTierCustomerTier, error) {
+	var retval __premarshalcustomerTierCustomerTier
+
+	retval.Id = v.CustomerTierSummaryFields.Id
+	retval.Name = v.CustomerTierSummaryFields.Name
+	retval.DisplayName = v.CustomerTierSummaryFields.DisplayName
+	retval.Color = v.CustomerTierSummaryFields.Color
+	retval.Description = v.CustomerTierSummaryFields.Description
+	retval.Position = v.CustomerTierSummaryFields.Position
+	retval.ArchivedAt = v.CustomerTierSummaryFields.ArchivedAt
+	return &retval, nil
+}
+
+// customerTierResponse is returned by customerTier on success.
+type customerTierResponse struct {
+	// One specific customer tier.
+	CustomerTier customerTierCustomerTier `json:"customerTier"`
+}
+
+// GetCustomerTier returns customerTierResponse.CustomerTier, and is useful for accessing the field via an interface.
+func (v *customerTierResponse) GetCustomerTier() customerTierCustomerTier { return v.CustomerTier }
+
+// customerTiersCustomerTiersCustomerTierConnection includes the requested fields of the GraphQL type CustomerTierConnection.
+type customerTiersCustomerTiersCustomerTierConnection struct {
+	Nodes    []customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier `json:"nodes"`
+	PageInfo customerTiersCustomerTiersCustomerTierConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns customerTiersCustomerTiersCustomerTierConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnection) GetNodes() []customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier {
+	return v.Nodes
+}
+
+// GetPageInfo returns customerTiersCustomerTiersCustomerTierConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnection) GetPageInfo() customerTiersCustomerTiersCustomerTierConnectionPageInfo {
+	return v.PageInfo
+}
+
+// customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier includes the requested fields of the GraphQL type CustomerTier.
+// The GraphQL type's documentation follows.
+//
+// A workspace-defined tier or segment for categorizing customers (e.g.,
+// Enterprise, Pro, Free). Customer tiers are used for prioritization and
+// filtering, are ordered by position, and displayed with a color in the UI. Tier
+// names are unique within a workspace.
+type customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier struct {
+	CustomerTierSummaryFields `json:"-"`
+}
+
+// GetId returns customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier.Id, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) GetId() string {
+	return v.CustomerTierSummaryFields.Id
+}
+
+// GetName returns customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier.Name, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) GetName() string {
+	return v.CustomerTierSummaryFields.Name
+}
+
+// GetDisplayName returns customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier.DisplayName, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) GetDisplayName() string {
+	return v.CustomerTierSummaryFields.DisplayName
+}
+
+// GetColor returns customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier.Color, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) GetColor() string {
+	return v.CustomerTierSummaryFields.Color
+}
+
+// GetDescription returns customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier.Description, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) GetDescription() *string {
+	return v.CustomerTierSummaryFields.Description
+}
+
+// GetPosition returns customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier.Position, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) GetPosition() float64 {
+	return v.CustomerTierSummaryFields.Position
+}
+
+// GetArchivedAt returns customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) GetArchivedAt() *string {
+	return v.CustomerTierSummaryFields.ArchivedAt
+}
+
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerTierSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Color string `json:"color"`
+
+	Description *string `json:"description"`
+
+	Position float64 `json:"position"`
+
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier) __premarshalJSON() (*__premarshalcustomerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier, error) {
+	var retval __premarshalcustomerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier
+
+	retval.Id = v.CustomerTierSummaryFields.Id
+	retval.Name = v.CustomerTierSummaryFields.Name
+	retval.DisplayName = v.CustomerTierSummaryFields.DisplayName
+	retval.Color = v.CustomerTierSummaryFields.Color
+	retval.Description = v.CustomerTierSummaryFields.Description
+	retval.Position = v.CustomerTierSummaryFields.Position
+	retval.ArchivedAt = v.CustomerTierSummaryFields.ArchivedAt
+	return &retval, nil
+}
+
+// customerTiersCustomerTiersCustomerTierConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type customerTiersCustomerTiersCustomerTierConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns customerTiersCustomerTiersCustomerTierConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns customerTiersCustomerTiersCustomerTierConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *customerTiersCustomerTiersCustomerTierConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// customerTiersResponse is returned by customerTiers on success.
+type customerTiersResponse struct {
+	// All customer tiers defined in the workspace.
+	CustomerTiers customerTiersCustomerTiersCustomerTierConnection `json:"customerTiers"`
+}
+
+// GetCustomerTiers returns customerTiersResponse.CustomerTiers, and is useful for accessing the field via an interface.
+func (v *customerTiersResponse) GetCustomerTiers() customerTiersCustomerTiersCustomerTierConnection {
+	return v.CustomerTiers
+}
 
 // customersCustomersCustomerConnection includes the requested fields of the GraphQL type CustomerConnection.
 type customersCustomersCustomerConnection struct {
@@ -17682,6 +18846,322 @@ func customer(
 	}
 
 	data_ = &customerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customerNeed.
+const customerNeed_Operation = `
+query customerNeed ($id: String) {
+	customerNeed(id: $id) {
+		... CustomerNeedSummaryFields
+	}
+}
+fragment CustomerNeedSummaryFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	body
+	content
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func customerNeed(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id *string,
+) (data_ *customerNeedResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customerNeed",
+		Query:  customerNeed_Operation,
+		Variables: &__customerNeedInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customerNeedResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customerNeeds.
+const customerNeeds_Operation = `
+query customerNeeds ($first: Int, $after: String, $includeArchived: Boolean) {
+	customerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... CustomerNeedSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment CustomerNeedSummaryFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	body
+	content
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func customerNeeds(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *customerNeedsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customerNeeds",
+		Query:  customerNeeds_Operation,
+		Variables: &__customerNeedsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &customerNeedsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customerStatus.
+const customerStatus_Operation = `
+query customerStatus ($id: String!) {
+	customerStatus(id: $id) {
+		... CustomerStatusSummaryFields
+	}
+}
+fragment CustomerStatusSummaryFields on CustomerStatus {
+	id
+	name
+	displayName
+	color
+	description
+	position
+	archivedAt
+}
+`
+
+func customerStatus(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *customerStatusResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customerStatus",
+		Query:  customerStatus_Operation,
+		Variables: &__customerStatusInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customerStatusResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customerStatuses.
+const customerStatuses_Operation = `
+query customerStatuses ($first: Int, $after: String, $includeArchived: Boolean) {
+	customerStatuses(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... CustomerStatusSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment CustomerStatusSummaryFields on CustomerStatus {
+	id
+	name
+	displayName
+	color
+	description
+	position
+	archivedAt
+}
+`
+
+func customerStatuses(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *customerStatusesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customerStatuses",
+		Query:  customerStatuses_Operation,
+		Variables: &__customerStatusesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &customerStatusesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customerTier.
+const customerTier_Operation = `
+query customerTier ($id: String!) {
+	customerTier(id: $id) {
+		... CustomerTierSummaryFields
+	}
+}
+fragment CustomerTierSummaryFields on CustomerTier {
+	id
+	name
+	displayName
+	color
+	description
+	position
+	archivedAt
+}
+`
+
+func customerTier(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *customerTierResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customerTier",
+		Query:  customerTier_Operation,
+		Variables: &__customerTierInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customerTierResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customerTiers.
+const customerTiers_Operation = `
+query customerTiers ($first: Int, $after: String, $includeArchived: Boolean) {
+	customerTiers(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... CustomerTierSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment CustomerTierSummaryFields on CustomerTier {
+	id
+	name
+	displayName
+	color
+	description
+	position
+	archivedAt
+}
+`
+
+func customerTiers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *customerTiersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customerTiers",
+		Query:  customerTiers_Operation,
+		Variables: &__customerTiersInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &customerTiersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

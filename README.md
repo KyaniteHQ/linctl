@@ -109,6 +109,12 @@ linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
 linctl customer list --limit 20
 linctl customer get customer-id
+linctl customer-need list --limit 20
+linctl customer-need get customer-need-id
+linctl customer-status list --limit 20
+linctl customer-status get customer-status-id
+linctl customer-tier list --limit 20
+linctl customer-tier get customer-tier-id
 linctl favorite list --limit 20
 linctl favorite children favorite-folder-id --limit 20
 linctl favorite get favorite-id
@@ -181,6 +187,12 @@ linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
 linctl customer list --limit 20
 linctl customer get customer-id
+linctl customer-need list --limit 20
+linctl customer-need get customer-need-id
+linctl customer-status list --limit 20
+linctl customer-status get customer-status-id
+linctl customer-tier list --limit 20
+linctl customer-tier get customer-tier-id
 linctl favorite list --limit 20
 linctl favorite children favorite-folder-id --limit 20
 linctl favorite get favorite-id
@@ -195,7 +207,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Organization, rate-limit, comment, ProjectUpdate, document, label, team, user, workflow-state, initiative, custom-view, customer, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Organization, rate-limit, comment, ProjectUpdate, document, label, team, user, workflow-state, initiative, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

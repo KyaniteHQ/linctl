@@ -342,11 +342,11 @@ Use the schema name `Customer` in code and docs. It is Linear's customer organiz
 
 Schema backing:
 
-- Types: `Customer`, `CustomerConnection`
-- Reads: `Query.customers`, `Query.customer`
-- Writes: `Mutation.customerCreate`, `Mutation.customerUpdate`, `Mutation.customerArchive`
-- Inputs: `CustomerCreateInput`, `CustomerUpdateInput`
-- Relevant fields: `Customer.id`, `Customer.name`, `Customer.domains`, `Customer.externalIds`, `Customer.status`, `Customer.tier`, `Customer.owner`, `Customer.approximateNeedCount`, `Customer.slugId`, `Customer.url`
+- Types: `Customer`, `CustomerConnection`, `CustomerNeed`, `CustomerNeedConnection`, `CustomerStatus`, `CustomerStatusConnection`, `CustomerTier`, `CustomerTierConnection`
+- Reads: `Query.customers`, `Query.customer`, `Query.customerNeeds`, `Query.customerNeed`, `Query.customerStatuses`, `Query.customerStatus`, `Query.customerTiers`, `Query.customerTier`
+- Writes: `Mutation.customerCreate`, `Mutation.customerUpdate`, `Mutation.customerArchive`, `Mutation.customerNeedCreate`, `Mutation.customerNeedUpdate`, `Mutation.customerNeedArchive`, `Mutation.customerNeedDelete`, `Mutation.customerStatusCreate`, `Mutation.customerStatusUpdate`, `Mutation.customerStatusDelete`, `Mutation.customerTierCreate`, `Mutation.customerTierUpdate`, `Mutation.customerTierDelete`
+- Inputs: `CustomerCreateInput`, `CustomerUpdateInput`, `CustomerNeedCreateInput`, `CustomerNeedUpdateInput`, `CustomerStatusCreateInput`, `CustomerStatusUpdateInput`, `CustomerTierCreateInput`, `CustomerTierUpdateInput`
+- Relevant fields: `Customer.id`, `Customer.name`, `Customer.domains`, `Customer.externalIds`, `Customer.status`, `Customer.tier`, `Customer.owner`, `Customer.approximateNeedCount`, `Customer.slugId`, `Customer.url`, `CustomerNeed.id`, `CustomerNeed.customer`, `CustomerNeed.issue`, `CustomerNeed.project`, `CustomerNeed.priority`, `CustomerNeed.content`, `CustomerStatus.id`, `CustomerStatus.displayName`, `CustomerStatus.color`, `CustomerStatus.position`, `CustomerTier.id`, `CustomerTier.displayName`, `CustomerTier.color`, `CustomerTier.position`
 
 Command status:
 
@@ -354,11 +354,27 @@ Command status:
 | --- | --- | --- |
 | `customer list` | `Query.customers` | Read-only |
 | `customer get` | `Query.customer` | Read-only |
+| `customer-need list` | `Query.customerNeeds` | Read-only |
+| `customer-need get` | `Query.customerNeed` | Read-only |
+| `customer-status list` | `Query.customerStatuses` | Read-only |
+| `customer-status get` | `Query.customerStatus` | Read-only |
+| `customer-tier list` | `Query.customerTiers` | Read-only |
+| `customer-tier get` | `Query.customerTier` | Read-only |
 | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model |
 | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
 | `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics |
+| `customer-need create` | `Mutation.customerNeedCreate` | Blocked: need creation must prove the linked issue, project, or customer target before mutation |
+| `customer-need update` | `Mutation.customerNeedUpdate` | Blocked: update must resolve the need and compare the linked issue or project target before mutation |
+| `customer-need archive` | `Mutation.customerNeedArchive` | Blocked: destructive command needs explicit safety semantics |
+| `customer-need delete` | `Mutation.customerNeedDelete` | Blocked: destructive command needs explicit safety semantics |
+| `customer-status create` | `Mutation.customerStatusCreate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model |
+| `customer-status update` | `Mutation.customerStatusUpdate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model |
+| `customer-status delete` | `Mutation.customerStatusDelete` | Blocked: destructive admin command needs explicit safety semantics |
+| `customer-tier create` | `Mutation.customerTierCreate` | Blocked: workspace tier configuration needs an explicit admin safety model |
+| `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: workspace tier configuration needs an explicit admin safety model |
+| `customer-tier delete` | `Mutation.customerTierDelete` | Blocked: destructive admin command needs explicit safety semantics |
 
-Only `customer list` and `customer get` are implemented in the current CLI. Customer writes are deferred as organization-scoped CRM surface.
+Only Customer read commands are implemented in the current CLI. Customer, CustomerNeed, CustomerStatus, and CustomerTier writes are deferred until they have explicit target or admin safety models.
 
 ## Favorite
 

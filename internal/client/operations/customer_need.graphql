@@ -1,0 +1,41 @@
+query customerNeeds($first: Int, $after: String, $includeArchived: Boolean) {
+  customerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CustomerNeedSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query customerNeed($id: String) {
+  customerNeed(id: $id) {
+    ...CustomerNeedSummaryFields
+  }
+}
+
+fragment CustomerNeedSummaryFields on CustomerNeed {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  priority
+  body
+  content
+  url
+  customer {
+    id
+    name
+  }
+  issue {
+    id
+    identifier
+    title
+  }
+  project {
+    id
+    name
+  }
+}

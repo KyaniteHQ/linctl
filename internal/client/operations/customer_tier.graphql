@@ -1,0 +1,27 @@
+query customerTiers($first: Int, $after: String, $includeArchived: Boolean) {
+  customerTiers(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CustomerTierSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query customerTier($id: String!) {
+  customerTier(id: $id) {
+    ...CustomerTierSummaryFields
+  }
+}
+
+fragment CustomerTierSummaryFields on CustomerTier {
+  id
+  name
+  displayName
+  color
+  description
+  position
+  archivedAt
+}

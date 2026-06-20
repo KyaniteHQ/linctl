@@ -93,6 +93,12 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "customer list", args: []string{"customer", "list", "--limit", "1"}, contains: "customer-id Acme [Active] needs 3"},
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, contains: "customer-id Acme [Active] needs 3"},
+		{name: "customer need list", args: []string{"customer-need", "list", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
+		{name: "customer need get", args: []string{"customer-need", "get", "customer-need-id"}, contains: "customer-need-id Acme LIT-1 priority 1"},
+		{name: "customer status list", args: []string{"customer-status", "list", "--limit", "1"}, contains: "customer-status-id Active #00ff00 1"},
+		{name: "customer status get", args: []string{"customer-status", "get", "customer-status-id"}, contains: "customer-status-id Active #00ff00 1"},
+		{name: "customer tier list", args: []string{"customer-tier", "list", "--limit", "1"}, contains: "customer-tier-id Enterprise #0000ff 2"},
+		{name: "customer tier get", args: []string{"customer-tier", "get", "customer-tier-id"}, contains: "customer-tier-id Enterprise #0000ff 2"},
 		{name: "favorite list", args: []string{"favorite", "list", "--limit", "1"}, contains: "favorite-id [issue]"},
 		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id", "--limit", "1"}, contains: "favorite-child-id [project]"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, contains: "favorite-id [issue]"},
@@ -657,6 +663,12 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "custom-view", "get", "custom-view-id"},
 		{"--json", "customer", "list", "--limit", "1"},
 		{"--json", "customer", "get", "customer-id"},
+		{"--json", "customer-need", "list", "--limit", "1"},
+		{"--json", "customer-need", "get", "customer-need-id"},
+		{"--json", "customer-status", "list", "--limit", "1"},
+		{"--json", "customer-status", "get", "customer-status-id"},
+		{"--json", "customer-tier", "list", "--limit", "1"},
+		{"--json", "customer-tier", "get", "customer-tier-id"},
 		{"--json", "favorite", "list", "--limit", "1"},
 		{"--json", "favorite", "children", "favorite-folder-id", "--limit", "1"},
 		{"--json", "favorite", "get", "favorite-id"},
@@ -1073,6 +1085,12 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
 		{name: "customer list", args: []string{"customer", "list"}, operation: "customers", contains: "list customers"},
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, operation: "customer", contains: "get customer customer-id"},
+		{name: "customer need list", args: []string{"customer-need", "list"}, operation: "customerNeeds", contains: "list customer needs"},
+		{name: "customer need get", args: []string{"customer-need", "get", "customer-need-id"}, operation: "customerNeed", contains: "get customer need customer-need-id"},
+		{name: "customer status list", args: []string{"customer-status", "list"}, operation: "customerStatuses", contains: "list customer statuses"},
+		{name: "customer status get", args: []string{"customer-status", "get", "customer-status-id"}, operation: "customerStatus", contains: "get customer status customer-status-id"},
+		{name: "customer tier list", args: []string{"customer-tier", "list"}, operation: "customerTiers", contains: "list customer tiers"},
+		{name: "customer tier get", args: []string{"customer-tier", "get", "customer-tier-id"}, operation: "customerTier", contains: "get customer tier customer-tier-id"},
 		{name: "favorite list", args: []string{"favorite", "list"}, operation: "favorites", contains: "list favorites"},
 		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id"}, operation: "favorite_children", contains: "list favorite children favorite-folder-id"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, operation: "favorite", contains: "get favorite favorite-id"},
@@ -1410,6 +1428,7 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 	return commandFlowExtraReadPayload(operation)
 }
 
+//nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
 func commandFlowExtraReadPayload(operation string) (string, bool) {
 	switch operation {
 	case "customViews":
@@ -1422,6 +1441,18 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"customers":{"nodes":[` + commandCustomerJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customer":
 		return `{"customer":` + commandCustomerJSON() + `}`, true
+	case "customerNeeds":
+		return `{"customerNeeds":{"nodes":[` + commandCustomerNeedJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "customerNeed":
+		return `{"customerNeed":` + commandCustomerNeedJSON() + `}`, true
+	case "customerStatuses":
+		return `{"customerStatuses":{"nodes":[` + commandCustomerStatusJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "customerStatus":
+		return `{"customerStatus":` + commandCustomerStatusJSON() + `}`, true
+	case "customerTiers":
+		return `{"customerTiers":{"nodes":[` + commandCustomerTierJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "customerTier":
+		return `{"customerTier":` + commandCustomerTierJSON() + `}`, true
 	case "favorites":
 		return `{"favorites":{"nodes":[` + commandFavoriteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "favorite_children":
@@ -1890,6 +1921,46 @@ func commandCustomerJSON() string {
 		"approximateNeedCount":3,
 		"slugId":"acme",
 		"url":"https://linear.app/kyanite/customer/acme"
+	}`
+}
+
+func commandCustomerNeedJSON() string {
+	return `{
+		"id":"customer-need-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"priority":1,
+		"body":"Need body",
+		"content":"Need content",
+		"url":"https://example.com/need",
+		"customer":{"id":"customer-id","name":"Acme"},
+		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},
+		"project":{"id":"project-id","name":"Customer project"}
+	}`
+}
+
+func commandCustomerStatusJSON() string {
+	return `{
+		"id":"customer-status-id",
+		"name":"active",
+		"displayName":"Active",
+		"color":"#00ff00",
+		"description":"Active customers",
+		"position":1,
+		"archivedAt":null
+	}`
+}
+
+func commandCustomerTierJSON() string {
+	return `{
+		"id":"customer-tier-id",
+		"name":"enterprise",
+		"displayName":"Enterprise",
+		"color":"#0000ff",
+		"description":"Enterprise customers",
+		"position":2,
+		"archivedAt":null
 	}`
 }
 

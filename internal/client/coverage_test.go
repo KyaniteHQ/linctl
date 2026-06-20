@@ -198,6 +198,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"customView":               `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
 		"customers":                `{"customers":{"nodes":[{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customer":                 `{"customer":{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}}`,
+		"customerNeeds":            `{"customerNeeds":{"nodes":[{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customerNeed":             `{"customerNeed":{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}}`,
+		"customerStatuses":         `{"customerStatuses":{"nodes":[{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customerStatus":           `{"customerStatus":{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}}`,
+		"customerTiers":            `{"customerTiers":{"nodes":[{"id":"customer-tier-id","name":"enterprise","displayName":"Enterprise","color":"#0000ff","description":"Enterprise customers","position":2,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customerTier":             `{"customerTier":{"id":"customer-tier-id","name":"enterprise","displayName":"Enterprise","color":"#0000ff","description":"Enterprise customers","position":2,"archivedAt":null}}`,
 		"favorites":                `{"favorites":{"nodes":[{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"favorite_children":        `{"favorite":{"children":{"nodes":[{"id":"favorite-child-id","type":"project","folderName":null,"url":"https://linear.app/kyanite/project/project-id"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"favorite":                 `{"favorite":{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}}`,
@@ -304,6 +310,18 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	customers, err := ListCustomers(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	customer, err := GetCustomerByID(context.Background(), graphqlClient, "customer-id")
+	require.NoError(t, err)
+	customerNeeds, err := ListCustomerNeeds(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	customerNeed, err := GetCustomerNeedByID(context.Background(), graphqlClient, "customer-need-id")
+	require.NoError(t, err)
+	customerStatuses, err := ListCustomerStatuses(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	customerStatus, err := GetCustomerStatusByID(context.Background(), graphqlClient, "customer-status-id")
+	require.NoError(t, err)
+	customerTiers, err := ListCustomerTiers(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	customerTier, err := GetCustomerTierByID(context.Background(), graphqlClient, "customer-tier-id")
 	require.NoError(t, err)
 	favorites, err := ListFavorites(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -444,6 +462,21 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "customer-id", customer.ID)
 	require.Equal(t, "Enterprise", customer.TierName)
 	require.Equal(t, "Omer", customer.OwnerDisplayName)
+	require.True(t, customerNeeds.HasNextPage)
+	require.Equal(t, &endCursor, customerNeeds.EndCursor)
+	require.Equal(t, "Acme", customerNeeds.Needs[0].CustomerName)
+	require.Equal(t, "LIT-1", customerNeed.Issue)
+	require.Equal(t, "Need content", customerNeed.Content)
+	require.True(t, customerStatuses.HasNextPage)
+	require.Equal(t, &endCursor, customerStatuses.EndCursor)
+	require.Equal(t, "Active", customerStatuses.Statuses[0].DisplayName)
+	require.Equal(t, "customer-status-id", customerStatus.ID)
+	require.Equal(t, "#00ff00", customerStatus.Color)
+	require.True(t, customerTiers.HasNextPage)
+	require.Equal(t, &endCursor, customerTiers.EndCursor)
+	require.Equal(t, "Enterprise", customerTiers.Tiers[0].DisplayName)
+	require.Equal(t, "customer-tier-id", customerTier.ID)
+	require.Equal(t, "#0000ff", customerTier.Color)
 	require.True(t, favorites.HasNextPage)
 	require.Equal(t, &endCursor, favorites.EndCursor)
 	require.Equal(t, "issue", favorites.Favorites[0].Type)
@@ -957,6 +990,30 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetCustomerByID(context.Background(), graphqlClient, "customer-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get customer customer-id")
+
+		_, err = ListCustomerNeeds(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list customer needs")
+
+		_, err = GetCustomerNeedByID(context.Background(), graphqlClient, "customer-need-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get customer need customer-need-id")
+
+		_, err = ListCustomerStatuses(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list customer statuses")
+
+		_, err = GetCustomerStatusByID(context.Background(), graphqlClient, "customer-status-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get customer status customer-status-id")
+
+		_, err = ListCustomerTiers(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list customer tiers")
+
+		_, err = GetCustomerTierByID(context.Background(), graphqlClient, "customer-tier-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get customer tier customer-tier-id")
 
 		_, err = ListFavorites(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

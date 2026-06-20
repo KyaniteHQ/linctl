@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for organization, rate-limit, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, initiative, CustomView, Customer, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for organization, rate-limit, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, initiative, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -114,6 +114,12 @@ linctl custom-view subscribers CUSTOM_VIEW_ID --json
 linctl custom-view get CUSTOM_VIEW_ID --json
 linctl customer list --json --limit 20
 linctl customer get CUSTOMER_ID --json
+linctl customer-need list --json --limit 20
+linctl customer-need get CUSTOMER_NEED_ID --json
+linctl customer-status list --json --limit 20
+linctl customer-status get CUSTOMER_STATUS_ID --json
+linctl customer-tier list --json --limit 20
+linctl customer-tier get CUSTOMER_TIER_ID --json
 linctl favorite list --json --limit 20
 linctl favorite children FAVORITE_ID --json --limit 20
 linctl favorite get FAVORITE_ID --json

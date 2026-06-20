@@ -100,6 +100,24 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		StatusName:           "Active",
 		ApproximateNeedCount: 3,
 	}
+	customerNeed := client.CustomerNeedSummary{
+		ID:           "customer-need-id",
+		CustomerName: "Acme",
+		Issue:        "LIT-1",
+		Priority:     1,
+	}
+	customerStatus := client.CustomerStatusSummary{
+		ID:          "customer-status-id",
+		DisplayName: "Active",
+		Color:       "#00ff00",
+		Position:    1,
+	}
+	customerTier := client.CustomerTierSummary{
+		ID:          "customer-tier-id",
+		DisplayName: "Enterprise",
+		Color:       "#0000ff",
+		Position:    2,
+	}
 	organizationExistsStatus := client.OrganizationExistsStatus{
 		URLKey:  "kyanite",
 		Success: true,
@@ -155,6 +173,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(textCommand, &textOptions, customViewSubscriberStatus))
 	require.NoError(t, writeCustomer(textCommand, &textOptions, customer))
+	require.NoError(t, writeCustomerNeed(textCommand, &textOptions, customerNeed))
+	require.NoError(t, writeCustomerStatus(textCommand, &textOptions, customerStatus))
+	require.NoError(t, writeCustomerTier(textCommand, &textOptions, customerTier))
 	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(textCommand, &textOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
@@ -170,6 +191,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"initiative-id Platform [Active]\ncustom-view-id My issues [Issue]\n"+
 			"custom-view-id has_subscribers true\n"+
 			"customer-id Acme [Active] needs 3\n"+
+			"customer-need-id Acme LIT-1 priority 1\n"+
+			"customer-status-id Active #00ff00 1\n"+
+			"customer-tier-id Enterprise #0000ff 2\n"+
 			"kyanite exists true success true\n"+
 			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
 			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
@@ -197,6 +221,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(jsonCommand, &jsonOptions, customViewSubscriberStatus))
 	require.NoError(t, writeCustomer(jsonCommand, &jsonOptions, customer))
+	require.NoError(t, writeCustomerNeed(jsonCommand, &jsonOptions, customerNeed))
+	require.NoError(t, writeCustomerStatus(jsonCommand, &jsonOptions, customerStatus))
+	require.NoError(t, writeCustomerTier(jsonCommand, &jsonOptions, customerTier))
 	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(jsonCommand, &jsonOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
@@ -217,6 +244,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
 	require.Contains(t, jsonOut.String(), `"has_subscribers": true`)
 	require.Contains(t, jsonOut.String(), `"approximate_need_count": 3`)
+	require.Contains(t, jsonOut.String(), `"customer_name": "Acme"`)
+	require.Contains(t, jsonOut.String(), `"display_name": "Active"`)
+	require.Contains(t, jsonOut.String(), `"display_name": "Enterprise"`)
 	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
 	require.Contains(t, jsonOut.String(), `"remaining_amount": 900`)
 	require.Contains(t, jsonOut.String(), `"type": "issue"`)
@@ -315,6 +345,24 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		StatusName:           "Active",
 		ApproximateNeedCount: 3,
 	}
+	customerNeed := client.CustomerNeedSummary{
+		ID:           "customer-need-id",
+		CustomerName: "Acme",
+		Issue:        "LIT-1",
+		Priority:     1,
+	}
+	customerStatus := client.CustomerStatusSummary{
+		ID:          "customer-status-id",
+		DisplayName: "Active",
+		Color:       "#00ff00",
+		Position:    1,
+	}
+	customerTier := client.CustomerTierSummary{
+		ID:          "customer-tier-id",
+		DisplayName: "Enterprise",
+		Color:       "#0000ff",
+		Position:    2,
+	}
 	organizationExistsStatus := client.OrganizationExistsStatus{
 		URLKey:  "kyanite",
 		Success: true,
@@ -365,6 +413,9 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomView(command, &rootOptions{idOnly: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(command, &rootOptions{idOnly: true}, customViewSubscriberStatus))
 	require.NoError(t, writeCustomer(command, &rootOptions{idOnly: true}, customer))
+	require.NoError(t, writeCustomerNeed(command, &rootOptions{idOnly: true}, customerNeed))
+	require.NoError(t, writeCustomerStatus(command, &rootOptions{idOnly: true}, customerStatus))
+	require.NoError(t, writeCustomerTier(command, &rootOptions{idOnly: true}, customerTier))
 	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
 	require.NoError(t, writeEmoji(command, &rootOptions{idOnly: true}, emoji))
 	require.NoError(t, writeAttachment(command, &rootOptions{idOnly: true}, attachment))
@@ -385,6 +436,9 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "initiative-id")
 	require.Contains(t, output.String(), "custom-view-id")
 	require.Contains(t, output.String(), "customer-id")
+	require.Contains(t, output.String(), "customer-need-id")
+	require.Contains(t, output.String(), "customer-status-id")
+	require.Contains(t, output.String(), "customer-tier-id")
 	require.Contains(t, output.String(), "favorite-id")
 	require.Contains(t, output.String(), "emoji-id")
 	require.Contains(t, output.String(), "attachment-id")
@@ -408,6 +462,9 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(quietCommand, &rootOptions{quiet: true}, customViewSubscriberStatus))
 	require.NoError(t, writeCustomer(quietCommand, &rootOptions{quiet: true}, customer))
+	require.NoError(t, writeCustomerNeed(quietCommand, &rootOptions{quiet: true}, customerNeed))
+	require.NoError(t, writeCustomerStatus(quietCommand, &rootOptions{quiet: true}, customerStatus))
+	require.NoError(t, writeCustomerTier(quietCommand, &rootOptions{quiet: true}, customerTier))
 	require.NoError(t, writeOrganizationExists(quietCommand, &rootOptions{quiet: true}, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(quietCommand, &rootOptions{quiet: true}, rateLimitStatus))
 	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
@@ -479,6 +536,33 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, map[string]any{
 		"customers": []any{map[string]any{"id": "customer-id", "status_name": "Active"}},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"customer_needs": []any{map[string]any{"id": "customer-need-id", "customer_name": "Acme"}}},
+		"id,customer_name",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"customer_needs": []any{map[string]any{"id": "customer-need-id", "customer_name": "Acme"}},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"customer_statuses": []any{map[string]any{"id": "customer-status-id", "display_name": "Active"}}},
+		"id,display_name",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"customer_statuses": []any{map[string]any{"id": "customer-status-id", "display_name": "Active"}},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"customer_tiers": []any{map[string]any{"id": "customer-tier-id", "display_name": "Enterprise"}}},
+		"id,display_name",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"customer_tiers": []any{map[string]any{"id": "customer-tier-id", "display_name": "Enterprise"}},
 	}, projected)
 
 	projected, err = projectJSONFields(

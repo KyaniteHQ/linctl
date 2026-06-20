@@ -1,0 +1,27 @@
+query customerStatuses($first: Int, $after: String, $includeArchived: Boolean) {
+  customerStatuses(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CustomerStatusSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query customerStatus($id: String!) {
+  customerStatus(id: $id) {
+    ...CustomerStatusSummaryFields
+  }
+}
+
+fragment CustomerStatusSummaryFields on CustomerStatus {
+  id
+  name
+  displayName
+  color
+  description
+  position
+  archivedAt
+}

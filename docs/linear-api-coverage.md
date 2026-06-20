@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 51 | 458 |
-| Upstream Query root fields | 158 | 39 | 158 |
+| Upstream SDK root methods | 458 | 57 | 458 |
+| Upstream Query root fields | 158 | 45 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 77 | 77 | 77 |
-| Domain-map commands | 107 | 71 | 107 |
+| Local generated Go operations | 83 | 83 | 83 |
+| Domain-map commands | 123 | 77 | 123 |
 
 ## Upstream SDK Root Methods
 
@@ -141,13 +141,13 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customViews` | method | implemented | local operation or command exists |
 | `customer` | method | implemented | local operation or command exists |
 | `customerMerge` | method | safe_candidate | read operation may fit future CLI coverage |
-| `customerNeed` | method | safe_candidate | read operation may fit future CLI coverage |
+| `customerNeed` | method | implemented | local operation or command exists |
 | `customerNeedCreateFromAttachment` | method | safe_candidate | read operation may fit future CLI coverage |
-| `customerNeeds` | method | safe_candidate | read operation may fit future CLI coverage |
-| `customerStatus` | method | safe_candidate | read operation may fit future CLI coverage |
-| `customerStatuses` | method | safe_candidate | read operation may fit future CLI coverage |
-| `customerTier` | method | safe_candidate | read operation may fit future CLI coverage |
-| `customerTiers` | method | safe_candidate | read operation may fit future CLI coverage |
+| `customerNeeds` | method | implemented | local operation or command exists |
+| `customerStatus` | method | implemented | local operation or command exists |
+| `customerStatuses` | method | implemented | local operation or command exists |
+| `customerTier` | method | implemented | local operation or command exists |
+| `customerTiers` | method | implemented | local operation or command exists |
 | `customerUnsync` | method | safe_candidate | read operation may fit future CLI coverage |
 | `customerUpsert` | method | safe_candidate | read operation may fit future CLI coverage |
 | `customers` | method | implemented | local operation or command exists |
@@ -517,12 +517,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customViewHasSubscribers` | `CustomViewHasSubscribersPayload!` | implemented | root field used by local GraphQL operation |
 | `customViews` | `CustomViewConnection!` | implemented | root field used by local GraphQL operation |
 | `customer` | `Customer!` | implemented | root field used by local GraphQL operation |
-| `customerNeed` | `CustomerNeed!` | safe_candidate | read operation may fit future CLI coverage |
-| `customerNeeds` | `CustomerNeedConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `customerStatus` | `CustomerStatus!` | safe_candidate | read operation may fit future CLI coverage |
-| `customerStatuses` | `CustomerStatusConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `customerTier` | `CustomerTier!` | safe_candidate | read operation may fit future CLI coverage |
-| `customerTiers` | `CustomerTierConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `customerNeed` | `CustomerNeed!` | implemented | root field used by local GraphQL operation |
+| `customerNeeds` | `CustomerNeedConnection!` | implemented | root field used by local GraphQL operation |
+| `customerStatus` | `CustomerStatus!` | implemented | root field used by local GraphQL operation |
+| `customerStatuses` | `CustomerStatusConnection!` | implemented | root field used by local GraphQL operation |
+| `customerTier` | `CustomerTier!` | implemented | root field used by local GraphQL operation |
+| `customerTiers` | `CustomerTierConnection!` | implemented | root field used by local GraphQL operation |
 | `customers` | `CustomerConnection!` | implemented | root field used by local GraphQL operation |
 | `cycle` | `Cycle!` | implemented | root field used by local GraphQL operation |
 | `cycles` | `CycleConnection!` | implemented | root field used by local GraphQL operation |
@@ -1068,6 +1068,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customViewHasSubscribers` | query | `customViewHasSubscribers` | implemented | `internal/client/generated.go` |
 | `customViews` | query | `customViews` | implemented | `internal/client/generated.go` |
 | `customer` | query | `customer` | implemented | `internal/client/generated.go` |
+| `customerNeed` | query | `customerNeed` | implemented | `internal/client/generated.go` |
+| `customerNeeds` | query | `customerNeeds` | implemented | `internal/client/generated.go` |
+| `customerStatus` | query | `customerStatus` | implemented | `internal/client/generated.go` |
+| `customerStatuses` | query | `customerStatuses` | implemented | `internal/client/generated.go` |
+| `customerTier` | query | `customerTier` | implemented | `internal/client/generated.go` |
+| `customerTiers` | query | `customerTiers` | implemented | `internal/client/generated.go` |
 | `customers` | query | `customers` | implemented | `internal/client/generated.go` |
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
@@ -1191,9 +1197,25 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | CustomView | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Customer | `customer list` | `Query.customers` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer get` | `Query.customer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer-need list` | `Query.customerNeeds` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer-need get` | `Query.customerNeed` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer-status list` | `Query.customerStatuses` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer-status get` | `Query.customerStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer-tier list` | `Query.customerTiers` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer-tier get` | `Query.customerTier` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Customer | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Customer | `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-need create` | `Mutation.customerNeedCreate` | Blocked: need creation must prove the linked issue, project, or customer target before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-need update` | `Mutation.customerNeedUpdate` | Blocked: update must resolve the need and compare the linked issue or project target before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-need archive` | `Mutation.customerNeedArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-need delete` | `Mutation.customerNeedDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Customer | `customer-status create` | `Mutation.customerStatusCreate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-status update` | `Mutation.customerStatusUpdate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-status delete` | `Mutation.customerStatusDelete` | Blocked: destructive admin command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Customer | `customer-tier create` | `Mutation.customerTierCreate` | Blocked: workspace tier configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: workspace tier configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-tier delete` | `Mutation.customerTierDelete` | Blocked: destructive admin command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Favorite | `favorite list` | `Query.favorites` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Favorite | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Favorite | `favorite get` | `Query.favorite` | Read-only | implemented | `linctl --help` / public CLI tests |
