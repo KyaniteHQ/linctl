@@ -9,6 +9,46 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// AttachmentSummaryFields includes the GraphQL fields of Attachment requested by the fragment AttachmentSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// An attachment linking external content to an issue. Attachments represent
+// connections to external resources such as GitHub pull requests, Slack messages,
+// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
+// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
+// serving as both the link destination and unique identifier per issue, and
+// optional metadata specific to the source integration.
+type AttachmentSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Content for the title line in the Linear attachment widget.
+	Title string `json:"title"`
+	// Content for the subtitle line in the Linear attachment widget.
+	Subtitle *string `json:"subtitle"`
+	// The URL of the external resource this attachment links to. Also serves as a
+	// unique identifier for the attachment within an issue; no two attachments on
+	// the same issue can share the same URL.
+	Url string `json:"url"`
+	// The source type of the attachment, derived from the source metadata. Returns
+	// the integration type (e.g., 'github', 'slack', 'zendesk') or 'unknown' if no source is set.
+	SourceType *string `json:"sourceType"`
+}
+
+// GetId returns AttachmentSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *AttachmentSummaryFields) GetId() string { return v.Id }
+
+// GetTitle returns AttachmentSummaryFields.Title, and is useful for accessing the field via an interface.
+func (v *AttachmentSummaryFields) GetTitle() string { return v.Title }
+
+// GetSubtitle returns AttachmentSummaryFields.Subtitle, and is useful for accessing the field via an interface.
+func (v *AttachmentSummaryFields) GetSubtitle() *string { return v.Subtitle }
+
+// GetUrl returns AttachmentSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *AttachmentSummaryFields) GetUrl() string { return v.Url }
+
+// GetSourceType returns AttachmentSummaryFields.SourceType, and is useful for accessing the field via an interface.
+func (v *AttachmentSummaryFields) GetSourceType() *string { return v.SourceType }
+
 // CompletedWorkflowStatesResponse is returned by CompletedWorkflowStates on success.
 type CompletedWorkflowStatesResponse struct {
 	// All issue workflow states (issue statuses). Returns a paginated list of
@@ -8943,6 +8983,30 @@ func (v *__TeamsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __TeamsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__TeamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __attachmentInput is used internally by genqlient
+type __attachmentInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __attachmentInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentInput) GetId() string { return v.Id }
+
+// __attachmentsInput is used internally by genqlient
+type __attachmentsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __attachmentsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __commentInput is used internally by genqlient
 type __commentInput struct {
 	Id   *string `json:"id"`
@@ -9318,6 +9382,241 @@ func (v *__workflowStatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __workflowStatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__workflowStatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// attachmentAttachment includes the requested fields of the GraphQL type Attachment.
+// The GraphQL type's documentation follows.
+//
+// An attachment linking external content to an issue. Attachments represent
+// connections to external resources such as GitHub pull requests, Slack messages,
+// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
+// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
+// serving as both the link destination and unique identifier per issue, and
+// optional metadata specific to the source integration.
+type attachmentAttachment struct {
+	AttachmentSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentAttachment.Id, and is useful for accessing the field via an interface.
+func (v *attachmentAttachment) GetId() string { return v.AttachmentSummaryFields.Id }
+
+// GetTitle returns attachmentAttachment.Title, and is useful for accessing the field via an interface.
+func (v *attachmentAttachment) GetTitle() string { return v.AttachmentSummaryFields.Title }
+
+// GetSubtitle returns attachmentAttachment.Subtitle, and is useful for accessing the field via an interface.
+func (v *attachmentAttachment) GetSubtitle() *string { return v.AttachmentSummaryFields.Subtitle }
+
+// GetUrl returns attachmentAttachment.Url, and is useful for accessing the field via an interface.
+func (v *attachmentAttachment) GetUrl() string { return v.AttachmentSummaryFields.Url }
+
+// GetSourceType returns attachmentAttachment.SourceType, and is useful for accessing the field via an interface.
+func (v *attachmentAttachment) GetSourceType() *string { return v.AttachmentSummaryFields.SourceType }
+
+func (v *attachmentAttachment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentAttachment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentAttachment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AttachmentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentAttachment struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Subtitle *string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	SourceType *string `json:"sourceType"`
+}
+
+func (v *attachmentAttachment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentAttachment) __premarshalJSON() (*__premarshalattachmentAttachment, error) {
+	var retval __premarshalattachmentAttachment
+
+	retval.Id = v.AttachmentSummaryFields.Id
+	retval.Title = v.AttachmentSummaryFields.Title
+	retval.Subtitle = v.AttachmentSummaryFields.Subtitle
+	retval.Url = v.AttachmentSummaryFields.Url
+	retval.SourceType = v.AttachmentSummaryFields.SourceType
+	return &retval, nil
+}
+
+// attachmentResponse is returned by attachment on success.
+type attachmentResponse struct {
+	// One specific issue attachment.
+	// [Deprecated] 'url' can no longer be used as the 'id' parameter. Use 'attachmentsForUrl' instead
+	Attachment attachmentAttachment `json:"attachment"`
+}
+
+// GetAttachment returns attachmentResponse.Attachment, and is useful for accessing the field via an interface.
+func (v *attachmentResponse) GetAttachment() attachmentAttachment { return v.Attachment }
+
+// attachmentsAttachmentsAttachmentConnection includes the requested fields of the GraphQL type AttachmentConnection.
+type attachmentsAttachmentsAttachmentConnection struct {
+	Nodes    []attachmentsAttachmentsAttachmentConnectionNodesAttachment `json:"nodes"`
+	PageInfo attachmentsAttachmentsAttachmentConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentsAttachmentsAttachmentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnection) GetNodes() []attachmentsAttachmentsAttachmentConnectionNodesAttachment {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentsAttachmentsAttachmentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnection) GetPageInfo() attachmentsAttachmentsAttachmentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentsAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
+// The GraphQL type's documentation follows.
+//
+// An attachment linking external content to an issue. Attachments represent
+// connections to external resources such as GitHub pull requests, Slack messages,
+// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
+// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
+// serving as both the link destination and unique identifier per issue, and
+// optional metadata specific to the source integration.
+type attachmentsAttachmentsAttachmentConnectionNodesAttachment struct {
+	AttachmentSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentsAttachmentsAttachmentConnectionNodesAttachment.Id, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) GetId() string {
+	return v.AttachmentSummaryFields.Id
+}
+
+// GetTitle returns attachmentsAttachmentsAttachmentConnectionNodesAttachment.Title, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) GetTitle() string {
+	return v.AttachmentSummaryFields.Title
+}
+
+// GetSubtitle returns attachmentsAttachmentsAttachmentConnectionNodesAttachment.Subtitle, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) GetSubtitle() *string {
+	return v.AttachmentSummaryFields.Subtitle
+}
+
+// GetUrl returns attachmentsAttachmentsAttachmentConnectionNodesAttachment.Url, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) GetUrl() string {
+	return v.AttachmentSummaryFields.Url
+}
+
+// GetSourceType returns attachmentsAttachmentsAttachmentConnectionNodesAttachment.SourceType, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) GetSourceType() *string {
+	return v.AttachmentSummaryFields.SourceType
+}
+
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentsAttachmentsAttachmentConnectionNodesAttachment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentsAttachmentsAttachmentConnectionNodesAttachment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AttachmentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentsAttachmentsAttachmentConnectionNodesAttachment struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Subtitle *string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	SourceType *string `json:"sourceType"`
+}
+
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentsAttachmentsAttachmentConnectionNodesAttachment) __premarshalJSON() (*__premarshalattachmentsAttachmentsAttachmentConnectionNodesAttachment, error) {
+	var retval __premarshalattachmentsAttachmentsAttachmentConnectionNodesAttachment
+
+	retval.Id = v.AttachmentSummaryFields.Id
+	retval.Title = v.AttachmentSummaryFields.Title
+	retval.Subtitle = v.AttachmentSummaryFields.Subtitle
+	retval.Url = v.AttachmentSummaryFields.Url
+	retval.SourceType = v.AttachmentSummaryFields.SourceType
+	return &retval, nil
+}
+
+// attachmentsAttachmentsAttachmentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentsAttachmentsAttachmentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentsAttachmentsAttachmentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentsAttachmentsAttachmentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentsAttachmentsAttachmentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentsResponse is returned by attachments on success.
+type attachmentsResponse struct {
+	// All issue attachments.
+	//
+	// To get attachments for a given URL, use `attachmentsForURL` query.
+	Attachments attachmentsAttachmentsAttachmentConnection `json:"attachments"`
+}
+
+// GetAttachments returns attachmentsResponse.Attachments, and is useful for accessing the field via an interface.
+func (v *attachmentsResponse) GetAttachments() attachmentsAttachmentsAttachmentConnection {
+	return v.Attachments
+}
 
 // commentComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
@@ -15921,6 +16220,98 @@ func Viewer(
 	}
 
 	data_ = &ViewerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachment.
+const attachment_Operation = `
+query attachment ($id: String!) {
+	attachment(id: $id) {
+		... AttachmentSummaryFields
+	}
+}
+fragment AttachmentSummaryFields on Attachment {
+	id
+	title
+	subtitle
+	url
+	sourceType
+}
+`
+
+func attachment(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *attachmentResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachment",
+		Query:  attachment_Operation,
+		Variables: &__attachmentInput{
+			Id: id,
+		},
+	}
+
+	data_ = &attachmentResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachments.
+const attachments_Operation = `
+query attachments ($first: Int, $after: String, $includeArchived: Boolean) {
+	attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... AttachmentSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment AttachmentSummaryFields on Attachment {
+	id
+	title
+	subtitle
+	url
+	sourceType
+}
+`
+
+func attachments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachments",
+		Query:  attachments_Operation,
+		Variables: &__attachmentsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

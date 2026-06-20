@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 43 | 458 |
-| Upstream Query root fields | 158 | 31 | 158 |
+| Upstream SDK root methods | 458 | 45 | 458 |
+| Upstream Query root fields | 158 | 33 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 68 | 68 | 68 |
-| Domain-map commands | 92 | 62 | 92 |
+| Local generated Go operations | 70 | 70 | 70 |
+| Domain-map commands | 97 | 64 | 97 |
 
 ## Upstream SDK Root Methods
 
@@ -54,7 +54,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `archiveRoadmap` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archiveWorkflowState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archivedIntegrations` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `attachment` | method | safe_candidate | read operation may fit future CLI coverage |
+| `attachment` | method | implemented | local operation or command exists |
 | `attachmentIssue` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `attachmentLinkDiscord` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkFront` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -68,7 +68,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentLinkURL` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkZendesk` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentSyncToSlack` | method | safe_candidate | read operation may fit future CLI coverage |
-| `attachments` | method | safe_candidate | read operation may fit future CLI coverage |
+| `attachments` | method | implemented | local operation or command exists |
 | `attachmentsForURL` | method | safe_candidate | read operation may fit future CLI coverage |
 | `auditEntries` | method | safe_candidate | read operation may fit future CLI coverage |
 | `auditEntryTypes` | getter | safe_candidate | read operation may fit future CLI coverage |
@@ -501,10 +501,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `applicationInfo` | `Application!` | safe_candidate | read operation may fit future CLI coverage |
 | `archivedIntegrations` | `[ArchivedIntegrationPayload!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `archivedTeams` | `[Team!]!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `attachment` | `Attachment!` | safe_candidate | read operation may fit future CLI coverage |
+| `attachment` | `Attachment!` | implemented | root field used by local GraphQL operation |
 | `attachmentIssue` | `Issue!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `attachmentSources` | `AttachmentSourcesPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `attachments` | `AttachmentConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `attachments` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
 | `attachmentsForURL` | `AttachmentConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `auditEntries` | `AuditEntryConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `auditEntryTypes` | `[AuditEntryType!]!` | safe_candidate | read operation may fit future CLI coverage |
@@ -1059,6 +1059,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `TargetProject` | query | `project` | implemented | `internal/client/generated.go` |
 | `Teams` | query | `teams` | implemented | `internal/client/generated.go` |
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `attachment` | query | `attachment` | implemented | `internal/client/generated.go` |
+| `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `customView` | query | `customView` | implemented | `internal/client/generated.go` |
@@ -1186,4 +1188,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Emoji | `emoji get` | `Query.emoji` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment get` | `Query.attachment` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 

@@ -682,6 +682,8 @@ func commandImplemented(command string) bool {
 		"favorite get":             true,
 		"emoji list":               true,
 		"emoji get":                true,
+		"attachment list":          true,
+		"attachment get":           true,
 	}
 	return implemented[command]
 }
@@ -710,6 +712,8 @@ func domainCommandBlocked(command string) bool {
 		"favorite create":        true,
 		"favorite update":        true,
 		"emoji create":           true,
+		"attachment create":      true,
+		"attachment update":      true,
 	}
 	return blocked[command]
 }

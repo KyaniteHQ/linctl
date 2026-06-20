@@ -88,6 +88,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addCustomViewCommand(ctx, command, &options)
 	addFavoriteCommand(ctx, command, &options)
 	addEmojiCommand(ctx, command, &options)
+	addAttachmentCommand(ctx, command, &options)
 	command.SetContext(ctx)
 
 	return command

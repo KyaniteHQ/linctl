@@ -113,6 +113,8 @@ linctl favorite list --json --limit 20
 linctl favorite get FAVORITE_ID --json
 linctl emoji list --json --limit 20
 linctl emoji get EMOJI_ID --json
+linctl attachment list --json --limit 20
+linctl attachment get ATTACHMENT_ID --json
 ```
 
 `next --dry-run` is a ranked read-only picker: it considers unstarted issues with no active blockers, then ranks by active unblock count, priority, and age. It never creates a branch or worktree.

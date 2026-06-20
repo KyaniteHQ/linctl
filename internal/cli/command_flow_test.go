@@ -92,6 +92,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, contains: "favorite-id [issue]"},
 		{name: "emoji list", args: []string{"emoji", "list", "--limit", "1"}, contains: "emoji-id party [custom]"},
 		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, contains: "emoji-id party [custom]"},
+		{name: "attachment list", args: []string{"attachment", "list", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "attachment get", args: []string{"attachment", "get", "attachment-id"}, contains: "attachment-id Linked PR [github]"},
 	}
 
 	for _, test := range tests {
@@ -644,6 +646,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "favorite", "get", "favorite-id"},
 		{"--json", "emoji", "list", "--limit", "1"},
 		{"--json", "emoji", "get", "emoji-id"},
+		{"--json", "attachment", "list", "--limit", "1"},
+		{"--json", "attachment", "get", "attachment-id"},
 	}
 
 	for _, args := range tests {
@@ -1051,6 +1055,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, operation: "favorite", contains: "get favorite favorite-id"},
 		{name: "emoji list", args: []string{"emoji", "list"}, operation: "emojis", contains: "list emojis"},
 		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, operation: "emoji", contains: "get emoji emoji-id"},
+		{name: "attachment list", args: []string{"attachment", "list"}, operation: "attachments", contains: "list attachments"},
+		{name: "attachment get", args: []string{"attachment", "get", "attachment-id"}, operation: "attachment", contains: "get attachment attachment-id"},
 	}
 
 	for _, test := range tests {
@@ -1355,6 +1361,13 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "comment":
 		return `{"comment":` + commandTopLevelCommentJSON() + `}`, true
+	}
+
+	return commandFlowExtraReadPayload(operation)
+}
+
+func commandFlowExtraReadPayload(operation string) (string, bool) {
+	switch operation {
 	case "customViews":
 		return `{"customViews":{"nodes":[` + commandCustomViewJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customView":
@@ -1367,6 +1380,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"emojis":{"nodes":[` + commandEmojiJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "emoji":
 		return `{"emoji":` + commandEmojiJSON() + `}`, true
+	case "attachments":
+		return `{"attachments":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "attachment":
+		return `{"attachment":` + commandAttachmentJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -1819,6 +1836,16 @@ func commandEmojiJSON() string {
 		"name":"party",
 		"url":"https://linear.app/kyanite/emoji/party.png",
 		"source":"custom"
+	}`
+}
+
+func commandAttachmentJSON() string {
+	return `{
+		"id":"attachment-id",
+		"title":"Linked PR",
+		"subtitle":"feat: add thing",
+		"url":"https://github.com/kyanite/linctl/pull/1",
+		"sourceType":"github"
 	}`
 }
 

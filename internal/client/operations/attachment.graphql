@@ -1,0 +1,25 @@
+query attachments($first: Int, $after: String, $includeArchived: Boolean) {
+  attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...AttachmentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query attachment($id: String!) {
+  attachment(id: $id) {
+    ...AttachmentSummaryFields
+  }
+}
+
+fragment AttachmentSummaryFields on Attachment {
+  id
+  title
+  subtitle
+  url
+  sourceType
+}

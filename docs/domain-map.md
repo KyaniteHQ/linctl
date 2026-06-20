@@ -379,3 +379,27 @@ Planned commands:
 | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics |
 
 Only `emoji list` and `emoji get` are implemented in the current CLI. Emoji writes are deferred as organization-scoped asset surface.
+
+## Attachment
+
+Use the schema name `Attachment` in code and docs. It is an external resource linked to a Linear issue.
+
+Schema backing:
+
+- Types: `Attachment`, `AttachmentConnection`
+- Reads: `Query.attachments`, `Query.attachment`, `Query.attachmentsForURL`
+- Writes: `Mutation.attachmentCreate`, `Mutation.attachmentUpdate`, `Mutation.attachmentDelete`, `Mutation.attachmentLinkURL`
+- Inputs: `AttachmentCreateInput`, `AttachmentUpdateInput`
+- Relevant fields: `Attachment.id`, `Attachment.title`, `Attachment.subtitle`, `Attachment.url`, `Attachment.sourceType`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `attachment list` | `Query.attachments` | Read-only |
+| `attachment get` | `Query.attachment` | Read-only |
+| `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation |
+| `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation |
+| `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics |
+
+Only `attachment list` and `attachment get` are implemented in the current CLI. Attachment writes are deferred until the owning-issue guard model is explicit.
