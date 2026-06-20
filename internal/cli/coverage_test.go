@@ -71,6 +71,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		DisplayName: "Omer",
 		Email:       "omer@example.com",
 	}
+	draft := client.DraftSummary{
+		ID:          "draft-id",
+		ParentType:  "issue",
+		ParentKey:   "LIT-3",
+		ParentTitle: "Draft issue",
+	}
 	comment := client.CommentSummary{
 		ID:          "comment-id",
 		Body:        "First comment",
@@ -330,6 +336,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeLabel(textCommand, &textOptions, label))
 	require.NoError(t, writeTeam(textCommand, &textOptions, team))
 	require.NoError(t, writeUser(textCommand, &textOptions, user))
+	require.NoError(t, writeDraft(textCommand, &textOptions, draft))
 	require.NoError(t, writeComment(textCommand, &textOptions, comment))
 	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(textCommand, &textOptions, timeSchedule))
@@ -376,7 +383,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-id Coverage [Backlog]\nproject-update-id onTrack Omer First update\n"+
 			"project-milestone-id Launch milestone [next]\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
-			"user-id Omer <omer@example.com>\ncomment-id Omer First comment\nworkflow-state-id Started [started]\n"+
+			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
+			"comment-id Omer First comment\nworkflow-state-id Started [started]\n"+
 			"time-schedule-id Primary on-call entries 1\n"+
 			"template-id Bug report [issue] team LIT\n"+
 			"initiative-id Platform [Active]\ninitiative-history-id initiative initiative-id entries 1\n"+
@@ -430,6 +438,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeLabel(jsonCommand, &jsonOptions, label))
 	require.NoError(t, writeTeam(jsonCommand, &jsonOptions, team))
 	require.NoError(t, writeUser(jsonCommand, &jsonOptions, user))
+	require.NoError(t, writeDraft(jsonCommand, &jsonOptions, draft))
 	require.NoError(t, writeComment(jsonCommand, &jsonOptions, comment))
 	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(jsonCommand, &jsonOptions, timeSchedule))
@@ -479,6 +488,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"color": "#ff0000"`)
 	require.Contains(t, jsonOut.String(), `"key": "LIT"`)
 	require.Contains(t, jsonOut.String(), `"email": "omer@example.com"`)
+	require.Contains(t, jsonOut.String(), `"parent_key": "LIT-3"`)
 	require.Contains(t, jsonOut.String(), `"body": "First comment"`)
 	require.Contains(t, jsonOut.String(), `"type": "started"`)
 	require.Contains(t, jsonOut.String(), `"entry_count": 1`)
@@ -1189,6 +1199,15 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, map[string]any{
 		"users": []any{map[string]any{"id": "user-id", "display_name": "Omer"}},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"drafts": []any{map[string]any{"id": "draft-id", "parent_key": "LIT-3"}}},
+		"id,parent_key",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"drafts": []any{map[string]any{"id": "draft-id", "parent_key": "LIT-3"}},
 	}, projected)
 
 	projected, err = projectJSONFields(map[string]any{"identifier": "LIT-1"}, "identifier")

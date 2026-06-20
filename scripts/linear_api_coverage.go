@@ -706,6 +706,7 @@ func commandImplemented(command string) bool {
 		"user list":                              true,
 		"user get":                               true,
 		"user me":                                true,
+		"user drafts":                            true,
 		"workflow-state list":                    true,
 		"workflow-state get":                     true,
 		"time-schedule list":                     true,

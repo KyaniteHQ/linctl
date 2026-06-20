@@ -222,26 +222,37 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			semanticSearchResultJSON("document"),
 			semanticSearchResultJSON("unknown"),
 		}, ",") + `]}}`,
-		"releasePipelines":                       `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"releasePipeline":                        `{"releasePipeline":` + releasePipelineJSON() + `}`,
-		"releasePipeline_releases":               `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"releasePipeline_stages":                 `{"releasePipeline":{"stages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"releaseStages":                          `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"releaseStage":                           `{"releaseStage":` + releaseStageJSON() + `}`,
-		"releaseStage_releases":                  `{"releaseStage":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"releases":                               `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"release":                                `{"release":` + releaseJSON() + `}`,
-		"releaseSearch":                          `{"releaseSearch":[` + releaseJSON() + `]}`,
-		"release_history":                        `{"release":{"history":{"nodes":[` + releaseHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"release_links":                          `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"entityExternalLink":                     `{"entityExternalLink":` + entityExternalLinkJSON() + `}`,
-		"releaseNotes":                           `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"releaseNote":                            `{"releaseNote":` + releaseNoteJSON() + `}`,
-		"team":                                   `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
-		"team_members":                           `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"users":                                  `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"user":                                   `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
-		"viewer":                                 `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"releasePipelines":         `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releasePipeline":          `{"releasePipeline":` + releasePipelineJSON() + `}`,
+		"releasePipeline_releases": `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releasePipeline_stages":   `{"releasePipeline":{"stages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releaseStages":            `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releaseStage":             `{"releaseStage":` + releaseStageJSON() + `}`,
+		"releaseStage_releases":    `{"releaseStage":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releases":                 `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"release":                  `{"release":` + releaseJSON() + `}`,
+		"releaseSearch":            `{"releaseSearch":[` + releaseJSON() + `]}`,
+		"release_history":          `{"release":{"history":{"nodes":[` + releaseHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"release_links":            `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"entityExternalLink":       `{"entityExternalLink":` + entityExternalLinkJSON() + `}`,
+		"releaseNotes":             `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releaseNote":              `{"releaseNote":` + releaseNoteJSON() + `}`,
+		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
+		"team_members":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"users":                    `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"user":                     `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"viewer":                   `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"viewer_drafts": `{"viewer":{"drafts":{"nodes":[` + strings.Join([]string{
+			draftJSON("issue"),
+			draftJSON("project"),
+			draftJSON("project_update"),
+			draftJSON("initiative"),
+			draftJSON("initiative_update"),
+			draftJSON("comment"),
+			draftJSON("customer_need"),
+			draftJSON("team"),
+			draftJSON("unknown"),
+		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"workflowStates":                         `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"workflowState":                          `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 		"timeSchedules":                          `{"timeSchedules":{"nodes":[{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -437,6 +448,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	user, err := GetUserByID(context.Background(), graphqlClient, "user-id")
 	require.NoError(t, err)
 	viewerUser, err := GetViewerUser(context.Background(), graphqlClient)
+	require.NoError(t, err)
+	drafts, err := ListViewerDrafts(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	workflowStates, err := ListWorkflowStates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -758,6 +771,18 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, users.Users[0].Admin)
 	require.Equal(t, "Omer", user.DisplayName)
 	require.Equal(t, "Omer", viewerUser.DisplayName)
+	require.True(t, drafts.HasNextPage)
+	require.Equal(t, &endCursor, drafts.EndCursor)
+	require.Equal(t, "issue", drafts.Drafts[0].ParentType)
+	require.Equal(t, "LIT-3", drafts.Drafts[0].ParentKey)
+	require.Equal(t, "project", drafts.Drafts[1].ParentType)
+	require.Equal(t, "project_update", drafts.Drafts[2].ParentType)
+	require.Equal(t, "initiative", drafts.Drafts[3].ParentType)
+	require.Equal(t, "initiative_update", drafts.Drafts[4].ParentType)
+	require.Equal(t, "comment", drafts.Drafts[5].ParentType)
+	require.Equal(t, "customer_need", drafts.Drafts[6].ParentType)
+	require.Equal(t, "team", drafts.Drafts[7].ParentType)
+	require.Equal(t, "unknown", drafts.Drafts[8].ParentType)
 	require.True(t, workflowStates.HasNextPage)
 	require.Equal(t, &endCursor, workflowStates.EndCursor)
 	require.Equal(t, "Started", workflowStates.WorkflowStates[0].Name)
@@ -1400,6 +1425,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetViewerUser(context.Background(), graphqlClient)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get viewer user")
+
+		_, err = ListViewerDrafts(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list viewer drafts")
 
 		_, err = ListWorkflowStates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -2378,6 +2407,43 @@ func notificationSubscriptionJSON() string {
 		"team":null,
 		"user":null
 	}`
+}
+
+func draftJSON(parentType string) string {
+	payload := `{
+		"id":"draft-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"issue":null,
+		"project":null,
+		"projectUpdate":null,
+		"initiative":null,
+		"initiativeUpdate":null,
+		"parentComment":null,
+		"customerNeed":null,
+		"team":null
+	}`
+	switch parentType {
+	case "issue":
+		return strings.Replace(payload, `"issue":null`, `"issue":{"id":"issue-id","identifier":"LIT-3","title":"Draft issue"}`, 1)
+	case "project":
+		return strings.Replace(payload, `"project":null`, `"project":{"id":"project-id","name":"Draft project"}`, 1)
+	case "project_update":
+		return strings.Replace(payload, `"projectUpdate":null`, `"projectUpdate":{"id":"project-update-id"}`, 1)
+	case "initiative":
+		return strings.Replace(payload, `"initiative":null`, `"initiative":{"id":"initiative-id","name":"Draft initiative"}`, 1)
+	case "initiative_update":
+		return strings.Replace(payload, `"initiativeUpdate":null`, `"initiativeUpdate":{"id":"initiative-update-id"}`, 1)
+	case "comment":
+		return strings.Replace(payload, `"parentComment":null`, `"parentComment":{"id":"comment-id"}`, 1)
+	case "customer_need":
+		return strings.Replace(payload, `"customerNeed":null`, `"customerNeed":{"id":"customer-need-id"}`, 1)
+	case "team":
+		return strings.Replace(payload, `"team":null`, `"team":{"id":"team-id","key":"LIT","name":"linctl"}`, 1)
+	default:
+		return payload
+	}
 }
 
 func triageResponsibilityJSON() string {

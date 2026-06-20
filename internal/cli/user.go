@@ -17,6 +17,7 @@ func addUserCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	addUserListCommand(ctx, userCommand, options)
 	addUserGetCommand(ctx, userCommand, options)
 	addUserMeCommand(ctx, userCommand, options)
+	addUserDraftsCommand(ctx, userCommand, options)
 	root.AddCommand(userCommand)
 }
 
@@ -74,6 +75,29 @@ func addUserMeCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 	})
 }
 
+func addUserDraftsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "drafts",
+		Short: "List the authenticated user's saved draft metadata",
+		Args:  cobra.NoArgs,
+		RunE: func(command *cobra.Command, _ []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				nil,
+				options,
+				limit,
+				loadViewerDraftList,
+				draftPageWithItems,
+				writeDraft,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum drafts to return")
+	root.AddCommand(command)
+}
+
 func writeUser(command *cobra.Command, options *rootOptions, user client.UserSummary) error {
 	if wrote, err := writeIDOnly(command, options, user.ID); wrote || err != nil {
 		return err
@@ -88,6 +112,29 @@ func writeUser(command *cobra.Command, options *rootOptions, user client.UserSum
 	return render.WriteLine(command.OutOrStdout(), "%s %s <%s>", user.ID, user.DisplayName, user.Email)
 }
 
+func writeDraft(command *cobra.Command, options *rootOptions, draft client.DraftSummary) error {
+	if wrote, err := writeIDOnly(command, options, draft.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, draft)
+	}
+
+	parentKey := defaultString(draft.ParentKey, "-")
+	parentTitle := defaultString(draft.ParentTitle, "-")
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s %s %s %s",
+		draft.ID,
+		draft.ParentType,
+		parentKey,
+		parentTitle,
+	)
+}
+
 func loadUserList(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -98,7 +145,22 @@ func loadUserList(
 	return users, users.Users, err
 }
 
+func loadViewerDraftList(
+	ctx context.Context,
+	runtime commandRuntime,
+	_ []string,
+	limit int,
+) (client.DraftList, []client.DraftSummary, error) {
+	drafts, err := client.ListViewerDrafts(ctx, runtime.graphqlClient, limit)
+	return drafts, drafts.Drafts, err
+}
+
 func userPageWithItems(page client.UserList, users []client.UserSummary) client.UserList {
 	page.Users = users
+	return page
+}
+
+func draftPageWithItems(page client.DraftList, drafts []client.DraftSummary) client.DraftList {
+	page.Drafts = drafts
 	return page
 }

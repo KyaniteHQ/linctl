@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 93 | 458 |
 | Upstream Query root fields | 158 | 81 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 148 | 148 | 148 |
-| Domain-map commands | 239 | 128 | 239 |
+| Local generated Go operations | 149 | 149 | 149 |
+| Domain-map commands | 240 | 129 | 240 |
 
 ## Upstream SDK Root Methods
 
@@ -1153,6 +1153,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
 | `users` | query | `users` | implemented | `internal/client/generated.go` |
 | `viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `viewer_drafts` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
 | `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 
@@ -1297,6 +1298,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | User | `user list` | `Query.users` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user get` | `Query.user` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user drafts` | `User.drafts` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |

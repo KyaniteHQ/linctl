@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for Application, AgentActivity, AgentSkill, AuditEntry, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, SemanticSearch, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, TriageResponsibility, SLA configuration, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for Application, AgentActivity, AgentSkill, AuditEntry, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, SemanticSearch, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, Draft, WorkflowState, TimeSchedule, TriageResponsibility, SLA configuration, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -136,6 +136,7 @@ linctl team members TEAM_ID --json --limit 20
 linctl user list --json --limit 20
 linctl user get USER_ID --json
 linctl user me --json
+linctl user drafts --json --limit 20
 linctl workflow-state list --json --limit 20
 linctl workflow-state get WORKFLOW_STATE_ID --json
 linctl time-schedule list --json --limit 20

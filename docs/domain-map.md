@@ -398,8 +398,8 @@ Only `team list`, `team get`, and `team members` are implemented in the current 
 Schema backing:
 
 - Types: `User`, `UserConnection`
-- Reads: `Query.users`, `Query.user`, `Query.viewer`, `Team.members`, `Project.members`
-- Relevant fields: `User.id`, `User.name`, `User.displayName`, `User.email`, `User.active`, `User.guest`, `User.admin`, `User.url`, `User.assignedIssues`, `User.teams`
+- Reads: `Query.users`, `Query.user`, `Query.viewer`, `User.drafts`, `Team.members`, `Project.members`
+- Relevant fields: `User.id`, `User.name`, `User.displayName`, `User.email`, `User.active`, `User.guest`, `User.admin`, `User.url`, `User.assignedIssues`, `User.teams`, `Draft.id`, `Draft.issue`, `Draft.project`, `Draft.projectUpdate`, `Draft.initiative`, `Draft.initiativeUpdate`, `Draft.parentComment`, `Draft.customerNeed`, `Draft.team`
 
 Planned commands:
 
@@ -408,8 +408,9 @@ Planned commands:
 | `user list` | `Query.users` | Read-only |
 | `user get` | `Query.user` | Read-only |
 | `user me` | `Query.viewer` | Read-only |
+| `user drafts` | `User.drafts` via `Query.viewer` | Read-only |
 
-User writes are not part of the v1 PM command surface until a later slice proves the exact Linear mutation and safety semantics.
+Only `user list`, `user get`, `user me`, and `user drafts` are implemented in the current CLI. Draft reads intentionally omit draft body/data and return parent metadata only. User writes are not part of the v1 PM command surface until a later slice proves the exact Linear mutation and safety semantics.
 
 ## WorkflowState
 

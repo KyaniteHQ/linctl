@@ -47,6 +47,7 @@ PY
   "$binary" organization templates --json --limit 5 >/dev/null
   "$binary" rate-limit status --json >/dev/null
   "$binary" whoami --json >/dev/null
+  "$binary" user drafts --json --limit 5 >/dev/null
   "$binary" issue usage >/dev/null
   "$binary" issue list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null

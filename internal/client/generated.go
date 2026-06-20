@@ -2828,6 +2828,239 @@ type DocumentsResponse struct {
 // GetDocuments returns DocumentsResponse.Documents, and is useful for accessing the field via an interface.
 func (v *DocumentsResponse) GetDocuments() DocumentsDocumentsDocumentConnection { return v.Documents }
 
+// DraftSummaryFields includes the GraphQL fields of Draft requested by the fragment DraftSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A general-purpose draft for unsaved content. Drafts store in-progress text for
+// comments, project updates, initiative updates, posts, pull request comments, and
+// customer needs. Each draft belongs to a user and is associated with exactly one
+// parent entity. Drafts are automatically deleted when the user publishes the
+// corresponding comment or update.
+type DraftSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The issue for which this is a draft comment. Null if the draft belongs to a different parent entity type.
+	Issue *DraftSummaryFieldsIssue `json:"issue"`
+	// The project for which this is a draft comment or project update. Null if the
+	// draft belongs to a different parent entity type.
+	Project *DraftSummaryFieldsProject `json:"project"`
+	// The project update for which this is a draft comment. Null if the draft belongs to a different parent entity type.
+	ProjectUpdate *DraftSummaryFieldsProjectUpdate `json:"projectUpdate"`
+	// The initiative for which this is a draft comment or initiative update. Null if
+	// the draft belongs to a different parent entity type.
+	Initiative *DraftSummaryFieldsInitiative `json:"initiative"`
+	// The initiative update for which this is a draft comment. Null if the draft belongs to a different parent entity type.
+	InitiativeUpdate *DraftSummaryFieldsInitiativeUpdate `json:"initiativeUpdate"`
+	// The parent comment for which this is a draft reply. Null if the draft is a
+	// top-level comment or belongs to a different parent entity type.
+	ParentComment *DraftSummaryFieldsParentComment `json:"parentComment"`
+	// The customer need that this draft is referencing. Null if the draft belongs to a different parent entity type.
+	CustomerNeed *DraftSummaryFieldsCustomerNeed `json:"customerNeed"`
+	// The team for which this is a draft post. Null if the draft belongs to a different parent entity type.
+	Team *DraftSummaryFieldsTeam `json:"team"`
+}
+
+// GetId returns DraftSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns DraftSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns DraftSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns DraftSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetIssue returns DraftSummaryFields.Issue, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetIssue() *DraftSummaryFieldsIssue { return v.Issue }
+
+// GetProject returns DraftSummaryFields.Project, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetProject() *DraftSummaryFieldsProject { return v.Project }
+
+// GetProjectUpdate returns DraftSummaryFields.ProjectUpdate, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetProjectUpdate() *DraftSummaryFieldsProjectUpdate {
+	return v.ProjectUpdate
+}
+
+// GetInitiative returns DraftSummaryFields.Initiative, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetInitiative() *DraftSummaryFieldsInitiative { return v.Initiative }
+
+// GetInitiativeUpdate returns DraftSummaryFields.InitiativeUpdate, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetInitiativeUpdate() *DraftSummaryFieldsInitiativeUpdate {
+	return v.InitiativeUpdate
+}
+
+// GetParentComment returns DraftSummaryFields.ParentComment, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetParentComment() *DraftSummaryFieldsParentComment {
+	return v.ParentComment
+}
+
+// GetCustomerNeed returns DraftSummaryFields.CustomerNeed, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetCustomerNeed() *DraftSummaryFieldsCustomerNeed { return v.CustomerNeed }
+
+// GetTeam returns DraftSummaryFields.Team, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFields) GetTeam() *DraftSummaryFieldsTeam { return v.Team }
+
+// DraftSummaryFieldsCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type DraftSummaryFieldsCustomerNeed struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns DraftSummaryFieldsCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsCustomerNeed) GetId() string { return v.Id }
+
+// DraftSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business
+// goal. Initiatives can contain multiple projects, have their own status updates
+// and health tracking, and can be organized hierarchically with parent-child relationships.
+type DraftSummaryFieldsInitiative struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the initiative.
+	Name string `json:"name"`
+}
+
+// GetId returns DraftSummaryFieldsInitiative.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsInitiative) GetId() string { return v.Id }
+
+// GetName returns DraftSummaryFieldsInitiative.Name, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsInitiative) GetName() string { return v.Name }
+
+// DraftSummaryFieldsInitiativeUpdate includes the requested fields of the GraphQL type InitiativeUpdate.
+// The GraphQL type's documentation follows.
+//
+// A status update posted to an initiative. Initiative updates communicate
+// progress, health, and blockers to stakeholders. Each update captures the
+// initiative's health at the time of writing and includes a rich-text body with
+// the update content.
+type DraftSummaryFieldsInitiativeUpdate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns DraftSummaryFieldsInitiativeUpdate.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsInitiativeUpdate) GetId() string { return v.Id }
+
+// DraftSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type DraftSummaryFieldsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// The issue's title. This is the primary human-readable summary of the work item.
+	Title string `json:"title"`
+}
+
+// GetId returns DraftSummaryFieldsIssue.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns DraftSummaryFieldsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetTitle returns DraftSummaryFieldsIssue.Title, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsIssue) GetTitle() string { return v.Title }
+
+// DraftSummaryFieldsParentComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type DraftSummaryFieldsParentComment struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns DraftSummaryFieldsParentComment.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsParentComment) GetId() string { return v.Id }
+
+// DraftSummaryFieldsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type DraftSummaryFieldsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+}
+
+// GetId returns DraftSummaryFieldsProject.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsProject) GetId() string { return v.Id }
+
+// GetName returns DraftSummaryFieldsProject.Name, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsProject) GetName() string { return v.Name }
+
+// DraftSummaryFieldsProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
+// The GraphQL type's documentation follows.
+//
+// A status update posted to a project. Project updates communicate progress,
+// health, and blockers to stakeholders. Each update captures the project's health
+// at the time of writing and includes a rich-text body with the update content.
+type DraftSummaryFieldsProjectUpdate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns DraftSummaryFieldsProjectUpdate.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsProjectUpdate) GetId() string { return v.Id }
+
+// DraftSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type DraftSummaryFieldsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns DraftSummaryFieldsTeam.Id, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsTeam) GetId() string { return v.Id }
+
+// GetKey returns DraftSummaryFieldsTeam.Key, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsTeam) GetKey() string { return v.Key }
+
+// GetName returns DraftSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
+func (v *DraftSummaryFieldsTeam) GetName() string { return v.Name }
+
 // EmojiSummaryFields includes the GraphQL fields of Emoji requested by the fragment EmojiSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -17033,6 +17266,22 @@ func (v *__usersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // GetIncludeDisabled returns __usersInput.IncludeDisabled, and is useful for accessing the field via an interface.
 func (v *__usersInput) GetIncludeDisabled() *bool { return v.IncludeDisabled }
+
+// __viewer_draftsInput is used internally by genqlient
+type __viewer_draftsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __viewer_draftsInput.First, and is useful for accessing the field via an interface.
+func (v *__viewer_draftsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __viewer_draftsInput.After, and is useful for accessing the field via an interface.
+func (v *__viewer_draftsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __viewer_draftsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__viewer_draftsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __workflowStateInput is used internally by genqlient
 type __workflowStateInput struct {
@@ -39786,6 +40035,215 @@ func (v *viewerViewerUser) __premarshalJSON() (*__premarshalviewerViewerUser, er
 	return &retval, nil
 }
 
+// viewer_draftsResponse is returned by viewer_drafts on success.
+type viewer_draftsResponse struct {
+	// The currently authenticated user making the API request.
+	Viewer viewer_draftsViewerUser `json:"viewer"`
+}
+
+// GetViewer returns viewer_draftsResponse.Viewer, and is useful for accessing the field via an interface.
+func (v *viewer_draftsResponse) GetViewer() viewer_draftsViewerUser { return v.Viewer }
+
+// viewer_draftsViewerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type viewer_draftsViewerUser struct {
+	// The user's saved drafts.
+	Drafts viewer_draftsViewerUserDraftsDraftConnection `json:"drafts"`
+}
+
+// GetDrafts returns viewer_draftsViewerUser.Drafts, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUser) GetDrafts() viewer_draftsViewerUserDraftsDraftConnection {
+	return v.Drafts
+}
+
+// viewer_draftsViewerUserDraftsDraftConnection includes the requested fields of the GraphQL type DraftConnection.
+type viewer_draftsViewerUserDraftsDraftConnection struct {
+	Nodes    []viewer_draftsViewerUserDraftsDraftConnectionNodesDraft `json:"nodes"`
+	PageInfo viewer_draftsViewerUserDraftsDraftConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns viewer_draftsViewerUserDraftsDraftConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnection) GetNodes() []viewer_draftsViewerUserDraftsDraftConnectionNodesDraft {
+	return v.Nodes
+}
+
+// GetPageInfo returns viewer_draftsViewerUserDraftsDraftConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnection) GetPageInfo() viewer_draftsViewerUserDraftsDraftConnectionPageInfo {
+	return v.PageInfo
+}
+
+// viewer_draftsViewerUserDraftsDraftConnectionNodesDraft includes the requested fields of the GraphQL type Draft.
+// The GraphQL type's documentation follows.
+//
+// A general-purpose draft for unsaved content. Drafts store in-progress text for
+// comments, project updates, initiative updates, posts, pull request comments, and
+// customer needs. Each draft belongs to a user and is associated with exactly one
+// parent entity. Drafts are automatically deleted when the user publishes the
+// corresponding comment or update.
+type viewer_draftsViewerUserDraftsDraftConnectionNodesDraft struct {
+	DraftSummaryFields `json:"-"`
+}
+
+// GetId returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.Id, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetId() string {
+	return v.DraftSummaryFields.Id
+}
+
+// GetCreatedAt returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.CreatedAt, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetCreatedAt() string {
+	return v.DraftSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetUpdatedAt() string {
+	return v.DraftSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetArchivedAt() *string {
+	return v.DraftSummaryFields.ArchivedAt
+}
+
+// GetIssue returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.Issue, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetIssue() *DraftSummaryFieldsIssue {
+	return v.DraftSummaryFields.Issue
+}
+
+// GetProject returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.Project, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetProject() *DraftSummaryFieldsProject {
+	return v.DraftSummaryFields.Project
+}
+
+// GetProjectUpdate returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.ProjectUpdate, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetProjectUpdate() *DraftSummaryFieldsProjectUpdate {
+	return v.DraftSummaryFields.ProjectUpdate
+}
+
+// GetInitiative returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.Initiative, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetInitiative() *DraftSummaryFieldsInitiative {
+	return v.DraftSummaryFields.Initiative
+}
+
+// GetInitiativeUpdate returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.InitiativeUpdate, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetInitiativeUpdate() *DraftSummaryFieldsInitiativeUpdate {
+	return v.DraftSummaryFields.InitiativeUpdate
+}
+
+// GetParentComment returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.ParentComment, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetParentComment() *DraftSummaryFieldsParentComment {
+	return v.DraftSummaryFields.ParentComment
+}
+
+// GetCustomerNeed returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.CustomerNeed, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetCustomerNeed() *DraftSummaryFieldsCustomerNeed {
+	return v.DraftSummaryFields.CustomerNeed
+}
+
+// GetTeam returns viewer_draftsViewerUserDraftsDraftConnectionNodesDraft.Team, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) GetTeam() *DraftSummaryFieldsTeam {
+	return v.DraftSummaryFields.Team
+}
+
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*viewer_draftsViewerUserDraftsDraftConnectionNodesDraft
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.viewer_draftsViewerUserDraftsDraftConnectionNodesDraft = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.DraftSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalviewer_draftsViewerUserDraftsDraftConnectionNodesDraft struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue *DraftSummaryFieldsIssue `json:"issue"`
+
+	Project *DraftSummaryFieldsProject `json:"project"`
+
+	ProjectUpdate *DraftSummaryFieldsProjectUpdate `json:"projectUpdate"`
+
+	Initiative *DraftSummaryFieldsInitiative `json:"initiative"`
+
+	InitiativeUpdate *DraftSummaryFieldsInitiativeUpdate `json:"initiativeUpdate"`
+
+	ParentComment *DraftSummaryFieldsParentComment `json:"parentComment"`
+
+	CustomerNeed *DraftSummaryFieldsCustomerNeed `json:"customerNeed"`
+
+	Team *DraftSummaryFieldsTeam `json:"team"`
+}
+
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *viewer_draftsViewerUserDraftsDraftConnectionNodesDraft) __premarshalJSON() (*__premarshalviewer_draftsViewerUserDraftsDraftConnectionNodesDraft, error) {
+	var retval __premarshalviewer_draftsViewerUserDraftsDraftConnectionNodesDraft
+
+	retval.Id = v.DraftSummaryFields.Id
+	retval.CreatedAt = v.DraftSummaryFields.CreatedAt
+	retval.UpdatedAt = v.DraftSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.DraftSummaryFields.ArchivedAt
+	retval.Issue = v.DraftSummaryFields.Issue
+	retval.Project = v.DraftSummaryFields.Project
+	retval.ProjectUpdate = v.DraftSummaryFields.ProjectUpdate
+	retval.Initiative = v.DraftSummaryFields.Initiative
+	retval.InitiativeUpdate = v.DraftSummaryFields.InitiativeUpdate
+	retval.ParentComment = v.DraftSummaryFields.ParentComment
+	retval.CustomerNeed = v.DraftSummaryFields.CustomerNeed
+	retval.Team = v.DraftSummaryFields.Team
+	return &retval, nil
+}
+
+// viewer_draftsViewerUserDraftsDraftConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type viewer_draftsViewerUserDraftsDraftConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns viewer_draftsViewerUserDraftsDraftConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns viewer_draftsViewerUserDraftsDraftConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *viewer_draftsViewerUserDraftsDraftConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // workflowStateResponse is returned by workflowState on success.
 type workflowStateResponse struct {
 	// One specific workflow state (issue status), looked up by its unique identifier.
@@ -48051,6 +48509,88 @@ func viewer(
 	}
 
 	data_ = &viewerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by viewer_drafts.
+const viewer_drafts_Operation = `
+query viewer_drafts ($first: Int, $after: String, $includeArchived: Boolean) {
+	viewer {
+		drafts(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... DraftSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment DraftSummaryFields on Draft {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+	projectUpdate {
+		id
+	}
+	initiative {
+		id
+		name
+	}
+	initiativeUpdate {
+		id
+	}
+	parentComment {
+		id
+	}
+	customerNeed {
+		id
+	}
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func viewer_drafts(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *viewer_draftsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "viewer_drafts",
+		Query:  viewer_drafts_Operation,
+		Variables: &__viewer_draftsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &viewer_draftsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

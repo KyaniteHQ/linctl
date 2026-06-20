@@ -25,6 +25,25 @@ type UserList struct {
 	EndCursor   *string       `json:"end_cursor,omitempty"`
 }
 
+// DraftSummary is the compact saved draft model used by viewer-scoped draft reads.
+type DraftSummary struct {
+	ID          string `json:"id"`
+	ParentType  string `json:"parent_type"`
+	ParentID    string `json:"parent_id"`
+	ParentKey   string `json:"parent_key,omitempty"`
+	ParentTitle string `json:"parent_title,omitempty"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+	ArchivedAt  string `json:"archived_at,omitempty"`
+}
+
+// DraftList is a page of the authenticated user's saved drafts.
+type DraftList struct {
+	Drafts      []DraftSummary `json:"drafts"`
+	HasNextPage bool           `json:"has_next_page"`
+	EndCursor   *string        `json:"end_cursor,omitempty"`
+}
+
 // ListUsers returns visible users.
 func ListUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (UserList, error) {
 	userPage, err := users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true), boolPtr(true))
@@ -64,6 +83,25 @@ func GetViewerUser(ctx context.Context, graphqlClient graphql.Client) (UserSumma
 	return userSummary(userResult.Viewer.UserSummaryFields), nil
 }
 
+// ListViewerDrafts returns the authenticated user's saved draft metadata.
+func ListViewerDrafts(ctx context.Context, graphqlClient graphql.Client, limit int) (DraftList, error) {
+	draftPage, err := viewer_drafts(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return DraftList{}, fmt.Errorf("list viewer drafts: %w", err)
+	}
+
+	summaries := make([]DraftSummary, 0, len(draftPage.Viewer.Drafts.Nodes))
+	for _, draft := range draftPage.Viewer.Drafts.Nodes {
+		summaries = append(summaries, draftSummary(draft.DraftSummaryFields))
+	}
+
+	return DraftList{
+		Drafts:      summaries,
+		HasNextPage: draftPage.Viewer.Drafts.PageInfo.HasNextPage,
+		EndCursor:   draftPage.Viewer.Drafts.PageInfo.EndCursor,
+	}, nil
+}
+
 func userSummary(user UserSummaryFields) UserSummary {
 	return UserSummary{
 		ID:          user.Id,
@@ -74,4 +112,49 @@ func userSummary(user UserSummaryFields) UserSummary {
 		Guest:       user.Guest,
 		Admin:       user.Admin,
 	}
+}
+
+func draftSummary(draft DraftSummaryFields) DraftSummary {
+	summary := DraftSummary{
+		ID:         draft.Id,
+		CreatedAt:  draft.CreatedAt,
+		UpdatedAt:  draft.UpdatedAt,
+		ArchivedAt: stringValue(draft.ArchivedAt),
+	}
+	switch {
+	case draft.Issue != nil:
+		summary.ParentType = "issue"
+		summary.ParentID = draft.Issue.Id
+		summary.ParentKey = draft.Issue.Identifier
+		summary.ParentTitle = draft.Issue.Title
+	case draft.Project != nil:
+		summary.ParentType = "project"
+		summary.ParentID = draft.Project.Id
+		summary.ParentTitle = draft.Project.Name
+	case draft.ProjectUpdate != nil:
+		summary.ParentType = "project_update"
+		summary.ParentID = draft.ProjectUpdate.Id
+	case draft.Initiative != nil:
+		summary.ParentType = "initiative"
+		summary.ParentID = draft.Initiative.Id
+		summary.ParentTitle = draft.Initiative.Name
+	case draft.InitiativeUpdate != nil:
+		summary.ParentType = "initiative_update"
+		summary.ParentID = draft.InitiativeUpdate.Id
+	case draft.ParentComment != nil:
+		summary.ParentType = "comment"
+		summary.ParentID = draft.ParentComment.Id
+	case draft.CustomerNeed != nil:
+		summary.ParentType = "customer_need"
+		summary.ParentID = draft.CustomerNeed.Id
+	case draft.Team != nil:
+		summary.ParentType = "team"
+		summary.ParentID = draft.Team.Id
+		summary.ParentKey = draft.Team.Key
+		summary.ParentTitle = draft.Team.Name
+	default:
+		summary.ParentType = "unknown"
+	}
+
+	return summary
 }

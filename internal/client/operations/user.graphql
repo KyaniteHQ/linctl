@@ -22,6 +22,20 @@ query viewer {
   }
 }
 
+query viewer_drafts($first: Int, $after: String, $includeArchived: Boolean) {
+  viewer {
+    drafts(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...DraftSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment UserSummaryFields on User {
   id
   name
@@ -30,4 +44,41 @@ fragment UserSummaryFields on User {
   active
   guest
   admin
+}
+
+fragment DraftSummaryFields on Draft {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  issue {
+    id
+    identifier
+    title
+  }
+  project {
+    id
+    name
+  }
+  projectUpdate {
+    id
+  }
+  initiative {
+    id
+    name
+  }
+  initiativeUpdate {
+    id
+  }
+  parentComment {
+    id
+  }
+  customerNeed {
+    id
+  }
+  team {
+    id
+    key
+    name
+  }
 }

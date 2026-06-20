@@ -115,6 +115,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "user list", args: []string{"user", "list", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user me", args: []string{"user", "me"}, contains: "user-id Omer <omer@example.com>"},
+		{name: "user drafts", args: []string{"user", "drafts", "--limit", "1"}, contains: "draft-id issue LIT-3 Draft issue"},
 		{name: "workflow state list", args: []string{"workflow-state", "list", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
 		{name: "time schedule list", args: []string{"time-schedule", "list", "--limit", "1"}, contains: "time-schedule-id Primary on-call entries 1"},
@@ -1102,6 +1103,63 @@ func Test_CommandFlows_semantic_search_honors_id_only_and_quiet(t *testing.T) {
 	}
 }
 
+func Test_CommandFlows_user_drafts_honor_list_controls(t *testing.T) {
+	tests := []struct {
+		name   string
+		args   []string
+		fake   commandFlowFakeClient
+		output string
+	}{
+		{name: "id only", args: []string{"--id-only", "user", "drafts"}, output: "draft-id\n"},
+		{name: "quiet", args: []string{"--quiet", "user", "drafts"}, output: ""},
+		{
+			name:   "sort",
+			args:   []string{"--sort", "parent_key", "--order", "desc", "user", "drafts"},
+			output: "draft-id issue LIT-3 Draft issue\n",
+		},
+		{
+			name: "empty",
+			args: []string{"--fail-on-empty", "user", "drafts"},
+			fake: commandFlowFakeClient{emptyViewerDrafts: true},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, test.fake)
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			if test.name == "empty" {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "empty result")
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, test.output, output.String())
+		})
+	}
+}
+
+func Test_CommandFlows_user_drafts_json_uses_projected_page(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--json", "--sort", "parent_key", "user", "drafts"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), `"drafts"`)
+	require.Contains(t, output.String(), `"parent_key": "LIT-3"`)
+}
+
 func Test_CommandFlows_get_project_milestone(t *testing.T) {
 	output := bytes.Buffer{}
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
@@ -1355,6 +1413,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "user list", args: []string{"user", "list"}, operation: "users", contains: "list users"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "user", contains: "get user user-id"},
 		{name: "user me", args: []string{"user", "me"}, operation: "viewer", contains: "get viewer user"},
+		{name: "user drafts", args: []string{"user", "drafts"}, operation: "viewer_drafts", contains: "list viewer drafts"},
 		{name: "workflow state list", args: []string{"workflow-state", "list"}, operation: "workflowStates", contains: "list workflow states"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
 		{name: "time schedule list", args: []string{"time-schedule", "list"}, operation: "timeSchedules", contains: "list time schedules"},
@@ -1502,6 +1561,7 @@ type commandFlowFakeClient struct {
 	emptyProjectMilestones      bool
 	emptySLAConfigurations      bool
 	emptySemanticSearch         bool
+	emptyViewerDrafts           bool
 	expectedCommentBody         string
 	expectedCommentParentID     string
 	expectedCreateDescription   string
@@ -1784,6 +1844,11 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 		return `{"user":` + commandUserJSON() + `}`, true
 	case "viewer":
 		return `{"viewer":` + commandUserJSON() + `}`, true
+	case "viewer_drafts":
+		if fake.emptyViewerDrafts {
+			return `{"viewer":{"drafts":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+		}
+		return `{"viewer":{"drafts":{"nodes":[` + commandDraftJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	}
 
 	return commandFlowStateAndCommentPayload(operation, fake)
@@ -2390,6 +2455,23 @@ func commandUserJSON() string {
 		"active":true,
 		"guest":false,
 		"admin":true
+	}`
+}
+
+func commandDraftJSON() string {
+	return `{
+		"id":"draft-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"issue":{"id":"issue-id","identifier":"LIT-3","title":"Draft issue"},
+		"project":null,
+		"projectUpdate":null,
+		"initiative":null,
+		"initiativeUpdate":null,
+		"parentComment":null,
+		"customerNeed":null,
+		"team":null
 	}`
 }
 

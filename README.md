@@ -131,6 +131,7 @@ linctl team members team-id --limit 20
 linctl user list --limit 20
 linctl user get user-id
 linctl user me
+linctl user drafts --limit 20
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
 linctl time-schedule list --limit 20
@@ -260,6 +261,7 @@ linctl document list --limit 20
 linctl label list --limit 20
 linctl team members team-id --limit 20
 linctl user me
+linctl user drafts --limit 20
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
 linctl time-schedule list --limit 20
