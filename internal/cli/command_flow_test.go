@@ -87,6 +87,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "initiative list", args: []string{"initiative", "list", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
+		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, contains: "custom-view-id has_subscribers true"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "favorite list", args: []string{"favorite", "list", "--limit", "1"}, contains: "favorite-id [issue]"},
 		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id", "--limit", "1"}, contains: "favorite-child-id [project]"},
@@ -492,6 +493,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"user", "list"},
 			{"user", "get", "user-id"},
 			{"user", "me"},
+			{"custom-view", "subscribers", "custom-view-id"},
 		}
 		for _, args := range commands {
 			t.Run(strings.Join(args, " "), func(t *testing.T) {
@@ -643,6 +645,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "initiative", "list", "--limit", "1"},
 		{"--json", "initiative", "get", "initiative-id"},
 		{"--json", "custom-view", "list", "--limit", "1"},
+		{"--json", "custom-view", "subscribers", "custom-view-id"},
 		{"--json", "custom-view", "get", "custom-view-id"},
 		{"--json", "favorite", "list", "--limit", "1"},
 		{"--json", "favorite", "children", "favorite-folder-id", "--limit", "1"},
@@ -1054,6 +1057,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "initiative list", args: []string{"initiative", "list"}, operation: "initiatives", contains: "list initiatives"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
+		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, operation: "customViewHasSubscribers", contains: "get custom view subscribers custom-view-id"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
 		{name: "favorite list", args: []string{"favorite", "list"}, operation: "favorites", contains: "list favorites"},
 		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id"}, operation: "favorite_children", contains: "list favorite children favorite-folder-id"},
@@ -1376,6 +1380,8 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 	switch operation {
 	case "customViews":
 		return `{"customViews":{"nodes":[` + commandCustomViewJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "customViewHasSubscribers":
+		return `{"customViewHasSubscribers":{"hasSubscribers":true}}`, true
 	case "customView":
 		return `{"customView":` + commandCustomViewJSON() + `}`, true
 	case "favorites":

@@ -9055,6 +9055,14 @@ func (v *__commentsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __customViewHasSubscribersInput is used internally by genqlient
+type __customViewHasSubscribersInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __customViewHasSubscribersInput.Id, and is useful for accessing the field via an interface.
+func (v *__customViewHasSubscribersInput) GetId() string { return v.Id }
+
 // __customViewInput is used internally by genqlient
 type __customViewInput struct {
 	Id string `json:"id"`
@@ -10263,6 +10271,32 @@ func (v *customViewCustomView) __premarshalJSON() (*__premarshalcustomViewCustom
 	retval.Color = v.CustomViewSummaryFields.Color
 	retval.SlugId = v.CustomViewSummaryFields.SlugId
 	return &retval, nil
+}
+
+// customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscribersPayload includes the requested fields of the GraphQL type CustomViewHasSubscribersPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a custom view subscribers check.
+type customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscribersPayload struct {
+	// Whether the custom view has subscribers.
+	HasSubscribers bool `json:"hasSubscribers"`
+}
+
+// GetHasSubscribers returns customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscribersPayload.HasSubscribers, and is useful for accessing the field via an interface.
+func (v *customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscribersPayload) GetHasSubscribers() bool {
+	return v.HasSubscribers
+}
+
+// customViewHasSubscribersResponse is returned by customViewHasSubscribers on success.
+type customViewHasSubscribersResponse struct {
+	// Whether a custom view has active notification subscribers other than the
+	// current user. Useful for warning before deleting a shared view.
+	CustomViewHasSubscribers customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscribersPayload `json:"customViewHasSubscribers"`
+}
+
+// GetCustomViewHasSubscribers returns customViewHasSubscribersResponse.CustomViewHasSubscribers, and is useful for accessing the field via an interface.
+func (v *customViewHasSubscribersResponse) GetCustomViewHasSubscribers() customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscribersPayload {
+	return v.CustomViewHasSubscribers
 }
 
 // customViewResponse is returned by customView on success.
@@ -16857,6 +16891,40 @@ func customView(
 	}
 
 	data_ = &customViewResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customViewHasSubscribers.
+const customViewHasSubscribers_Operation = `
+query customViewHasSubscribers ($id: String!) {
+	customViewHasSubscribers(id: $id) {
+		hasSubscribers
+	}
+}
+`
+
+func customViewHasSubscribers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *customViewHasSubscribersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customViewHasSubscribers",
+		Query:  customViewHasSubscribers_Operation,
+		Variables: &__customViewHasSubscribersInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customViewHasSubscribersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

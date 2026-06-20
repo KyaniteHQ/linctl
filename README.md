@@ -103,6 +103,7 @@ linctl workflow-state get workflow-state-id
 linctl initiative list --limit 20
 linctl initiative get initiative-id
 linctl custom-view list --limit 20
+linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
 linctl favorite list --limit 20
 linctl favorite children favorite-folder-id --limit 20
@@ -170,6 +171,7 @@ linctl workflow-state get workflow-state-id
 linctl initiative list --limit 20
 linctl initiative get initiative-id
 linctl custom-view list --limit 20
+linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
 linctl favorite list --limit 20
 linctl favorite children favorite-folder-id --limit 20

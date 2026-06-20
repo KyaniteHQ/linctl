@@ -677,6 +677,7 @@ func commandImplemented(command string) bool {
 		"initiative list":          true,
 		"initiative get":           true,
 		"custom-view list":         true,
+		"custom-view subscribers":  true,
 		"custom-view get":          true,
 		"favorite list":            true,
 		"favorite children":        true,

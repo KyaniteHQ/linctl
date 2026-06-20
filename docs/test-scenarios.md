@@ -338,46 +338,52 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/custom_view_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-65. Favorite list
+65. CustomView subscribers
+   - Success: `linctl custom-view subscribers CUSTOM_VIEW_ID` reports whether a CustomView has active notification subscribers through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/custom_view_subscribers`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+66. Favorite list
    - Success: `linctl favorite list --limit N` lists the authenticated user's Favorites through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/favorite_list`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-66. Favorite get
+67. Favorite get
    - Success: `linctl favorite get FAVORITE_ID` reads one Favorite by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/favorite_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-67. Favorite children
+68. Favorite children
    - Success: `linctl favorite children FAVORITE_ID --limit N` lists child Favorites under a folder Favorite through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/favorite_children`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-68. Emoji list
+69. Emoji list
    - Success: `linctl emoji list --limit N` lists workspace custom Emojis through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/emoji_list`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-69. Emoji get
+70. Emoji get
    - Success: `linctl emoji get EMOJI_ID` reads one custom Emoji by id or name.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/emoji_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-70. Attachment list
+71. Attachment list
    - Success: `linctl attachment list --limit N` lists visible issue Attachments through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_list`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-71. Attachment get
+72. Attachment get
    - Success: `linctl attachment get ATTACHMENT_ID` reads one Attachment by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-72. Attachment URL lookup
+73. Attachment URL lookup
    - Success: `linctl attachment url URL --limit N` lists issue Attachments linked to a URL through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_url`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
@@ -385,7 +391,7 @@ Success is pass/fail:
 
 ## Current Outcome
 
-All seventy-two local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All seventy-three local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

@@ -108,6 +108,7 @@ linctl workflow-state get WORKFLOW_STATE_ID --json
 linctl initiative list --json --limit 20
 linctl initiative get INITIATIVE_ID --json
 linctl custom-view list --json --limit 20
+linctl custom-view subscribers CUSTOM_VIEW_ID --json
 linctl custom-view get CUSTOM_VIEW_ID --json
 linctl favorite list --json --limit 20
 linctl favorite children FAVORITE_ID --json --limit 20

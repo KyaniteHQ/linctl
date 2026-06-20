@@ -16,6 +16,12 @@ query customView($id: String!) {
   }
 }
 
+query customViewHasSubscribers($id: String!) {
+  customViewHasSubscribers(id: $id) {
+    hasSubscribers
+  }
+}
+
 fragment CustomViewSummaryFields on CustomView {
   id
   name

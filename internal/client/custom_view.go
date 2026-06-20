@@ -25,6 +25,12 @@ type CustomViewList struct {
 	EndCursor   *string             `json:"end_cursor,omitempty"`
 }
 
+// CustomViewSubscriberStatus reports whether a custom view has active subscribers.
+type CustomViewSubscriberStatus struct {
+	ID             string `json:"id"`
+	HasSubscribers bool   `json:"has_subscribers"`
+}
+
 // ListCustomViews returns visible custom views.
 func ListCustomViews(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomViewList, error) {
 	result, err := customViews(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -56,6 +62,23 @@ func GetCustomViewByID(
 	}
 
 	return customViewSummary(result.CustomView.CustomViewSummaryFields), nil
+}
+
+// GetCustomViewSubscriberStatus returns whether a custom view has active subscribers.
+func GetCustomViewSubscriberStatus(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (CustomViewSubscriberStatus, error) {
+	result, err := customViewHasSubscribers(ctx, graphqlClient, id)
+	if err != nil {
+		return CustomViewSubscriberStatus{}, fmt.Errorf("get custom view subscribers %s: %w", id, err)
+	}
+
+	return CustomViewSubscriberStatus{
+		ID:             id,
+		HasSubscribers: result.CustomViewHasSubscribers.HasSubscribers,
+	}, nil
 }
 
 func customViewSummary(fields CustomViewSummaryFields) CustomViewSummary {
