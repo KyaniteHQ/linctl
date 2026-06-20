@@ -82,6 +82,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue search", args: []string{"issue", "search", "needle", "--limit", "1"}, contains: "LIT-3 Search result [Todo]", fake: commandFlowFakeClient{expectedSearchQuery: "needle"}},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1", "--limit", "2"}, contains: "blocked_by:\nLIT-24 Blocker issue [Todo]", fake: commandFlowFakeClient{expectedIssueDeps: "LIT-1"}},
+		{name: "issue relation list", args: []string{"issue-relation", "list", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
+		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, contains: `gh pr create --title "LIT-1 Detail issue" --body "https://linear.app/kyanite/issue/LIT-1"`},
 		{name: "issue create", args: []string{"issue", "create", "--title", "Created issue"}, contains: "LIT-2 Created issue [Todo]"},
 		{name: "issue update", args: []string{"issue", "update", "LIT-1", "--title", "Updated issue"}, contains: "LIT-1 Updated issue [Todo]"},
@@ -828,6 +830,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
 		{"--json", "issue", "deps", "LIT-1", "--limit", "2"},
+		{"--json", "--fields", "id,type,issue_identifier,related_issue_identifier", "issue-relation", "list", "--limit", "1"},
+		{"--json", "issue-relation", "get", "issue-relation-id"},
 		{"--json", "issue", "pr", "LIT-1"},
 		{"--json", "issue", "start", "LIT-1"},
 		{"--json", "issue", "comment", "LIT-1", "--body", "Looks good"},
@@ -1402,6 +1406,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "issueSearch", contains: "search issues"},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1"}, operation: "IssueDependencies", contains: "get issue dependencies LIT-1"},
+		{name: "issue relation list", args: []string{"issue-relation", "list"}, operation: "issueRelations", contains: "list issue relations"},
+		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, operation: "issueRelation", contains: "get issue relation issue-relation-id"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue create", args: []string{"issue", "create", "--title", "Created issue"}, operation: "IssueCreate", contains: "create issue"},
 		{name: "issue update", args: []string{"issue", "update", "LIT-1", "--title", "Updated issue"}, operation: "IssueUpdate", contains: "update issue LIT-1"},
@@ -2123,6 +2129,10 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"issue":` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `}`, true
 	case "IssueDependencies":
 		return commandFlowIssueDependenciesPayload(), true
+	case "issueRelations":
+		return `{"issueRelations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "issueRelation":
+		return `{"issueRelation":` + commandIssueRelationJSON() + `}`, true
 	case "issue_comments":
 		if fake.emptyIssueComments {
 			return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
@@ -2417,6 +2427,18 @@ func commandIssueJSON(identifier string, title string, stateID string, state str
 		"state":{"id":"` + stateID + `","name":"` + state + `","type":"` + stateType + `"},
 		"assignee":null,
 		"project":{"id":"project-id","name":"Pinned project"}
+	}`
+}
+
+func commandIssueRelationJSON() string {
+	return `{
+		"id":"issue-relation-id",
+		"type":"blocks",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},
+		"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}
 	}`
 }
 

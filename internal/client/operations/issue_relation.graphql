@@ -1,0 +1,35 @@
+query issueRelations($first: Int, $after: String, $includeArchived: Boolean) {
+  issueRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueRelationSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query issueRelation($id: String!) {
+  issueRelation(id: $id) {
+    ...IssueRelationSummaryFields
+  }
+}
+
+fragment IssueRelationSummaryFields on IssueRelation {
+  id
+  type
+  createdAt
+  updatedAt
+  archivedAt
+  issue {
+    id
+    identifier
+    title
+  }
+  relatedIssue {
+    id
+    identifier
+    title
+  }
+}

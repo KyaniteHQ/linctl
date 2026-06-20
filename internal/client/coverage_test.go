@@ -186,6 +186,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"projectRelations": `{"projectRelations":{"nodes":[{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"project-relation-no-user","type":"relates","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone"},"relatedProject":{"id":"other-related-project-id","name":"Other related"},"relatedProjectMilestone":{"id":"related-project-milestone-id","name":"Related milestone"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"projectRelation":  `{"projectRelation":{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"issueRelations":   `{"issueRelations":{"nodes":[{"id":"issue-relation-id","type":"blocks","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issueRelation":    `{"issueRelation":{"id":"issue-relation-id","type":"blocks","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}}`,
 		"applicationInfo":  `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
 		"issue_comments":   `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"comments":         `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -378,6 +380,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	projectRelations, err := ListProjectRelations(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	projectRelation, err := GetProjectRelationByID(context.Background(), graphqlClient, "project-relation-id")
+	require.NoError(t, err)
+	issueRelations, err := ListIssueRelations(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	issueRelation, err := GetIssueRelationByID(context.Background(), graphqlClient, "issue-relation-id")
 	require.NoError(t, err)
 	application, err := GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
 	require.NoError(t, err)
@@ -673,6 +679,14 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Empty(t, projectRelations.Relations[1].DisplayName)
 	require.Equal(t, "project-relation-id", projectRelation.ID)
 	require.Equal(t, "blocks", projectRelation.Type)
+	require.True(t, issueRelations.HasNextPage)
+	require.Equal(t, &endCursor, issueRelations.EndCursor)
+	require.Equal(t, "issue-relation-id", issueRelations.Relations[0].ID)
+	require.Equal(t, "blocks", issueRelations.Relations[0].Type)
+	require.Equal(t, "LIT-1", issueRelations.Relations[0].IssueIdentifier)
+	require.Equal(t, "LIT-2", issueRelations.Relations[0].RelatedIssueIdentifier)
+	require.Equal(t, "issue-relation-id", issueRelation.ID)
+	require.Equal(t, "related-issue-id", issueRelation.RelatedIssueID)
 	require.Equal(t, "app-id", application.ID)
 	require.Equal(t, "app-client-id", application.ClientID)
 	require.Equal(t, "Demo App", application.Name)
@@ -1469,6 +1483,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetProjectRelationByID(context.Background(), graphqlClient, "project-relation-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get project relation project-relation-id")
+
+		_, err = ListIssueRelations(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue relations")
+
+		_, err = GetIssueRelationByID(context.Background(), graphqlClient, "issue-relation-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue relation issue-relation-id")
 
 		_, err = ListTeamMemberships(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

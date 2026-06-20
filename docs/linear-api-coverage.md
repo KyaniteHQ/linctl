@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 103 | 458 |
-| Upstream Query root fields | 158 | 91 | 158 |
+| Upstream SDK root methods | 458 | 105 | 458 |
+| Upstream Query root fields | 158 | 93 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 161 | 161 | 161 |
-| Domain-map commands | 270 | 141 | 270 |
+| Local generated Go operations | 163 | 163 | 163 |
+| Domain-map commands | 275 | 143 | 275 |
 
 ## Upstream SDK Root Methods
 
@@ -293,8 +293,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueLabelRetire` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueLabels` | method | implemented | local operation or command exists |
 | `issuePriorityValues` | getter | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueRelation` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueRelations` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueRelation` | method | implemented | local operation or command exists |
+| `issueRelations` | method | implemented | local operation or command exists |
 | `issueReminder` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueRepositorySuggestions` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -564,8 +564,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueLabel` | `IssueLabel!` | implemented | root field used by local GraphQL operation |
 | `issueLabels` | `IssueLabelConnection!` | implemented | root field used by local GraphQL operation |
 | `issuePriorityValues` | `[IssuePriorityValue!]!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueRelation` | `IssueRelation!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueRelations` | `IssueRelationConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueRelation` | `IssueRelation!` | implemented | root field used by local GraphQL operation |
+| `issueRelations` | `IssueRelationConnection!` | implemented | root field used by local GraphQL operation |
 | `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueSearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1108,6 +1108,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
+| `issueRelation` | query | `issueRelation` | implemented | `internal/client/generated.go` |
+| `issueRelations` | query | `issueRelations` | implemented | `internal/client/generated.go` |
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
 | `issue_comments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issues` | query | `issues` | implemented | `internal/client/generated.go` |
@@ -1263,6 +1265,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
+| IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
+| IssueRelation | `issue-relation create` | `Mutation.issueRelationCreate` | Blocked: create must resolve and compare both issue endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| IssueRelation | `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| IssueRelation | `issue-relation delete` | `Mutation.issueRelationDelete` | Blocked: destructive command needs explicit issue relation safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Comment | `comment list` | `Query.comments` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment get` | `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |

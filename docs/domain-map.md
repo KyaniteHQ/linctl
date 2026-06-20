@@ -196,6 +196,30 @@ Planned commands:
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
 
+## IssueRelation
+
+Use `IssueRelation` for Linear dependency and similarity relations between issues. It is root issue graph metadata; `issue deps` remains the focused per-issue dependency view.
+
+Schema backing:
+
+- Types: `IssueRelation`, `IssueRelationConnection`
+- Reads: `Query.issueRelations`, `Query.issueRelation`
+- Writes: `Mutation.issueRelationCreate`, `Mutation.issueRelationUpdate`, `Mutation.issueRelationDelete`
+- Inputs: `IssueRelationCreateInput`, `IssueRelationUpdateInput`
+- Relevant fields: `IssueRelation.id`, `IssueRelation.type`, `IssueRelation.issue`, `IssueRelation.relatedIssue`, `IssueRelation.createdAt`, `IssueRelation.updatedAt`, `IssueRelation.archivedAt`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `issue-relation list` | `Query.issueRelations` | Read-only |
+| `issue-relation get` | `Query.issueRelation` | Read-only |
+| `issue-relation create` | `Mutation.issueRelationCreate` | Blocked: create must resolve and compare both issue endpoints before mutation |
+| `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation |
+| `issue-relation delete` | `Mutation.issueRelationDelete` | Blocked: destructive command needs explicit issue relation safety semantics |
+
+Only `issue-relation list` and `issue-relation get` are implemented in the current CLI. IssueRelation writes are deferred until their endpoint guard model is explicit.
+
 ## Comment
 
 Schema backing:
