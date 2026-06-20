@@ -104,6 +104,10 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, contains: "project-milestone-id Updated milestone [done]"},
 		{name: "project status list", args: []string{"project-status", "list", "--limit", "1"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
 		{name: "project status get", args: []string{"project-status", "get", "project-status-id"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
+		{name: "project label list", args: []string{"project-label", "list", "--limit", "1"}, contains: "project-label-id Roadmap #f2c94c"},
+		{name: "project label get", args: []string{"project-label", "get", "project-label-id"}, contains: "project-label-id Roadmap #f2c94c"},
+		{name: "project label children", args: []string{"project-label", "children", "project-label-id", "--limit", "1"}, contains: "child-project-label-id Mobile #56ccf2"},
+		{name: "project label projects", args: []string{"project-label", "projects", "project-label-id", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, contains: "project-id Created project [Backlog]"},
 		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, contains: "project-id Updated project [Started]"},
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, contains: "project-id Archived project [Canceled]"},
@@ -833,6 +837,9 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,name,status", "project-milestone", "list", "project-id", "--limit", "1"},
 		{"--json", "project-status", "list", "--limit", "1"},
 		{"--json", "project-status", "get", "project-status-id"},
+		{"--json", "project-label", "list", "--limit", "1"},
+		{"--json", "project-label", "children", "project-label-id", "--limit", "1"},
+		{"--json", "project-label", "projects", "project-label-id", "--limit", "1"},
 		{"--json", "--fields", "id,title,parent_type", "document", "list", "--limit", "1"},
 		{"--json", "--fields", "id,name,color", "label", "list", "--limit", "1"},
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
@@ -2223,6 +2230,12 @@ func commandFlowIssueWritePayload(operation string, fake commandFlowFakeClient) 
 }
 
 func commandFlowProjectPayload(operation string, fake commandFlowFakeClient) (string, bool) {
+	if payload, ok := commandFlowProjectStatusPayload(operation); ok {
+		return payload, true
+	}
+	if payload, ok := commandFlowProjectLabelPayload(operation); ok {
+		return payload, true
+	}
 	if payload, ok := commandFlowProjectReadPayload(operation, fake); ok {
 		return payload, true
 	}
@@ -2231,10 +2244,6 @@ func commandFlowProjectPayload(operation string, fake commandFlowFakeClient) (st
 }
 
 func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient) (string, bool) {
-	if payload, ok := commandFlowProjectStatusPayload(operation); ok {
-		return payload, true
-	}
-
 	switch operation {
 	case "Projects":
 		if fake.emptyProjectList {
@@ -2280,6 +2289,27 @@ func commandFlowProjectStatusPayload(operation string) (string, bool) {
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "projectStatus":
 		return `{"projectStatus":` + commandProjectStatusJSON() + `}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowProjectLabelPayload(operation string) (string, bool) {
+	switch operation {
+	case "projectLabels":
+		return `{"projectLabels":{"nodes":[` +
+			commandProjectLabelJSON("project-label-id", "Roadmap", "#f2c94c") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "projectLabel":
+		return `{"projectLabel":` + commandProjectLabelJSON("project-label-id", "Roadmap", "#f2c94c") + `}`, true
+	case "projectLabel_children":
+		return `{"projectLabel":{"id":"project-label-id","name":"Roadmap","children":{"nodes":[` +
+			commandProjectLabelJSON("child-project-label-id", "Mobile", "#56ccf2") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "projectLabel_projects":
+		return `{"projectLabel":{"id":"project-label-id","name":"Roadmap","projects":{"nodes":[` +
+			commandProjectJSON("Listed project", "Backlog", "backlog") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
@@ -2383,6 +2413,22 @@ func commandProjectStatusJSON() string {
 		"archivedAt":null,
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:00:00Z"
+	}`
+}
+
+func commandProjectLabelJSON(id string, name string, color string) string {
+	return `{
+		"id":"` + id + `",
+		"name":"` + name + `",
+		"description":"Project label",
+		"color":"` + color + `",
+		"isGroup":false,
+		"lastAppliedAt":"2026-06-19T12:00:00Z",
+		"retiredAt":null,
+		"archivedAt":null,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"parent":null
 	}`
 }
 

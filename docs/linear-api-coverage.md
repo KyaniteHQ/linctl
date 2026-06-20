@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 95 | 458 |
-| Upstream Query root fields | 158 | 83 | 158 |
+| Upstream SDK root methods | 458 | 97 | 458 |
+| Upstream Query root fields | 158 | 85 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 151 | 151 | 151 |
-| Domain-map commands | 246 | 131 | 246 |
+| Local generated Go operations | 155 | 155 | 155 |
+| Domain-map commands | 255 | 135 | 255 |
 
 ## Upstream SDK Root Methods
 
@@ -334,10 +334,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectAddLabel` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectExternalSyncDisable` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectFilterSuggestion` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabel` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabelRestore` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabelRetire` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabels` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectLabel` | method | implemented | local operation or command exists |
+| `projectLabelRestore` | method | blocked_needs_design | project label lifecycle restore needs explicit workspace/admin safety semantics |
+| `projectLabelRetire` | method | blocked_needs_design | project label lifecycle retire needs explicit workspace/admin safety semantics |
+| `projectLabels` | method | implemented | local operation or command exists |
 | `projectMilestone` | method | implemented | local operation or command exists |
 | `projectMilestones` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectRelation` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -591,8 +591,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | implemented | root field used by local GraphQL operation |
 | `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabel` | `ProjectLabel!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabels` | `ProjectLabelConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectLabel` | `ProjectLabel!` | implemented | root field used by local GraphQL operation |
+| `projectLabels` | `ProjectLabelConnection!` | implemented | root field used by local GraphQL operation |
 | `projectMilestone` | `ProjectMilestone!` | implemented | root field used by local GraphQL operation |
 | `projectMilestones` | `ProjectMilestoneConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectRelation` | `ProjectRelation!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -910,8 +910,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectExternalSyncDisable` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectLabelCreate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectLabelRestore` | `ProjectLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectLabelRetire` | `ProjectLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectLabelRestore` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle restore needs explicit workspace/admin safety semantics |
+| `projectLabelRetire` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle retire needs explicit workspace/admin safety semantics |
 | `projectLabelUpdate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestoneCreate` | `ProjectMilestonePayload!` | implemented | root field used by local GraphQL operation |
 | `projectMilestoneDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -1118,6 +1118,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organizationExists` | query | `organizationExists` | implemented | `internal/client/generated.go` |
 | `organization_templates` | query | `organization` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
+| `projectLabel` | query | `projectLabel` | implemented | `internal/client/generated.go` |
+| `projectLabel_children` | query | `projectLabel` | implemented | `internal/client/generated.go` |
+| `projectLabel_projects` | query | `projectLabel` | implemented | `internal/client/generated.go` |
+| `projectLabels` | query | `projectLabels` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectStatus` | query | `projectStatus` | implemented | `internal/client/generated.go` |
 | `projectStatuses` | query | `projectStatuses` | implemented | `internal/client/generated.go` |
@@ -1271,10 +1275,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model | accepted_gap | planned in `docs/domain-map.md` |
-| ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | accepted_gap | planned in `docs/domain-map.md` |
-| ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | accepted_gap | planned in `docs/domain-map.md` |
-| ProjectStatus | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model | accepted_gap | planned in `docs/domain-map.md` |
+| ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectStatus | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectLabel | `project-label list` | `Query.projectLabels` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectLabel | `project-label get` | `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectLabel | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectLabel | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectLabel | `project-label create` | `Mutation.projectLabelCreate` | Blocked: workspace label configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectLabel | `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectLabel | `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| ProjectLabel | `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectLabel | `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Cycle | `cycle list` | `Query.cycles` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Cycle | `cycle get` | `Query.cycle` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Cycle | `cycle create` | `Mutation.cycleCreate` | Team-scoped | implemented | `linctl --help` / public CLI tests |

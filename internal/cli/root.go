@@ -97,6 +97,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addProjectUpdateReadCommand(ctx, command, options)
 	addProjectMilestoneCommand(ctx, command, options)
 	addProjectStatusCommand(ctx, command, options)
+	addProjectLabelCommand(ctx, command, options)
 	addCycleCommand(ctx, command, options)
 	addSprintCommand(ctx, command, options)
 	addDocumentCommand(ctx, command, options)

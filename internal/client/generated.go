@@ -11821,6 +11821,100 @@ func (v *ProjectCreateResponse) GetProjectCreate() ProjectCreateProjectCreatePro
 	return v.ProjectCreate
 }
 
+// ProjectLabelSummaryFields includes the GraphQL fields of ProjectLabel requested by the fragment ProjectLabelSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type ProjectLabelSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The label's name.
+	Name string `json:"name"`
+	// The label's description.
+	Description *string `json:"description"`
+	// The label's color as a HEX string (e.g., '#EB5757'). Used for visual identification of the label in the UI.
+	Color string `json:"color"`
+	// Whether the label is a group. When true, this label acts as a container for
+	// child labels and cannot be directly applied to issues or projects. When false,
+	// the label can be directly applied.
+	IsGroup bool `json:"isGroup"`
+	// The date when the label was last applied to an issue, project, or initiative. Null if the label has never been applied.
+	LastAppliedAt *string `json:"lastAppliedAt"`
+	// [Internal] When the label was retired.
+	RetiredAt *string `json:"retiredAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The parent label group. If set, this label is a child within a group. Only one
+	// child label from each group can be applied to a project at a time.
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+// GetId returns ProjectLabelSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetId() string { return v.Id }
+
+// GetName returns ProjectLabelSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetName() string { return v.Name }
+
+// GetDescription returns ProjectLabelSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetDescription() *string { return v.Description }
+
+// GetColor returns ProjectLabelSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetColor() string { return v.Color }
+
+// GetIsGroup returns ProjectLabelSummaryFields.IsGroup, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetIsGroup() bool { return v.IsGroup }
+
+// GetLastAppliedAt returns ProjectLabelSummaryFields.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetLastAppliedAt() *string { return v.LastAppliedAt }
+
+// GetRetiredAt returns ProjectLabelSummaryFields.RetiredAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetRetiredAt() *string { return v.RetiredAt }
+
+// GetArchivedAt returns ProjectLabelSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetCreatedAt returns ProjectLabelSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns ProjectLabelSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetParent returns ProjectLabelSummaryFields.Parent, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.Parent
+}
+
+// ProjectLabelSummaryFieldsParentProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type ProjectLabelSummaryFieldsParentProjectLabel struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The label's name.
+	Name string `json:"name"`
+	// The label's color as a HEX string (e.g., '#EB5757'). Used for visual identification of the label in the UI.
+	Color string `json:"color"`
+}
+
+// GetId returns ProjectLabelSummaryFieldsParentProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFieldsParentProjectLabel) GetId() string { return v.Id }
+
+// GetName returns ProjectLabelSummaryFieldsParentProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFieldsParentProjectLabel) GetName() string { return v.Name }
+
+// GetColor returns ProjectLabelSummaryFieldsParentProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFieldsParentProjectLabel) GetColor() string { return v.Color }
+
 // ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayload includes the requested fields of the GraphQL type ProjectMilestonePayload.
 // The GraphQL type's documentation follows.
 //
@@ -16897,6 +16991,70 @@ type __projectInput struct {
 
 // GetId returns __projectInput.Id, and is useful for accessing the field via an interface.
 func (v *__projectInput) GetId() string { return v.Id }
+
+// __projectLabelInput is used internally by genqlient
+type __projectLabelInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __projectLabelInput.Id, and is useful for accessing the field via an interface.
+func (v *__projectLabelInput) GetId() string { return v.Id }
+
+// __projectLabel_childrenInput is used internally by genqlient
+type __projectLabel_childrenInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __projectLabel_childrenInput.Id, and is useful for accessing the field via an interface.
+func (v *__projectLabel_childrenInput) GetId() string { return v.Id }
+
+// GetFirst returns __projectLabel_childrenInput.First, and is useful for accessing the field via an interface.
+func (v *__projectLabel_childrenInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __projectLabel_childrenInput.After, and is useful for accessing the field via an interface.
+func (v *__projectLabel_childrenInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __projectLabel_childrenInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__projectLabel_childrenInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __projectLabel_projectsInput is used internally by genqlient
+type __projectLabel_projectsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __projectLabel_projectsInput.Id, and is useful for accessing the field via an interface.
+func (v *__projectLabel_projectsInput) GetId() string { return v.Id }
+
+// GetFirst returns __projectLabel_projectsInput.First, and is useful for accessing the field via an interface.
+func (v *__projectLabel_projectsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __projectLabel_projectsInput.After, and is useful for accessing the field via an interface.
+func (v *__projectLabel_projectsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __projectLabel_projectsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__projectLabel_projectsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __projectLabelsInput is used internally by genqlient
+type __projectLabelsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __projectLabelsInput.First, and is useful for accessing the field via an interface.
+func (v *__projectLabelsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __projectLabelsInput.After, and is useful for accessing the field via an interface.
+func (v *__projectLabelsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __projectLabelsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__projectLabelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __projectMilestoneInput is used internally by genqlient
 type __projectMilestoneInput struct {
@@ -34276,6 +34434,734 @@ func (v *organization_templatesResponse) GetOrganization() organization_template
 	return v.Organization
 }
 
+// projectLabelProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type projectLabelProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns projectLabelProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetId() string { return v.ProjectLabelSummaryFields.Id }
+
+// GetName returns projectLabelProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetName() string { return v.ProjectLabelSummaryFields.Name }
+
+// GetDescription returns projectLabelProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns projectLabelProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetColor() string { return v.ProjectLabelSummaryFields.Color }
+
+// GetIsGroup returns projectLabelProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetIsGroup() bool { return v.ProjectLabelSummaryFields.IsGroup }
+
+// GetLastAppliedAt returns projectLabelProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns projectLabelProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns projectLabelProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns projectLabelProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns projectLabelProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetParent returns projectLabelProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *projectLabelProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectLabelProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectLabelProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectLabelProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *projectLabelProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectLabelProjectLabel) __premarshalJSON() (*__premarshalprojectLabelProjectLabel, error) {
+	var retval __premarshalprojectLabelProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// projectLabelResponse is returned by projectLabel on success.
+type projectLabelResponse struct {
+	// Returns a single project label by its identifier.
+	ProjectLabel projectLabelProjectLabel `json:"projectLabel"`
+}
+
+// GetProjectLabel returns projectLabelResponse.ProjectLabel, and is useful for accessing the field via an interface.
+func (v *projectLabelResponse) GetProjectLabel() projectLabelProjectLabel { return v.ProjectLabel }
+
+// projectLabel_childrenProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type projectLabel_childrenProjectLabel struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The label's name.
+	Name string `json:"name"`
+	// Children of the label.
+	Children projectLabel_childrenProjectLabelChildrenProjectLabelConnection `json:"children"`
+}
+
+// GetId returns projectLabel_childrenProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabel) GetId() string { return v.Id }
+
+// GetName returns projectLabel_childrenProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabel) GetName() string { return v.Name }
+
+// GetChildren returns projectLabel_childrenProjectLabel.Children, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabel) GetChildren() projectLabel_childrenProjectLabelChildrenProjectLabelConnection {
+	return v.Children
+}
+
+// projectLabel_childrenProjectLabelChildrenProjectLabelConnection includes the requested fields of the GraphQL type ProjectLabelConnection.
+type projectLabel_childrenProjectLabelChildrenProjectLabelConnection struct {
+	Nodes    []projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel `json:"nodes"`
+	PageInfo projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns projectLabel_childrenProjectLabelChildrenProjectLabelConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnection) GetNodes() []projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel {
+	return v.Nodes
+}
+
+// GetPageInfo returns projectLabel_childrenProjectLabelChildrenProjectLabelConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnection) GetPageInfo() projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo {
+	return v.PageInfo
+}
+
+// projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetId() string {
+	return v.ProjectLabelSummaryFields.Id
+}
+
+// GetName returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetName() string {
+	return v.ProjectLabelSummaryFields.Name
+}
+
+// GetDescription returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetColor() string {
+	return v.ProjectLabelSummaryFields.Color
+}
+
+// GetIsGroup returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetIsGroup() bool {
+	return v.ProjectLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetParent returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) __premarshalJSON() (*__premarshalprojectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel, error) {
+	var retval __premarshalprojectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// projectLabel_childrenResponse is returned by projectLabel_children on success.
+type projectLabel_childrenResponse struct {
+	// Returns a single project label by its identifier.
+	ProjectLabel projectLabel_childrenProjectLabel `json:"projectLabel"`
+}
+
+// GetProjectLabel returns projectLabel_childrenResponse.ProjectLabel, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenResponse) GetProjectLabel() projectLabel_childrenProjectLabel {
+	return v.ProjectLabel
+}
+
+// projectLabel_projectsProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type projectLabel_projectsProjectLabel struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The label's name.
+	Name string `json:"name"`
+	// Projects associated with the label.
+	Projects projectLabel_projectsProjectLabelProjectsProjectConnection `json:"projects"`
+}
+
+// GetId returns projectLabel_projectsProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabel) GetId() string { return v.Id }
+
+// GetName returns projectLabel_projectsProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabel) GetName() string { return v.Name }
+
+// GetProjects returns projectLabel_projectsProjectLabel.Projects, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabel) GetProjects() projectLabel_projectsProjectLabelProjectsProjectConnection {
+	return v.Projects
+}
+
+// projectLabel_projectsProjectLabelProjectsProjectConnection includes the requested fields of the GraphQL type ProjectConnection.
+type projectLabel_projectsProjectLabelProjectsProjectConnection struct {
+	Nodes    []projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject `json:"nodes"`
+	PageInfo projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns projectLabel_projectsProjectLabelProjectsProjectConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnection) GetNodes() []projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject {
+	return v.Nodes
+}
+
+// GetPageInfo returns projectLabel_projectsProjectLabelProjectsProjectConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnection) GetPageInfo() projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo {
+	return v.PageInfo
+}
+
+// projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject struct {
+	ProjectSummaryFields `json:"-"`
+}
+
+// GetId returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Id, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetId() string {
+	return v.ProjectSummaryFields.Id
+}
+
+// GetName returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Name, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetName() string {
+	return v.ProjectSummaryFields.Name
+}
+
+// GetDescription returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Description, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetDescription() string {
+	return v.ProjectSummaryFields.Description
+}
+
+// GetSlugId returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetSlugId() string {
+	return v.ProjectSummaryFields.SlugId
+}
+
+// GetUrl returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Url, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetUrl() string {
+	return v.ProjectSummaryFields.Url
+}
+
+// GetPriority returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Priority, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetPriority() int {
+	return v.ProjectSummaryFields.Priority
+}
+
+// GetStatus returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Status, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetStatus() ProjectSummaryFieldsStatusProjectStatus {
+	return v.ProjectSummaryFields.Status
+}
+
+// GetLead returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Lead, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetLead() *ProjectSummaryFieldsLeadUser {
+	return v.ProjectSummaryFields.Lead
+}
+
+// GetTeams returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.Teams, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetTeams() ProjectSummaryFieldsTeamsTeamConnection {
+	return v.ProjectSummaryFields.Teams
+}
+
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description string `json:"description"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Priority int `json:"priority"`
+
+	Status ProjectSummaryFieldsStatusProjectStatus `json:"status"`
+
+	Lead *ProjectSummaryFieldsLeadUser `json:"lead"`
+
+	Teams ProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
+}
+
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) __premarshalJSON() (*__premarshalprojectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject, error) {
+	var retval __premarshalprojectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject
+
+	retval.Id = v.ProjectSummaryFields.Id
+	retval.Name = v.ProjectSummaryFields.Name
+	retval.Description = v.ProjectSummaryFields.Description
+	retval.SlugId = v.ProjectSummaryFields.SlugId
+	retval.Url = v.ProjectSummaryFields.Url
+	retval.Priority = v.ProjectSummaryFields.Priority
+	retval.Status = v.ProjectSummaryFields.Status
+	retval.Lead = v.ProjectSummaryFields.Lead
+	retval.Teams = v.ProjectSummaryFields.Teams
+	return &retval, nil
+}
+
+// projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// projectLabel_projectsResponse is returned by projectLabel_projects on success.
+type projectLabel_projectsResponse struct {
+	// Returns a single project label by its identifier.
+	ProjectLabel projectLabel_projectsProjectLabel `json:"projectLabel"`
+}
+
+// GetProjectLabel returns projectLabel_projectsResponse.ProjectLabel, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsResponse) GetProjectLabel() projectLabel_projectsProjectLabel {
+	return v.ProjectLabel
+}
+
+// projectLabelsProjectLabelsProjectLabelConnection includes the requested fields of the GraphQL type ProjectLabelConnection.
+type projectLabelsProjectLabelsProjectLabelConnection struct {
+	Nodes    []projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel `json:"nodes"`
+	PageInfo projectLabelsProjectLabelsProjectLabelConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns projectLabelsProjectLabelsProjectLabelConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnection) GetNodes() []projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel {
+	return v.Nodes
+}
+
+// GetPageInfo returns projectLabelsProjectLabelsProjectLabelConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnection) GetPageInfo() projectLabelsProjectLabelsProjectLabelConnectionPageInfo {
+	return v.PageInfo
+}
+
+// projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetId() string {
+	return v.ProjectLabelSummaryFields.Id
+}
+
+// GetName returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetName() string {
+	return v.ProjectLabelSummaryFields.Name
+}
+
+// GetDescription returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetColor() string {
+	return v.ProjectLabelSummaryFields.Color
+}
+
+// GetIsGroup returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetIsGroup() bool {
+	return v.ProjectLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetParent returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) __premarshalJSON() (*__premarshalprojectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel, error) {
+	var retval __premarshalprojectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// projectLabelsProjectLabelsProjectLabelConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type projectLabelsProjectLabelsProjectLabelConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns projectLabelsProjectLabelsProjectLabelConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns projectLabelsProjectLabelsProjectLabelConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// projectLabelsResponse is returned by projectLabels on success.
+type projectLabelsResponse struct {
+	// Returns all project labels in the workspace, with optional filtering.
+	ProjectLabels projectLabelsProjectLabelsProjectLabelConnection `json:"projectLabels"`
+}
+
+// GetProjectLabels returns projectLabelsResponse.ProjectLabels, and is useful for accessing the field via an interface.
+func (v *projectLabelsResponse) GetProjectLabels() projectLabelsProjectLabelsProjectLabelConnection {
+	return v.ProjectLabels
+}
+
 // projectMilestoneProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
@@ -46792,6 +47678,260 @@ func project(
 	}
 
 	data_ = &projectResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by projectLabel.
+const projectLabel_Operation = `
+query projectLabel ($id: String!) {
+	projectLabel(id: $id) {
+		... ProjectLabelSummaryFields
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func projectLabel(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *projectLabelResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectLabel",
+		Query:  projectLabel_Operation,
+		Variables: &__projectLabelInput{
+			Id: id,
+		},
+	}
+
+	data_ = &projectLabelResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by projectLabel_children.
+const projectLabel_children_Operation = `
+query projectLabel_children ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	projectLabel(id: $id) {
+		id
+		name
+		children(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ProjectLabelSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func projectLabel_children(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *projectLabel_childrenResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectLabel_children",
+		Query:  projectLabel_children_Operation,
+		Variables: &__projectLabel_childrenInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &projectLabel_childrenResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by projectLabel_projects.
+const projectLabel_projects_Operation = `
+query projectLabel_projects ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	projectLabel(id: $id) {
+		id
+		name
+		projects(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ProjectSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ProjectSummaryFields on Project {
+	id
+	name
+	description
+	slugId
+	url
+	priority
+	status {
+		id
+		name
+		type
+	}
+	lead {
+		id
+		name
+		displayName
+	}
+	teams(first: 50) {
+		nodes {
+			id
+			key
+			name
+		}
+	}
+}
+`
+
+func projectLabel_projects(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *projectLabel_projectsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectLabel_projects",
+		Query:  projectLabel_projects_Operation,
+		Variables: &__projectLabel_projectsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &projectLabel_projectsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by projectLabels.
+const projectLabels_Operation = `
+query projectLabels ($first: Int, $after: String, $includeArchived: Boolean) {
+	projectLabels(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... ProjectLabelSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func projectLabels(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *projectLabelsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectLabels",
+		Query:  projectLabels_Operation,
+		Variables: &__projectLabelsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &projectLabelsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

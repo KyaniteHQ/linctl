@@ -288,6 +288,33 @@ Planned commands:
 
 Only `project-status list` and `project-status get` are implemented in the current CLI. ProjectStatus writes are deferred as workspace/admin configuration surface.
 
+## ProjectLabel
+
+Use `ProjectLabel` for Linear project labels. Do not confuse it with issue labels.
+
+Schema backing:
+
+- Types: `ProjectLabel`, `ProjectLabelConnection`
+- Reads: `Query.projectLabels`, `Query.projectLabel`, `ProjectLabel.children`, `ProjectLabel.projects`
+- Writes: `Mutation.projectLabelCreate`, `Mutation.projectLabelUpdate`, `Mutation.projectLabelDelete`, `Mutation.projectLabelRetire`, `Mutation.projectLabelRestore`
+- Relevant fields: `ProjectLabel.id`, `ProjectLabel.name`, `ProjectLabel.description`, `ProjectLabel.color`, `ProjectLabel.isGroup`, `ProjectLabel.parent`, `ProjectLabel.retiredAt`, `ProjectLabel.archivedAt`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `project-label list` | `Query.projectLabels` | Read-only |
+| `project-label get` | `Query.projectLabel` | Read-only |
+| `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only |
+| `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only |
+| `project-label create` | `Mutation.projectLabelCreate` | Blocked: workspace label configuration needs an explicit admin safety model |
+| `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning workspace before mutation |
+| `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics |
+| `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics |
+| `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model |
+
+Only `project-label list`, `project-label get`, `project-label children`, and `project-label projects` are implemented in the current CLI. ProjectLabel writes are deferred as workspace/admin configuration surface.
+
 ## Cycle
 
 Schema backing:

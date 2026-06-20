@@ -57,6 +57,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Type:  "backlog",
 		Color: "#bec2c8",
 	}
+	projectLabel := client.ProjectLabelSummary{
+		ID:         "project-label-id",
+		Name:       "Roadmap",
+		Color:      "#f2c94c",
+		ParentName: "Parent",
+	}
 	document := client.DocumentSummary{
 		ID:         "document-id",
 		Title:      "Spec",
@@ -339,6 +345,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectUpdate(textCommand, &textOptions, projectUpdate))
 	require.NoError(t, writeProjectMilestone(textCommand, &textOptions, milestone))
 	require.NoError(t, writeProjectStatus(textCommand, &textOptions, projectStatus))
+	require.NoError(t, writeProjectLabel(textCommand, &textOptions, projectLabel))
 	require.NoError(t, writeDocument(textCommand, &textOptions, document))
 	require.NoError(t, writeLabel(textCommand, &textOptions, label))
 	require.NoError(t, writeTeam(textCommand, &textOptions, team))
@@ -390,6 +397,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-id Coverage [Backlog]\nproject-update-id onTrack Omer First update\n"+
 			"project-milestone-id Launch milestone [next]\n"+
 			"project-status-id Backlog [backlog] #bec2c8\n"+
+			"project-label-id Roadmap #f2c94c\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
 			"comment-id Omer First comment\nworkflow-state-id Started [started]\n"+
@@ -443,6 +451,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectUpdate(jsonCommand, &jsonOptions, projectUpdate))
 	require.NoError(t, writeProjectMilestone(jsonCommand, &jsonOptions, milestone))
 	require.NoError(t, writeProjectStatus(jsonCommand, &jsonOptions, projectStatus))
+	require.NoError(t, writeProjectLabel(jsonCommand, &jsonOptions, projectLabel))
 	require.NoError(t, writeDocument(jsonCommand, &jsonOptions, document))
 	require.NoError(t, writeLabel(jsonCommand, &jsonOptions, label))
 	require.NoError(t, writeTeam(jsonCommand, &jsonOptions, team))
@@ -493,6 +502,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"body": "First update"`)
 	require.Contains(t, jsonOut.String(), `"name": "Launch milestone"`)
 	require.Contains(t, jsonOut.String(), `"id": "project-status-id"`)
+	require.Contains(t, jsonOut.String(), `"id": "project-label-id"`)
 	require.Contains(t, jsonOut.String(), `"key": "LIT-3"`)
 	require.Contains(t, jsonOut.String(), `"title": "Spec"`)
 	require.Contains(t, jsonOut.String(), `"color": "#ff0000"`)
@@ -582,6 +592,12 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Name:  "Backlog",
 		Type:  "backlog",
 		Color: "#bec2c8",
+	}
+	projectLabel := client.ProjectLabelSummary{
+		ID:         "project-label-id",
+		Name:       "Roadmap",
+		Color:      "#f2c94c",
+		ParentName: "Parent",
 	}
 	document := client.DocumentSummary{
 		ID:         "document-id",
@@ -842,6 +858,10 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectMilestone(command, &rootOptions{format: "full"}, milestone))
 	require.NoError(t, writeProjectMilestone(command, &rootOptions{idOnly: true}, milestone))
 	require.NoError(t, writeProjectStatus(command, &rootOptions{idOnly: true}, projectStatus))
+	require.NoError(t, writeProjectLabel(command, &rootOptions{format: "minimal"}, projectLabel))
+	require.NoError(t, writeProjectLabel(command, &rootOptions{format: "full"}, projectLabel))
+	require.NoError(t, writeProjectLabel(command, &rootOptions{idOnly: true}, projectLabel))
+	require.Error(t, writeProjectLabel(command, &rootOptions{format: "wide"}, projectLabel))
 	require.NoError(t, writeDocument(command, &rootOptions{idOnly: true}, document))
 	require.NoError(t, writeLabel(command, &rootOptions{idOnly: true}, label))
 	require.NoError(t, writeTeam(command, &rootOptions{idOnly: true}, team))
@@ -891,6 +911,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "target_date=2026-06-30")
 	require.Contains(t, output.String(), "project-milestone-id")
 	require.Contains(t, output.String(), "project-status-id")
+	require.Contains(t, output.String(), "project-label-id")
 	require.Contains(t, output.String(), "document-id")
 	require.Contains(t, output.String(), "label-id")
 	require.Contains(t, output.String(), "team-id")
@@ -938,6 +959,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectUpdate(quietCommand, &rootOptions{quiet: true}, projectUpdate))
 	require.NoError(t, writeProjectMilestone(quietCommand, &rootOptions{quiet: true}, milestone))
 	require.NoError(t, writeProjectStatus(quietCommand, &rootOptions{quiet: true}, projectStatus))
+	require.NoError(t, writeProjectLabel(quietCommand, &rootOptions{quiet: true}, projectLabel))
 	require.NoError(t, writeDocument(quietCommand, &rootOptions{quiet: true}, document))
 	require.NoError(t, writeLabel(quietCommand, &rootOptions{quiet: true}, label))
 	require.NoError(t, writeTeam(quietCommand, &rootOptions{quiet: true}, team))

@@ -123,6 +123,10 @@ linctl project-milestone create project-id --name "Launch milestone"
 linctl project-milestone update project-milestone-id --target-date 2026-06-30
 linctl project-status list --limit 20
 linctl project-status get project-status-id
+linctl project-label list --limit 20
+linctl project-label get project-label-id
+linctl project-label children project-label-id --limit 20
+linctl project-label projects project-label-id --limit 20
 linctl document list --limit 20
 linctl document get document-id
 linctl label list --limit 20
@@ -261,6 +265,10 @@ linctl project-update list --limit 20
 linctl project-update get project-update-id
 linctl project-status list --limit 20
 linctl project-status get project-status-id
+linctl project-label list --limit 20
+linctl project-label get project-label-id
+linctl project-label children project-label-id --limit 20
+linctl project-label projects project-label-id --limit 20
 linctl document list --limit 20
 linctl label list --limit 20
 linctl team members team-id --limit 20

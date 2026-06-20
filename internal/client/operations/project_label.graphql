@@ -1,0 +1,67 @@
+fragment ProjectLabelSummaryFields on ProjectLabel {
+  id
+  name
+  description
+  color
+  isGroup
+  lastAppliedAt
+  retiredAt
+  archivedAt
+  createdAt
+  updatedAt
+  parent {
+    id
+    name
+    color
+  }
+}
+
+query projectLabels($first: Int, $after: String, $includeArchived: Boolean) {
+  projectLabels(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ProjectLabelSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query projectLabel($id: String!) {
+  projectLabel(id: $id) {
+    ...ProjectLabelSummaryFields
+  }
+}
+
+query projectLabel_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  projectLabel(id: $id) {
+    id
+    name
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query projectLabel_projects($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  projectLabel(id: $id) {
+    id
+    name
+    projects(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
