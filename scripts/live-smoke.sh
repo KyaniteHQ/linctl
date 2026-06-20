@@ -57,6 +57,14 @@ PY
   "$binary" project-status list --json --limit 5 >/dev/null
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null
+  "$binary" team cycles "$team_id" --json --limit 5 >/dev/null
+  "$binary" team issues "$team_id" --json --limit 5 >/dev/null
+  "$binary" team labels "$team_id" --json --limit 5 >/dev/null
+  "$binary" team memberships "$team_id" --json --limit 5 >/dev/null
+  "$binary" team projects "$team_id" --json --limit 5 >/dev/null
+  "$binary" team release-pipelines "$team_id" --json --limit 5 >/dev/null
+  "$binary" team states "$team_id" --json --limit 5 >/dev/null
+  "$binary" team templates "$team_id" --json --limit 5 >/dev/null
   "$binary" team-membership list --json --limit 5 >/dev/null
   "$binary" notification list --json --limit 5 >/dev/null
   "$binary" notification subscription list --json --limit 5 >/dev/null

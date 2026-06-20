@@ -125,7 +125,15 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "label get", args: []string{"label", "get", "label-id"}, contains: "label-id Bug #ff0000"},
 		{name: "team list", args: []string{"team", "list", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, contains: "team-id LIT linctl"},
+		{name: "team cycles", args: []string{"team", "cycles", "team-id", "--limit", "1"}, contains: "cycle-id Planning cycle [active]"},
+		{name: "team issues", args: []string{"team", "issues", "team-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "team labels", args: []string{"team", "labels", "team-id", "--limit", "1"}, contains: "label-id Bug #ff0000"},
 		{name: "team members", args: []string{"team", "members", "team-id", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
+		{name: "team memberships", args: []string{"team", "memberships", "team-id", "--limit", "1"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
+		{name: "team projects", args: []string{"team", "projects", "team-id", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
+		{name: "team release pipelines", args: []string{"team", "release-pipelines", "team-id", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
+		{name: "team states", args: []string{"team", "states", "team-id", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
+		{name: "team templates", args: []string{"team", "templates", "team-id", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
 		{name: "team membership list", args: []string{"team-membership", "list", "--limit", "1"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
 		{name: "team membership get", args: []string{"team-membership", "get", "team-membership-id"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
 		{name: "user list", args: []string{"user", "list", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
@@ -863,7 +871,15 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,title,parent_type", "document", "list", "--limit", "1"},
 		{"--json", "--fields", "id,name,color", "label", "list", "--limit", "1"},
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
+		{"--json", "--fields", "id,name,status", "team", "cycles", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "team", "issues", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,name,color", "team", "labels", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,display_name,email", "team", "members", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,team_key,user_id,owner", "team", "memberships", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,name,status", "team", "projects", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,name,type", "team", "release-pipelines", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,name,type", "team", "states", "team-id", "--limit", "1"},
+		{"--json", "--fields", "id,name,type,team_key", "team", "templates", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,team_key,user_id,owner", "team-membership", "list", "--limit", "1"},
 		{"--json", "team-membership", "get", "team-membership-id"},
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
@@ -1450,7 +1466,15 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "issueLabel", contains: "get label label-id"},
 		{name: "team list", args: []string{"team", "list"}, operation: "Teams", contains: "list teams"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, operation: "team", contains: "get team team-id"},
+		{name: "team cycles", args: []string{"team", "cycles", "team-id"}, operation: "team_cycles", contains: "list team cycles team-id"},
+		{name: "team issues", args: []string{"team", "issues", "team-id"}, operation: "team_issues", contains: "list team issues team-id"},
+		{name: "team labels", args: []string{"team", "labels", "team-id"}, operation: "team_labels", contains: "list team labels team-id"},
 		{name: "team members", args: []string{"team", "members", "team-id"}, operation: "team_members", contains: "list team members team-id"},
+		{name: "team memberships", args: []string{"team", "memberships", "team-id"}, operation: "team_memberships", contains: "list team memberships team-id"},
+		{name: "team projects", args: []string{"team", "projects", "team-id"}, operation: "team_projects", contains: "list team projects team-id"},
+		{name: "team release pipelines", args: []string{"team", "release-pipelines", "team-id"}, operation: "team_releasePipelines", contains: "list team release pipelines team-id"},
+		{name: "team states", args: []string{"team", "states", "team-id"}, operation: "team_states", contains: "list team states team-id"},
+		{name: "team templates", args: []string{"team", "templates", "team-id"}, operation: "team_templates", contains: "list team templates team-id"},
 		{name: "user list", args: []string{"user", "list"}, operation: "users", contains: "list users"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "user", contains: "get user user-id"},
 		{name: "user me", args: []string{"user", "me"}, operation: "viewer", contains: "get viewer user"},
@@ -1914,7 +1938,44 @@ func commandExternalUserJSON() string {
 	}`
 }
 
+func commandFlowTeamChildPayload(operation string) (string, bool) {
+	switch operation {
+	case "team_cycles":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","cycles":{"nodes":[` +
+			commandCycleJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_issues":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","issues":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "state-id", "Todo", "backlog") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_labels":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","labels":{"nodes":[` +
+			commandLabelJSON("label body") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_memberships":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","memberships":{"nodes":[` +
+			commandTeamMembershipJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_projects":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","projects":{"nodes":[` +
+			commandProjectJSON("Listed project", "Backlog", "backlog") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_releasePipelines":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","releasePipelines":{"nodes":[` +
+			commandReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_states":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","states":{"nodes":[` +
+			commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_templates":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","templates":{"nodes":[` +
+			commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	default:
+		return "", false
+	}
+}
+
 func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFakeClient) (string, bool) {
+	if payload, ok := commandFlowTeamChildPayload(operation); ok {
+		return payload, true
+	}
+
 	switch operation {
 	case "Documents":
 		return `{"documents":{"nodes":[` + commandDocumentJSON(
@@ -2483,6 +2544,20 @@ func commandIssueToReleaseJSON() string {
 		"archivedAt":null,
 		"issue":{"id":"issue-id"},
 		"release":{"id":"release-id"}
+	}`
+}
+
+func commandCycleJSON() string {
+	return `{
+		"id":"cycle-id",
+		"number":7,
+		"name":"Planning cycle",
+		"description":"Cycle body",
+		"startsAt":"2026-06-01T00:00:00Z",
+		"endsAt":"2026-07-15T00:00:00Z",
+		"completedAt":null,
+		"progress":0.5,
+		"team":{"id":"team-id","key":"LIT","name":"linctl"}
 	}`
 }
 

@@ -16,7 +16,15 @@ func addTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	}
 	addTeamListCommand(ctx, teamCommand, options)
 	addTeamGetCommand(ctx, teamCommand, options)
+	addTeamCyclesCommand(ctx, teamCommand, options)
+	addTeamIssuesCommand(ctx, teamCommand, options)
+	addTeamLabelsCommand(ctx, teamCommand, options)
 	addTeamMembersCommand(ctx, teamCommand, options)
+	addTeamMembershipsCommand(ctx, teamCommand, options)
+	addTeamProjectsCommand(ctx, teamCommand, options)
+	addTeamReleasePipelinesCommand(ctx, teamCommand, options)
+	addTeamStatesCommand(ctx, teamCommand, options)
+	addTeamTemplatesCommand(ctx, teamCommand, options)
 	root.AddCommand(teamCommand)
 }
 
@@ -77,6 +85,160 @@ func addTeamMembersCommand(ctx context.Context, root *cobra.Command, options *ro
 	root.AddCommand(command)
 }
 
+func addTeamCyclesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "cycles TEAM_ID",
+		Short: "List team Cycles",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx, command, args, options, limit,
+				loadTeamCycles, cyclePageWithItems, writeCycle,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum Cycles to return")
+	root.AddCommand(command)
+}
+
+func addTeamIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "issues TEAM_ID",
+		Short: "List team issues",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx, command, args, options, limit,
+				loadTeamIssues, issuePageWithItems, writeIssue,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
+	root.AddCommand(command)
+}
+
+func addTeamLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "labels TEAM_ID",
+		Short: "List team labels",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx, command, args, options, limit,
+				loadTeamLabels, labelPageWithItems, writeLabel,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
+	root.AddCommand(command)
+}
+
+func addTeamMembershipsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "memberships TEAM_ID",
+		Short: "List team memberships",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadTeamMemberships,
+				teamMembershipPageWithItems,
+				writeTeamMembership,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum memberships to return")
+	root.AddCommand(command)
+}
+
+func addTeamProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "projects TEAM_ID",
+		Short: "List team projects",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx, command, args, options, limit,
+				loadTeamProjects, projectPageWithItems, writeProject,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
+	root.AddCommand(command)
+}
+
+func addTeamReleasePipelinesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "release-pipelines TEAM_ID",
+		Short: "List team release pipelines",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadTeamReleasePipelines,
+				releasePipelinePageWithItems,
+				writeReleasePipeline,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum release pipelines to return")
+	root.AddCommand(command)
+}
+
+func addTeamStatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "states TEAM_ID",
+		Short: "List team workflow states",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadTeamStates,
+				workflowStatePageWithItems,
+				writeWorkflowState,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum workflow states to return")
+	root.AddCommand(command)
+}
+
+func addTeamTemplatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "templates TEAM_ID",
+		Short: "List team templates",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx, command, args, options, limit,
+				loadTeamTemplates, templatePageWithItems, writeTemplate,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum templates to return")
+	root.AddCommand(command)
+}
+
 func writeTeam(command *cobra.Command, options *rootOptions, team client.TeamSummary) error {
 	if wrote, err := writeIDOnly(command, options, team.ID); wrote || err != nil {
 		return err
@@ -118,5 +280,100 @@ func loadTeamMemberList(
 
 func teamMemberPageWithItems(page client.TeamMemberList, members []client.UserSummary) client.TeamMemberList {
 	page.Members = members
+	return page
+}
+
+func loadTeamCycles(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.CycleList, []client.CycleSummary, error) {
+	cycles, err := client.ListTeamCycles(ctx, runtime.graphqlClient, args[0], limit)
+	return cycles, cycles.Cycles, err
+}
+
+func loadTeamIssues(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.IssueList, []client.IssueSummary, error) {
+	issues, err := client.ListTeamIssues(ctx, runtime.graphqlClient, args[0], limit)
+	return issues, issues.Issues, err
+}
+
+func loadTeamLabels(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.LabelList, []client.LabelSummary, error) {
+	labels, err := client.ListTeamLabels(ctx, runtime.graphqlClient, args[0], limit)
+	return labels, labels.Labels, err
+}
+
+func loadTeamMemberships(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.TeamMembershipList, []client.TeamMembershipSummary, error) {
+	memberships, err := client.ListTeamMembershipsForTeam(ctx, runtime.graphqlClient, args[0], limit)
+	return memberships, memberships.Memberships, err
+}
+
+func loadTeamProjects(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.ProjectList, []client.ProjectSummary, error) {
+	projects, err := client.ListTeamProjects(ctx, runtime.graphqlClient, args[0], limit)
+	return projects, projects.Projects, err
+}
+
+func loadTeamReleasePipelines(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.ReleasePipelineList, []client.ReleasePipelineSummary, error) {
+	pipelines, err := client.ListTeamReleasePipelines(ctx, runtime.graphqlClient, args[0], limit)
+	return pipelines, pipelines.ReleasePipelines, err
+}
+
+func loadTeamStates(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.WorkflowStateList, []client.WorkflowStateSummary, error) {
+	states, err := client.ListTeamWorkflowStates(ctx, runtime.graphqlClient, args[0], limit)
+	return states, states.WorkflowStates, err
+}
+
+func loadTeamTemplates(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.TemplateList, []client.TemplateSummary, error) {
+	templates, err := client.ListTeamTemplates(ctx, runtime.graphqlClient, args[0], limit)
+	return templates, templates.Templates, err
+}
+
+func cyclePageWithItems(page client.CycleList, cycles []client.CycleSummary) client.CycleList {
+	page.Cycles = cycles
+	return page
+}
+
+func issuePageWithItems(page client.IssueList, issues []client.IssueSummary) client.IssueList {
+	page.Issues = issues
+	return page
+}
+
+func projectPageWithItems(page client.ProjectList, projects []client.ProjectSummary) client.ProjectList {
+	page.Projects = projects
 	return page
 }

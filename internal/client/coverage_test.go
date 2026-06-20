@@ -201,6 +201,21 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"Teams":            `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"teamMemberships":  `{"teamMemberships":{"nodes":[{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"teamMembership":   `{"teamMembership":{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
+		"team_cycles":      `{"team":{"id":"team-id","key":"LIT","name":"linctl","cycles":{"nodes":[` + cycleJSON("Planning cycle", "team-id", "LIT") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_issues": `{"team":{"id":"team-id","key":"LIT","name":"linctl","issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "Team issue",
+			StateID:    "state-id",
+			State:      "Todo",
+			StateType:  "backlog",
+			Project:    "Team project",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_labels":           `{"team":{"id":"team-id","key":"LIT","name":"linctl","labels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_memberships":      `{"team":{"id":"team-id","key":"LIT","name":"linctl","memberships":{"nodes":[{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_projects":         `{"team":{"id":"team-id","key":"LIT","name":"linctl","projects":{"nodes":[` + projectJSON(projectFixture{ID: "project-id", Name: "Team project", Status: "Backlog"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_releasePipelines": `{"team":{"id":"team-id","key":"LIT","name":"linctl","releasePipelines":{"nodes":[` + releasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_states":           `{"team":{"id":"team-id","key":"LIT","name":"linctl","states":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_templates":        `{"team":{"id":"team-id","key":"LIT","name":"linctl","templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"agentActivities": `{"agentActivities":{"nodes":[` + strings.Join([]string{
 			agentActivityJSON("action"),
 			agentActivityJSON("elicitation"),
@@ -497,6 +512,22 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	teamMembers, err := ListTeamMembers(context.Background(), graphqlClient, "team-id", 2)
 	require.NoError(t, err)
+	teamCycles, err := ListTeamCycles(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	teamIssues, err := ListTeamIssues(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	teamLabels, err := ListTeamLabels(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	teamScopedMemberships, err := ListTeamMembershipsForTeam(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	teamProjects, err := ListTeamProjects(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	teamReleasePipelines, err := ListTeamReleasePipelines(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	teamWorkflowStates, err := ListTeamWorkflowStates(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
+	teamTemplates, err := ListTeamTemplates(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
 	users, err := ListUsers(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	user, err := GetUserByID(context.Background(), graphqlClient, "user-id")
@@ -774,6 +805,16 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Omer", teamMemberships.Memberships[0].DisplayName)
 	require.True(t, teamMemberships.Memberships[0].Owner)
 	require.InEpsilon(t, 1.5, teamMemberships.Memberships[0].SortOrder, 0)
+	require.True(t, teamCycles.HasNextPage)
+	require.Equal(t, &endCursor, teamCycles.EndCursor)
+	require.Equal(t, "cycle-id", teamCycles.Cycles[0].ID)
+	require.Equal(t, "LIT-1", teamIssues.Issues[0].Identifier)
+	require.Equal(t, "label-id", teamLabels.Labels[0].ID)
+	require.Equal(t, "team-membership-id", teamScopedMemberships.Memberships[0].ID)
+	require.Equal(t, "Team project", teamProjects.Projects[0].Name)
+	require.Equal(t, "release-pipeline-id", teamReleasePipelines.ReleasePipelines[0].ID)
+	require.Equal(t, "workflow-state-id", teamWorkflowStates.WorkflowStates[0].ID)
+	require.Equal(t, "template-id", teamTemplates.Templates[0].ID)
 	require.Equal(t, "team-membership-id", teamMembership.ID)
 	require.Equal(t, "omer@example.com", teamMembership.Email)
 	require.Equal(t, "LIT", teams.Teams[0].Key)
@@ -1605,6 +1646,38 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListTeamMembers(context.Background(), graphqlClient, "team-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list team members team-id")
+
+		_, err = ListTeamCycles(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team cycles team-id")
+
+		_, err = ListTeamIssues(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team issues team-id")
+
+		_, err = ListTeamLabels(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team labels team-id")
+
+		_, err = ListTeamMembershipsForTeam(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team memberships team-id")
+
+		_, err = ListTeamProjects(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team projects team-id")
+
+		_, err = ListTeamReleasePipelines(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team release pipelines team-id")
+
+		_, err = ListTeamWorkflowStates(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team states team-id")
+
+		_, err = ListTeamTemplates(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team templates team-id")
 
 		_, err = ListUsers(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

@@ -87,6 +87,174 @@ func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id strin
 	}, nil
 }
 
+// ListTeamCycles returns Cycles associated with one Team.
+func ListTeamCycles(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (CycleList, error) {
+	team, err := team_cycles(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return CycleList{}, fmt.Errorf("list team cycles %s: %w", id, err)
+	}
+
+	cycles := make([]CycleSummary, 0, len(team.Team.Cycles.Nodes))
+	for _, cycle := range team.Team.Cycles.Nodes {
+		cycles = append(cycles, cycleSummary(cycle.CycleSummaryFields))
+	}
+
+	return CycleList{
+		Cycles:      cycles,
+		HasNextPage: team.Team.Cycles.PageInfo.HasNextPage,
+		EndCursor:   team.Team.Cycles.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListTeamIssues returns issues associated with one Team.
+func ListTeamIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (IssueList, error) {
+	team, err := team_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list team issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(team.Team.Issues.Nodes))
+	for _, issue := range team.Team.Issues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: team.Team.Issues.PageInfo.HasNextPage,
+		EndCursor:   team.Team.Issues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListTeamLabels returns IssueLabels associated with one Team.
+func ListTeamLabels(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (LabelList, error) {
+	team, err := team_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return LabelList{}, fmt.Errorf("list team labels %s: %w", id, err)
+	}
+
+	labels := make([]LabelSummary, 0, len(team.Team.Labels.Nodes))
+	for _, label := range team.Team.Labels.Nodes {
+		labels = append(labels, labelSummary(label.IssueLabelSummaryFields))
+	}
+
+	return LabelList{
+		Labels:      labels,
+		HasNextPage: team.Team.Labels.PageInfo.HasNextPage,
+		EndCursor:   team.Team.Labels.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListTeamMembershipsForTeam returns TeamMemberships associated with one Team.
+func ListTeamMembershipsForTeam(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (TeamMembershipList, error) {
+	team, err := team_memberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return TeamMembershipList{}, fmt.Errorf("list team memberships %s: %w", id, err)
+	}
+
+	memberships := make([]TeamMembershipSummary, 0, len(team.Team.Memberships.Nodes))
+	for _, membership := range team.Team.Memberships.Nodes {
+		memberships = append(memberships, teamMembershipSummary(membership.TeamMembershipSummaryFields))
+	}
+
+	return TeamMembershipList{
+		Memberships: memberships,
+		HasNextPage: team.Team.Memberships.PageInfo.HasNextPage,
+		EndCursor:   team.Team.Memberships.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListTeamProjects returns Projects associated with one Team.
+func ListTeamProjects(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (ProjectList, error) {
+	team, err := team_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectList{}, fmt.Errorf("list team projects %s: %w", id, err)
+	}
+
+	projects := make([]ProjectSummary, 0, len(team.Team.Projects.Nodes))
+	for _, project := range team.Team.Projects.Nodes {
+		projects = append(projects, projectSummaryFromFields(project.ProjectSummaryFields))
+	}
+
+	return ProjectList{
+		Projects:    projects,
+		HasNextPage: team.Team.Projects.PageInfo.HasNextPage,
+		EndCursor:   team.Team.Projects.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListTeamReleasePipelines returns ReleasePipelines associated with one Team.
+func ListTeamReleasePipelines(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ReleasePipelineList, error) {
+	team, err := team_releasePipelines(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ReleasePipelineList{}, fmt.Errorf("list team release pipelines %s: %w", id, err)
+	}
+
+	pipelines := make([]ReleasePipelineSummary, 0, len(team.Team.ReleasePipelines.Nodes))
+	for _, pipeline := range team.Team.ReleasePipelines.Nodes {
+		pipelines = append(pipelines, releasePipelineSummary(pipeline.ReleasePipelineSummaryFields))
+	}
+
+	return ReleasePipelineList{
+		ReleasePipelines: pipelines,
+		HasNextPage:      team.Team.ReleasePipelines.PageInfo.HasNextPage,
+		EndCursor:        team.Team.ReleasePipelines.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListTeamWorkflowStates returns workflow states associated with one Team.
+func ListTeamWorkflowStates(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (WorkflowStateList, error) {
+	team, err := team_states(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return WorkflowStateList{}, fmt.Errorf("list team states %s: %w", id, err)
+	}
+
+	states := make([]WorkflowStateSummary, 0, len(team.Team.States.Nodes))
+	for _, state := range team.Team.States.Nodes {
+		states = append(states, workflowStateSummary(state.WorkflowStateSummaryFields))
+	}
+
+	return WorkflowStateList{
+		WorkflowStates: states,
+		HasNextPage:    team.Team.States.PageInfo.HasNextPage,
+		EndCursor:      team.Team.States.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListTeamTemplates returns Templates associated with one Team.
+func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TemplateList, error) {
+	team, err := team_templates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return TemplateList{}, fmt.Errorf("list team templates %s: %w", id, err)
+	}
+
+	templates := make([]TemplateSummary, 0, len(team.Team.Templates.Nodes))
+	for _, template := range team.Team.Templates.Nodes {
+		templates = append(templates, templateSummary(template.TemplateSummaryFields))
+	}
+
+	return TemplateList{
+		Templates:   templates,
+		TotalCount:  len(templates),
+		HasNextPage: team.Team.Templates.PageInfo.HasNextPage,
+		EndCursor:   team.Team.Templates.PageInfo.EndCursor,
+	}, nil
+}
+
 func teamSummary(team TeamSummaryFields) TeamSummary {
 	description := ""
 	if team.Description != nil {

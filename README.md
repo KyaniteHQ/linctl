@@ -141,7 +141,15 @@ linctl label list --limit 20
 linctl label get label-id
 linctl team list --limit 20
 linctl team get team-id
+linctl team cycles team-id --limit 20
+linctl team issues team-id --limit 20
+linctl team labels team-id --limit 20
 linctl team members team-id --limit 20
+linctl team memberships team-id --limit 20
+linctl team projects team-id --limit 20
+linctl team release-pipelines team-id --limit 20
+linctl team states team-id --limit 20
+linctl team templates team-id --limit 20
 linctl team-membership list --limit 20
 linctl team-membership get team-membership-id
 linctl user list --limit 20
@@ -291,7 +299,15 @@ linctl project-relation list --limit 20
 linctl project-relation get project-relation-id
 linctl document list --limit 20
 linctl label list --limit 20
+linctl team cycles team-id --limit 20
+linctl team issues team-id --limit 20
+linctl team labels team-id --limit 20
 linctl team members team-id --limit 20
+linctl team memberships team-id --limit 20
+linctl team projects team-id --limit 20
+linctl team release-pipelines team-id --limit 20
+linctl team states team-id --limit 20
+linctl team templates team-id --limit 20
 linctl team-membership list --limit 20
 linctl team-membership get team-membership-id
 linctl user me

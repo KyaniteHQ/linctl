@@ -494,7 +494,7 @@ Only `label list` and `label get` are implemented in the current CLI. Label writ
 Schema backing:
 
 - Types: `Team`, `TeamConnection`, `TeamMembership`, `TeamMembershipConnection`
-- Reads: `Query.teams`, `Query.team`, `Team.members`, `Query.teamMemberships`, `Query.teamMembership`, `Team.issues`, `Team.cycles`, `Team.projects`
+- Reads: `Query.teams`, `Query.team`, `Team.cycles`, `Team.issues`, `Team.labels`, `Team.members`, `Team.memberships`, `Team.projects`, `Team.releasePipelines`, `Team.states`, `Team.templates`, `Query.teamMemberships`, `Query.teamMembership`
 - Writes: `Mutation.teamCreate`, `Mutation.teamUpdate`, `Mutation.teamDelete`, `Mutation.teamMembershipCreate`, `Mutation.teamMembershipUpdate`, `Mutation.teamMembershipDelete`
 - Inputs: `TeamCreateInput`, `TeamUpdateInput`
 - Relevant fields: `Team.id`, `Team.name`, `Team.key`, `Team.description`, `Team.archivedAt`, `Team.issues`, `Team.cycles`, `Team.members`, `Team.projects`, `TeamMembership.id`, `TeamMembership.user`, `TeamMembership.team`, `TeamMembership.owner`, `TeamMembership.sortOrder`, `TeamMembership.archivedAt`
@@ -508,14 +508,22 @@ Planned commands:
 | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model |
 | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison |
 | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics |
+| `team cycles` | `Team.cycles` | Read-only |
+| `team issues` | `Team.issues` | Read-only |
+| `team labels` | `Team.labels` | Read-only |
 | `team members` | `Team.members` | Read-only |
+| `team memberships` | `Team.memberships` | Read-only |
+| `team projects` | `Team.projects` | Read-only |
+| `team release-pipelines` | `Team.releasePipelines` | Read-only |
+| `team states` | `Team.states` | Read-only |
+| `team templates` | `Team.templates` | Read-only |
 | `team-membership list` | `Query.teamMemberships` | Read-only |
 | `team-membership get` | `Query.teamMembership` | Read-only |
 | `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model |
 | `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation |
 | `team-membership delete` | `Mutation.teamMembershipDelete` | Blocked: destructive membership command needs explicit admin safety semantics |
 
-Only `team list`, `team get`, `team members`, `team-membership list`, and `team-membership get` are implemented in the current CLI. Team creation, metadata mutation, and membership writes are deferred as organization/admin surface.
+Team list/get, the read-only Team child-list commands above, and `team-membership list/get` are implemented in the current CLI. `Team.gitAutomationStates` is deferred with automation settings because branch automation patterns belong with guarded automation/admin design. Team creation, metadata mutation, and membership writes are deferred as organization/admin surface.
 
 ## User
 

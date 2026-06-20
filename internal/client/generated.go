@@ -18225,6 +18225,66 @@ func (v *__teamMembershipsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __teamMembershipsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__teamMembershipsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __team_cyclesInput is used internally by genqlient
+type __team_cyclesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_cyclesInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_cyclesInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_cyclesInput.First, and is useful for accessing the field via an interface.
+func (v *__team_cyclesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_cyclesInput.After, and is useful for accessing the field via an interface.
+func (v *__team_cyclesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_cyclesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_cyclesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_issuesInput is used internally by genqlient
+type __team_issuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_issuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_issuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_issuesInput.First, and is useful for accessing the field via an interface.
+func (v *__team_issuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_issuesInput.After, and is useful for accessing the field via an interface.
+func (v *__team_issuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_issuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_issuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_labelsInput is used internally by genqlient
+type __team_labelsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_labelsInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_labelsInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_labelsInput.First, and is useful for accessing the field via an interface.
+func (v *__team_labelsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_labelsInput.After, and is useful for accessing the field via an interface.
+func (v *__team_labelsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_labelsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_labelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __team_membersInput is used internally by genqlient
 type __team_membersInput struct {
 	Id              string  `json:"id"`
@@ -18244,6 +18304,106 @@ func (v *__team_membersInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __team_membersInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__team_membersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_membershipsInput is used internally by genqlient
+type __team_membershipsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_membershipsInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_membershipsInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_membershipsInput.First, and is useful for accessing the field via an interface.
+func (v *__team_membershipsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_membershipsInput.After, and is useful for accessing the field via an interface.
+func (v *__team_membershipsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_membershipsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_membershipsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_projectsInput is used internally by genqlient
+type __team_projectsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_projectsInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_projectsInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_projectsInput.First, and is useful for accessing the field via an interface.
+func (v *__team_projectsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_projectsInput.After, and is useful for accessing the field via an interface.
+func (v *__team_projectsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_projectsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_projectsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_releasePipelinesInput is used internally by genqlient
+type __team_releasePipelinesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_releasePipelinesInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_releasePipelinesInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_releasePipelinesInput.First, and is useful for accessing the field via an interface.
+func (v *__team_releasePipelinesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_releasePipelinesInput.After, and is useful for accessing the field via an interface.
+func (v *__team_releasePipelinesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_releasePipelinesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_releasePipelinesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_statesInput is used internally by genqlient
+type __team_statesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_statesInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_statesInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_statesInput.First, and is useful for accessing the field via an interface.
+func (v *__team_statesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_statesInput.After, and is useful for accessing the field via an interface.
+func (v *__team_statesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_statesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_statesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_templatesInput is used internally by genqlient
+type __team_templatesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_templatesInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_templatesInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_templatesInput.First, and is useful for accessing the field via an interface.
+func (v *__team_templatesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_templatesInput.After, and is useful for accessing the field via an interface.
+func (v *__team_templatesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_templatesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_templatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __templateInput is used internally by genqlient
 type __templateInput struct {
@@ -42326,6 +42486,588 @@ func (v *teamTeam) __premarshalJSON() (*__premarshalteamTeam, error) {
 	return &retval, nil
 }
 
+// team_cyclesResponse is returned by team_cycles on success.
+type team_cyclesResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_cyclesTeam `json:"team"`
+}
+
+// GetTeam returns team_cyclesResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_cyclesResponse) GetTeam() team_cyclesTeam { return v.Team }
+
+// team_cyclesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_cyclesTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Cycles associated with the team.
+	Cycles team_cyclesTeamCyclesCycleConnection `json:"cycles"`
+}
+
+// GetId returns team_cyclesTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeam) GetId() string { return v.Id }
+
+// GetKey returns team_cyclesTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeam) GetKey() string { return v.Key }
+
+// GetName returns team_cyclesTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeam) GetName() string { return v.Name }
+
+// GetCycles returns team_cyclesTeam.Cycles, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeam) GetCycles() team_cyclesTeamCyclesCycleConnection { return v.Cycles }
+
+// team_cyclesTeamCyclesCycleConnection includes the requested fields of the GraphQL type CycleConnection.
+type team_cyclesTeamCyclesCycleConnection struct {
+	Nodes    []team_cyclesTeamCyclesCycleConnectionNodesCycle `json:"nodes"`
+	PageInfo team_cyclesTeamCyclesCycleConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns team_cyclesTeamCyclesCycleConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnection) GetNodes() []team_cyclesTeamCyclesCycleConnectionNodesCycle {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_cyclesTeamCyclesCycleConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnection) GetPageInfo() team_cyclesTeamCyclesCycleConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_cyclesTeamCyclesCycleConnectionNodesCycle includes the requested fields of the GraphQL type Cycle.
+// The GraphQL type's documentation follows.
+//
+// A time-boxed iteration (similar to a sprint) used for planning and tracking
+// work. Cycles belong to a team and have defined start and end dates. Issues are
+// assigned to cycles for time-based planning, and progress is tracked via
+// completed, in-progress, and total scope. Cycles are automatically completed when
+// their end date passes, and uncompleted issues can be carried over to the next cycle.
+type team_cyclesTeamCyclesCycleConnectionNodesCycle struct {
+	CycleSummaryFields `json:"-"`
+}
+
+// GetId returns team_cyclesTeamCyclesCycleConnectionNodesCycle.Id, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetId() string {
+	return v.CycleSummaryFields.Id
+}
+
+// GetNumber returns team_cyclesTeamCyclesCycleConnectionNodesCycle.Number, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetNumber() float64 {
+	return v.CycleSummaryFields.Number
+}
+
+// GetName returns team_cyclesTeamCyclesCycleConnectionNodesCycle.Name, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetName() *string {
+	return v.CycleSummaryFields.Name
+}
+
+// GetDescription returns team_cyclesTeamCyclesCycleConnectionNodesCycle.Description, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetDescription() *string {
+	return v.CycleSummaryFields.Description
+}
+
+// GetStartsAt returns team_cyclesTeamCyclesCycleConnectionNodesCycle.StartsAt, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetStartsAt() string {
+	return v.CycleSummaryFields.StartsAt
+}
+
+// GetEndsAt returns team_cyclesTeamCyclesCycleConnectionNodesCycle.EndsAt, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetEndsAt() string {
+	return v.CycleSummaryFields.EndsAt
+}
+
+// GetCompletedAt returns team_cyclesTeamCyclesCycleConnectionNodesCycle.CompletedAt, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetCompletedAt() *string {
+	return v.CycleSummaryFields.CompletedAt
+}
+
+// GetProgress returns team_cyclesTeamCyclesCycleConnectionNodesCycle.Progress, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetProgress() float64 {
+	return v.CycleSummaryFields.Progress
+}
+
+// GetTeam returns team_cyclesTeamCyclesCycleConnectionNodesCycle.Team, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) GetTeam() CycleSummaryFieldsTeam {
+	return v.CycleSummaryFields.Team
+}
+
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_cyclesTeamCyclesCycleConnectionNodesCycle
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_cyclesTeamCyclesCycleConnectionNodesCycle = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CycleSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_cyclesTeamCyclesCycleConnectionNodesCycle struct {
+	Id string `json:"id"`
+
+	Number float64 `json:"number"`
+
+	Name *string `json:"name"`
+
+	Description *string `json:"description"`
+
+	StartsAt string `json:"startsAt"`
+
+	EndsAt string `json:"endsAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	Progress float64 `json:"progress"`
+
+	Team CycleSummaryFieldsTeam `json:"team"`
+}
+
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_cyclesTeamCyclesCycleConnectionNodesCycle) __premarshalJSON() (*__premarshalteam_cyclesTeamCyclesCycleConnectionNodesCycle, error) {
+	var retval __premarshalteam_cyclesTeamCyclesCycleConnectionNodesCycle
+
+	retval.Id = v.CycleSummaryFields.Id
+	retval.Number = v.CycleSummaryFields.Number
+	retval.Name = v.CycleSummaryFields.Name
+	retval.Description = v.CycleSummaryFields.Description
+	retval.StartsAt = v.CycleSummaryFields.StartsAt
+	retval.EndsAt = v.CycleSummaryFields.EndsAt
+	retval.CompletedAt = v.CycleSummaryFields.CompletedAt
+	retval.Progress = v.CycleSummaryFields.Progress
+	retval.Team = v.CycleSummaryFields.Team
+	return &retval, nil
+}
+
+// team_cyclesTeamCyclesCycleConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_cyclesTeamCyclesCycleConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_cyclesTeamCyclesCycleConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns team_cyclesTeamCyclesCycleConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_cyclesTeamCyclesCycleConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// team_issuesResponse is returned by team_issues on success.
+type team_issuesResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_issuesTeam `json:"team"`
+}
+
+// GetTeam returns team_issuesResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_issuesResponse) GetTeam() team_issuesTeam { return v.Team }
+
+// team_issuesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_issuesTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Issues belonging to the team. Supports filtering and optional inclusion of sub-team issues.
+	Issues team_issuesTeamIssuesIssueConnection `json:"issues"`
+}
+
+// GetId returns team_issuesTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_issuesTeam) GetId() string { return v.Id }
+
+// GetKey returns team_issuesTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_issuesTeam) GetKey() string { return v.Key }
+
+// GetName returns team_issuesTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_issuesTeam) GetName() string { return v.Name }
+
+// GetIssues returns team_issuesTeam.Issues, and is useful for accessing the field via an interface.
+func (v *team_issuesTeam) GetIssues() team_issuesTeamIssuesIssueConnection { return v.Issues }
+
+// team_issuesTeamIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type team_issuesTeamIssuesIssueConnection struct {
+	Nodes    []team_issuesTeamIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo team_issuesTeamIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns team_issuesTeamIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnection) GetNodes() []team_issuesTeamIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_issuesTeamIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnection) GetPageInfo() team_issuesTeamIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_issuesTeamIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type team_issuesTeamIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns team_issuesTeamIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns team_issuesTeamIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns team_issuesTeamIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns team_issuesTeamIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns team_issuesTeamIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns team_issuesTeamIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns team_issuesTeamIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns team_issuesTeamIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns team_issuesTeamIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns team_issuesTeamIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns team_issuesTeamIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_issuesTeamIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_issuesTeamIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_issuesTeamIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_issuesTeamIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalteam_issuesTeamIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalteam_issuesTeamIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// team_issuesTeamIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_issuesTeamIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_issuesTeamIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns team_issuesTeamIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_issuesTeamIssuesIssueConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// team_labelsResponse is returned by team_labels on success.
+type team_labelsResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_labelsTeam `json:"team"`
+}
+
+// GetTeam returns team_labelsResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_labelsResponse) GetTeam() team_labelsTeam { return v.Team }
+
+// team_labelsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_labelsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Labels associated with the team.
+	Labels team_labelsTeamLabelsIssueLabelConnection `json:"labels"`
+}
+
+// GetId returns team_labelsTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_labelsTeam) GetId() string { return v.Id }
+
+// GetKey returns team_labelsTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_labelsTeam) GetKey() string { return v.Key }
+
+// GetName returns team_labelsTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_labelsTeam) GetName() string { return v.Name }
+
+// GetLabels returns team_labelsTeam.Labels, and is useful for accessing the field via an interface.
+func (v *team_labelsTeam) GetLabels() team_labelsTeamLabelsIssueLabelConnection { return v.Labels }
+
+// team_labelsTeamLabelsIssueLabelConnection includes the requested fields of the GraphQL type IssueLabelConnection.
+type team_labelsTeamLabelsIssueLabelConnection struct {
+	Nodes    []team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel `json:"nodes"`
+	PageInfo team_labelsTeamLabelsIssueLabelConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns team_labelsTeamLabelsIssueLabelConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnection) GetNodes() []team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_labelsTeamLabelsIssueLabelConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnection) GetPageInfo() team_labelsTeamLabelsIssueLabelConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel) __premarshalJSON() (*__premarshalteam_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel, error) {
+	var retval __premarshalteam_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// team_labelsTeamLabelsIssueLabelConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_labelsTeamLabelsIssueLabelConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_labelsTeamLabelsIssueLabelConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns team_labelsTeamLabelsIssueLabelConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_labelsTeamLabelsIssueLabelConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // team_membersResponse is returned by team_members on success.
 type team_membersResponse struct {
 	// Fetches a specific team by its ID.
@@ -42503,6 +43245,1078 @@ func (v *team_membersTeamMembersUserConnectionPageInfo) GetHasNextPage() bool { 
 
 // GetEndCursor returns team_membersTeamMembersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *team_membersTeamMembersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// team_membershipsResponse is returned by team_memberships on success.
+type team_membershipsResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_membershipsTeam `json:"team"`
+}
+
+// GetTeam returns team_membershipsResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_membershipsResponse) GetTeam() team_membershipsTeam { return v.Team }
+
+// team_membershipsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_membershipsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Memberships associated with the team. For easier access of the same data, use `members` query.
+	Memberships team_membershipsTeamMembershipsTeamMembershipConnection `json:"memberships"`
+}
+
+// GetId returns team_membershipsTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeam) GetId() string { return v.Id }
+
+// GetKey returns team_membershipsTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeam) GetKey() string { return v.Key }
+
+// GetName returns team_membershipsTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeam) GetName() string { return v.Name }
+
+// GetMemberships returns team_membershipsTeam.Memberships, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeam) GetMemberships() team_membershipsTeamMembershipsTeamMembershipConnection {
+	return v.Memberships
+}
+
+// team_membershipsTeamMembershipsTeamMembershipConnection includes the requested fields of the GraphQL type TeamMembershipConnection.
+type team_membershipsTeamMembershipsTeamMembershipConnection struct {
+	Nodes    []team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership `json:"nodes"`
+	PageInfo team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns team_membershipsTeamMembershipsTeamMembershipConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnection) GetNodes() []team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_membershipsTeamMembershipsTeamMembershipConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnection) GetPageInfo() team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
+// The GraphQL type's documentation follows.
+//
+// A join entity that defines a user's membership in a team. Each membership record
+// links a user to a team and tracks whether the user is a team owner. Users can be
+// members of multiple teams, and their memberships determine which teams' issues
+// and resources they can access.
+type team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	TeamMembershipSummaryFields `json:"-"`
+}
+
+// GetId returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Id, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetId() string {
+	return v.TeamMembershipSummaryFields.Id
+}
+
+// GetCreatedAt returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.CreatedAt, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetCreatedAt() string {
+	return v.TeamMembershipSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUpdatedAt() string {
+	return v.TeamMembershipSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetArchivedAt() *string {
+	return v.TeamMembershipSummaryFields.ArchivedAt
+}
+
+// GetOwner returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Owner, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetOwner() bool {
+	return v.TeamMembershipSummaryFields.Owner
+}
+
+// GetSortOrder returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.SortOrder, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetSortOrder() float64 {
+	return v.TeamMembershipSummaryFields.SortOrder
+}
+
+// GetUser returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.User, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetUser() TeamMembershipSummaryFieldsUser {
+	return v.TeamMembershipSummaryFields.User
+}
+
+// GetTeam returns team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership.Team, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) GetTeam() TeamMembershipSummaryFieldsTeam {
+	return v.TeamMembershipSummaryFields.Team
+}
+
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamMembershipSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Owner bool `json:"owner"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	User TeamMembershipSummaryFieldsUser `json:"user"`
+
+	Team TeamMembershipSummaryFieldsTeam `json:"team"`
+}
+
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership) __premarshalJSON() (*__premarshalteam_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership, error) {
+	var retval __premarshalteam_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership
+
+	retval.Id = v.TeamMembershipSummaryFields.Id
+	retval.CreatedAt = v.TeamMembershipSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TeamMembershipSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TeamMembershipSummaryFields.ArchivedAt
+	retval.Owner = v.TeamMembershipSummaryFields.Owner
+	retval.SortOrder = v.TeamMembershipSummaryFields.SortOrder
+	retval.User = v.TeamMembershipSummaryFields.User
+	retval.Team = v.TeamMembershipSummaryFields.Team
+	return &retval, nil
+}
+
+// team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_membershipsTeamMembershipsTeamMembershipConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// team_projectsResponse is returned by team_projects on success.
+type team_projectsResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_projectsTeam `json:"team"`
+}
+
+// GetTeam returns team_projectsResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_projectsResponse) GetTeam() team_projectsTeam { return v.Team }
+
+// team_projectsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_projectsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Projects associated with the team.
+	Projects team_projectsTeamProjectsProjectConnection `json:"projects"`
+}
+
+// GetId returns team_projectsTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_projectsTeam) GetId() string { return v.Id }
+
+// GetKey returns team_projectsTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_projectsTeam) GetKey() string { return v.Key }
+
+// GetName returns team_projectsTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_projectsTeam) GetName() string { return v.Name }
+
+// GetProjects returns team_projectsTeam.Projects, and is useful for accessing the field via an interface.
+func (v *team_projectsTeam) GetProjects() team_projectsTeamProjectsProjectConnection {
+	return v.Projects
+}
+
+// team_projectsTeamProjectsProjectConnection includes the requested fields of the GraphQL type ProjectConnection.
+type team_projectsTeamProjectsProjectConnection struct {
+	Nodes    []team_projectsTeamProjectsProjectConnectionNodesProject `json:"nodes"`
+	PageInfo team_projectsTeamProjectsProjectConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns team_projectsTeamProjectsProjectConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnection) GetNodes() []team_projectsTeamProjectsProjectConnectionNodesProject {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_projectsTeamProjectsProjectConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnection) GetPageInfo() team_projectsTeamProjectsProjectConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_projectsTeamProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type team_projectsTeamProjectsProjectConnectionNodesProject struct {
+	ProjectSummaryFields `json:"-"`
+}
+
+// GetId returns team_projectsTeamProjectsProjectConnectionNodesProject.Id, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetId() string {
+	return v.ProjectSummaryFields.Id
+}
+
+// GetName returns team_projectsTeamProjectsProjectConnectionNodesProject.Name, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetName() string {
+	return v.ProjectSummaryFields.Name
+}
+
+// GetDescription returns team_projectsTeamProjectsProjectConnectionNodesProject.Description, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetDescription() string {
+	return v.ProjectSummaryFields.Description
+}
+
+// GetSlugId returns team_projectsTeamProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetSlugId() string {
+	return v.ProjectSummaryFields.SlugId
+}
+
+// GetUrl returns team_projectsTeamProjectsProjectConnectionNodesProject.Url, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetUrl() string {
+	return v.ProjectSummaryFields.Url
+}
+
+// GetPriority returns team_projectsTeamProjectsProjectConnectionNodesProject.Priority, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetPriority() int {
+	return v.ProjectSummaryFields.Priority
+}
+
+// GetStatus returns team_projectsTeamProjectsProjectConnectionNodesProject.Status, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetStatus() ProjectSummaryFieldsStatusProjectStatus {
+	return v.ProjectSummaryFields.Status
+}
+
+// GetLead returns team_projectsTeamProjectsProjectConnectionNodesProject.Lead, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetLead() *ProjectSummaryFieldsLeadUser {
+	return v.ProjectSummaryFields.Lead
+}
+
+// GetTeams returns team_projectsTeamProjectsProjectConnectionNodesProject.Teams, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetTeams() ProjectSummaryFieldsTeamsTeamConnection {
+	return v.ProjectSummaryFields.Teams
+}
+
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_projectsTeamProjectsProjectConnectionNodesProject
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_projectsTeamProjectsProjectConnectionNodesProject = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_projectsTeamProjectsProjectConnectionNodesProject struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description string `json:"description"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Priority int `json:"priority"`
+
+	Status ProjectSummaryFieldsStatusProjectStatus `json:"status"`
+
+	Lead *ProjectSummaryFieldsLeadUser `json:"lead"`
+
+	Teams ProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
+}
+
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) __premarshalJSON() (*__premarshalteam_projectsTeamProjectsProjectConnectionNodesProject, error) {
+	var retval __premarshalteam_projectsTeamProjectsProjectConnectionNodesProject
+
+	retval.Id = v.ProjectSummaryFields.Id
+	retval.Name = v.ProjectSummaryFields.Name
+	retval.Description = v.ProjectSummaryFields.Description
+	retval.SlugId = v.ProjectSummaryFields.SlugId
+	retval.Url = v.ProjectSummaryFields.Url
+	retval.Priority = v.ProjectSummaryFields.Priority
+	retval.Status = v.ProjectSummaryFields.Status
+	retval.Lead = v.ProjectSummaryFields.Lead
+	retval.Teams = v.ProjectSummaryFields.Teams
+	return &retval, nil
+}
+
+// team_projectsTeamProjectsProjectConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_projectsTeamProjectsProjectConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_projectsTeamProjectsProjectConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns team_projectsTeamProjectsProjectConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// team_releasePipelinesResponse is returned by team_releasePipelines on success.
+type team_releasePipelinesResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_releasePipelinesTeam `json:"team"`
+}
+
+// GetTeam returns team_releasePipelinesResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesResponse) GetTeam() team_releasePipelinesTeam { return v.Team }
+
+// team_releasePipelinesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_releasePipelinesTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Release pipelines associated with the team.
+	ReleasePipelines team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection `json:"releasePipelines"`
+}
+
+// GetId returns team_releasePipelinesTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeam) GetId() string { return v.Id }
+
+// GetKey returns team_releasePipelinesTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeam) GetKey() string { return v.Key }
+
+// GetName returns team_releasePipelinesTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeam) GetName() string { return v.Name }
+
+// GetReleasePipelines returns team_releasePipelinesTeam.ReleasePipelines, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeam) GetReleasePipelines() team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection {
+	return v.ReleasePipelines
+}
+
+// team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection includes the requested fields of the GraphQL type ReleasePipelineConnection.
+type team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection struct {
+	Nodes    []team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline `json:"nodes"`
+	PageInfo team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo               `json:"pageInfo"`
+}
+
+// GetNodes returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection) GetNodes() []team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection) GetPageInfo() team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
+// The GraphQL type's documentation follows.
+//
+// A release pipeline that defines a release workflow with ordered stages.
+// Pipelines can be continuous (each sync creates a completed release) or scheduled
+// (issues accumulate in a started release that is explicitly completed). Pipelines
+// are associated with teams and can filter commits by file path patterns.
+type team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline struct {
+	ReleasePipelineSummaryFields `json:"-"`
+}
+
+// GetId returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.Id, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetId() string {
+	return v.ReleasePipelineSummaryFields.Id
+}
+
+// GetName returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.Name, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetName() string {
+	return v.ReleasePipelineSummaryFields.Name
+}
+
+// GetSlugId returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.SlugId, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetSlugId() string {
+	return v.ReleasePipelineSummaryFields.SlugId
+}
+
+// GetType returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.Type, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetType() ReleasePipelineType {
+	return v.ReleasePipelineSummaryFields.Type
+}
+
+// GetIsProduction returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.IsProduction, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetIsProduction() bool {
+	return v.ReleasePipelineSummaryFields.IsProduction
+}
+
+// GetAutoGenerateReleaseNotesOnCompletion returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.AutoGenerateReleaseNotesOnCompletion, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetAutoGenerateReleaseNotesOnCompletion() bool {
+	return v.ReleasePipelineSummaryFields.AutoGenerateReleaseNotesOnCompletion
+}
+
+// GetIncludePathPatterns returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.IncludePathPatterns, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetIncludePathPatterns() []string {
+	return v.ReleasePipelineSummaryFields.IncludePathPatterns
+}
+
+// GetApproximateReleaseCount returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.ApproximateReleaseCount, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetApproximateReleaseCount() int {
+	return v.ReleasePipelineSummaryFields.ApproximateReleaseCount
+}
+
+// GetTrashed returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.Trashed, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetTrashed() *bool {
+	return v.ReleasePipelineSummaryFields.Trashed
+}
+
+// GetReleaseNoteTemplate returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.ReleaseNoteTemplate, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetReleaseNoteTemplate() *ReleasePipelineSummaryFieldsReleaseNoteTemplate {
+	return v.ReleasePipelineSummaryFields.ReleaseNoteTemplate
+}
+
+// GetLatestReleaseNote returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.LatestReleaseNote, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetLatestReleaseNote() *ReleasePipelineSummaryFieldsLatestReleaseNote {
+	return v.ReleasePipelineSummaryFields.LatestReleaseNote
+}
+
+// GetUrl returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.Url, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetUrl() string {
+	return v.ReleasePipelineSummaryFields.Url
+}
+
+// GetCreatedAt returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.CreatedAt, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetCreatedAt() string {
+	return v.ReleasePipelineSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetUpdatedAt() string {
+	return v.ReleasePipelineSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) GetArchivedAt() *string {
+	return v.ReleasePipelineSummaryFields.ArchivedAt
+}
+
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ReleasePipelineSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	SlugId string `json:"slugId"`
+
+	Type ReleasePipelineType `json:"type"`
+
+	IsProduction bool `json:"isProduction"`
+
+	AutoGenerateReleaseNotesOnCompletion bool `json:"autoGenerateReleaseNotesOnCompletion"`
+
+	IncludePathPatterns []string `json:"includePathPatterns"`
+
+	ApproximateReleaseCount int `json:"approximateReleaseCount"`
+
+	Trashed *bool `json:"trashed"`
+
+	ReleaseNoteTemplate *ReleasePipelineSummaryFieldsReleaseNoteTemplate `json:"releaseNoteTemplate"`
+
+	LatestReleaseNote *ReleasePipelineSummaryFieldsLatestReleaseNote `json:"latestReleaseNote"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline) __premarshalJSON() (*__premarshalteam_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline, error) {
+	var retval __premarshalteam_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline
+
+	retval.Id = v.ReleasePipelineSummaryFields.Id
+	retval.Name = v.ReleasePipelineSummaryFields.Name
+	retval.SlugId = v.ReleasePipelineSummaryFields.SlugId
+	retval.Type = v.ReleasePipelineSummaryFields.Type
+	retval.IsProduction = v.ReleasePipelineSummaryFields.IsProduction
+	retval.AutoGenerateReleaseNotesOnCompletion = v.ReleasePipelineSummaryFields.AutoGenerateReleaseNotesOnCompletion
+	retval.IncludePathPatterns = v.ReleasePipelineSummaryFields.IncludePathPatterns
+	retval.ApproximateReleaseCount = v.ReleasePipelineSummaryFields.ApproximateReleaseCount
+	retval.Trashed = v.ReleasePipelineSummaryFields.Trashed
+	retval.ReleaseNoteTemplate = v.ReleasePipelineSummaryFields.ReleaseNoteTemplate
+	retval.LatestReleaseNote = v.ReleasePipelineSummaryFields.LatestReleaseNote
+	retval.Url = v.ReleasePipelineSummaryFields.Url
+	retval.CreatedAt = v.ReleasePipelineSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ReleasePipelineSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.ReleasePipelineSummaryFields.ArchivedAt
+	return &retval, nil
+}
+
+// team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// team_statesResponse is returned by team_states on success.
+type team_statesResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_statesTeam `json:"team"`
+}
+
+// GetTeam returns team_statesResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_statesResponse) GetTeam() team_statesTeam { return v.Team }
+
+// team_statesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_statesTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// The states that define the workflow associated with the team.
+	States team_statesTeamStatesWorkflowStateConnection `json:"states"`
+}
+
+// GetId returns team_statesTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_statesTeam) GetId() string { return v.Id }
+
+// GetKey returns team_statesTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_statesTeam) GetKey() string { return v.Key }
+
+// GetName returns team_statesTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_statesTeam) GetName() string { return v.Name }
+
+// GetStates returns team_statesTeam.States, and is useful for accessing the field via an interface.
+func (v *team_statesTeam) GetStates() team_statesTeamStatesWorkflowStateConnection { return v.States }
+
+// team_statesTeamStatesWorkflowStateConnection includes the requested fields of the GraphQL type WorkflowStateConnection.
+type team_statesTeamStatesWorkflowStateConnection struct {
+	Nodes    []team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState `json:"nodes"`
+	PageInfo team_statesTeamStatesWorkflowStateConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns team_statesTeamStatesWorkflowStateConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnection) GetNodes() []team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_statesTeamStatesWorkflowStateConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnection) GetPageInfo() team_statesTeamStatesWorkflowStateConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState struct {
+	WorkflowStateSummaryFields `json:"-"`
+}
+
+// GetId returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetId() string {
+	return v.WorkflowStateSummaryFields.Id
+}
+
+// GetName returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetName() string {
+	return v.WorkflowStateSummaryFields.Name
+}
+
+// GetType returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetType() string {
+	return v.WorkflowStateSummaryFields.Type
+}
+
+// GetColor returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Color, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetColor() string {
+	return v.WorkflowStateSummaryFields.Color
+}
+
+// GetPosition returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Position, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetPosition() float64 {
+	return v.WorkflowStateSummaryFields.Position
+}
+
+// GetTeam returns team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState.Team, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) GetTeam() WorkflowStateSummaryFieldsTeam {
+	return v.WorkflowStateSummaryFields.Team
+}
+
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.WorkflowStateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_statesTeamStatesWorkflowStateConnectionNodesWorkflowState struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Color string `json:"color"`
+
+	Position float64 `json:"position"`
+
+	Team WorkflowStateSummaryFieldsTeam `json:"team"`
+}
+
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState) __premarshalJSON() (*__premarshalteam_statesTeamStatesWorkflowStateConnectionNodesWorkflowState, error) {
+	var retval __premarshalteam_statesTeamStatesWorkflowStateConnectionNodesWorkflowState
+
+	retval.Id = v.WorkflowStateSummaryFields.Id
+	retval.Name = v.WorkflowStateSummaryFields.Name
+	retval.Type = v.WorkflowStateSummaryFields.Type
+	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Position = v.WorkflowStateSummaryFields.Position
+	retval.Team = v.WorkflowStateSummaryFields.Team
+	return &retval, nil
+}
+
+// team_statesTeamStatesWorkflowStateConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_statesTeamStatesWorkflowStateConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_statesTeamStatesWorkflowStateConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns team_statesTeamStatesWorkflowStateConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_statesTeamStatesWorkflowStateConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// team_templatesResponse is returned by team_templates on success.
+type team_templatesResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_templatesTeam `json:"team"`
+}
+
+// GetTeam returns team_templatesResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_templatesResponse) GetTeam() team_templatesTeam { return v.Team }
+
+// team_templatesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_templatesTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Templates associated with the team.
+	Templates team_templatesTeamTemplatesTemplateConnection `json:"templates"`
+}
+
+// GetId returns team_templatesTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_templatesTeam) GetId() string { return v.Id }
+
+// GetKey returns team_templatesTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_templatesTeam) GetKey() string { return v.Key }
+
+// GetName returns team_templatesTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_templatesTeam) GetName() string { return v.Name }
+
+// GetTemplates returns team_templatesTeam.Templates, and is useful for accessing the field via an interface.
+func (v *team_templatesTeam) GetTemplates() team_templatesTeamTemplatesTemplateConnection {
+	return v.Templates
+}
+
+// team_templatesTeamTemplatesTemplateConnection includes the requested fields of the GraphQL type TemplateConnection.
+type team_templatesTeamTemplatesTemplateConnection struct {
+	Nodes    []team_templatesTeamTemplatesTemplateConnectionNodesTemplate `json:"nodes"`
+	PageInfo team_templatesTeamTemplatesTemplateConnectionPageInfo        `json:"pageInfo"`
+}
+
+// GetNodes returns team_templatesTeamTemplatesTemplateConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnection) GetNodes() []team_templatesTeamTemplatesTemplateConnectionNodesTemplate {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_templatesTeamTemplatesTemplateConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnection) GetPageInfo() team_templatesTeamTemplatesTemplateConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_templatesTeamTemplatesTemplateConnectionNodesTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store
+// pre-filled field values and content as JSON data. They can be scoped to a
+// specific team or shared across the entire workspace. Team-scoped templates may
+// be inherited from parent teams.
+type team_templatesTeamTemplatesTemplateConnectionNodesTemplate struct {
+	TemplateSummaryFields `json:"-"`
+}
+
+// GetId returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Id, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetId() string {
+	return v.TemplateSummaryFields.Id
+}
+
+// GetName returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Name, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetName() string {
+	return v.TemplateSummaryFields.Name
+}
+
+// GetType returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Type, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetType() string {
+	return v.TemplateSummaryFields.Type
+}
+
+// GetDescription returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Description, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetDescription() *string {
+	return v.TemplateSummaryFields.Description
+}
+
+// GetIcon returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Icon, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetIcon() *string {
+	return v.TemplateSummaryFields.Icon
+}
+
+// GetColor returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Color, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetColor() *string {
+	return v.TemplateSummaryFields.Color
+}
+
+// GetSortOrder returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.SortOrder, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetSortOrder() float64 {
+	return v.TemplateSummaryFields.SortOrder
+}
+
+// GetLastAppliedAt returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetLastAppliedAt() *string {
+	return v.TemplateSummaryFields.LastAppliedAt
+}
+
+// GetCreatedAt returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.CreatedAt, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetCreatedAt() string {
+	return v.TemplateSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetUpdatedAt() string {
+	return v.TemplateSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetArchivedAt() *string {
+	return v.TemplateSummaryFields.ArchivedAt
+}
+
+// GetTeam returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Team, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetTeam() *TemplateSummaryFieldsTeam {
+	return v.TemplateSummaryFields.Team
+}
+
+// GetPipeline returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Pipeline, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetPipeline() *TemplateSummaryFieldsPipelineReleasePipeline {
+	return v.TemplateSummaryFields.Pipeline
+}
+
+// GetCreator returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.Creator, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetCreator() *TemplateSummaryFieldsCreatorUser {
+	return v.TemplateSummaryFields.Creator
+}
+
+// GetLastUpdatedBy returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetLastUpdatedBy() *TemplateSummaryFieldsLastUpdatedByUser {
+	return v.TemplateSummaryFields.LastUpdatedBy
+}
+
+// GetInheritedFrom returns team_templatesTeamTemplatesTemplateConnectionNodesTemplate.InheritedFrom, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) GetInheritedFrom() *TemplateSummaryFieldsInheritedFromTemplate {
+	return v.TemplateSummaryFields.InheritedFrom
+}
+
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_templatesTeamTemplatesTemplateConnectionNodesTemplate
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_templatesTeamTemplatesTemplateConnectionNodesTemplate = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TemplateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_templatesTeamTemplatesTemplateConnectionNodesTemplate struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Description *string `json:"description"`
+
+	Icon *string `json:"icon"`
+
+	Color *string `json:"color"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Team *TemplateSummaryFieldsTeam `json:"team"`
+
+	Pipeline *TemplateSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+
+	Creator *TemplateSummaryFieldsCreatorUser `json:"creator"`
+
+	LastUpdatedBy *TemplateSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+
+	InheritedFrom *TemplateSummaryFieldsInheritedFromTemplate `json:"inheritedFrom"`
+}
+
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_templatesTeamTemplatesTemplateConnectionNodesTemplate) __premarshalJSON() (*__premarshalteam_templatesTeamTemplatesTemplateConnectionNodesTemplate, error) {
+	var retval __premarshalteam_templatesTeamTemplatesTemplateConnectionNodesTemplate
+
+	retval.Id = v.TemplateSummaryFields.Id
+	retval.Name = v.TemplateSummaryFields.Name
+	retval.Type = v.TemplateSummaryFields.Type
+	retval.Description = v.TemplateSummaryFields.Description
+	retval.Icon = v.TemplateSummaryFields.Icon
+	retval.Color = v.TemplateSummaryFields.Color
+	retval.SortOrder = v.TemplateSummaryFields.SortOrder
+	retval.LastAppliedAt = v.TemplateSummaryFields.LastAppliedAt
+	retval.CreatedAt = v.TemplateSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TemplateSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TemplateSummaryFields.ArchivedAt
+	retval.Team = v.TemplateSummaryFields.Team
+	retval.Pipeline = v.TemplateSummaryFields.Pipeline
+	retval.Creator = v.TemplateSummaryFields.Creator
+	retval.LastUpdatedBy = v.TemplateSummaryFields.LastUpdatedBy
+	retval.InheritedFrom = v.TemplateSummaryFields.InheritedFrom
+	return &retval, nil
+}
+
+// team_templatesTeamTemplatesTemplateConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_templatesTeamTemplatesTemplateConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_templatesTeamTemplatesTemplateConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns team_templatesTeamTemplatesTemplateConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_templatesTeamTemplatesTemplateConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
 
 // templateResponse is returned by template on success.
 type templateResponse struct {
@@ -52764,6 +54578,214 @@ func teamMemberships(
 	return data_, err_
 }
 
+// The query executed by team_cycles.
+const team_cycles_Operation = `
+query team_cycles ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		cycles(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CycleSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CycleSummaryFields on Cycle {
+	id
+	number
+	name
+	description
+	startsAt
+	endsAt
+	completedAt
+	progress
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func team_cycles(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_cyclesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_cycles",
+		Query:  team_cycles_Operation,
+		Variables: &__team_cyclesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_cyclesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_issues.
+const team_issues_Operation = `
+query team_issues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		issues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func team_issues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_issuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_issues",
+		Query:  team_issues_Operation,
+		Variables: &__team_issuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_issuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_labels.
+const team_labels_Operation = `
+query team_labels ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		labels(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueLabelSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func team_labels(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_labelsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_labels",
+		Query:  team_labels_Operation,
+		Variables: &__team_labelsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_labelsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by team_members.
 const team_members_Operation = `
 query team_members ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -52813,6 +54835,374 @@ func team_members(
 	}
 
 	data_ = &team_membersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_memberships.
+const team_memberships_Operation = `
+query team_memberships ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		memberships(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TeamMembershipSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TeamMembershipSummaryFields on TeamMembership {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	owner
+	sortOrder
+	user {
+		... UserSummaryFields
+	}
+	team {
+		id
+		key
+		name
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func team_memberships(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_membershipsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_memberships",
+		Query:  team_memberships_Operation,
+		Variables: &__team_membershipsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_membershipsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_projects.
+const team_projects_Operation = `
+query team_projects ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		projects(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ProjectSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ProjectSummaryFields on Project {
+	id
+	name
+	description
+	slugId
+	url
+	priority
+	status {
+		id
+		name
+		type
+	}
+	lead {
+		id
+		name
+		displayName
+	}
+	teams(first: 50) {
+		nodes {
+			id
+			key
+			name
+		}
+	}
+}
+`
+
+func team_projects(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_projectsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_projects",
+		Query:  team_projects_Operation,
+		Variables: &__team_projectsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_projectsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_releasePipelines.
+const team_releasePipelines_Operation = `
+query team_releasePipelines ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		releasePipelines(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ReleasePipelineSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ReleasePipelineSummaryFields on ReleasePipeline {
+	id
+	name
+	slugId
+	type
+	isProduction
+	autoGenerateReleaseNotesOnCompletion
+	includePathPatterns
+	approximateReleaseCount
+	trashed
+	releaseNoteTemplate {
+		id
+	}
+	latestReleaseNote {
+		id
+	}
+	url
+	createdAt
+	updatedAt
+	archivedAt
+}
+`
+
+func team_releasePipelines(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_releasePipelinesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_releasePipelines",
+		Query:  team_releasePipelines_Operation,
+		Variables: &__team_releasePipelinesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_releasePipelinesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_states.
+const team_states_Operation = `
+query team_states ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		states(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... WorkflowStateSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment WorkflowStateSummaryFields on WorkflowState {
+	id
+	name
+	type
+	color
+	position
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func team_states(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_statesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_states",
+		Query:  team_states_Operation,
+		Variables: &__team_statesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_statesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_templates.
+const team_templates_Operation = `
+query team_templates ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		templates(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TemplateSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TemplateSummaryFields on Template {
+	id
+	name
+	type
+	description
+	icon
+	color
+	sortOrder
+	lastAppliedAt
+	createdAt
+	updatedAt
+	archivedAt
+	team {
+		id
+		key
+		name
+	}
+	pipeline {
+		id
+	}
+	creator {
+		id
+	}
+	lastUpdatedBy {
+		id
+	}
+	inheritedFrom {
+		id
+	}
+}
+`
+
+func team_templates(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_templatesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_templates",
+		Query:  team_templates_Operation,
+		Variables: &__team_templatesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_templatesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

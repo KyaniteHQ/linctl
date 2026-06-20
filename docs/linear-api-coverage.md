@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 167 | 167 | 167 |
-| Domain-map commands | 279 | 147 | 279 |
+| Local generated Go operations | 175 | 175 | 175 |
+| Domain-map commands | 287 | 155 | 287 |
 
 ## Upstream SDK Root Methods
 
@@ -1160,7 +1160,15 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `teamMembership` | query | `teamMembership` | implemented | `internal/client/generated.go` |
 | `teamMemberships` | query | `teamMemberships` | implemented | `internal/client/generated.go` |
+| `team_cycles` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_issues` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_labels` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_memberships` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_projects` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_releasePipelines` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_states` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_templates` | query | `team` | implemented | `internal/client/generated.go` |
 | `template` | query | `template` | implemented | `internal/client/generated.go` |
 | `templates` | query | `templates` | implemented | `internal/client/generated.go` |
 | `timeSchedule` | query | `timeSchedule` | implemented | `internal/client/generated.go` |
@@ -1341,7 +1349,15 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Team | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | write command needs explicit target and safety semantics |
 | Team | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Team | `team cycles` | `Team.cycles` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team issues` | `Team.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team labels` | `Team.labels` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team members` | `Team.members` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team memberships` | `Team.memberships` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team projects` | `Team.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team release-pipelines` | `Team.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team states` | `Team.states` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team templates` | `Team.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team-membership list` | `Query.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team-membership get` | `Query.teamMembership` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |

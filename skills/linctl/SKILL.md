@@ -146,7 +146,15 @@ linctl label list --json --limit 20
 linctl label get LABEL_ID --json
 linctl team list --json --limit 20
 linctl team get TEAM_ID --json
+linctl team cycles TEAM_ID --json --limit 20
+linctl team issues TEAM_ID --json --limit 20
+linctl team labels TEAM_ID --json --limit 20
 linctl team members TEAM_ID --json --limit 20
+linctl team memberships TEAM_ID --json --limit 20
+linctl team projects TEAM_ID --json --limit 20
+linctl team release-pipelines TEAM_ID --json --limit 20
+linctl team states TEAM_ID --json --limit 20
+linctl team templates TEAM_ID --json --limit 20
 linctl team-membership list --json --limit 20
 linctl team-membership get TEAM_MEMBERSHIP_ID --json
 linctl user list --json --limit 20

@@ -172,6 +172,7 @@ func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bo
 	for _, key := range []string{
 		"issues",
 		"associations",
+		"cycles",
 		"projects",
 		"members",
 		"comments",
@@ -203,6 +204,7 @@ func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bo
 		"sla_configurations",
 		"results",
 		"templates",
+		"workflow_states",
 		"agent_activities",
 		"agent_skills",
 		"external_users",

@@ -21,6 +21,142 @@ query team_members($id: String!, $first: Int, $after: String, $includeArchived: 
   }
 }
 
+query team_cycles($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    cycles(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CycleSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query team_issues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query team_labels($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    labels(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query team_memberships($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    memberships(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamMembershipSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query team_projects($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    projects(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query team_releasePipelines($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    releasePipelines(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ReleasePipelineSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query team_states($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    states(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...WorkflowStateSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query team_templates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    templates(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TemplateSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment TeamSummaryFields on Team {
   id
   key
