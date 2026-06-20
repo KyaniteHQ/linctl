@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -13,6 +14,7 @@ import (
 
 func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueCreateRequest{}
+	descriptionFile := ""
 	command := &cobra.Command{
 		Use:   "create",
 		Short: "Create an issue in the pinned target",
@@ -20,6 +22,9 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 		RunE: func(command *cobra.Command, _ []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
+				return err
+			}
+			if err := resolveFileFlag(&request.Description, descriptionFile, "description"); err != nil {
 				return err
 			}
 			issue, err := client.CreateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
@@ -32,11 +37,14 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "issue title")
 	command.Flags().StringVar(&request.Description, "description", "", "issue description")
+	command.Flags().StringVar(&descriptionFile, "description-file", "", "read issue description from file")
 	root.AddCommand(command)
 }
 
 func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueUpdateRequest{}
+	descriptionFile := ""
+	appendFile := ""
 	command := &cobra.Command{
 		Use:   "update ISSUE_ID",
 		Short: "Update an issue after pinned-target comparison",
@@ -47,6 +55,12 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 				return err
 			}
 			request.ID = args[0]
+			if err := resolveFileFlag(&request.Description, descriptionFile, "description"); err != nil {
+				return err
+			}
+			if err := resolveFileFlag(&request.Append, appendFile, "append"); err != nil {
+				return err
+			}
 			issue, err := client.UpdateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
 			if err != nil {
 				return err
@@ -57,7 +71,9 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "new issue title")
 	command.Flags().StringVar(&request.Description, "description", "", "new issue description")
+	command.Flags().StringVar(&descriptionFile, "description-file", "", "read new issue description from file")
 	command.Flags().StringVar(&request.Append, "append", "", "text to append to the issue description")
+	command.Flags().StringVar(&appendFile, "append-file", "", "read text to append from file")
 	root.AddCommand(command)
 }
 
@@ -83,6 +99,7 @@ func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *roo
 
 func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueCommentRequest{}
+	bodyFile := ""
 	command := &cobra.Command{
 		Use:   "comment ISSUE_ID",
 		Short: "Comment on an issue after pinned-target comparison",
@@ -94,6 +111,9 @@ func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *r
 			}
 			request.ID = args[0]
 			if err := resolveBodyFlag(command, &request.Body); err != nil {
+				return err
+			}
+			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
 				return err
 			}
 			comment, err := client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
@@ -108,11 +128,13 @@ func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *r
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "comment body")
+	command.Flags().StringVar(&bodyFile, "body-file", "", "read comment body from file")
 	root.AddCommand(command)
 }
 
 func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueCommentRequest{}
+	bodyFile := ""
 	command := &cobra.Command{
 		Use:   "reply ISSUE_ID COMMENT_ID",
 		Short: "Reply to an issue comment after pinned-target comparison",
@@ -127,6 +149,9 @@ func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *roo
 			if err := resolveBodyFlag(command, &request.Body); err != nil {
 				return err
 			}
+			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+				return err
+			}
 			comment, err := client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
 			if err != nil {
 				return err
@@ -139,6 +164,7 @@ func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *roo
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "reply body")
+	command.Flags().StringVar(&bodyFile, "body-file", "", "read reply body from file")
 	root.AddCommand(command)
 }
 
@@ -151,6 +177,24 @@ func resolveBodyFlag(command *cobra.Command, body *string) error {
 		return fmt.Errorf("read body from stdin: %w", err)
 	}
 	*body = string(data)
+
+	return nil
+}
+
+func resolveFileFlag(value *string, path string, label string) error {
+	if path == "" {
+		return nil
+	}
+	if *value != "" {
+		return fmt.Errorf("%s and %s-file are mutually exclusive", label, label)
+	}
+
+	//nolint:gosec // The path is an explicit CLI input for reading issue text.
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("read %s from file %s: %w", label, path, err)
+	}
+	*value = string(data)
 
 	return nil
 }

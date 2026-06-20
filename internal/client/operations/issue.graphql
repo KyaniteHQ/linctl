@@ -205,6 +205,18 @@ query NextIssuesByTeam($teamId: ID!, $first: Int, $after: String, $includeArchiv
   ) {
     nodes {
       ...IssueSummaryFields
+      createdAt
+      relations(first: 10) {
+        nodes {
+          type
+          relatedIssue {
+            id
+            state {
+              type
+            }
+          }
+        }
+      }
     }
     pageInfo {
       hasNextPage

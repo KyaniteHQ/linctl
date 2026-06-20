@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -321,6 +322,28 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, users.Users[0].Admin)
 	require.Equal(t, "Omer", user.DisplayName)
 	require.Equal(t, "Omer", viewerUser.DisplayName)
+}
+
+func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"NextIssuesByTeam": `{"issues":{"nodes":[` +
+			nextIssueJSON("LIT-31", "Low priority standalone", 4, "Low", "2026-01-01T00:00:00Z", []string{}) + `,` +
+			nextIssueJSON("LIT-32", "Urgent standalone", 1, "Urgent", "2026-02-01T00:00:00Z", []string{}) + `,` +
+			nextIssueJSON("LIT-33", "Older high standalone", 2, "High", "2026-01-15T00:00:00Z", []string{}) + `,` +
+			nextIssueJSON("LIT-34", "Newer high standalone", 2, "High", "2026-02-15T00:00:00Z", []string{}) + `,` +
+			nextIssueJSON("LIT-35", "No priority standalone", 0, "No priority", "2026-01-01T00:00:00Z", []string{}) + `,` +
+			nextIssueJSON("LIT-36", "Unblocks active work", 3, "Normal", "2026-03-01T00:00:00Z", []string{
+				`{"type":"blocks","relatedIssue":{"id":"active-1","state":{"type":"started"}}}`,
+				`{"type":"blocks","relatedIssue":{"id":"done-1","state":{"type":"completed"}}}`,
+				`{"type":"relates","relatedIssue":{"id":"active-2","state":{"type":"unstarted"}}}`,
+			}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+	}
+
+	issues, err := ListNextIssuesByTeam(context.Background(), graphqlClient, "team-id", 6)
+
+	require.NoError(t, err)
+	require.Equal(t, []string{"LIT-36", "LIT-32", "LIT-33", "LIT-34", "LIT-31", "LIT-35"}, issueIdentifiers(issues.Issues))
+	require.Equal(t, 1, issues.Issues[0].UnblocksCount)
 }
 
 func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
@@ -1326,6 +1349,38 @@ func issueJSONWithAssignee(issue issueFixture, assignee string) string {
 
 func issueJSONWithDescription(issue issueFixture, description string) string {
 	return strings.Replace(issueJSON(issue), `"id":"issue-id",`, `"id":"issue-id","description":"`+description+`",`, 1)
+}
+
+func nextIssueJSON(
+	identifier string,
+	title string,
+	priority int,
+	priorityLabel string,
+	createdAt string,
+	relations []string,
+) string {
+	return strings.TrimSuffix(issueJSON(issueFixture{
+		Identifier: identifier,
+		Title:      title,
+		StateID:    "todo",
+		State:      "Todo",
+		StateType:  "unstarted",
+	}), "\n\t}") +
+		`,
+		"priority":` + strconv.Itoa(priority) + `,
+		"priorityLabel":"` + priorityLabel + `",
+		"createdAt":"` + createdAt + `",
+		"relations":{"nodes":[` + strings.Join(relations, ",") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+	}`
+}
+
+func issueIdentifiers(issues []IssueSummary) []string {
+	identifiers := make([]string, 0, len(issues))
+	for _, issue := range issues {
+		identifiers = append(identifiers, issue.Identifier)
+	}
+
+	return identifiers
 }
 
 func projectJSONWithLead(project projectFixture, lead string) string {

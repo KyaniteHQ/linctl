@@ -6580,6 +6580,18 @@ func (v *NextIssuesByTeamIssuesIssueConnection) GetPageInfo() NextIssuesByTeamIs
 // tracked through their full history of changes.
 type NextIssuesByTeamIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// Relations associated with this issue.
+	Relations NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnection `json:"relations"`
+}
+
+// GetCreatedAt returns NextIssuesByTeamIssuesIssueConnectionNodesIssue.CreatedAt, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) GetCreatedAt() string { return v.CreatedAt }
+
+// GetRelations returns NextIssuesByTeamIssuesIssueConnectionNodesIssue.Relations, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) GetRelations() NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnection {
+	return v.Relations
 }
 
 // GetId returns NextIssuesByTeamIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
@@ -6663,6 +6675,10 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte
 }
 
 type __premarshalNextIssuesByTeamIssuesIssueConnectionNodesIssue struct {
+	CreatedAt string `json:"createdAt"`
+
+	Relations NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnection `json:"relations"`
+
 	Id string `json:"id"`
 
 	Identifier string `json:"identifier"`
@@ -6697,6 +6713,8 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte,
 func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalNextIssuesByTeamIssuesIssueConnectionNodesIssue, error) {
 	var retval __premarshalNextIssuesByTeamIssuesIssueConnectionNodesIssue
 
+	retval.CreatedAt = v.CreatedAt
+	retval.Relations = v.Relations
 	retval.Id = v.IssueSummaryFields.Id
 	retval.Identifier = v.IssueSummaryFields.Identifier
 	retval.Title = v.IssueSummaryFields.Title
@@ -6709,6 +6727,90 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssue) __premarshalJSON() (*_
 	retval.Assignee = v.IssueSummaryFields.Assignee
 	retval.Project = v.IssueSummaryFields.Project
 	return &retval, nil
+}
+
+// NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnection includes the requested fields of the GraphQL type IssueRelationConnection.
+type NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnection struct {
+	Nodes []NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation `json:"nodes"`
+}
+
+// GetNodes returns NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnection) GetNodes() []NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation {
+	return v.Nodes
+}
+
+// NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
+// The GraphQL type's documentation follows.
+//
+// A relation between two issues. Issue relations represent directional
+// relationships such as blocking, being blocked by, relating to, or duplicating
+// another issue. Each relation connects a source issue to a related issue with a
+// specific type describing the nature of the relationship.
+type NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
+	// The type of relationship between the source issue and the related issue.
+	// Possible values include blocks, duplicate, and related.
+	Type string `json:"type"`
+	// The target issue that the source issue is related to. The relation type
+	// describes how the source issue relates to this issue.
+	RelatedIssue NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue `json:"relatedIssue"`
+}
+
+// GetType returns NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation.Type, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation) GetType() string {
+	return v.Type
+}
+
+// GetRelatedIssue returns NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation.RelatedIssue, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation) GetRelatedIssue() NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue {
+	return v.RelatedIssue
+}
+
+// NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The workflow state (issue status) that the issue is currently in. Workflow
+	// states represent the issue's progress through the team's workflow, such as
+	// Triage, Todo, In Progress, Done, or Canceled.
+	State NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState `json:"state"`
+}
+
+// GetId returns NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue.Id, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) GetId() string {
+	return v.Id
+}
+
+// GetState returns NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue.State, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue) GetState() NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState {
+	return v.State
+}
+
+// NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState struct {
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+}
+
+// GetType returns NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState) GetType() string {
+	return v.Type
 }
 
 // NextIssuesByTeamIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
@@ -13031,6 +13133,18 @@ query NextIssuesByTeam ($teamId: ID!, $first: Int, $after: String, $includeArchi
 	issues(filter: {team:{id:{eq:$teamId}},state:{type:{eq:"unstarted"}},hasBlockedByRelations:{eq:false}}, first: $first, after: $after, includeArchived: $includeArchived) {
 		nodes {
 			... IssueSummaryFields
+			createdAt
+			relations(first: 10) {
+				nodes {
+					type
+					relatedIssue {
+						id
+						state {
+							type
+						}
+					}
+				}
+			}
 		}
 		pageInfo {
 			hasNextPage

@@ -5,7 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -25,6 +29,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		fake     commandFlowFakeClient
 	}{
 		{name: "target", args: []string{"target"}, contains: "org org-id team LIT/team-id project project-id confirmed true"},
+		{name: "doctor", args: []string{"doctor"}, contains: "config ok\n token set\n target confirmed LIT/team-id project project-id"},
 		{name: "whoami", args: []string{"whoami"}, contains: "Omer <omer@example.com>"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
 		{name: "issue list", args: []string{"issue", "list", "--limit", "1"}, contains: "LIT-1 Listed issue [Todo]"},
@@ -105,6 +110,111 @@ func Test_CommandFlows_read_issue_comment_body_from_stdin(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Contains(t, output.String(), "comment comment-id on LIT-1")
+}
+
+func Test_CommandFlows_read_issue_text_from_files(t *testing.T) {
+	descriptionFile := writeTempTextFile(t, "description from file")
+	appendFile := writeTempTextFile(t, "append from file")
+	commentFile := writeTempTextFile(t, "comment from file")
+	replyFile := writeTempTextFile(t, "reply from file")
+
+	tests := []struct {
+		name string
+		args []string
+		fake commandFlowFakeClient
+	}{
+		{
+			name: "create description",
+			args: []string{"issue", "create", "--title", "Created issue", "--description-file", descriptionFile},
+			fake: commandFlowFakeClient{expectedCreateDescription: "description from file"},
+		},
+		{
+			name: "update append",
+			args: []string{"issue", "update", "LIT-1", "--append-file", appendFile},
+			fake: commandFlowFakeClient{expectedUpdateDescription: "Existing description\n\nappend from file"},
+		},
+		{
+			name: "comment body",
+			args: []string{"issue", "comment", "LIT-1", "--body-file", commentFile},
+			fake: commandFlowFakeClient{expectedCommentBody: "comment from file"},
+		},
+		{
+			name: "reply body",
+			args: []string{"issue", "reply", "LIT-1", "comment-id", "--body-file", replyFile},
+			fake: commandFlowFakeClient{expectedCommentBody: "reply from file", expectedCommentParentID: "comment-id"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, test.fake)
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.NotEmpty(t, output.String())
+		})
+	}
+}
+
+func Test_CommandFlows_report_issue_text_file_errors(t *testing.T) {
+	textFile := writeTempTextFile(t, "from file")
+	missingFile := filepath.Join(t.TempDir(), "missing.md")
+	tests := []struct {
+		name     string
+		args     []string
+		contains string
+	}{
+		{
+			name:     "create description conflict",
+			args:     []string{"issue", "create", "--title", "Created issue", "--description", "inline", "--description-file", textFile},
+			contains: "description and description-file are mutually exclusive",
+		},
+		{
+			name:     "update description conflict",
+			args:     []string{"issue", "update", "LIT-1", "--description", "inline", "--description-file", textFile},
+			contains: "description and description-file are mutually exclusive",
+		},
+		{
+			name:     "update append conflict",
+			args:     []string{"issue", "update", "LIT-1", "--append", "inline", "--append-file", textFile},
+			contains: "append and append-file are mutually exclusive",
+		},
+		{
+			name:     "comment body conflict",
+			args:     []string{"issue", "comment", "LIT-1", "--body", "inline", "--body-file", textFile},
+			contains: "body and body-file are mutually exclusive",
+		},
+		{
+			name:     "reply body conflict",
+			args:     []string{"issue", "reply", "LIT-1", "comment-id", "--body", "inline", "--body-file", textFile},
+			contains: "body and body-file are mutually exclusive",
+		},
+		{
+			name:     "missing file",
+			args:     []string{"issue", "comment", "LIT-1", "--body-file", missingFile},
+			contains: "read body from file",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.Error(t, err)
+			require.Contains(t, err.Error(), test.contains)
+		})
+	}
 }
 
 func Test_CommandFlows_resolve_current_issue_from_branch(t *testing.T) {
@@ -204,6 +314,20 @@ func Test_CommandFlows_report_next_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "empty result")
 	})
+}
+
+func Test_CommandFlows_rank_next_issue_candidates(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{rankedNextIssues: true})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"next", "--dry-run"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "LIT-30 Unblocks checkout [Todo]")
 }
 
 func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
@@ -314,6 +438,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 	t.Run("runtime error returns from command", func(t *testing.T) {
 		commands := [][]string{
 			{"target"},
+			{"doctor"},
 			{"whoami"},
 			{"next", "--dry-run"},
 			{"issue", "list"},
@@ -375,6 +500,19 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		command.SetOut(commandFailingWriter{})
 
 		err := writeIssues(command, &rootOptions{}, []client.IssueSummary{{Identifier: "LIT-1", Title: "Broken", State: "Todo"}})
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("doctor returns writer errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(commandFailingWriter{})
+		command.SetArgs([]string{"doctor"})
+
+		err := command.ExecuteContext(context.Background())
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "write line")
@@ -460,6 +598,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 	tests := [][]string{
 		{"--json", "target"},
+		{"--json", "doctor"},
 		{"--json", "whoami"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
@@ -546,17 +685,26 @@ func Test_CommandFlows_print_only_id_when_id_only_flag_is_set(t *testing.T) {
 }
 
 func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing.T) {
-	output := bytes.Buffer{}
-	restore := useCommandRuntime(t, commandFlowFakeClient{})
-	defer restore()
-	command := NewRootCommand(context.Background(), BuildInfo{})
-	command.SetOut(&output)
-	command.SetArgs([]string{"--quiet", "issue", "get", "LIT-1"})
+	tests := [][]string{
+		{"--quiet", "doctor"},
+		{"--quiet", "issue", "get", "LIT-1"},
+	}
 
-	err := command.ExecuteContext(context.Background())
+	for _, args := range tests {
+		t.Run(strings.Join(args, " "), func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(args)
 
-	require.NoError(t, err)
-	require.Empty(t, output.String())
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Empty(t, output.String())
+		})
+	}
 }
 
 func Test_CommandFlows_fail_on_empty_list_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -796,6 +944,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		contains  string
 	}{
 		{name: "target resolve", args: []string{"target"}, operation: "Teams", contains: "resolve teams"},
+		{name: "doctor target resolve", args: []string{"doctor"}, operation: "Teams", contains: "resolve teams"},
 		{name: "whoami resolve", args: []string{"whoami"}, operation: "Viewer", contains: "resolve viewer"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
 		{name: "next issues", args: []string{"next", "--dry-run"}, operation: "NextIssuesByTeam", contains: "list next issues"},
@@ -873,6 +1022,16 @@ func runGitCommand(t *testing.T, dir string, args ...string) {
 	require.NoError(t, err, string(output))
 }
 
+func writeTempTextFile(t *testing.T, content string) string {
+	t.Helper()
+
+	path := filepath.Join(t.TempDir(), "body.md")
+	err := os.WriteFile(path, []byte(content), 0o600)
+	require.NoError(t, err)
+
+	return path
+}
+
 type commandFailingWriter struct{}
 
 func (writer commandFailingWriter) Write(_ []byte) (int, error) {
@@ -922,6 +1081,7 @@ type commandFlowFakeClient struct {
 	emptyIssueAllTeams        bool
 	emptyIssueSearch          bool
 	emptyNextIssues           bool
+	rankedNextIssues          bool
 	expectedStateType         string
 	expectedProjectID         string
 	expectedAssigneeID        string
@@ -938,6 +1098,7 @@ type commandFlowFakeClient struct {
 	emptyProjectMilestones    bool
 	expectedCommentBody       string
 	expectedCommentParentID   string
+	expectedCreateDescription string
 	expectedUpdateDescription string
 	expectedStartAssigneeID   string
 	expectedStartStateID      string
@@ -969,6 +1130,14 @@ func (client commandFlowFakeClient) MakeRequest(
 }
 
 func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Request) error {
+	if client.expectedCreateDescription != "" && request.OpName == "IssueCreate" {
+		return requireRequestVariable(
+			request,
+			[]string{"input", "description"},
+			client.expectedCreateDescription,
+			"create description",
+		)
+	}
 	if client.expectedCommentBody != "" && request.OpName == "IssueCommentCreate" {
 		return requireRequestVariable(request, []string{"input", "body"}, client.expectedCommentBody, "comment body")
 	}
@@ -1140,7 +1309,14 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 		if fake.emptyNextIssues {
 			return emptyCommandIssuesPayload(), true
 		}
-		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-27", "Next issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		if fake.rankedNextIssues {
+			return `{"issues":{"nodes":[` +
+				commandIssueWithNextRankJSON("LIT-28", "Low priority standalone", 4, "Low", "2026-05-01T12:00:00Z", 0) + `,` +
+				commandIssueWithNextRankJSON("LIT-29", "Urgent standalone", 1, "Urgent", "2026-06-01T12:00:00Z", 0) + `,` +
+				commandIssueWithNextRankJSON("LIT-30", "Unblocks checkout", 2, "High", "2026-06-10T12:00:00Z", 2) +
+				`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		}
+		return `{"issues":{"nodes":[` + commandIssueWithNextRankJSON("LIT-27", "Next issue", 0, "No priority", "2026-06-01T12:00:00Z", 0) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "IssueByID":
 		return `{"issue":` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `}`, true
 	case "IssueDependencies":
@@ -1377,6 +1553,32 @@ func commandIssueJSON(identifier string, title string, stateID string, state str
 		"assignee":null,
 		"project":{"id":"project-id","name":"Pinned project"}
 	}`
+}
+
+func commandIssueWithNextRankJSON(
+	identifier string,
+	title string,
+	priority int,
+	priorityLabel string,
+	createdAt string,
+	unblocksCount int,
+) string {
+	return strings.TrimSuffix(commandIssueJSON(identifier, title, "todo-state", "Todo", "unstarted"), "\n\t}") +
+		`,
+		"priority":` + strconv.Itoa(priority) + `,
+		"priorityLabel":"` + priorityLabel + `",
+		"createdAt":"` + createdAt + `",
+		"relations":{"nodes":[` + commandBlockingRelationsJSON(unblocksCount) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+	}`
+}
+
+func commandBlockingRelationsJSON(count int) string {
+	relations := make([]string, 0, count)
+	for i := range count {
+		relations = append(relations, fmt.Sprintf(`{"type":"blocks","relatedIssue":{"id":"blocked-%d","state":{"type":"unstarted"}}}`, i))
+	}
+
+	return strings.Join(relations, ",")
 }
 
 func commandProjectJSON(name string, status string, statusType string) string {

@@ -67,6 +67,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 
 	addUsageCommand(command, &options)
 	addTargetCommand(ctx, command, &options)
+	addDoctorCommand(ctx, command, &options)
 	addWhoamiCommand(ctx, command, &options)
 	addIssueCommand(ctx, command, &options)
 	addNextCommand(ctx, command, &options)
