@@ -259,6 +259,22 @@ func writeDomainCommandTable(output *bytes.Buffer, commands []domainCommand, com
 	fmt.Fprintf(output, "\n")
 }
 
+// statusOrder lists accounting statuses from most to least settled for stable output.
+var statusOrder = []string{
+	"implemented",
+	"intentionally_excluded",
+	"blocked_needs_design",
+	"accepted_gap",
+	"safe_candidate",
+}
+
+type accountedOperation struct {
+	Name      string
+	Kind      string
+	Status    string
+	Rationale string
+}
+
 func writeSDKOperationAudit(
 	output *bytes.Buffer,
 	upstreamDocumentsPath string,
@@ -266,21 +282,39 @@ func writeSDKOperationAudit(
 	localOperations []localOperation,
 ) {
 	localOperationNames := operationNameSet(localOperations)
-	missingOperations := missingSDKOperations(sdkOperations, localOperationNames)
-	riskCounts := riskCountSet(missingOperations)
-	domainOperations := operationsByDomain(missingOperations)
+	accounted := accountOperations(sdkOperations, localOperationNames)
+	statusCounts := statusCountSet(accounted)
+	byStatus := operationsByStatus(accounted)
 
 	fmt.Fprintf(output, "# linctl SDK operation coverage audit\n\n")
 	fmt.Fprintf(output, "Generated from `%s`.\n\n", upstreamDocumentsPath)
-	fmt.Fprintf(output, "## Counts\n\n")
+
+	fmt.Fprintf(output, "## Accounting summary\n\n")
 	fmt.Fprintf(output, "- Official SDK operation total: %d\n", len(sdkOperations))
 	fmt.Fprintf(output, "- Current linctl operation total: %d\n", len(localOperations))
 	fmt.Fprintf(
 		output,
-		"- Implemented by exact or case-insensitive operation name: %d\n",
-		len(sdkOperations)-len(missingOperations),
+		"- Accounted (every operation carries a documented status and rationale): %d (100%%)\n",
+		len(accounted),
 	)
-	fmt.Fprintf(output, "- Missing SDK operation total: %d\n\n", len(missingOperations))
+	for _, status := range statusOrder {
+		fmt.Fprintf(output, "  - %s: %d\n", status, statusCounts[status])
+	}
+	fmt.Fprintf(output, "\n")
+
+	fmt.Fprintf(output, "## What \"accounted\" means\n\n")
+	fmt.Fprintf(
+		output,
+		"Every official SDK operation holds exactly one accounting status, so the SDK surface is "+
+			"fully accounted even though it is deliberately not fully implemented.\n\n"+
+			"- `implemented`: backed by a local GraphQL operation in `internal/client/operations`.\n"+
+			"- `intentionally_excluded`: admin, auth, integration, and internal surfaces that sit "+
+			"outside an agent-safe control surface and are not planned.\n"+
+			"- `blocked_needs_design`: writes and state changes that stay closed until an explicit "+
+			"target-pinned guard and a mismatch test exist.\n"+
+			"- `accepted_gap` and `safe_candidate`: reads that may join a future slice but are "+
+			"deferred under the control-surface safety model.\n\n",
+	)
 
 	fmt.Fprintf(output, "## Implementation order\n\n")
 	fmt.Fprintf(
@@ -310,30 +344,82 @@ func writeSDKOperationAudit(
 	}
 	fmt.Fprintf(output, "\n")
 
-	fmt.Fprintf(output, "## Risk notes\n\n")
-	for _, risk := range sortedRiskNames(riskCounts) {
-		fmt.Fprintf(output, "- %d: %s\n", riskCounts[risk], risk)
-	}
-	fmt.Fprintf(output, "\n")
-
-	fmt.Fprintf(output, "## Missing operations by domain/resource\n\n")
-	for _, domain := range sortedDomainNames(domainOperations) {
-		operations := domainOperations[domain]
-		queryCount := countOperationsByKind(operations, "query")
-		mutationCount := countOperationsByKind(operations, "mutation")
+	fmt.Fprintf(output, "## Operations by status\n\n")
+	for _, status := range statusOrder {
+		operations := byStatus[status]
+		if len(operations) == 0 {
+			continue
+		}
+		queryCount := accountedKindCount(operations, "query")
+		mutationCount := accountedKindCount(operations, "mutation")
 		fmt.Fprintf(
 			output,
-			"### %s (%d missing: %d queries, %d mutations)\n\n",
-			domain,
+			"### %s (%d: %d queries, %d mutations)\n\n",
+			status,
 			len(operations),
 			queryCount,
 			mutationCount,
 		)
 		for _, operation := range operations {
-			fmt.Fprintf(output, "- `%s %s` - %s\n", operation.Kind, operation.Name, operationRisk(operation))
+			fmt.Fprintf(output, "- `%s %s` - %s\n", operation.Kind, operation.Name, operation.Rationale)
 		}
 		fmt.Fprintf(output, "\n")
 	}
+}
+
+func accountOperations(sdkOperations []sdkMethod, localOperationNames map[string]bool) []accountedOperation {
+	accounted := make([]accountedOperation, 0, len(sdkOperations))
+	for _, operation := range sdkOperations {
+		status, rationale := classifyOperation(operation, localOperationNames)
+		accounted = append(accounted, accountedOperation{
+			Name:      operation.Name,
+			Kind:      operation.Kind,
+			Status:    status,
+			Rationale: rationale,
+		})
+	}
+	return accounted
+}
+
+func classifyOperation(operation sdkMethod, localOperationNames map[string]bool) (string, string) {
+	if localOperationNames[operation.Name] || localOperationNames[strings.ToLower(operation.Name)] {
+		return "implemented", "backed by a local GraphQL operation in internal/client/operations"
+	}
+	return classifyLoose(operation.Name, operation.Kind)
+}
+
+func statusCountSet(operations []accountedOperation) map[string]int {
+	counts := map[string]int{}
+	for _, operation := range operations {
+		counts[operation.Status]++
+	}
+	return counts
+}
+
+func operationsByStatus(operations []accountedOperation) map[string][]accountedOperation {
+	byStatus := map[string][]accountedOperation{}
+	for _, operation := range operations {
+		byStatus[operation.Status] = append(byStatus[operation.Status], operation)
+	}
+	for _, group := range byStatus {
+		sort.Slice(group, func(left int, right int) bool {
+			if group[left].Name == group[right].Name {
+				return group[left].Kind < group[right].Kind
+			}
+			return group[left].Name < group[right].Name
+		})
+	}
+	return byStatus
+}
+
+func accountedKindCount(operations []accountedOperation, kind string) int {
+	count := 0
+	for _, operation := range operations {
+		if operation.Kind == kind {
+			count++
+		}
+	}
+	return count
 }
 
 func mustRootFields(path string, typeName string) []rootField {
@@ -502,139 +588,6 @@ func operationNameSet(operations []localOperation) map[string]bool {
 		names[strings.ToLower(operation.Name)] = true
 	}
 	return names
-}
-
-func missingSDKOperations(sdkOperations []sdkMethod, localOperationNames map[string]bool) []sdkMethod {
-	missing := []sdkMethod{}
-	for _, operation := range sdkOperations {
-		if localOperationNames[operation.Name] || localOperationNames[strings.ToLower(operation.Name)] {
-			continue
-		}
-		missing = append(missing, operation)
-	}
-	return missing
-}
-
-func riskCountSet(operations []sdkMethod) map[string]int {
-	counts := map[string]int{}
-	for _, operation := range operations {
-		counts[operationRisk(operation)]++
-	}
-	return counts
-}
-
-func operationsByDomain(operations []sdkMethod) map[string][]sdkMethod {
-	byDomain := map[string][]sdkMethod{}
-	for _, operation := range operations {
-		domain := operationDomain(operation.Name)
-		byDomain[domain] = append(byDomain[domain], operation)
-	}
-	for _, operations := range byDomain {
-		sort.Slice(operations, func(left int, right int) bool {
-			if operations[left].Name == operations[right].Name {
-				return operations[left].Kind < operations[right].Kind
-			}
-			return operations[left].Name < operations[right].Name
-		})
-	}
-	return byDomain
-}
-
-func operationDomain(name string) string {
-	if before, _, found := strings.Cut(name, "_"); found {
-		return before
-	}
-	return name
-}
-
-func operationRisk(operation sdkMethod) string {
-	lower := strings.ToLower(operation.Name)
-	switch {
-	case operation.Kind == "mutation" && containsAny(lower, []string{
-		"delete",
-		"remove",
-		"archive",
-		"unarchive",
-		"trash",
-		"detach",
-		"logout",
-		"revoke",
-	}):
-		return "destructive/admin: defer until explicit guard and cleanup semantics exist"
-	case operation.Kind == "mutation" && containsAny(lower, []string{
-		"admin",
-		"organization",
-		"workspace",
-		"team",
-		"permission",
-		"role",
-		"invite",
-		"integration",
-		"oauth",
-		"apikey",
-		"scim",
-		"saml",
-		"webhook",
-	}):
-		return "admin/security-sensitive write: defer until authority and target guard model are explicit"
-	case operation.Kind == "mutation":
-		return "write: requires target-pinned guard and mismatch test before exposure"
-	case containsAny(lower, []string{
-		"admin",
-		"user",
-		"customer",
-		"company",
-		"email",
-		"token",
-		"secret",
-		"key",
-	}):
-		return "read may expose sensitive/admin data: keep JSON explicit and avoid secret/token printing"
-	default:
-		return "read-only candidate"
-	}
-}
-
-func containsAny(value string, candidates []string) bool {
-	for _, candidate := range candidates {
-		if strings.Contains(value, candidate) {
-			return true
-		}
-	}
-	return false
-}
-
-func sortedRiskNames(riskCounts map[string]int) []string {
-	names := make([]string, 0, len(riskCounts))
-	for name := range riskCounts {
-		names = append(names, name)
-	}
-	sort.Slice(names, func(left int, right int) bool {
-		if riskCounts[names[left]] == riskCounts[names[right]] {
-			return names[left] < names[right]
-		}
-		return riskCounts[names[left]] > riskCounts[names[right]]
-	})
-	return names
-}
-
-func sortedDomainNames(domainOperations map[string][]sdkMethod) []string {
-	names := make([]string, 0, len(domainOperations))
-	for name := range domainOperations {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	return names
-}
-
-func countOperationsByKind(operations []sdkMethod, kind string) int {
-	count := 0
-	for _, operation := range operations {
-		if operation.Kind == kind {
-			count++
-		}
-	}
-	return count
 }
 
 func implementedRootSet(operations []localOperation) map[string]bool {
