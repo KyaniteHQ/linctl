@@ -224,17 +224,21 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			agentActivityJSON("response"),
 			agentActivityJSON("thought"),
 		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"agentActivity":          `{"agentActivity":` + agentActivityJSON("action") + `}`,
-		"agentSkills":            `{"agentSkills":{"nodes":[` + agentSkillJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"agentSkill":             `{"agentSkill":` + agentSkillJSON() + `}`,
-		"externalUsers":          `{"externalUsers":{"nodes":[` + externalUserJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"externalUser":           `{"externalUser":` + externalUserJSON() + `}`,
-		"auditEntryTypes":        `{"auditEntryTypes":[{"type":"user_login","description":"User logged in"}]}`,
-		"organizationExists":     `{"organizationExists":{"success":true,"exists":true}}`,
-		"organization_templates": `{"organization":{"templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"rateLimitStatus":        `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
-		"notifications":          `{"notifications":{"nodes":[` + notificationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"notification":           `{"notification":` + notificationJSON() + `}`,
+		"agentActivity":              `{"agentActivity":` + agentActivityJSON("action") + `}`,
+		"agentSkills":                `{"agentSkills":{"nodes":[` + agentSkillJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"agentSkill":                 `{"agentSkill":` + agentSkillJSON() + `}`,
+		"externalUsers":              `{"externalUsers":{"nodes":[` + externalUserJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"externalUser":               `{"externalUser":` + externalUserJSON() + `}`,
+		"auditEntryTypes":            `{"auditEntryTypes":[{"type":"user_login","description":"User logged in"}]}`,
+		"organizationExists":         `{"organizationExists":{"success":true,"exists":true}}`,
+		"organization_labels":        `{"organization":{"labels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"organization_projectLabels": `{"organization":{"projectLabels":{"nodes":[{"id":"project-label-id","name":"Roadmap","description":"Project label","color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"organization_teams":         `{"organization":{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":null,"archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"organization_templates":     `{"organization":{"templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"organization_users":         `{"organization":{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"rateLimitStatus":            `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
+		"notifications":              `{"notifications":{"nodes":[` + notificationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"notification":               `{"notification":` + notificationJSON() + `}`,
 		"notificationSubscriptions": `{"notificationSubscriptions":{"nodes":[` + strings.Join([]string{
 			notificationSubscriptionJSON(),
 			notificationSubscriptionTargetJSON("CustomerNotificationSubscription", "customer", `{"id":"customer-id","name":"Acme"}`, false, false),
@@ -610,7 +614,15 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	timeSchedule, err := GetTimeScheduleByID(context.Background(), graphqlClient, "time-schedule-id")
 	require.NoError(t, err)
+	organizationLabels, err := ListOrganizationLabels(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	organizationProjectLabels, err := ListOrganizationProjectLabels(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	organizationTeams, err := ListOrganizationTeams(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
 	organizationTemplates, err := ListOrganizationTemplates(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	organizationUsers, err := ListOrganizationUsers(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	templates, err := ListTemplates(context.Background(), graphqlClient, 1)
 	require.NoError(t, err)
@@ -1033,9 +1045,18 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, 1, timeSchedule.EntryCount)
 	require.Equal(t, "integration-id", timeSchedule.IntegrationID)
 	require.Equal(t, "omer@example.com", timeSchedule.Entries[0].UserEmail)
+	require.True(t, organizationLabels.HasNextPage)
+	require.Equal(t, &endCursor, organizationLabels.EndCursor)
+	require.Equal(t, "Bug", organizationLabels.Labels[0].Name)
+	require.True(t, organizationProjectLabels.HasNextPage)
+	require.Equal(t, "Roadmap", organizationProjectLabels.ProjectLabels[0].Name)
+	require.True(t, organizationTeams.HasNextPage)
+	require.Equal(t, "linctl", organizationTeams.Teams[0].Name)
 	require.True(t, organizationTemplates.HasNextPage)
 	require.Equal(t, &endCursor, organizationTemplates.EndCursor)
 	require.Equal(t, "Bug report", organizationTemplates.Templates[0].Name)
+	require.True(t, organizationUsers.HasNextPage)
+	require.Equal(t, "Omer", organizationUsers.Users[0].DisplayName)
 	require.Equal(t, 2, templates.TotalCount)
 	require.Len(t, templates.Templates, 1)
 	require.Equal(t, "Bug report", templates.Templates[0].Name)
@@ -1827,9 +1848,25 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get time schedule time-schedule-id")
 
+		_, err = ListOrganizationLabels(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list organization labels")
+
+		_, err = ListOrganizationProjectLabels(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list organization project labels")
+
+		_, err = ListOrganizationTeams(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list organization teams")
+
 		_, err = ListOrganizationTemplates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list organization templates")
+
+		_, err = ListOrganizationUsers(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list organization users")
 
 		_, err = ListTemplates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

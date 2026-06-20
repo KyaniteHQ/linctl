@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 185 | 185 | 185 |
-| Domain-map commands | 297 | 165 | 297 |
+| Local generated Go operations | 189 | 189 | 189 |
+| Domain-map commands | 301 | 169 | 301 |
 
 ## Upstream SDK Root Methods
 
@@ -1122,7 +1122,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `notificationSubscriptions` | query | `notificationSubscriptions` | implemented | `internal/client/generated.go` |
 | `notifications` | query | `notifications` | implemented | `internal/client/generated.go` |
 | `organizationExists` | query | `organizationExists` | implemented | `internal/client/generated.go` |
+| `organization_labels` | query | `organization` | implemented | `internal/client/generated.go` |
+| `organization_projectLabels` | query | `organization` | implemented | `internal/client/generated.go` |
+| `organization_teams` | query | `organization` | implemented | `internal/client/generated.go` |
 | `organization_templates` | query | `organization` | implemented | `internal/client/generated.go` |
+| `organization_users` | query | `organization` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
 | `projectLabel` | query | `projectLabel` | implemented | `internal/client/generated.go` |
 | `projectLabel_children` | query | `projectLabel` | implemented | `internal/client/generated.go` |
@@ -1202,7 +1206,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
 | Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | implemented | `linctl --help` / public CLI tests |
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
+| Core target | `organization labels` | `Organization.labels` via `Query.organization` | Read-only workspace-level issue labels. | implemented | `linctl --help` / public CLI tests |
+| Core target | `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only workspace-level project labels. | implemented | `linctl --help` / public CLI tests |
+| Core target | `organization teams` | `Organization.teams` via `Query.organization` | Read-only teams visible to the authenticated user. | implemented | `linctl --help` / public CLI tests |
 | Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only workspace-level templates. | implemented | `linctl --help` / public CLI tests |
+| Core target | `organization users` | `Organization.users` via `Query.organization` | Read-only active users visible to the authenticated user. | implemented | `linctl --help` / public CLI tests |
 | Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |
 | AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | implemented | `linctl --help` / public CLI tests |
 | AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | implemented | `linctl --help` / public CLI tests |

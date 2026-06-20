@@ -40,7 +40,11 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "external user get", args: []string{"external-user", "get", "external-user-id"}, contains: "external-user-id External User @external last_seen 2026-06-19T12:00:00Z"},
 		{name: "audit entry types", args: []string{"audit-entry", "types"}, contains: "user_login User logged in"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
+		{name: "organization labels", args: []string{"organization", "labels", "--limit", "1"}, contains: "label-id Bug #ff0000"},
+		{name: "organization project labels", args: []string{"organization", "project-labels", "--limit", "1"}, contains: "project-label-id Roadmap #f2c94c"},
+		{name: "organization teams", args: []string{"organization", "teams", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "organization templates", args: []string{"organization", "templates", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
+		{name: "organization users", args: []string{"organization", "users", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, contains: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000"},
 		{name: "notification list", args: []string{"notification", "list", "--limit", "1"}, contains: "notification-id issueMention [mentions] Mentioned you"},
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, contains: "notification-id issueMention [mentions] Mentioned you"},
@@ -1416,7 +1420,11 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "external user get", args: []string{"external-user", "get", "external-user-id"}, operation: "externalUser", contains: "get external user external-user-id"},
 		{name: "audit entry types", args: []string{"audit-entry", "types"}, operation: "auditEntryTypes", contains: "list audit entry types"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
+		{name: "organization labels", args: []string{"organization", "labels"}, operation: "organization_labels", contains: "list organization labels"},
+		{name: "organization project labels", args: []string{"organization", "project-labels"}, operation: "organization_projectLabels", contains: "list organization project labels"},
+		{name: "organization teams", args: []string{"organization", "teams"}, operation: "organization_teams", contains: "list organization teams"},
 		{name: "organization templates", args: []string{"organization", "templates"}, operation: "organization_templates", contains: "list organization templates"},
+		{name: "organization users", args: []string{"organization", "users"}, operation: "organization_users", contains: "list organization users"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, operation: "rateLimitStatus", contains: "operation failed"},
 		{name: "notification list", args: []string{"notification", "list"}, operation: "notifications", contains: "list notifications"},
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, operation: "notification", contains: "get notification notification-id"},
@@ -1853,6 +1861,9 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 	if payload, ok := commandFlowPeopleAndReferencePayload(operation, fake); ok {
 		return payload, nil
 	}
+	if payload, ok := commandFlowOrganizationPayload(operation); ok {
+		return payload, nil
+	}
 
 	return "", errors.New("missing fake response for " + operation)
 }
@@ -1865,8 +1876,6 @@ func commandFlowBasePayload(operation string) (string, bool) {
 		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "TargetProject":
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, true
-	case "organizationExists":
-		return `{"organizationExists":{"success":true,"exists":true}}`, true
 	case "applicationInfo":
 		return commandApplicationInfoPayload(), true
 	case "agentActivities":
@@ -1881,10 +1890,27 @@ func commandFlowBasePayload(operation string) (string, bool) {
 		return `{"externalUsers":{"nodes":[` + commandExternalUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "externalUser":
 		return `{"externalUser":` + commandExternalUserJSON() + `}`, true
-	case "organization_templates":
-		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "rateLimitStatus":
 		return commandRateLimitStatusPayload(), true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowOrganizationPayload(operation string) (string, bool) {
+	switch operation {
+	case "organizationExists":
+		return `{"organizationExists":{"success":true,"exists":true}}`, true
+	case "organization_labels":
+		return `{"organization":{"labels":{"nodes":[` + commandLabelJSON("label body") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "organization_projectLabels":
+		return `{"organization":{"projectLabels":{"nodes":[` + commandProjectLabelJSON("project-label-id", "Roadmap", "#f2c94c") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "organization_teams":
+		return `{"organization":{"teams":{"nodes":[` + commandTeamJSON(false) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "organization_templates":
+		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "organization_users":
+		return `{"organization":{"users":{"nodes":[` + commandUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}

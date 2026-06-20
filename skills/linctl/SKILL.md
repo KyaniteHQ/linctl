@@ -61,7 +61,11 @@ linctl agent-skill list --json --limit 20
 linctl agent-skill get AGENT_SKILL_ID --json
 linctl audit-entry types --json
 linctl organization exists URL_KEY --json
+linctl organization labels --json --limit 20
+linctl organization project-labels --json --limit 20
+linctl organization teams --json --limit 20
 linctl organization templates --json --limit 20
+linctl organization users --json --limit 20
 linctl rate-limit status --json
 linctl notification list --json --limit 20
 linctl notification get NOTIFICATION_ID --json

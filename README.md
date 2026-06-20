@@ -66,7 +66,11 @@ linctl agent-skill list --limit 20
 linctl agent-skill get agent-skill-id
 linctl audit-entry types
 linctl organization exists kyanite
+linctl organization labels --limit 20
+linctl organization project-labels --limit 20
+linctl organization teams --limit 20
 linctl organization templates --limit 20
+linctl organization users --limit 20
 linctl rate-limit status
 linctl notification list --limit 20
 linctl notification get notification-id
@@ -243,7 +247,11 @@ linctl agent-skill list --limit 20
 linctl agent-skill get agent-skill-id
 linctl audit-entry types
 linctl organization exists kyanite
+linctl organization labels --limit 20
+linctl organization project-labels --limit 20
+linctl organization teams --limit 20
 linctl organization templates --limit 20
+linctl organization users --limit 20
 linctl rate-limit status
 linctl notification list --limit 20
 linctl notification get notification-id

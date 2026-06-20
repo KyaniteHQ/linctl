@@ -12,7 +12,11 @@ Command names below are either implemented CLI surface or intentionally deferred
 | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. |
 | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. |
 | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. |
+| `organization labels` | `Organization.labels` via `Query.organization` | Read-only workspace-level issue labels. |
+| `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only workspace-level project labels. |
+| `organization teams` | `Organization.teams` via `Query.organization` | Read-only teams visible to the authenticated user. |
 | `organization templates` | `Organization.templates` via `Query.organization` | Read-only workspace-level templates. |
+| `organization users` | `Organization.users` via `Query.organization` | Read-only active users visible to the authenticated user. |
 | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. |
 
 The target vocabulary is `org_id`, `team_key`, `team_id`, and optional `project_id`. Do not introduce `workspace` as a flag or JSON key synonym.

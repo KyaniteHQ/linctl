@@ -17725,6 +17725,54 @@ type __organizationExistsInput struct {
 // GetUrlKey returns __organizationExistsInput.UrlKey, and is useful for accessing the field via an interface.
 func (v *__organizationExistsInput) GetUrlKey() string { return v.UrlKey }
 
+// __organization_labelsInput is used internally by genqlient
+type __organization_labelsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __organization_labelsInput.First, and is useful for accessing the field via an interface.
+func (v *__organization_labelsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __organization_labelsInput.After, and is useful for accessing the field via an interface.
+func (v *__organization_labelsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __organization_labelsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__organization_labelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __organization_projectLabelsInput is used internally by genqlient
+type __organization_projectLabelsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __organization_projectLabelsInput.First, and is useful for accessing the field via an interface.
+func (v *__organization_projectLabelsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __organization_projectLabelsInput.After, and is useful for accessing the field via an interface.
+func (v *__organization_projectLabelsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __organization_projectLabelsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__organization_projectLabelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __organization_teamsInput is used internally by genqlient
+type __organization_teamsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __organization_teamsInput.First, and is useful for accessing the field via an interface.
+func (v *__organization_teamsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __organization_teamsInput.After, and is useful for accessing the field via an interface.
+func (v *__organization_teamsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __organization_teamsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__organization_teamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __organization_templatesInput is used internally by genqlient
 type __organization_templatesInput struct {
 	First           *int    `json:"first"`
@@ -17740,6 +17788,22 @@ func (v *__organization_templatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __organization_templatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__organization_templatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __organization_usersInput is used internally by genqlient
+type __organization_usersInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __organization_usersInput.First, and is useful for accessing the field via an interface.
+func (v *__organization_usersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __organization_usersInput.After, and is useful for accessing the field via an interface.
+func (v *__organization_usersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __organization_usersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__organization_usersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __projectInput is used internally by genqlient
 type __projectInput struct {
@@ -36170,6 +36234,535 @@ func (v *organizationExistsResponse) GetOrganizationExists() organizationExistsO
 	return v.OrganizationExists
 }
 
+// organization_labelsOrganization includes the requested fields of the GraphQL type Organization.
+// The GraphQL type's documentation follows.
+//
+// A workspace (referred to as Organization in the API). Workspaces are the
+// root-level container for all teams, users, projects, issues, and settings. Every
+// user belongs to at least one workspace, and all data is scoped within a
+// workspace boundary.
+type organization_labelsOrganization struct {
+	// Workspace-level issue labels (not associated with any specific team). These
+	// labels are available across all teams in the workspace.
+	Labels organization_labelsOrganizationLabelsIssueLabelConnection `json:"labels"`
+}
+
+// GetLabels returns organization_labelsOrganization.Labels, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganization) GetLabels() organization_labelsOrganizationLabelsIssueLabelConnection {
+	return v.Labels
+}
+
+// organization_labelsOrganizationLabelsIssueLabelConnection includes the requested fields of the GraphQL type IssueLabelConnection.
+type organization_labelsOrganizationLabelsIssueLabelConnection struct {
+	Nodes    []organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel `json:"nodes"`
+	PageInfo organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns organization_labelsOrganizationLabelsIssueLabelConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnection) GetNodes() []organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel {
+	return v.Nodes
+}
+
+// GetPageInfo returns organization_labelsOrganizationLabelsIssueLabelConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnection) GetPageInfo() organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo {
+	return v.PageInfo
+}
+
+// organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalorganization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel) __premarshalJSON() (*__premarshalorganization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel, error) {
+	var retval __premarshalorganization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *organization_labelsOrganizationLabelsIssueLabelConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// organization_labelsResponse is returned by organization_labels on success.
+type organization_labelsResponse struct {
+	// The authenticated user's workspace.
+	Organization organization_labelsOrganization `json:"organization"`
+}
+
+// GetOrganization returns organization_labelsResponse.Organization, and is useful for accessing the field via an interface.
+func (v *organization_labelsResponse) GetOrganization() organization_labelsOrganization {
+	return v.Organization
+}
+
+// organization_projectLabelsOrganization includes the requested fields of the GraphQL type Organization.
+// The GraphQL type's documentation follows.
+//
+// A workspace (referred to as Organization in the API). Workspaces are the
+// root-level container for all teams, users, projects, issues, and settings. Every
+// user belongs to at least one workspace, and all data is scoped within a
+// workspace boundary.
+type organization_projectLabelsOrganization struct {
+	// Project labels available in the workspace for categorizing projects.
+	ProjectLabels organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection `json:"projectLabels"`
+}
+
+// GetProjectLabels returns organization_projectLabelsOrganization.ProjectLabels, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganization) GetProjectLabels() organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection {
+	return v.ProjectLabels
+}
+
+// organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection includes the requested fields of the GraphQL type ProjectLabelConnection.
+type organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection struct {
+	Nodes    []organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel `json:"nodes"`
+	PageInfo organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection) GetNodes() []organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel {
+	return v.Nodes
+}
+
+// GetPageInfo returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection) GetPageInfo() organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo {
+	return v.PageInfo
+}
+
+// organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetId() string {
+	return v.ProjectLabelSummaryFields.Id
+}
+
+// GetName returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetName() string {
+	return v.ProjectLabelSummaryFields.Name
+}
+
+// GetDescription returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetColor() string {
+	return v.ProjectLabelSummaryFields.Color
+}
+
+// GetIsGroup returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetIsGroup() bool {
+	return v.ProjectLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetParent returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalorganization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) __premarshalJSON() (*__premarshalorganization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel, error) {
+	var retval __premarshalorganization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// organization_projectLabelsResponse is returned by organization_projectLabels on success.
+type organization_projectLabelsResponse struct {
+	// The authenticated user's workspace.
+	Organization organization_projectLabelsOrganization `json:"organization"`
+}
+
+// GetOrganization returns organization_projectLabelsResponse.Organization, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsResponse) GetOrganization() organization_projectLabelsOrganization {
+	return v.Organization
+}
+
+// organization_teamsOrganization includes the requested fields of the GraphQL type Organization.
+// The GraphQL type's documentation follows.
+//
+// A workspace (referred to as Organization in the API). Workspaces are the
+// root-level container for all teams, users, projects, issues, and settings. Every
+// user belongs to at least one workspace, and all data is scoped within a
+// workspace boundary.
+type organization_teamsOrganization struct {
+	// Teams in the workspace. Returns only teams visible to the requesting user (all
+	// public teams plus private teams the user is a member of).
+	Teams organization_teamsOrganizationTeamsTeamConnection `json:"teams"`
+}
+
+// GetTeams returns organization_teamsOrganization.Teams, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganization) GetTeams() organization_teamsOrganizationTeamsTeamConnection {
+	return v.Teams
+}
+
+// organization_teamsOrganizationTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
+type organization_teamsOrganizationTeamsTeamConnection struct {
+	Nodes    []organization_teamsOrganizationTeamsTeamConnectionNodesTeam `json:"nodes"`
+	PageInfo organization_teamsOrganizationTeamsTeamConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns organization_teamsOrganizationTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnection) GetNodes() []organization_teamsOrganizationTeamsTeamConnectionNodesTeam {
+	return v.Nodes
+}
+
+// GetPageInfo returns organization_teamsOrganizationTeamsTeamConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnection) GetPageInfo() organization_teamsOrganizationTeamsTeamConnectionPageInfo {
+	return v.PageInfo
+}
+
+// organization_teamsOrganizationTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type organization_teamsOrganizationTeamsTeamConnectionNodesTeam struct {
+	TeamSummaryFields `json:"-"`
+}
+
+// GetId returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.Id, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetId() string {
+	return v.TeamSummaryFields.Id
+}
+
+// GetKey returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.Key, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetKey() string {
+	return v.TeamSummaryFields.Key
+}
+
+// GetName returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.Name, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetName() string {
+	return v.TeamSummaryFields.Name
+}
+
+// GetDescription returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.Description, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetDescription() *string {
+	return v.TeamSummaryFields.Description
+}
+
+// GetArchivedAt returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetArchivedAt() *string {
+	return v.TeamSummaryFields.ArchivedAt
+}
+
+// GetOrganization returns organization_teamsOrganizationTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
+	return v.TeamSummaryFields.Organization
+}
+
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*organization_teamsOrganizationTeamsTeamConnectionNodesTeam
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.organization_teamsOrganizationTeamsTeamConnectionNodesTeam = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalorganization_teamsOrganizationTeamsTeamConnectionNodesTeam struct {
+	Id string `json:"id"`
+
+	Key string `json:"key"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Organization TeamSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *organization_teamsOrganizationTeamsTeamConnectionNodesTeam) __premarshalJSON() (*__premarshalorganization_teamsOrganizationTeamsTeamConnectionNodesTeam, error) {
+	var retval __premarshalorganization_teamsOrganizationTeamsTeamConnectionNodesTeam
+
+	retval.Id = v.TeamSummaryFields.Id
+	retval.Key = v.TeamSummaryFields.Key
+	retval.Name = v.TeamSummaryFields.Name
+	retval.Description = v.TeamSummaryFields.Description
+	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
+}
+
+// organization_teamsOrganizationTeamsTeamConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type organization_teamsOrganizationTeamsTeamConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns organization_teamsOrganizationTeamsTeamConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns organization_teamsOrganizationTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *organization_teamsOrganizationTeamsTeamConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// organization_teamsResponse is returned by organization_teams on success.
+type organization_teamsResponse struct {
+	// The authenticated user's workspace.
+	Organization organization_teamsOrganization `json:"organization"`
+}
+
+// GetOrganization returns organization_teamsResponse.Organization, and is useful for accessing the field via an interface.
+func (v *organization_teamsResponse) GetOrganization() organization_teamsOrganization {
+	return v.Organization
+}
+
 // organization_templatesOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
@@ -36410,6 +37003,177 @@ type organization_templatesResponse struct {
 
 // GetOrganization returns organization_templatesResponse.Organization, and is useful for accessing the field via an interface.
 func (v *organization_templatesResponse) GetOrganization() organization_templatesOrganization {
+	return v.Organization
+}
+
+// organization_usersOrganization includes the requested fields of the GraphQL type Organization.
+// The GraphQL type's documentation follows.
+//
+// A workspace (referred to as Organization in the API). Workspaces are the
+// root-level container for all teams, users, projects, issues, and settings. Every
+// user belongs to at least one workspace, and all data is scoped within a
+// workspace boundary.
+type organization_usersOrganization struct {
+	// Users belonging to the workspace. By default only returns active users; use
+	// the includeDisabled argument to include deactivated users.
+	Users organization_usersOrganizationUsersUserConnection `json:"users"`
+}
+
+// GetUsers returns organization_usersOrganization.Users, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganization) GetUsers() organization_usersOrganizationUsersUserConnection {
+	return v.Users
+}
+
+// organization_usersOrganizationUsersUserConnection includes the requested fields of the GraphQL type UserConnection.
+type organization_usersOrganizationUsersUserConnection struct {
+	Nodes    []organization_usersOrganizationUsersUserConnectionNodesUser `json:"nodes"`
+	PageInfo organization_usersOrganizationUsersUserConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns organization_usersOrganizationUsersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnection) GetNodes() []organization_usersOrganizationUsersUserConnectionNodesUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns organization_usersOrganizationUsersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnection) GetPageInfo() organization_usersOrganizationUsersUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// organization_usersOrganizationUsersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type organization_usersOrganizationUsersUserConnectionNodesUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns organization_usersOrganizationUsersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) GetId() string {
+	return v.UserSummaryFields.Id
+}
+
+// GetName returns organization_usersOrganizationUsersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) GetName() string {
+	return v.UserSummaryFields.Name
+}
+
+// GetDisplayName returns organization_usersOrganizationUsersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) GetDisplayName() string {
+	return v.UserSummaryFields.DisplayName
+}
+
+// GetEmail returns organization_usersOrganizationUsersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) GetEmail() string {
+	return v.UserSummaryFields.Email
+}
+
+// GetActive returns organization_usersOrganizationUsersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) GetActive() bool {
+	return v.UserSummaryFields.Active
+}
+
+// GetGuest returns organization_usersOrganizationUsersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) GetGuest() bool {
+	return v.UserSummaryFields.Guest
+}
+
+// GetAdmin returns organization_usersOrganizationUsersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) GetAdmin() bool {
+	return v.UserSummaryFields.Admin
+}
+
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*organization_usersOrganizationUsersUserConnectionNodesUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.organization_usersOrganizationUsersUserConnectionNodesUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalorganization_usersOrganizationUsersUserConnectionNodesUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *organization_usersOrganizationUsersUserConnectionNodesUser) __premarshalJSON() (*__premarshalorganization_usersOrganizationUsersUserConnectionNodesUser, error) {
+	var retval __premarshalorganization_usersOrganizationUsersUserConnectionNodesUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
+// organization_usersOrganizationUsersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type organization_usersOrganizationUsersUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns organization_usersOrganizationUsersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns organization_usersOrganizationUsersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *organization_usersOrganizationUsersUserConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// organization_usersResponse is returned by organization_users on success.
+type organization_usersResponse struct {
+	// The authenticated user's workspace.
+	Organization organization_usersOrganization `json:"organization"`
+}
+
+// GetOrganization returns organization_usersResponse.Organization, and is useful for accessing the field via an interface.
+func (v *organization_usersResponse) GetOrganization() organization_usersOrganization {
 	return v.Organization
 }
 
@@ -54269,6 +55033,185 @@ func organizationExists(
 	return data_, err_
 }
 
+// The query executed by organization_labels.
+const organization_labels_Operation = `
+query organization_labels ($first: Int, $after: String, $includeArchived: Boolean) {
+	organization {
+		labels(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueLabelSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func organization_labels(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *organization_labelsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "organization_labels",
+		Query:  organization_labels_Operation,
+		Variables: &__organization_labelsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &organization_labelsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by organization_projectLabels.
+const organization_projectLabels_Operation = `
+query organization_projectLabels ($first: Int, $after: String, $includeArchived: Boolean) {
+	organization {
+		projectLabels(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ProjectLabelSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func organization_projectLabels(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *organization_projectLabelsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "organization_projectLabels",
+		Query:  organization_projectLabels_Operation,
+		Variables: &__organization_projectLabelsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &organization_projectLabelsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by organization_teams.
+const organization_teams_Operation = `
+query organization_teams ($first: Int, $after: String, $includeArchived: Boolean) {
+	organization {
+		teams(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TeamSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TeamSummaryFields on Team {
+	id
+	key
+	name
+	description
+	archivedAt
+	organization {
+		id
+		name
+		urlKey
+	}
+}
+`
+
+func organization_teams(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *organization_teamsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "organization_teams",
+		Query:  organization_teams_Operation,
+		Variables: &__organization_teamsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &organization_teamsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by organization_templates.
 const organization_templates_Operation = `
 query organization_templates ($first: Int, $after: String, $includeArchived: Boolean) {
@@ -54334,6 +55277,61 @@ func organization_templates(
 	}
 
 	data_ = &organization_templatesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by organization_users.
+const organization_users_Operation = `
+query organization_users ($first: Int, $after: String, $includeArchived: Boolean) {
+	organization {
+		users(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... UserSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func organization_users(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *organization_usersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "organization_users",
+		Query:  organization_users_Operation,
+		Variables: &__organization_usersInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &organization_usersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

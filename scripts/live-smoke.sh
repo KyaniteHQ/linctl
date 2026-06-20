@@ -44,7 +44,11 @@ PY
   "$binary" agent-skill list --json --limit 5 >/dev/null
   "$binary" audit-entry types --json >/dev/null
   "$binary" organization exists "$org_url_key" --json >/dev/null
+  "$binary" organization labels --json --limit 5 >/dev/null
+  "$binary" organization project-labels --json --limit 5 >/dev/null
+  "$binary" organization teams --json --limit 5 >/dev/null
   "$binary" organization templates --json --limit 5 >/dev/null
+  "$binary" organization users --json --limit 5 >/dev/null
   "$binary" rate-limit status --json >/dev/null
   viewer_json="$("$binary" whoami --json)"
   user_id="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["id"])' <<<"$viewer_json")"

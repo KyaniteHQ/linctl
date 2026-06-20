@@ -1,0 +1,55 @@
+query organization_labels($first: Int, $after: String, $includeArchived: Boolean) {
+  organization {
+    labels(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query organization_projectLabels($first: Int, $after: String, $includeArchived: Boolean) {
+  organization {
+    projectLabels(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query organization_teams($first: Int, $after: String, $includeArchived: Boolean) {
+  organization {
+    teams(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query organization_users($first: Int, $after: String, $includeArchived: Boolean) {
+  organization {
+    users(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...UserSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
