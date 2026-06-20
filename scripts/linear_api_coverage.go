@@ -635,6 +635,7 @@ func commandImplemented(command string) bool {
 		"release-pipeline stages":        true,
 		"release-stage list":             true,
 		"release-stage get":              true,
+		"release-stage releases":         true,
 		"release list":                   true,
 		"release search":                 true,
 		"release get":                    true,

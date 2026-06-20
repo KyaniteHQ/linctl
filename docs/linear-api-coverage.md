@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 80 | 458 |
 | Upstream Query root fields | 158 | 68 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 120 | 120 | 120 |
-| Domain-map commands | 200 | 102 | 200 |
+| Local generated Go operations | 121 | 121 | 121 |
+| Domain-map commands | 201 | 103 | 201 |
 
 ## Upstream SDK Root Methods
 
@@ -1116,6 +1116,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releasePipelines` | query | `releasePipelines` | implemented | `internal/client/generated.go` |
 | `releaseSearch` | query | `releaseSearch` | implemented | `internal/client/generated.go` |
 | `releaseStage` | query | `releaseStage` | implemented | `internal/client/generated.go` |
+| `releaseStage_releases` | query | `releaseStage` | implemented | `internal/client/generated.go` |
 | `releaseStages` | query | `releaseStages` | implemented | `internal/client/generated.go` |
 | `releases` | query | `releases` | implemented | `internal/client/generated.go` |
 | `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
@@ -1160,6 +1161,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `release-pipeline stages` | `ReleasePipeline.stages` via `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-stage list` | `Query.releaseStages` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-stage get` | `Query.releaseStage` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-stage releases` | `ReleaseStage.releases` via `Query.releaseStage` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release list` | `Query.releases` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release search` | `Query.releaseSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release get` | `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |

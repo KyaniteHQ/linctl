@@ -66,6 +66,7 @@ linctl release-pipeline releases RELEASE_PIPELINE_ID --json --limit 20
 linctl release-pipeline stages RELEASE_PIPELINE_ID --json --limit 20
 linctl release-stage list --json --limit 20
 linctl release-stage get RELEASE_STAGE_ID --json
+linctl release-stage releases RELEASE_STAGE_ID --json --limit 20
 linctl release list --json --limit 20
 linctl release search TERM --json --limit 20
 linctl release get RELEASE_ID --json

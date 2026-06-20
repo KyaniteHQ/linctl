@@ -166,6 +166,30 @@ func GetReleaseStageByID(ctx context.Context, graphqlClient graphql.Client, id s
 	return releaseStageSummary(result.ReleaseStage.ReleaseStageSummaryFields), nil
 }
 
+// ListReleaseStageReleases returns releases associated with one Linear release stage.
+func ListReleaseStageReleases(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ReleaseList, error) {
+	result, err := releaseStage_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ReleaseList{}, fmt.Errorf("list release stage releases %s: %w", id, err)
+	}
+
+	summaries := make([]ReleaseSummary, 0, len(result.ReleaseStage.Releases.Nodes))
+	for _, node := range result.ReleaseStage.Releases.Nodes {
+		summaries = append(summaries, releaseSummary(node.ReleaseSummaryFields))
+	}
+
+	return ReleaseList{
+		Releases:    summaries,
+		HasNextPage: result.ReleaseStage.Releases.PageInfo.HasNextPage,
+		EndCursor:   result.ReleaseStage.Releases.PageInfo.EndCursor,
+	}, nil
+}
+
 func releasePipelineSummary(fields ReleasePipelineSummaryFields) ReleasePipelineSummary {
 	summary := ReleasePipelineSummary{
 		ID:                                   fields.Id,

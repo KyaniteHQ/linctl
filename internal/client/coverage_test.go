@@ -203,6 +203,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"releasePipeline_stages":   `{"releasePipeline":{"stages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"releaseStages":            `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releaseStage":             `{"releaseStage":` + releaseStageJSON() + `}`,
+		"releaseStage_releases":    `{"releaseStage":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"releases":                 `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"release":                  `{"release":` + releaseJSON() + `}`,
 		"releaseSearch":            `{"releaseSearch":[` + releaseJSON() + `]}`,
@@ -340,6 +341,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	releaseStages, err := ListReleaseStages(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	releaseStage, err := GetReleaseStageByID(context.Background(), graphqlClient, "release-stage-id")
+	require.NoError(t, err)
+	releaseStageReleases, err := ListReleaseStageReleases(context.Background(), graphqlClient, "release-stage-id", 2)
 	require.NoError(t, err)
 	releases, err := ListReleases(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -552,6 +555,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Started", releaseStages.ReleaseStages[0].Name)
 	require.Equal(t, "started", releaseStages.ReleaseStages[0].Type)
 	require.Equal(t, "Production", releaseStage.PipelineName)
+	require.True(t, releaseStageReleases.HasNextPage)
+	require.Equal(t, &endCursor, releaseStageReleases.EndCursor)
+	require.Equal(t, "release-id", releaseStageReleases.Releases[0].ID)
+	require.Equal(t, "release-stage-id", releaseStageReleases.Releases[0].StageID)
 	require.True(t, releases.HasNextPage)
 	require.Equal(t, &endCursor, releases.EndCursor)
 	require.Equal(t, "Mobile 1.2.3", releases.Releases[0].Name)
@@ -1305,6 +1312,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetReleaseStageByID(context.Background(), graphqlClient, "release-stage-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get release stage release-stage-id")
+
+		_, err = ListReleaseStageReleases(context.Background(), graphqlClient, "release-stage-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release stage releases release-stage-id")
 
 		_, err = ListReleases(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

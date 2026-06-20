@@ -14655,6 +14655,26 @@ type __releaseStageInput struct {
 // GetId returns __releaseStageInput.Id, and is useful for accessing the field via an interface.
 func (v *__releaseStageInput) GetId() string { return v.Id }
 
+// __releaseStage_releasesInput is used internally by genqlient
+type __releaseStage_releasesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __releaseStage_releasesInput.Id, and is useful for accessing the field via an interface.
+func (v *__releaseStage_releasesInput) GetId() string { return v.Id }
+
+// GetFirst returns __releaseStage_releasesInput.First, and is useful for accessing the field via an interface.
+func (v *__releaseStage_releasesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __releaseStage_releasesInput.After, and is useful for accessing the field via an interface.
+func (v *__releaseStage_releasesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __releaseStage_releasesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__releaseStage_releasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __releaseStagesInput is used internally by genqlient
 type __releaseStagesInput struct {
 	First           *int    `json:"first"`
@@ -31503,6 +31523,297 @@ type releaseStageResponse struct {
 // GetReleaseStage returns releaseStageResponse.ReleaseStage, and is useful for accessing the field via an interface.
 func (v *releaseStageResponse) GetReleaseStage() releaseStageReleaseStage { return v.ReleaseStage }
 
+// releaseStage_releasesReleaseStage includes the requested fields of the GraphQL type ReleaseStage.
+// The GraphQL type's documentation follows.
+//
+// A stage within a release pipeline that represents a phase in the release
+// lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress
+// through stages as they move toward production. Started-type stages can be frozen
+// to prevent new issues from being automatically synced into releases at that stage.
+type releaseStage_releasesReleaseStage struct {
+	// Releases associated with this stage.
+	Releases releaseStage_releasesReleaseStageReleasesReleaseConnection `json:"releases"`
+}
+
+// GetReleases returns releaseStage_releasesReleaseStage.Releases, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStage) GetReleases() releaseStage_releasesReleaseStageReleasesReleaseConnection {
+	return v.Releases
+}
+
+// releaseStage_releasesReleaseStageReleasesReleaseConnection includes the requested fields of the GraphQL type ReleaseConnection.
+type releaseStage_releasesReleaseStageReleasesReleaseConnection struct {
+	Nodes    []releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease `json:"nodes"`
+	PageInfo releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns releaseStage_releasesReleaseStageReleasesReleaseConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnection) GetNodes() []releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease {
+	return v.Nodes
+}
+
+// GetPageInfo returns releaseStage_releasesReleaseStageReleasesReleaseConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnection) GetPageInfo() releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo {
+	return v.PageInfo
+}
+
+// releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease struct {
+	ReleaseSummaryFields `json:"-"`
+}
+
+// GetId returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Id, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetId() string {
+	return v.ReleaseSummaryFields.Id
+}
+
+// GetName returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Name, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetName() string {
+	return v.ReleaseSummaryFields.Name
+}
+
+// GetSlugId returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.SlugId, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetSlugId() string {
+	return v.ReleaseSummaryFields.SlugId
+}
+
+// GetVersion returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Version, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetVersion() *string {
+	return v.ReleaseSummaryFields.Version
+}
+
+// GetDescription returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Description, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetDescription() *string {
+	return v.ReleaseSummaryFields.Description
+}
+
+// GetCommitSha returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.CommitSha, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetCommitSha() *string {
+	return v.ReleaseSummaryFields.CommitSha
+}
+
+// GetIssueCount returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.IssueCount, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetIssueCount() int {
+	return v.ReleaseSummaryFields.IssueCount
+}
+
+// GetTrashed returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Trashed, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetTrashed() *bool {
+	return v.ReleaseSummaryFields.Trashed
+}
+
+// GetUrl returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Url, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetUrl() string {
+	return v.ReleaseSummaryFields.Url
+}
+
+// GetStartDate returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.StartDate, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetStartDate() *string {
+	return v.ReleaseSummaryFields.StartDate
+}
+
+// GetTargetDate returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.TargetDate, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetTargetDate() *string {
+	return v.ReleaseSummaryFields.TargetDate
+}
+
+// GetStartedAt returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.StartedAt, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetStartedAt() *string {
+	return v.ReleaseSummaryFields.StartedAt
+}
+
+// GetCompletedAt returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.CompletedAt, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetCompletedAt() *string {
+	return v.ReleaseSummaryFields.CompletedAt
+}
+
+// GetCanceledAt returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.CanceledAt, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetCanceledAt() *string {
+	return v.ReleaseSummaryFields.CanceledAt
+}
+
+// GetAutoArchivedAt returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.AutoArchivedAt, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetAutoArchivedAt() *string {
+	return v.ReleaseSummaryFields.AutoArchivedAt
+}
+
+// GetCreatedAt returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.CreatedAt, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetCreatedAt() string {
+	return v.ReleaseSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetUpdatedAt() string {
+	return v.ReleaseSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetArchivedAt() *string {
+	return v.ReleaseSummaryFields.ArchivedAt
+}
+
+// GetPipeline returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Pipeline, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetPipeline() ReleaseSummaryFieldsPipelineReleasePipeline {
+	return v.ReleaseSummaryFields.Pipeline
+}
+
+// GetStage returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Stage, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetStage() ReleaseSummaryFieldsStageReleaseStage {
+	return v.ReleaseSummaryFields.Stage
+}
+
+// GetReleaseNotes returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.ReleaseNotes, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetReleaseNotes() []ReleaseSummaryFieldsReleaseNotesReleaseNote {
+	return v.ReleaseSummaryFields.ReleaseNotes
+}
+
+// GetCreator returns releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease.Creator, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) GetCreator() *ReleaseSummaryFieldsCreatorUser {
+	return v.ReleaseSummaryFields.Creator
+}
+
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ReleaseSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalreleaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	SlugId string `json:"slugId"`
+
+	Version *string `json:"version"`
+
+	Description *string `json:"description"`
+
+	CommitSha *string `json:"commitSha"`
+
+	IssueCount int `json:"issueCount"`
+
+	Trashed *bool `json:"trashed"`
+
+	Url string `json:"url"`
+
+	StartDate *string `json:"startDate"`
+
+	TargetDate *string `json:"targetDate"`
+
+	StartedAt *string `json:"startedAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	CanceledAt *string `json:"canceledAt"`
+
+	AutoArchivedAt *string `json:"autoArchivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Pipeline ReleaseSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+
+	Stage ReleaseSummaryFieldsStageReleaseStage `json:"stage"`
+
+	ReleaseNotes []ReleaseSummaryFieldsReleaseNotesReleaseNote `json:"releaseNotes"`
+
+	Creator *ReleaseSummaryFieldsCreatorUser `json:"creator"`
+}
+
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease) __premarshalJSON() (*__premarshalreleaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease, error) {
+	var retval __premarshalreleaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease
+
+	retval.Id = v.ReleaseSummaryFields.Id
+	retval.Name = v.ReleaseSummaryFields.Name
+	retval.SlugId = v.ReleaseSummaryFields.SlugId
+	retval.Version = v.ReleaseSummaryFields.Version
+	retval.Description = v.ReleaseSummaryFields.Description
+	retval.CommitSha = v.ReleaseSummaryFields.CommitSha
+	retval.IssueCount = v.ReleaseSummaryFields.IssueCount
+	retval.Trashed = v.ReleaseSummaryFields.Trashed
+	retval.Url = v.ReleaseSummaryFields.Url
+	retval.StartDate = v.ReleaseSummaryFields.StartDate
+	retval.TargetDate = v.ReleaseSummaryFields.TargetDate
+	retval.StartedAt = v.ReleaseSummaryFields.StartedAt
+	retval.CompletedAt = v.ReleaseSummaryFields.CompletedAt
+	retval.CanceledAt = v.ReleaseSummaryFields.CanceledAt
+	retval.AutoArchivedAt = v.ReleaseSummaryFields.AutoArchivedAt
+	retval.CreatedAt = v.ReleaseSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ReleaseSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.ReleaseSummaryFields.ArchivedAt
+	retval.Pipeline = v.ReleaseSummaryFields.Pipeline
+	retval.Stage = v.ReleaseSummaryFields.Stage
+	retval.ReleaseNotes = v.ReleaseSummaryFields.ReleaseNotes
+	retval.Creator = v.ReleaseSummaryFields.Creator
+	return &retval, nil
+}
+
+// releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesReleaseStageReleasesReleaseConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// releaseStage_releasesResponse is returned by releaseStage_releases on success.
+type releaseStage_releasesResponse struct {
+	// Fetch a single release stage by its UUID.
+	ReleaseStage releaseStage_releasesReleaseStage `json:"releaseStage"`
+}
+
+// GetReleaseStage returns releaseStage_releasesResponse.ReleaseStage, and is useful for accessing the field via an interface.
+func (v *releaseStage_releasesResponse) GetReleaseStage() releaseStage_releasesReleaseStage {
+	return v.ReleaseStage
+}
+
 // releaseStagesReleaseStagesReleaseStageConnection includes the requested fields of the GraphQL type ReleaseStageConnection.
 type releaseStagesReleaseStagesReleaseStageConnection struct {
 	Nodes    []releaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage `json:"nodes"`
@@ -39225,6 +39536,93 @@ func releaseStage(
 	}
 
 	data_ = &releaseStageResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by releaseStage_releases.
+const releaseStage_releases_Operation = `
+query releaseStage_releases ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	releaseStage(id: $id) {
+		releases(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ReleaseSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ReleaseSummaryFields on Release {
+	id
+	name
+	slugId
+	version
+	description
+	commitSha
+	issueCount
+	trashed
+	url
+	startDate
+	targetDate
+	startedAt
+	completedAt
+	canceledAt
+	autoArchivedAt
+	createdAt
+	updatedAt
+	archivedAt
+	pipeline {
+		id
+		name
+		slugId
+	}
+	stage {
+		id
+		name
+		type
+	}
+	releaseNotes {
+		id
+		title
+		slugId
+	}
+	creator {
+		id
+		displayName
+	}
+}
+`
+
+func releaseStage_releases(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *releaseStage_releasesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "releaseStage_releases",
+		Query:  releaseStage_releases_Operation,
+		Variables: &__releaseStage_releasesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &releaseStage_releasesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

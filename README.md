@@ -71,6 +71,7 @@ linctl release-pipeline releases release-pipeline-id --limit 20
 linctl release-pipeline stages release-pipeline-id --limit 20
 linctl release-stage list --limit 20
 linctl release-stage get release-stage-id
+linctl release-stage releases release-stage-id --limit 20
 linctl release list --limit 20
 linctl release search "mobile" --limit 20
 linctl release get release-id
@@ -185,6 +186,7 @@ linctl release-pipeline releases release-pipeline-id --limit 20
 linctl release-pipeline stages release-pipeline-id --limit 20
 linctl release-stage list --limit 20
 linctl release-stage get release-stage-id
+linctl release-stage releases release-stage-id --limit 20
 linctl release list --limit 20
 linctl release search "mobile" --limit 20
 linctl release get release-id

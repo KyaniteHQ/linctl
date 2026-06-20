@@ -43,6 +43,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "release pipeline stages", args: []string{"release-pipeline", "stages", "release-pipeline-id", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release stage list", args: []string{"release-stage", "list", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, contains: "release-stage-id Started [started] pipeline Production"},
+		{name: "release stage releases", args: []string{"release-stage", "releases", "release-stage-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
 		{name: "release list", args: []string{"release", "list", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
 		{name: "release search", args: []string{"release", "search", "mobile", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3", fake: commandFlowFakeClient{expectedReleaseSearchTerm: "mobile"}},
 		{name: "release get", args: []string{"release", "get", "release-id"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
@@ -699,6 +700,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,pipeline_id,type", "release-pipeline", "stages", "release-pipeline-id", "--limit", "1"},
 		{"--json", "release-stage", "list", "--limit", "1"},
 		{"--json", "release-stage", "get", "release-stage-id"},
+		{"--json", "--fields", "id,pipeline_id,stage_id", "release-stage", "releases", "release-stage-id", "--limit", "1"},
 		{"--json", "release", "list", "--limit", "1"},
 		{"--json", "release", "search", "mobile", "--limit", "1"},
 		{"--json", "release", "get", "release-id"},
@@ -1112,6 +1114,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "release pipeline stages", args: []string{"release-pipeline", "stages", "release-pipeline-id"}, operation: "releasePipeline_stages", contains: "list release pipeline stages release-pipeline-id"},
 		{name: "release stage list", args: []string{"release-stage", "list"}, operation: "releaseStages", contains: "list release stages"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, operation: "releaseStage", contains: "get release stage release-stage-id"},
+		{name: "release stage releases", args: []string{"release-stage", "releases", "release-stage-id"}, operation: "releaseStage_releases", contains: "list release stage releases release-stage-id"},
 		{name: "release list", args: []string{"release", "list"}, operation: "releases", contains: "list releases"},
 		{name: "release search", args: []string{"release", "search", "mobile"}, operation: "releaseSearch", contains: "search releases"},
 		{name: "release get", args: []string{"release", "get", "release-id"}, operation: "release", contains: "get release release-id"},
@@ -1580,6 +1583,8 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"releaseStages":{"nodes":[` + commandReleaseStageJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseStage":
 		return `{"releaseStage":` + commandReleaseStageJSON() + `}`, true
+	case "releaseStage_releases":
+		return `{"releaseStage":{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "releases":
 		return `{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseSearch":

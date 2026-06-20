@@ -51,7 +51,11 @@ PY
     "$binary" release-pipeline releases "$release_pipeline_id" --json --limit 5 >/dev/null
     "$binary" release-pipeline stages "$release_pipeline_id" --json --limit 5 >/dev/null
   fi
-  "$binary" release-stage list --json --limit 5 >/dev/null
+  release_stage_json="$("$binary" release-stage list --json --limit 5)"
+  release_stage_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("release_stages", []); print(items[0]["id"] if items else "")' <<<"$release_stage_json")"
+  if [[ -n "$release_stage_id" ]]; then
+    "$binary" release-stage releases "$release_stage_id" --json --limit 5 >/dev/null
+  fi
   "$binary" release list --json --limit 5 >/dev/null
   "$binary" release-note list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null

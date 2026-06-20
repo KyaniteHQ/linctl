@@ -79,18 +79,47 @@ func addReleasePipelineStagesCommand(ctx context.Context, root *cobra.Command, o
 }
 
 func addReleaseStageCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(ctx, root, options, readListGetSpec[client.ReleaseStageList, client.ReleaseStageSummary]{
-		Use:           "release-stage",
-		Short:         "Read Linear release stages",
-		ListShort:     "List visible Linear release stages",
-		LimitHelp:     "maximum release stages to return",
-		GetUse:        "get RELEASE_STAGE_ID",
-		GetShort:      "Get one release stage by id",
-		LoadList:      loadReleaseStageList,
-		PageWithItems: releaseStagePageWithItems,
-		LoadGet:       loadReleaseStage,
-		WriteItem:     writeReleaseStage,
-	})
+	command := addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.ReleaseStageList, client.ReleaseStageSummary]{
+			Use:           "release-stage",
+			Short:         "Read Linear release stages",
+			ListShort:     "List visible Linear release stages",
+			LimitHelp:     "maximum release stages to return",
+			GetUse:        "get RELEASE_STAGE_ID",
+			GetShort:      "Get one release stage by id",
+			LoadList:      loadReleaseStageList,
+			PageWithItems: releaseStagePageWithItems,
+			LoadGet:       loadReleaseStage,
+			WriteItem:     writeReleaseStage,
+		},
+	)
+	addReleaseStageReleasesCommand(ctx, command, options)
+}
+
+func addReleaseStageReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "releases RELEASE_STAGE_ID",
+		Short: "List releases associated with one Linear release stage",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadReleaseStageReleases,
+				releasePageWithItems,
+				writeRelease,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum releases to return")
+	root.AddCommand(command)
 }
 
 func writeReleasePipeline(
@@ -213,4 +242,14 @@ func releaseStagePageWithItems(
 ) client.ReleaseStageList {
 	page.ReleaseStages = stages
 	return page
+}
+
+func loadReleaseStageReleases(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.ReleaseList, []client.ReleaseSummary, error) {
+	releases, err := client.ListReleaseStageReleases(ctx, runtime.graphqlClient, args[0], limit)
+	return releases, releases.Releases, err
 }
