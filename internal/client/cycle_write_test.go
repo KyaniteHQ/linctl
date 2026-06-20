@@ -30,7 +30,7 @@ func Test_CreateCycle_returns_created_cycle_when_target_matches(t *testing.T) {
 
 func Test_UpdateCycle_returns_updated_cycle_when_target_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"CycleByID":   `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+		"cycle":       `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 		"CycleUpdate": `{"cycleUpdate":{"success":true,"cycle":` + cycleJSON("Updated cycle", "team-id", "LIT") + `}}`,
 	})
 
@@ -46,7 +46,7 @@ func Test_UpdateCycle_returns_updated_cycle_when_target_matches(t *testing.T) {
 
 func Test_ArchiveCycle_returns_archived_cycle_when_target_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"CycleByID":    `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+		"cycle":        `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 		"CycleArchive": `{"cycleArchive":{"success":true,"entity":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}}`,
 	})
 
@@ -59,7 +59,7 @@ func Test_ArchiveCycle_returns_archived_cycle_when_target_matches(t *testing.T) 
 
 func Test_UpdateCycle_refuses_when_team_differs(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
-		"CycleByID": `{"cycle":` + cycleJSON("Wrong team cycle", "other-team", "OTHER") + `}`,
+		"cycle": `{"cycle":` + cycleJSON("Wrong team cycle", "other-team", "OTHER") + `}`,
 	})
 
 	_, err := UpdateCycle(

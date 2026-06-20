@@ -347,7 +347,7 @@ func Test_CycleCommandFlows_report_cycle_get_runtime_error(t *testing.T) {
 }
 
 func Test_CycleCommandFlows_report_cycle_get_operation_error(t *testing.T) {
-	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{failOperation: "CycleByID"})
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{failOperation: "cycle"})
 	defer restore()
 	command := NewRootCommand(context.Background(), BuildInfo{})
 	command.SetArgs([]string{"cycle", "get", "cycle-id"})
@@ -355,7 +355,7 @@ func Test_CycleCommandFlows_report_cycle_get_operation_error(t *testing.T) {
 	err := command.ExecuteContext(context.Background())
 
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "cyclebyid failed")
+	require.Contains(t, err.Error(), "cycle failed")
 }
 
 func Test_CycleCommandFlows_report_cycle_get_writer_error(t *testing.T) {
@@ -586,7 +586,7 @@ func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport boo
 			return `{"cycles":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 		}
 		return `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":null,"description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "CycleByID":
+	case "cycle":
 		return `{"cycle":{"id":"cycle-id","number":12,"name":"Named cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`, true
 	case "CycleCreate":
 		return `{"cycleCreate":{"success":true,"cycle":` + cycleCommandCycleJSON("Created cycle") + `}}`, true

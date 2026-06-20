@@ -39,7 +39,7 @@ func Test_ListCyclesByTeam_wraps_graphql_errors(t *testing.T) {
 
 func Test_GetCycleByID_returns_cycle(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
-		"CycleByID": `{"cycle":{"id":"cycle-id","number":12,"name":"Named cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
+		"cycle": `{"cycle":{"id":"cycle-id","number":12,"name":"Named cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 	}
 
 	cycle, err := GetCycleByID(context.Background(), graphqlClient, "cycle-id")

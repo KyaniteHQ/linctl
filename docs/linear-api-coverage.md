@@ -1024,7 +1024,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `AllTeamIssues` | query | `issues` | implemented | `internal/client/generated.go` |
 | `CompletedWorkflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 | `CycleArchive` | mutation | `cycleArchive` | implemented | `internal/client/generated.go` |
-| `CycleByID` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `CycleCreate` | mutation | `cycleCreate` | implemented | `internal/client/generated.go` |
 | `CycleReport` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `CycleUpdate` | mutation | `cycleUpdate` | implemented | `internal/client/generated.go` |
@@ -1075,6 +1074,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `ViewerUser` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
+| `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |

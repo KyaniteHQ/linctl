@@ -15,7 +15,7 @@ query CyclesByTeam($teamId: ID!, $first: Int, $after: String, $includeArchived: 
   }
 }
 
-query CycleByID($id: String!) {
+query cycle($id: String!) {
   cycle(id: $id) {
     ...CycleSummaryFields
   }

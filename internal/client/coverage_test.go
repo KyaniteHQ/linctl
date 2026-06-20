@@ -906,7 +906,7 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = UpdateCycle(
 			context.Background(),
 			projectWriteFakeClient(map[string]string{
-				"CycleByID":   `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+				"cycle":       `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 				"CycleUpdate": `{"cycleUpdate":{"success":false,"cycle":null}}`,
 			}),
 			matchingTarget(),
@@ -917,7 +917,7 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ArchiveCycle(
 			context.Background(),
 			projectWriteFakeClient(map[string]string{
-				"CycleByID":    `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+				"cycle":        `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 				"CycleArchive": `{"cycleArchive":{"success":false,"entity":null}}`,
 			}),
 			matchingTarget(),
@@ -1042,14 +1042,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Contains(t, err.Error(), "create cycle")
 
 		_, err = UpdateCycle(context.Background(), projectWriteFakeClient(map[string]string{
-			"CycleByID":   `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+			"cycle":       `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 			"CycleUpdate": "",
 		}).withError(operationErr), matchingTarget(), CycleUpdateRequest{ID: "cycle-id", Name: "name"})
 		require.ErrorIs(t, err, operationErr)
 		require.Contains(t, err.Error(), "update cycle cycle-id")
 
 		_, err = ArchiveCycle(context.Background(), projectWriteFakeClient(map[string]string{
-			"CycleByID":    `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+			"cycle":        `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 			"CycleArchive": "",
 		}).withError(operationErr), matchingTarget(), "cycle-id")
 		require.ErrorIs(t, err, operationErr)
@@ -1130,12 +1130,12 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.ErrorIs(t, err, operationErr)
 
 		_, err = UpdateCycle(context.Background(), projectWriteFakeClient(map[string]string{
-			"CycleByID": "",
+			"cycle": "",
 		}).withError(operationErr), matchingTarget(), CycleUpdateRequest{ID: "cycle-id", Name: "name"})
 		require.ErrorIs(t, err, operationErr)
 
 		_, err = ArchiveCycle(context.Background(), projectWriteFakeClient(map[string]string{
-			"CycleByID": "",
+			"cycle": "",
 		}).withError(operationErr), matchingTarget(), "cycle-id")
 		require.ErrorIs(t, err, operationErr)
 	})

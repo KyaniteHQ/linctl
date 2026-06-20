@@ -105,7 +105,7 @@ func ListCyclesByTeam(
 
 // GetCycleByID returns a Cycle by Linear id or slug.
 func GetCycleByID(ctx context.Context, graphqlClient graphql.Client, id string) (CycleSummary, error) {
-	cycle, err := CycleByID(ctx, graphqlClient, id)
+	cycle, err := cycle(ctx, graphqlClient, id)
 	if err != nil {
 		return CycleSummary{}, fmt.Errorf("get cycle %s: %w", id, err)
 	}
