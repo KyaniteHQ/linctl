@@ -43,6 +43,7 @@ PY
   "$binary" issue list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null
   "$binary" project list --json --limit 5 >/dev/null
+  "$binary" customer list --json --limit 5 >/dev/null
 )
 
 go test -count=1 -tags=integration ./internal/client

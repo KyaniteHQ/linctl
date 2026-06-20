@@ -196,6 +196,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"customViews":              `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customViewHasSubscribers": `{"customViewHasSubscribers":{"hasSubscribers":true}}`,
 		"customView":               `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
+		"customers":                `{"customers":{"nodes":[{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customer":                 `{"customer":{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}}`,
 		"favorites":                `{"favorites":{"nodes":[{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"favorite_children":        `{"favorite":{"children":{"nodes":[{"id":"favorite-child-id","type":"project","folderName":null,"url":"https://linear.app/kyanite/project/project-id"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"favorite":                 `{"favorite":{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}}`,
@@ -298,6 +300,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	customViewSubscribers, err := GetCustomViewSubscriberStatus(context.Background(), graphqlClient, "custom-view-id")
 	require.NoError(t, err)
 	customView, err := GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
+	require.NoError(t, err)
+	customers, err := ListCustomers(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	customer, err := GetCustomerByID(context.Background(), graphqlClient, "customer-id")
 	require.NoError(t, err)
 	favorites, err := ListFavorites(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -430,6 +436,14 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, customViewSubscribers.HasSubscribers)
 	require.Equal(t, "custom-view-id", customView.ID)
 	require.Equal(t, "Saved issue view", customView.Description)
+	require.True(t, customers.HasNextPage)
+	require.Equal(t, &endCursor, customers.EndCursor)
+	require.Equal(t, "Acme", customers.Customers[0].Name)
+	require.Equal(t, "Active", customers.Customers[0].StatusName)
+	require.InDelta(t, 3, customers.Customers[0].ApproximateNeedCount, 0)
+	require.Equal(t, "customer-id", customer.ID)
+	require.Equal(t, "Enterprise", customer.TierName)
+	require.Equal(t, "Omer", customer.OwnerDisplayName)
 	require.True(t, favorites.HasNextPage)
 	require.Equal(t, &endCursor, favorites.EndCursor)
 	require.Equal(t, "issue", favorites.Favorites[0].Type)
@@ -935,6 +949,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get custom view custom-view-id")
+
+		_, err = ListCustomers(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list customers")
+
+		_, err = GetCustomerByID(context.Background(), graphqlClient, "customer-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get customer customer-id")
 
 		_, err = ListFavorites(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

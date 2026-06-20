@@ -91,6 +91,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, contains: "custom-view-id has_subscribers true"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
+		{name: "customer list", args: []string{"customer", "list", "--limit", "1"}, contains: "customer-id Acme [Active] needs 3"},
+		{name: "customer get", args: []string{"customer", "get", "customer-id"}, contains: "customer-id Acme [Active] needs 3"},
 		{name: "favorite list", args: []string{"favorite", "list", "--limit", "1"}, contains: "favorite-id [issue]"},
 		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id", "--limit", "1"}, contains: "favorite-child-id [project]"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, contains: "favorite-id [issue]"},
@@ -653,6 +655,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "custom-view", "list", "--limit", "1"},
 		{"--json", "custom-view", "subscribers", "custom-view-id"},
 		{"--json", "custom-view", "get", "custom-view-id"},
+		{"--json", "customer", "list", "--limit", "1"},
+		{"--json", "customer", "get", "customer-id"},
 		{"--json", "favorite", "list", "--limit", "1"},
 		{"--json", "favorite", "children", "favorite-folder-id", "--limit", "1"},
 		{"--json", "favorite", "get", "favorite-id"},
@@ -1067,6 +1071,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, operation: "customViewHasSubscribers", contains: "get custom view subscribers custom-view-id"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
+		{name: "customer list", args: []string{"customer", "list"}, operation: "customers", contains: "list customers"},
+		{name: "customer get", args: []string{"customer", "get", "customer-id"}, operation: "customer", contains: "get customer customer-id"},
 		{name: "favorite list", args: []string{"favorite", "list"}, operation: "favorites", contains: "list favorites"},
 		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id"}, operation: "favorite_children", contains: "list favorite children favorite-folder-id"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, operation: "favorite", contains: "get favorite favorite-id"},
@@ -1412,6 +1418,10 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"customViewHasSubscribers":{"hasSubscribers":true}}`, true
 	case "customView":
 		return `{"customView":` + commandCustomViewJSON() + `}`, true
+	case "customers":
+		return `{"customers":{"nodes":[` + commandCustomerJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "customer":
+		return `{"customer":` + commandCustomerJSON() + `}`, true
 	case "favorites":
 		return `{"favorites":{"nodes":[` + commandFavoriteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "favorite_children":
@@ -1862,6 +1872,24 @@ func commandCustomViewJSON() string {
 		"shared":true,
 		"color":"#5e6ad2",
 		"slugId":"my-issues"
+	}`
+}
+
+func commandCustomerJSON() string {
+	return `{
+		"id":"customer-id",
+		"name":"Acme",
+		"domains":["acme.example"],
+		"externalIds":["crm-acme"],
+		"slackChannelId":"slack-channel-id",
+		"status":{"id":"status-id","name":"Active"},
+		"tier":{"id":"tier-id","name":"Enterprise"},
+		"owner":{"id":"user-id","displayName":"Omer"},
+		"revenue":120000,
+		"size":42,
+		"approximateNeedCount":3,
+		"slugId":"acme",
+		"url":"https://linear.app/kyanite/customer/acme"
 	}`
 }
 

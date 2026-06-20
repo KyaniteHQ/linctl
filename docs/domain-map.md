@@ -336,6 +336,30 @@ Planned commands:
 
 Only `custom-view list`, `custom-view subscribers`, and `custom-view get` are implemented in the current CLI. CustomView writes are deferred as organization-scoped view configuration surface.
 
+## Customer
+
+Use the schema name `Customer` in code and docs. It is Linear's customer organization record for customer requests and feedback.
+
+Schema backing:
+
+- Types: `Customer`, `CustomerConnection`
+- Reads: `Query.customers`, `Query.customer`
+- Writes: `Mutation.customerCreate`, `Mutation.customerUpdate`, `Mutation.customerArchive`
+- Inputs: `CustomerCreateInput`, `CustomerUpdateInput`
+- Relevant fields: `Customer.id`, `Customer.name`, `Customer.domains`, `Customer.externalIds`, `Customer.status`, `Customer.tier`, `Customer.owner`, `Customer.approximateNeedCount`, `Customer.slugId`, `Customer.url`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `customer list` | `Query.customers` | Read-only |
+| `customer get` | `Query.customer` | Read-only |
+| `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model |
+| `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
+| `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics |
+
+Only `customer list` and `customer get` are implemented in the current CLI. Customer writes are deferred as organization-scoped CRM surface.
+
 ## Favorite
 
 Use the schema name `Favorite` in code and docs. It is the authenticated user's bookmarked entity in the Linear sidebar.

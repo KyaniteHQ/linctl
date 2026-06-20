@@ -1,0 +1,42 @@
+query customers($first: Int, $after: String, $includeArchived: Boolean) {
+  customers(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CustomerSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query customer($id: String!) {
+  customer(id: $id) {
+    ...CustomerSummaryFields
+  }
+}
+
+fragment CustomerSummaryFields on Customer {
+  id
+  name
+  domains
+  externalIds
+  slackChannelId
+  status {
+    id
+    name
+  }
+  tier {
+    id
+    name
+  }
+  owner {
+    id
+    displayName
+  }
+  revenue
+  size
+  approximateNeedCount
+  slugId
+  url
+}

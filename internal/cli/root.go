@@ -88,6 +88,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addWorkflowStateCommand(ctx, command, &options)
 	addInitiativeCommand(ctx, command, &options)
 	addCustomViewCommand(ctx, command, &options)
+	addCustomerCommand(ctx, command, &options)
 	addFavoriteCommand(ctx, command, &options)
 	addEmojiCommand(ctx, command, &options)
 	addAttachmentCommand(ctx, command, &options)
