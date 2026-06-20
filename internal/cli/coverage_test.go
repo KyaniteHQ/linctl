@@ -186,6 +186,20 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Type:         "started",
 		PipelineName: "Production",
 	}
+	release := client.ReleaseSummary{
+		ID:           "release-id",
+		Name:         "Mobile 1.2.3",
+		Version:      "v1.2.3",
+		PipelineName: "Production",
+		StageName:    "Started",
+		IssueCount:   3,
+	}
+	releaseNote := client.ReleaseNoteSummary{
+		ID:           "release-note-id",
+		Title:        "Launch notes",
+		PipelineName: "Production",
+		ReleaseCount: 2,
+	}
 
 	textOut := bytes.Buffer{}
 	textCommand := &cobra.Command{}
@@ -221,6 +235,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeNotificationSubscription(textCommand, &textOptions, notificationSubscription))
 	require.NoError(t, writeReleasePipeline(textCommand, &textOptions, releasePipeline))
 	require.NoError(t, writeReleaseStage(textCommand, &textOptions, releaseStage))
+	require.NoError(t, writeRelease(textCommand, &textOptions, release))
+	require.NoError(t, writeReleaseNote(textCommand, &textOptions, releaseNote))
 	require.Equal(
 		t,
 		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
@@ -243,7 +259,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"notification-id issueMention [mentions] Mentioned you\n"+
 			"notification-subscription-id project Roadmap active true\n"+
 			"release-pipeline-id Production production releases 4\n"+
-			"release-stage-id Started [started] pipeline Production\n",
+			"release-stage-id Started [started] pipeline Production\n"+
+			"release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3\n"+
+			"release-note-id Launch notes pipeline Production releases 2\n",
 		textOut.String(),
 	)
 
@@ -281,6 +299,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeNotificationSubscription(jsonCommand, &jsonOptions, notificationSubscription))
 	require.NoError(t, writeReleasePipeline(jsonCommand, &jsonOptions, releasePipeline))
 	require.NoError(t, writeReleaseStage(jsonCommand, &jsonOptions, releaseStage))
+	require.NoError(t, writeRelease(jsonCommand, &jsonOptions, release))
+	require.NoError(t, writeReleaseNote(jsonCommand, &jsonOptions, releaseNote))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
@@ -310,6 +330,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"target_type": "project"`)
 	require.Contains(t, jsonOut.String(), `"slug_id": "production"`)
 	require.Contains(t, jsonOut.String(), `"pipeline_name": "Production"`)
+	require.Contains(t, jsonOut.String(), `"version": "v1.2.3"`)
+	require.Contains(t, jsonOut.String(), `"release_count": 2`)
 }
 
 func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
@@ -482,6 +504,20 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Type:         "started",
 		PipelineName: "Production",
 	}
+	release := client.ReleaseSummary{
+		ID:           "release-id",
+		Name:         "Mobile 1.2.3",
+		Version:      "v1.2.3",
+		PipelineName: "Production",
+		StageName:    "Started",
+		IssueCount:   3,
+	}
+	releaseNote := client.ReleaseNoteSummary{
+		ID:           "release-note-id",
+		Title:        "Launch notes",
+		PipelineName: "Production",
+		ReleaseCount: 2,
+	}
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
@@ -517,6 +553,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeNotificationSubscription(command, &rootOptions{idOnly: true}, notificationSubscription))
 	require.NoError(t, writeReleasePipeline(command, &rootOptions{idOnly: true}, releasePipeline))
 	require.NoError(t, writeReleaseStage(command, &rootOptions{idOnly: true}, releaseStage))
+	require.NoError(t, writeRelease(command, &rootOptions{idOnly: true}, release))
+	require.NoError(t, writeReleaseNote(command, &rootOptions{idOnly: true}, releaseNote))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
 	require.Contains(t, output.String(), "starts_at=2026-07-01T00:00:00Z")
@@ -546,6 +584,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "notification-subscription-id")
 	require.Contains(t, output.String(), "release-pipeline-id")
 	require.Contains(t, output.String(), "release-stage-id")
+	require.Contains(t, output.String(), "release-id")
+	require.Contains(t, output.String(), "release-note-id")
 	require.Equal(t, "-", emptyDash(""))
 
 	quietOutput := bytes.Buffer{}
@@ -580,6 +620,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeNotificationSubscription(quietCommand, &rootOptions{quiet: true}, notificationSubscription))
 	require.NoError(t, writeReleasePipeline(quietCommand, &rootOptions{quiet: true}, releasePipeline))
 	require.NoError(t, writeReleaseStage(quietCommand, &rootOptions{quiet: true}, releaseStage))
+	require.NoError(t, writeRelease(quietCommand, &rootOptions{quiet: true}, release))
+	require.NoError(t, writeReleaseNote(quietCommand, &rootOptions{quiet: true}, releaseNote))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")
 	require.NoError(t, err)

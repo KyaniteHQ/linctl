@@ -184,6 +184,8 @@ func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bo
 		"notification_subscriptions",
 		"release_pipelines",
 		"release_stages",
+		"releases",
+		"release_notes",
 		"customers",
 		"customer_needs",
 		"customer_statuses",

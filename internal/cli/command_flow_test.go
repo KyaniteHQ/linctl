@@ -41,6 +41,11 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release stage list", args: []string{"release-stage", "list", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, contains: "release-stage-id Started [started] pipeline Production"},
+		{name: "release list", args: []string{"release", "list", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "release search", args: []string{"release", "search", "mobile", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3", fake: commandFlowFakeClient{expectedReleaseSearchTerm: "mobile"}},
+		{name: "release get", args: []string{"release", "get", "release-id"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "release note list", args: []string{"release-note", "list", "--limit", "1"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
+		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
 		{name: "issue list", args: []string{"issue", "list", "--limit", "1"}, contains: "LIT-1 Listed issue [Todo]"},
 		{name: "issue list state filter", args: []string{"issue", "list", "--state", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
@@ -483,6 +488,11 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"whoami"},
 			{"organization", "exists", "kyanite"},
 			{"rate-limit", "status"},
+			{"release", "list"},
+			{"release", "search", "mobile"},
+			{"release", "get", "release-id"},
+			{"release-note", "list"},
+			{"release-note", "get", "release-note-id"},
 			{"next", "--dry-run"},
 			{"issue", "list"},
 			{"issue", "search", "needle"},
@@ -614,6 +624,31 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		require.Contains(t, err.Error(), "write line")
 	})
 
+	t.Run("release search returns writer errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(commandFailingWriter{})
+		command.SetArgs([]string{"release", "search", "mobile"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("release search reports sort errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--sort", "missing", "release", "search", "mobile"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	})
+
 	t.Run("document list returns writer errors", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{})
 		defer restore()
@@ -654,6 +689,11 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "release-pipeline", "get", "release-pipeline-id"},
 		{"--json", "release-stage", "list", "--limit", "1"},
 		{"--json", "release-stage", "get", "release-stage-id"},
+		{"--json", "release", "list", "--limit", "1"},
+		{"--json", "release", "search", "mobile", "--limit", "1"},
+		{"--json", "release", "get", "release-id"},
+		{"--json", "release-note", "list", "--limit", "1"},
+		{"--json", "release-note", "get", "release-note-id"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1054,6 +1094,11 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
 		{name: "release stage list", args: []string{"release-stage", "list"}, operation: "releaseStages", contains: "list release stages"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, operation: "releaseStage", contains: "get release stage release-stage-id"},
+		{name: "release list", args: []string{"release", "list"}, operation: "releases", contains: "list releases"},
+		{name: "release search", args: []string{"release", "search", "mobile"}, operation: "releaseSearch", contains: "search releases"},
+		{name: "release get", args: []string{"release", "get", "release-id"}, operation: "release", contains: "get release release-id"},
+		{name: "release note list", args: []string{"release-note", "list"}, operation: "releaseNotes", contains: "list release notes"},
+		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, operation: "releaseNote", contains: "get release note release-note-id"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
 		{name: "next issues", args: []string{"next", "--dry-run"}, operation: "NextIssuesByTeam", contains: "list next issues"},
 		{name: "issue list target resolve", args: []string{"issue", "list"}, operation: "Teams", contains: "resolve teams"},
@@ -1231,6 +1276,7 @@ type commandFlowFakeClient struct {
 	expectedBlockedBy          string
 	expectedIssueDeps          string
 	expectedSearchQuery        string
+	expectedReleaseSearchTerm  string
 	emptyProjectList           bool
 	emptyProjectMembers        bool
 	emptyProjectUpdates        bool
@@ -1300,16 +1346,27 @@ func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Re
 	if err := client.requireExpectedIssueListVariables(request); err != nil {
 		return err
 	}
-	if client.expectedSearchQuery != "" && request.OpName == "issueSearch" {
-		return requireRequestVariable(request, []string{"query"}, client.expectedSearchQuery, "search query")
-	}
-	if client.expectedIssueDeps != "" && request.OpName == "IssueDependencies" {
-		return requireRequestVariable(request, []string{"id"}, client.expectedIssueDeps, "issue deps id")
+	if err := client.requireExpectedSearchVariables(request); err != nil {
+		return err
 	}
 	if err := client.requireExpectedOrganizationVariables(request); err != nil {
 		return err
 	}
 	return client.requireExpectedIssueStartVariables(request)
+}
+
+func (client commandFlowFakeClient) requireExpectedSearchVariables(request *graphql.Request) error {
+	if client.expectedSearchQuery != "" && request.OpName == "issueSearch" {
+		return requireRequestVariable(request, []string{"query"}, client.expectedSearchQuery, "search query")
+	}
+	if client.expectedReleaseSearchTerm != "" && request.OpName == "releaseSearch" {
+		return requireRequestVariable(request, []string{"term"}, client.expectedReleaseSearchTerm, "release search term")
+	}
+	if client.expectedIssueDeps != "" && request.OpName == "IssueDependencies" {
+		return requireRequestVariable(request, []string{"id"}, client.expectedIssueDeps, "issue deps id")
+	}
+
+	return nil
 }
 
 func (client commandFlowFakeClient) requireExpectedOrganizationVariables(request *graphql.Request) error {
@@ -1483,6 +1540,16 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"releaseStages":{"nodes":[` + commandReleaseStageJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseStage":
 		return `{"releaseStage":` + commandReleaseStageJSON() + `}`, true
+	case "releases":
+		return `{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "releaseSearch":
+		return `{"releaseSearch":[` + commandReleaseJSON() + `]}`, true
+	case "release":
+		return `{"release":` + commandReleaseJSON() + `}`, true
+	case "releaseNotes":
+		return `{"releaseNotes":{"nodes":[` + commandReleaseNoteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "releaseNote":
+		return `{"releaseNote":` + commandReleaseNoteJSON() + `}`, true
 	case "timeSchedules":
 		return `{"timeSchedules":{"nodes":[` + commandTimeScheduleJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "timeSchedule":
@@ -2169,6 +2236,49 @@ func commandReleaseStageJSON() string {
 		"updatedAt":"2026-06-19T12:01:00Z",
 		"archivedAt":null,
 		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"}
+	}`
+}
+
+func commandReleaseJSON() string {
+	return `{
+		"id":"release-id",
+		"name":"Mobile 1.2.3",
+		"slugId":"mobile-1-2-3",
+		"version":"v1.2.3",
+		"description":"Release body",
+		"commitSha":"abc123",
+		"issueCount":3,
+		"trashed":null,
+		"url":"https://linear.app/kyanite/release/mobile-1-2-3",
+		"startDate":"2026-06-20",
+		"targetDate":"2026-06-30",
+		"startedAt":"2026-06-20T12:00:00Z",
+		"completedAt":null,
+		"canceledAt":null,
+		"autoArchivedAt":null,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-20T12:00:00Z",
+		"archivedAt":null,
+		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"},
+		"stage":{"id":"release-stage-id","name":"Started","type":"started"},
+		"releaseNotes":[{"id":"release-note-id","title":"Launch notes","slugId":"launch-notes"}],
+		"creator":{"id":"user-id","displayName":"Omer"}
+	}`
+}
+
+func commandReleaseNoteJSON() string {
+	return `{
+		"id":"release-note-id",
+		"title":"Launch notes",
+		"slugId":"launch-notes",
+		"generationStatus":"completed",
+		"releaseCount":2,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-20T12:00:00Z",
+		"archivedAt":null,
+		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"},
+		"firstRelease":{"id":"release-id","name":"Mobile 1.2.2","version":"v1.2.2"},
+		"lastRelease":{"id":"release-id","name":"Mobile 1.2.3","version":"v1.2.3"}
 	}`
 }
 

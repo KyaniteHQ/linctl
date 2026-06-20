@@ -74,6 +74,8 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addNotificationCommand(ctx, command, &options)
 	addReleasePipelineCommand(ctx, command, &options)
 	addReleaseStageCommand(ctx, command, &options)
+	addReleaseCommand(ctx, command, &options)
+	addReleaseNoteCommand(ctx, command, &options)
 	addIssueCommand(ctx, command, &options)
 	addNextCommand(ctx, command, &options)
 	addCurrentCommand(ctx, command, &options)

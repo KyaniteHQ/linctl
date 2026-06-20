@@ -1,0 +1,107 @@
+query releases($first: Int, $after: String, $includeArchived: Boolean) {
+  releases(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ReleaseSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query release($id: String!) {
+  release(id: $id) {
+    ...ReleaseSummaryFields
+  }
+}
+
+query releaseSearch($term: String, $first: Int) {
+  releaseSearch(term: $term, first: $first) {
+    ...ReleaseSummaryFields
+  }
+}
+
+query releaseNotes($first: Int, $after: String, $includeArchived: Boolean) {
+  releaseNotes(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ReleaseNoteSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query releaseNote($id: String!) {
+  releaseNote(id: $id) {
+    ...ReleaseNoteSummaryFields
+  }
+}
+
+fragment ReleaseSummaryFields on Release {
+  id
+  name
+  slugId
+  version
+  description
+  commitSha
+  issueCount
+  trashed
+  url
+  startDate
+  targetDate
+  startedAt
+  completedAt
+  canceledAt
+  autoArchivedAt
+  createdAt
+  updatedAt
+  archivedAt
+  pipeline {
+    id
+    name
+    slugId
+  }
+  stage {
+    id
+    name
+    type
+  }
+  releaseNotes {
+    id
+    title
+    slugId
+  }
+  creator {
+    id
+    displayName
+  }
+}
+
+fragment ReleaseNoteSummaryFields on ReleaseNote {
+  id
+  title
+  slugId
+  generationStatus
+  releaseCount
+  createdAt
+  updatedAt
+  archivedAt
+  pipeline {
+    id
+    name
+    slugId
+  }
+  firstRelease {
+    id
+    name
+    version
+  }
+  lastRelease {
+    id
+    name
+    version
+  }
+}

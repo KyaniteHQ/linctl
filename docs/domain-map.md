@@ -51,10 +51,10 @@ Only `notification list`, `notification get`, `notification subscription list`, 
 Schema backing:
 
 - Types: `Release`, `ReleasePipeline`, `ReleaseStage`, `ReleaseNote`, `IssueToRelease`
-- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `Query.releaseStages`, `Query.releaseStage`
-- Deferred reads: `Query.releases`, `Query.release`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`, nested release documents/issues/history/links, and access-key release reads
+- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `Query.releaseStages`, `Query.releaseStage`, `Query.releases`, `Query.release`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`
+- Deferred reads: nested release documents/issues/history/links and access-key release reads
 - Writes: `Mutation.releasePipelineCreate`, `Mutation.releasePipelineUpdate`, `Mutation.releasePipelineArchive`, `Mutation.releasePipelineDelete`, `Mutation.releaseStageCreate`, `Mutation.releaseStageUpdate`, `Mutation.releaseStageArchive`, `Mutation.releaseStageUnarchive`, plus Release/ReleaseNote/IssueToRelease create/update/archive/delete/sync/complete mutations
-- Relevant fields: `ReleasePipeline.id`, `ReleasePipeline.name`, `ReleasePipeline.slugId`, `ReleasePipeline.type`, `ReleasePipeline.isProduction`, `ReleasePipeline.approximateReleaseCount`, `ReleaseStage.id`, `ReleaseStage.name`, `ReleaseStage.type`, `ReleaseStage.pipeline`
+- Relevant fields: `Release.id`, `Release.name`, `Release.slugId`, `Release.version`, `Release.pipeline`, `Release.stage`, `Release.issueCount`, `ReleaseNote.id`, `ReleaseNote.title`, `ReleaseNote.slugId`, `ReleaseNote.pipeline`, `ReleaseNote.releaseCount`, `ReleasePipeline.id`, `ReleasePipeline.name`, `ReleasePipeline.slugId`, `ReleasePipeline.type`, `ReleasePipeline.isProduction`, `ReleasePipeline.approximateReleaseCount`, `ReleaseStage.id`, `ReleaseStage.name`, `ReleaseStage.type`, `ReleaseStage.pipeline`
 
 Planned commands:
 
@@ -64,6 +64,11 @@ Planned commands:
 | `release-pipeline get` | `Query.releasePipeline` | Read-only |
 | `release-stage list` | `Query.releaseStages` | Read-only |
 | `release-stage get` | `Query.releaseStage` | Read-only |
+| `release list` | `Query.releases` | Read-only |
+| `release search` | `Query.releaseSearch` | Read-only |
+| `release get` | `Query.release` | Read-only |
+| `release-note list` | `Query.releaseNotes` | Read-only |
+| `release-note get` | `Query.releaseNote` | Read-only |
 | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics |
 | `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation |
 | `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics |
@@ -73,8 +78,22 @@ Planned commands:
 | `release-stage update` | `Mutation.releaseStageUpdate` | Blocked: update must resolve the stage's pipeline and teams before mutation |
 | `release-stage archive` | `Mutation.releaseStageArchive` | Blocked: destructive command needs explicit safety semantics |
 | `release-stage unarchive` | `Mutation.releaseStageUnarchive` | Blocked: restore command needs explicit safety semantics |
+| `release create` | `Mutation.releaseCreate` | Blocked: create must resolve pipeline/team guard semantics before mutation |
+| `release update` | `Mutation.releaseUpdate` | Blocked: update must resolve the release pipeline/stage and associated teams before mutation |
+| `release archive` | `Mutation.releaseArchive` | Blocked: destructive command needs explicit safety semantics |
+| `release unarchive` | `Mutation.releaseUnarchive` | Blocked: restore command needs explicit safety semantics |
+| `release delete` | `Mutation.releaseDelete` | Blocked: destructive command needs explicit safety semantics |
+| `release complete` | `Mutation.releaseComplete`, `Mutation.releaseCompleteByAccessKey` | Blocked: lifecycle transition and access-key behavior need explicit guard semantics |
+| `release sync` | `Mutation.releaseSync`, `Mutation.releaseSyncByAccessKey` | Blocked: sync mutates release associations and needs explicit guard semantics |
+| `release-note create` | `Mutation.releaseNoteCreate` | Blocked: create must resolve release pipeline and release range semantics before mutation |
+| `release-note update` | `Mutation.releaseNoteUpdate` | Blocked: update must resolve covered releases and pipeline before mutation |
+| `release-note archive` | `Mutation.releaseNoteArchive` | Blocked: destructive command needs explicit safety semantics |
+| `release-note delete` | `Mutation.releaseNoteDelete` | Blocked: destructive command needs explicit safety semantics |
+| `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation |
+| `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation |
+| `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics |
 
-Only `release-pipeline list`, `release-pipeline get`, `release-stage list`, and `release-stage get` are implemented in the current CLI. Release, ReleaseNote, IssueToRelease, sync, complete, access-key, and association commands remain deferred until their control-surface shape and guard model are explicit.
+Release, ReleasePipeline, ReleaseStage, and ReleaseNote read commands are implemented in the current CLI. IssueToRelease, sync, complete, access-key, and association commands remain deferred until their control-surface shape and guard model are explicit.
 
 ## Issue
 

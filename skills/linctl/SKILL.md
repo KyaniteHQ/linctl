@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, initiative, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, initiative, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -64,6 +64,11 @@ linctl release-pipeline list --json --limit 20
 linctl release-pipeline get RELEASE_PIPELINE_ID --json
 linctl release-stage list --json --limit 20
 linctl release-stage get RELEASE_STAGE_ID --json
+linctl release list --json --limit 20
+linctl release search TERM --json --limit 20
+linctl release get RELEASE_ID --json
+linctl release-note list --json --limit 20
+linctl release-note get RELEASE_NOTE_ID --json
 linctl current --json
 linctl next --dry-run
 linctl issue id

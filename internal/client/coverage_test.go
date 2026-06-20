@@ -201,6 +201,11 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"releasePipeline":          `{"releasePipeline":` + releasePipelineJSON() + `}`,
 		"releaseStages":            `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releaseStage":             `{"releaseStage":` + releaseStageJSON() + `}`,
+		"releases":                 `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"release":                  `{"release":` + releaseJSON() + `}`,
+		"releaseSearch":            `{"releaseSearch":[` + releaseJSON() + `]}`,
+		"releaseNotes":             `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releaseNote":              `{"releaseNote":` + releaseNoteJSON() + `}`,
 		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
 		"team_members":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"users":                    `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -323,6 +328,16 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	releaseStages, err := ListReleaseStages(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	releaseStage, err := GetReleaseStageByID(context.Background(), graphqlClient, "release-stage-id")
+	require.NoError(t, err)
+	releases, err := ListReleases(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	release, err := GetReleaseByID(context.Background(), graphqlClient, "release-id")
+	require.NoError(t, err)
+	releaseSearch, err := SearchReleases(context.Background(), graphqlClient, "mobile", 2)
+	require.NoError(t, err)
+	releaseNotes, err := ListReleaseNotes(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	releaseNote, err := GetReleaseNoteByID(context.Background(), graphqlClient, "release-note-id")
 	require.NoError(t, err)
 	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
 	require.NoError(t, err)
@@ -505,6 +520,19 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Started", releaseStages.ReleaseStages[0].Name)
 	require.Equal(t, "started", releaseStages.ReleaseStages[0].Type)
 	require.Equal(t, "Production", releaseStage.PipelineName)
+	require.True(t, releases.HasNextPage)
+	require.Equal(t, &endCursor, releases.EndCursor)
+	require.Equal(t, "Mobile 1.2.3", releases.Releases[0].Name)
+	require.Equal(t, "Started", releases.Releases[0].StageName)
+	require.Equal(t, "v1.2.3", release.Version)
+	require.Equal(t, "Omer", release.CreatorName)
+	require.Equal(t, 1, release.ReleaseNoteCount)
+	require.Equal(t, "release-id", releaseSearch.Releases[0].ID)
+	require.True(t, releaseNotes.HasNextPage)
+	require.Equal(t, &endCursor, releaseNotes.EndCursor)
+	require.Equal(t, "Launch notes", releaseNotes.ReleaseNotes[0].Title)
+	require.Equal(t, "completed", releaseNote.GenerationStatus)
+	require.Equal(t, "Mobile 1.2.3", releaseNote.LastReleaseName)
 	require.Equal(t, "team body", team.Description)
 	require.Equal(t, "Omer", teamMembers.Members[0].DisplayName)
 	require.Equal(t, &endCursor, teamMembers.EndCursor)
@@ -894,6 +922,23 @@ func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.
 	require.Equal(t, "2026-06-19T12:00:00Z", team.ArchivedAt)
 }
 
+func Test_SummaryMappingScenarios_preserve_release_note_without_generation_status(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"releaseNote": `{"releaseNote":` + strings.Replace(
+			releaseNoteJSON(),
+			`"generationStatus":"completed"`,
+			`"generationStatus":null`,
+			1,
+		) + `}`,
+	}
+
+	note, err := GetReleaseNoteByID(context.Background(), graphqlClient, "release-note-id")
+
+	require.NoError(t, err)
+	require.Empty(t, note.GenerationStatus)
+	require.Equal(t, "Launch notes", note.Title)
+}
+
 func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 	t.Run("read operations wrap graphql errors", func(t *testing.T) {
 		graphqlClient := errorGraphQLClient{err: errors.New("network down")}
@@ -1173,6 +1218,26 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetReleaseStageByID(context.Background(), graphqlClient, "release-stage-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get release stage release-stage-id")
+
+		_, err = ListReleases(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list releases")
+
+		_, err = GetReleaseByID(context.Background(), graphqlClient, "release-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get release release-id")
+
+		_, err = SearchReleases(context.Background(), graphqlClient, "mobile", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "search releases")
+
+		_, err = ListReleaseNotes(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release notes")
+
+		_, err = GetReleaseNoteByID(context.Background(), graphqlClient, "release-note-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get release note release-note-id")
 
 		_, err = ListAttachments(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -1948,5 +2013,48 @@ func releaseStageJSON() string {
 		"updatedAt":"2026-06-19T12:01:00Z",
 		"archivedAt":null,
 		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"}
+	}`
+}
+
+func releaseJSON() string {
+	return `{
+		"id":"release-id",
+		"name":"Mobile 1.2.3",
+		"slugId":"mobile-1-2-3",
+		"version":"v1.2.3",
+		"description":"Release body",
+		"commitSha":"abc123",
+		"issueCount":3,
+		"trashed":null,
+		"url":"https://linear.app/kyanite/release/mobile-1-2-3",
+		"startDate":"2026-06-20",
+		"targetDate":"2026-06-30",
+		"startedAt":"2026-06-20T12:00:00Z",
+		"completedAt":null,
+		"canceledAt":null,
+		"autoArchivedAt":null,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-20T12:00:00Z",
+		"archivedAt":null,
+		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"},
+		"stage":{"id":"release-stage-id","name":"Started","type":"started"},
+		"releaseNotes":[{"id":"release-note-id","title":"Launch notes","slugId":"launch-notes"}],
+		"creator":{"id":"user-id","displayName":"Omer"}
+	}`
+}
+
+func releaseNoteJSON() string {
+	return `{
+		"id":"release-note-id",
+		"title":"Launch notes",
+		"slugId":"launch-notes",
+		"generationStatus":"completed",
+		"releaseCount":2,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-20T12:00:00Z",
+		"archivedAt":null,
+		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"},
+		"firstRelease":{"id":"release-id","name":"Mobile 1.2.2","version":"v1.2.2"},
+		"lastRelease":{"id":"release-id","name":"Mobile 1.2.3","version":"v1.2.3"}
 	}`
 }
