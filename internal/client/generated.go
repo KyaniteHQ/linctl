@@ -1374,123 +1374,6 @@ type CyclesByTeamResponse struct {
 // GetCycles returns CyclesByTeamResponse.Cycles, and is useful for accessing the field via an interface.
 func (v *CyclesByTeamResponse) GetCycles() CyclesByTeamCyclesCycleConnection { return v.Cycles }
 
-// DocumentByIDDocument includes the requested fields of the GraphQL type Document.
-// The GraphQL type's documentation follows.
-//
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
-type DocumentByIDDocument struct {
-	DocumentSummaryFields `json:"-"`
-}
-
-// GetId returns DocumentByIDDocument.Id, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetId() string { return v.DocumentSummaryFields.Id }
-
-// GetTitle returns DocumentByIDDocument.Title, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetTitle() string { return v.DocumentSummaryFields.Title }
-
-// GetSlugId returns DocumentByIDDocument.SlugId, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetSlugId() string { return v.DocumentSummaryFields.SlugId }
-
-// GetArchivedAt returns DocumentByIDDocument.ArchivedAt, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetArchivedAt() *string { return v.DocumentSummaryFields.ArchivedAt }
-
-// GetProject returns DocumentByIDDocument.Project, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetProject() *DocumentSummaryFieldsProject {
-	return v.DocumentSummaryFields.Project
-}
-
-// GetTeam returns DocumentByIDDocument.Team, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetTeam() *DocumentSummaryFieldsTeam {
-	return v.DocumentSummaryFields.Team
-}
-
-// GetIssue returns DocumentByIDDocument.Issue, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetIssue() *DocumentSummaryFieldsIssue {
-	return v.DocumentSummaryFields.Issue
-}
-
-// GetCycle returns DocumentByIDDocument.Cycle, and is useful for accessing the field via an interface.
-func (v *DocumentByIDDocument) GetCycle() *DocumentSummaryFieldsCycle {
-	return v.DocumentSummaryFields.Cycle
-}
-
-func (v *DocumentByIDDocument) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*DocumentByIDDocument
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.DocumentByIDDocument = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.DocumentSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalDocumentByIDDocument struct {
-	Id string `json:"id"`
-
-	Title string `json:"title"`
-
-	SlugId string `json:"slugId"`
-
-	ArchivedAt *string `json:"archivedAt"`
-
-	Project *DocumentSummaryFieldsProject `json:"project"`
-
-	Team *DocumentSummaryFieldsTeam `json:"team"`
-
-	Issue *DocumentSummaryFieldsIssue `json:"issue"`
-
-	Cycle *DocumentSummaryFieldsCycle `json:"cycle"`
-}
-
-func (v *DocumentByIDDocument) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *DocumentByIDDocument) __premarshalJSON() (*__premarshalDocumentByIDDocument, error) {
-	var retval __premarshalDocumentByIDDocument
-
-	retval.Id = v.DocumentSummaryFields.Id
-	retval.Title = v.DocumentSummaryFields.Title
-	retval.SlugId = v.DocumentSummaryFields.SlugId
-	retval.ArchivedAt = v.DocumentSummaryFields.ArchivedAt
-	retval.Project = v.DocumentSummaryFields.Project
-	retval.Team = v.DocumentSummaryFields.Team
-	retval.Issue = v.DocumentSummaryFields.Issue
-	retval.Cycle = v.DocumentSummaryFields.Cycle
-	return &retval, nil
-}
-
-// DocumentByIDResponse is returned by DocumentByID on success.
-type DocumentByIDResponse struct {
-	// A specific document by ID or slug.
-	Document DocumentByIDDocument `json:"document"`
-}
-
-// GetDocument returns DocumentByIDResponse.Document, and is useful for accessing the field via an interface.
-func (v *DocumentByIDResponse) GetDocument() DocumentByIDDocument { return v.Document }
-
 // DocumentSummaryFields includes the GraphQL fields of Document requested by the fragment DocumentSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -10547,14 +10430,6 @@ func (v *__CyclesByTeamInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __CyclesByTeamInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__CyclesByTeamInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
-// __DocumentByIDInput is used internally by genqlient
-type __DocumentByIDInput struct {
-	Id string `json:"id"`
-}
-
-// GetId returns __DocumentByIDInput.Id, and is useful for accessing the field via an interface.
-func (v *__DocumentByIDInput) GetId() string { return v.Id }
-
 // __DocumentsInput is used internally by genqlient
 type __DocumentsInput struct {
 	First           *int    `json:"first"`
@@ -11255,6 +11130,14 @@ func (v *__commentsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __documentInput is used internally by genqlient
+type __documentInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __documentInput.Id, and is useful for accessing the field via an interface.
+func (v *__documentInput) GetId() string { return v.Id }
+
 // __projectUpdateInput is used internally by genqlient
 type __projectUpdateInput struct {
 	Id string `json:"id"`
@@ -11676,6 +11559,121 @@ type commentsResponse struct {
 
 // GetComments returns commentsResponse.Comments, and is useful for accessing the field via an interface.
 func (v *commentsResponse) GetComments() commentsCommentsCommentConnection { return v.Comments }
+
+// documentDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type documentDocument struct {
+	DocumentSummaryFields `json:"-"`
+}
+
+// GetId returns documentDocument.Id, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetId() string { return v.DocumentSummaryFields.Id }
+
+// GetTitle returns documentDocument.Title, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetTitle() string { return v.DocumentSummaryFields.Title }
+
+// GetSlugId returns documentDocument.SlugId, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetSlugId() string { return v.DocumentSummaryFields.SlugId }
+
+// GetArchivedAt returns documentDocument.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetArchivedAt() *string { return v.DocumentSummaryFields.ArchivedAt }
+
+// GetProject returns documentDocument.Project, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetProject() *DocumentSummaryFieldsProject {
+	return v.DocumentSummaryFields.Project
+}
+
+// GetTeam returns documentDocument.Team, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetTeam() *DocumentSummaryFieldsTeam { return v.DocumentSummaryFields.Team }
+
+// GetIssue returns documentDocument.Issue, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetIssue() *DocumentSummaryFieldsIssue {
+	return v.DocumentSummaryFields.Issue
+}
+
+// GetCycle returns documentDocument.Cycle, and is useful for accessing the field via an interface.
+func (v *documentDocument) GetCycle() *DocumentSummaryFieldsCycle {
+	return v.DocumentSummaryFields.Cycle
+}
+
+func (v *documentDocument) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*documentDocument
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.documentDocument = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.DocumentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaldocumentDocument struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	SlugId string `json:"slugId"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Project *DocumentSummaryFieldsProject `json:"project"`
+
+	Team *DocumentSummaryFieldsTeam `json:"team"`
+
+	Issue *DocumentSummaryFieldsIssue `json:"issue"`
+
+	Cycle *DocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+func (v *documentDocument) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *documentDocument) __premarshalJSON() (*__premarshaldocumentDocument, error) {
+	var retval __premarshaldocumentDocument
+
+	retval.Id = v.DocumentSummaryFields.Id
+	retval.Title = v.DocumentSummaryFields.Title
+	retval.SlugId = v.DocumentSummaryFields.SlugId
+	retval.ArchivedAt = v.DocumentSummaryFields.ArchivedAt
+	retval.Project = v.DocumentSummaryFields.Project
+	retval.Team = v.DocumentSummaryFields.Team
+	retval.Issue = v.DocumentSummaryFields.Issue
+	retval.Cycle = v.DocumentSummaryFields.Cycle
+	return &retval, nil
+}
+
+// documentResponse is returned by document on success.
+type documentResponse struct {
+	// A specific document by ID or slug.
+	Document documentDocument `json:"document"`
+}
+
+// GetDocument returns documentResponse.Document, and is useful for accessing the field via an interface.
+func (v *documentResponse) GetDocument() documentDocument { return v.Document }
 
 // projectUpdateProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
@@ -12672,65 +12670,6 @@ func CyclesByTeam(
 	}
 
 	data_ = &CyclesByTeamResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by DocumentByID.
-const DocumentByID_Operation = `
-query DocumentByID ($id: String!) {
-	document(id: $id) {
-		... DocumentSummaryFields
-	}
-}
-fragment DocumentSummaryFields on Document {
-	id
-	title
-	slugId
-	archivedAt
-	project {
-		id
-		name
-	}
-	team {
-		id
-		key
-		name
-	}
-	issue {
-		id
-		identifier
-		title
-	}
-	cycle {
-		id
-		number
-		name
-	}
-}
-`
-
-func DocumentByID(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-) (data_ *DocumentByIDResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "DocumentByID",
-		Query:  DocumentByID_Operation,
-		Variables: &__DocumentByIDInput{
-			Id: id,
-		},
-	}
-
-	data_ = &DocumentByIDResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -15758,6 +15697,65 @@ func comments(
 	}
 
 	data_ = &commentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by document.
+const document_Operation = `
+query document ($id: String!) {
+	document(id: $id) {
+		... DocumentSummaryFields
+	}
+}
+fragment DocumentSummaryFields on Document {
+	id
+	title
+	slugId
+	archivedAt
+	project {
+		id
+		name
+	}
+	team {
+		id
+		key
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	cycle {
+		id
+		number
+		name
+	}
+}
+`
+
+func document(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *documentResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "document",
+		Query:  document_Operation,
+		Variables: &__documentInput{
+			Id: id,
+		},
+	}
+
+	data_ = &documentResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

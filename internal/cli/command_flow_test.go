@@ -1016,7 +1016,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, operation: "ProjectUpdate", contains: "update project project-id"},
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, operation: "ProjectArchive", contains: "archive project project-id"},
 		{name: "document list", args: []string{"document", "list"}, operation: "Documents", contains: "list documents"},
-		{name: "document get", args: []string{"document", "get", "document-id"}, operation: "DocumentByID", contains: "get document document-id"},
+		{name: "document get", args: []string{"document", "get", "document-id"}, operation: "document", contains: "get document document-id"},
 		{name: "label list", args: []string{"label", "list"}, operation: "IssueLabels", contains: "list labels"},
 		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "IssueLabelByID", contains: "get label label-id"},
 		{name: "team list", args: []string{"team", "list"}, operation: "Teams", contains: "list teams"},
@@ -1293,7 +1293,7 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 			"Spec",
 			`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
 		) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "DocumentByID":
+	case "document":
 		return `{"document":` + commandDocumentJSON(
 			"Team note",
 			`"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,

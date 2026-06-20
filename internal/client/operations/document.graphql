@@ -10,7 +10,7 @@ query Documents($first: Int, $after: String, $includeArchived: Boolean) {
   }
 }
 
-query DocumentByID($id: String!) {
+query document($id: String!) {
   document(id: $id) {
     ...DocumentSummaryFields
   }

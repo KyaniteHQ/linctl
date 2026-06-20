@@ -46,7 +46,7 @@ func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int)
 
 // GetDocumentByID returns one Document by id or slug.
 func GetDocumentByID(ctx context.Context, graphqlClient graphql.Client, id string) (DocumentSummary, error) {
-	document, err := DocumentByID(ctx, graphqlClient, id)
+	document, err := document(ctx, graphqlClient, id)
 	if err != nil {
 		return DocumentSummary{}, fmt.Errorf("get document %s: %w", id, err)
 	}
