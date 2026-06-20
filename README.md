@@ -60,6 +60,8 @@ linctl usage
 linctl target --json
 linctl doctor
 linctl application info app-client-id
+linctl agent-activity list --limit 20
+linctl agent-activity get agent-activity-id
 linctl agent-skill list --limit 20
 linctl agent-skill get agent-skill-id
 linctl organization exists kyanite
@@ -188,6 +190,8 @@ linctl issue deps LIT-123 --limit 20
 linctl issue pr LIT-123
 linctl next --dry-run
 linctl application info app-client-id
+linctl agent-activity list --limit 20
+linctl agent-activity get agent-activity-id
 linctl agent-skill list --limit 20
 linctl agent-skill get agent-skill-id
 linctl organization exists kyanite
@@ -285,7 +289,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Application, AgentSkill, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, comment, ProjectUpdate, document, label, team, user, workflow-state, time-schedule, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Application, AgentActivity, AgentSkill, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, comment, ProjectUpdate, document, label, team, user, workflow-state, time-schedule, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

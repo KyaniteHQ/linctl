@@ -1,0 +1,65 @@
+query agentActivities($first: Int, $after: String, $includeArchived: Boolean) {
+  agentActivities(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...AgentActivitySummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query agentActivity($id: String!) {
+  agentActivity(id: $id) {
+    ...AgentActivitySummaryFields
+  }
+}
+
+fragment AgentActivitySummaryFields on AgentActivity {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  signal
+  ephemeral
+  agentSession {
+    id
+  }
+  sourceComment {
+    id
+  }
+  user {
+    id
+  }
+  content {
+    __typename
+    ... on AgentActivityActionContent {
+      type
+      action
+      parameter
+      result
+    }
+    ... on AgentActivityElicitationContent {
+      type
+      body
+    }
+    ... on AgentActivityErrorContent {
+      type
+      body
+      reasonCode
+    }
+    ... on AgentActivityPromptContent {
+      type
+      body
+    }
+    ... on AgentActivityResponseContent {
+      type
+      body
+    }
+    ... on AgentActivityThoughtContent {
+      type
+      body
+    }
+  }
+}

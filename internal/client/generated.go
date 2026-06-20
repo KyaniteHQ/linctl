@@ -10,6 +10,561 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// A modifier that provides additional instructions on how the activity should be interpreted.
+type AgentActivitySignal string
+
+const (
+	AgentActivitySignalStop     AgentActivitySignal = "stop"
+	AgentActivitySignalContinue AgentActivitySignal = "continue"
+	AgentActivitySignalAuth     AgentActivitySignal = "auth"
+	AgentActivitySignalSelect   AgentActivitySignal = "select"
+)
+
+var AllAgentActivitySignal = []AgentActivitySignal{
+	AgentActivitySignalStop,
+	AgentActivitySignalContinue,
+	AgentActivitySignalAuth,
+	AgentActivitySignalSelect,
+}
+
+// AgentActivitySummaryFields includes the GraphQL fields of AgentActivity requested by the fragment AgentActivitySummaryFields.
+// The GraphQL type's documentation follows.
+//
+// An activity performed by or directed at an AI coding agent during a session.
+// Activities represent the observable steps of an agent's work, including
+// thoughts, actions (tool calls), responses, prompts from users, errors, and
+// elicitation requests. Each activity belongs to an agent session and is
+// associated with the user who initiated it.
+type AgentActivitySummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// An optional modifier that provides additional instructions on how the activity should be interpreted.
+	Signal *AgentActivitySignal `json:"signal"`
+	// Whether the activity is ephemeral, and should disappear after the next agent activity.
+	Ephemeral bool `json:"ephemeral"`
+	// The agent session this activity belongs to.
+	AgentSession AgentActivitySummaryFieldsAgentSession `json:"agentSession"`
+	// The source comment this activity is linked to. Null if the activity was not triggered by a comment.
+	SourceComment *AgentActivitySummaryFieldsSourceComment `json:"sourceComment"`
+	// The user who created this agent activity.
+	User AgentActivitySummaryFieldsUser `json:"user"`
+	// The content of the activity, which varies by type (thought, action, response, prompt, error, or elicitation).
+	Content AgentActivitySummaryFieldsContentAgentActivityContent `json:"-"`
+}
+
+// GetId returns AgentActivitySummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns AgentActivitySummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns AgentActivitySummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns AgentActivitySummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetSignal returns AgentActivitySummaryFields.Signal, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetSignal() *AgentActivitySignal { return v.Signal }
+
+// GetEphemeral returns AgentActivitySummaryFields.Ephemeral, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetEphemeral() bool { return v.Ephemeral }
+
+// GetAgentSession returns AgentActivitySummaryFields.AgentSession, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetAgentSession() AgentActivitySummaryFieldsAgentSession {
+	return v.AgentSession
+}
+
+// GetSourceComment returns AgentActivitySummaryFields.SourceComment, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetSourceComment() *AgentActivitySummaryFieldsSourceComment {
+	return v.SourceComment
+}
+
+// GetUser returns AgentActivitySummaryFields.User, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetUser() AgentActivitySummaryFieldsUser { return v.User }
+
+// GetContent returns AgentActivitySummaryFields.Content, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFields) GetContent() AgentActivitySummaryFieldsContentAgentActivityContent {
+	return v.Content
+}
+
+func (v *AgentActivitySummaryFields) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*AgentActivitySummaryFields
+		Content json.RawMessage `json:"content"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.AgentActivitySummaryFields = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Content
+		src := firstPass.Content
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalAgentActivitySummaryFieldsContentAgentActivityContent(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal AgentActivitySummaryFields.Content: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalAgentActivitySummaryFields struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Signal *AgentActivitySignal `json:"signal"`
+
+	Ephemeral bool `json:"ephemeral"`
+
+	AgentSession AgentActivitySummaryFieldsAgentSession `json:"agentSession"`
+
+	SourceComment *AgentActivitySummaryFieldsSourceComment `json:"sourceComment"`
+
+	User AgentActivitySummaryFieldsUser `json:"user"`
+
+	Content json.RawMessage `json:"content"`
+}
+
+func (v *AgentActivitySummaryFields) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *AgentActivitySummaryFields) __premarshalJSON() (*__premarshalAgentActivitySummaryFields, error) {
+	var retval __premarshalAgentActivitySummaryFields
+
+	retval.Id = v.Id
+	retval.CreatedAt = v.CreatedAt
+	retval.UpdatedAt = v.UpdatedAt
+	retval.ArchivedAt = v.ArchivedAt
+	retval.Signal = v.Signal
+	retval.Ephemeral = v.Ephemeral
+	retval.AgentSession = v.AgentSession
+	retval.SourceComment = v.SourceComment
+	retval.User = v.User
+	{
+
+		dst := &retval.Content
+		src := v.Content
+		var err error
+		*dst, err = __marshalAgentActivitySummaryFieldsContentAgentActivityContent(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal AgentActivitySummaryFields.Content: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// AgentActivitySummaryFieldsAgentSession includes the requested fields of the GraphQL type AgentSession.
+// The GraphQL type's documentation follows.
+//
+// A session representing an AI coding agent's work on an issue or conversation.
+// Agent sessions track the lifecycle of an agent's engagement, from creation
+// through active work to completion or dismissal. Each session is associated with
+// an agent user (the bot), optionally a human creator, an issue, and a comment
+// thread where the agent posts updates. Sessions contain activities that record
+// the agent's observable steps and can be linked to pull requests created during the work.
+type AgentActivitySummaryFieldsAgentSession struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns AgentActivitySummaryFieldsAgentSession.Id, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsAgentSession) GetId() string { return v.Id }
+
+// AgentActivitySummaryFieldsContentAgentActivityActionContent includes the requested fields of the GraphQL type AgentActivityActionContent.
+// The GraphQL type's documentation follows.
+//
+// Content for an action activity (tool call or action).
+type AgentActivitySummaryFieldsContentAgentActivityActionContent struct {
+	Typename *string `json:"__typename"`
+	// The type of activity.
+	Type AgentActivityType `json:"type"`
+	// The action being performed.
+	Action string `json:"action"`
+	// The parameters for the action, e.g. a file path, a keyword, etc.
+	Parameter string `json:"parameter"`
+	// The result of the action in Markdown format.
+	Result *string `json:"result"`
+}
+
+// GetTypename returns AgentActivitySummaryFieldsContentAgentActivityActionContent.Typename, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityActionContent) GetTypename() *string {
+	return v.Typename
+}
+
+// GetType returns AgentActivitySummaryFieldsContentAgentActivityActionContent.Type, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityActionContent) GetType() AgentActivityType {
+	return v.Type
+}
+
+// GetAction returns AgentActivitySummaryFieldsContentAgentActivityActionContent.Action, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityActionContent) GetAction() string {
+	return v.Action
+}
+
+// GetParameter returns AgentActivitySummaryFieldsContentAgentActivityActionContent.Parameter, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityActionContent) GetParameter() string {
+	return v.Parameter
+}
+
+// GetResult returns AgentActivitySummaryFieldsContentAgentActivityActionContent.Result, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityActionContent) GetResult() *string {
+	return v.Result
+}
+
+// AgentActivitySummaryFieldsContentAgentActivityContent includes the requested fields of the GraphQL interface AgentActivityContent.
+//
+// AgentActivitySummaryFieldsContentAgentActivityContent is implemented by the following types:
+// AgentActivitySummaryFieldsContentAgentActivityActionContent
+// AgentActivitySummaryFieldsContentAgentActivityElicitationContent
+// AgentActivitySummaryFieldsContentAgentActivityErrorContent
+// AgentActivitySummaryFieldsContentAgentActivityPromptContent
+// AgentActivitySummaryFieldsContentAgentActivityResponseContent
+// AgentActivitySummaryFieldsContentAgentActivityThoughtContent
+// The GraphQL type's documentation follows.
+//
+// Content for different types of agent activities.
+type AgentActivitySummaryFieldsContentAgentActivityContent interface {
+	implementsGraphQLInterfaceAgentActivitySummaryFieldsContentAgentActivityContent()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+}
+
+func (v *AgentActivitySummaryFieldsContentAgentActivityActionContent) implementsGraphQLInterfaceAgentActivitySummaryFieldsContentAgentActivityContent() {
+}
+func (v *AgentActivitySummaryFieldsContentAgentActivityElicitationContent) implementsGraphQLInterfaceAgentActivitySummaryFieldsContentAgentActivityContent() {
+}
+func (v *AgentActivitySummaryFieldsContentAgentActivityErrorContent) implementsGraphQLInterfaceAgentActivitySummaryFieldsContentAgentActivityContent() {
+}
+func (v *AgentActivitySummaryFieldsContentAgentActivityPromptContent) implementsGraphQLInterfaceAgentActivitySummaryFieldsContentAgentActivityContent() {
+}
+func (v *AgentActivitySummaryFieldsContentAgentActivityResponseContent) implementsGraphQLInterfaceAgentActivitySummaryFieldsContentAgentActivityContent() {
+}
+func (v *AgentActivitySummaryFieldsContentAgentActivityThoughtContent) implementsGraphQLInterfaceAgentActivitySummaryFieldsContentAgentActivityContent() {
+}
+
+func __unmarshalAgentActivitySummaryFieldsContentAgentActivityContent(b []byte, v *AgentActivitySummaryFieldsContentAgentActivityContent) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "AgentActivityActionContent":
+		*v = new(AgentActivitySummaryFieldsContentAgentActivityActionContent)
+		return json.Unmarshal(b, *v)
+	case "AgentActivityElicitationContent":
+		*v = new(AgentActivitySummaryFieldsContentAgentActivityElicitationContent)
+		return json.Unmarshal(b, *v)
+	case "AgentActivityErrorContent":
+		*v = new(AgentActivitySummaryFieldsContentAgentActivityErrorContent)
+		return json.Unmarshal(b, *v)
+	case "AgentActivityPromptContent":
+		*v = new(AgentActivitySummaryFieldsContentAgentActivityPromptContent)
+		return json.Unmarshal(b, *v)
+	case "AgentActivityResponseContent":
+		*v = new(AgentActivitySummaryFieldsContentAgentActivityResponseContent)
+		return json.Unmarshal(b, *v)
+	case "AgentActivityThoughtContent":
+		*v = new(AgentActivitySummaryFieldsContentAgentActivityThoughtContent)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing AgentActivityContent.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for AgentActivitySummaryFieldsContentAgentActivityContent: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalAgentActivitySummaryFieldsContentAgentActivityContent(v *AgentActivitySummaryFieldsContentAgentActivityContent) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *AgentActivitySummaryFieldsContentAgentActivityActionContent:
+		typename = "AgentActivityActionContent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*AgentActivitySummaryFieldsContentAgentActivityActionContent
+		}{typename, v}
+		return json.Marshal(result)
+	case *AgentActivitySummaryFieldsContentAgentActivityElicitationContent:
+		typename = "AgentActivityElicitationContent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*AgentActivitySummaryFieldsContentAgentActivityElicitationContent
+		}{typename, v}
+		return json.Marshal(result)
+	case *AgentActivitySummaryFieldsContentAgentActivityErrorContent:
+		typename = "AgentActivityErrorContent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*AgentActivitySummaryFieldsContentAgentActivityErrorContent
+		}{typename, v}
+		return json.Marshal(result)
+	case *AgentActivitySummaryFieldsContentAgentActivityPromptContent:
+		typename = "AgentActivityPromptContent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*AgentActivitySummaryFieldsContentAgentActivityPromptContent
+		}{typename, v}
+		return json.Marshal(result)
+	case *AgentActivitySummaryFieldsContentAgentActivityResponseContent:
+		typename = "AgentActivityResponseContent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*AgentActivitySummaryFieldsContentAgentActivityResponseContent
+		}{typename, v}
+		return json.Marshal(result)
+	case *AgentActivitySummaryFieldsContentAgentActivityThoughtContent:
+		typename = "AgentActivityThoughtContent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*AgentActivitySummaryFieldsContentAgentActivityThoughtContent
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for AgentActivitySummaryFieldsContentAgentActivityContent: "%T"`, v)
+	}
+}
+
+// AgentActivitySummaryFieldsContentAgentActivityElicitationContent includes the requested fields of the GraphQL type AgentActivityElicitationContent.
+// The GraphQL type's documentation follows.
+//
+// Content for an elicitation activity.
+type AgentActivitySummaryFieldsContentAgentActivityElicitationContent struct {
+	Typename *string `json:"__typename"`
+	// The type of activity.
+	Type AgentActivityType `json:"type"`
+	// The elicitation message in Markdown format.
+	Body string `json:"body"`
+}
+
+// GetTypename returns AgentActivitySummaryFieldsContentAgentActivityElicitationContent.Typename, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityElicitationContent) GetTypename() *string {
+	return v.Typename
+}
+
+// GetType returns AgentActivitySummaryFieldsContentAgentActivityElicitationContent.Type, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityElicitationContent) GetType() AgentActivityType {
+	return v.Type
+}
+
+// GetBody returns AgentActivitySummaryFieldsContentAgentActivityElicitationContent.Body, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityElicitationContent) GetBody() string {
+	return v.Body
+}
+
+// AgentActivitySummaryFieldsContentAgentActivityErrorContent includes the requested fields of the GraphQL type AgentActivityErrorContent.
+// The GraphQL type's documentation follows.
+//
+// Content for an error activity.
+type AgentActivitySummaryFieldsContentAgentActivityErrorContent struct {
+	Typename *string `json:"__typename"`
+	// The type of activity.
+	Type AgentActivityType `json:"type"`
+	// The error message in Markdown format.
+	Body string `json:"body"`
+	// A stable reason code for specialized error handling.
+	ReasonCode *string `json:"reasonCode"`
+}
+
+// GetTypename returns AgentActivitySummaryFieldsContentAgentActivityErrorContent.Typename, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityErrorContent) GetTypename() *string {
+	return v.Typename
+}
+
+// GetType returns AgentActivitySummaryFieldsContentAgentActivityErrorContent.Type, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityErrorContent) GetType() AgentActivityType {
+	return v.Type
+}
+
+// GetBody returns AgentActivitySummaryFieldsContentAgentActivityErrorContent.Body, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityErrorContent) GetBody() string { return v.Body }
+
+// GetReasonCode returns AgentActivitySummaryFieldsContentAgentActivityErrorContent.ReasonCode, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityErrorContent) GetReasonCode() *string {
+	return v.ReasonCode
+}
+
+// AgentActivitySummaryFieldsContentAgentActivityPromptContent includes the requested fields of the GraphQL type AgentActivityPromptContent.
+// The GraphQL type's documentation follows.
+//
+// Content for a prompt activity.
+type AgentActivitySummaryFieldsContentAgentActivityPromptContent struct {
+	Typename *string `json:"__typename"`
+	// The type of activity.
+	Type AgentActivityType `json:"type"`
+	// A message requesting additional information or action from user.
+	Body string `json:"body"`
+}
+
+// GetTypename returns AgentActivitySummaryFieldsContentAgentActivityPromptContent.Typename, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityPromptContent) GetTypename() *string {
+	return v.Typename
+}
+
+// GetType returns AgentActivitySummaryFieldsContentAgentActivityPromptContent.Type, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityPromptContent) GetType() AgentActivityType {
+	return v.Type
+}
+
+// GetBody returns AgentActivitySummaryFieldsContentAgentActivityPromptContent.Body, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityPromptContent) GetBody() string { return v.Body }
+
+// AgentActivitySummaryFieldsContentAgentActivityResponseContent includes the requested fields of the GraphQL type AgentActivityResponseContent.
+// The GraphQL type's documentation follows.
+//
+// Content for a response activity.
+type AgentActivitySummaryFieldsContentAgentActivityResponseContent struct {
+	Typename *string `json:"__typename"`
+	// The type of activity.
+	Type AgentActivityType `json:"type"`
+	// The response content in Markdown format.
+	Body string `json:"body"`
+}
+
+// GetTypename returns AgentActivitySummaryFieldsContentAgentActivityResponseContent.Typename, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityResponseContent) GetTypename() *string {
+	return v.Typename
+}
+
+// GetType returns AgentActivitySummaryFieldsContentAgentActivityResponseContent.Type, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityResponseContent) GetType() AgentActivityType {
+	return v.Type
+}
+
+// GetBody returns AgentActivitySummaryFieldsContentAgentActivityResponseContent.Body, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityResponseContent) GetBody() string {
+	return v.Body
+}
+
+// AgentActivitySummaryFieldsContentAgentActivityThoughtContent includes the requested fields of the GraphQL type AgentActivityThoughtContent.
+// The GraphQL type's documentation follows.
+//
+// Content for a thought activity.
+type AgentActivitySummaryFieldsContentAgentActivityThoughtContent struct {
+	Typename *string `json:"__typename"`
+	// The type of activity.
+	Type AgentActivityType `json:"type"`
+	// The thought content in Markdown format.
+	Body string `json:"body"`
+}
+
+// GetTypename returns AgentActivitySummaryFieldsContentAgentActivityThoughtContent.Typename, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityThoughtContent) GetTypename() *string {
+	return v.Typename
+}
+
+// GetType returns AgentActivitySummaryFieldsContentAgentActivityThoughtContent.Type, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityThoughtContent) GetType() AgentActivityType {
+	return v.Type
+}
+
+// GetBody returns AgentActivitySummaryFieldsContentAgentActivityThoughtContent.Body, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsContentAgentActivityThoughtContent) GetBody() string {
+	return v.Body
+}
+
+// AgentActivitySummaryFieldsSourceComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type AgentActivitySummaryFieldsSourceComment struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns AgentActivitySummaryFieldsSourceComment.Id, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsSourceComment) GetId() string { return v.Id }
+
+// AgentActivitySummaryFieldsUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type AgentActivitySummaryFieldsUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns AgentActivitySummaryFieldsUser.Id, and is useful for accessing the field via an interface.
+func (v *AgentActivitySummaryFieldsUser) GetId() string { return v.Id }
+
+// The type of an agent activity.
+type AgentActivityType string
+
+const (
+	AgentActivityTypeThought     AgentActivityType = "thought"
+	AgentActivityTypeAction      AgentActivityType = "action"
+	AgentActivityTypeResponse    AgentActivityType = "response"
+	AgentActivityTypeElicitation AgentActivityType = "elicitation"
+	AgentActivityTypeError       AgentActivityType = "error"
+	AgentActivityTypePrompt      AgentActivityType = "prompt"
+)
+
+var AllAgentActivityType = []AgentActivityType{
+	AgentActivityTypeThought,
+	AgentActivityTypeAction,
+	AgentActivityTypeResponse,
+	AgentActivityTypeElicitation,
+	AgentActivityTypeError,
+	AgentActivityTypePrompt,
+}
+
 // AgentSkillSummaryFields includes the GraphQL fields of AgentSkill requested by the fragment AgentSkillSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -14559,6 +15114,30 @@ func (v *__TeamsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __TeamsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__TeamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __agentActivitiesInput is used internally by genqlient
+type __agentActivitiesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __agentActivitiesInput.First, and is useful for accessing the field via an interface.
+func (v *__agentActivitiesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __agentActivitiesInput.After, and is useful for accessing the field via an interface.
+func (v *__agentActivitiesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __agentActivitiesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__agentActivitiesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __agentActivityInput is used internally by genqlient
+type __agentActivityInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __agentActivityInput.Id, and is useful for accessing the field via an interface.
+func (v *__agentActivityInput) GetId() string { return v.Id }
+
 // __agentSkillInput is used internally by genqlient
 type __agentSkillInput struct {
 	Id string `json:"id"`
@@ -15630,6 +16209,346 @@ func (v *__workflowStatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __workflowStatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__workflowStatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// agentActivitiesAgentActivitiesAgentActivityConnection includes the requested fields of the GraphQL type AgentActivityConnection.
+type agentActivitiesAgentActivitiesAgentActivityConnection struct {
+	Nodes    []agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity `json:"nodes"`
+	PageInfo agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns agentActivitiesAgentActivitiesAgentActivityConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnection) GetNodes() []agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity {
+	return v.Nodes
+}
+
+// GetPageInfo returns agentActivitiesAgentActivitiesAgentActivityConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnection) GetPageInfo() agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo {
+	return v.PageInfo
+}
+
+// agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity includes the requested fields of the GraphQL type AgentActivity.
+// The GraphQL type's documentation follows.
+//
+// An activity performed by or directed at an AI coding agent during a session.
+// Activities represent the observable steps of an agent's work, including
+// thoughts, actions (tool calls), responses, prompts from users, errors, and
+// elicitation requests. Each activity belongs to an agent session and is
+// associated with the user who initiated it.
+type agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity struct {
+	AgentActivitySummaryFields `json:"-"`
+}
+
+// GetId returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.Id, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetId() string {
+	return v.AgentActivitySummaryFields.Id
+}
+
+// GetCreatedAt returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.CreatedAt, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetCreatedAt() string {
+	return v.AgentActivitySummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetUpdatedAt() string {
+	return v.AgentActivitySummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetArchivedAt() *string {
+	return v.AgentActivitySummaryFields.ArchivedAt
+}
+
+// GetSignal returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.Signal, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetSignal() *AgentActivitySignal {
+	return v.AgentActivitySummaryFields.Signal
+}
+
+// GetEphemeral returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.Ephemeral, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetEphemeral() bool {
+	return v.AgentActivitySummaryFields.Ephemeral
+}
+
+// GetAgentSession returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.AgentSession, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetAgentSession() AgentActivitySummaryFieldsAgentSession {
+	return v.AgentActivitySummaryFields.AgentSession
+}
+
+// GetSourceComment returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.SourceComment, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetSourceComment() *AgentActivitySummaryFieldsSourceComment {
+	return v.AgentActivitySummaryFields.SourceComment
+}
+
+// GetUser returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.User, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetUser() AgentActivitySummaryFieldsUser {
+	return v.AgentActivitySummaryFields.User
+}
+
+// GetContent returns agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.Content, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) GetContent() AgentActivitySummaryFieldsContentAgentActivityContent {
+	return v.AgentActivitySummaryFields.Content
+}
+
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AgentActivitySummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalagentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Signal *AgentActivitySignal `json:"signal"`
+
+	Ephemeral bool `json:"ephemeral"`
+
+	AgentSession AgentActivitySummaryFieldsAgentSession `json:"agentSession"`
+
+	SourceComment *AgentActivitySummaryFieldsSourceComment `json:"sourceComment"`
+
+	User AgentActivitySummaryFieldsUser `json:"user"`
+
+	Content json.RawMessage `json:"content"`
+}
+
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity) __premarshalJSON() (*__premarshalagentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity, error) {
+	var retval __premarshalagentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity
+
+	retval.Id = v.AgentActivitySummaryFields.Id
+	retval.CreatedAt = v.AgentActivitySummaryFields.CreatedAt
+	retval.UpdatedAt = v.AgentActivitySummaryFields.UpdatedAt
+	retval.ArchivedAt = v.AgentActivitySummaryFields.ArchivedAt
+	retval.Signal = v.AgentActivitySummaryFields.Signal
+	retval.Ephemeral = v.AgentActivitySummaryFields.Ephemeral
+	retval.AgentSession = v.AgentActivitySummaryFields.AgentSession
+	retval.SourceComment = v.AgentActivitySummaryFields.SourceComment
+	retval.User = v.AgentActivitySummaryFields.User
+	{
+
+		dst := &retval.Content
+		src := v.AgentActivitySummaryFields.Content
+		var err error
+		*dst, err = __marshalAgentActivitySummaryFieldsContentAgentActivityContent(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity.AgentActivitySummaryFields.Content: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *agentActivitiesAgentActivitiesAgentActivityConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// agentActivitiesResponse is returned by agentActivities on success.
+type agentActivitiesResponse struct {
+	// All agent activities.
+	AgentActivities agentActivitiesAgentActivitiesAgentActivityConnection `json:"agentActivities"`
+}
+
+// GetAgentActivities returns agentActivitiesResponse.AgentActivities, and is useful for accessing the field via an interface.
+func (v *agentActivitiesResponse) GetAgentActivities() agentActivitiesAgentActivitiesAgentActivityConnection {
+	return v.AgentActivities
+}
+
+// agentActivityAgentActivity includes the requested fields of the GraphQL type AgentActivity.
+// The GraphQL type's documentation follows.
+//
+// An activity performed by or directed at an AI coding agent during a session.
+// Activities represent the observable steps of an agent's work, including
+// thoughts, actions (tool calls), responses, prompts from users, errors, and
+// elicitation requests. Each activity belongs to an agent session and is
+// associated with the user who initiated it.
+type agentActivityAgentActivity struct {
+	AgentActivitySummaryFields `json:"-"`
+}
+
+// GetId returns agentActivityAgentActivity.Id, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetId() string { return v.AgentActivitySummaryFields.Id }
+
+// GetCreatedAt returns agentActivityAgentActivity.CreatedAt, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetCreatedAt() string {
+	return v.AgentActivitySummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns agentActivityAgentActivity.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetUpdatedAt() string {
+	return v.AgentActivitySummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns agentActivityAgentActivity.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetArchivedAt() *string {
+	return v.AgentActivitySummaryFields.ArchivedAt
+}
+
+// GetSignal returns agentActivityAgentActivity.Signal, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetSignal() *AgentActivitySignal {
+	return v.AgentActivitySummaryFields.Signal
+}
+
+// GetEphemeral returns agentActivityAgentActivity.Ephemeral, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetEphemeral() bool {
+	return v.AgentActivitySummaryFields.Ephemeral
+}
+
+// GetAgentSession returns agentActivityAgentActivity.AgentSession, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetAgentSession() AgentActivitySummaryFieldsAgentSession {
+	return v.AgentActivitySummaryFields.AgentSession
+}
+
+// GetSourceComment returns agentActivityAgentActivity.SourceComment, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetSourceComment() *AgentActivitySummaryFieldsSourceComment {
+	return v.AgentActivitySummaryFields.SourceComment
+}
+
+// GetUser returns agentActivityAgentActivity.User, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetUser() AgentActivitySummaryFieldsUser {
+	return v.AgentActivitySummaryFields.User
+}
+
+// GetContent returns agentActivityAgentActivity.Content, and is useful for accessing the field via an interface.
+func (v *agentActivityAgentActivity) GetContent() AgentActivitySummaryFieldsContentAgentActivityContent {
+	return v.AgentActivitySummaryFields.Content
+}
+
+func (v *agentActivityAgentActivity) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*agentActivityAgentActivity
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.agentActivityAgentActivity = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AgentActivitySummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalagentActivityAgentActivity struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Signal *AgentActivitySignal `json:"signal"`
+
+	Ephemeral bool `json:"ephemeral"`
+
+	AgentSession AgentActivitySummaryFieldsAgentSession `json:"agentSession"`
+
+	SourceComment *AgentActivitySummaryFieldsSourceComment `json:"sourceComment"`
+
+	User AgentActivitySummaryFieldsUser `json:"user"`
+
+	Content json.RawMessage `json:"content"`
+}
+
+func (v *agentActivityAgentActivity) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *agentActivityAgentActivity) __premarshalJSON() (*__premarshalagentActivityAgentActivity, error) {
+	var retval __premarshalagentActivityAgentActivity
+
+	retval.Id = v.AgentActivitySummaryFields.Id
+	retval.CreatedAt = v.AgentActivitySummaryFields.CreatedAt
+	retval.UpdatedAt = v.AgentActivitySummaryFields.UpdatedAt
+	retval.ArchivedAt = v.AgentActivitySummaryFields.ArchivedAt
+	retval.Signal = v.AgentActivitySummaryFields.Signal
+	retval.Ephemeral = v.AgentActivitySummaryFields.Ephemeral
+	retval.AgentSession = v.AgentActivitySummaryFields.AgentSession
+	retval.SourceComment = v.AgentActivitySummaryFields.SourceComment
+	retval.User = v.AgentActivitySummaryFields.User
+	{
+
+		dst := &retval.Content
+		src := v.AgentActivitySummaryFields.Content
+		var err error
+		*dst, err = __marshalAgentActivitySummaryFieldsContentAgentActivityContent(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal agentActivityAgentActivity.AgentActivitySummaryFields.Content: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// agentActivityResponse is returned by agentActivity on success.
+type agentActivityResponse struct {
+	// A specific agent activity.
+	AgentActivity agentActivityAgentActivity `json:"agentActivity"`
+}
+
+// GetAgentActivity returns agentActivityResponse.AgentActivity, and is useful for accessing the field via an interface.
+func (v *agentActivityResponse) GetAgentActivity() agentActivityAgentActivity { return v.AgentActivity }
 
 // agentSkillAgentSkill includes the requested fields of the GraphQL type AgentSkill.
 // The GraphQL type's documentation follows.
@@ -39372,6 +40291,178 @@ func Viewer(
 	}
 
 	data_ = &ViewerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by agentActivities.
+const agentActivities_Operation = `
+query agentActivities ($first: Int, $after: String, $includeArchived: Boolean) {
+	agentActivities(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... AgentActivitySummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment AgentActivitySummaryFields on AgentActivity {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	signal
+	ephemeral
+	agentSession {
+		id
+	}
+	sourceComment {
+		id
+	}
+	user {
+		id
+	}
+	content {
+		__typename
+		... on AgentActivityActionContent {
+			type
+			action
+			parameter
+			result
+		}
+		... on AgentActivityElicitationContent {
+			type
+			body
+		}
+		... on AgentActivityErrorContent {
+			type
+			body
+			reasonCode
+		}
+		... on AgentActivityPromptContent {
+			type
+			body
+		}
+		... on AgentActivityResponseContent {
+			type
+			body
+		}
+		... on AgentActivityThoughtContent {
+			type
+			body
+		}
+	}
+}
+`
+
+func agentActivities(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *agentActivitiesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "agentActivities",
+		Query:  agentActivities_Operation,
+		Variables: &__agentActivitiesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &agentActivitiesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by agentActivity.
+const agentActivity_Operation = `
+query agentActivity ($id: String!) {
+	agentActivity(id: $id) {
+		... AgentActivitySummaryFields
+	}
+}
+fragment AgentActivitySummaryFields on AgentActivity {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	signal
+	ephemeral
+	agentSession {
+		id
+	}
+	sourceComment {
+		id
+	}
+	user {
+		id
+	}
+	content {
+		__typename
+		... on AgentActivityActionContent {
+			type
+			action
+			parameter
+			result
+		}
+		... on AgentActivityElicitationContent {
+			type
+			body
+		}
+		... on AgentActivityErrorContent {
+			type
+			body
+			reasonCode
+		}
+		... on AgentActivityPromptContent {
+			type
+			body
+		}
+		... on AgentActivityResponseContent {
+			type
+			body
+		}
+		... on AgentActivityThoughtContent {
+			type
+			body
+		}
+	}
+}
+`
+
+func agentActivity(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *agentActivityResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "agentActivity",
+		Query:  agentActivity_Operation,
+		Variables: &__agentActivityInput{
+			Id: id,
+		},
+	}
+
+	data_ = &agentActivityResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

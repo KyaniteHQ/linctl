@@ -168,21 +168,30 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "detail",
 			Status: "Started",
 		}) + `}`,
-		"project_members":        `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"ProjectUpdates":         `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectUpdates":         `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"projectUpdate":          `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"ProjectMilestones":      `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectMilestone":       `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
-		"applicationInfo":        `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
-		"issue_comments":         `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"comments":               `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"comment":                `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"Documents":              `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"document":               `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
-		"IssueLabels":            `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"issueLabel":             `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
-		"Teams":                  `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"project_members":   `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"ProjectUpdates":    `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectUpdates":    `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectUpdate":     `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"ProjectMilestones": `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectMilestone":  `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
+		"applicationInfo":   `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
+		"issue_comments":    `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"comments":          `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"comment":           `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"Documents":         `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"document":          `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
+		"IssueLabels":       `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issueLabel":        `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
+		"Teams":             `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"agentActivities": `{"agentActivities":{"nodes":[` + strings.Join([]string{
+			agentActivityJSON("action"),
+			agentActivityJSON("elicitation"),
+			agentActivityJSON("error"),
+			agentActivityJSON("prompt"),
+			agentActivityJSON("response"),
+			agentActivityJSON("thought"),
+		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"agentActivity":          `{"agentActivity":` + agentActivityJSON("action") + `}`,
 		"agentSkills":            `{"agentSkills":{"nodes":[` + agentSkillJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"agentSkill":             `{"agentSkill":` + agentSkillJSON() + `}`,
 		"organizationExists":     `{"organizationExists":{"success":true,"exists":true}}`,
@@ -312,6 +321,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	projectMilestone, err := GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
 	require.NoError(t, err)
 	application, err := GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
+	require.NoError(t, err)
+	agentActivities, err := ListAgentActivities(context.Background(), graphqlClient, 6)
+	require.NoError(t, err)
+	agentActivity, err := GetAgentActivityByID(context.Background(), graphqlClient, "agent-activity-id")
 	require.NoError(t, err)
 	agentSkills, err := ListAgentSkills(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -529,6 +542,19 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "app-client-id", application.ClientID)
 	require.Equal(t, "Demo App", application.Name)
 	require.Equal(t, "Kyanite", application.Developer)
+	require.True(t, agentActivities.HasNextPage)
+	require.Equal(t, &endCursor, agentActivities.EndCursor)
+	require.Equal(t, "action", agentActivities.AgentActivities[0].ContentType)
+	require.Equal(t, "elicitation", agentActivities.AgentActivities[1].ContentType)
+	require.Equal(t, "error", agentActivities.AgentActivities[2].ContentType)
+	require.Equal(t, "prompt", agentActivities.AgentActivities[3].ContentType)
+	require.Equal(t, "response", agentActivities.AgentActivities[4].ContentType)
+	require.Equal(t, "thought", agentActivities.AgentActivities[5].ContentType)
+	require.Equal(t, "agent-activity-id", agentActivity.ID)
+	require.Equal(t, "agent-session-id", agentActivity.AgentSessionID)
+	require.Equal(t, "comment-id", agentActivity.SourceCommentID)
+	require.Equal(t, "read_file", agentActivity.Content.Action)
+	require.Empty(t, agentActivityContentSummary(nil).Type)
 	require.True(t, agentSkills.HasNextPage)
 	require.Equal(t, &endCursor, agentSkills.EndCursor)
 	require.Equal(t, "agent-skill-id", agentSkills.AgentSkills[0].ID)
@@ -1210,6 +1236,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get application info app-client-id")
+
+		_, err = ListAgentActivities(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list agent activities")
+
+		_, err = GetAgentActivityByID(context.Background(), graphqlClient, "agent-activity-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get agent activity agent-activity-id")
 
 		_, err = ListAgentSkills(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -2313,6 +2347,57 @@ func agentSkillJSON() string {
 		"owner":{"id":"owner-id"},
 		"creator":{"id":"creator-id"},
 		"lastUpdatedBy":{"id":"updater-id"}
+	}`
+}
+
+func agentActivityJSON(contentType string) string {
+	content := map[string]string{
+		"action": `{
+			"__typename":"AgentActivityActionContent",
+			"type":"action",
+			"action":"read_file",
+			"parameter":"README.md",
+			"result":"Read file"
+		}`,
+		"elicitation": `{
+			"__typename":"AgentActivityElicitationContent",
+			"type":"elicitation",
+			"body":"Need a choice"
+		}`,
+		"error": `{
+			"__typename":"AgentActivityErrorContent",
+			"type":"error",
+			"body":"Tool failed",
+			"reasonCode":"tool_error"
+		}`,
+		"prompt": `{
+			"__typename":"AgentActivityPromptContent",
+			"type":"prompt",
+			"body":"Please continue"
+		}`,
+		"response": `{
+			"__typename":"AgentActivityResponseContent",
+			"type":"response",
+			"body":"Done"
+		}`,
+		"thought": `{
+			"__typename":"AgentActivityThoughtContent",
+			"type":"thought",
+			"body":"Thinking"
+		}`,
+	}[contentType]
+
+	return `{
+		"id":"agent-activity-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"signal":"continue",
+		"ephemeral":false,
+		"agentSession":{"id":"agent-session-id"},
+		"sourceComment":{"id":"comment-id"},
+		"user":{"id":"user-id"},
+		"content":` + content + `
 	}`
 }
 

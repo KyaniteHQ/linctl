@@ -39,6 +39,7 @@ PY
   if [[ -n "${LINCTL_APPLICATION_CLIENT_ID:-}" ]]; then
     "$binary" application info "$LINCTL_APPLICATION_CLIENT_ID" --json >/dev/null
   fi
+  "$binary" agent-activity list --json --limit 5 >/dev/null
   "$binary" agent-skill list --json --limit 5 >/dev/null
   "$binary" organization exists "$org_url_key" --json >/dev/null
   "$binary" organization templates --json --limit 5 >/dev/null

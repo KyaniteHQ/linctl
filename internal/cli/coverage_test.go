@@ -178,6 +178,18 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Shared:           true,
 		RecentUsageCount: 3,
 	}
+	agentActivity := client.AgentActivitySummary{
+		ID:             "agent-activity-id",
+		AgentSessionID: "agent-session-id",
+		ContentType:    "action",
+		Content: client.AgentActivityContentSummary{
+			Type:      "action",
+			Action:    "read_file",
+			Parameter: "README.md",
+		},
+		Signal: "continue",
+		UserID: "user-id",
+	}
 	rateLimitStatus := client.RateLimitStatus{
 		Identifier: "api-key",
 		Kind:       "api",
@@ -289,6 +301,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomerStatus(textCommand, &textOptions, customerStatus))
 	require.NoError(t, writeCustomerTier(textCommand, &textOptions, customerTier))
 	require.NoError(t, writeApplicationInfo(textCommand, &textOptions, application))
+	require.NoError(t, writeAgentActivity(textCommand, &textOptions, agentActivity))
 	require.NoError(t, writeAgentSkill(textCommand, &textOptions, agentSkill))
 	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(textCommand, &textOptions, rateLimitStatus))
@@ -324,6 +337,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"customer-status-id Active #00ff00 1\n"+
 			"customer-tier-id Enterprise #0000ff 2\n"+
 			"app-id Demo App by Kyanite\n"+
+			"agent-activity-id session agent-session-id [action] signal continue\n"+
 			"agent-skill-id Triage Helper shared true recent 3\n"+
 			"kyanite exists true success true\n"+
 			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
@@ -371,6 +385,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomerStatus(jsonCommand, &jsonOptions, customerStatus))
 	require.NoError(t, writeCustomerTier(jsonCommand, &jsonOptions, customerTier))
 	require.NoError(t, writeApplicationInfo(jsonCommand, &jsonOptions, application))
+	require.NoError(t, writeAgentActivity(jsonCommand, &jsonOptions, agentActivity))
 	require.NoError(t, writeAgentSkill(jsonCommand, &jsonOptions, agentSkill))
 	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(jsonCommand, &jsonOptions, rateLimitStatus))
@@ -410,6 +425,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"display_name": "Active"`)
 	require.Contains(t, jsonOut.String(), `"display_name": "Enterprise"`)
 	require.Contains(t, jsonOut.String(), `"client_id": "app-client-id"`)
+	require.Contains(t, jsonOut.String(), `"content_type": "action"`)
 	require.Contains(t, jsonOut.String(), `"title": "Triage Helper"`)
 	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
 	require.Contains(t, jsonOut.String(), `"remaining_amount": 900`)
@@ -599,6 +615,18 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Shared:           true,
 		RecentUsageCount: 3,
 	}
+	agentActivity := client.AgentActivitySummary{
+		ID:             "agent-activity-id",
+		AgentSessionID: "agent-session-id",
+		ContentType:    "action",
+		Content: client.AgentActivityContentSummary{
+			Type:      "action",
+			Action:    "read_file",
+			Parameter: "README.md",
+		},
+		Signal: "continue",
+		UserID: "user-id",
+	}
 	favorite := client.FavoriteSummary{
 		ID:   "favorite-id",
 		Type: "issue",
@@ -698,6 +726,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomerStatus(command, &rootOptions{idOnly: true}, customerStatus))
 	require.NoError(t, writeCustomerTier(command, &rootOptions{idOnly: true}, customerTier))
 	require.NoError(t, writeApplicationInfo(command, &rootOptions{idOnly: true}, application))
+	require.NoError(t, writeAgentActivity(command, &rootOptions{idOnly: true}, agentActivity))
 	require.NoError(t, writeAgentSkill(command, &rootOptions{idOnly: true}, agentSkill))
 	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
 	require.NoError(t, writeEmoji(command, &rootOptions{idOnly: true}, emoji))
@@ -738,6 +767,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "customer-status-id")
 	require.Contains(t, output.String(), "customer-tier-id")
 	require.Contains(t, output.String(), "app-id")
+	require.Contains(t, output.String(), "agent-activity-id")
 	require.Contains(t, output.String(), "agent-skill-id")
 	require.Contains(t, output.String(), "favorite-id")
 	require.Contains(t, output.String(), "emoji-id")
@@ -781,6 +811,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomerStatus(quietCommand, &rootOptions{quiet: true}, customerStatus))
 	require.NoError(t, writeCustomerTier(quietCommand, &rootOptions{quiet: true}, customerTier))
 	require.NoError(t, writeApplicationInfo(quietCommand, &rootOptions{quiet: true}, application))
+	require.NoError(t, writeAgentActivity(quietCommand, &rootOptions{quiet: true}, agentActivity))
 	require.NoError(t, writeAgentSkill(quietCommand, &rootOptions{quiet: true}, agentSkill))
 	require.NoError(t, writeOrganizationExists(quietCommand, &rootOptions{quiet: true}, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(quietCommand, &rootOptions{quiet: true}, rateLimitStatus))

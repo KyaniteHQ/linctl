@@ -17,6 +17,27 @@ Command names below are either implemented CLI surface or intentionally deferred
 
 The target vocabulary is `org_id`, `team_key`, `team_id`, and optional `project_id`. Do not introduce `workspace` as a flag or JSON key synonym.
 
+## AgentActivity
+
+Schema backing:
+
+- Types: `AgentActivity`, `AgentActivityConnection`, `AgentActivityContent`
+- Reads: `Query.agentActivities`, `Query.agentActivity`
+- Writes: `Mutation.agentActivityCreate`, `Mutation.agentActivityUpdate`, `Mutation.agentActivityArchive`, prompt-specific activity mutations
+- Relevant fields: `AgentActivity.id`, `AgentActivity.agentSession`, `AgentActivity.content`, `AgentActivity.signal`, `AgentActivity.ephemeral`, `AgentActivity.sourceComment`, `AgentActivity.user`, `AgentActivity.createdAt`, `AgentActivity.updatedAt`
+
+Command coverage:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `agent-activity list` | `Query.agentActivities` | Read-only |
+| `agent-activity get` | `Query.agentActivity` | Read-only |
+| `agent-activity create` | `Mutation.agentActivityCreate` | Blocked: create writes into an agent session and needs explicit session/comment guard semantics |
+| `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation |
+| `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics |
+
+Only `agent-activity list` and `agent-activity get` are implemented in the current CLI. AgentActivity writes remain deferred until their session and comment guard model is explicit.
+
 ## AgentSkill
 
 Schema backing:
