@@ -183,6 +183,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"issueLabel":               `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
 		"Teams":                    `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"organizationExists":       `{"organizationExists":{"success":true,"exists":true}}`,
+		"rateLimitStatus":          `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
 		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
 		"team_members":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"users":                    `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -271,6 +272,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	teams, err := ListTeams(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	organizationExists, err := CheckOrganizationExists(context.Background(), graphqlClient, "kyanite")
+	require.NoError(t, err)
+	rateLimitStatus, err := GetRateLimitStatus(context.Background(), graphqlClient)
 	require.NoError(t, err)
 	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
 	require.NoError(t, err)
@@ -394,6 +397,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "kyanite", organizationExists.URLKey)
 	require.True(t, organizationExists.Success)
 	require.True(t, organizationExists.Exists)
+	require.Equal(t, "api-key", rateLimitStatus.Identifier)
+	require.Equal(t, "api", rateLimitStatus.Kind)
+	require.Equal(t, "complexity", rateLimitStatus.Limits[0].Type)
+	require.InDelta(t, 900, rateLimitStatus.Limits[0].RemainingAmount, 0)
 	require.Equal(t, "team body", team.Description)
 	require.Equal(t, "Omer", teamMembers.Members[0].DisplayName)
 	require.Equal(t, &endCursor, teamMembers.EndCursor)
@@ -455,6 +462,13 @@ func Test_CheckOrganizationExists_returns_operation_errors(t *testing.T) {
 
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "missing fake response for organizationExists")
+}
+
+func Test_GetRateLimitStatus_returns_operation_errors(t *testing.T) {
+	_, err := GetRateLimitStatus(context.Background(), fakeGraphQLClient{})
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "missing fake response for rateLimitStatus")
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {

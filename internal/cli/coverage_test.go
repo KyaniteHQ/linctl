@@ -99,6 +99,20 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Success: true,
 		Exists:  true,
 	}
+	rateLimitStatus := client.RateLimitStatus{
+		Identifier: "api-key",
+		Kind:       "api",
+		Limits: []client.RateLimit{
+			{
+				Type:            "complexity",
+				RequestedAmount: 1,
+				AllowedAmount:   1000,
+				Period:          60000,
+				RemainingAmount: 900,
+				Reset:           1720000000000,
+			},
+		},
+	}
 	favorite := client.FavoriteSummary{
 		ID:   "favorite-id",
 		Type: "issue",
@@ -135,6 +149,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(textCommand, &textOptions, customViewSubscriberStatus))
 	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
+	require.NoError(t, writeRateLimitStatus(textCommand, &textOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
 	require.NoError(t, writeEmoji(textCommand, &textOptions, emoji))
 	require.NoError(t, writeAttachment(textCommand, &textOptions, attachment))
@@ -148,6 +163,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"initiative-id Platform [Active]\ncustom-view-id My issues [Issue]\n"+
 			"custom-view-id has_subscribers true\n"+
 			"kyanite exists true success true\n"+
+			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
 			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
 			"attachment-id Linked PR [github]\n",
 		textOut.String(),
@@ -173,6 +189,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(jsonCommand, &jsonOptions, customViewSubscriberStatus))
 	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
+	require.NoError(t, writeRateLimitStatus(jsonCommand, &jsonOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
 	require.NoError(t, writeEmoji(jsonCommand, &jsonOptions, emoji))
 	require.NoError(t, writeAttachment(jsonCommand, &jsonOptions, attachment))
@@ -191,6 +208,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
 	require.Contains(t, jsonOut.String(), `"has_subscribers": true`)
 	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
+	require.Contains(t, jsonOut.String(), `"remaining_amount": 900`)
 	require.Contains(t, jsonOut.String(), `"type": "issue"`)
 	require.Contains(t, jsonOut.String(), `"source": "custom"`)
 	require.Contains(t, jsonOut.String(), `"source_type": "github"`)
@@ -286,6 +304,13 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Success: true,
 		Exists:  true,
 	}
+	rateLimitStatus := client.RateLimitStatus{
+		Identifier: "api-key",
+		Kind:       "api",
+		Limits: []client.RateLimit{
+			{Type: "complexity", AllowedAmount: 1000, RemainingAmount: 900, Reset: 1720000000000},
+		},
+	}
 	favorite := client.FavoriteSummary{
 		ID:   "favorite-id",
 		Type: "issue",
@@ -365,6 +390,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(quietCommand, &rootOptions{quiet: true}, customViewSubscriberStatus))
 	require.NoError(t, writeOrganizationExists(quietCommand, &rootOptions{quiet: true}, organizationExistsStatus))
+	require.NoError(t, writeRateLimitStatus(quietCommand, &rootOptions{quiet: true}, rateLimitStatus))
 	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
 	require.NoError(t, writeEmoji(quietCommand, &rootOptions{quiet: true}, emoji))
 	require.NoError(t, writeAttachment(quietCommand, &rootOptions{quiet: true}, attachment))
@@ -829,6 +855,36 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 		dependencies := client.IssueDependencyGraph{Identifier: "LIT-1"}
 
 		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+}
+
+func Test_CommandFlows_cover_rate_limit_writer_errors(t *testing.T) {
+	status := client.RateLimitStatus{
+		Identifier: "api-key",
+		Kind:       "api",
+		Limits: []client.RateLimit{
+			{Type: "complexity", AllowedAmount: 1000, RemainingAmount: 900, Reset: 1720000000000},
+		},
+	}
+
+	t.Run("header", func(t *testing.T) {
+		command := &cobra.Command{}
+		command.SetOut(commandFailingWriter{})
+
+		err := writeRateLimitStatus(command, &rootOptions{}, status)
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("limit", func(t *testing.T) {
+		command := &cobra.Command{}
+		command.SetOut(&countFailingWriter{failAt: 2})
+
+		err := writeRateLimitStatus(command, &rootOptions{}, status)
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "write line")

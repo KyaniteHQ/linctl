@@ -623,6 +623,7 @@ func commandImplemented(command string) bool {
 		"whoami":                   true,
 		"target":                   true,
 		"organization exists":      true,
+		"rate-limit status":        true,
 		"issue list":               true,
 		"issue search":             true,
 		"issue get":                true,

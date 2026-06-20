@@ -11,6 +11,7 @@ Command names below are either implemented CLI surface or intentionally deferred
 | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. |
 | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. |
 | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. |
+| `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. |
 
 The target vocabulary is `org_id`, `team_key`, `team_id`, and optional `project_id`. Do not introduce `workspace` as a flag or JSON key synonym.
 

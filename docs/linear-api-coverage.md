@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 48 | 458 |
-| Upstream Query root fields | 158 | 36 | 158 |
+| Upstream SDK root methods | 458 | 49 | 458 |
+| Upstream Query root fields | 158 | 37 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 74 | 74 | 74 |
-| Domain-map commands | 101 | 68 | 101 |
+| Local generated Go operations | 75 | 75 | 75 |
+| Domain-map commands | 102 | 69 | 102 |
 
 ## Upstream SDK Root Methods
 
@@ -349,7 +349,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdates` | method | implemented | local operation or command exists |
 | `projects` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `pushSubscriptionTest` | method | safe_candidate | read operation may fit future CLI coverage |
-| `rateLimitStatus` | getter | safe_candidate | read operation may fit future CLI coverage |
+| `rateLimitStatus` | getter | implemented | local operation or command exists |
 | `recentReleasesByAccessKey` | method | safe_candidate | read operation may fit future CLI coverage |
 | `refreshGoogleSheetsData` | method | safe_candidate | read operation may fit future CLI coverage |
 | `release` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -604,7 +604,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdates` | `ProjectUpdateConnection!` | implemented | root field used by local GraphQL operation |
 | `projects` | `ProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `rateLimitStatus` | `RateLimitPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `rateLimitStatus` | `RateLimitPayload!` | implemented | root field used by local GraphQL operation |
 | `recentReleasesByAccessKey` | `[Release!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `release` | `Release!` | safe_candidate | read operation may fit future CLI coverage |
 | `releaseNote` | `ReleaseNote!` | safe_candidate | read operation may fit future CLI coverage |
@@ -1088,6 +1088,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
 | `project_members` | query | `project` | implemented | `internal/client/generated.go` |
+| `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
@@ -1104,6 +1105,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help` / public CLI tests |
 | Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
+| Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |

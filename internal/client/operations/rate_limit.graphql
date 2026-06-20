@@ -1,0 +1,14 @@
+query rateLimitStatus {
+  rateLimitStatus {
+    identifier
+    kind
+    limits {
+      type
+      requestedAmount
+      allowedAmount
+      period
+      remainingAmount
+      reset
+    }
+  }
+}

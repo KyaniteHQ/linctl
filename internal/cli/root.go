@@ -70,6 +70,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addDoctorCommand(ctx, command, &options)
 	addWhoamiCommand(ctx, command, &options)
 	addOrganizationCommand(ctx, command, &options)
+	addRateLimitCommand(ctx, command, &options)
 	addIssueCommand(ctx, command, &options)
 	addNextCommand(ctx, command, &options)
 	addCurrentCommand(ctx, command, &options)

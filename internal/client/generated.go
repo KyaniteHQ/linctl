@@ -13242,6 +13242,91 @@ type project_membersResponse struct {
 // GetProject returns project_membersResponse.Project, and is useful for accessing the field via an interface.
 func (v *project_membersResponse) GetProject() project_membersProject { return v.Project }
 
+// rateLimitStatusRateLimitStatusRateLimitPayload includes the requested fields of the GraphQL type RateLimitPayload.
+// The GraphQL type's documentation follows.
+//
+// The current rate limit status for the authenticated entity.
+type rateLimitStatusRateLimitStatusRateLimitPayload struct {
+	// The identifier being rate limited, typically the API key or user ID.
+	Identifier *string `json:"identifier"`
+	// The category of rate limit applied to this request, such as API complexity or request count.
+	Kind string `json:"kind"`
+	// The current state of each rate limit type, including remaining quota and reset timing.
+	Limits []rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload `json:"limits"`
+}
+
+// GetIdentifier returns rateLimitStatusRateLimitStatusRateLimitPayload.Identifier, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayload) GetIdentifier() *string { return v.Identifier }
+
+// GetKind returns rateLimitStatusRateLimitStatusRateLimitPayload.Kind, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayload) GetKind() string { return v.Kind }
+
+// GetLimits returns rateLimitStatusRateLimitStatusRateLimitPayload.Limits, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayload) GetLimits() []rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload {
+	return v.Limits
+}
+
+// rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload includes the requested fields of the GraphQL type RateLimitResultPayload.
+// The GraphQL type's documentation follows.
+//
+// The state of a specific rate limit type, including remaining quota and reset timing.
+type rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload struct {
+	// The specific type of rate limit being tracked, such as query complexity or mutation count.
+	Type string `json:"type"`
+	// The requested quantity for this type of limit.
+	RequestedAmount float64 `json:"requestedAmount"`
+	// The total allowed quantity for this type of limit.
+	AllowedAmount float64 `json:"allowedAmount"`
+	// The duration in milliseconds of the rate limit window. After this period elapses, the limit is fully replenished.
+	Period float64 `json:"period"`
+	// The remaining quantity for this type of limit after this request.
+	RemainingAmount float64 `json:"remainingAmount"`
+	// The UNIX timestamp (in milliseconds) at which the rate limit will be fully replenished.
+	Reset float64 `json:"reset"`
+}
+
+// GetType returns rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload.Type, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload) GetType() string {
+	return v.Type
+}
+
+// GetRequestedAmount returns rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload.RequestedAmount, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload) GetRequestedAmount() float64 {
+	return v.RequestedAmount
+}
+
+// GetAllowedAmount returns rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload.AllowedAmount, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload) GetAllowedAmount() float64 {
+	return v.AllowedAmount
+}
+
+// GetPeriod returns rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload.Period, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload) GetPeriod() float64 {
+	return v.Period
+}
+
+// GetRemainingAmount returns rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload.RemainingAmount, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload) GetRemainingAmount() float64 {
+	return v.RemainingAmount
+}
+
+// GetReset returns rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload.Reset, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload) GetReset() float64 {
+	return v.Reset
+}
+
+// rateLimitStatusResponse is returned by rateLimitStatus on success.
+type rateLimitStatusResponse struct {
+	// The current rate limit status for the authenticated client, including
+	// remaining quota and reset timing for each limit type.
+	RateLimitStatus rateLimitStatusRateLimitStatusRateLimitPayload `json:"rateLimitStatus"`
+}
+
+// GetRateLimitStatus returns rateLimitStatusResponse.RateLimitStatus, and is useful for accessing the field via an interface.
+func (v *rateLimitStatusResponse) GetRateLimitStatus() rateLimitStatusRateLimitStatusRateLimitPayload {
+	return v.RateLimitStatus
+}
+
 // teamResponse is returned by team on success.
 type teamResponse struct {
 	// Fetches a specific team by its ID.
@@ -18169,6 +18254,45 @@ func project_members(
 	}
 
 	data_ = &project_membersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by rateLimitStatus.
+const rateLimitStatus_Operation = `
+query rateLimitStatus {
+	rateLimitStatus {
+		identifier
+		kind
+		limits {
+			type
+			requestedAmount
+			allowedAmount
+			period
+			remainingAmount
+			reset
+		}
+	}
+}
+`
+
+func rateLimitStatus(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *rateLimitStatusResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "rateLimitStatus",
+		Query:  rateLimitStatus_Operation,
+	}
+
+	data_ = &rateLimitStatusResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

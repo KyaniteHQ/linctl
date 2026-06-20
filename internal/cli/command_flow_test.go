@@ -32,6 +32,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "doctor", args: []string{"doctor"}, contains: "config ok\n token set\n target confirmed LIT/team-id project project-id"},
 		{name: "whoami", args: []string{"whoami"}, contains: "Omer <omer@example.com>"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
+		{name: "rate limit status", args: []string{"rate-limit", "status"}, contains: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
 		{name: "issue list", args: []string{"issue", "list", "--limit", "1"}, contains: "LIT-1 Listed issue [Todo]"},
 		{name: "issue list state filter", args: []string{"issue", "list", "--state", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
@@ -461,6 +462,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"doctor"},
 			{"whoami"},
 			{"organization", "exists", "kyanite"},
+			{"rate-limit", "status"},
 			{"next", "--dry-run"},
 			{"issue", "list"},
 			{"issue", "search", "needle"},
@@ -623,6 +625,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "doctor"},
 		{"--json", "whoami"},
 		{"--json", "organization", "exists", "kyanite"},
+		{"--json", "rate-limit", "status"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1002,6 +1005,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "doctor target resolve", args: []string{"doctor"}, operation: "Teams", contains: "resolve teams"},
 		{name: "whoami resolve", args: []string{"whoami"}, operation: "Viewer", contains: "resolve viewer"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
+		{name: "rate limit status", args: []string{"rate-limit", "status"}, operation: "rateLimitStatus", contains: "operation failed"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
 		{name: "next issues", args: []string{"next", "--dry-run"}, operation: "NextIssuesByTeam", contains: "list next issues"},
 		{name: "issue list target resolve", args: []string{"issue", "list"}, operation: "Teams", contains: "resolve teams"},
@@ -1330,6 +1334,8 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, nil
 	case "organizationExists":
 		return `{"organizationExists":{"success":true,"exists":true}}`, nil
+	case "rateLimitStatus":
+		return commandRateLimitStatusPayload(), nil
 	}
 	if payload, ok := commandFlowIssuePayload(operation, fake); ok {
 		return payload, nil
@@ -1342,6 +1348,10 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 	}
 
 	return "", errors.New("missing fake response for " + operation)
+}
+
+func commandRateLimitStatusPayload() string {
+	return `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`
 }
 
 func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
