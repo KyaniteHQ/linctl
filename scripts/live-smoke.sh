@@ -98,6 +98,16 @@ PY
   "$binary" initiative-to-project list --json --limit 5 >/dev/null
   "$binary" initiative-update list --json --limit 5 >/dev/null
   "$binary" roadmap list --json --limit 5 >/dev/null
+  custom_view_json="$("$binary" custom-view list --json --limit 5)"
+  custom_view_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("custom_views", []); print(items[0]["id"] if items else "")' <<<"$custom_view_json")"
+  if [[ -n "$custom_view_id" ]]; then
+    "$binary" custom-view get "$custom_view_id" --json >/dev/null
+    "$binary" custom-view subscribers "$custom_view_id" --json >/dev/null
+    "$binary" custom-view initiatives "$custom_view_id" --json --limit 5 >/dev/null
+    "$binary" custom-view organization-preferences "$custom_view_id" --json >/dev/null
+    "$binary" custom-view organization-preferences values "$custom_view_id" --json >/dev/null
+    "$binary" custom-view preference-values "$custom_view_id" --json >/dev/null
+  fi
   "$binary" customer list --json --limit 5 >/dev/null
   "$binary" customer-need list --json --limit 5 >/dev/null
   "$binary" customer-status list --json --limit 5 >/dev/null

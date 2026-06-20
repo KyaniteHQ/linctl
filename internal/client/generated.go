@@ -872,6 +872,376 @@ var AllContextViewType = []ContextViewType{
 	ContextViewTypeTriage,
 }
 
+// CustomViewPreferencesFields includes the GraphQL fields of ViewPreferences requested by the fragment CustomViewPreferencesFields.
+// The GraphQL type's documentation follows.
+//
+// The display preferences for a view, controlling layout mode (list, board,
+// spreadsheet), grouping, sorting, column visibility, and other visual settings.
+// View preferences exist at two levels: organization-wide defaults and per-user
+// overrides. The effective preferences are computed by merging both layers, with
+// user preferences taking priority.
+type CustomViewPreferencesFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The type of view preferences: "organization" for workspace-wide defaults or "user" for personal overrides.
+	Type string `json:"type"`
+	// The type of view these preferences apply to, such as board, cycle, project, customView, myIssues, etc.
+	ViewType string `json:"viewType"`
+	// The view preferences values, containing layout, grouping, sorting, and field visibility settings.
+	Preferences CustomViewPreferencesFieldsPreferencesViewPreferencesValues `json:"preferences"`
+}
+
+// GetId returns CustomViewPreferencesFields.Id, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns CustomViewPreferencesFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns CustomViewPreferencesFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns CustomViewPreferencesFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetType returns CustomViewPreferencesFields.Type, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFields) GetType() string { return v.Type }
+
+// GetViewType returns CustomViewPreferencesFields.ViewType, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFields) GetViewType() string { return v.ViewType }
+
+// GetPreferences returns CustomViewPreferencesFields.Preferences, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFields) GetPreferences() CustomViewPreferencesFieldsPreferencesViewPreferencesValues {
+	return v.Preferences
+}
+
+// CustomViewPreferencesFieldsPreferencesViewPreferencesValues includes the requested fields of the GraphQL type ViewPreferencesValues.
+// The GraphQL type's documentation follows.
+//
+// The computed view preferences values for a view, containing all display settings
+// such as layout mode, grouping, sorting, field visibility, and other visual
+// configuration. These values represent the merged result of organization defaults
+// and user overrides.
+type CustomViewPreferencesFieldsPreferencesViewPreferencesValues struct {
+	CustomViewPreferencesValueFields `json:"-"`
+}
+
+// GetLayout returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.Layout, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetLayout() *string {
+	return v.CustomViewPreferencesValueFields.Layout
+}
+
+// GetViewOrdering returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ViewOrdering, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetViewOrdering() *string {
+	return v.CustomViewPreferencesValueFields.ViewOrdering
+}
+
+// GetViewOrderingDirection returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ViewOrderingDirection, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetViewOrderingDirection() *string {
+	return v.CustomViewPreferencesValueFields.ViewOrderingDirection
+}
+
+// GetIssueGrouping returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.IssueGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetIssueGrouping() *string {
+	return v.CustomViewPreferencesValueFields.IssueGrouping
+}
+
+// GetIssueSubGrouping returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.IssueSubGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetIssueSubGrouping() *string {
+	return v.CustomViewPreferencesValueFields.IssueSubGrouping
+}
+
+// GetShowCompletedIssues returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ShowCompletedIssues, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetShowCompletedIssues() *string {
+	return v.CustomViewPreferencesValueFields.ShowCompletedIssues
+}
+
+// GetShowArchivedItems returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ShowArchivedItems, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetShowArchivedItems() *bool {
+	return v.CustomViewPreferencesValueFields.ShowArchivedItems
+}
+
+// GetShowEmptyGroups returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetShowEmptyGroups() *bool {
+	return v.CustomViewPreferencesValueFields.ShowEmptyGroups
+}
+
+// GetHiddenColumns returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.HiddenColumns, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetHiddenColumns() []string {
+	return v.CustomViewPreferencesValueFields.HiddenColumns
+}
+
+// GetHiddenRows returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.HiddenRows, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetHiddenRows() []string {
+	return v.CustomViewPreferencesValueFields.HiddenRows
+}
+
+// GetHiddenGroupsList returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.HiddenGroupsList, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetHiddenGroupsList() []string {
+	return v.CustomViewPreferencesValueFields.HiddenGroupsList
+}
+
+// GetColumnOrderBoard returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ColumnOrderBoard, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetColumnOrderBoard() []string {
+	return v.CustomViewPreferencesValueFields.ColumnOrderBoard
+}
+
+// GetColumnOrderList returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ColumnOrderList, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetColumnOrderList() []string {
+	return v.CustomViewPreferencesValueFields.ColumnOrderList
+}
+
+// GetProjectLayout returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ProjectLayout, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetProjectLayout() *string {
+	return v.CustomViewPreferencesValueFields.ProjectLayout
+}
+
+// GetProjectViewOrdering returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ProjectViewOrdering, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetProjectViewOrdering() *string {
+	return v.CustomViewPreferencesValueFields.ProjectViewOrdering
+}
+
+// GetProjectGrouping returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ProjectGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetProjectGrouping() *string {
+	return v.CustomViewPreferencesValueFields.ProjectGrouping
+}
+
+// GetProjectSubGrouping returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ProjectSubGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetProjectSubGrouping() *string {
+	return v.CustomViewPreferencesValueFields.ProjectSubGrouping
+}
+
+// GetProjectShowEmptyGroups returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ProjectShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetProjectShowEmptyGroups() *string {
+	return v.CustomViewPreferencesValueFields.ProjectShowEmptyGroups
+}
+
+// GetProjectShowEmptySubGroups returns CustomViewPreferencesFieldsPreferencesViewPreferencesValues.ProjectShowEmptySubGroups, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) GetProjectShowEmptySubGroups() *string {
+	return v.CustomViewPreferencesValueFields.ProjectShowEmptySubGroups
+}
+
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*CustomViewPreferencesFieldsPreferencesViewPreferencesValues
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.CustomViewPreferencesFieldsPreferencesViewPreferencesValues = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomViewPreferencesValueFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalCustomViewPreferencesFieldsPreferencesViewPreferencesValues struct {
+	Layout *string `json:"layout"`
+
+	ViewOrdering *string `json:"viewOrdering"`
+
+	ViewOrderingDirection *string `json:"viewOrderingDirection"`
+
+	IssueGrouping *string `json:"issueGrouping"`
+
+	IssueSubGrouping *string `json:"issueSubGrouping"`
+
+	ShowCompletedIssues *string `json:"showCompletedIssues"`
+
+	ShowArchivedItems *bool `json:"showArchivedItems"`
+
+	ShowEmptyGroups *bool `json:"showEmptyGroups"`
+
+	HiddenColumns []string `json:"hiddenColumns"`
+
+	HiddenRows []string `json:"hiddenRows"`
+
+	HiddenGroupsList []string `json:"hiddenGroupsList"`
+
+	ColumnOrderBoard []string `json:"columnOrderBoard"`
+
+	ColumnOrderList []string `json:"columnOrderList"`
+
+	ProjectLayout *string `json:"projectLayout"`
+
+	ProjectViewOrdering *string `json:"projectViewOrdering"`
+
+	ProjectGrouping *string `json:"projectGrouping"`
+
+	ProjectSubGrouping *string `json:"projectSubGrouping"`
+
+	ProjectShowEmptyGroups *string `json:"projectShowEmptyGroups"`
+
+	ProjectShowEmptySubGroups *string `json:"projectShowEmptySubGroups"`
+}
+
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) __premarshalJSON() (*__premarshalCustomViewPreferencesFieldsPreferencesViewPreferencesValues, error) {
+	var retval __premarshalCustomViewPreferencesFieldsPreferencesViewPreferencesValues
+
+	retval.Layout = v.CustomViewPreferencesValueFields.Layout
+	retval.ViewOrdering = v.CustomViewPreferencesValueFields.ViewOrdering
+	retval.ViewOrderingDirection = v.CustomViewPreferencesValueFields.ViewOrderingDirection
+	retval.IssueGrouping = v.CustomViewPreferencesValueFields.IssueGrouping
+	retval.IssueSubGrouping = v.CustomViewPreferencesValueFields.IssueSubGrouping
+	retval.ShowCompletedIssues = v.CustomViewPreferencesValueFields.ShowCompletedIssues
+	retval.ShowArchivedItems = v.CustomViewPreferencesValueFields.ShowArchivedItems
+	retval.ShowEmptyGroups = v.CustomViewPreferencesValueFields.ShowEmptyGroups
+	retval.HiddenColumns = v.CustomViewPreferencesValueFields.HiddenColumns
+	retval.HiddenRows = v.CustomViewPreferencesValueFields.HiddenRows
+	retval.HiddenGroupsList = v.CustomViewPreferencesValueFields.HiddenGroupsList
+	retval.ColumnOrderBoard = v.CustomViewPreferencesValueFields.ColumnOrderBoard
+	retval.ColumnOrderList = v.CustomViewPreferencesValueFields.ColumnOrderList
+	retval.ProjectLayout = v.CustomViewPreferencesValueFields.ProjectLayout
+	retval.ProjectViewOrdering = v.CustomViewPreferencesValueFields.ProjectViewOrdering
+	retval.ProjectGrouping = v.CustomViewPreferencesValueFields.ProjectGrouping
+	retval.ProjectSubGrouping = v.CustomViewPreferencesValueFields.ProjectSubGrouping
+	retval.ProjectShowEmptyGroups = v.CustomViewPreferencesValueFields.ProjectShowEmptyGroups
+	retval.ProjectShowEmptySubGroups = v.CustomViewPreferencesValueFields.ProjectShowEmptySubGroups
+	return &retval, nil
+}
+
+// CustomViewPreferencesValueFields includes the GraphQL fields of ViewPreferencesValues requested by the fragment CustomViewPreferencesValueFields.
+// The GraphQL type's documentation follows.
+//
+// The computed view preferences values for a view, containing all display settings
+// such as layout mode, grouping, sorting, field visibility, and other visual
+// configuration. These values represent the merged result of organization defaults
+// and user overrides.
+type CustomViewPreferencesValueFields struct {
+	// The issue layout type.
+	Layout *string `json:"layout"`
+	// The issue ordering.
+	ViewOrdering *string `json:"viewOrdering"`
+	// The direction of the issue ordering.
+	ViewOrderingDirection *string `json:"viewOrderingDirection"`
+	// The issue grouping.
+	IssueGrouping *string `json:"issueGrouping"`
+	// The issue sub-grouping.
+	IssueSubGrouping *string `json:"issueSubGrouping"`
+	// Whether completed issues are shown and for how long.
+	ShowCompletedIssues *string `json:"showCompletedIssues"`
+	// Whether to show archived items.
+	ShowArchivedItems *bool `json:"showArchivedItems"`
+	// Whether to show empty groups.
+	ShowEmptyGroups *bool `json:"showEmptyGroups"`
+	// List of column model IDs which should be hidden on a board.
+	HiddenColumns []string `json:"hiddenColumns"`
+	// List of row model IDs which should be hidden on a board.
+	HiddenRows []string `json:"hiddenRows"`
+	// List of group model IDs which should be hidden on a list.
+	HiddenGroupsList []string `json:"hiddenGroupsList"`
+	// Custom ordering of groups on the board layout.
+	ColumnOrderBoard []string `json:"columnOrderBoard"`
+	// Custom ordering of groups on the list layout.
+	ColumnOrderList []string `json:"columnOrderList"`
+	// The project layout type.
+	ProjectLayout *string `json:"projectLayout"`
+	// The project ordering.
+	ProjectViewOrdering *string `json:"projectViewOrdering"`
+	// The project grouping.
+	ProjectGrouping *string `json:"projectGrouping"`
+	// The project sub-grouping.
+	ProjectSubGrouping *string `json:"projectSubGrouping"`
+	// How to show empty project groups.
+	ProjectShowEmptyGroups *string `json:"projectShowEmptyGroups"`
+	// How to show empty project sub-groups.
+	ProjectShowEmptySubGroups *string `json:"projectShowEmptySubGroups"`
+}
+
+// GetLayout returns CustomViewPreferencesValueFields.Layout, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetLayout() *string { return v.Layout }
+
+// GetViewOrdering returns CustomViewPreferencesValueFields.ViewOrdering, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetViewOrdering() *string { return v.ViewOrdering }
+
+// GetViewOrderingDirection returns CustomViewPreferencesValueFields.ViewOrderingDirection, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetViewOrderingDirection() *string {
+	return v.ViewOrderingDirection
+}
+
+// GetIssueGrouping returns CustomViewPreferencesValueFields.IssueGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetIssueGrouping() *string { return v.IssueGrouping }
+
+// GetIssueSubGrouping returns CustomViewPreferencesValueFields.IssueSubGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetIssueSubGrouping() *string { return v.IssueSubGrouping }
+
+// GetShowCompletedIssues returns CustomViewPreferencesValueFields.ShowCompletedIssues, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetShowCompletedIssues() *string {
+	return v.ShowCompletedIssues
+}
+
+// GetShowArchivedItems returns CustomViewPreferencesValueFields.ShowArchivedItems, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetShowArchivedItems() *bool { return v.ShowArchivedItems }
+
+// GetShowEmptyGroups returns CustomViewPreferencesValueFields.ShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetShowEmptyGroups() *bool { return v.ShowEmptyGroups }
+
+// GetHiddenColumns returns CustomViewPreferencesValueFields.HiddenColumns, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetHiddenColumns() []string { return v.HiddenColumns }
+
+// GetHiddenRows returns CustomViewPreferencesValueFields.HiddenRows, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetHiddenRows() []string { return v.HiddenRows }
+
+// GetHiddenGroupsList returns CustomViewPreferencesValueFields.HiddenGroupsList, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetHiddenGroupsList() []string { return v.HiddenGroupsList }
+
+// GetColumnOrderBoard returns CustomViewPreferencesValueFields.ColumnOrderBoard, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetColumnOrderBoard() []string { return v.ColumnOrderBoard }
+
+// GetColumnOrderList returns CustomViewPreferencesValueFields.ColumnOrderList, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetColumnOrderList() []string { return v.ColumnOrderList }
+
+// GetProjectLayout returns CustomViewPreferencesValueFields.ProjectLayout, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetProjectLayout() *string { return v.ProjectLayout }
+
+// GetProjectViewOrdering returns CustomViewPreferencesValueFields.ProjectViewOrdering, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetProjectViewOrdering() *string {
+	return v.ProjectViewOrdering
+}
+
+// GetProjectGrouping returns CustomViewPreferencesValueFields.ProjectGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetProjectGrouping() *string { return v.ProjectGrouping }
+
+// GetProjectSubGrouping returns CustomViewPreferencesValueFields.ProjectSubGrouping, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetProjectSubGrouping() *string {
+	return v.ProjectSubGrouping
+}
+
+// GetProjectShowEmptyGroups returns CustomViewPreferencesValueFields.ProjectShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetProjectShowEmptyGroups() *string {
+	return v.ProjectShowEmptyGroups
+}
+
+// GetProjectShowEmptySubGroups returns CustomViewPreferencesValueFields.ProjectShowEmptySubGroups, and is useful for accessing the field via an interface.
+func (v *CustomViewPreferencesValueFields) GetProjectShowEmptySubGroups() *string {
+	return v.ProjectShowEmptySubGroups
+}
+
 // CustomViewSummaryFields includes the GraphQL fields of CustomView requested by the fragment CustomViewSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -15417,6 +15787,50 @@ type __customViewInput struct {
 // GetId returns __customViewInput.Id, and is useful for accessing the field via an interface.
 func (v *__customViewInput) GetId() string { return v.Id }
 
+// __customView_initiativesInput is used internally by genqlient
+type __customView_initiativesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __customView_initiativesInput.Id, and is useful for accessing the field via an interface.
+func (v *__customView_initiativesInput) GetId() string { return v.Id }
+
+// GetFirst returns __customView_initiativesInput.First, and is useful for accessing the field via an interface.
+func (v *__customView_initiativesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __customView_initiativesInput.After, and is useful for accessing the field via an interface.
+func (v *__customView_initiativesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __customView_initiativesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__customView_initiativesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __customView_organizationViewPreferencesInput is used internally by genqlient
+type __customView_organizationViewPreferencesInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __customView_organizationViewPreferencesInput.Id, and is useful for accessing the field via an interface.
+func (v *__customView_organizationViewPreferencesInput) GetId() string { return v.Id }
+
+// __customView_organizationViewPreferences_preferencesInput is used internally by genqlient
+type __customView_organizationViewPreferences_preferencesInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __customView_organizationViewPreferences_preferencesInput.Id, and is useful for accessing the field via an interface.
+func (v *__customView_organizationViewPreferences_preferencesInput) GetId() string { return v.Id }
+
+// __customView_viewPreferencesValuesInput is used internally by genqlient
+type __customView_viewPreferencesValuesInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __customView_viewPreferencesValuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__customView_viewPreferencesValuesInput) GetId() string { return v.Id }
+
 // __customViewsInput is used internally by genqlient
 type __customViewsInput struct {
 	First           *int    `json:"first"`
@@ -18159,6 +18573,805 @@ type customViewResponse struct {
 
 // GetCustomView returns customViewResponse.CustomView, and is useful for accessing the field via an interface.
 func (v *customViewResponse) GetCustomView() customViewCustomView { return v.CustomView }
+
+// customView_initiativesCustomView includes the requested fields of the GraphQL type CustomView.
+// The GraphQL type's documentation follows.
+//
+// A custom view built from a saved filter, sort, and grouping configuration. Views
+// can be personal (visible only to the owner) or shared with the entire workspace.
+// They define which issues, projects, initiatives, or feed items are displayed and
+// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+type customView_initiativesCustomView struct {
+	// Initiatives matching the custom view's initiative filter. Returns an empty
+	// connection if the view's modelName is not "Initiative".
+	Initiatives customView_initiativesCustomViewInitiativesInitiativeConnection `json:"initiatives"`
+}
+
+// GetInitiatives returns customView_initiativesCustomView.Initiatives, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomView) GetInitiatives() customView_initiativesCustomViewInitiativesInitiativeConnection {
+	return v.Initiatives
+}
+
+// customView_initiativesCustomViewInitiativesInitiativeConnection includes the requested fields of the GraphQL type InitiativeConnection.
+type customView_initiativesCustomViewInitiativesInitiativeConnection struct {
+	Nodes    []customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative `json:"nodes"`
+	PageInfo customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns customView_initiativesCustomViewInitiativesInitiativeConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnection) GetNodes() []customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative {
+	return v.Nodes
+}
+
+// GetPageInfo returns customView_initiativesCustomViewInitiativesInitiativeConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnection) GetPageInfo() customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo {
+	return v.PageInfo
+}
+
+// customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business
+// goal. Initiatives can contain multiple projects, have their own status updates
+// and health tracking, and can be organized hierarchically with parent-child relationships.
+type customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative struct {
+	InitiativeSummaryFields `json:"-"`
+}
+
+// GetId returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.Id, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetId() string {
+	return v.InitiativeSummaryFields.Id
+}
+
+// GetName returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.Name, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetName() string {
+	return v.InitiativeSummaryFields.Name
+}
+
+// GetDescription returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.Description, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetDescription() *string {
+	return v.InitiativeSummaryFields.Description
+}
+
+// GetStatus returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.Status, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetStatus() InitiativeStatus {
+	return v.InitiativeSummaryFields.Status
+}
+
+// GetPriority returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.Priority, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetPriority() int {
+	return v.InitiativeSummaryFields.Priority
+}
+
+// GetTargetDate returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.TargetDate, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetTargetDate() *string {
+	return v.InitiativeSummaryFields.TargetDate
+}
+
+// GetSlugId returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.SlugId, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetSlugId() string {
+	return v.InitiativeSummaryFields.SlugId
+}
+
+// GetUrl returns customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative.Url, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) GetUrl() string {
+	return v.InitiativeSummaryFields.Url
+}
+
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.InitiativeSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Status InitiativeStatus `json:"status"`
+
+	Priority int `json:"priority"`
+
+	TargetDate *string `json:"targetDate"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+}
+
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative) __premarshalJSON() (*__premarshalcustomView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative, error) {
+	var retval __premarshalcustomView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative
+
+	retval.Id = v.InitiativeSummaryFields.Id
+	retval.Name = v.InitiativeSummaryFields.Name
+	retval.Description = v.InitiativeSummaryFields.Description
+	retval.Status = v.InitiativeSummaryFields.Status
+	retval.Priority = v.InitiativeSummaryFields.Priority
+	retval.TargetDate = v.InitiativeSummaryFields.TargetDate
+	retval.SlugId = v.InitiativeSummaryFields.SlugId
+	retval.Url = v.InitiativeSummaryFields.Url
+	return &retval, nil
+}
+
+// customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *customView_initiativesCustomViewInitiativesInitiativeConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// customView_initiativesResponse is returned by customView_initiatives on success.
+type customView_initiativesResponse struct {
+	// One specific custom view, looked up by ID or slug.
+	CustomView customView_initiativesCustomView `json:"customView"`
+}
+
+// GetCustomView returns customView_initiativesResponse.CustomView, and is useful for accessing the field via an interface.
+func (v *customView_initiativesResponse) GetCustomView() customView_initiativesCustomView {
+	return v.CustomView
+}
+
+// customView_organizationViewPreferencesCustomView includes the requested fields of the GraphQL type CustomView.
+// The GraphQL type's documentation follows.
+//
+// A custom view built from a saved filter, sort, and grouping configuration. Views
+// can be personal (visible only to the owner) or shared with the entire workspace.
+// They define which issues, projects, initiatives, or feed items are displayed and
+// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+type customView_organizationViewPreferencesCustomView struct {
+	// The workspace-level default view preferences for this custom view, if any have been set.
+	OrganizationViewPreferences *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences `json:"organizationViewPreferences"`
+}
+
+// GetOrganizationViewPreferences returns customView_organizationViewPreferencesCustomView.OrganizationViewPreferences, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomView) GetOrganizationViewPreferences() *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences {
+	return v.OrganizationViewPreferences
+}
+
+// customView_organizationViewPreferencesCustomViewOrganizationViewPreferences includes the requested fields of the GraphQL type ViewPreferences.
+// The GraphQL type's documentation follows.
+//
+// The display preferences for a view, controlling layout mode (list, board,
+// spreadsheet), grouping, sorting, column visibility, and other visual settings.
+// View preferences exist at two levels: organization-wide defaults and per-user
+// overrides. The effective preferences are computed by merging both layers, with
+// user preferences taking priority.
+type customView_organizationViewPreferencesCustomViewOrganizationViewPreferences struct {
+	CustomViewPreferencesFields `json:"-"`
+}
+
+// GetId returns customView_organizationViewPreferencesCustomViewOrganizationViewPreferences.Id, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) GetId() string {
+	return v.CustomViewPreferencesFields.Id
+}
+
+// GetCreatedAt returns customView_organizationViewPreferencesCustomViewOrganizationViewPreferences.CreatedAt, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) GetCreatedAt() string {
+	return v.CustomViewPreferencesFields.CreatedAt
+}
+
+// GetUpdatedAt returns customView_organizationViewPreferencesCustomViewOrganizationViewPreferences.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) GetUpdatedAt() string {
+	return v.CustomViewPreferencesFields.UpdatedAt
+}
+
+// GetArchivedAt returns customView_organizationViewPreferencesCustomViewOrganizationViewPreferences.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) GetArchivedAt() *string {
+	return v.CustomViewPreferencesFields.ArchivedAt
+}
+
+// GetType returns customView_organizationViewPreferencesCustomViewOrganizationViewPreferences.Type, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) GetType() string {
+	return v.CustomViewPreferencesFields.Type
+}
+
+// GetViewType returns customView_organizationViewPreferencesCustomViewOrganizationViewPreferences.ViewType, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) GetViewType() string {
+	return v.CustomViewPreferencesFields.ViewType
+}
+
+// GetPreferences returns customView_organizationViewPreferencesCustomViewOrganizationViewPreferences.Preferences, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) GetPreferences() CustomViewPreferencesFieldsPreferencesViewPreferencesValues {
+	return v.CustomViewPreferencesFields.Preferences
+}
+
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customView_organizationViewPreferencesCustomViewOrganizationViewPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customView_organizationViewPreferencesCustomViewOrganizationViewPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomViewPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomView_organizationViewPreferencesCustomViewOrganizationViewPreferences struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Type string `json:"type"`
+
+	ViewType string `json:"viewType"`
+
+	Preferences CustomViewPreferencesFieldsPreferencesViewPreferencesValues `json:"preferences"`
+}
+
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences) __premarshalJSON() (*__premarshalcustomView_organizationViewPreferencesCustomViewOrganizationViewPreferences, error) {
+	var retval __premarshalcustomView_organizationViewPreferencesCustomViewOrganizationViewPreferences
+
+	retval.Id = v.CustomViewPreferencesFields.Id
+	retval.CreatedAt = v.CustomViewPreferencesFields.CreatedAt
+	retval.UpdatedAt = v.CustomViewPreferencesFields.UpdatedAt
+	retval.ArchivedAt = v.CustomViewPreferencesFields.ArchivedAt
+	retval.Type = v.CustomViewPreferencesFields.Type
+	retval.ViewType = v.CustomViewPreferencesFields.ViewType
+	retval.Preferences = v.CustomViewPreferencesFields.Preferences
+	return &retval, nil
+}
+
+// customView_organizationViewPreferencesResponse is returned by customView_organizationViewPreferences on success.
+type customView_organizationViewPreferencesResponse struct {
+	// One specific custom view, looked up by ID or slug.
+	CustomView customView_organizationViewPreferencesCustomView `json:"customView"`
+}
+
+// GetCustomView returns customView_organizationViewPreferencesResponse.CustomView, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferencesResponse) GetCustomView() customView_organizationViewPreferencesCustomView {
+	return v.CustomView
+}
+
+// customView_organizationViewPreferences_preferencesCustomView includes the requested fields of the GraphQL type CustomView.
+// The GraphQL type's documentation follows.
+//
+// A custom view built from a saved filter, sort, and grouping configuration. Views
+// can be personal (visible only to the owner) or shared with the entire workspace.
+// They define which issues, projects, initiatives, or feed items are displayed and
+// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+type customView_organizationViewPreferences_preferencesCustomView struct {
+	// The workspace-level default view preferences for this custom view, if any have been set.
+	OrganizationViewPreferences *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences `json:"organizationViewPreferences"`
+}
+
+// GetOrganizationViewPreferences returns customView_organizationViewPreferences_preferencesCustomView.OrganizationViewPreferences, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomView) GetOrganizationViewPreferences() *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences {
+	return v.OrganizationViewPreferences
+}
+
+// customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences includes the requested fields of the GraphQL type ViewPreferences.
+// The GraphQL type's documentation follows.
+//
+// The display preferences for a view, controlling layout mode (list, board,
+// spreadsheet), grouping, sorting, column visibility, and other visual settings.
+// View preferences exist at two levels: organization-wide defaults and per-user
+// overrides. The effective preferences are computed by merging both layers, with
+// user preferences taking priority.
+type customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences struct {
+	// The view preferences values, containing layout, grouping, sorting, and field visibility settings.
+	Preferences customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues `json:"preferences"`
+}
+
+// GetPreferences returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences.Preferences, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences) GetPreferences() customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues {
+	return v.Preferences
+}
+
+// customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues includes the requested fields of the GraphQL type ViewPreferencesValues.
+// The GraphQL type's documentation follows.
+//
+// The computed view preferences values for a view, containing all display settings
+// such as layout mode, grouping, sorting, field visibility, and other visual
+// configuration. These values represent the merged result of organization defaults
+// and user overrides.
+type customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues struct {
+	CustomViewPreferencesValueFields `json:"-"`
+}
+
+// GetLayout returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.Layout, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetLayout() *string {
+	return v.CustomViewPreferencesValueFields.Layout
+}
+
+// GetViewOrdering returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ViewOrdering, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetViewOrdering() *string {
+	return v.CustomViewPreferencesValueFields.ViewOrdering
+}
+
+// GetViewOrderingDirection returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ViewOrderingDirection, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetViewOrderingDirection() *string {
+	return v.CustomViewPreferencesValueFields.ViewOrderingDirection
+}
+
+// GetIssueGrouping returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.IssueGrouping, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetIssueGrouping() *string {
+	return v.CustomViewPreferencesValueFields.IssueGrouping
+}
+
+// GetIssueSubGrouping returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.IssueSubGrouping, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetIssueSubGrouping() *string {
+	return v.CustomViewPreferencesValueFields.IssueSubGrouping
+}
+
+// GetShowCompletedIssues returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ShowCompletedIssues, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetShowCompletedIssues() *string {
+	return v.CustomViewPreferencesValueFields.ShowCompletedIssues
+}
+
+// GetShowArchivedItems returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ShowArchivedItems, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetShowArchivedItems() *bool {
+	return v.CustomViewPreferencesValueFields.ShowArchivedItems
+}
+
+// GetShowEmptyGroups returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetShowEmptyGroups() *bool {
+	return v.CustomViewPreferencesValueFields.ShowEmptyGroups
+}
+
+// GetHiddenColumns returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.HiddenColumns, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetHiddenColumns() []string {
+	return v.CustomViewPreferencesValueFields.HiddenColumns
+}
+
+// GetHiddenRows returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.HiddenRows, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetHiddenRows() []string {
+	return v.CustomViewPreferencesValueFields.HiddenRows
+}
+
+// GetHiddenGroupsList returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.HiddenGroupsList, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetHiddenGroupsList() []string {
+	return v.CustomViewPreferencesValueFields.HiddenGroupsList
+}
+
+// GetColumnOrderBoard returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ColumnOrderBoard, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetColumnOrderBoard() []string {
+	return v.CustomViewPreferencesValueFields.ColumnOrderBoard
+}
+
+// GetColumnOrderList returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ColumnOrderList, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetColumnOrderList() []string {
+	return v.CustomViewPreferencesValueFields.ColumnOrderList
+}
+
+// GetProjectLayout returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ProjectLayout, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetProjectLayout() *string {
+	return v.CustomViewPreferencesValueFields.ProjectLayout
+}
+
+// GetProjectViewOrdering returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ProjectViewOrdering, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetProjectViewOrdering() *string {
+	return v.CustomViewPreferencesValueFields.ProjectViewOrdering
+}
+
+// GetProjectGrouping returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ProjectGrouping, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetProjectGrouping() *string {
+	return v.CustomViewPreferencesValueFields.ProjectGrouping
+}
+
+// GetProjectSubGrouping returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ProjectSubGrouping, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetProjectSubGrouping() *string {
+	return v.CustomViewPreferencesValueFields.ProjectSubGrouping
+}
+
+// GetProjectShowEmptyGroups returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ProjectShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetProjectShowEmptyGroups() *string {
+	return v.CustomViewPreferencesValueFields.ProjectShowEmptyGroups
+}
+
+// GetProjectShowEmptySubGroups returns customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues.ProjectShowEmptySubGroups, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) GetProjectShowEmptySubGroups() *string {
+	return v.CustomViewPreferencesValueFields.ProjectShowEmptySubGroups
+}
+
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomViewPreferencesValueFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues struct {
+	Layout *string `json:"layout"`
+
+	ViewOrdering *string `json:"viewOrdering"`
+
+	ViewOrderingDirection *string `json:"viewOrderingDirection"`
+
+	IssueGrouping *string `json:"issueGrouping"`
+
+	IssueSubGrouping *string `json:"issueSubGrouping"`
+
+	ShowCompletedIssues *string `json:"showCompletedIssues"`
+
+	ShowArchivedItems *bool `json:"showArchivedItems"`
+
+	ShowEmptyGroups *bool `json:"showEmptyGroups"`
+
+	HiddenColumns []string `json:"hiddenColumns"`
+
+	HiddenRows []string `json:"hiddenRows"`
+
+	HiddenGroupsList []string `json:"hiddenGroupsList"`
+
+	ColumnOrderBoard []string `json:"columnOrderBoard"`
+
+	ColumnOrderList []string `json:"columnOrderList"`
+
+	ProjectLayout *string `json:"projectLayout"`
+
+	ProjectViewOrdering *string `json:"projectViewOrdering"`
+
+	ProjectGrouping *string `json:"projectGrouping"`
+
+	ProjectSubGrouping *string `json:"projectSubGrouping"`
+
+	ProjectShowEmptyGroups *string `json:"projectShowEmptyGroups"`
+
+	ProjectShowEmptySubGroups *string `json:"projectShowEmptySubGroups"`
+}
+
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues) __premarshalJSON() (*__premarshalcustomView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues, error) {
+	var retval __premarshalcustomView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues
+
+	retval.Layout = v.CustomViewPreferencesValueFields.Layout
+	retval.ViewOrdering = v.CustomViewPreferencesValueFields.ViewOrdering
+	retval.ViewOrderingDirection = v.CustomViewPreferencesValueFields.ViewOrderingDirection
+	retval.IssueGrouping = v.CustomViewPreferencesValueFields.IssueGrouping
+	retval.IssueSubGrouping = v.CustomViewPreferencesValueFields.IssueSubGrouping
+	retval.ShowCompletedIssues = v.CustomViewPreferencesValueFields.ShowCompletedIssues
+	retval.ShowArchivedItems = v.CustomViewPreferencesValueFields.ShowArchivedItems
+	retval.ShowEmptyGroups = v.CustomViewPreferencesValueFields.ShowEmptyGroups
+	retval.HiddenColumns = v.CustomViewPreferencesValueFields.HiddenColumns
+	retval.HiddenRows = v.CustomViewPreferencesValueFields.HiddenRows
+	retval.HiddenGroupsList = v.CustomViewPreferencesValueFields.HiddenGroupsList
+	retval.ColumnOrderBoard = v.CustomViewPreferencesValueFields.ColumnOrderBoard
+	retval.ColumnOrderList = v.CustomViewPreferencesValueFields.ColumnOrderList
+	retval.ProjectLayout = v.CustomViewPreferencesValueFields.ProjectLayout
+	retval.ProjectViewOrdering = v.CustomViewPreferencesValueFields.ProjectViewOrdering
+	retval.ProjectGrouping = v.CustomViewPreferencesValueFields.ProjectGrouping
+	retval.ProjectSubGrouping = v.CustomViewPreferencesValueFields.ProjectSubGrouping
+	retval.ProjectShowEmptyGroups = v.CustomViewPreferencesValueFields.ProjectShowEmptyGroups
+	retval.ProjectShowEmptySubGroups = v.CustomViewPreferencesValueFields.ProjectShowEmptySubGroups
+	return &retval, nil
+}
+
+// customView_organizationViewPreferences_preferencesResponse is returned by customView_organizationViewPreferences_preferences on success.
+type customView_organizationViewPreferences_preferencesResponse struct {
+	// One specific custom view, looked up by ID or slug.
+	CustomView customView_organizationViewPreferences_preferencesCustomView `json:"customView"`
+}
+
+// GetCustomView returns customView_organizationViewPreferences_preferencesResponse.CustomView, and is useful for accessing the field via an interface.
+func (v *customView_organizationViewPreferences_preferencesResponse) GetCustomView() customView_organizationViewPreferences_preferencesCustomView {
+	return v.CustomView
+}
+
+// customView_viewPreferencesValuesCustomView includes the requested fields of the GraphQL type CustomView.
+// The GraphQL type's documentation follows.
+//
+// A custom view built from a saved filter, sort, and grouping configuration. Views
+// can be personal (visible only to the owner) or shared with the entire workspace.
+// They define which issues, projects, initiatives, or feed items are displayed and
+// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+type customView_viewPreferencesValuesCustomView struct {
+	// The computed view preferences values for this custom view, merging
+	// organization defaults with user overrides and system defaults. Use this for
+	// the effective display settings rather than reading raw preferences directly.
+	ViewPreferencesValues *customView_viewPreferencesValuesCustomViewViewPreferencesValues `json:"viewPreferencesValues"`
+}
+
+// GetViewPreferencesValues returns customView_viewPreferencesValuesCustomView.ViewPreferencesValues, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomView) GetViewPreferencesValues() *customView_viewPreferencesValuesCustomViewViewPreferencesValues {
+	return v.ViewPreferencesValues
+}
+
+// customView_viewPreferencesValuesCustomViewViewPreferencesValues includes the requested fields of the GraphQL type ViewPreferencesValues.
+// The GraphQL type's documentation follows.
+//
+// The computed view preferences values for a view, containing all display settings
+// such as layout mode, grouping, sorting, field visibility, and other visual
+// configuration. These values represent the merged result of organization defaults
+// and user overrides.
+type customView_viewPreferencesValuesCustomViewViewPreferencesValues struct {
+	CustomViewPreferencesValueFields `json:"-"`
+}
+
+// GetLayout returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.Layout, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetLayout() *string {
+	return v.CustomViewPreferencesValueFields.Layout
+}
+
+// GetViewOrdering returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ViewOrdering, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetViewOrdering() *string {
+	return v.CustomViewPreferencesValueFields.ViewOrdering
+}
+
+// GetViewOrderingDirection returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ViewOrderingDirection, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetViewOrderingDirection() *string {
+	return v.CustomViewPreferencesValueFields.ViewOrderingDirection
+}
+
+// GetIssueGrouping returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.IssueGrouping, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetIssueGrouping() *string {
+	return v.CustomViewPreferencesValueFields.IssueGrouping
+}
+
+// GetIssueSubGrouping returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.IssueSubGrouping, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetIssueSubGrouping() *string {
+	return v.CustomViewPreferencesValueFields.IssueSubGrouping
+}
+
+// GetShowCompletedIssues returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ShowCompletedIssues, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetShowCompletedIssues() *string {
+	return v.CustomViewPreferencesValueFields.ShowCompletedIssues
+}
+
+// GetShowArchivedItems returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ShowArchivedItems, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetShowArchivedItems() *bool {
+	return v.CustomViewPreferencesValueFields.ShowArchivedItems
+}
+
+// GetShowEmptyGroups returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetShowEmptyGroups() *bool {
+	return v.CustomViewPreferencesValueFields.ShowEmptyGroups
+}
+
+// GetHiddenColumns returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.HiddenColumns, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetHiddenColumns() []string {
+	return v.CustomViewPreferencesValueFields.HiddenColumns
+}
+
+// GetHiddenRows returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.HiddenRows, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetHiddenRows() []string {
+	return v.CustomViewPreferencesValueFields.HiddenRows
+}
+
+// GetHiddenGroupsList returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.HiddenGroupsList, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetHiddenGroupsList() []string {
+	return v.CustomViewPreferencesValueFields.HiddenGroupsList
+}
+
+// GetColumnOrderBoard returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ColumnOrderBoard, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetColumnOrderBoard() []string {
+	return v.CustomViewPreferencesValueFields.ColumnOrderBoard
+}
+
+// GetColumnOrderList returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ColumnOrderList, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetColumnOrderList() []string {
+	return v.CustomViewPreferencesValueFields.ColumnOrderList
+}
+
+// GetProjectLayout returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ProjectLayout, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetProjectLayout() *string {
+	return v.CustomViewPreferencesValueFields.ProjectLayout
+}
+
+// GetProjectViewOrdering returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ProjectViewOrdering, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetProjectViewOrdering() *string {
+	return v.CustomViewPreferencesValueFields.ProjectViewOrdering
+}
+
+// GetProjectGrouping returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ProjectGrouping, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetProjectGrouping() *string {
+	return v.CustomViewPreferencesValueFields.ProjectGrouping
+}
+
+// GetProjectSubGrouping returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ProjectSubGrouping, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetProjectSubGrouping() *string {
+	return v.CustomViewPreferencesValueFields.ProjectSubGrouping
+}
+
+// GetProjectShowEmptyGroups returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ProjectShowEmptyGroups, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetProjectShowEmptyGroups() *string {
+	return v.CustomViewPreferencesValueFields.ProjectShowEmptyGroups
+}
+
+// GetProjectShowEmptySubGroups returns customView_viewPreferencesValuesCustomViewViewPreferencesValues.ProjectShowEmptySubGroups, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) GetProjectShowEmptySubGroups() *string {
+	return v.CustomViewPreferencesValueFields.ProjectShowEmptySubGroups
+}
+
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customView_viewPreferencesValuesCustomViewViewPreferencesValues
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customView_viewPreferencesValuesCustomViewViewPreferencesValues = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomViewPreferencesValueFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomView_viewPreferencesValuesCustomViewViewPreferencesValues struct {
+	Layout *string `json:"layout"`
+
+	ViewOrdering *string `json:"viewOrdering"`
+
+	ViewOrderingDirection *string `json:"viewOrderingDirection"`
+
+	IssueGrouping *string `json:"issueGrouping"`
+
+	IssueSubGrouping *string `json:"issueSubGrouping"`
+
+	ShowCompletedIssues *string `json:"showCompletedIssues"`
+
+	ShowArchivedItems *bool `json:"showArchivedItems"`
+
+	ShowEmptyGroups *bool `json:"showEmptyGroups"`
+
+	HiddenColumns []string `json:"hiddenColumns"`
+
+	HiddenRows []string `json:"hiddenRows"`
+
+	HiddenGroupsList []string `json:"hiddenGroupsList"`
+
+	ColumnOrderBoard []string `json:"columnOrderBoard"`
+
+	ColumnOrderList []string `json:"columnOrderList"`
+
+	ProjectLayout *string `json:"projectLayout"`
+
+	ProjectViewOrdering *string `json:"projectViewOrdering"`
+
+	ProjectGrouping *string `json:"projectGrouping"`
+
+	ProjectSubGrouping *string `json:"projectSubGrouping"`
+
+	ProjectShowEmptyGroups *string `json:"projectShowEmptyGroups"`
+
+	ProjectShowEmptySubGroups *string `json:"projectShowEmptySubGroups"`
+}
+
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customView_viewPreferencesValuesCustomViewViewPreferencesValues) __premarshalJSON() (*__premarshalcustomView_viewPreferencesValuesCustomViewViewPreferencesValues, error) {
+	var retval __premarshalcustomView_viewPreferencesValuesCustomViewViewPreferencesValues
+
+	retval.Layout = v.CustomViewPreferencesValueFields.Layout
+	retval.ViewOrdering = v.CustomViewPreferencesValueFields.ViewOrdering
+	retval.ViewOrderingDirection = v.CustomViewPreferencesValueFields.ViewOrderingDirection
+	retval.IssueGrouping = v.CustomViewPreferencesValueFields.IssueGrouping
+	retval.IssueSubGrouping = v.CustomViewPreferencesValueFields.IssueSubGrouping
+	retval.ShowCompletedIssues = v.CustomViewPreferencesValueFields.ShowCompletedIssues
+	retval.ShowArchivedItems = v.CustomViewPreferencesValueFields.ShowArchivedItems
+	retval.ShowEmptyGroups = v.CustomViewPreferencesValueFields.ShowEmptyGroups
+	retval.HiddenColumns = v.CustomViewPreferencesValueFields.HiddenColumns
+	retval.HiddenRows = v.CustomViewPreferencesValueFields.HiddenRows
+	retval.HiddenGroupsList = v.CustomViewPreferencesValueFields.HiddenGroupsList
+	retval.ColumnOrderBoard = v.CustomViewPreferencesValueFields.ColumnOrderBoard
+	retval.ColumnOrderList = v.CustomViewPreferencesValueFields.ColumnOrderList
+	retval.ProjectLayout = v.CustomViewPreferencesValueFields.ProjectLayout
+	retval.ProjectViewOrdering = v.CustomViewPreferencesValueFields.ProjectViewOrdering
+	retval.ProjectGrouping = v.CustomViewPreferencesValueFields.ProjectGrouping
+	retval.ProjectSubGrouping = v.CustomViewPreferencesValueFields.ProjectSubGrouping
+	retval.ProjectShowEmptyGroups = v.CustomViewPreferencesValueFields.ProjectShowEmptyGroups
+	retval.ProjectShowEmptySubGroups = v.CustomViewPreferencesValueFields.ProjectShowEmptySubGroups
+	return &retval, nil
+}
+
+// customView_viewPreferencesValuesResponse is returned by customView_viewPreferencesValues on success.
+type customView_viewPreferencesValuesResponse struct {
+	// One specific custom view, looked up by ID or slug.
+	CustomView customView_viewPreferencesValuesCustomView `json:"customView"`
+}
+
+// GetCustomView returns customView_viewPreferencesValuesResponse.CustomView, and is useful for accessing the field via an interface.
+func (v *customView_viewPreferencesValuesResponse) GetCustomView() customView_viewPreferencesValuesCustomView {
+	return v.CustomView
+}
 
 // customViewsCustomViewsCustomViewConnection includes the requested fields of the GraphQL type CustomViewConnection.
 type customViewsCustomViewsCustomViewConnection struct {
@@ -41577,6 +42790,248 @@ func customViewHasSubscribers(
 	}
 
 	data_ = &customViewHasSubscribersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customView_initiatives.
+const customView_initiatives_Operation = `
+query customView_initiatives ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	customView(id: $id) {
+		initiatives(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... InitiativeSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment InitiativeSummaryFields on Initiative {
+	id
+	name
+	description
+	status
+	priority
+	targetDate
+	slugId
+	url
+}
+`
+
+func customView_initiatives(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *customView_initiativesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customView_initiatives",
+		Query:  customView_initiatives_Operation,
+		Variables: &__customView_initiativesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &customView_initiativesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customView_organizationViewPreferences.
+const customView_organizationViewPreferences_Operation = `
+query customView_organizationViewPreferences ($id: String!) {
+	customView(id: $id) {
+		organizationViewPreferences {
+			... CustomViewPreferencesFields
+		}
+	}
+}
+fragment CustomViewPreferencesFields on ViewPreferences {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	type
+	viewType
+	preferences {
+		... CustomViewPreferencesValueFields
+	}
+}
+fragment CustomViewPreferencesValueFields on ViewPreferencesValues {
+	layout
+	viewOrdering
+	viewOrderingDirection
+	issueGrouping
+	issueSubGrouping
+	showCompletedIssues
+	showArchivedItems
+	showEmptyGroups
+	hiddenColumns
+	hiddenRows
+	hiddenGroupsList
+	columnOrderBoard
+	columnOrderList
+	projectLayout
+	projectViewOrdering
+	projectGrouping
+	projectSubGrouping
+	projectShowEmptyGroups
+	projectShowEmptySubGroups
+}
+`
+
+func customView_organizationViewPreferences(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *customView_organizationViewPreferencesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customView_organizationViewPreferences",
+		Query:  customView_organizationViewPreferences_Operation,
+		Variables: &__customView_organizationViewPreferencesInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customView_organizationViewPreferencesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customView_organizationViewPreferences_preferences.
+const customView_organizationViewPreferences_preferences_Operation = `
+query customView_organizationViewPreferences_preferences ($id: String!) {
+	customView(id: $id) {
+		organizationViewPreferences {
+			preferences {
+				... CustomViewPreferencesValueFields
+			}
+		}
+	}
+}
+fragment CustomViewPreferencesValueFields on ViewPreferencesValues {
+	layout
+	viewOrdering
+	viewOrderingDirection
+	issueGrouping
+	issueSubGrouping
+	showCompletedIssues
+	showArchivedItems
+	showEmptyGroups
+	hiddenColumns
+	hiddenRows
+	hiddenGroupsList
+	columnOrderBoard
+	columnOrderList
+	projectLayout
+	projectViewOrdering
+	projectGrouping
+	projectSubGrouping
+	projectShowEmptyGroups
+	projectShowEmptySubGroups
+}
+`
+
+func customView_organizationViewPreferences_preferences(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *customView_organizationViewPreferences_preferencesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customView_organizationViewPreferences_preferences",
+		Query:  customView_organizationViewPreferences_preferences_Operation,
+		Variables: &__customView_organizationViewPreferences_preferencesInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customView_organizationViewPreferences_preferencesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customView_viewPreferencesValues.
+const customView_viewPreferencesValues_Operation = `
+query customView_viewPreferencesValues ($id: String!) {
+	customView(id: $id) {
+		viewPreferencesValues {
+			... CustomViewPreferencesValueFields
+		}
+	}
+}
+fragment CustomViewPreferencesValueFields on ViewPreferencesValues {
+	layout
+	viewOrdering
+	viewOrderingDirection
+	issueGrouping
+	issueSubGrouping
+	showCompletedIssues
+	showArchivedItems
+	showEmptyGroups
+	hiddenColumns
+	hiddenRows
+	hiddenGroupsList
+	columnOrderBoard
+	columnOrderList
+	projectLayout
+	projectViewOrdering
+	projectGrouping
+	projectSubGrouping
+	projectShowEmptyGroups
+	projectShowEmptySubGroups
+}
+`
+
+func customView_viewPreferencesValues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *customView_viewPreferencesValuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customView_viewPreferencesValues",
+		Query:  customView_viewPreferencesValues_Operation,
+		Variables: &__customView_viewPreferencesValuesInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customView_viewPreferencesValuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

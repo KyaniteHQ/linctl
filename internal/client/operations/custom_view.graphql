@@ -22,6 +22,46 @@ query customViewHasSubscribers($id: String!) {
   }
 }
 
+query customView_initiatives($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  customView(id: $id) {
+    initiatives(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...InitiativeSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query customView_organizationViewPreferences($id: String!) {
+  customView(id: $id) {
+    organizationViewPreferences {
+      ...CustomViewPreferencesFields
+    }
+  }
+}
+
+query customView_organizationViewPreferences_preferences($id: String!) {
+  customView(id: $id) {
+    organizationViewPreferences {
+      preferences {
+        ...CustomViewPreferencesValueFields
+      }
+    }
+  }
+}
+
+query customView_viewPreferencesValues($id: String!) {
+  customView(id: $id) {
+    viewPreferencesValues {
+      ...CustomViewPreferencesValueFields
+    }
+  }
+}
+
 fragment CustomViewSummaryFields on CustomView {
   id
   name
@@ -30,4 +70,38 @@ fragment CustomViewSummaryFields on CustomView {
   shared
   color
   slugId
+}
+
+fragment CustomViewPreferencesFields on ViewPreferences {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  type
+  viewType
+  preferences {
+    ...CustomViewPreferencesValueFields
+  }
+}
+
+fragment CustomViewPreferencesValueFields on ViewPreferencesValues {
+  layout
+  viewOrdering
+  viewOrderingDirection
+  issueGrouping
+  issueSubGrouping
+  showCompletedIssues
+  showArchivedItems
+  showEmptyGroups
+  hiddenColumns
+  hiddenRows
+  hiddenGroupsList
+  columnOrderBoard
+  columnOrderList
+  projectLayout
+  projectViewOrdering
+  projectGrouping
+  projectSubGrouping
+  projectShowEmptyGroups
+  projectShowEmptySubGroups
 }

@@ -152,6 +152,10 @@ linctl roadmap get roadmap-id
 linctl custom-view list --limit 20
 linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
+linctl custom-view initiatives custom-view-id --limit 20
+linctl custom-view organization-preferences custom-view-id
+linctl custom-view organization-preferences values custom-view-id
+linctl custom-view preference-values custom-view-id
 linctl customer list --limit 20
 linctl customer get customer-id
 linctl customer-need list --limit 20
@@ -275,6 +279,10 @@ linctl roadmap get roadmap-id
 linctl custom-view list --limit 20
 linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
+linctl custom-view initiatives custom-view-id --limit 20
+linctl custom-view organization-preferences custom-view-id
+linctl custom-view organization-preferences values custom-view-id
+linctl custom-view preference-values custom-view-id
 linctl customer list --limit 20
 linctl customer get customer-id
 linctl customer-need list --limit 20

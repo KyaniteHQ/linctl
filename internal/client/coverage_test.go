@@ -210,69 +210,73 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			notificationSubscriptionTargetJSON("TeamNotificationSubscription", "team", `{"id":"team-id","key":"LIT","name":"linctl"}`, true, false),
 			notificationSubscriptionTargetJSON("UserNotificationSubscription", "user", `{"id":"target-user-id","displayName":"Ada"}`, false, true),
 		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"notificationSubscription":             `{"notificationSubscription":` + notificationSubscriptionJSON() + `}`,
-		"triageResponsibilities":               `{"triageResponsibilities":{"nodes":[` + triageResponsibilityJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"triageResponsibility":                 `{"triageResponsibility":` + triageResponsibilityJSON() + `}`,
-		"triageResponsibility_manualSelection": `{"triageResponsibility":{"id":"triage-responsibility-id","manualSelection":{"userIds":["user-id","other-user-id"]}}}`,
-		"releasePipelines":                     `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"releasePipeline":                      `{"releasePipeline":` + releasePipelineJSON() + `}`,
-		"releasePipeline_releases":             `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"releasePipeline_stages":               `{"releasePipeline":{"stages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"releaseStages":                        `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"releaseStage":                         `{"releaseStage":` + releaseStageJSON() + `}`,
-		"releaseStage_releases":                `{"releaseStage":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"releases":                             `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"release":                              `{"release":` + releaseJSON() + `}`,
-		"releaseSearch":                        `{"releaseSearch":[` + releaseJSON() + `]}`,
-		"release_history":                      `{"release":{"history":{"nodes":[` + releaseHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"release_links":                        `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"entityExternalLink":                   `{"entityExternalLink":` + entityExternalLinkJSON() + `}`,
-		"releaseNotes":                         `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"releaseNote":                          `{"releaseNote":` + releaseNoteJSON() + `}`,
-		"team":                                 `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
-		"team_members":                         `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"users":                                `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"user":                                 `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
-		"viewer":                               `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
-		"workflowStates":                       `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"workflowState":                        `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
-		"timeSchedules":                        `{"timeSchedules":{"nodes":[{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"timeSchedule":                         `{"timeSchedule":{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}}`,
-		"templates":                            `{"templates":[` + templateJSON() + `,` + strings.Replace(templateJSON(), "template-id", "template-two-id", 1) + `]}`,
-		"template":                             `{"template":` + templateJSON() + `}`,
-		"initiatives":                          `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"initiative":                           `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
-		"initiative_history":                   `{"initiative":{"history":{"nodes":[` + initiativeHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"initiative_links":                     `{"initiative":{"links":{"nodes":[` + entityExternalLinkJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"initiative_subInitiatives":            `{"initiative":{"subInitiatives":{"nodes":[` + subInitiativeJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"initiative_initiativeUpdates":         `{"initiative":{"initiativeUpdates":{"nodes":[` + initiativeUpdateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"initiativeRelations":                  `{"initiativeRelations":{"nodes":[{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"initiative-relation-no-user","sortOrder":2,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"other-child-initiative-id","name":"Other child"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"initiativeRelation":                   `{"initiativeRelation":{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"initiativeToProjects":                 `{"initiativeToProjects":{"nodes":[{"id":"initiative-to-project-id","sortOrder":"1","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"initiativeToProject":                  `{"initiativeToProject":{"id":"initiative-to-project-id","sortOrder":"1","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}}}`,
-		"initiativeUpdates":                    `{"initiativeUpdates":{"nodes":[{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"initiativeUpdate":                     `{"initiativeUpdate":{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"roadmaps":                             `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"roadmap":                              `{"roadmap":{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}}`,
-		"customViews":                          `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"customViewHasSubscribers":             `{"customViewHasSubscribers":{"hasSubscribers":true}}`,
-		"customView":                           `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
-		"customers":                            `{"customers":{"nodes":[{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"customer":                             `{"customer":{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}}`,
-		"customerNeeds":                        `{"customerNeeds":{"nodes":[{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"customerNeed":                         `{"customerNeed":{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}}`,
-		"customerStatuses":                     `{"customerStatuses":{"nodes":[{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"customerStatus":                       `{"customerStatus":{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}}`,
-		"customerTiers":                        `{"customerTiers":{"nodes":[{"id":"customer-tier-id","name":"enterprise","displayName":"Enterprise","color":"#0000ff","description":"Enterprise customers","position":2,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"customerTier":                         `{"customerTier":{"id":"customer-tier-id","name":"enterprise","displayName":"Enterprise","color":"#0000ff","description":"Enterprise customers","position":2,"archivedAt":null}}`,
-		"favorites":                            `{"favorites":{"nodes":[{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"favorite_children":                    `{"favorite":{"children":{"nodes":[{"id":"favorite-child-id","type":"project","folderName":null,"url":"https://linear.app/kyanite/project/project-id"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"favorite":                             `{"favorite":{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}}`,
-		"emojis":                               `{"emojis":{"nodes":[{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"emoji":                                `{"emoji":{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}}`,
-		"attachments":                          `{"attachments":{"nodes":[{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"attachmentsForURL":                    `{"attachmentsForURL":{"nodes":[{"id":"attachment-url-id","title":"Linked URL","subtitle":"url source","url":"https://example.com/spec","sourceType":"url"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"attachment":                           `{"attachment":{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}}`,
+		"notificationSubscription":               `{"notificationSubscription":` + notificationSubscriptionJSON() + `}`,
+		"triageResponsibilities":                 `{"triageResponsibilities":{"nodes":[` + triageResponsibilityJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"triageResponsibility":                   `{"triageResponsibility":` + triageResponsibilityJSON() + `}`,
+		"triageResponsibility_manualSelection":   `{"triageResponsibility":{"id":"triage-responsibility-id","manualSelection":{"userIds":["user-id","other-user-id"]}}}`,
+		"releasePipelines":                       `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releasePipeline":                        `{"releasePipeline":` + releasePipelineJSON() + `}`,
+		"releasePipeline_releases":               `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releasePipeline_stages":                 `{"releasePipeline":{"stages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releaseStages":                          `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releaseStage":                           `{"releaseStage":` + releaseStageJSON() + `}`,
+		"releaseStage_releases":                  `{"releaseStage":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releases":                               `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"release":                                `{"release":` + releaseJSON() + `}`,
+		"releaseSearch":                          `{"releaseSearch":[` + releaseJSON() + `]}`,
+		"release_history":                        `{"release":{"history":{"nodes":[` + releaseHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"release_links":                          `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"entityExternalLink":                     `{"entityExternalLink":` + entityExternalLinkJSON() + `}`,
+		"releaseNotes":                           `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releaseNote":                            `{"releaseNote":` + releaseNoteJSON() + `}`,
+		"team":                                   `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
+		"team_members":                           `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"users":                                  `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"user":                                   `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"viewer":                                 `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"workflowStates":                         `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"workflowState":                          `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
+		"timeSchedules":                          `{"timeSchedules":{"nodes":[{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"timeSchedule":                           `{"timeSchedule":{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}}`,
+		"templates":                              `{"templates":[` + templateJSON() + `,` + strings.Replace(templateJSON(), "template-id", "template-two-id", 1) + `]}`,
+		"template":                               `{"template":` + templateJSON() + `}`,
+		"initiatives":                            `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiative":                             `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
+		"initiative_history":                     `{"initiative":{"history":{"nodes":[` + initiativeHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"initiative_links":                       `{"initiative":{"links":{"nodes":[` + entityExternalLinkJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"initiative_subInitiatives":              `{"initiative":{"subInitiatives":{"nodes":[` + subInitiativeJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"initiative_initiativeUpdates":           `{"initiative":{"initiativeUpdates":{"nodes":[` + initiativeUpdateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"initiativeRelations":                    `{"initiativeRelations":{"nodes":[{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"initiative-relation-no-user","sortOrder":2,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"other-child-initiative-id","name":"Other child"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiativeRelation":                     `{"initiativeRelation":{"id":"initiative-relation-id","sortOrder":1.5,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"relatedInitiative":{"id":"child-initiative-id","name":"Child initiative"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"initiativeToProjects":                   `{"initiativeToProjects":{"nodes":[{"id":"initiative-to-project-id","sortOrder":"1","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiativeToProject":                    `{"initiativeToProject":{"id":"initiative-to-project-id","sortOrder":"1","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}}}`,
+		"initiativeUpdates":                      `{"initiativeUpdates":{"nodes":[{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiativeUpdate":                       `{"initiativeUpdate":{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"roadmaps":                               `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"roadmap":                                `{"roadmap":{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}}`,
+		"customViews":                            `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customViewHasSubscribers":               `{"customViewHasSubscribers":{"hasSubscribers":true}}`,
+		"customView":                             `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
+		"customView_initiatives":                 `{"customView":{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"customView_organizationViewPreferences": `{"customView":{"organizationViewPreferences":` + customViewPreferencesJSON("priority", "list") + `}}`,
+		"customView_organizationViewPreferences_preferences": `{"customView":{"organizationViewPreferences":{"preferences":` + customViewPreferenceValuesJSON("priority", "list") + `}}}`,
+		"customView_viewPreferencesValues":                   `{"customView":{"viewPreferencesValues":` + customViewPreferenceValuesJSON("updatedAt", "board") + `}}`,
+		"customers":                                          `{"customers":{"nodes":[{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customer":                                           `{"customer":{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}}`,
+		"customerNeeds":                                      `{"customerNeeds":{"nodes":[{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customerNeed":                                       `{"customerNeed":{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}}`,
+		"customerStatuses":                                   `{"customerStatuses":{"nodes":[{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customerStatus":                                     `{"customerStatus":{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}}`,
+		"customerTiers":                                      `{"customerTiers":{"nodes":[{"id":"customer-tier-id","name":"enterprise","displayName":"Enterprise","color":"#0000ff","description":"Enterprise customers","position":2,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"customerTier":                                       `{"customerTier":{"id":"customer-tier-id","name":"enterprise","displayName":"Enterprise","color":"#0000ff","description":"Enterprise customers","position":2,"archivedAt":null}}`,
+		"favorites":                                          `{"favorites":{"nodes":[{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"favorite_children":                                  `{"favorite":{"children":{"nodes":[{"id":"favorite-child-id","type":"project","folderName":null,"url":"https://linear.app/kyanite/project/project-id"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"favorite":                                           `{"favorite":{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}}`,
+		"emojis":                                             `{"emojis":{"nodes":[{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"emoji":                                              `{"emoji":{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}}`,
+		"attachments":                                        `{"attachments":{"nodes":[{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"attachmentsForURL":                                  `{"attachmentsForURL":{"nodes":[{"id":"attachment-url-id","title":"Linked URL","subtitle":"url source","url":"https://example.com/spec","sourceType":"url"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"attachment":                                         `{"attachment":{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}}`,
 	}
 
 	// When
@@ -474,6 +478,22 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	customViewSubscribers, err := GetCustomViewSubscriberStatus(context.Background(), graphqlClient, "custom-view-id")
 	require.NoError(t, err)
 	customView, err := GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
+	require.NoError(t, err)
+	customViewInitiatives, err := ListCustomViewInitiatives(context.Background(), graphqlClient, "custom-view-id", 2)
+	require.NoError(t, err)
+	customViewOrganizationPreferences, err := GetCustomViewOrganizationPreferences(
+		context.Background(),
+		graphqlClient,
+		"custom-view-id",
+	)
+	require.NoError(t, err)
+	customViewOrganizationPreferenceValues, err := GetCustomViewOrganizationPreferenceValues(
+		context.Background(),
+		graphqlClient,
+		"custom-view-id",
+	)
+	require.NoError(t, err)
+	customViewPreferenceValues, err := GetCustomViewPreferenceValues(context.Background(), graphqlClient, "custom-view-id")
 	require.NoError(t, err)
 	customers, err := ListCustomers(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -797,6 +817,18 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, customViewSubscribers.HasSubscribers)
 	require.Equal(t, "custom-view-id", customView.ID)
 	require.Equal(t, "Saved issue view", customView.Description)
+	require.True(t, customViewInitiatives.HasNextPage)
+	require.Equal(t, "Platform", customViewInitiatives.Initiatives[0].Name)
+	require.Equal(t, "view-preferences-id", customViewOrganizationPreferences.ID)
+	require.Equal(t, "organization", customViewOrganizationPreferences.Type)
+	require.Equal(t, "list", customViewOrganizationPreferences.Values.Layout)
+	require.True(t, customViewOrganizationPreferenceValues.HasOrganizationPreferences)
+	require.Equal(t, "priority", customViewOrganizationPreferenceValues.ViewOrdering)
+	require.True(t, customViewOrganizationPreferenceValues.ShowArchivedItems)
+	require.Equal(t, []string{"column-id"}, customViewOrganizationPreferenceValues.HiddenColumns)
+	require.True(t, customViewPreferenceValues.HasEffectivePreferenceValue)
+	require.Equal(t, "board", customViewPreferenceValues.Layout)
+	require.Equal(t, "updatedAt", customViewPreferenceValues.ViewOrdering)
 	require.True(t, customers.HasNextPage)
 	require.Equal(t, &endCursor, customers.EndCursor)
 	require.Equal(t, "Acme", customers.Customers[0].Name)
@@ -1435,6 +1467,22 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get custom view custom-view-id")
 
+		_, err = ListCustomViewInitiatives(context.Background(), graphqlClient, "custom-view-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list custom view initiatives custom-view-id")
+
+		_, err = GetCustomViewOrganizationPreferences(context.Background(), graphqlClient, "custom-view-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get custom view organization preferences custom-view-id")
+
+		_, err = GetCustomViewOrganizationPreferenceValues(context.Background(), graphqlClient, "custom-view-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get custom view organization preference values custom-view-id")
+
+		_, err = GetCustomViewPreferenceValues(context.Background(), graphqlClient, "custom-view-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get custom view preference values custom-view-id")
+
 		_, err = ListCustomers(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list customers")
@@ -2061,6 +2109,26 @@ func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
 	require.Contains(t, err.Error(), "wait for retry")
 }
 
+func Test_CustomViewPreferenceReads_return_empty_values_when_organization_defaults_are_absent(t *testing.T) {
+	// Given
+	graphqlClient := fakeGraphQLClient{
+		"customView_organizationViewPreferences":             `{"customView":{"organizationViewPreferences":null}}`,
+		"customView_organizationViewPreferences_preferences": `{"customView":{"organizationViewPreferences":null}}`,
+	}
+
+	// When
+	preferences, err := GetCustomViewOrganizationPreferences(context.Background(), graphqlClient, "custom-view-id")
+	require.NoError(t, err)
+	values, err := GetCustomViewOrganizationPreferenceValues(context.Background(), graphqlClient, "custom-view-id")
+	require.NoError(t, err)
+
+	// Then
+	require.Equal(t, "custom-view-id", preferences.CustomViewID)
+	require.Empty(t, preferences.ID)
+	require.Equal(t, "custom-view-id", values.CustomViewID)
+	require.False(t, values.HasOrganizationPreferences)
+}
+
 type errorGraphQLClient struct {
 	err error
 }
@@ -2363,6 +2431,42 @@ func initiativeUpdateJSON() string {
 		"commentCount":1,
 		"initiative":{"id":"initiative-id","name":"Platform"},
 		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func customViewPreferencesJSON(ordering string, layout string) string {
+	return `{
+		"id":"view-preferences-id",
+		"createdAt":"2026-06-01T12:00:00Z",
+		"updatedAt":"2026-06-01T12:01:00Z",
+		"archivedAt":null,
+		"type":"organization",
+		"viewType":"customView",
+		"preferences":` + customViewPreferenceValuesJSON(ordering, layout) + `
+	}`
+}
+
+func customViewPreferenceValuesJSON(ordering string, layout string) string {
+	return `{
+		"layout":"` + layout + `",
+		"viewOrdering":"` + ordering + `",
+		"viewOrderingDirection":"Descending",
+		"issueGrouping":"status",
+		"issueSubGrouping":"priority",
+		"showCompletedIssues":"all",
+		"showArchivedItems":true,
+		"showEmptyGroups":true,
+		"hiddenColumns":["column-id"],
+		"hiddenRows":["row-id"],
+		"hiddenGroupsList":["group-id"],
+		"columnOrderBoard":["board-column-id"],
+		"columnOrderList":["list-column-id"],
+		"projectLayout":"timeline",
+		"projectViewOrdering":"priority",
+		"projectGrouping":"status",
+		"projectSubGrouping":"lead",
+		"projectShowEmptyGroups":"all",
+		"projectShowEmptySubGroups":"all"
 	}`
 }
 

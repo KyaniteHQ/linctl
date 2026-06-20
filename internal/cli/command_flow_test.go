@@ -136,6 +136,10 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, contains: "custom-view-id has_subscribers true"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
+		{name: "custom view initiatives", args: []string{"custom-view", "initiatives", "custom-view-id", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
+		{name: "custom view organization preferences", args: []string{"custom-view", "organization-preferences", "custom-view-id"}, contains: "custom-view-id organization preferences organization customView layout list"},
+		{name: "custom view organization preference values", args: []string{"custom-view", "organization-preferences", "values", "custom-view-id"}, contains: "custom-view-id preference values layout list ordering priority"},
+		{name: "custom view preference values", args: []string{"custom-view", "preference-values", "custom-view-id"}, contains: "custom-view-id preference values layout board ordering updatedAt"},
 		{name: "customer list", args: []string{"customer", "list", "--limit", "1"}, contains: "customer-id Acme [Active] needs 3"},
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, contains: "customer-id Acme [Active] needs 3"},
 		{name: "customer need list", args: []string{"customer-need", "list", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
@@ -566,6 +570,10 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"user", "get", "user-id"},
 			{"user", "me"},
 			{"custom-view", "subscribers", "custom-view-id"},
+			{"custom-view", "initiatives", "custom-view-id"},
+			{"custom-view", "organization-preferences", "custom-view-id"},
+			{"custom-view", "organization-preferences", "values", "custom-view-id"},
+			{"custom-view", "preference-values", "custom-view-id"},
 		}
 		for _, args := range commands {
 			t.Run(strings.Join(args, " "), func(t *testing.T) {
@@ -791,6 +799,10 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "custom-view", "list", "--limit", "1"},
 		{"--json", "custom-view", "subscribers", "custom-view-id"},
 		{"--json", "custom-view", "get", "custom-view-id"},
+		{"--json", "--fields", "id,name,status", "custom-view", "initiatives", "custom-view-id", "--limit", "1"},
+		{"--json", "custom-view", "organization-preferences", "custom-view-id"},
+		{"--json", "custom-view", "organization-preferences", "values", "custom-view-id"},
+		{"--json", "custom-view", "preference-values", "custom-view-id"},
 		{"--json", "customer", "list", "--limit", "1"},
 		{"--json", "customer", "get", "customer-id"},
 		{"--json", "customer-need", "list", "--limit", "1"},
@@ -1258,6 +1270,10 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, operation: "customViewHasSubscribers", contains: "get custom view subscribers custom-view-id"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
+		{name: "custom view initiatives", args: []string{"custom-view", "initiatives", "custom-view-id"}, operation: "customView_initiatives", contains: "list custom view initiatives custom-view-id"},
+		{name: "custom view organization preferences", args: []string{"custom-view", "organization-preferences", "custom-view-id"}, operation: "customView_organizationViewPreferences", contains: "get custom view organization preferences custom-view-id"},
+		{name: "custom view organization preference values", args: []string{"custom-view", "organization-preferences", "values", "custom-view-id"}, operation: "customView_organizationViewPreferences_preferences", contains: "get custom view organization preference values custom-view-id"},
+		{name: "custom view preference values", args: []string{"custom-view", "preference-values", "custom-view-id"}, operation: "customView_viewPreferencesValues", contains: "get custom view preference values custom-view-id"},
 		{name: "customer list", args: []string{"customer", "list"}, operation: "customers", contains: "list customers"},
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, operation: "customer", contains: "get customer customer-id"},
 		{name: "customer need list", args: []string{"customer-need", "list"}, operation: "customerNeeds", contains: "list customer needs"},
@@ -1772,6 +1788,14 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"customViewHasSubscribers":{"hasSubscribers":true}}`, true
 	case "customView":
 		return `{"customView":` + commandCustomViewJSON() + `}`, true
+	case "customView_initiatives":
+		return `{"customView":{"initiatives":{"nodes":[` + commandInitiativeJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "customView_organizationViewPreferences":
+		return `{"customView":{"organizationViewPreferences":` + commandCustomViewPreferencesJSON("priority", "list") + `}}`, true
+	case "customView_organizationViewPreferences_preferences":
+		return `{"customView":{"organizationViewPreferences":{"preferences":` + commandCustomViewPreferenceValuesJSON("priority", "list") + `}}}`, true
+	case "customView_viewPreferencesValues":
+		return `{"customView":{"viewPreferencesValues":` + commandCustomViewPreferenceValuesJSON("updatedAt", "board") + `}}`, true
 	case "customers":
 		return `{"customers":{"nodes":[` + commandCustomerJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customer":
@@ -2302,6 +2326,42 @@ func commandCustomViewJSON() string {
 		"shared":true,
 		"color":"#5e6ad2",
 		"slugId":"my-issues"
+	}`
+}
+
+func commandCustomViewPreferencesJSON(ordering string, layout string) string {
+	return `{
+		"id":"view-preferences-id",
+		"createdAt":"2026-06-01T12:00:00Z",
+		"updatedAt":"2026-06-01T12:01:00Z",
+		"archivedAt":null,
+		"type":"organization",
+		"viewType":"customView",
+		"preferences":` + commandCustomViewPreferenceValuesJSON(ordering, layout) + `
+	}`
+}
+
+func commandCustomViewPreferenceValuesJSON(ordering string, layout string) string {
+	return `{
+		"layout":"` + layout + `",
+		"viewOrdering":"` + ordering + `",
+		"viewOrderingDirection":"Descending",
+		"issueGrouping":"status",
+		"issueSubGrouping":"priority",
+		"showCompletedIssues":"all",
+		"showArchivedItems":true,
+		"showEmptyGroups":true,
+		"hiddenColumns":["column-id"],
+		"hiddenRows":["row-id"],
+		"hiddenGroupsList":["group-id"],
+		"columnOrderBoard":["board-column-id"],
+		"columnOrderList":["list-column-id"],
+		"projectLayout":"timeline",
+		"projectViewOrdering":"priority",
+		"projectGrouping":"status",
+		"projectSubGrouping":"lead",
+		"projectShowEmptyGroups":"all",
+		"projectShowEmptySubGroups":"all"
 	}`
 }
 

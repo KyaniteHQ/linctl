@@ -642,7 +642,9 @@ Use the schema name `CustomView` in code and docs. It is Linear's saved view ove
 Schema backing:
 
 - Types: `CustomView`, `CustomViewConnection`
-- Reads: `Query.customViews`, `Query.customView`, `Query.customViewHasSubscribers`
+- Reads: `Query.customViews`, `Query.customView`, `Query.customViewHasSubscribers`, `Query.customView_initiatives`,
+  `Query.customView_organizationViewPreferences`, `Query.customView_organizationViewPreferences_preferences`,
+  `Query.customView_viewPreferencesValues`
 - Writes: `Mutation.createCustomView`, `Mutation.updateCustomView`, `Mutation.deleteCustomView`
 - Inputs: `CustomViewCreateInput`, `CustomViewUpdateInput`
 - Relevant fields: `CustomView.id`, `CustomView.name`, `CustomView.description`, `CustomView.modelName`, `CustomView.shared`, `CustomView.color`, `CustomView.slugId`
@@ -654,11 +656,15 @@ Planned commands:
 | `custom-view list` | `Query.customViews` | Read-only |
 | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only |
 | `custom-view get` | `Query.customView` | Read-only |
+| `custom-view initiatives` | `Query.customView_initiatives` | Read-only |
+| `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only |
+| `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only |
+| `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only |
 | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model |
 | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation |
 | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics |
 
-Only `custom-view list`, `custom-view subscribers`, and `custom-view get` are implemented in the current CLI. CustomView writes are deferred as organization-scoped view configuration surface.
+Only CustomView reads are implemented in the current CLI. CustomView writes are deferred as organization-scoped view configuration surface.
 
 ## Customer
 

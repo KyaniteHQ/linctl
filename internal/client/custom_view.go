@@ -31,6 +31,44 @@ type CustomViewSubscriberStatus struct {
 	HasSubscribers bool   `json:"has_subscribers"`
 }
 
+// CustomViewPreferences is the compact organization preference model for one custom view.
+type CustomViewPreferences struct {
+	CustomViewID string                      `json:"custom_view_id"`
+	ID           string                      `json:"id,omitempty"`
+	Type         string                      `json:"type,omitempty"`
+	ViewType     string                      `json:"view_type,omitempty"`
+	CreatedAt    string                      `json:"created_at,omitempty"`
+	UpdatedAt    string                      `json:"updated_at,omitempty"`
+	ArchivedAt   string                      `json:"archived_at,omitempty"`
+	Values       CustomViewPreferencesValues `json:"values"`
+}
+
+// CustomViewPreferencesValues is the compact display-settings model for one custom view.
+type CustomViewPreferencesValues struct {
+	CustomViewID                string   `json:"custom_view_id,omitempty"`
+	Layout                      string   `json:"layout,omitempty"`
+	ViewOrdering                string   `json:"view_ordering,omitempty"`
+	ViewOrderingDirection       string   `json:"view_ordering_direction,omitempty"`
+	IssueGrouping               string   `json:"issue_grouping,omitempty"`
+	IssueSubGrouping            string   `json:"issue_sub_grouping,omitempty"`
+	ShowCompletedIssues         string   `json:"show_completed_issues,omitempty"`
+	ShowArchivedItems           bool     `json:"show_archived_items,omitempty"`
+	ShowEmptyGroups             bool     `json:"show_empty_groups,omitempty"`
+	HiddenColumns               []string `json:"hidden_columns,omitempty"`
+	HiddenRows                  []string `json:"hidden_rows,omitempty"`
+	HiddenGroupsList            []string `json:"hidden_groups_list,omitempty"`
+	ColumnOrderBoard            []string `json:"column_order_board,omitempty"`
+	ColumnOrderList             []string `json:"column_order_list,omitempty"`
+	ProjectLayout               string   `json:"project_layout,omitempty"`
+	ProjectViewOrdering         string   `json:"project_view_ordering,omitempty"`
+	ProjectGrouping             string   `json:"project_grouping,omitempty"`
+	ProjectSubGrouping          string   `json:"project_sub_grouping,omitempty"`
+	ProjectShowEmptyGroups      string   `json:"project_show_empty_groups,omitempty"`
+	ProjectShowEmptySubGroups   string   `json:"project_show_empty_sub_groups,omitempty"`
+	HasOrganizationPreferences  bool     `json:"has_organization_preferences,omitempty"`
+	HasEffectivePreferenceValue bool     `json:"has_effective_preference_value,omitempty"`
+}
+
 // ListCustomViews returns visible custom views.
 func ListCustomViews(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomViewList, error) {
 	result, err := customViews(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -81,6 +119,99 @@ func GetCustomViewSubscriberStatus(
 	}, nil
 }
 
+// ListCustomViewInitiatives returns initiatives matching one custom view's initiative filter.
+func ListCustomViewInitiatives(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (InitiativeList, error) {
+	result, err := customView_initiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return InitiativeList{}, fmt.Errorf("list custom view initiatives %s: %w", id, err)
+	}
+
+	initiatives := make([]InitiativeSummary, 0, len(result.CustomView.Initiatives.Nodes))
+	for _, node := range result.CustomView.Initiatives.Nodes {
+		initiatives = append(initiatives, initiativeSummary(node.InitiativeSummaryFields))
+	}
+
+	return InitiativeList{
+		Initiatives: initiatives,
+		HasNextPage: result.CustomView.Initiatives.PageInfo.HasNextPage,
+		EndCursor:   result.CustomView.Initiatives.PageInfo.EndCursor,
+	}, nil
+}
+
+// GetCustomViewOrganizationPreferences returns organization defaults for one custom view.
+func GetCustomViewOrganizationPreferences(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (CustomViewPreferences, error) {
+	result, err := customView_organizationViewPreferences(ctx, graphqlClient, id)
+	if err != nil {
+		return CustomViewPreferences{}, fmt.Errorf("get custom view organization preferences %s: %w", id, err)
+	}
+	if result.CustomView.OrganizationViewPreferences == nil {
+		return CustomViewPreferences{CustomViewID: id}, nil
+	}
+
+	fields := result.CustomView.OrganizationViewPreferences.CustomViewPreferencesFields
+	return CustomViewPreferences{
+		CustomViewID: id,
+		ID:           fields.Id,
+		Type:         fields.Type,
+		ViewType:     fields.ViewType,
+		CreatedAt:    fields.CreatedAt,
+		UpdatedAt:    fields.UpdatedAt,
+		ArchivedAt:   stringValue(fields.ArchivedAt),
+		Values:       customViewPreferencesValues(id, fields.Preferences.CustomViewPreferencesValueFields),
+	}, nil
+}
+
+// GetCustomViewOrganizationPreferenceValues returns organization default display settings for one custom view.
+func GetCustomViewOrganizationPreferenceValues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (CustomViewPreferencesValues, error) {
+	result, err := customView_organizationViewPreferences_preferences(ctx, graphqlClient, id)
+	if err != nil {
+		return CustomViewPreferencesValues{}, fmt.Errorf(
+			"get custom view organization preference values %s: %w",
+			id,
+			err,
+		)
+	}
+	if result.CustomView.OrganizationViewPreferences == nil {
+		return CustomViewPreferencesValues{CustomViewID: id}, nil
+	}
+
+	values := customViewPreferencesValues(
+		id,
+		result.CustomView.OrganizationViewPreferences.Preferences.CustomViewPreferencesValueFields,
+	)
+	values.HasOrganizationPreferences = true
+	return values, nil
+}
+
+// GetCustomViewPreferenceValues returns effective display settings for one custom view.
+func GetCustomViewPreferenceValues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (CustomViewPreferencesValues, error) {
+	result, err := customView_viewPreferencesValues(ctx, graphqlClient, id)
+	if err != nil {
+		return CustomViewPreferencesValues{}, fmt.Errorf("get custom view preference values %s: %w", id, err)
+	}
+
+	values := customViewPreferencesValues(id, result.CustomView.ViewPreferencesValues.CustomViewPreferencesValueFields)
+	values.HasEffectivePreferenceValue = true
+	return values, nil
+}
+
 func customViewSummary(fields CustomViewSummaryFields) CustomViewSummary {
 	return CustomViewSummary{
 		ID:          fields.Id,
@@ -90,5 +221,33 @@ func customViewSummary(fields CustomViewSummaryFields) CustomViewSummary {
 		Shared:      fields.Shared,
 		Color:       stringValue(fields.Color),
 		SlugID:      fields.SlugId,
+	}
+}
+
+func customViewPreferencesValues(
+	id string,
+	fields CustomViewPreferencesValueFields,
+) CustomViewPreferencesValues {
+	return CustomViewPreferencesValues{
+		CustomViewID:              id,
+		Layout:                    stringValue(fields.Layout),
+		ViewOrdering:              stringValue(fields.ViewOrdering),
+		ViewOrderingDirection:     stringValue(fields.ViewOrderingDirection),
+		IssueGrouping:             stringValue(fields.IssueGrouping),
+		IssueSubGrouping:          stringValue(fields.IssueSubGrouping),
+		ShowCompletedIssues:       stringValue(fields.ShowCompletedIssues),
+		ShowArchivedItems:         boolValue(fields.ShowArchivedItems),
+		ShowEmptyGroups:           boolValue(fields.ShowEmptyGroups),
+		HiddenColumns:             fields.HiddenColumns,
+		HiddenRows:                fields.HiddenRows,
+		HiddenGroupsList:          fields.HiddenGroupsList,
+		ColumnOrderBoard:          fields.ColumnOrderBoard,
+		ColumnOrderList:           fields.ColumnOrderList,
+		ProjectLayout:             stringValue(fields.ProjectLayout),
+		ProjectViewOrdering:       stringValue(fields.ProjectViewOrdering),
+		ProjectGrouping:           stringValue(fields.ProjectGrouping),
+		ProjectSubGrouping:        stringValue(fields.ProjectSubGrouping),
+		ProjectShowEmptyGroups:    stringValue(fields.ProjectShowEmptyGroups),
+		ProjectShowEmptySubGroups: stringValue(fields.ProjectShowEmptySubGroups),
 	}
 }

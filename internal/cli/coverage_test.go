@@ -135,6 +135,24 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		ID:             "custom-view-id",
 		HasSubscribers: true,
 	}
+	customViewPreferences := client.CustomViewPreferences{
+		CustomViewID: "custom-view-id",
+		ID:           "view-preferences-id",
+		Type:         "organization",
+		ViewType:     "customView",
+		Values: client.CustomViewPreferencesValues{
+			CustomViewID:  "custom-view-id",
+			Layout:        "list",
+			ViewOrdering:  "priority",
+			HiddenColumns: []string{"column-id"},
+		},
+	}
+	customViewPreferenceValues := client.CustomViewPreferencesValues{
+		CustomViewID:  "custom-view-id",
+		Layout:        "board",
+		ViewOrdering:  "updatedAt",
+		HiddenColumns: []string{"column-id"},
+	}
 	customer := client.CustomerSummary{
 		ID:                   "customer-id",
 		Name:                 "Acme",
@@ -310,6 +328,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeRoadmap(textCommand, &textOptions, roadmap))
 	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(textCommand, &textOptions, customViewSubscriberStatus))
+	require.NoError(t, writeCustomViewPreferences(textCommand, &textOptions, customViewPreferences))
+	require.NoError(t, writeCustomViewPreferenceValues(textCommand, &textOptions, customViewPreferenceValues))
+	require.NoError(t, writeCustomViewPreferences(textCommand, &textOptions, client.CustomViewPreferences{CustomViewID: "empty-custom-view-id"}))
 	require.NoError(t, writeCustomer(textCommand, &textOptions, customer))
 	require.NoError(t, writeCustomerNeed(textCommand, &textOptions, customerNeed))
 	require.NoError(t, writeCustomerStatus(textCommand, &textOptions, customerStatus))
@@ -349,6 +370,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"roadmap-id Platform roadmap platform-roadmap\n"+
 			"custom-view-id My issues [Issue]\n"+
 			"custom-view-id has_subscribers true\n"+
+			"custom-view-id organization preferences organization customView layout list\n"+
+			"custom-view-id preference values layout board ordering updatedAt\n"+
+			"empty-custom-view-id organization preferences -\n"+
 			"customer-id Acme [Active] needs 3\n"+
 			"customer-need-id Acme LIT-1 priority 1\n"+
 			"customer-status-id Active #00ff00 1\n"+
@@ -400,6 +424,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeRoadmap(jsonCommand, &jsonOptions, roadmap))
 	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(jsonCommand, &jsonOptions, customViewSubscriberStatus))
+	require.NoError(t, writeCustomViewPreferences(jsonCommand, &jsonOptions, customViewPreferences))
+	require.NoError(t, writeCustomViewPreferenceValues(jsonCommand, &jsonOptions, customViewPreferenceValues))
 	require.NoError(t, writeCustomer(jsonCommand, &jsonOptions, customer))
 	require.NoError(t, writeCustomerNeed(jsonCommand, &jsonOptions, customerNeed))
 	require.NoError(t, writeCustomerStatus(jsonCommand, &jsonOptions, customerStatus))
@@ -443,6 +469,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"slug_id": "platform-roadmap"`)
 	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
 	require.Contains(t, jsonOut.String(), `"has_subscribers": true`)
+	require.Contains(t, jsonOut.String(), `"view_ordering": "updatedAt"`)
+	require.Contains(t, jsonOut.String(), `"hidden_columns": [`)
 	require.Contains(t, jsonOut.String(), `"approximate_need_count": 3`)
 	require.Contains(t, jsonOut.String(), `"customer_name": "Acme"`)
 	require.Contains(t, jsonOut.String(), `"display_name": "Active"`)
@@ -590,6 +618,20 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	customViewSubscriberStatus := client.CustomViewSubscriberStatus{
 		ID:             "custom-view-id",
 		HasSubscribers: true,
+	}
+	customViewPreferences := client.CustomViewPreferences{
+		CustomViewID: "custom-view-id",
+		ID:           "view-preferences-id",
+		Type:         "organization",
+		ViewType:     "customView",
+		Values: client.CustomViewPreferencesValues{
+			CustomViewID: "custom-view-id",
+			Layout:       "list",
+		},
+	}
+	customViewPreferenceValues := client.CustomViewPreferencesValues{
+		CustomViewID: "custom-view-id",
+		Layout:       "board",
 	}
 	customer := client.CustomerSummary{
 		ID:                   "customer-id",
@@ -761,6 +803,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeRoadmap(command, &rootOptions{idOnly: true}, roadmap))
 	require.NoError(t, writeCustomView(command, &rootOptions{idOnly: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(command, &rootOptions{idOnly: true}, customViewSubscriberStatus))
+	require.NoError(t, writeCustomViewPreferences(command, &rootOptions{idOnly: true}, customViewPreferences))
+	require.NoError(t, writeCustomViewPreferenceValues(command, &rootOptions{idOnly: true}, customViewPreferenceValues))
 	require.NoError(t, writeCustomer(command, &rootOptions{idOnly: true}, customer))
 	require.NoError(t, writeCustomerNeed(command, &rootOptions{idOnly: true}, customerNeed))
 	require.NoError(t, writeCustomerStatus(command, &rootOptions{idOnly: true}, customerStatus))
@@ -851,6 +895,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeRoadmap(quietCommand, &rootOptions{quiet: true}, roadmap))
 	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(quietCommand, &rootOptions{quiet: true}, customViewSubscriberStatus))
+	require.NoError(t, writeCustomViewPreferences(quietCommand, &rootOptions{quiet: true}, customViewPreferences))
+	require.NoError(t, writeCustomViewPreferenceValues(quietCommand, &rootOptions{quiet: true}, customViewPreferenceValues))
 	require.NoError(t, writeCustomer(quietCommand, &rootOptions{quiet: true}, customer))
 	require.NoError(t, writeCustomerNeed(quietCommand, &rootOptions{quiet: true}, customerNeed))
 	require.NoError(t, writeCustomerStatus(quietCommand, &rootOptions{quiet: true}, customerStatus))
