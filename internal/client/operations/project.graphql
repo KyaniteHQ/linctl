@@ -18,7 +18,7 @@ query project($id: String!) {
   }
 }
 
-query ProjectMembers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+query project_members($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   project(id: $id) {
     id
     name

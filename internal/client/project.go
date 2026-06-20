@@ -123,7 +123,7 @@ func ListProjectMembers(
 	id string,
 	limit int,
 ) (ProjectMemberList, error) {
-	project, err := ProjectMembers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	project, err := project_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectMemberList{}, fmt.Errorf("list project members %s: %w", id, err)
 	}

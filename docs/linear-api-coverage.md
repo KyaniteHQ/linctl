@@ -1050,7 +1050,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `Organization` | query | `organization` | implemented | `internal/client/generated.go` |
 | `ProjectArchive` | mutation | `projectArchive` | implemented | `internal/client/generated.go` |
 | `ProjectCreate` | mutation | `projectCreate` | implemented | `internal/client/generated.go` |
-| `ProjectMembers` | query | `project` | implemented | `internal/client/generated.go` |
 | `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | implemented | `internal/client/generated.go` |
 | `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | implemented | `internal/client/generated.go` |
 | `ProjectMilestones` | query | `project` | implemented | `internal/client/generated.go` |
@@ -1074,6 +1073,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
+| `project_members` | query | `project` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |

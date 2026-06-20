@@ -6150,107 +6150,6 @@ func (v *ProjectCreateResponse) GetProjectCreate() ProjectCreateProjectCreatePro
 	return v.ProjectCreate
 }
 
-// ProjectMembersProject includes the requested fields of the GraphQL type Project.
-// The GraphQL type's documentation follows.
-//
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
-type ProjectMembersProject struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The name of the project.
-	Name string `json:"name"`
-	// Users that are members of the project.
-	Members ProjectMembersProjectMembersUserConnection `json:"members"`
-}
-
-// GetId returns ProjectMembersProject.Id, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProject) GetId() string { return v.Id }
-
-// GetName returns ProjectMembersProject.Name, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProject) GetName() string { return v.Name }
-
-// GetMembers returns ProjectMembersProject.Members, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProject) GetMembers() ProjectMembersProjectMembersUserConnection {
-	return v.Members
-}
-
-// ProjectMembersProjectMembersUserConnection includes the requested fields of the GraphQL type UserConnection.
-type ProjectMembersProjectMembersUserConnection struct {
-	Nodes    []ProjectMembersProjectMembersUserConnectionNodesUser `json:"nodes"`
-	PageInfo ProjectMembersProjectMembersUserConnectionPageInfo    `json:"pageInfo"`
-}
-
-// GetNodes returns ProjectMembersProjectMembersUserConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnection) GetNodes() []ProjectMembersProjectMembersUserConnectionNodesUser {
-	return v.Nodes
-}
-
-// GetPageInfo returns ProjectMembersProjectMembersUserConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnection) GetPageInfo() ProjectMembersProjectMembersUserConnectionPageInfo {
-	return v.PageInfo
-}
-
-// ProjectMembersProjectMembersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
-// The GraphQL type's documentation follows.
-//
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
-type ProjectMembersProjectMembersUserConnectionNodesUser struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The user's full name.
-	Name string `json:"name"`
-	// The user's display (nick) name. Must be unique within the workspace.
-	DisplayName string `json:"displayName"`
-	// The user's email address.
-	Email string `json:"email"`
-}
-
-// GetId returns ProjectMembersProjectMembersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnectionNodesUser) GetId() string { return v.Id }
-
-// GetName returns ProjectMembersProjectMembersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnectionNodesUser) GetName() string { return v.Name }
-
-// GetDisplayName returns ProjectMembersProjectMembersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnectionNodesUser) GetDisplayName() string {
-	return v.DisplayName
-}
-
-// GetEmail returns ProjectMembersProjectMembersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnectionNodesUser) GetEmail() string { return v.Email }
-
-// ProjectMembersProjectMembersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-type ProjectMembersProjectMembersUserConnectionPageInfo struct {
-	// Indicates if there are more results when paginating forward.
-	HasNextPage bool `json:"hasNextPage"`
-	// Cursor representing the last result in the paginated results.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns ProjectMembersProjectMembersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnectionPageInfo) GetHasNextPage() bool {
-	return v.HasNextPage
-}
-
-// GetEndCursor returns ProjectMembersProjectMembersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *ProjectMembersProjectMembersUserConnectionPageInfo) GetEndCursor() *string {
-	return v.EndCursor
-}
-
-// ProjectMembersResponse is returned by ProjectMembers on success.
-type ProjectMembersResponse struct {
-	// Returns a single project by its identifier or URL slug.
-	Project ProjectMembersProject `json:"project"`
-}
-
-// GetProject returns ProjectMembersResponse.Project, and is useful for accessing the field via an interface.
-func (v *ProjectMembersResponse) GetProject() ProjectMembersProject { return v.Project }
-
 // ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayload includes the requested fields of the GraphQL type ProjectMilestonePayload.
 // The GraphQL type's documentation follows.
 //
@@ -8903,26 +8802,6 @@ type __ProjectCreateInput struct {
 // GetInput returns __ProjectCreateInput.Input, and is useful for accessing the field via an interface.
 func (v *__ProjectCreateInput) GetInput() LinearProjectCreateInput { return v.Input }
 
-// __ProjectMembersInput is used internally by genqlient
-type __ProjectMembersInput struct {
-	Id              string  `json:"id"`
-	First           *int    `json:"first"`
-	After           *string `json:"after"`
-	IncludeArchived *bool   `json:"includeArchived"`
-}
-
-// GetId returns __ProjectMembersInput.Id, and is useful for accessing the field via an interface.
-func (v *__ProjectMembersInput) GetId() string { return v.Id }
-
-// GetFirst returns __ProjectMembersInput.First, and is useful for accessing the field via an interface.
-func (v *__ProjectMembersInput) GetFirst() *int { return v.First }
-
-// GetAfter returns __ProjectMembersInput.After, and is useful for accessing the field via an interface.
-func (v *__ProjectMembersInput) GetAfter() *string { return v.After }
-
-// GetIncludeArchived returns __ProjectMembersInput.IncludeArchived, and is useful for accessing the field via an interface.
-func (v *__ProjectMembersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
-
 // __ProjectMilestoneCreateInput is used internally by genqlient
 type __ProjectMilestoneCreateInput struct {
 	Input LinearProjectMilestoneCreateInput `json:"input"`
@@ -9210,6 +9089,26 @@ func (v *__projectUpdatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __projectUpdatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__projectUpdatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __project_membersInput is used internally by genqlient
+type __project_membersInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __project_membersInput.Id, and is useful for accessing the field via an interface.
+func (v *__project_membersInput) GetId() string { return v.Id }
+
+// GetFirst returns __project_membersInput.First, and is useful for accessing the field via an interface.
+func (v *__project_membersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __project_membersInput.After, and is useful for accessing the field via an interface.
+func (v *__project_membersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __project_membersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__project_membersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __teamInput is used internally by genqlient
 type __teamInput struct {
@@ -11327,6 +11226,107 @@ type projectUpdatesResponse struct {
 func (v *projectUpdatesResponse) GetProjectUpdates() projectUpdatesProjectUpdatesProjectUpdateConnection {
 	return v.ProjectUpdates
 }
+
+// project_membersProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type project_membersProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+	// Users that are members of the project.
+	Members project_membersProjectMembersUserConnection `json:"members"`
+}
+
+// GetId returns project_membersProject.Id, and is useful for accessing the field via an interface.
+func (v *project_membersProject) GetId() string { return v.Id }
+
+// GetName returns project_membersProject.Name, and is useful for accessing the field via an interface.
+func (v *project_membersProject) GetName() string { return v.Name }
+
+// GetMembers returns project_membersProject.Members, and is useful for accessing the field via an interface.
+func (v *project_membersProject) GetMembers() project_membersProjectMembersUserConnection {
+	return v.Members
+}
+
+// project_membersProjectMembersUserConnection includes the requested fields of the GraphQL type UserConnection.
+type project_membersProjectMembersUserConnection struct {
+	Nodes    []project_membersProjectMembersUserConnectionNodesUser `json:"nodes"`
+	PageInfo project_membersProjectMembersUserConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns project_membersProjectMembersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnection) GetNodes() []project_membersProjectMembersUserConnectionNodesUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns project_membersProjectMembersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnection) GetPageInfo() project_membersProjectMembersUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// project_membersProjectMembersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type project_membersProjectMembersUserConnectionNodesUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's full name.
+	Name string `json:"name"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+	// The user's email address.
+	Email string `json:"email"`
+}
+
+// GetId returns project_membersProjectMembersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnectionNodesUser) GetId() string { return v.Id }
+
+// GetName returns project_membersProjectMembersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnectionNodesUser) GetName() string { return v.Name }
+
+// GetDisplayName returns project_membersProjectMembersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnectionNodesUser) GetDisplayName() string {
+	return v.DisplayName
+}
+
+// GetEmail returns project_membersProjectMembersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnectionNodesUser) GetEmail() string { return v.Email }
+
+// project_membersProjectMembersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type project_membersProjectMembersUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns project_membersProjectMembersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns project_membersProjectMembersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *project_membersProjectMembersUserConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// project_membersResponse is returned by project_members on success.
+type project_membersResponse struct {
+	// Returns a single project by its identifier or URL slug.
+	Project project_membersProject `json:"project"`
+}
+
+// GetProject returns project_membersResponse.Project, and is useful for accessing the field via an interface.
+func (v *project_membersResponse) GetProject() project_membersProject { return v.Project }
 
 // teamResponse is returned by team on success.
 type teamResponse struct {
@@ -14194,59 +14194,6 @@ func ProjectCreate(
 	return data_, err_
 }
 
-// The query executed by ProjectMembers.
-const ProjectMembers_Operation = `
-query ProjectMembers ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
-	project(id: $id) {
-		id
-		name
-		members(first: $first, after: $after, includeArchived: $includeArchived) {
-			nodes {
-				id
-				name
-				displayName
-				email
-			}
-			pageInfo {
-				hasNextPage
-				endCursor
-			}
-		}
-	}
-}
-`
-
-func ProjectMembers(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-	first *int,
-	after *string,
-	includeArchived *bool,
-) (data_ *ProjectMembersResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "ProjectMembers",
-		Query:  ProjectMembers_Operation,
-		Variables: &__ProjectMembersInput{
-			Id:              id,
-			First:           first,
-			After:           after,
-			IncludeArchived: includeArchived,
-		},
-	}
-
-	data_ = &ProjectMembersResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The mutation executed by ProjectMilestoneCreate.
 const ProjectMilestoneCreate_Operation = `
 mutation ProjectMilestoneCreate ($input: ProjectMilestoneCreateInput!) {
@@ -15613,6 +15560,59 @@ func projectUpdates(
 	}
 
 	data_ = &projectUpdatesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by project_members.
+const project_members_Operation = `
+query project_members ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	project(id: $id) {
+		id
+		name
+		members(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				id
+				name
+				displayName
+				email
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+`
+
+func project_members(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *project_membersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "project_members",
+		Query:  project_members_Operation,
+		Variables: &__project_membersInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &project_membersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

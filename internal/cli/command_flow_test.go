@@ -1004,7 +1004,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project list target resolve", args: []string{"project", "list"}, operation: "Teams", contains: "resolve teams"},
 		{name: "project list", args: []string{"project", "list"}, operation: "Projects", contains: "list projects"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, operation: "project", contains: "get project project-id"},
-		{name: "project members", args: []string{"project", "members", "project-id"}, operation: "ProjectMembers", contains: "list project members project-id"},
+		{name: "project members", args: []string{"project", "members", "project-id"}, operation: "project_members", contains: "list project members project-id"},
 		{name: "project updates", args: []string{"project", "updates", "project-id"}, operation: "ProjectUpdates", contains: "list project updates project-id"},
 		{name: "project update list", args: []string{"project-update", "list"}, operation: "projectUpdates", contains: "list project updates"},
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, operation: "projectUpdate", contains: "get project update project-update-id"},
@@ -1538,7 +1538,7 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 		return `{"team":{"projects":{"nodes":[` + commandProjectJSON("Listed project", "Backlog", "backlog") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "project":
 		return `{"project":` + commandProjectJSON("Detail project", "Backlog", "backlog") + `}`, true
-	case "ProjectMembers":
+	case "project_members":
 		if fake.emptyProjectMembers {
 			return `{"project":{"id":"project-id","name":"Detail project","members":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
