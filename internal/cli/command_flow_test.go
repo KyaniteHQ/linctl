@@ -1022,9 +1022,9 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "team list", args: []string{"team", "list"}, operation: "Teams", contains: "list teams"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, operation: "team", contains: "get team team-id"},
 		{name: "team members", args: []string{"team", "members", "team-id"}, operation: "TeamMembers", contains: "list team members team-id"},
-		{name: "user list", args: []string{"user", "list"}, operation: "Users", contains: "list users"},
-		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "UserByID", contains: "get user user-id"},
-		{name: "user me", args: []string{"user", "me"}, operation: "ViewerUser", contains: "get viewer user"},
+		{name: "user list", args: []string{"user", "list"}, operation: "users", contains: "list users"},
+		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "user", contains: "get user user-id"},
+		{name: "user me", args: []string{"user", "me"}, operation: "viewer", contains: "get viewer user"},
 		{name: "workflow state list", args: []string{"workflow-state", "list"}, operation: "workflowStates", contains: "list workflow states"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
 	}
@@ -1306,11 +1306,11 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 		return `{"team":` + commandTeamJSON(true) + `}`, true
 	case "TeamMembers":
 		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[` + commandUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
-	case "Users":
+	case "users":
 		return `{"users":{"nodes":[` + commandUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "UserByID":
+	case "user":
 		return `{"user":` + commandUserJSON() + `}`, true
-	case "ViewerUser":
+	case "viewer":
 		return `{"viewer":` + commandUserJSON() + `}`, true
 	case "workflowStates":
 		return `{"workflowStates":{"nodes":[` + commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true

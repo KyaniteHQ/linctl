@@ -1067,10 +1067,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `TargetProject` | query | `project` | implemented | `internal/client/generated.go` |
 | `TeamMembers` | query | `team` | implemented | `internal/client/generated.go` |
 | `Teams` | query | `teams` | implemented | `internal/client/generated.go` |
-| `UserByID` | query | `user` | implemented | `internal/client/generated.go` |
-| `Users` | query | `users` | implemented | `internal/client/generated.go` |
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `ViewerUser` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
@@ -1079,6 +1076,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
+| `user` | query | `user` | implemented | `internal/client/generated.go` |
+| `users` | query | `users` | implemented | `internal/client/generated.go` |
+| `viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
 | `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 

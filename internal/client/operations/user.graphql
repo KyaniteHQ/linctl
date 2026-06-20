@@ -1,4 +1,4 @@
-query Users($first: Int, $after: String, $includeArchived: Boolean, $includeDisabled: Boolean) {
+query users($first: Int, $after: String, $includeArchived: Boolean, $includeDisabled: Boolean) {
   users(first: $first, after: $after, includeArchived: $includeArchived, includeDisabled: $includeDisabled) {
     nodes {
       ...UserSummaryFields
@@ -10,13 +10,13 @@ query Users($first: Int, $after: String, $includeArchived: Boolean, $includeDisa
   }
 }
 
-query UserByID($id: String!) {
+query user($id: String!) {
   user(id: $id) {
     ...UserSummaryFields
   }
 }
 
-query ViewerUser {
+query viewer {
   viewer {
     ...UserSummaryFields
   }

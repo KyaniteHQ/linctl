@@ -9487,109 +9487,6 @@ func (v *TopLevelProjectUpdateSummaryFieldsUser) GetName() string { return v.Nam
 // GetDisplayName returns TopLevelProjectUpdateSummaryFieldsUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *TopLevelProjectUpdateSummaryFieldsUser) GetDisplayName() string { return v.DisplayName }
 
-// UserByIDResponse is returned by UserByID on success.
-type UserByIDResponse struct {
-	// Fetches a specific user by their ID.
-	User UserByIDUser `json:"user"`
-}
-
-// GetUser returns UserByIDResponse.User, and is useful for accessing the field via an interface.
-func (v *UserByIDResponse) GetUser() UserByIDUser { return v.User }
-
-// UserByIDUser includes the requested fields of the GraphQL type User.
-// The GraphQL type's documentation follows.
-//
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
-type UserByIDUser struct {
-	UserSummaryFields `json:"-"`
-}
-
-// GetId returns UserByIDUser.Id, and is useful for accessing the field via an interface.
-func (v *UserByIDUser) GetId() string { return v.UserSummaryFields.Id }
-
-// GetName returns UserByIDUser.Name, and is useful for accessing the field via an interface.
-func (v *UserByIDUser) GetName() string { return v.UserSummaryFields.Name }
-
-// GetDisplayName returns UserByIDUser.DisplayName, and is useful for accessing the field via an interface.
-func (v *UserByIDUser) GetDisplayName() string { return v.UserSummaryFields.DisplayName }
-
-// GetEmail returns UserByIDUser.Email, and is useful for accessing the field via an interface.
-func (v *UserByIDUser) GetEmail() string { return v.UserSummaryFields.Email }
-
-// GetActive returns UserByIDUser.Active, and is useful for accessing the field via an interface.
-func (v *UserByIDUser) GetActive() bool { return v.UserSummaryFields.Active }
-
-// GetGuest returns UserByIDUser.Guest, and is useful for accessing the field via an interface.
-func (v *UserByIDUser) GetGuest() bool { return v.UserSummaryFields.Guest }
-
-// GetAdmin returns UserByIDUser.Admin, and is useful for accessing the field via an interface.
-func (v *UserByIDUser) GetAdmin() bool { return v.UserSummaryFields.Admin }
-
-func (v *UserByIDUser) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*UserByIDUser
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.UserByIDUser = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.UserSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalUserByIDUser struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	DisplayName string `json:"displayName"`
-
-	Email string `json:"email"`
-
-	Active bool `json:"active"`
-
-	Guest bool `json:"guest"`
-
-	Admin bool `json:"admin"`
-}
-
-func (v *UserByIDUser) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *UserByIDUser) __premarshalJSON() (*__premarshalUserByIDUser, error) {
-	var retval __premarshalUserByIDUser
-
-	retval.Id = v.UserSummaryFields.Id
-	retval.Name = v.UserSummaryFields.Name
-	retval.DisplayName = v.UserSummaryFields.DisplayName
-	retval.Email = v.UserSummaryFields.Email
-	retval.Active = v.UserSummaryFields.Active
-	retval.Guest = v.UserSummaryFields.Guest
-	retval.Admin = v.UserSummaryFields.Admin
-	return &retval, nil
-}
-
 // UserSummaryFields includes the GraphQL fields of User requested by the fragment UserSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -9635,137 +9532,6 @@ func (v *UserSummaryFields) GetGuest() bool { return v.Guest }
 // GetAdmin returns UserSummaryFields.Admin, and is useful for accessing the field via an interface.
 func (v *UserSummaryFields) GetAdmin() bool { return v.Admin }
 
-// UsersResponse is returned by Users on success.
-type UsersResponse struct {
-	// All users in the workspace. Supports filtering, sorting, and pagination.
-	Users UsersUsersUserConnection `json:"users"`
-}
-
-// GetUsers returns UsersResponse.Users, and is useful for accessing the field via an interface.
-func (v *UsersResponse) GetUsers() UsersUsersUserConnection { return v.Users }
-
-// UsersUsersUserConnection includes the requested fields of the GraphQL type UserConnection.
-type UsersUsersUserConnection struct {
-	Nodes    []UsersUsersUserConnectionNodesUser `json:"nodes"`
-	PageInfo UsersUsersUserConnectionPageInfo    `json:"pageInfo"`
-}
-
-// GetNodes returns UsersUsersUserConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnection) GetNodes() []UsersUsersUserConnectionNodesUser { return v.Nodes }
-
-// GetPageInfo returns UsersUsersUserConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnection) GetPageInfo() UsersUsersUserConnectionPageInfo { return v.PageInfo }
-
-// UsersUsersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
-// The GraphQL type's documentation follows.
-//
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
-type UsersUsersUserConnectionNodesUser struct {
-	UserSummaryFields `json:"-"`
-}
-
-// GetId returns UsersUsersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionNodesUser) GetId() string { return v.UserSummaryFields.Id }
-
-// GetName returns UsersUsersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionNodesUser) GetName() string { return v.UserSummaryFields.Name }
-
-// GetDisplayName returns UsersUsersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionNodesUser) GetDisplayName() string {
-	return v.UserSummaryFields.DisplayName
-}
-
-// GetEmail returns UsersUsersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionNodesUser) GetEmail() string { return v.UserSummaryFields.Email }
-
-// GetActive returns UsersUsersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionNodesUser) GetActive() bool { return v.UserSummaryFields.Active }
-
-// GetGuest returns UsersUsersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionNodesUser) GetGuest() bool { return v.UserSummaryFields.Guest }
-
-// GetAdmin returns UsersUsersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionNodesUser) GetAdmin() bool { return v.UserSummaryFields.Admin }
-
-func (v *UsersUsersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*UsersUsersUserConnectionNodesUser
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.UsersUsersUserConnectionNodesUser = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.UserSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalUsersUsersUserConnectionNodesUser struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	DisplayName string `json:"displayName"`
-
-	Email string `json:"email"`
-
-	Active bool `json:"active"`
-
-	Guest bool `json:"guest"`
-
-	Admin bool `json:"admin"`
-}
-
-func (v *UsersUsersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *UsersUsersUserConnectionNodesUser) __premarshalJSON() (*__premarshalUsersUsersUserConnectionNodesUser, error) {
-	var retval __premarshalUsersUsersUserConnectionNodesUser
-
-	retval.Id = v.UserSummaryFields.Id
-	retval.Name = v.UserSummaryFields.Name
-	retval.DisplayName = v.UserSummaryFields.DisplayName
-	retval.Email = v.UserSummaryFields.Email
-	retval.Active = v.UserSummaryFields.Active
-	retval.Guest = v.UserSummaryFields.Guest
-	retval.Admin = v.UserSummaryFields.Admin
-	return &retval, nil
-}
-
-// UsersUsersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-type UsersUsersUserConnectionPageInfo struct {
-	// Indicates if there are more results when paginating forward.
-	HasNextPage bool `json:"hasNextPage"`
-	// Cursor representing the last result in the paginated results.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns UsersUsersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
-
-// GetEndCursor returns UsersUsersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *UsersUsersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
-
 // ViewerResponse is returned by Viewer on success.
 type ViewerResponse struct {
 	// The currently authenticated user making the API request.
@@ -9774,109 +9540,6 @@ type ViewerResponse struct {
 
 // GetViewer returns ViewerResponse.Viewer, and is useful for accessing the field via an interface.
 func (v *ViewerResponse) GetViewer() ViewerViewerUser { return v.Viewer }
-
-// ViewerUserResponse is returned by ViewerUser on success.
-type ViewerUserResponse struct {
-	// The currently authenticated user making the API request.
-	Viewer ViewerUserViewerUser `json:"viewer"`
-}
-
-// GetViewer returns ViewerUserResponse.Viewer, and is useful for accessing the field via an interface.
-func (v *ViewerUserResponse) GetViewer() ViewerUserViewerUser { return v.Viewer }
-
-// ViewerUserViewerUser includes the requested fields of the GraphQL type User.
-// The GraphQL type's documentation follows.
-//
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
-type ViewerUserViewerUser struct {
-	UserSummaryFields `json:"-"`
-}
-
-// GetId returns ViewerUserViewerUser.Id, and is useful for accessing the field via an interface.
-func (v *ViewerUserViewerUser) GetId() string { return v.UserSummaryFields.Id }
-
-// GetName returns ViewerUserViewerUser.Name, and is useful for accessing the field via an interface.
-func (v *ViewerUserViewerUser) GetName() string { return v.UserSummaryFields.Name }
-
-// GetDisplayName returns ViewerUserViewerUser.DisplayName, and is useful for accessing the field via an interface.
-func (v *ViewerUserViewerUser) GetDisplayName() string { return v.UserSummaryFields.DisplayName }
-
-// GetEmail returns ViewerUserViewerUser.Email, and is useful for accessing the field via an interface.
-func (v *ViewerUserViewerUser) GetEmail() string { return v.UserSummaryFields.Email }
-
-// GetActive returns ViewerUserViewerUser.Active, and is useful for accessing the field via an interface.
-func (v *ViewerUserViewerUser) GetActive() bool { return v.UserSummaryFields.Active }
-
-// GetGuest returns ViewerUserViewerUser.Guest, and is useful for accessing the field via an interface.
-func (v *ViewerUserViewerUser) GetGuest() bool { return v.UserSummaryFields.Guest }
-
-// GetAdmin returns ViewerUserViewerUser.Admin, and is useful for accessing the field via an interface.
-func (v *ViewerUserViewerUser) GetAdmin() bool { return v.UserSummaryFields.Admin }
-
-func (v *ViewerUserViewerUser) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*ViewerUserViewerUser
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.ViewerUserViewerUser = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.UserSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalViewerUserViewerUser struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	DisplayName string `json:"displayName"`
-
-	Email string `json:"email"`
-
-	Active bool `json:"active"`
-
-	Guest bool `json:"guest"`
-
-	Admin bool `json:"admin"`
-}
-
-func (v *ViewerUserViewerUser) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *ViewerUserViewerUser) __premarshalJSON() (*__premarshalViewerUserViewerUser, error) {
-	var retval __premarshalViewerUserViewerUser
-
-	retval.Id = v.UserSummaryFields.Id
-	retval.Name = v.UserSummaryFields.Name
-	retval.DisplayName = v.UserSummaryFields.DisplayName
-	retval.Email = v.UserSummaryFields.Email
-	retval.Active = v.UserSummaryFields.Active
-	retval.Guest = v.UserSummaryFields.Guest
-	retval.Admin = v.UserSummaryFields.Admin
-	return &retval, nil
-}
 
 // ViewerViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
@@ -10732,34 +10395,6 @@ func (v *__TeamsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __TeamsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__TeamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
-// __UserByIDInput is used internally by genqlient
-type __UserByIDInput struct {
-	Id string `json:"id"`
-}
-
-// GetId returns __UserByIDInput.Id, and is useful for accessing the field via an interface.
-func (v *__UserByIDInput) GetId() string { return v.Id }
-
-// __UsersInput is used internally by genqlient
-type __UsersInput struct {
-	First           *int    `json:"first"`
-	After           *string `json:"after"`
-	IncludeArchived *bool   `json:"includeArchived"`
-	IncludeDisabled *bool   `json:"includeDisabled"`
-}
-
-// GetFirst returns __UsersInput.First, and is useful for accessing the field via an interface.
-func (v *__UsersInput) GetFirst() *int { return v.First }
-
-// GetAfter returns __UsersInput.After, and is useful for accessing the field via an interface.
-func (v *__UsersInput) GetAfter() *string { return v.After }
-
-// GetIncludeArchived returns __UsersInput.IncludeArchived, and is useful for accessing the field via an interface.
-func (v *__UsersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
-
-// GetIncludeDisabled returns __UsersInput.IncludeDisabled, and is useful for accessing the field via an interface.
-func (v *__UsersInput) GetIncludeDisabled() *bool { return v.IncludeDisabled }
-
 // __commentInput is used internally by genqlient
 type __commentInput struct {
 	Id   *string `json:"id"`
@@ -10843,6 +10478,34 @@ type __teamInput struct {
 
 // GetId returns __teamInput.Id, and is useful for accessing the field via an interface.
 func (v *__teamInput) GetId() string { return v.Id }
+
+// __userInput is used internally by genqlient
+type __userInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __userInput.Id, and is useful for accessing the field via an interface.
+func (v *__userInput) GetId() string { return v.Id }
+
+// __usersInput is used internally by genqlient
+type __usersInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+	IncludeDisabled *bool   `json:"includeDisabled"`
+}
+
+// GetFirst returns __usersInput.First, and is useful for accessing the field via an interface.
+func (v *__usersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __usersInput.After, and is useful for accessing the field via an interface.
+func (v *__usersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __usersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__usersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// GetIncludeDisabled returns __usersInput.IncludeDisabled, and is useful for accessing the field via an interface.
+func (v *__usersInput) GetIncludeDisabled() *bool { return v.IncludeDisabled }
 
 // __workflowStateInput is used internally by genqlient
 type __workflowStateInput struct {
@@ -11950,6 +11613,343 @@ func (v *teamTeam) __premarshalJSON() (*__premarshalteamTeam, error) {
 	retval.Description = v.TeamSummaryFields.Description
 	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
 	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
+}
+
+// userResponse is returned by user on success.
+type userResponse struct {
+	// Fetches a specific user by their ID.
+	User userUser `json:"user"`
+}
+
+// GetUser returns userResponse.User, and is useful for accessing the field via an interface.
+func (v *userResponse) GetUser() userUser { return v.User }
+
+// userUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type userUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns userUser.Id, and is useful for accessing the field via an interface.
+func (v *userUser) GetId() string { return v.UserSummaryFields.Id }
+
+// GetName returns userUser.Name, and is useful for accessing the field via an interface.
+func (v *userUser) GetName() string { return v.UserSummaryFields.Name }
+
+// GetDisplayName returns userUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *userUser) GetDisplayName() string { return v.UserSummaryFields.DisplayName }
+
+// GetEmail returns userUser.Email, and is useful for accessing the field via an interface.
+func (v *userUser) GetEmail() string { return v.UserSummaryFields.Email }
+
+// GetActive returns userUser.Active, and is useful for accessing the field via an interface.
+func (v *userUser) GetActive() bool { return v.UserSummaryFields.Active }
+
+// GetGuest returns userUser.Guest, and is useful for accessing the field via an interface.
+func (v *userUser) GetGuest() bool { return v.UserSummaryFields.Guest }
+
+// GetAdmin returns userUser.Admin, and is useful for accessing the field via an interface.
+func (v *userUser) GetAdmin() bool { return v.UserSummaryFields.Admin }
+
+func (v *userUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *userUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userUser) __premarshalJSON() (*__premarshaluserUser, error) {
+	var retval __premarshaluserUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
+// usersResponse is returned by users on success.
+type usersResponse struct {
+	// All users in the workspace. Supports filtering, sorting, and pagination.
+	Users usersUsersUserConnection `json:"users"`
+}
+
+// GetUsers returns usersResponse.Users, and is useful for accessing the field via an interface.
+func (v *usersResponse) GetUsers() usersUsersUserConnection { return v.Users }
+
+// usersUsersUserConnection includes the requested fields of the GraphQL type UserConnection.
+type usersUsersUserConnection struct {
+	Nodes    []usersUsersUserConnectionNodesUser `json:"nodes"`
+	PageInfo usersUsersUserConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns usersUsersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnection) GetNodes() []usersUsersUserConnectionNodesUser { return v.Nodes }
+
+// GetPageInfo returns usersUsersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnection) GetPageInfo() usersUsersUserConnectionPageInfo { return v.PageInfo }
+
+// usersUsersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type usersUsersUserConnectionNodesUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns usersUsersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionNodesUser) GetId() string { return v.UserSummaryFields.Id }
+
+// GetName returns usersUsersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionNodesUser) GetName() string { return v.UserSummaryFields.Name }
+
+// GetDisplayName returns usersUsersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionNodesUser) GetDisplayName() string {
+	return v.UserSummaryFields.DisplayName
+}
+
+// GetEmail returns usersUsersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionNodesUser) GetEmail() string { return v.UserSummaryFields.Email }
+
+// GetActive returns usersUsersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionNodesUser) GetActive() bool { return v.UserSummaryFields.Active }
+
+// GetGuest returns usersUsersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionNodesUser) GetGuest() bool { return v.UserSummaryFields.Guest }
+
+// GetAdmin returns usersUsersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionNodesUser) GetAdmin() bool { return v.UserSummaryFields.Admin }
+
+func (v *usersUsersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*usersUsersUserConnectionNodesUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.usersUsersUserConnectionNodesUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalusersUsersUserConnectionNodesUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *usersUsersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *usersUsersUserConnectionNodesUser) __premarshalJSON() (*__premarshalusersUsersUserConnectionNodesUser, error) {
+	var retval __premarshalusersUsersUserConnectionNodesUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
+// usersUsersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type usersUsersUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns usersUsersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns usersUsersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *usersUsersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// viewerResponse is returned by viewer on success.
+type viewerResponse struct {
+	// The currently authenticated user making the API request.
+	Viewer viewerViewerUser `json:"viewer"`
+}
+
+// GetViewer returns viewerResponse.Viewer, and is useful for accessing the field via an interface.
+func (v *viewerResponse) GetViewer() viewerViewerUser { return v.Viewer }
+
+// viewerViewerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type viewerViewerUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns viewerViewerUser.Id, and is useful for accessing the field via an interface.
+func (v *viewerViewerUser) GetId() string { return v.UserSummaryFields.Id }
+
+// GetName returns viewerViewerUser.Name, and is useful for accessing the field via an interface.
+func (v *viewerViewerUser) GetName() string { return v.UserSummaryFields.Name }
+
+// GetDisplayName returns viewerViewerUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *viewerViewerUser) GetDisplayName() string { return v.UserSummaryFields.DisplayName }
+
+// GetEmail returns viewerViewerUser.Email, and is useful for accessing the field via an interface.
+func (v *viewerViewerUser) GetEmail() string { return v.UserSummaryFields.Email }
+
+// GetActive returns viewerViewerUser.Active, and is useful for accessing the field via an interface.
+func (v *viewerViewerUser) GetActive() bool { return v.UserSummaryFields.Active }
+
+// GetGuest returns viewerViewerUser.Guest, and is useful for accessing the field via an interface.
+func (v *viewerViewerUser) GetGuest() bool { return v.UserSummaryFields.Guest }
+
+// GetAdmin returns viewerViewerUser.Admin, and is useful for accessing the field via an interface.
+func (v *viewerViewerUser) GetAdmin() bool { return v.UserSummaryFields.Admin }
+
+func (v *viewerViewerUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*viewerViewerUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.viewerViewerUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalviewerViewerUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *viewerViewerUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *viewerViewerUser) __premarshalJSON() (*__premarshalviewerViewerUser, error) {
+	var retval __premarshalviewerViewerUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
 	return &retval, nil
 }
 
@@ -15268,104 +15268,6 @@ func Teams(
 	return data_, err_
 }
 
-// The query executed by UserByID.
-const UserByID_Operation = `
-query UserByID ($id: String!) {
-	user(id: $id) {
-		... UserSummaryFields
-	}
-}
-fragment UserSummaryFields on User {
-	id
-	name
-	displayName
-	email
-	active
-	guest
-	admin
-}
-`
-
-func UserByID(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-) (data_ *UserByIDResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "UserByID",
-		Query:  UserByID_Operation,
-		Variables: &__UserByIDInput{
-			Id: id,
-		},
-	}
-
-	data_ = &UserByIDResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by Users.
-const Users_Operation = `
-query Users ($first: Int, $after: String, $includeArchived: Boolean, $includeDisabled: Boolean) {
-	users(first: $first, after: $after, includeArchived: $includeArchived, includeDisabled: $includeDisabled) {
-		nodes {
-			... UserSummaryFields
-		}
-		pageInfo {
-			hasNextPage
-			endCursor
-		}
-	}
-}
-fragment UserSummaryFields on User {
-	id
-	name
-	displayName
-	email
-	active
-	guest
-	admin
-}
-`
-
-func Users(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	first *int,
-	after *string,
-	includeArchived *bool,
-	includeDisabled *bool,
-) (data_ *UsersResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "Users",
-		Query:  Users_Operation,
-		Variables: &__UsersInput{
-			First:           first,
-			After:           after,
-			IncludeArchived: includeArchived,
-			IncludeDisabled: includeDisabled,
-		},
-	}
-
-	data_ = &UsersResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The query executed by Viewer.
 const Viewer_Operation = `
 query Viewer {
@@ -15393,45 +15295,6 @@ func Viewer(
 	}
 
 	data_ = &ViewerResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by ViewerUser.
-const ViewerUser_Operation = `
-query ViewerUser {
-	viewer {
-		... UserSummaryFields
-	}
-}
-fragment UserSummaryFields on User {
-	id
-	name
-	displayName
-	email
-	active
-	guest
-	admin
-}
-`
-
-func ViewerUser(
-	ctx_ context.Context,
-	client_ graphql.Client,
-) (data_ *ViewerUserResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "ViewerUser",
-		Query:  ViewerUser_Operation,
-	}
-
-	data_ = &ViewerUserResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -15866,6 +15729,143 @@ func team(
 	}
 
 	data_ = &teamResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by user.
+const user_Operation = `
+query user ($id: String!) {
+	user(id: $id) {
+		... UserSummaryFields
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func user(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *userResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "user",
+		Query:  user_Operation,
+		Variables: &__userInput{
+			Id: id,
+		},
+	}
+
+	data_ = &userResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by users.
+const users_Operation = `
+query users ($first: Int, $after: String, $includeArchived: Boolean, $includeDisabled: Boolean) {
+	users(first: $first, after: $after, includeArchived: $includeArchived, includeDisabled: $includeDisabled) {
+		nodes {
+			... UserSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func users(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+	includeDisabled *bool,
+) (data_ *usersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "users",
+		Query:  users_Operation,
+		Variables: &__usersInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+			IncludeDisabled: includeDisabled,
+		},
+	}
+
+	data_ = &usersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by viewer.
+const viewer_Operation = `
+query viewer {
+	viewer {
+		... UserSummaryFields
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func viewer(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *viewerResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "viewer",
+		Query:  viewer_Operation,
+	}
+
+	data_ = &viewerResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

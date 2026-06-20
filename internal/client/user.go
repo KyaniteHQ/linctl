@@ -27,41 +27,41 @@ type UserList struct {
 
 // ListUsers returns visible users.
 func ListUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (UserList, error) {
-	users, err := Users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true), boolPtr(true))
+	userPage, err := users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true), boolPtr(true))
 	if err != nil {
 		return UserList{}, fmt.Errorf("list users: %w", err)
 	}
 
-	summaries := make([]UserSummary, 0, len(users.Users.Nodes))
-	for _, user := range users.Users.Nodes {
+	summaries := make([]UserSummary, 0, len(userPage.Users.Nodes))
+	for _, user := range userPage.Users.Nodes {
 		summaries = append(summaries, userSummary(user.UserSummaryFields))
 	}
 
 	return UserList{
 		Users:       summaries,
-		HasNextPage: users.Users.PageInfo.HasNextPage,
-		EndCursor:   users.Users.PageInfo.EndCursor,
+		HasNextPage: userPage.Users.PageInfo.HasNextPage,
+		EndCursor:   userPage.Users.PageInfo.EndCursor,
 	}, nil
 }
 
 // GetUserByID returns one User by id.
 func GetUserByID(ctx context.Context, graphqlClient graphql.Client, id string) (UserSummary, error) {
-	user, err := UserByID(ctx, graphqlClient, id)
+	userResult, err := user(ctx, graphqlClient, id)
 	if err != nil {
 		return UserSummary{}, fmt.Errorf("get user %s: %w", id, err)
 	}
 
-	return userSummary(user.User.UserSummaryFields), nil
+	return userSummary(userResult.User.UserSummaryFields), nil
 }
 
 // GetViewerUser returns the authenticated User.
 func GetViewerUser(ctx context.Context, graphqlClient graphql.Client) (UserSummary, error) {
-	user, err := ViewerUser(ctx, graphqlClient)
+	userResult, err := viewer(ctx, graphqlClient)
 	if err != nil {
 		return UserSummary{}, fmt.Errorf("get viewer user: %w", err)
 	}
 
-	return userSummary(user.Viewer.UserSummaryFields), nil
+	return userSummary(userResult.Viewer.UserSummaryFields), nil
 }
 
 func userSummary(user UserSummaryFields) UserSummary {
