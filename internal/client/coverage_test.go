@@ -220,6 +220,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"workflowState":                `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 		"timeSchedules":                `{"timeSchedules":{"nodes":[{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"timeSchedule":                 `{"timeSchedule":{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}}`,
+		"templates":                    `{"templates":[` + templateJSON() + `,` + strings.Replace(templateJSON(), "template-id", "template-two-id", 1) + `]}`,
+		"template":                     `{"template":` + templateJSON() + `}`,
 		"initiatives":                  `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiative":                   `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
 		"initiative_history":           `{"initiative":{"history":{"nodes":[` + initiativeHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
@@ -381,6 +383,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	timeSchedules, err := ListTimeSchedules(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	timeSchedule, err := GetTimeScheduleByID(context.Background(), graphqlClient, "time-schedule-id")
+	require.NoError(t, err)
+	templates, err := ListTemplates(context.Background(), graphqlClient, 1)
+	require.NoError(t, err)
+	template, err := GetTemplateByID(context.Background(), graphqlClient, "template-id")
 	require.NoError(t, err)
 	initiatives, err := ListInitiatives(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -630,6 +636,14 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, 1, timeSchedule.EntryCount)
 	require.Equal(t, "integration-id", timeSchedule.IntegrationID)
 	require.Equal(t, "omer@example.com", timeSchedule.Entries[0].UserEmail)
+	require.Equal(t, 2, templates.TotalCount)
+	require.Len(t, templates.Templates, 1)
+	require.Equal(t, "Bug report", templates.Templates[0].Name)
+	require.Equal(t, "issue", templates.Templates[0].Type)
+	require.Equal(t, "LIT", templates.Templates[0].TeamKey)
+	require.Equal(t, "template-id", template.ID)
+	require.Equal(t, "pipeline-id", template.PipelineID)
+	require.Equal(t, "creator-id", template.CreatorID)
 	require.True(t, initiatives.HasNextPage)
 	require.Equal(t, &endCursor, initiatives.EndCursor)
 	require.Equal(t, "Platform", initiatives.Initiatives[0].Name)
@@ -1229,6 +1243,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetTimeScheduleByID(context.Background(), graphqlClient, "time-schedule-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get time schedule time-schedule-id")
+
+		_, err = ListTemplates(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list templates")
+
+		_, err = GetTemplateByID(context.Background(), graphqlClient, "template-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get template template-id")
 
 		_, err = ListInitiatives(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -2196,6 +2218,28 @@ func initiativeUpdateJSON() string {
 		"commentCount":1,
 		"initiative":{"id":"initiative-id","name":"Platform"},
 		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func templateJSON() string {
+	return `{
+		"id":"template-id",
+		"name":"Bug report",
+		"type":"issue",
+		"description":"Bug report template",
+		"icon":"bug",
+		"color":"#ff0000",
+		"templateData":{"title":"Bug: "},
+		"sortOrder":1,
+		"lastAppliedAt":"2026-06-19T12:00:00Z",
+		"createdAt":"2026-06-18T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"team":{"id":"team-id","key":"LIT","name":"linctl"},
+		"pipeline":{"id":"pipeline-id"},
+		"creator":{"id":"creator-id"},
+		"lastUpdatedBy":{"id":"updated-by-id"},
+		"inheritedFrom":{"id":"parent-template-id"}
 	}`
 }
 

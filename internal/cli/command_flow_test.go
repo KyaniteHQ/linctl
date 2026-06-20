@@ -106,6 +106,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
 		{name: "time schedule list", args: []string{"time-schedule", "list", "--limit", "1"}, contains: "time-schedule-id Primary on-call entries 1"},
 		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, contains: "time-schedule-id Primary on-call entries 1"},
+		{name: "template list", args: []string{"template", "list", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
+		{name: "template get", args: []string{"template", "get", "template-id"}, contains: "template-id Bug report [issue] team LIT"},
 		{name: "initiative list", args: []string{"initiative", "list", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
 		{name: "initiative history", args: []string{"initiative", "history", "initiative-id", "--limit", "1"}, contains: "initiative-history-id initiative initiative-id entries 1"},
@@ -738,6 +740,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,display_name,email", "user", "list", "--limit", "1"},
 		{"--json", "time-schedule", "list", "--limit", "1"},
 		{"--json", "time-schedule", "get", "time-schedule-id"},
+		{"--json", "--fields", "id,name,type,team_key", "template", "list", "--limit", "1"},
+		{"--json", "template", "get", "template-id"},
 		{"--json", "initiative", "list", "--limit", "1"},
 		{"--json", "initiative", "get", "initiative-id"},
 		{"--json", "--fields", "id,initiative_id,entry_count", "initiative", "history", "initiative-id", "--limit", "1"},
@@ -1192,6 +1196,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
 		{name: "time schedule list", args: []string{"time-schedule", "list"}, operation: "timeSchedules", contains: "list time schedules"},
 		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, operation: "timeSchedule", contains: "get time schedule time-schedule-id"},
+		{name: "template list", args: []string{"template", "list"}, operation: "templates", contains: "list templates"},
+		{name: "template get", args: []string{"template", "get", "template-id"}, operation: "template", contains: "get template template-id"},
 		{name: "initiative list", args: []string{"initiative", "list"}, operation: "initiatives", contains: "list initiatives"},
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
 		{name: "initiative history", args: []string{"initiative", "history", "initiative-id"}, operation: "initiative_history", contains: "list initiative history initiative-id"},
@@ -1636,6 +1642,10 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"timeSchedules":{"nodes":[` + commandTimeScheduleJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "timeSchedule":
 		return `{"timeSchedule":` + commandTimeScheduleJSON() + `}`, true
+	case "templates":
+		return `{"templates":[` + commandTemplateJSON() + `]}`, true
+	case "template":
+		return `{"template":` + commandTemplateJSON() + `}`, true
 	case "roadmaps":
 		return `{"roadmaps":{"nodes":[` + commandRoadmapJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "roadmap":
@@ -2225,6 +2235,27 @@ func commandTimeScheduleJSON() string {
 		"externalUrl":"https://example.com/schedule",
 		"integration":{"id":"integration-id"},
 		"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]
+	}`
+}
+
+func commandTemplateJSON() string {
+	return `{
+		"id":"template-id",
+		"name":"Bug report",
+		"type":"issue",
+		"description":"Bug report template",
+		"icon":"bug",
+		"color":"#ff0000",
+		"sortOrder":1,
+		"lastAppliedAt":"2026-06-19T12:00:00Z",
+		"createdAt":"2026-06-18T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"team":{"id":"team-id","key":"LIT","name":"linctl"},
+		"pipeline":{"id":"pipeline-id"},
+		"creator":{"id":"creator-id"},
+		"lastUpdatedBy":{"id":"updated-by-id"},
+		"inheritedFrom":{"id":"parent-template-id"}
 	}`
 }
 

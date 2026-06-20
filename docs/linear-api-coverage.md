@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 80 | 458 |
-| Upstream Query root fields | 158 | 68 | 158 |
+| Upstream SDK root methods | 458 | 82 | 458 |
+| Upstream Query root fields | 158 | 70 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 127 | 127 | 127 |
-| Domain-map commands | 207 | 109 | 207 |
+| Local generated Go operations | 129 | 129 | 129 |
+| Domain-map commands | 212 | 111 | 212 |
 
 ## Upstream SDK Root Methods
 
@@ -387,8 +387,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `teamMembership` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `teamMemberships` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `teams` | method | implemented | local operation or command exists |
-| `template` | method | safe_candidate | read operation may fit future CLI coverage |
-| `templates` | getter | safe_candidate | read operation may fit future CLI coverage |
+| `template` | method | implemented | local operation or command exists |
+| `templates` | getter | implemented | local operation or command exists |
 | `templatesForIntegration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeSchedule` | method | implemented | local operation or command exists |
 | `timeScheduleRefreshIntegrationSchedule` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -630,8 +630,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `teamMembership` | `TeamMembership!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `teamMemberships` | `TeamMembershipConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `teams` | `TeamConnection!` | implemented | root field used by local GraphQL operation |
-| `template` | `Template!` | safe_candidate | read operation may fit future CLI coverage |
-| `templates` | `[Template!]!` | safe_candidate | read operation may fit future CLI coverage |
+| `template` | `Template!` | implemented | root field used by local GraphQL operation |
+| `templates` | `[Template!]!` | implemented | root field used by local GraphQL operation |
 | `templatesForIntegration` | `[Template!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeSchedule` | `TimeSchedule!` | implemented | root field used by local GraphQL operation |
 | `timeSchedules` | `TimeScheduleConnection!` | implemented | root field used by local GraphQL operation |
@@ -1129,6 +1129,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
+| `template` | query | `template` | implemented | `internal/client/generated.go` |
+| `templates` | query | `templates` | implemented | `internal/client/generated.go` |
 | `timeSchedule` | query | `timeSchedule` | implemented | `internal/client/generated.go` |
 | `timeSchedules` | query | `timeSchedules` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
@@ -1274,6 +1276,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | TimeSchedule | `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | TimeSchedule | `time-schedule delete` | `Mutation.timeScheduleDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | write command needs explicit target and safety semantics |
+| Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Template | `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Template | `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's workspace, team, or pipeline scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Template | `template delete` | `Mutation.templateDelete` | Blocked: destructive command needs explicit template-scope safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative history` | `Initiative.history` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |

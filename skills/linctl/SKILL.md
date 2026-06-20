@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -127,6 +127,8 @@ linctl workflow-state list --json --limit 20
 linctl workflow-state get WORKFLOW_STATE_ID --json
 linctl time-schedule list --json --limit 20
 linctl time-schedule get TIME_SCHEDULE_ID --json
+linctl template list --json --limit 20
+linctl template get TEMPLATE_ID --json
 linctl initiative list --json --limit 20
 linctl initiative get INITIATIVE_ID --json
 linctl initiative history INITIATIVE_ID --json --limit 20

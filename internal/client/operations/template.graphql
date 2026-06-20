@@ -1,0 +1,42 @@
+query templates {
+  templates {
+    ...TemplateSummaryFields
+  }
+}
+
+query template($id: String!) {
+  template(id: $id) {
+    ...TemplateSummaryFields
+  }
+}
+
+fragment TemplateSummaryFields on Template {
+  id
+  name
+  type
+  description
+  icon
+  color
+  sortOrder
+  lastAppliedAt
+  createdAt
+  updatedAt
+  archivedAt
+  team {
+    id
+    key
+    name
+  }
+  pipeline {
+    id
+  }
+  creator {
+    id
+  }
+  lastUpdatedBy {
+    id
+  }
+  inheritedFrom {
+    id
+  }
+}

@@ -64,6 +64,11 @@ PY
   fi
   "$binary" release-note list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null
+  template_json="$("$binary" template list --json --limit 5)"
+  template_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("templates", []); print(items[0]["id"] if items else "")' <<<"$template_json")"
+  if [[ -n "$template_id" ]]; then
+    "$binary" template get "$template_id" --json >/dev/null
+  fi
   initiative_json="$("$binary" initiative list --json --limit 5)"
   initiative_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("initiatives", []); print(items[0]["id"] if items else "")' <<<"$initiative_json")"
   if [[ -n "$initiative_id" ]]; then

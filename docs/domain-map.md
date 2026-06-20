@@ -397,6 +397,30 @@ Command status:
 
 Only `time-schedule list` and `time-schedule get` are implemented in the current CLI. TimeSchedule writes and external upserts are deferred as triage/admin configuration surface.
 
+## Template
+
+Use the schema name `Template` in code and docs. It is Linear's reusable issue, project, document, and release-note template entity.
+
+Schema backing:
+
+- Types: `Template`
+- Reads: `Query.templates`, `Query.template`
+- Writes: `Mutation.templateCreate`, `Mutation.templateUpdate`, `Mutation.templateDelete`
+- Inputs: `TemplateCreateInput`, `TemplateUpdateInput`
+- Relevant fields: `Template.id`, `Template.name`, `Template.type`, `Template.description`, `Template.icon`, `Template.color`, `Template.sortOrder`, `Template.lastAppliedAt`, `Template.team`, `Template.pipeline`, `Template.creator`, `Template.lastUpdatedBy`, `Template.inheritedFrom`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `template list` | `Query.templates` | Read-only |
+| `template get` | `Query.template` | Read-only |
+| `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics |
+| `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's workspace, team, or pipeline scope before mutation |
+| `template delete` | `Mutation.templateDelete` | Blocked: destructive command needs explicit template-scope safety semantics |
+
+Only `template list` and `template get` are implemented in the current CLI. Template writes are deferred until their workspace, team, and pipeline guard model is explicit.
+
 ## Initiative
 
 Use the schema name `Initiative` in code and docs. It is Linear's strategic grouping of projects toward a goal.

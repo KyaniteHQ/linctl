@@ -13091,6 +13091,191 @@ func (v *TeamsTeamsTeamConnectionPageInfo) GetHasNextPage() bool { return v.HasN
 // GetEndCursor returns TeamsTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *TeamsTeamsTeamConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// TemplateSummaryFields includes the GraphQL fields of Template requested by the fragment TemplateSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store
+// pre-filled field values and content as JSON data. They can be scoped to a
+// specific team or shared across the entire workspace. Team-scoped templates may
+// be inherited from parent teams.
+type TemplateSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the template.
+	Name string `json:"name"`
+	// The entity type this template is for, such as 'issue', 'project', or 'document'.
+	Type string `json:"type"`
+	// A description of what the template is used for.
+	Description *string `json:"description"`
+	// The icon of the template, either a decorative icon type or an emoji string. Null if no icon has been set.
+	Icon *string `json:"icon"`
+	// The hex color of the template icon. Null if no custom color has been set.
+	Color *string `json:"color"`
+	// The sort order of the template within the templates list.
+	SortOrder float64 `json:"sortOrder"`
+	// The date when the template was last applied to create or update an entity. Null if the template has never been applied.
+	LastAppliedAt *string `json:"lastAppliedAt"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The team that the template is associated with. If null, the template is global to the workspace.
+	Team *TemplateSummaryFieldsTeam `json:"team"`
+	// The release pipeline this template is bound to. Required when the template
+	// type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one
+	// release note template, which defines the format AI follows when generating release notes.
+	Pipeline *TemplateSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+	// The user who created the template. Null if the creator's account has been deleted.
+	Creator *TemplateSummaryFieldsCreatorUser `json:"creator"`
+	// The user who last updated the template. Null if the user's account has been deleted.
+	LastUpdatedBy *TemplateSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+	// The parent team template this template was inherited from. Null for original (non-inherited) templates.
+	InheritedFrom *TemplateSummaryFieldsInheritedFromTemplate `json:"inheritedFrom"`
+}
+
+// GetId returns TemplateSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetId() string { return v.Id }
+
+// GetName returns TemplateSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetName() string { return v.Name }
+
+// GetType returns TemplateSummaryFields.Type, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetType() string { return v.Type }
+
+// GetDescription returns TemplateSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetDescription() *string { return v.Description }
+
+// GetIcon returns TemplateSummaryFields.Icon, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetIcon() *string { return v.Icon }
+
+// GetColor returns TemplateSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetColor() *string { return v.Color }
+
+// GetSortOrder returns TemplateSummaryFields.SortOrder, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetSortOrder() float64 { return v.SortOrder }
+
+// GetLastAppliedAt returns TemplateSummaryFields.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetLastAppliedAt() *string { return v.LastAppliedAt }
+
+// GetCreatedAt returns TemplateSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns TemplateSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns TemplateSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetTeam returns TemplateSummaryFields.Team, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetTeam() *TemplateSummaryFieldsTeam { return v.Team }
+
+// GetPipeline returns TemplateSummaryFields.Pipeline, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetPipeline() *TemplateSummaryFieldsPipelineReleasePipeline {
+	return v.Pipeline
+}
+
+// GetCreator returns TemplateSummaryFields.Creator, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetCreator() *TemplateSummaryFieldsCreatorUser { return v.Creator }
+
+// GetLastUpdatedBy returns TemplateSummaryFields.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetLastUpdatedBy() *TemplateSummaryFieldsLastUpdatedByUser {
+	return v.LastUpdatedBy
+}
+
+// GetInheritedFrom returns TemplateSummaryFields.InheritedFrom, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFields) GetInheritedFrom() *TemplateSummaryFieldsInheritedFromTemplate {
+	return v.InheritedFrom
+}
+
+// TemplateSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type TemplateSummaryFieldsCreatorUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns TemplateSummaryFieldsCreatorUser.Id, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFieldsCreatorUser) GetId() string { return v.Id }
+
+// TemplateSummaryFieldsInheritedFromTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store
+// pre-filled field values and content as JSON data. They can be scoped to a
+// specific team or shared across the entire workspace. Team-scoped templates may
+// be inherited from parent teams.
+type TemplateSummaryFieldsInheritedFromTemplate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns TemplateSummaryFieldsInheritedFromTemplate.Id, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFieldsInheritedFromTemplate) GetId() string { return v.Id }
+
+// TemplateSummaryFieldsLastUpdatedByUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type TemplateSummaryFieldsLastUpdatedByUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns TemplateSummaryFieldsLastUpdatedByUser.Id, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFieldsLastUpdatedByUser) GetId() string { return v.Id }
+
+// TemplateSummaryFieldsPipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
+// The GraphQL type's documentation follows.
+//
+// A release pipeline that defines a release workflow with ordered stages.
+// Pipelines can be continuous (each sync creates a completed release) or scheduled
+// (issues accumulate in a started release that is explicitly completed). Pipelines
+// are associated with teams and can filter commits by file path patterns.
+type TemplateSummaryFieldsPipelineReleasePipeline struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns TemplateSummaryFieldsPipelineReleasePipeline.Id, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFieldsPipelineReleasePipeline) GetId() string { return v.Id }
+
+// TemplateSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TemplateSummaryFieldsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns TemplateSummaryFieldsTeam.Id, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFieldsTeam) GetId() string { return v.Id }
+
+// GetKey returns TemplateSummaryFieldsTeam.Key, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFieldsTeam) GetKey() string { return v.Key }
+
+// GetName returns TemplateSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
+func (v *TemplateSummaryFieldsTeam) GetName() string { return v.Name }
+
 // TimeScheduleSummaryFields includes the GraphQL fields of TimeSchedule requested by the fragment TimeScheduleSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -15120,6 +15305,14 @@ func (v *__team_membersInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __team_membersInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__team_membersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __templateInput is used internally by genqlient
+type __templateInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __templateInput.Id, and is useful for accessing the field via an interface.
+func (v *__templateInput) GetId() string { return v.Id }
 
 // __timeScheduleInput is used internally by genqlient
 type __timeScheduleInput struct {
@@ -34295,6 +34488,344 @@ func (v *team_membersTeamMembersUserConnectionPageInfo) GetHasNextPage() bool { 
 // GetEndCursor returns team_membersTeamMembersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *team_membersTeamMembersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// templateResponse is returned by template on success.
+type templateResponse struct {
+	// A specific template.
+	Template templateTemplate `json:"template"`
+}
+
+// GetTemplate returns templateResponse.Template, and is useful for accessing the field via an interface.
+func (v *templateResponse) GetTemplate() templateTemplate { return v.Template }
+
+// templateTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store
+// pre-filled field values and content as JSON data. They can be scoped to a
+// specific team or shared across the entire workspace. Team-scoped templates may
+// be inherited from parent teams.
+type templateTemplate struct {
+	TemplateSummaryFields `json:"-"`
+}
+
+// GetId returns templateTemplate.Id, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetId() string { return v.TemplateSummaryFields.Id }
+
+// GetName returns templateTemplate.Name, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetName() string { return v.TemplateSummaryFields.Name }
+
+// GetType returns templateTemplate.Type, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetType() string { return v.TemplateSummaryFields.Type }
+
+// GetDescription returns templateTemplate.Description, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetDescription() *string { return v.TemplateSummaryFields.Description }
+
+// GetIcon returns templateTemplate.Icon, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetIcon() *string { return v.TemplateSummaryFields.Icon }
+
+// GetColor returns templateTemplate.Color, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetColor() *string { return v.TemplateSummaryFields.Color }
+
+// GetSortOrder returns templateTemplate.SortOrder, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetSortOrder() float64 { return v.TemplateSummaryFields.SortOrder }
+
+// GetLastAppliedAt returns templateTemplate.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetLastAppliedAt() *string { return v.TemplateSummaryFields.LastAppliedAt }
+
+// GetCreatedAt returns templateTemplate.CreatedAt, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetCreatedAt() string { return v.TemplateSummaryFields.CreatedAt }
+
+// GetUpdatedAt returns templateTemplate.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetUpdatedAt() string { return v.TemplateSummaryFields.UpdatedAt }
+
+// GetArchivedAt returns templateTemplate.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetArchivedAt() *string { return v.TemplateSummaryFields.ArchivedAt }
+
+// GetTeam returns templateTemplate.Team, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetTeam() *TemplateSummaryFieldsTeam { return v.TemplateSummaryFields.Team }
+
+// GetPipeline returns templateTemplate.Pipeline, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetPipeline() *TemplateSummaryFieldsPipelineReleasePipeline {
+	return v.TemplateSummaryFields.Pipeline
+}
+
+// GetCreator returns templateTemplate.Creator, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetCreator() *TemplateSummaryFieldsCreatorUser {
+	return v.TemplateSummaryFields.Creator
+}
+
+// GetLastUpdatedBy returns templateTemplate.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetLastUpdatedBy() *TemplateSummaryFieldsLastUpdatedByUser {
+	return v.TemplateSummaryFields.LastUpdatedBy
+}
+
+// GetInheritedFrom returns templateTemplate.InheritedFrom, and is useful for accessing the field via an interface.
+func (v *templateTemplate) GetInheritedFrom() *TemplateSummaryFieldsInheritedFromTemplate {
+	return v.TemplateSummaryFields.InheritedFrom
+}
+
+func (v *templateTemplate) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*templateTemplate
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.templateTemplate = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TemplateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaltemplateTemplate struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Description *string `json:"description"`
+
+	Icon *string `json:"icon"`
+
+	Color *string `json:"color"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Team *TemplateSummaryFieldsTeam `json:"team"`
+
+	Pipeline *TemplateSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+
+	Creator *TemplateSummaryFieldsCreatorUser `json:"creator"`
+
+	LastUpdatedBy *TemplateSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+
+	InheritedFrom *TemplateSummaryFieldsInheritedFromTemplate `json:"inheritedFrom"`
+}
+
+func (v *templateTemplate) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *templateTemplate) __premarshalJSON() (*__premarshaltemplateTemplate, error) {
+	var retval __premarshaltemplateTemplate
+
+	retval.Id = v.TemplateSummaryFields.Id
+	retval.Name = v.TemplateSummaryFields.Name
+	retval.Type = v.TemplateSummaryFields.Type
+	retval.Description = v.TemplateSummaryFields.Description
+	retval.Icon = v.TemplateSummaryFields.Icon
+	retval.Color = v.TemplateSummaryFields.Color
+	retval.SortOrder = v.TemplateSummaryFields.SortOrder
+	retval.LastAppliedAt = v.TemplateSummaryFields.LastAppliedAt
+	retval.CreatedAt = v.TemplateSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TemplateSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TemplateSummaryFields.ArchivedAt
+	retval.Team = v.TemplateSummaryFields.Team
+	retval.Pipeline = v.TemplateSummaryFields.Pipeline
+	retval.Creator = v.TemplateSummaryFields.Creator
+	retval.LastUpdatedBy = v.TemplateSummaryFields.LastUpdatedBy
+	retval.InheritedFrom = v.TemplateSummaryFields.InheritedFrom
+	return &retval, nil
+}
+
+// templatesResponse is returned by templates on success.
+type templatesResponse struct {
+	// All templates in the workspace, including both team-scoped and workspace-level templates.
+	Templates []templatesTemplatesTemplate `json:"templates"`
+}
+
+// GetTemplates returns templatesResponse.Templates, and is useful for accessing the field via an interface.
+func (v *templatesResponse) GetTemplates() []templatesTemplatesTemplate { return v.Templates }
+
+// templatesTemplatesTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store
+// pre-filled field values and content as JSON data. They can be scoped to a
+// specific team or shared across the entire workspace. Team-scoped templates may
+// be inherited from parent teams.
+type templatesTemplatesTemplate struct {
+	TemplateSummaryFields `json:"-"`
+}
+
+// GetId returns templatesTemplatesTemplate.Id, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetId() string { return v.TemplateSummaryFields.Id }
+
+// GetName returns templatesTemplatesTemplate.Name, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetName() string { return v.TemplateSummaryFields.Name }
+
+// GetType returns templatesTemplatesTemplate.Type, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetType() string { return v.TemplateSummaryFields.Type }
+
+// GetDescription returns templatesTemplatesTemplate.Description, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetDescription() *string {
+	return v.TemplateSummaryFields.Description
+}
+
+// GetIcon returns templatesTemplatesTemplate.Icon, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetIcon() *string { return v.TemplateSummaryFields.Icon }
+
+// GetColor returns templatesTemplatesTemplate.Color, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetColor() *string { return v.TemplateSummaryFields.Color }
+
+// GetSortOrder returns templatesTemplatesTemplate.SortOrder, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetSortOrder() float64 { return v.TemplateSummaryFields.SortOrder }
+
+// GetLastAppliedAt returns templatesTemplatesTemplate.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetLastAppliedAt() *string {
+	return v.TemplateSummaryFields.LastAppliedAt
+}
+
+// GetCreatedAt returns templatesTemplatesTemplate.CreatedAt, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetCreatedAt() string { return v.TemplateSummaryFields.CreatedAt }
+
+// GetUpdatedAt returns templatesTemplatesTemplate.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetUpdatedAt() string { return v.TemplateSummaryFields.UpdatedAt }
+
+// GetArchivedAt returns templatesTemplatesTemplate.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetArchivedAt() *string {
+	return v.TemplateSummaryFields.ArchivedAt
+}
+
+// GetTeam returns templatesTemplatesTemplate.Team, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetTeam() *TemplateSummaryFieldsTeam {
+	return v.TemplateSummaryFields.Team
+}
+
+// GetPipeline returns templatesTemplatesTemplate.Pipeline, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetPipeline() *TemplateSummaryFieldsPipelineReleasePipeline {
+	return v.TemplateSummaryFields.Pipeline
+}
+
+// GetCreator returns templatesTemplatesTemplate.Creator, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetCreator() *TemplateSummaryFieldsCreatorUser {
+	return v.TemplateSummaryFields.Creator
+}
+
+// GetLastUpdatedBy returns templatesTemplatesTemplate.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetLastUpdatedBy() *TemplateSummaryFieldsLastUpdatedByUser {
+	return v.TemplateSummaryFields.LastUpdatedBy
+}
+
+// GetInheritedFrom returns templatesTemplatesTemplate.InheritedFrom, and is useful for accessing the field via an interface.
+func (v *templatesTemplatesTemplate) GetInheritedFrom() *TemplateSummaryFieldsInheritedFromTemplate {
+	return v.TemplateSummaryFields.InheritedFrom
+}
+
+func (v *templatesTemplatesTemplate) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*templatesTemplatesTemplate
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.templatesTemplatesTemplate = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TemplateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaltemplatesTemplatesTemplate struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Description *string `json:"description"`
+
+	Icon *string `json:"icon"`
+
+	Color *string `json:"color"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Team *TemplateSummaryFieldsTeam `json:"team"`
+
+	Pipeline *TemplateSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+
+	Creator *TemplateSummaryFieldsCreatorUser `json:"creator"`
+
+	LastUpdatedBy *TemplateSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+
+	InheritedFrom *TemplateSummaryFieldsInheritedFromTemplate `json:"inheritedFrom"`
+}
+
+func (v *templatesTemplatesTemplate) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *templatesTemplatesTemplate) __premarshalJSON() (*__premarshaltemplatesTemplatesTemplate, error) {
+	var retval __premarshaltemplatesTemplatesTemplate
+
+	retval.Id = v.TemplateSummaryFields.Id
+	retval.Name = v.TemplateSummaryFields.Name
+	retval.Type = v.TemplateSummaryFields.Type
+	retval.Description = v.TemplateSummaryFields.Description
+	retval.Icon = v.TemplateSummaryFields.Icon
+	retval.Color = v.TemplateSummaryFields.Color
+	retval.SortOrder = v.TemplateSummaryFields.SortOrder
+	retval.LastAppliedAt = v.TemplateSummaryFields.LastAppliedAt
+	retval.CreatedAt = v.TemplateSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TemplateSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TemplateSummaryFields.ArchivedAt
+	retval.Team = v.TemplateSummaryFields.Team
+	retval.Pipeline = v.TemplateSummaryFields.Pipeline
+	retval.Creator = v.TemplateSummaryFields.Creator
+	retval.LastUpdatedBy = v.TemplateSummaryFields.LastUpdatedBy
+	retval.InheritedFrom = v.TemplateSummaryFields.InheritedFrom
+	return &retval, nil
+}
+
 // timeScheduleResponse is returned by timeSchedule on success.
 type timeScheduleResponse struct {
 	// A specific time schedule.
@@ -41807,6 +42338,130 @@ func team_members(
 	}
 
 	data_ = &team_membersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by template.
+const template_Operation = `
+query template ($id: String!) {
+	template(id: $id) {
+		... TemplateSummaryFields
+	}
+}
+fragment TemplateSummaryFields on Template {
+	id
+	name
+	type
+	description
+	icon
+	color
+	sortOrder
+	lastAppliedAt
+	createdAt
+	updatedAt
+	archivedAt
+	team {
+		id
+		key
+		name
+	}
+	pipeline {
+		id
+	}
+	creator {
+		id
+	}
+	lastUpdatedBy {
+		id
+	}
+	inheritedFrom {
+		id
+	}
+}
+`
+
+func template(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *templateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "template",
+		Query:  template_Operation,
+		Variables: &__templateInput{
+			Id: id,
+		},
+	}
+
+	data_ = &templateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by templates.
+const templates_Operation = `
+query templates {
+	templates {
+		... TemplateSummaryFields
+	}
+}
+fragment TemplateSummaryFields on Template {
+	id
+	name
+	type
+	description
+	icon
+	color
+	sortOrder
+	lastAppliedAt
+	createdAt
+	updatedAt
+	archivedAt
+	team {
+		id
+		key
+		name
+	}
+	pipeline {
+		id
+	}
+	creator {
+		id
+	}
+	lastUpdatedBy {
+		id
+	}
+	inheritedFrom {
+		id
+	}
+}
+`
+
+func templates(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *templatesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "templates",
+		Query:  templates_Operation,
+	}
+
+	data_ = &templatesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
