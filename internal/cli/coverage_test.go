@@ -174,6 +174,18 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		TargetType: "project",
 		TargetName: "Roadmap",
 	}
+	releasePipeline := client.ReleasePipelineSummary{
+		ID:                      "release-pipeline-id",
+		Name:                    "Production",
+		SlugID:                  "production",
+		ApproximateReleaseCount: 4,
+	}
+	releaseStage := client.ReleaseStageSummary{
+		ID:           "release-stage-id",
+		Name:         "Started",
+		Type:         "started",
+		PipelineName: "Production",
+	}
 
 	textOut := bytes.Buffer{}
 	textCommand := &cobra.Command{}
@@ -207,6 +219,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeAttachment(textCommand, &textOptions, attachment))
 	require.NoError(t, writeNotification(textCommand, &textOptions, notification))
 	require.NoError(t, writeNotificationSubscription(textCommand, &textOptions, notificationSubscription))
+	require.NoError(t, writeReleasePipeline(textCommand, &textOptions, releasePipeline))
+	require.NoError(t, writeReleaseStage(textCommand, &textOptions, releaseStage))
 	require.Equal(
 		t,
 		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
@@ -227,7 +241,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
 			"attachment-id Linked PR [github]\n"+
 			"notification-id issueMention [mentions] Mentioned you\n"+
-			"notification-subscription-id project Roadmap active true\n",
+			"notification-subscription-id project Roadmap active true\n"+
+			"release-pipeline-id Production production releases 4\n"+
+			"release-stage-id Started [started] pipeline Production\n",
 		textOut.String(),
 	)
 
@@ -263,6 +279,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeAttachment(jsonCommand, &jsonOptions, attachment))
 	require.NoError(t, writeNotification(jsonCommand, &jsonOptions, notification))
 	require.NoError(t, writeNotificationSubscription(jsonCommand, &jsonOptions, notificationSubscription))
+	require.NoError(t, writeReleasePipeline(jsonCommand, &jsonOptions, releasePipeline))
+	require.NoError(t, writeReleaseStage(jsonCommand, &jsonOptions, releaseStage))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
@@ -290,6 +308,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"source_type": "github"`)
 	require.Contains(t, jsonOut.String(), `"category": "mentions"`)
 	require.Contains(t, jsonOut.String(), `"target_type": "project"`)
+	require.Contains(t, jsonOut.String(), `"slug_id": "production"`)
+	require.Contains(t, jsonOut.String(), `"pipeline_name": "Production"`)
 }
 
 func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
@@ -450,6 +470,18 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		TargetType: "project",
 		TargetName: "Roadmap",
 	}
+	releasePipeline := client.ReleasePipelineSummary{
+		ID:                      "release-pipeline-id",
+		Name:                    "Production",
+		SlugID:                  "production",
+		ApproximateReleaseCount: 4,
+	}
+	releaseStage := client.ReleaseStageSummary{
+		ID:           "release-stage-id",
+		Name:         "Started",
+		Type:         "started",
+		PipelineName: "Production",
+	}
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
@@ -483,6 +515,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeAttachment(command, &rootOptions{idOnly: true}, attachment))
 	require.NoError(t, writeNotification(command, &rootOptions{idOnly: true}, notification))
 	require.NoError(t, writeNotificationSubscription(command, &rootOptions{idOnly: true}, notificationSubscription))
+	require.NoError(t, writeReleasePipeline(command, &rootOptions{idOnly: true}, releasePipeline))
+	require.NoError(t, writeReleaseStage(command, &rootOptions{idOnly: true}, releaseStage))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
 	require.Contains(t, output.String(), "starts_at=2026-07-01T00:00:00Z")
@@ -510,6 +544,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "attachment-id")
 	require.Contains(t, output.String(), "notification-id")
 	require.Contains(t, output.String(), "notification-subscription-id")
+	require.Contains(t, output.String(), "release-pipeline-id")
+	require.Contains(t, output.String(), "release-stage-id")
 	require.Equal(t, "-", emptyDash(""))
 
 	quietOutput := bytes.Buffer{}
@@ -542,6 +578,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeAttachment(quietCommand, &rootOptions{quiet: true}, attachment))
 	require.NoError(t, writeNotification(quietCommand, &rootOptions{quiet: true}, notification))
 	require.NoError(t, writeNotificationSubscription(quietCommand, &rootOptions{quiet: true}, notificationSubscription))
+	require.NoError(t, writeReleasePipeline(quietCommand, &rootOptions{quiet: true}, releasePipeline))
+	require.NoError(t, writeReleaseStage(quietCommand, &rootOptions{quiet: true}, releaseStage))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")
 	require.NoError(t, err)
@@ -650,6 +688,24 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 		"notification_subscriptions": []any{
 			map[string]any{"id": "notification-subscription-id", "target_type": "project"},
 		},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"release_pipelines": []any{map[string]any{"id": "release-pipeline-id", "slug_id": "production"}}},
+		"id,slug_id",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"release_pipelines": []any{map[string]any{"id": "release-pipeline-id", "slug_id": "production"}},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"release_stages": []any{map[string]any{"id": "release-stage-id", "pipeline_name": "Production"}}},
+		"id,pipeline_name",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"release_stages": []any{map[string]any{"id": "release-stage-id", "pipeline_name": "Production"}},
 	}, projected)
 
 	projected, err = projectJSONFields(

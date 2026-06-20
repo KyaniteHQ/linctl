@@ -46,6 +46,36 @@ Planned commands:
 
 Only `notification list`, `notification get`, `notification subscription list`, and `notification subscription get` are implemented in the current CLI. Notification writes are deferred as viewer-state and preference surface.
 
+## Release
+
+Schema backing:
+
+- Types: `Release`, `ReleasePipeline`, `ReleaseStage`, `ReleaseNote`, `IssueToRelease`
+- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `Query.releaseStages`, `Query.releaseStage`
+- Deferred reads: `Query.releases`, `Query.release`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`, nested release documents/issues/history/links, and access-key release reads
+- Writes: `Mutation.releasePipelineCreate`, `Mutation.releasePipelineUpdate`, `Mutation.releasePipelineArchive`, `Mutation.releasePipelineDelete`, `Mutation.releaseStageCreate`, `Mutation.releaseStageUpdate`, `Mutation.releaseStageArchive`, `Mutation.releaseStageUnarchive`, plus Release/ReleaseNote/IssueToRelease create/update/archive/delete/sync/complete mutations
+- Relevant fields: `ReleasePipeline.id`, `ReleasePipeline.name`, `ReleasePipeline.slugId`, `ReleasePipeline.type`, `ReleasePipeline.isProduction`, `ReleasePipeline.approximateReleaseCount`, `ReleaseStage.id`, `ReleaseStage.name`, `ReleaseStage.type`, `ReleaseStage.pipeline`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `release-pipeline list` | `Query.releasePipelines` | Read-only |
+| `release-pipeline get` | `Query.releasePipeline` | Read-only |
+| `release-stage list` | `Query.releaseStages` | Read-only |
+| `release-stage get` | `Query.releaseStage` | Read-only |
+| `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics |
+| `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation |
+| `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics |
+| `release-pipeline unarchive` | `Mutation.releasePipelineUnarchive` | Blocked: restore command needs explicit safety semantics |
+| `release-pipeline delete` | `Mutation.releasePipelineDelete` | Blocked: destructive command needs explicit safety semantics |
+| `release-stage create` | `Mutation.releaseStageCreate` | Blocked: release workflow configuration needs explicit pipeline/team guard semantics |
+| `release-stage update` | `Mutation.releaseStageUpdate` | Blocked: update must resolve the stage's pipeline and teams before mutation |
+| `release-stage archive` | `Mutation.releaseStageArchive` | Blocked: destructive command needs explicit safety semantics |
+| `release-stage unarchive` | `Mutation.releaseStageUnarchive` | Blocked: restore command needs explicit safety semantics |
+
+Only `release-pipeline list`, `release-pipeline get`, `release-stage list`, and `release-stage get` are implemented in the current CLI. Release, ReleaseNote, IssueToRelease, sync, complete, access-key, and association commands remain deferred until their control-surface shape and guard model are explicit.
+
 ## Issue
 
 Schema backing:

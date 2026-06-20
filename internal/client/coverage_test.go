@@ -197,6 +197,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			notificationSubscriptionTargetJSON("UserNotificationSubscription", "user", `{"id":"target-user-id","displayName":"Ada"}`, false, true),
 		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"notificationSubscription": `{"notificationSubscription":` + notificationSubscriptionJSON() + `}`,
+		"releasePipelines":         `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releasePipeline":          `{"releasePipeline":` + releasePipelineJSON() + `}`,
+		"releaseStages":            `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releaseStage":             `{"releaseStage":` + releaseStageJSON() + `}`,
 		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
 		"team_members":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"users":                    `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -311,6 +315,14 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		graphqlClient,
 		"notification-subscription-id",
 	)
+	require.NoError(t, err)
+	releasePipelines, err := ListReleasePipelines(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	releasePipeline, err := GetReleasePipelineByID(context.Background(), graphqlClient, "release-pipeline-id")
+	require.NoError(t, err)
+	releaseStages, err := ListReleaseStages(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	releaseStage, err := GetReleaseStageByID(context.Background(), graphqlClient, "release-stage-id")
 	require.NoError(t, err)
 	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
 	require.NoError(t, err)
@@ -482,6 +494,17 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "assigned", notificationSubscriptions.Subscriptions[7].UserContextViewType)
 	require.Equal(t, "Ada", notificationSubscriptions.Subscriptions[7].TargetName)
 	require.Equal(t, "project-id", notificationSubscription.TargetID)
+	require.True(t, releasePipelines.HasNextPage)
+	require.Equal(t, &endCursor, releasePipelines.EndCursor)
+	require.Equal(t, "Production", releasePipelines.ReleasePipelines[0].Name)
+	require.Equal(t, "scheduled", releasePipelines.ReleasePipelines[0].Type)
+	require.True(t, releasePipeline.IsProduction)
+	require.Equal(t, "template-id", releasePipeline.ReleaseNoteTemplateID)
+	require.True(t, releaseStages.HasNextPage)
+	require.Equal(t, &endCursor, releaseStages.EndCursor)
+	require.Equal(t, "Started", releaseStages.ReleaseStages[0].Name)
+	require.Equal(t, "started", releaseStages.ReleaseStages[0].Type)
+	require.Equal(t, "Production", releaseStage.PipelineName)
 	require.Equal(t, "team body", team.Description)
 	require.Equal(t, "Omer", teamMembers.Members[0].DisplayName)
 	require.Equal(t, &endCursor, teamMembers.EndCursor)
@@ -1134,6 +1157,22 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetNotificationSubscriptionByID(context.Background(), graphqlClient, "notification-subscription-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get notification subscription notification-subscription-id")
+
+		_, err = ListReleasePipelines(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release pipelines")
+
+		_, err = GetReleasePipelineByID(context.Background(), graphqlClient, "release-pipeline-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get release pipeline release-pipeline-id")
+
+		_, err = ListReleaseStages(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release stages")
+
+		_, err = GetReleaseStageByID(context.Background(), graphqlClient, "release-stage-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get release stage release-stage-id")
 
 		_, err = ListAttachments(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -1871,4 +1910,43 @@ func notificationSubscriptionTargetJSON(
 	}`
 
 	return strings.Replace(payload, `"`+targetField+`":null`, `"`+targetField+`":`+targetPayload, 1)
+}
+
+func releasePipelineJSON() string {
+	return `{
+		"id":"release-pipeline-id",
+		"name":"Production",
+		"slugId":"production",
+		"type":"scheduled",
+		"isProduction":true,
+		"autoGenerateReleaseNotesOnCompletion":true,
+		"includePathPatterns":["services/api/**"],
+		"approximateReleaseCount":4,
+		"trashed":null,
+		"releaseNoteTemplate":{"id":"template-id"},
+		"latestReleaseNote":{"id":"release-note-id"},
+		"url":"https://linear.app/kyanite/releases/production",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null
+	}`
+}
+
+func trashedReleasePipelineJSON() string {
+	return strings.Replace(releasePipelineJSON(), `"trashed":null`, `"trashed":false`, 1)
+}
+
+func releaseStageJSON() string {
+	return `{
+		"id":"release-stage-id",
+		"name":"Started",
+		"color":"#00ff00",
+		"type":"started",
+		"position":2,
+		"frozen":false,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"}
+	}`
 }

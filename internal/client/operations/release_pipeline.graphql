@@ -1,0 +1,74 @@
+query releasePipelines($first: Int, $after: String, $includeArchived: Boolean) {
+  releasePipelines(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ReleasePipelineSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query releasePipeline($id: String!) {
+  releasePipeline(id: $id) {
+    ...ReleasePipelineSummaryFields
+  }
+}
+
+query releaseStages($first: Int, $after: String, $includeArchived: Boolean) {
+  releaseStages(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ReleaseStageSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query releaseStage($id: String!) {
+  releaseStage(id: $id) {
+    ...ReleaseStageSummaryFields
+  }
+}
+
+fragment ReleasePipelineSummaryFields on ReleasePipeline {
+  id
+  name
+  slugId
+  type
+  isProduction
+  autoGenerateReleaseNotesOnCompletion
+  includePathPatterns
+  approximateReleaseCount
+  trashed
+  releaseNoteTemplate {
+    id
+  }
+  latestReleaseNote {
+    id
+  }
+  url
+  createdAt
+  updatedAt
+  archivedAt
+}
+
+fragment ReleaseStageSummaryFields on ReleaseStage {
+  id
+  name
+  color
+  type
+  position
+  frozen
+  createdAt
+  updatedAt
+  archivedAt
+  pipeline {
+    id
+    name
+    slugId
+  }
+}

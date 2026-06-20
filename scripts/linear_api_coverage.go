@@ -618,6 +618,7 @@ func domainCommandSet(commands []domainCommand) map[string]bool {
 	return set
 }
 
+//nolint:funlen // The command registry intentionally mirrors the full documented CLI surface.
 func commandImplemented(command string) bool {
 	implemented := map[string]bool{
 		"whoami":                         true,
@@ -628,6 +629,10 @@ func commandImplemented(command string) bool {
 		"notification get":               true,
 		"notification subscription list": true,
 		"notification subscription get":  true,
+		"release-pipeline list":          true,
+		"release-pipeline get":           true,
+		"release-stage list":             true,
+		"release-stage get":              true,
 		"issue list":                     true,
 		"issue search":                   true,
 		"issue get":                      true,
@@ -767,6 +772,15 @@ func domainCommandBlocked(command string) bool {
 		"notification subscription create":                  true,
 		"notification subscription update":                  true,
 		"notification subscription delete":                  true,
+		"release-pipeline create":                           true,
+		"release-pipeline update":                           true,
+		"release-pipeline archive":                          true,
+		"release-pipeline unarchive":                        true,
+		"release-pipeline delete":                           true,
+		"release-stage create":                              true,
+		"release-stage update":                              true,
+		"release-stage archive":                             true,
+		"release-stage unarchive":                           true,
 	}
 	return blocked[command]
 }

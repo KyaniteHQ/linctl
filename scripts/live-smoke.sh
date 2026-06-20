@@ -45,6 +45,8 @@ PY
   "$binary" project list --json --limit 5 >/dev/null
   "$binary" notification list --json --limit 5 >/dev/null
   "$binary" notification subscription list --json --limit 5 >/dev/null
+  "$binary" release-pipeline list --json --limit 5 >/dev/null
+  "$binary" release-stage list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null
   "$binary" roadmap list --json --limit 5 >/dev/null
   "$binary" customer list --json --limit 5 >/dev/null

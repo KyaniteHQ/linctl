@@ -37,6 +37,10 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, contains: "notification-id issueMention [mentions] Mentioned you"},
 		{name: "notification subscription list", args: []string{"notification", "subscription", "list", "--limit", "1"}, contains: "notification-subscription-id project Roadmap active true"},
 		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, contains: "notification-subscription-id project Roadmap active true"},
+		{name: "release pipeline list", args: []string{"release-pipeline", "list", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
+		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
+		{name: "release stage list", args: []string{"release-stage", "list", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
+		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
 		{name: "issue list", args: []string{"issue", "list", "--limit", "1"}, contains: "LIT-1 Listed issue [Todo]"},
 		{name: "issue list state filter", args: []string{"issue", "list", "--state", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
@@ -646,6 +650,10 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "notification", "get", "notification-id"},
 		{"--json", "notification", "subscription", "list", "--limit", "1"},
 		{"--json", "notification", "subscription", "get", "notification-subscription-id"},
+		{"--json", "release-pipeline", "list", "--limit", "1"},
+		{"--json", "release-pipeline", "get", "release-pipeline-id"},
+		{"--json", "release-stage", "list", "--limit", "1"},
+		{"--json", "release-stage", "get", "release-stage-id"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1042,6 +1050,10 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, operation: "notification", contains: "get notification notification-id"},
 		{name: "notification subscription list", args: []string{"notification", "subscription", "list"}, operation: "notificationSubscriptions", contains: "list notification subscriptions"},
 		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, operation: "notificationSubscription", contains: "get notification subscription notification-subscription-id"},
+		{name: "release pipeline list", args: []string{"release-pipeline", "list"}, operation: "releasePipelines", contains: "list release pipelines"},
+		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
+		{name: "release stage list", args: []string{"release-stage", "list"}, operation: "releaseStages", contains: "list release stages"},
+		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, operation: "releaseStage", contains: "get release stage release-stage-id"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
 		{name: "next issues", args: []string{"next", "--dry-run"}, operation: "NextIssuesByTeam", contains: "list next issues"},
 		{name: "issue list target resolve", args: []string{"issue", "list"}, operation: "Teams", contains: "resolve teams"},
@@ -1463,6 +1475,14 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"notificationSubscriptions":{"nodes":[` + commandNotificationSubscriptionJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "notificationSubscription":
 		return `{"notificationSubscription":` + commandNotificationSubscriptionJSON() + `}`, true
+	case "releasePipelines":
+		return `{"releasePipelines":{"nodes":[` + commandReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "releasePipeline":
+		return `{"releasePipeline":` + commandReleasePipelineJSON() + `}`, true
+	case "releaseStages":
+		return `{"releaseStages":{"nodes":[` + commandReleaseStageJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "releaseStage":
+		return `{"releaseStage":` + commandReleaseStageJSON() + `}`, true
 	case "timeSchedules":
 		return `{"timeSchedules":{"nodes":[` + commandTimeScheduleJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "timeSchedule":
@@ -2114,6 +2134,41 @@ func commandNotificationSubscriptionJSON() string {
 		"project":{"id":"project-id","name":"Roadmap"},
 		"team":null,
 		"user":null
+	}`
+}
+
+func commandReleasePipelineJSON() string {
+	return `{
+		"id":"release-pipeline-id",
+		"name":"Production",
+		"slugId":"production",
+		"type":"scheduled",
+		"isProduction":true,
+		"autoGenerateReleaseNotesOnCompletion":true,
+		"approximateReleaseCount":4,
+		"url":"https://linear.app/kyanite/releases/production",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"trashed":null,
+		"includePathPatterns":["services/api/**"],
+		"releaseNoteTemplate":{"id":"template-id"},
+		"latestReleaseNote":{"id":"release-note-id"}
+	}`
+}
+
+func commandReleaseStageJSON() string {
+	return `{
+		"id":"release-stage-id",
+		"name":"Started",
+		"color":"#00ff00",
+		"type":"started",
+		"position":2,
+		"frozen":false,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"pipeline":{"id":"release-pipeline-id","name":"Production","slugId":"production"}
 	}`
 }
 

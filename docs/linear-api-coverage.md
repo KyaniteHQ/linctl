@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 65 | 458 |
-| Upstream Query root fields | 158 | 53 | 158 |
+| Upstream SDK root methods | 458 | 69 | 458 |
+| Upstream Query root fields | 158 | 57 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 103 | 103 | 103 |
-| Domain-map commands | 150 | 85 | 150 |
+| Local generated Go operations | 107 | 107 | 107 |
+| Domain-map commands | 163 | 89 | 163 |
 
 ## Upstream SDK Root Methods
 
@@ -357,12 +357,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releaseCompleteByAccessKey` | method | safe_candidate | read operation may fit future CLI coverage |
 | `releaseNote` | method | safe_candidate | read operation may fit future CLI coverage |
 | `releaseNotes` | method | safe_candidate | read operation may fit future CLI coverage |
-| `releasePipeline` | method | safe_candidate | read operation may fit future CLI coverage |
+| `releasePipeline` | method | implemented | local operation or command exists |
 | `releasePipelineByAccessKey` | getter | safe_candidate | read operation may fit future CLI coverage |
-| `releasePipelines` | method | safe_candidate | read operation may fit future CLI coverage |
+| `releasePipelines` | method | implemented | local operation or command exists |
 | `releaseSearch` | method | safe_candidate | read operation may fit future CLI coverage |
-| `releaseStage` | method | safe_candidate | read operation may fit future CLI coverage |
-| `releaseStages` | method | safe_candidate | read operation may fit future CLI coverage |
+| `releaseStage` | method | implemented | local operation or command exists |
+| `releaseStages` | method | implemented | local operation or command exists |
 | `releaseSync` | method | safe_candidate | read operation may fit future CLI coverage |
 | `releaseSyncByAccessKey` | method | safe_candidate | read operation may fit future CLI coverage |
 | `releaseUpdateByPipeline` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -609,12 +609,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `release` | `Release!` | safe_candidate | read operation may fit future CLI coverage |
 | `releaseNote` | `ReleaseNote!` | safe_candidate | read operation may fit future CLI coverage |
 | `releaseNotes` | `ReleaseNoteConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `releasePipeline` | `ReleasePipeline!` | safe_candidate | read operation may fit future CLI coverage |
+| `releasePipeline` | `ReleasePipeline!` | implemented | root field used by local GraphQL operation |
 | `releasePipelineByAccessKey` | `ReleasePipeline!` | safe_candidate | read operation may fit future CLI coverage |
-| `releasePipelines` | `ReleasePipelineConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `releasePipelines` | `ReleasePipelineConnection!` | implemented | root field used by local GraphQL operation |
 | `releaseSearch` | `[Release!]!` | safe_candidate | read operation may fit future CLI coverage |
-| `releaseStage` | `ReleaseStage!` | safe_candidate | read operation may fit future CLI coverage |
-| `releaseStages` | `ReleaseStageConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `releaseStage` | `ReleaseStage!` | implemented | root field used by local GraphQL operation |
+| `releaseStages` | `ReleaseStageConnection!` | implemented | root field used by local GraphQL operation |
 | `releases` | `ReleaseConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `roadmap` | `Roadmap!` | implemented | root field used by local GraphQL operation |
 | `roadmapToProject` | `RoadmapToProject!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1101,6 +1101,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
 | `project_members` | query | `project` | implemented | `internal/client/generated.go` |
 | `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
+| `releasePipeline` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
+| `releasePipelines` | query | `releasePipelines` | implemented | `internal/client/generated.go` |
+| `releaseStage` | query | `releaseStage` | implemented | `internal/client/generated.go` |
+| `releaseStages` | query | `releaseStages` | implemented | `internal/client/generated.go` |
 | `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
@@ -1137,6 +1141,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Notification | `notification subscription create` | `Mutation.notificationSubscriptionCreate` | Blocked: subscription writes can target several entity types and need explicit target-resolution semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | Notification | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Notification | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Release | `release-pipeline list` | `Query.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-pipeline get` | `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-stage list` | `Query.releaseStages` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-stage get` | `Query.releaseStage` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-pipeline unarchive` | `Mutation.releasePipelineUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-pipeline delete` | `Mutation.releasePipelineDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Release | `release-stage create` | `Mutation.releaseStageCreate` | Blocked: release workflow configuration needs explicit pipeline/team guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-stage update` | `Mutation.releaseStageUpdate` | Blocked: update must resolve the stage's pipeline and teams before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-stage archive` | `Mutation.releaseStageArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-stage unarchive` | `Mutation.releaseStageUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
