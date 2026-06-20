@@ -92,7 +92,7 @@ func ListIssueComments(
 	id string,
 	limit int,
 ) (IssueCommentList, error) {
-	comments, err := IssueComments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	comments, err := issue_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCommentList{}, fmt.Errorf("list issue comments %s: %w", id, err)
 	}
@@ -111,7 +111,7 @@ func ListIssueComments(
 	}, nil
 }
 
-func issueCommentSummary(comment IssueCommentsIssueCommentsCommentConnectionNodesComment) IssueCommentSummary {
+func issueCommentSummary(comment issue_commentsIssueCommentsCommentConnectionNodesComment) IssueCommentSummary {
 	userID := ""
 	userName := ""
 	displayName := ""

@@ -644,7 +644,7 @@ func Test_CommandFlows_cover_issue_reply_stdin_read_error(t *testing.T) {
 
 func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 	t.Run("operation error", func(t *testing.T) {
-		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "IssueComments"})
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue_comments"})
 		defer restore()
 		command := NewRootCommand(context.Background(), BuildInfo{})
 		command.SetArgs([]string{"issue", "comments", "LIT-1"})

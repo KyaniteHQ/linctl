@@ -2007,152 +2007,6 @@ func (v *IssueCommentCreateResponse) GetCommentCreate() IssueCommentCreateCommen
 	return v.CommentCreate
 }
 
-// IssueCommentsIssue includes the requested fields of the GraphQL type Issue.
-// The GraphQL type's documentation follows.
-//
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
-type IssueCommentsIssue struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// Issue's human readable identifier (e.g. ENG-123).
-	Identifier string `json:"identifier"`
-	// Comments associated with the issue.
-	Comments IssueCommentsIssueCommentsCommentConnection `json:"comments"`
-}
-
-// GetId returns IssueCommentsIssue.Id, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssue) GetId() string { return v.Id }
-
-// GetIdentifier returns IssueCommentsIssue.Identifier, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssue) GetIdentifier() string { return v.Identifier }
-
-// GetComments returns IssueCommentsIssue.Comments, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssue) GetComments() IssueCommentsIssueCommentsCommentConnection {
-	return v.Comments
-}
-
-// IssueCommentsIssueCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
-type IssueCommentsIssueCommentsCommentConnection struct {
-	Nodes    []IssueCommentsIssueCommentsCommentConnectionNodesComment `json:"nodes"`
-	PageInfo IssueCommentsIssueCommentsCommentConnectionPageInfo       `json:"pageInfo"`
-}
-
-// GetNodes returns IssueCommentsIssueCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnection) GetNodes() []IssueCommentsIssueCommentsCommentConnectionNodesComment {
-	return v.Nodes
-}
-
-// GetPageInfo returns IssueCommentsIssueCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnection) GetPageInfo() IssueCommentsIssueCommentsCommentConnectionPageInfo {
-	return v.PageInfo
-}
-
-// IssueCommentsIssueCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
-// The GraphQL type's documentation follows.
-//
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
-type IssueCommentsIssueCommentsCommentConnectionNodesComment struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The comment content in markdown format. This is a derived representation of the canonical bodyData ProseMirror content.
-	Body string `json:"body"`
-	// Comment's URL.
-	Url string `json:"url"`
-	// The time at which the entity was created.
-	CreatedAt string `json:"createdAt"`
-	// The ID of the parent comment under which the current comment is nested. Null for top-level comments.
-	ParentId *string `json:"parentId"`
-	// The user who wrote the comment. Null for comments created by integrations or bots without a user association.
-	User *IssueCommentsIssueCommentsCommentConnectionNodesCommentUser `json:"user"`
-}
-
-// GetId returns IssueCommentsIssueCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesComment) GetId() string { return v.Id }
-
-// GetBody returns IssueCommentsIssueCommentsCommentConnectionNodesComment.Body, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesComment) GetBody() string { return v.Body }
-
-// GetUrl returns IssueCommentsIssueCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesComment) GetUrl() string { return v.Url }
-
-// GetCreatedAt returns IssueCommentsIssueCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesComment) GetCreatedAt() string {
-	return v.CreatedAt
-}
-
-// GetParentId returns IssueCommentsIssueCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesComment) GetParentId() *string {
-	return v.ParentId
-}
-
-// GetUser returns IssueCommentsIssueCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesComment) GetUser() *IssueCommentsIssueCommentsCommentConnectionNodesCommentUser {
-	return v.User
-}
-
-// IssueCommentsIssueCommentsCommentConnectionNodesCommentUser includes the requested fields of the GraphQL type User.
-// The GraphQL type's documentation follows.
-//
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
-type IssueCommentsIssueCommentsCommentConnectionNodesCommentUser struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The user's full name.
-	Name string `json:"name"`
-	// The user's display (nick) name. Must be unique within the workspace.
-	DisplayName string `json:"displayName"`
-}
-
-// GetId returns IssueCommentsIssueCommentsCommentConnectionNodesCommentUser.Id, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesCommentUser) GetId() string { return v.Id }
-
-// GetName returns IssueCommentsIssueCommentsCommentConnectionNodesCommentUser.Name, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesCommentUser) GetName() string { return v.Name }
-
-// GetDisplayName returns IssueCommentsIssueCommentsCommentConnectionNodesCommentUser.DisplayName, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionNodesCommentUser) GetDisplayName() string {
-	return v.DisplayName
-}
-
-// IssueCommentsIssueCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-type IssueCommentsIssueCommentsCommentConnectionPageInfo struct {
-	// Indicates if there are more results when paginating forward.
-	HasNextPage bool `json:"hasNextPage"`
-	// Cursor representing the last result in the paginated results.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns IssueCommentsIssueCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
-	return v.HasNextPage
-}
-
-// GetEndCursor returns IssueCommentsIssueCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *IssueCommentsIssueCommentsCommentConnectionPageInfo) GetEndCursor() *string {
-	return v.EndCursor
-}
-
-// IssueCommentsResponse is returned by IssueComments on success.
-type IssueCommentsResponse struct {
-	// One specific issue, looked up by its unique identifier.
-	Issue IssueCommentsIssue `json:"issue"`
-}
-
-// GetIssue returns IssueCommentsResponse.Issue, and is useful for accessing the field via an interface.
-func (v *IssueCommentsResponse) GetIssue() IssueCommentsIssue { return v.Issue }
-
 // IssueCreateIssueCreateIssuePayload includes the requested fields of the GraphQL type IssuePayload.
 // The GraphQL type's documentation follows.
 //
@@ -8458,26 +8312,6 @@ type __IssueCommentCreateInput struct {
 // GetInput returns __IssueCommentCreateInput.Input, and is useful for accessing the field via an interface.
 func (v *__IssueCommentCreateInput) GetInput() LinearCommentCreateInput { return v.Input }
 
-// __IssueCommentsInput is used internally by genqlient
-type __IssueCommentsInput struct {
-	Id              string  `json:"id"`
-	First           *int    `json:"first"`
-	After           *string `json:"after"`
-	IncludeArchived *bool   `json:"includeArchived"`
-}
-
-// GetId returns __IssueCommentsInput.Id, and is useful for accessing the field via an interface.
-func (v *__IssueCommentsInput) GetId() string { return v.Id }
-
-// GetFirst returns __IssueCommentsInput.First, and is useful for accessing the field via an interface.
-func (v *__IssueCommentsInput) GetFirst() *int { return v.First }
-
-// GetAfter returns __IssueCommentsInput.After, and is useful for accessing the field via an interface.
-func (v *__IssueCommentsInput) GetAfter() *string { return v.After }
-
-// GetIncludeArchived returns __IssueCommentsInput.IncludeArchived, and is useful for accessing the field via an interface.
-func (v *__IssueCommentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
-
 // __IssueCreateInput is used internally by genqlient
 type __IssueCreateInput struct {
 	Input LinearIssueCreateInput `json:"input"`
@@ -9033,6 +8867,26 @@ func (v *__issueSearchInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __issueSearchInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueSearchInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issue_commentsInput is used internally by genqlient
+type __issue_commentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __issue_commentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__issue_commentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __issue_commentsInput.First, and is useful for accessing the field via an interface.
+func (v *__issue_commentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issue_commentsInput.After, and is useful for accessing the field via an interface.
+func (v *__issue_commentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issue_commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issue_commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __issuesInput is used internally by genqlient
 type __issuesInput struct {
@@ -10406,6 +10260,154 @@ type issueSearchResponse struct {
 func (v *issueSearchResponse) GetIssueSearch() issueSearchIssueSearchIssueConnection {
 	return v.IssueSearch
 }
+
+// issue_commentsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issue_commentsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Comments associated with the issue.
+	Comments issue_commentsIssueCommentsCommentConnection `json:"comments"`
+}
+
+// GetId returns issue_commentsIssue.Id, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issue_commentsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetComments returns issue_commentsIssue.Comments, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssue) GetComments() issue_commentsIssueCommentsCommentConnection {
+	return v.Comments
+}
+
+// issue_commentsIssueCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
+type issue_commentsIssueCommentsCommentConnection struct {
+	Nodes    []issue_commentsIssueCommentsCommentConnectionNodesComment `json:"nodes"`
+	PageInfo issue_commentsIssueCommentsCommentConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns issue_commentsIssueCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnection) GetNodes() []issue_commentsIssueCommentsCommentConnectionNodesComment {
+	return v.Nodes
+}
+
+// GetPageInfo returns issue_commentsIssueCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnection) GetPageInfo() issue_commentsIssueCommentsCommentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issue_commentsIssueCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type issue_commentsIssueCommentsCommentConnectionNodesComment struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The comment content in markdown format. This is a derived representation of the canonical bodyData ProseMirror content.
+	Body string `json:"body"`
+	// Comment's URL.
+	Url string `json:"url"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The ID of the parent comment under which the current comment is nested. Null for top-level comments.
+	ParentId *string `json:"parentId"`
+	// The user who wrote the comment. Null for comments created by integrations or bots without a user association.
+	User *issue_commentsIssueCommentsCommentConnectionNodesCommentUser `json:"user"`
+}
+
+// GetId returns issue_commentsIssueCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesComment) GetId() string { return v.Id }
+
+// GetBody returns issue_commentsIssueCommentsCommentConnectionNodesComment.Body, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesComment) GetBody() string { return v.Body }
+
+// GetUrl returns issue_commentsIssueCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesComment) GetUrl() string { return v.Url }
+
+// GetCreatedAt returns issue_commentsIssueCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesComment) GetCreatedAt() string {
+	return v.CreatedAt
+}
+
+// GetParentId returns issue_commentsIssueCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesComment) GetParentId() *string {
+	return v.ParentId
+}
+
+// GetUser returns issue_commentsIssueCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesComment) GetUser() *issue_commentsIssueCommentsCommentConnectionNodesCommentUser {
+	return v.User
+}
+
+// issue_commentsIssueCommentsCommentConnectionNodesCommentUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type issue_commentsIssueCommentsCommentConnectionNodesCommentUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's full name.
+	Name string `json:"name"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns issue_commentsIssueCommentsCommentConnectionNodesCommentUser.Id, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesCommentUser) GetId() string { return v.Id }
+
+// GetName returns issue_commentsIssueCommentsCommentConnectionNodesCommentUser.Name, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesCommentUser) GetName() string {
+	return v.Name
+}
+
+// GetDisplayName returns issue_commentsIssueCommentsCommentConnectionNodesCommentUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionNodesCommentUser) GetDisplayName() string {
+	return v.DisplayName
+}
+
+// issue_commentsIssueCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issue_commentsIssueCommentsCommentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issue_commentsIssueCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issue_commentsIssueCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issue_commentsIssueCommentsCommentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issue_commentsResponse is returned by issue_comments on success.
+type issue_commentsResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issue_commentsIssue `json:"issue"`
+}
+
+// GetIssue returns issue_commentsResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issue_commentsResponse) GetIssue() issue_commentsIssue { return v.Issue }
 
 // issuesIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
 type issuesIssuesIssueConnection struct {
@@ -12842,65 +12844,6 @@ func IssueCommentCreate(
 	return data_, err_
 }
 
-// The query executed by IssueComments.
-const IssueComments_Operation = `
-query IssueComments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
-	issue(id: $id) {
-		id
-		identifier
-		comments(first: $first, after: $after, includeArchived: $includeArchived) {
-			nodes {
-				id
-				body
-				url
-				createdAt
-				parentId
-				user {
-					id
-					name
-					displayName
-				}
-			}
-			pageInfo {
-				hasNextPage
-				endCursor
-			}
-		}
-	}
-}
-`
-
-func IssueComments(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-	first *int,
-	after *string,
-	includeArchived *bool,
-) (data_ *IssueCommentsResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "IssueComments",
-		Query:  IssueComments_Operation,
-		Variables: &__IssueCommentsInput{
-			Id:              id,
-			First:           first,
-			After:           after,
-			IncludeArchived: includeArchived,
-		},
-	}
-
-	data_ = &IssueCommentsResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The mutation executed by IssueCreate.
 const IssueCreate_Operation = `
 mutation IssueCreate ($input: IssueCreateInput!) {
@@ -15246,6 +15189,65 @@ func issueSearch(
 	}
 
 	data_ = &issueSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issue_comments.
+const issue_comments_Operation = `
+query issue_comments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issue(id: $id) {
+		id
+		identifier
+		comments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				id
+				body
+				url
+				createdAt
+				parentId
+				user {
+					id
+					name
+					displayName
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+`
+
+func issue_comments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issue_commentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue_comments",
+		Query:  issue_comments_Operation,
+		Variables: &__issue_commentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issue_commentsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

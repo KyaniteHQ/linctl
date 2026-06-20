@@ -319,7 +319,7 @@ query issue($id: String!) {
   }
 }
 
-query IssueComments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+query issue_comments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
     id
     identifier

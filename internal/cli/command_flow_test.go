@@ -1360,7 +1360,7 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"issue":` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `}`, true
 	case "IssueDependencies":
 		return commandFlowIssueDependenciesPayload(), true
-	case "IssueComments":
+	case "issue_comments":
 		if fake.emptyIssueComments {
 			return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
