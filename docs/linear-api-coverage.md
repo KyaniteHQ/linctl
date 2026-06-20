@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 89 | 458 |
-| Upstream Query root fields | 158 | 77 | 158 |
+| Upstream SDK root methods | 458 | 91 | 458 |
+| Upstream Query root fields | 158 | 79 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 139 | 139 | 139 |
-| Domain-map commands | 227 | 119 | 227 |
+| Local generated Go operations | 142 | 142 | 142 |
+| Domain-map commands | 233 | 122 | 233 |
 
 ## Upstream SDK Root Methods
 
@@ -395,8 +395,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `timeScheduleUpsertExternal` | method | safe_candidate | read operation may fit future CLI coverage |
 | `timeSchedules` | method | implemented | local operation or command exists |
 | `trackAnonymousEvent` | method | safe_candidate | read operation may fit future CLI coverage |
-| `triageResponsibilities` | method | safe_candidate | read operation may fit future CLI coverage |
-| `triageResponsibility` | method | safe_candidate | read operation may fit future CLI coverage |
+| `triageResponsibilities` | method | implemented | local operation or command exists |
+| `triageResponsibility` | method | implemented | local operation or command exists |
 | `unarchiveCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `unarchiveDocument` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `unarchiveInitiative` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -635,8 +635,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `templatesForIntegration` | `[Template!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeSchedule` | `TimeSchedule!` | implemented | root field used by local GraphQL operation |
 | `timeSchedules` | `TimeScheduleConnection!` | implemented | root field used by local GraphQL operation |
-| `triageResponsibilities` | `TriageResponsibilityConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `triageResponsibility` | `TriageResponsibility!` | safe_candidate | read operation may fit future CLI coverage |
+| `triageResponsibilities` | `TriageResponsibilityConnection!` | implemented | root field used by local GraphQL operation |
+| `triageResponsibility` | `TriageResponsibility!` | implemented | root field used by local GraphQL operation |
 | `user` | `User!` | implemented | root field used by local GraphQL operation |
 | `userSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `userSettings` | `UserSettings!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1141,6 +1141,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `templates` | query | `templates` | implemented | `internal/client/generated.go` |
 | `timeSchedule` | query | `timeSchedule` | implemented | `internal/client/generated.go` |
 | `timeSchedules` | query | `timeSchedules` | implemented | `internal/client/generated.go` |
+| `triageResponsibilities` | query | `triageResponsibilities` | implemented | `internal/client/generated.go` |
+| `triageResponsibility` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
+| `triageResponsibility_manualSelection` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
 | `users` | query | `users` | implemented | `internal/client/generated.go` |
 | `viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
@@ -1299,6 +1302,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | TimeSchedule | `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | TimeSchedule | `time-schedule delete` | `Mutation.timeScheduleDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | write command needs explicit target and safety semantics |
+| TriageResponsibility | `triage-responsibility list` | `Query.triageResponsibilities` | Read-only | implemented | `linctl --help` / public CLI tests |
+| TriageResponsibility | `triage-responsibility get` | `Query.triageResponsibility` | Read-only | implemented | `linctl --help` / public CLI tests |
+| TriageResponsibility | `triage-responsibility manual-selection` | `TriageResponsibility.manualSelection` via `Query.triageResponsibility` | Read-only | implemented | `linctl --help` / public CLI tests |
+| TriageResponsibility | `triage-responsibility create` | `Mutation.triageResponsibilityCreate` | Blocked: team triage configuration needs an explicit admin safety model | accepted_gap | planned in `docs/domain-map.md` |
+| TriageResponsibility | `triage-responsibility update` | `Mutation.triageResponsibilityUpdate` | Blocked: update must resolve and compare the owning team before mutation | accepted_gap | planned in `docs/domain-map.md` |
+| TriageResponsibility | `triage-responsibility delete` | `Mutation.triageResponsibilityDelete` | Blocked: destructive team triage configuration command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |

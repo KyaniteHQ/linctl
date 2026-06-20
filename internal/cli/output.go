@@ -197,6 +197,7 @@ func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bo
 		"relations",
 		"roadmaps",
 		"time_schedules",
+		"triage_responsibilities",
 		"templates",
 		"agent_activities",
 		"agent_skills",

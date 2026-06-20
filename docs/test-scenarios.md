@@ -685,9 +685,27 @@ Success is pass/fail:
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+126. TriageResponsibility list
+   - Success: `linctl triage-responsibility list --limit N` lists visible Linear TriageResponsibility records.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/triage_responsibility_list`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+127. TriageResponsibility get
+   - Success: `linctl triage-responsibility get TRIAGE_RESPONSIBILITY_ID` reads one Linear TriageResponsibility by id.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/triage_responsibility_get`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+128. TriageResponsibility manual selection
+   - Success: `linctl triage-responsibility manual-selection TRIAGE_RESPONSIBILITY_ID` reads the manual user selection for one Linear TriageResponsibility.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/triage_responsibility_manual_selection`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
-All one hundred twenty-five local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All one hundred twenty-eight local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

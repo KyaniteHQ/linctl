@@ -14340,6 +14340,165 @@ func (v *TopLevelProjectUpdateSummaryFieldsUser) GetName() string { return v.Nam
 // GetDisplayName returns TopLevelProjectUpdateSummaryFieldsUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *TopLevelProjectUpdateSummaryFieldsUser) GetDisplayName() string { return v.DisplayName }
 
+// Which action should be taken after an issue is added to triage.
+type TriageResponsibilityAction string
+
+const (
+	TriageResponsibilityActionAssign TriageResponsibilityAction = "assign"
+	TriageResponsibilityActionNotify TriageResponsibilityAction = "notify"
+)
+
+var AllTriageResponsibilityAction = []TriageResponsibilityAction{
+	TriageResponsibilityActionAssign,
+	TriageResponsibilityActionNotify,
+}
+
+// TriageResponsibilitySummaryFields includes the GraphQL fields of TriageResponsibility requested by the fragment TriageResponsibilitySummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A team's triage responsibility configuration that defines how issues entering
+// triage are handled. Each team can have one triage responsibility, which
+// specifies the action to take (notify or assign) and the responsible users,
+// determined either by a manual selection of specific users or by an on-call time schedule.
+type TriageResponsibilitySummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The action to take when an issue is added to triage.
+	Action TriageResponsibilityAction `json:"action"`
+	// The team to which the triage responsibility belongs to.
+	Team TriageResponsibilitySummaryFieldsTeam `json:"team"`
+	// The time schedule used for scheduling.
+	TimeSchedule *TriageResponsibilitySummaryFieldsTimeSchedule `json:"timeSchedule"`
+	// The user currently responsible for triage.
+	CurrentUser *TriageResponsibilitySummaryFieldsCurrentUser `json:"currentUser"`
+	// Set of users used for triage responsibility.
+	ManualSelection *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection `json:"manualSelection"`
+}
+
+// GetId returns TriageResponsibilitySummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns TriageResponsibilitySummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns TriageResponsibilitySummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns TriageResponsibilitySummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetAction returns TriageResponsibilitySummaryFields.Action, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetAction() TriageResponsibilityAction { return v.Action }
+
+// GetTeam returns TriageResponsibilitySummaryFields.Team, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetTeam() TriageResponsibilitySummaryFieldsTeam {
+	return v.Team
+}
+
+// GetTimeSchedule returns TriageResponsibilitySummaryFields.TimeSchedule, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetTimeSchedule() *TriageResponsibilitySummaryFieldsTimeSchedule {
+	return v.TimeSchedule
+}
+
+// GetCurrentUser returns TriageResponsibilitySummaryFields.CurrentUser, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetCurrentUser() *TriageResponsibilitySummaryFieldsCurrentUser {
+	return v.CurrentUser
+}
+
+// GetManualSelection returns TriageResponsibilitySummaryFields.ManualSelection, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFields) GetManualSelection() *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection {
+	return v.ManualSelection
+}
+
+// TriageResponsibilitySummaryFieldsCurrentUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type TriageResponsibilitySummaryFieldsCurrentUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns TriageResponsibilitySummaryFieldsCurrentUser.Id, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsCurrentUser) GetId() string { return v.Id }
+
+// GetDisplayName returns TriageResponsibilitySummaryFieldsCurrentUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsCurrentUser) GetDisplayName() string { return v.DisplayName }
+
+// TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection includes the requested fields of the GraphQL type TriageResponsibilityManualSelection.
+// The GraphQL type's documentation follows.
+//
+// Manual triage responsibility configuration specifying a set of users to assign
+// triaged issues to, with optional round-robin rotation.
+type TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection struct {
+	// The set of users responsible for triage.
+	UserIds []string `json:"userIds"`
+}
+
+// GetUserIds returns TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection.UserIds, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection) GetUserIds() []string {
+	return v.UserIds
+}
+
+// TriageResponsibilitySummaryFieldsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TriageResponsibilitySummaryFieldsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns TriageResponsibilitySummaryFieldsTeam.Id, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsTeam) GetId() string { return v.Id }
+
+// GetKey returns TriageResponsibilitySummaryFieldsTeam.Key, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsTeam) GetKey() string { return v.Key }
+
+// GetName returns TriageResponsibilitySummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsTeam) GetName() string { return v.Name }
+
+// TriageResponsibilitySummaryFieldsTimeSchedule includes the requested fields of the GraphQL type TimeSchedule.
+// The GraphQL type's documentation follows.
+//
+// A time-based schedule defining on-call rotations or availability windows.
+// Schedules contain a series of time entries, each specifying a user and their
+// active period. They can be synced from external services (such as PagerDuty or
+// Opsgenie) via integrations, or created manually. Schedules are used by triage
+// responsibilities to determine who should be assigned or notified when issues enter triage.
+type TriageResponsibilitySummaryFieldsTimeSchedule struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the schedule.
+	Name string `json:"name"`
+}
+
+// GetId returns TriageResponsibilitySummaryFieldsTimeSchedule.Id, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsTimeSchedule) GetId() string { return v.Id }
+
+// GetName returns TriageResponsibilitySummaryFieldsTimeSchedule.Name, and is useful for accessing the field via an interface.
+func (v *TriageResponsibilitySummaryFieldsTimeSchedule) GetName() string { return v.Name }
+
 type UserContextViewType string
 
 const (
@@ -16157,6 +16316,38 @@ func (v *__timeSchedulesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __timeSchedulesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__timeSchedulesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __triageResponsibilitiesInput is used internally by genqlient
+type __triageResponsibilitiesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __triageResponsibilitiesInput.First, and is useful for accessing the field via an interface.
+func (v *__triageResponsibilitiesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __triageResponsibilitiesInput.After, and is useful for accessing the field via an interface.
+func (v *__triageResponsibilitiesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __triageResponsibilitiesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__triageResponsibilitiesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __triageResponsibilityInput is used internally by genqlient
+type __triageResponsibilityInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __triageResponsibilityInput.Id, and is useful for accessing the field via an interface.
+func (v *__triageResponsibilityInput) GetId() string { return v.Id }
+
+// __triageResponsibility_manualSelectionInput is used internally by genqlient
+type __triageResponsibility_manualSelectionInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __triageResponsibility_manualSelectionInput.Id, and is useful for accessing the field via an interface.
+func (v *__triageResponsibility_manualSelectionInput) GetId() string { return v.Id }
 
 // __userInput is used internally by genqlient
 type __userInput struct {
@@ -37215,6 +37406,358 @@ func (v *timeSchedulesTimeSchedulesTimeScheduleConnectionPageInfo) GetEndCursor(
 	return v.EndCursor
 }
 
+// triageResponsibilitiesResponse is returned by triageResponsibilities on success.
+type triageResponsibilitiesResponse struct {
+	// All triage responsibilities.
+	TriageResponsibilities triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection `json:"triageResponsibilities"`
+}
+
+// GetTriageResponsibilities returns triageResponsibilitiesResponse.TriageResponsibilities, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesResponse) GetTriageResponsibilities() triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection {
+	return v.TriageResponsibilities
+}
+
+// triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection includes the requested fields of the GraphQL type TriageResponsibilityConnection.
+type triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection struct {
+	Nodes    []triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility `json:"nodes"`
+	PageInfo triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo                    `json:"pageInfo"`
+}
+
+// GetNodes returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection) GetNodes() []triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility {
+	return v.Nodes
+}
+
+// GetPageInfo returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnection) GetPageInfo() triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo {
+	return v.PageInfo
+}
+
+// triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility includes the requested fields of the GraphQL type TriageResponsibility.
+// The GraphQL type's documentation follows.
+//
+// A team's triage responsibility configuration that defines how issues entering
+// triage are handled. Each team can have one triage responsibility, which
+// specifies the action to take (notify or assign) and the responsible users,
+// determined either by a manual selection of specific users or by an on-call time schedule.
+type triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility struct {
+	TriageResponsibilitySummaryFields `json:"-"`
+}
+
+// GetId returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.Id, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetId() string {
+	return v.TriageResponsibilitySummaryFields.Id
+}
+
+// GetCreatedAt returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.CreatedAt, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetCreatedAt() string {
+	return v.TriageResponsibilitySummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetUpdatedAt() string {
+	return v.TriageResponsibilitySummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetArchivedAt() *string {
+	return v.TriageResponsibilitySummaryFields.ArchivedAt
+}
+
+// GetAction returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.Action, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetAction() TriageResponsibilityAction {
+	return v.TriageResponsibilitySummaryFields.Action
+}
+
+// GetTeam returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.Team, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetTeam() TriageResponsibilitySummaryFieldsTeam {
+	return v.TriageResponsibilitySummaryFields.Team
+}
+
+// GetTimeSchedule returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.TimeSchedule, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetTimeSchedule() *TriageResponsibilitySummaryFieldsTimeSchedule {
+	return v.TriageResponsibilitySummaryFields.TimeSchedule
+}
+
+// GetCurrentUser returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.CurrentUser, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetCurrentUser() *TriageResponsibilitySummaryFieldsCurrentUser {
+	return v.TriageResponsibilitySummaryFields.CurrentUser
+}
+
+// GetManualSelection returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility.ManualSelection, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) GetManualSelection() *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection {
+	return v.TriageResponsibilitySummaryFields.ManualSelection
+}
+
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TriageResponsibilitySummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaltriageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Action TriageResponsibilityAction `json:"action"`
+
+	Team TriageResponsibilitySummaryFieldsTeam `json:"team"`
+
+	TimeSchedule *TriageResponsibilitySummaryFieldsTimeSchedule `json:"timeSchedule"`
+
+	CurrentUser *TriageResponsibilitySummaryFieldsCurrentUser `json:"currentUser"`
+
+	ManualSelection *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection `json:"manualSelection"`
+}
+
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility) __premarshalJSON() (*__premarshaltriageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility, error) {
+	var retval __premarshaltriageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility
+
+	retval.Id = v.TriageResponsibilitySummaryFields.Id
+	retval.CreatedAt = v.TriageResponsibilitySummaryFields.CreatedAt
+	retval.UpdatedAt = v.TriageResponsibilitySummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TriageResponsibilitySummaryFields.ArchivedAt
+	retval.Action = v.TriageResponsibilitySummaryFields.Action
+	retval.Team = v.TriageResponsibilitySummaryFields.Team
+	retval.TimeSchedule = v.TriageResponsibilitySummaryFields.TimeSchedule
+	retval.CurrentUser = v.TriageResponsibilitySummaryFields.CurrentUser
+	retval.ManualSelection = v.TriageResponsibilitySummaryFields.ManualSelection
+	return &retval, nil
+}
+
+// triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// triageResponsibilityResponse is returned by triageResponsibility on success.
+type triageResponsibilityResponse struct {
+	// A specific triage responsibility.
+	TriageResponsibility triageResponsibilityTriageResponsibility `json:"triageResponsibility"`
+}
+
+// GetTriageResponsibility returns triageResponsibilityResponse.TriageResponsibility, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityResponse) GetTriageResponsibility() triageResponsibilityTriageResponsibility {
+	return v.TriageResponsibility
+}
+
+// triageResponsibilityTriageResponsibility includes the requested fields of the GraphQL type TriageResponsibility.
+// The GraphQL type's documentation follows.
+//
+// A team's triage responsibility configuration that defines how issues entering
+// triage are handled. Each team can have one triage responsibility, which
+// specifies the action to take (notify or assign) and the responsible users,
+// determined either by a manual selection of specific users or by an on-call time schedule.
+type triageResponsibilityTriageResponsibility struct {
+	TriageResponsibilitySummaryFields `json:"-"`
+}
+
+// GetId returns triageResponsibilityTriageResponsibility.Id, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetId() string {
+	return v.TriageResponsibilitySummaryFields.Id
+}
+
+// GetCreatedAt returns triageResponsibilityTriageResponsibility.CreatedAt, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetCreatedAt() string {
+	return v.TriageResponsibilitySummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns triageResponsibilityTriageResponsibility.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetUpdatedAt() string {
+	return v.TriageResponsibilitySummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns triageResponsibilityTriageResponsibility.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetArchivedAt() *string {
+	return v.TriageResponsibilitySummaryFields.ArchivedAt
+}
+
+// GetAction returns triageResponsibilityTriageResponsibility.Action, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetAction() TriageResponsibilityAction {
+	return v.TriageResponsibilitySummaryFields.Action
+}
+
+// GetTeam returns triageResponsibilityTriageResponsibility.Team, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetTeam() TriageResponsibilitySummaryFieldsTeam {
+	return v.TriageResponsibilitySummaryFields.Team
+}
+
+// GetTimeSchedule returns triageResponsibilityTriageResponsibility.TimeSchedule, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetTimeSchedule() *TriageResponsibilitySummaryFieldsTimeSchedule {
+	return v.TriageResponsibilitySummaryFields.TimeSchedule
+}
+
+// GetCurrentUser returns triageResponsibilityTriageResponsibility.CurrentUser, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetCurrentUser() *TriageResponsibilitySummaryFieldsCurrentUser {
+	return v.TriageResponsibilitySummaryFields.CurrentUser
+}
+
+// GetManualSelection returns triageResponsibilityTriageResponsibility.ManualSelection, and is useful for accessing the field via an interface.
+func (v *triageResponsibilityTriageResponsibility) GetManualSelection() *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection {
+	return v.TriageResponsibilitySummaryFields.ManualSelection
+}
+
+func (v *triageResponsibilityTriageResponsibility) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*triageResponsibilityTriageResponsibility
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.triageResponsibilityTriageResponsibility = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TriageResponsibilitySummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaltriageResponsibilityTriageResponsibility struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Action TriageResponsibilityAction `json:"action"`
+
+	Team TriageResponsibilitySummaryFieldsTeam `json:"team"`
+
+	TimeSchedule *TriageResponsibilitySummaryFieldsTimeSchedule `json:"timeSchedule"`
+
+	CurrentUser *TriageResponsibilitySummaryFieldsCurrentUser `json:"currentUser"`
+
+	ManualSelection *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection `json:"manualSelection"`
+}
+
+func (v *triageResponsibilityTriageResponsibility) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *triageResponsibilityTriageResponsibility) __premarshalJSON() (*__premarshaltriageResponsibilityTriageResponsibility, error) {
+	var retval __premarshaltriageResponsibilityTriageResponsibility
+
+	retval.Id = v.TriageResponsibilitySummaryFields.Id
+	retval.CreatedAt = v.TriageResponsibilitySummaryFields.CreatedAt
+	retval.UpdatedAt = v.TriageResponsibilitySummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TriageResponsibilitySummaryFields.ArchivedAt
+	retval.Action = v.TriageResponsibilitySummaryFields.Action
+	retval.Team = v.TriageResponsibilitySummaryFields.Team
+	retval.TimeSchedule = v.TriageResponsibilitySummaryFields.TimeSchedule
+	retval.CurrentUser = v.TriageResponsibilitySummaryFields.CurrentUser
+	retval.ManualSelection = v.TriageResponsibilitySummaryFields.ManualSelection
+	return &retval, nil
+}
+
+// triageResponsibility_manualSelectionResponse is returned by triageResponsibility_manualSelection on success.
+type triageResponsibility_manualSelectionResponse struct {
+	// A specific triage responsibility.
+	TriageResponsibility triageResponsibility_manualSelectionTriageResponsibility `json:"triageResponsibility"`
+}
+
+// GetTriageResponsibility returns triageResponsibility_manualSelectionResponse.TriageResponsibility, and is useful for accessing the field via an interface.
+func (v *triageResponsibility_manualSelectionResponse) GetTriageResponsibility() triageResponsibility_manualSelectionTriageResponsibility {
+	return v.TriageResponsibility
+}
+
+// triageResponsibility_manualSelectionTriageResponsibility includes the requested fields of the GraphQL type TriageResponsibility.
+// The GraphQL type's documentation follows.
+//
+// A team's triage responsibility configuration that defines how issues entering
+// triage are handled. Each team can have one triage responsibility, which
+// specifies the action to take (notify or assign) and the responsible users,
+// determined either by a manual selection of specific users or by an on-call time schedule.
+type triageResponsibility_manualSelectionTriageResponsibility struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Set of users used for triage responsibility.
+	ManualSelection *triageResponsibility_manualSelectionTriageResponsibilityManualSelection `json:"manualSelection"`
+}
+
+// GetId returns triageResponsibility_manualSelectionTriageResponsibility.Id, and is useful for accessing the field via an interface.
+func (v *triageResponsibility_manualSelectionTriageResponsibility) GetId() string { return v.Id }
+
+// GetManualSelection returns triageResponsibility_manualSelectionTriageResponsibility.ManualSelection, and is useful for accessing the field via an interface.
+func (v *triageResponsibility_manualSelectionTriageResponsibility) GetManualSelection() *triageResponsibility_manualSelectionTriageResponsibilityManualSelection {
+	return v.ManualSelection
+}
+
+// triageResponsibility_manualSelectionTriageResponsibilityManualSelection includes the requested fields of the GraphQL type TriageResponsibilityManualSelection.
+// The GraphQL type's documentation follows.
+//
+// Manual triage responsibility configuration specifying a set of users to assign
+// triaged issues to, with optional round-robin rotation.
+type triageResponsibility_manualSelectionTriageResponsibilityManualSelection struct {
+	// The set of users responsible for triage.
+	UserIds []string `json:"userIds"`
+}
+
+// GetUserIds returns triageResponsibility_manualSelectionTriageResponsibilityManualSelection.UserIds, and is useful for accessing the field via an interface.
+func (v *triageResponsibility_manualSelectionTriageResponsibilityManualSelection) GetUserIds() []string {
+	return v.UserIds
+}
+
 // userResponse is returned by user on success.
 type userResponse struct {
 	// Fetches a specific user by their ID.
@@ -45170,6 +45713,167 @@ func timeSchedules(
 	}
 
 	data_ = &timeSchedulesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by triageResponsibilities.
+const triageResponsibilities_Operation = `
+query triageResponsibilities ($first: Int, $after: String, $includeArchived: Boolean) {
+	triageResponsibilities(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... TriageResponsibilitySummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment TriageResponsibilitySummaryFields on TriageResponsibility {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	action
+	team {
+		id
+		key
+		name
+	}
+	timeSchedule {
+		id
+		name
+	}
+	currentUser {
+		id
+		displayName
+	}
+	manualSelection {
+		userIds
+	}
+}
+`
+
+func triageResponsibilities(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *triageResponsibilitiesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "triageResponsibilities",
+		Query:  triageResponsibilities_Operation,
+		Variables: &__triageResponsibilitiesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &triageResponsibilitiesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by triageResponsibility.
+const triageResponsibility_Operation = `
+query triageResponsibility ($id: String!) {
+	triageResponsibility(id: $id) {
+		... TriageResponsibilitySummaryFields
+	}
+}
+fragment TriageResponsibilitySummaryFields on TriageResponsibility {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	action
+	team {
+		id
+		key
+		name
+	}
+	timeSchedule {
+		id
+		name
+	}
+	currentUser {
+		id
+		displayName
+	}
+	manualSelection {
+		userIds
+	}
+}
+`
+
+func triageResponsibility(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *triageResponsibilityResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "triageResponsibility",
+		Query:  triageResponsibility_Operation,
+		Variables: &__triageResponsibilityInput{
+			Id: id,
+		},
+	}
+
+	data_ = &triageResponsibilityResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by triageResponsibility_manualSelection.
+const triageResponsibility_manualSelection_Operation = `
+query triageResponsibility_manualSelection ($id: String!) {
+	triageResponsibility(id: $id) {
+		id
+		manualSelection {
+			userIds
+		}
+	}
+}
+`
+
+func triageResponsibility_manualSelection(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *triageResponsibility_manualSelectionResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "triageResponsibility_manualSelection",
+		Query:  triageResponsibility_manualSelection_Operation,
+		Variables: &__triageResponsibility_manualSelectionInput{
+			Id: id,
+		},
+	}
+
+	data_ = &triageResponsibility_manualSelectionResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

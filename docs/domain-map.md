@@ -460,6 +460,31 @@ Command status:
 
 Only `time-schedule list` and `time-schedule get` are implemented in the current CLI. TimeSchedule writes and external upserts are deferred as triage/admin configuration surface.
 
+## TriageResponsibility
+
+Use the schema name `TriageResponsibility` in code and docs. It is Linear's team triage assignment or notification responsibility configuration.
+
+Schema backing:
+
+- Types: `TriageResponsibility`, `TriageResponsibilityConnection`, `TriageResponsibilityManualSelection`
+- Reads: `Query.triageResponsibilities`, `Query.triageResponsibility`, `TriageResponsibility.manualSelection`
+- Writes: `Mutation.triageResponsibilityCreate`, `Mutation.triageResponsibilityUpdate`, `Mutation.triageResponsibilityDelete`
+- Inputs: `TriageResponsibilityCreateInput`, `TriageResponsibilityUpdateInput`
+- Relevant fields: `TriageResponsibility.id`, `TriageResponsibility.action`, `TriageResponsibility.team`, `TriageResponsibility.timeSchedule`, `TriageResponsibility.currentUser`, `TriageResponsibility.manualSelection`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `triage-responsibility list` | `Query.triageResponsibilities` | Read-only |
+| `triage-responsibility get` | `Query.triageResponsibility` | Read-only |
+| `triage-responsibility manual-selection` | `TriageResponsibility.manualSelection` via `Query.triageResponsibility` | Read-only |
+| `triage-responsibility create` | `Mutation.triageResponsibilityCreate` | Blocked: team triage configuration needs an explicit admin safety model |
+| `triage-responsibility update` | `Mutation.triageResponsibilityUpdate` | Blocked: update must resolve and compare the owning team before mutation |
+| `triage-responsibility delete` | `Mutation.triageResponsibilityDelete` | Blocked: destructive team triage configuration command needs explicit safety semantics |
+
+Only `triage-responsibility list`, `triage-responsibility get`, and `triage-responsibility manual-selection` are implemented in the current CLI. TriageResponsibility writes are deferred as team/admin configuration surface.
+
 ## Template
 
 Use the schema name `Template` in code and docs. It is Linear's reusable issue, project, document, and release-note template entity.

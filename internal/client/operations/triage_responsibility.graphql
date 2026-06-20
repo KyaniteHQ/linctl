@@ -1,0 +1,50 @@
+query triageResponsibilities($first: Int, $after: String, $includeArchived: Boolean) {
+  triageResponsibilities(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...TriageResponsibilitySummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query triageResponsibility($id: String!) {
+  triageResponsibility(id: $id) {
+    ...TriageResponsibilitySummaryFields
+  }
+}
+
+query triageResponsibility_manualSelection($id: String!) {
+  triageResponsibility(id: $id) {
+    id
+    manualSelection {
+      userIds
+    }
+  }
+}
+
+fragment TriageResponsibilitySummaryFields on TriageResponsibility {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  action
+  team {
+    id
+    key
+    name
+  }
+  timeSchedule {
+    id
+    name
+  }
+  currentUser {
+    id
+    displayName
+  }
+  manualSelection {
+    userIds
+  }
+}

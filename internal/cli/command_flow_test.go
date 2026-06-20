@@ -44,6 +44,9 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, contains: "notification-id issueMention [mentions] Mentioned you"},
 		{name: "notification subscription list", args: []string{"notification", "subscription", "list", "--limit", "1"}, contains: "notification-subscription-id project Roadmap active true"},
 		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, contains: "notification-subscription-id project Roadmap active true"},
+		{name: "triage responsibility list", args: []string{"triage-responsibility", "list", "--limit", "1"}, contains: "triage-responsibility-id team LIT action notify current Omer"},
+		{name: "triage responsibility get", args: []string{"triage-responsibility", "get", "triage-responsibility-id"}, contains: "triage-responsibility-id team LIT action notify current Omer"},
+		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, contains: "triage-responsibility-id manual users user-id,other-user-id"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
@@ -517,6 +520,9 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"agent-skill", "list"},
 			{"agent-skill", "get", "agent-skill-id"},
 			{"audit-entry", "types"},
+			{"triage-responsibility", "list"},
+			{"triage-responsibility", "get", "triage-responsibility-id"},
+			{"triage-responsibility", "manual-selection", "triage-responsibility-id"},
 			{"organization", "exists", "kyanite"},
 			{"rate-limit", "status"},
 			{"release", "list"},
@@ -718,6 +724,9 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "notification", "get", "notification-id"},
 		{"--json", "notification", "subscription", "list", "--limit", "1"},
 		{"--json", "notification", "subscription", "get", "notification-subscription-id"},
+		{"--json", "--fields", "id,team_key,action", "triage-responsibility", "list", "--limit", "1"},
+		{"--json", "triage-responsibility", "get", "triage-responsibility-id"},
+		{"--json", "triage-responsibility", "manual-selection", "triage-responsibility-id"},
 		{"--json", "release-pipeline", "list", "--limit", "1"},
 		{"--json", "release-pipeline", "get", "release-pipeline-id"},
 		{"--json", "--fields", "id,pipeline_id,stage_id", "release-pipeline", "releases", "release-pipeline-id", "--limit", "1"},
@@ -1154,6 +1163,9 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, operation: "notification", contains: "get notification notification-id"},
 		{name: "notification subscription list", args: []string{"notification", "subscription", "list"}, operation: "notificationSubscriptions", contains: "list notification subscriptions"},
 		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, operation: "notificationSubscription", contains: "get notification subscription notification-subscription-id"},
+		{name: "triage responsibility list", args: []string{"triage-responsibility", "list"}, operation: "triageResponsibilities", contains: "list triage responsibilities"},
+		{name: "triage responsibility get", args: []string{"triage-responsibility", "get", "triage-responsibility-id"}, operation: "triageResponsibility", contains: "get triage responsibility triage-responsibility-id"},
+		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, operation: "triageResponsibility_manualSelection", contains: "get triage responsibility manual selection triage-responsibility-id"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list"}, operation: "releasePipelines", contains: "list release pipelines"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id"}, operation: "releasePipeline_releases", contains: "list release pipeline releases release-pipeline-id"},
@@ -1706,6 +1718,12 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"notificationSubscriptions":{"nodes":[` + commandNotificationSubscriptionJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "notificationSubscription":
 		return `{"notificationSubscription":` + commandNotificationSubscriptionJSON() + `}`, true
+	case "triageResponsibilities":
+		return `{"triageResponsibilities":{"nodes":[` + commandTriageResponsibilityJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "triageResponsibility":
+		return `{"triageResponsibility":` + commandTriageResponsibilityJSON() + `}`, true
+	case "triageResponsibility_manualSelection":
+		return `{"triageResponsibility":{"id":"triage-responsibility-id","manualSelection":{"userIds":["user-id","other-user-id"]}}}`, true
 	case "releasePipelines":
 		return `{"releasePipelines":{"nodes":[` + commandReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releasePipeline":
@@ -2476,6 +2494,20 @@ func commandNotificationSubscriptionJSON() string {
 		"project":{"id":"project-id","name":"Roadmap"},
 		"team":null,
 		"user":null
+	}`
+}
+
+func commandTriageResponsibilityJSON() string {
+	return `{
+		"id":"triage-responsibility-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"action":"notify",
+		"team":{"id":"team-id","key":"LIT","name":"linctl"},
+		"timeSchedule":{"id":"time-schedule-id","name":"Primary rotation"},
+		"currentUser":{"id":"user-id","displayName":"Omer"},
+		"manualSelection":{"userIds":["user-id","other-user-id"]}
 	}`
 }
 

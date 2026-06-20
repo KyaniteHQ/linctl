@@ -104,6 +104,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addUserCommand(ctx, command, options)
 	addWorkflowStateCommand(ctx, command, options)
 	addTimeScheduleCommand(ctx, command, options)
+	addTriageResponsibilityCommand(ctx, command, options)
 	addTemplateCommand(ctx, command, options)
 	addInitiativeCommand(ctx, command, options)
 	addInitiativeRelationCommand(ctx, command, options)

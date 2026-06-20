@@ -235,6 +235,16 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		TargetType: "project",
 		TargetName: "Roadmap",
 	}
+	triageResponsibility := client.TriageResponsibilitySummary{
+		ID:              "triage-responsibility-id",
+		Action:          "notify",
+		TeamKey:         "LIT",
+		CurrentUserName: "Omer",
+	}
+	triageManualSelection := client.TriageResponsibilityManualSelection{
+		ID:      "triage-responsibility-id",
+		UserIDs: []string{"user-id", "other-user-id"},
+	}
 	releasePipeline := client.ReleasePipelineSummary{
 		ID:                      "release-pipeline-id",
 		Name:                    "Production",
@@ -315,6 +325,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeAttachment(textCommand, &textOptions, attachment))
 	require.NoError(t, writeNotification(textCommand, &textOptions, notification))
 	require.NoError(t, writeNotificationSubscription(textCommand, &textOptions, notificationSubscription))
+	require.NoError(t, writeTriageResponsibility(textCommand, &textOptions, triageResponsibility))
+	require.NoError(t, writeTriageResponsibilityManualSelection(textCommand, &textOptions, triageManualSelection))
 	require.NoError(t, writeReleasePipeline(textCommand, &textOptions, releasePipeline))
 	require.NoError(t, writeReleaseStage(textCommand, &textOptions, releaseStage))
 	require.NoError(t, writeRelease(textCommand, &textOptions, release))
@@ -351,6 +363,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"attachment-id Linked PR [github]\n"+
 			"notification-id issueMention [mentions] Mentioned you\n"+
 			"notification-subscription-id project Roadmap active true\n"+
+			"triage-responsibility-id team LIT action notify current Omer\n"+
+			"triage-responsibility-id manual users user-id,other-user-id\n"+
 			"release-pipeline-id Production production releases 4\n"+
 			"release-stage-id Started [started] pipeline Production\n"+
 			"release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3\n"+
@@ -401,6 +415,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeAttachment(jsonCommand, &jsonOptions, attachment))
 	require.NoError(t, writeNotification(jsonCommand, &jsonOptions, notification))
 	require.NoError(t, writeNotificationSubscription(jsonCommand, &jsonOptions, notificationSubscription))
+	require.NoError(t, writeTriageResponsibility(jsonCommand, &jsonOptions, triageResponsibility))
+	require.NoError(t, writeTriageResponsibilityManualSelection(jsonCommand, &jsonOptions, triageManualSelection))
 	require.NoError(t, writeReleasePipeline(jsonCommand, &jsonOptions, releasePipeline))
 	require.NoError(t, writeReleaseStage(jsonCommand, &jsonOptions, releaseStage))
 	require.NoError(t, writeRelease(jsonCommand, &jsonOptions, release))
@@ -442,6 +458,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"source_type": "github"`)
 	require.Contains(t, jsonOut.String(), `"category": "mentions"`)
 	require.Contains(t, jsonOut.String(), `"target_type": "project"`)
+	require.Contains(t, jsonOut.String(), `"team_key": "LIT"`)
+	require.Contains(t, jsonOut.String(), `"user_ids": [`)
 	require.Contains(t, jsonOut.String(), `"slug_id": "production"`)
 	require.Contains(t, jsonOut.String(), `"pipeline_name": "Production"`)
 	require.Contains(t, jsonOut.String(), `"version": "v1.2.3"`)
@@ -666,6 +684,16 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		TargetType: "project",
 		TargetName: "Roadmap",
 	}
+	triageResponsibility := client.TriageResponsibilitySummary{
+		ID:              "triage-responsibility-id",
+		Action:          "notify",
+		TeamKey:         "LIT",
+		CurrentUserName: "Omer",
+	}
+	triageManualSelection := client.TriageResponsibilityManualSelection{
+		ID:      "triage-responsibility-id",
+		UserIDs: []string{"user-id", "other-user-id"},
+	}
 	releasePipeline := client.ReleasePipelineSummary{
 		ID:                      "release-pipeline-id",
 		Name:                    "Production",
@@ -746,6 +774,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeAttachment(command, &rootOptions{idOnly: true}, attachment))
 	require.NoError(t, writeNotification(command, &rootOptions{idOnly: true}, notification))
 	require.NoError(t, writeNotificationSubscription(command, &rootOptions{idOnly: true}, notificationSubscription))
+	require.NoError(t, writeTriageResponsibility(command, &rootOptions{idOnly: true}, triageResponsibility))
+	require.NoError(t, writeTriageResponsibilityManualSelection(command, &rootOptions{idOnly: true}, triageManualSelection))
 	require.NoError(t, writeReleasePipeline(command, &rootOptions{idOnly: true}, releasePipeline))
 	require.NoError(t, writeReleaseStage(command, &rootOptions{idOnly: true}, releaseStage))
 	require.NoError(t, writeRelease(command, &rootOptions{idOnly: true}, release))
@@ -788,6 +818,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "attachment-id")
 	require.Contains(t, output.String(), "notification-id")
 	require.Contains(t, output.String(), "notification-subscription-id")
+	require.Contains(t, output.String(), "triage-responsibility-id")
 	require.Contains(t, output.String(), "release-pipeline-id")
 	require.Contains(t, output.String(), "release-stage-id")
 	require.Contains(t, output.String(), "release-id")
@@ -840,6 +871,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeAttachment(quietCommand, &rootOptions{quiet: true}, attachment))
 	require.NoError(t, writeNotification(quietCommand, &rootOptions{quiet: true}, notification))
 	require.NoError(t, writeNotificationSubscription(quietCommand, &rootOptions{quiet: true}, notificationSubscription))
+	require.NoError(t, writeTriageResponsibility(quietCommand, &rootOptions{quiet: true}, triageResponsibility))
+	require.NoError(t, writeTriageResponsibilityManualSelection(quietCommand, &rootOptions{quiet: true}, triageManualSelection))
 	require.NoError(t, writeReleasePipeline(quietCommand, &rootOptions{quiet: true}, releasePipeline))
 	require.NoError(t, writeReleaseStage(quietCommand, &rootOptions{quiet: true}, releaseStage))
 	require.NoError(t, writeRelease(quietCommand, &rootOptions{quiet: true}, release))
@@ -953,6 +986,19 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.Equal(t, map[string]any{
 		"notification_subscriptions": []any{
 			map[string]any{"id": "notification-subscription-id", "target_type": "project"},
+		},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"triage_responsibilities": []any{
+			map[string]any{"id": "triage-responsibility-id", "team_key": "LIT", "action": "notify"},
+		}},
+		"id,team_key,action",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"triage_responsibilities": []any{
+			map[string]any{"id": "triage-responsibility-id", "team_key": "LIT", "action": "notify"},
 		},
 	}, projected)
 

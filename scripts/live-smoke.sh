@@ -52,6 +52,12 @@ PY
   "$binary" project list --json --limit 5 >/dev/null
   "$binary" notification list --json --limit 5 >/dev/null
   "$binary" notification subscription list --json --limit 5 >/dev/null
+  triage_responsibility_json="$("$binary" triage-responsibility list --json --limit 5)"
+  triage_responsibility_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("triage_responsibilities", []); print(items[0]["id"] if items else "")' <<<"$triage_responsibility_json")"
+  if [[ -n "$triage_responsibility_id" ]]; then
+    "$binary" triage-responsibility get "$triage_responsibility_id" --json >/dev/null
+    "$binary" triage-responsibility manual-selection "$triage_responsibility_id" --json >/dev/null
+  fi
   release_pipeline_json="$("$binary" release-pipeline list --json --limit 5)"
   release_pipeline_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("release_pipelines", []); print(items[0]["id"] if items else "")' <<<"$release_pipeline_json")"
   if [[ -n "$release_pipeline_id" ]]; then
