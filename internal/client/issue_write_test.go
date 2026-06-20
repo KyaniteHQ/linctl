@@ -39,7 +39,7 @@ func Test_CreateIssue_returns_created_issue_when_target_matches(t *testing.T) {
 func Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"IssueByID": `{"issue":` + issueJSON(issueFixture{
+		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-3",
 			Title:      "wrong project",
 			ProjectID:  "other-project",
@@ -64,7 +64,7 @@ func Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project(t
 func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_matches(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"IssueByID": `{"issue":` + issueJSON(issueFixture{
+		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-5",
 			Title:      "start",
 			ProjectID:  "project-id",
@@ -101,7 +101,7 @@ func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_match
 func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
-		"IssueByID": `{"issue":` + issueJSON(issueFixture{
+		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-4",
 			Title:      "close",
 			ProjectID:  "project-id",

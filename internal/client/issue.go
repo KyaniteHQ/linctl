@@ -471,12 +471,12 @@ func GetIssueByID(ctx context.Context, graphqlClient graphql.Client, id string) 
 
 // GetIssueDetail returns an issue by Linear id or identifier with mutable text fields.
 func GetIssueDetail(ctx context.Context, graphqlClient graphql.Client, id string) (IssueDetail, error) {
-	issue, err := IssueByID(ctx, graphqlClient, id)
+	issueResult, err := issue(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueDetail{}, fmt.Errorf("get issue %s: %w", id, err)
 	}
 
-	return detailIssue(issue.Issue), nil
+	return detailIssue(issueResult.Issue), nil
 }
 
 func allTeamIssueSummary(issue AllTeamIssuesIssuesIssueConnectionNodesIssue) IssueSummary {
@@ -632,11 +632,11 @@ func searchIssueSummary(issue IssueSearchIssuesIssueConnectionNodesIssue) IssueS
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
-func detailIssueSummary(issue IssueByIDIssue) IssueSummary {
+func detailIssueSummary(issue issueIssue) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
-func detailIssue(issue IssueByIDIssue) IssueDetail {
+func detailIssue(issue issueIssue) IssueDetail {
 	description := ""
 	if issue.Description != nil {
 		description = *issue.Description

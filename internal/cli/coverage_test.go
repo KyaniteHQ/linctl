@@ -595,7 +595,7 @@ func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
 			t,
 			[]string{"issue", "url"},
 			func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-				return testCommandRuntime(commandFlowFakeClient{failOperation: "IssueByID"}), nil
+				return testCommandRuntime(commandFlowFakeClient{failOperation: "issue"}), nil
 			},
 		)
 
@@ -604,7 +604,7 @@ func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
 	})
 
 	t.Run("branch argument lookup error", func(t *testing.T) {
-		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "IssueByID"})
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue"})
 		defer restore()
 		command := NewRootCommand(context.Background(), BuildInfo{})
 		command.SetArgs([]string{"issue", "branch", "LIT-1"})

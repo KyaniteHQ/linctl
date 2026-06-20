@@ -307,7 +307,7 @@ query IssueSearch($teamId: ID!, $query: String!, $first: Int, $after: String, $i
   }
 }
 
-query IssueByID($id: String!) {
+query issue($id: String!) {
   issue(id: $id) {
     description
     ...IssueSummaryFields

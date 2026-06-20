@@ -389,7 +389,7 @@ func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
 
 	t.Run("issue lookup failure", func(t *testing.T) {
 		_, err := runCurrentCommandInGitBranchWithRuntime(t, []string{"current"}, func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-			return testCommandRuntime(commandFlowFakeClient{failOperation: "IssueByID"}), nil
+			return testCommandRuntime(commandFlowFakeClient{failOperation: "issue"}), nil
 		})
 
 		require.Error(t, err)
@@ -989,9 +989,9 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams"}, operation: "AllTeamIssues", contains: "list issues"},
 		{name: "issue search target resolve", args: []string{"issue", "search", "needle"}, operation: "Teams", contains: "resolve teams"},
 		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "IssueSearch", contains: "search issues"},
-		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, operation: "IssueByID", contains: "get issue LIT-1"},
+		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1"}, operation: "IssueDependencies", contains: "get issue dependencies LIT-1"},
-		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, operation: "IssueByID", contains: "get issue LIT-1"},
+		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue create", args: []string{"issue", "create", "--title", "Created issue"}, operation: "IssueCreate", contains: "create issue"},
 		{name: "issue update", args: []string{"issue", "update", "LIT-1", "--title", "Updated issue"}, operation: "IssueUpdate", contains: "update issue LIT-1"},
 		{name: "issue start state", args: []string{"issue", "start", "LIT-1"}, operation: "StartedWorkflowStates", contains: "list started workflow states"},
@@ -1356,7 +1356,7 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 				`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 		}
 		return `{"issues":{"nodes":[` + commandIssueWithNextRankJSON("LIT-27", "Next issue", 0, "No priority", "2026-06-01T12:00:00Z", 0) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssueByID":
+	case "issue":
 		return `{"issue":` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `}`, true
 	case "IssueDependencies":
 		return commandFlowIssueDependenciesPayload(), true

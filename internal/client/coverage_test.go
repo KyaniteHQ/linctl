@@ -151,7 +151,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
-		"IssueByID": `{"issue":` + issueJSON(issueFixture{
+		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-11",
 			Title:      "detail issue",
 			StateID:    "done",
@@ -462,7 +462,7 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 
 	t.Run("issue comment succeeds", func(t *testing.T) {
 		graphqlClient := issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-12",
 				Title:      "comment target",
 				ProjectID:  "project-id",
@@ -494,7 +494,7 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 
 	t.Run("issue update succeeds", func(t *testing.T) {
 		graphqlClient := issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-21",
 				Title:      "update target",
 				ProjectID:  "project-id",
@@ -525,7 +525,7 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 
 	t.Run("issue update appends to description", func(t *testing.T) {
 		graphqlClient := issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSONWithDescription(issueFixture{
+			"issue": `{"issue":` + issueJSONWithDescription(issueFixture{
 				Identifier: "LIT-22",
 				Title:      "append target",
 				ProjectID:  "project-id",
@@ -590,7 +590,7 @@ func Test_ClientWriteScenarios_guard_writes_and_report_results(t *testing.T) {
 
 func Test_SummaryMappingScenarios_preserve_optional_people(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
-		"IssueByID": `{"issue":` + issueJSONWithAssignee(issueFixture{
+		"issue": `{"issue":` + issueJSONWithAssignee(issueFixture{
 			Identifier: "LIT-30",
 			Title:      "assigned",
 			ProjectID:  "project-id",
@@ -813,7 +813,7 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 	t.Run("issue mutations fail when payload omits entity", func(t *testing.T) {
 		graphqlClient := issueWriteFakeClient(map[string]string{
 			"IssueCreate": `{"issueCreate":{"success":false,"issue":null}}`,
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-20",
 				Title:      "target",
 				ProjectID:  "project-id",
@@ -936,7 +936,7 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Contains(t, err.Error(), "create issue")
 
 		_, err = UpdateIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-40",
 				Title:      "target",
 				ProjectID:  "project-id",
@@ -951,7 +951,7 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Contains(t, err.Error(), "update issue LIT-40")
 
 		_, err = CommentOnIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-40",
 				Title:      "target",
 				ProjectID:  "project-id",
@@ -966,7 +966,7 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Contains(t, err.Error(), "comment on issue LIT-40")
 
 		_, err = StartIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-40",
 				Title:      "target",
 				ProjectID:  "project-id",
@@ -982,7 +982,7 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Contains(t, err.Error(), "start issue LIT-40")
 
 		_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-40",
 				Title:      "target",
 				ProjectID:  "project-id",
@@ -1060,22 +1060,22 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		operationErr := errors.New("guard read failed")
 
 		_, err := UpdateIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": "",
+			"issue": "",
 		}).withError(operationErr), matchingTarget(), IssueUpdateRequest{ID: "LIT-50", Title: "title"})
 		require.ErrorIs(t, err, operationErr)
 
 		_, err = CommentOnIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": "",
+			"issue": "",
 		}).withError(operationErr), matchingTarget(), IssueCommentRequest{ID: "LIT-50", Body: "body"})
 		require.ErrorIs(t, err, operationErr)
 
 		_, err = StartIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": "",
+			"issue": "",
 		}).withError(operationErr), matchingTarget(), "LIT-50")
 		require.ErrorIs(t, err, operationErr)
 
 		_, err = StartIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-51",
 				Title:      "target",
 				ProjectID:  "project-id",
@@ -1090,12 +1090,12 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Contains(t, err.Error(), "list started workflow states")
 
 		_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": "",
+			"issue": "",
 		}).withError(operationErr), matchingTarget(), "LIT-50")
 		require.ErrorIs(t, err, operationErr)
 
 		_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
-			"IssueByID": `{"issue":` + issueJSON(issueFixture{
+			"issue": `{"issue":` + issueJSON(issueFixture{
 				Identifier: "LIT-51",
 				Title:      "target",
 				ProjectID:  "project-id",
@@ -1333,7 +1333,7 @@ func Test_WriteGuardScenarios_refuse_mismatched_resources(t *testing.T) {
 		},
 	}
 	graphqlClient := fakeGraphQLClient{
-		"IssueByID": `{"issue":` + strings.ReplaceAll(issueJSON(issueFixture{
+		"issue": `{"issue":` + strings.ReplaceAll(issueJSON(issueFixture{
 			Identifier: "ABC-1",
 			Title:      "wrong team",
 			StateID:    "todo",

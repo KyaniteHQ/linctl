@@ -1981,177 +1981,6 @@ type IssueBlockedIssuesResponse struct {
 // GetIssue returns IssueBlockedIssuesResponse.Issue, and is useful for accessing the field via an interface.
 func (v *IssueBlockedIssuesResponse) GetIssue() IssueBlockedIssuesIssue { return v.Issue }
 
-// IssueByIDIssue includes the requested fields of the GraphQL type Issue.
-// The GraphQL type's documentation follows.
-//
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
-type IssueByIDIssue struct {
-	// The issue's description in markdown format.
-	Description        *string `json:"description"`
-	IssueSummaryFields `json:"-"`
-	// The project milestone that the issue is associated with. Null if the issue is
-	// not assigned to a specific milestone within its project.
-	ProjectMilestone *IssueByIDIssueProjectMilestone `json:"projectMilestone"`
-}
-
-// GetDescription returns IssueByIDIssue.Description, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetDescription() *string { return v.Description }
-
-// GetProjectMilestone returns IssueByIDIssue.ProjectMilestone, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetProjectMilestone() *IssueByIDIssueProjectMilestone {
-	return v.ProjectMilestone
-}
-
-// GetId returns IssueByIDIssue.Id, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetId() string { return v.IssueSummaryFields.Id }
-
-// GetIdentifier returns IssueByIDIssue.Identifier, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetIdentifier() string { return v.IssueSummaryFields.Identifier }
-
-// GetTitle returns IssueByIDIssue.Title, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetTitle() string { return v.IssueSummaryFields.Title }
-
-// GetBranchName returns IssueByIDIssue.BranchName, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetBranchName() string { return v.IssueSummaryFields.BranchName }
-
-// GetUrl returns IssueByIDIssue.Url, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetUrl() string { return v.IssueSummaryFields.Url }
-
-// GetPriority returns IssueByIDIssue.Priority, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetPriority() float64 { return v.IssueSummaryFields.Priority }
-
-// GetPriorityLabel returns IssueByIDIssue.PriorityLabel, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetPriorityLabel() string { return v.IssueSummaryFields.PriorityLabel }
-
-// GetTeam returns IssueByIDIssue.Team, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetTeam() IssueSummaryFieldsTeam { return v.IssueSummaryFields.Team }
-
-// GetState returns IssueByIDIssue.State, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetState() IssueSummaryFieldsStateWorkflowState {
-	return v.IssueSummaryFields.State
-}
-
-// GetAssignee returns IssueByIDIssue.Assignee, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
-	return v.IssueSummaryFields.Assignee
-}
-
-// GetProject returns IssueByIDIssue.Project, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssue) GetProject() *IssueSummaryFieldsProject { return v.IssueSummaryFields.Project }
-
-func (v *IssueByIDIssue) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*IssueByIDIssue
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.IssueByIDIssue = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.IssueSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalIssueByIDIssue struct {
-	Description *string `json:"description"`
-
-	ProjectMilestone *IssueByIDIssueProjectMilestone `json:"projectMilestone"`
-
-	Id string `json:"id"`
-
-	Identifier string `json:"identifier"`
-
-	Title string `json:"title"`
-
-	BranchName string `json:"branchName"`
-
-	Url string `json:"url"`
-
-	Priority float64 `json:"priority"`
-
-	PriorityLabel string `json:"priorityLabel"`
-
-	Team IssueSummaryFieldsTeam `json:"team"`
-
-	State IssueSummaryFieldsStateWorkflowState `json:"state"`
-
-	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
-
-	Project *IssueSummaryFieldsProject `json:"project"`
-}
-
-func (v *IssueByIDIssue) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *IssueByIDIssue) __premarshalJSON() (*__premarshalIssueByIDIssue, error) {
-	var retval __premarshalIssueByIDIssue
-
-	retval.Description = v.Description
-	retval.ProjectMilestone = v.ProjectMilestone
-	retval.Id = v.IssueSummaryFields.Id
-	retval.Identifier = v.IssueSummaryFields.Identifier
-	retval.Title = v.IssueSummaryFields.Title
-	retval.BranchName = v.IssueSummaryFields.BranchName
-	retval.Url = v.IssueSummaryFields.Url
-	retval.Priority = v.IssueSummaryFields.Priority
-	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
-	retval.Team = v.IssueSummaryFields.Team
-	retval.State = v.IssueSummaryFields.State
-	retval.Assignee = v.IssueSummaryFields.Assignee
-	retval.Project = v.IssueSummaryFields.Project
-	return &retval, nil
-}
-
-// IssueByIDIssueProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
-// The GraphQL type's documentation follows.
-//
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
-type IssueByIDIssueProjectMilestone struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The name of the project milestone.
-	Name string `json:"name"`
-}
-
-// GetId returns IssueByIDIssueProjectMilestone.Id, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssueProjectMilestone) GetId() string { return v.Id }
-
-// GetName returns IssueByIDIssueProjectMilestone.Name, and is useful for accessing the field via an interface.
-func (v *IssueByIDIssueProjectMilestone) GetName() string { return v.Name }
-
-// IssueByIDResponse is returned by IssueByID on success.
-type IssueByIDResponse struct {
-	// One specific issue, looked up by its unique identifier.
-	Issue IssueByIDIssue `json:"issue"`
-}
-
-// GetIssue returns IssueByIDResponse.Issue, and is useful for accessing the field via an interface.
-func (v *IssueByIDResponse) GetIssue() IssueByIDIssue { return v.Issue }
-
 // IssueCloseIssueUpdateIssuePayload includes the requested fields of the GraphQL type IssuePayload.
 // The GraphQL type's documentation follows.
 //
@@ -9444,14 +9273,6 @@ func (v *__IssueBlockedIssuesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __IssueBlockedIssuesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__IssueBlockedIssuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
-// __IssueByIDInput is used internally by genqlient
-type __IssueByIDInput struct {
-	Id string `json:"id"`
-}
-
-// GetId returns __IssueByIDInput.Id, and is useful for accessing the field via an interface.
-func (v *__IssueByIDInput) GetId() string { return v.Id }
-
 // __IssueCloseInput is used internally by genqlient
 type __IssueCloseInput struct {
 	Id    string                 `json:"id"`
@@ -10051,6 +9872,14 @@ type __documentInput struct {
 
 // GetId returns __documentInput.Id, and is useful for accessing the field via an interface.
 func (v *__documentInput) GetId() string { return v.Id }
+
+// __issueInput is used internally by genqlient
+type __issueInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __issueInput.Id, and is useful for accessing the field via an interface.
+func (v *__issueInput) GetId() string { return v.Id }
 
 // __issueLabelInput is used internally by genqlient
 type __issueLabelInput struct {
@@ -10765,6 +10594,166 @@ type documentResponse struct {
 // GetDocument returns documentResponse.Document, and is useful for accessing the field via an interface.
 func (v *documentResponse) GetDocument() documentDocument { return v.Document }
 
+// issueIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueIssue struct {
+	// The issue's description in markdown format.
+	Description        *string `json:"description"`
+	IssueSummaryFields `json:"-"`
+	// The project milestone that the issue is associated with. Null if the issue is
+	// not assigned to a specific milestone within its project.
+	ProjectMilestone *issueIssueProjectMilestone `json:"projectMilestone"`
+}
+
+// GetDescription returns issueIssue.Description, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetDescription() *string { return v.Description }
+
+// GetProjectMilestone returns issueIssue.ProjectMilestone, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetProjectMilestone() *issueIssueProjectMilestone { return v.ProjectMilestone }
+
+// GetId returns issueIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetId() string { return v.IssueSummaryFields.Id }
+
+// GetIdentifier returns issueIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetIdentifier() string { return v.IssueSummaryFields.Identifier }
+
+// GetTitle returns issueIssue.Title, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetTitle() string { return v.IssueSummaryFields.Title }
+
+// GetBranchName returns issueIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetBranchName() string { return v.IssueSummaryFields.BranchName }
+
+// GetUrl returns issueIssue.Url, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetUrl() string { return v.IssueSummaryFields.Url }
+
+// GetPriority returns issueIssue.Priority, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetPriority() float64 { return v.IssueSummaryFields.Priority }
+
+// GetPriorityLabel returns issueIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetPriorityLabel() string { return v.IssueSummaryFields.PriorityLabel }
+
+// GetTeam returns issueIssue.Team, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetTeam() IssueSummaryFieldsTeam { return v.IssueSummaryFields.Team }
+
+// GetState returns issueIssue.State, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns issueIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns issueIssue.Project, and is useful for accessing the field via an interface.
+func (v *issueIssue) GetProject() *IssueSummaryFieldsProject { return v.IssueSummaryFields.Project }
+
+func (v *issueIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueIssue struct {
+	Description *string `json:"description"`
+
+	ProjectMilestone *issueIssueProjectMilestone `json:"projectMilestone"`
+
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *issueIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueIssue) __premarshalJSON() (*__premarshalissueIssue, error) {
+	var retval __premarshalissueIssue
+
+	retval.Description = v.Description
+	retval.ProjectMilestone = v.ProjectMilestone
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// issueIssueProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
+// The GraphQL type's documentation follows.
+//
+// A milestone within a project. Milestones break a project into phases or target
+// checkpoints, each with its own target date and set of issues. Issues can be
+// assigned to a milestone to track progress toward that checkpoint.
+type issueIssueProjectMilestone struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project milestone.
+	Name string `json:"name"`
+}
+
+// GetId returns issueIssueProjectMilestone.Id, and is useful for accessing the field via an interface.
+func (v *issueIssueProjectMilestone) GetId() string { return v.Id }
+
+// GetName returns issueIssueProjectMilestone.Name, and is useful for accessing the field via an interface.
+func (v *issueIssueProjectMilestone) GetName() string { return v.Name }
+
 // issueLabelIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
@@ -10864,6 +10853,15 @@ type issueLabelResponse struct {
 
 // GetIssueLabel returns issueLabelResponse.IssueLabel, and is useful for accessing the field via an interface.
 func (v *issueLabelResponse) GetIssueLabel() issueLabelIssueLabel { return v.IssueLabel }
+
+// issueResponse is returned by issue on success.
+type issueResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issueIssue `json:"issue"`
+}
+
+// GetIssue returns issueResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issueResponse) GetIssue() issueIssue { return v.Issue }
 
 // projectMilestoneProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
@@ -12829,73 +12827,6 @@ func IssueBlockedIssues(
 	}
 
 	data_ = &IssueBlockedIssuesResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by IssueByID.
-const IssueByID_Operation = `
-query IssueByID ($id: String!) {
-	issue(id: $id) {
-		description
-		... IssueSummaryFields
-		projectMilestone {
-			id
-			name
-		}
-	}
-}
-fragment IssueSummaryFields on Issue {
-	id
-	identifier
-	title
-	branchName
-	url
-	priority
-	priorityLabel
-	team {
-		id
-		key
-		name
-	}
-	state {
-		id
-		name
-		type
-	}
-	assignee {
-		id
-		name
-		displayName
-	}
-	project {
-		id
-		name
-	}
-}
-`
-
-func IssueByID(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-) (data_ *IssueByIDResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "IssueByID",
-		Query:  IssueByID_Operation,
-		Variables: &__IssueByIDInput{
-			Id: id,
-		},
-	}
-
-	data_ = &IssueByIDResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -15387,6 +15318,73 @@ func document(
 	}
 
 	data_ = &documentResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issue.
+const issue_Operation = `
+query issue ($id: String!) {
+	issue(id: $id) {
+		description
+		... IssueSummaryFields
+		projectMilestone {
+			id
+			name
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *issueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue",
+		Query:  issue_Operation,
+		Variables: &__issueInput{
+			Id: id,
+		},
+	}
+
+	data_ = &issueResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

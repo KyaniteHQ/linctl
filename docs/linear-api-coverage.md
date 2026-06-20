@@ -1031,7 +1031,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `Documents` | query | `documents` | implemented | `internal/client/generated.go` |
 | `IssueArchive` | mutation | `issueArchive` | implemented | `internal/client/generated.go` |
 | `IssueBlockedIssues` | query | `issue` | implemented | `internal/client/generated.go` |
-| `IssueByID` | query | `issue` | implemented | `internal/client/generated.go` |
 | `IssueClose` | mutation | `issueUpdate` | implemented | `internal/client/generated.go` |
 | `IssueCommentCreate` | mutation | `commentCreate` | implemented | `internal/client/generated.go` |
 | `IssueComments` | query | `issue` | implemented | `internal/client/generated.go` |
@@ -1070,6 +1069,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
+| `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
