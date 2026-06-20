@@ -696,6 +696,8 @@ func commandImplemented(command string) bool {
 		"project-milestone get":                  true,
 		"project-milestone create":               true,
 		"project-milestone update":               true,
+		"project-status list":                    true,
+		"project-status get":                     true,
 		"document list":                          true,
 		"document get":                           true,
 		"label list":                             true,

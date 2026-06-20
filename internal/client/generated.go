@@ -12602,6 +12602,65 @@ type ProjectMilestonesResponse struct {
 // GetProject returns ProjectMilestonesResponse.Project, and is useful for accessing the field via an interface.
 func (v *ProjectMilestonesResponse) GetProject() ProjectMilestonesProject { return v.Project }
 
+// ProjectStatusSummaryFields includes the GraphQL fields of ProjectStatus requested by the fragment ProjectStatusSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A custom project status within a workspace. Statuses are grouped by type
+// (backlog, planned, started, paused, completed, canceled) and define the
+// lifecycle stages a project can move through. Each workspace can customize the
+// names and colors of its project statuses.
+type ProjectStatusSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the status.
+	Name string `json:"name"`
+	// Description of the status.
+	Description *string `json:"description"`
+	// The category type of the project status (e.g., backlog, planned, started,
+	// paused, completed, canceled). Determines the status's behavior and position in
+	// the project lifecycle.
+	Type ProjectStatusType `json:"type"`
+	// The color of the status as a HEX string, used for display in the UI.
+	Color string `json:"color"`
+	// The position of the status within its type group in the workspace's project
+	// flow. Used for ordering statuses of the same type.
+	Position float64 `json:"position"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+}
+
+// GetId returns ProjectStatusSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetId() string { return v.Id }
+
+// GetName returns ProjectStatusSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetName() string { return v.Name }
+
+// GetDescription returns ProjectStatusSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetDescription() *string { return v.Description }
+
+// GetType returns ProjectStatusSummaryFields.Type, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetType() ProjectStatusType { return v.Type }
+
+// GetColor returns ProjectStatusSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetColor() string { return v.Color }
+
+// GetPosition returns ProjectStatusSummaryFields.Position, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetPosition() float64 { return v.Position }
+
+// GetArchivedAt returns ProjectStatusSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetCreatedAt returns ProjectStatusSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns ProjectStatusSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectStatusSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
 // A type of project status.
 type ProjectStatusType string
 
@@ -16846,6 +16905,30 @@ type __projectMilestoneInput struct {
 
 // GetId returns __projectMilestoneInput.Id, and is useful for accessing the field via an interface.
 func (v *__projectMilestoneInput) GetId() string { return v.Id }
+
+// __projectStatusInput is used internally by genqlient
+type __projectStatusInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __projectStatusInput.Id, and is useful for accessing the field via an interface.
+func (v *__projectStatusInput) GetId() string { return v.Id }
+
+// __projectStatusesInput is used internally by genqlient
+type __projectStatusesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __projectStatusesInput.First, and is useful for accessing the field via an interface.
+func (v *__projectStatusesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __projectStatusesInput.After, and is useful for accessing the field via an interface.
+func (v *__projectStatusesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __projectStatusesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__projectStatusesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __projectUpdateInput is used internally by genqlient
 type __projectUpdateInput struct {
@@ -34556,6 +34639,302 @@ type projectResponse struct {
 // GetProject returns projectResponse.Project, and is useful for accessing the field via an interface.
 func (v *projectResponse) GetProject() projectProject { return v.Project }
 
+// projectStatusProjectStatus includes the requested fields of the GraphQL type ProjectStatus.
+// The GraphQL type's documentation follows.
+//
+// A custom project status within a workspace. Statuses are grouped by type
+// (backlog, planned, started, paused, completed, canceled) and define the
+// lifecycle stages a project can move through. Each workspace can customize the
+// names and colors of its project statuses.
+type projectStatusProjectStatus struct {
+	ProjectStatusSummaryFields `json:"-"`
+}
+
+// GetId returns projectStatusProjectStatus.Id, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetId() string { return v.ProjectStatusSummaryFields.Id }
+
+// GetName returns projectStatusProjectStatus.Name, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetName() string { return v.ProjectStatusSummaryFields.Name }
+
+// GetDescription returns projectStatusProjectStatus.Description, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetDescription() *string {
+	return v.ProjectStatusSummaryFields.Description
+}
+
+// GetType returns projectStatusProjectStatus.Type, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetType() ProjectStatusType {
+	return v.ProjectStatusSummaryFields.Type
+}
+
+// GetColor returns projectStatusProjectStatus.Color, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetColor() string { return v.ProjectStatusSummaryFields.Color }
+
+// GetPosition returns projectStatusProjectStatus.Position, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetPosition() float64 {
+	return v.ProjectStatusSummaryFields.Position
+}
+
+// GetArchivedAt returns projectStatusProjectStatus.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetArchivedAt() *string {
+	return v.ProjectStatusSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns projectStatusProjectStatus.CreatedAt, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetCreatedAt() string {
+	return v.ProjectStatusSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns projectStatusProjectStatus.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *projectStatusProjectStatus) GetUpdatedAt() string {
+	return v.ProjectStatusSummaryFields.UpdatedAt
+}
+
+func (v *projectStatusProjectStatus) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectStatusProjectStatus
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectStatusProjectStatus = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectStatusSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectStatusProjectStatus struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Type ProjectStatusType `json:"type"`
+
+	Color string `json:"color"`
+
+	Position float64 `json:"position"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+}
+
+func (v *projectStatusProjectStatus) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectStatusProjectStatus) __premarshalJSON() (*__premarshalprojectStatusProjectStatus, error) {
+	var retval __premarshalprojectStatusProjectStatus
+
+	retval.Id = v.ProjectStatusSummaryFields.Id
+	retval.Name = v.ProjectStatusSummaryFields.Name
+	retval.Description = v.ProjectStatusSummaryFields.Description
+	retval.Type = v.ProjectStatusSummaryFields.Type
+	retval.Color = v.ProjectStatusSummaryFields.Color
+	retval.Position = v.ProjectStatusSummaryFields.Position
+	retval.ArchivedAt = v.ProjectStatusSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectStatusSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectStatusSummaryFields.UpdatedAt
+	return &retval, nil
+}
+
+// projectStatusResponse is returned by projectStatus on success.
+type projectStatusResponse struct {
+	// Returns a single project status by its identifier.
+	ProjectStatus projectStatusProjectStatus `json:"projectStatus"`
+}
+
+// GetProjectStatus returns projectStatusResponse.ProjectStatus, and is useful for accessing the field via an interface.
+func (v *projectStatusResponse) GetProjectStatus() projectStatusProjectStatus { return v.ProjectStatus }
+
+// projectStatusesProjectStatusesProjectStatusConnection includes the requested fields of the GraphQL type ProjectStatusConnection.
+type projectStatusesProjectStatusesProjectStatusConnection struct {
+	Nodes    []projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus `json:"nodes"`
+	PageInfo projectStatusesProjectStatusesProjectStatusConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns projectStatusesProjectStatusesProjectStatusConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnection) GetNodes() []projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus {
+	return v.Nodes
+}
+
+// GetPageInfo returns projectStatusesProjectStatusesProjectStatusConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnection) GetPageInfo() projectStatusesProjectStatusesProjectStatusConnectionPageInfo {
+	return v.PageInfo
+}
+
+// projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus includes the requested fields of the GraphQL type ProjectStatus.
+// The GraphQL type's documentation follows.
+//
+// A custom project status within a workspace. Statuses are grouped by type
+// (backlog, planned, started, paused, completed, canceled) and define the
+// lifecycle stages a project can move through. Each workspace can customize the
+// names and colors of its project statuses.
+type projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus struct {
+	ProjectStatusSummaryFields `json:"-"`
+}
+
+// GetId returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.Id, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetId() string {
+	return v.ProjectStatusSummaryFields.Id
+}
+
+// GetName returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.Name, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetName() string {
+	return v.ProjectStatusSummaryFields.Name
+}
+
+// GetDescription returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.Description, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetDescription() *string {
+	return v.ProjectStatusSummaryFields.Description
+}
+
+// GetType returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.Type, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetType() ProjectStatusType {
+	return v.ProjectStatusSummaryFields.Type
+}
+
+// GetColor returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.Color, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetColor() string {
+	return v.ProjectStatusSummaryFields.Color
+}
+
+// GetPosition returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.Position, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetPosition() float64 {
+	return v.ProjectStatusSummaryFields.Position
+}
+
+// GetArchivedAt returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetArchivedAt() *string {
+	return v.ProjectStatusSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.CreatedAt, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetCreatedAt() string {
+	return v.ProjectStatusSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) GetUpdatedAt() string {
+	return v.ProjectStatusSummaryFields.UpdatedAt
+}
+
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectStatusSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Type ProjectStatusType `json:"type"`
+
+	Color string `json:"color"`
+
+	Position float64 `json:"position"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+}
+
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus) __premarshalJSON() (*__premarshalprojectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus, error) {
+	var retval __premarshalprojectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus
+
+	retval.Id = v.ProjectStatusSummaryFields.Id
+	retval.Name = v.ProjectStatusSummaryFields.Name
+	retval.Description = v.ProjectStatusSummaryFields.Description
+	retval.Type = v.ProjectStatusSummaryFields.Type
+	retval.Color = v.ProjectStatusSummaryFields.Color
+	retval.Position = v.ProjectStatusSummaryFields.Position
+	retval.ArchivedAt = v.ProjectStatusSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectStatusSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectStatusSummaryFields.UpdatedAt
+	return &retval, nil
+}
+
+// projectStatusesProjectStatusesProjectStatusConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type projectStatusesProjectStatusesProjectStatusConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns projectStatusesProjectStatusesProjectStatusConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns projectStatusesProjectStatusesProjectStatusConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *projectStatusesProjectStatusesProjectStatusConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// projectStatusesResponse is returned by projectStatuses on success.
+type projectStatusesResponse struct {
+	// Returns all project statuses in the workspace.
+	ProjectStatuses projectStatusesProjectStatusesProjectStatusConnection `json:"projectStatuses"`
+}
+
+// GetProjectStatuses returns projectStatusesResponse.ProjectStatuses, and is useful for accessing the field via an interface.
+func (v *projectStatusesResponse) GetProjectStatuses() projectStatusesProjectStatusesProjectStatusConnection {
+	return v.ProjectStatuses
+}
+
 // projectUpdateProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
 //
@@ -46484,6 +46863,106 @@ func projectMilestone(
 	}
 
 	data_ = &projectMilestoneResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by projectStatus.
+const projectStatus_Operation = `
+query projectStatus ($id: String!) {
+	projectStatus(id: $id) {
+		... ProjectStatusSummaryFields
+	}
+}
+fragment ProjectStatusSummaryFields on ProjectStatus {
+	id
+	name
+	description
+	type
+	color
+	position
+	archivedAt
+	createdAt
+	updatedAt
+}
+`
+
+func projectStatus(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *projectStatusResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectStatus",
+		Query:  projectStatus_Operation,
+		Variables: &__projectStatusInput{
+			Id: id,
+		},
+	}
+
+	data_ = &projectStatusResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by projectStatuses.
+const projectStatuses_Operation = `
+query projectStatuses ($first: Int, $after: String, $includeArchived: Boolean) {
+	projectStatuses(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... ProjectStatusSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment ProjectStatusSummaryFields on ProjectStatus {
+	id
+	name
+	description
+	type
+	color
+	position
+	archivedAt
+	createdAt
+	updatedAt
+}
+`
+
+func projectStatuses(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *projectStatusesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectStatuses",
+		Query:  projectStatuses_Operation,
+		Variables: &__projectStatusesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &projectStatusesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

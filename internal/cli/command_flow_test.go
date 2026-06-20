@@ -102,6 +102,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id", "--limit", "1"}, contains: "project-milestone-id Launch milestone [next]"},
 		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, contains: "project-milestone-id Created milestone [next]"},
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, contains: "project-milestone-id Updated milestone [done]"},
+		{name: "project status list", args: []string{"project-status", "list", "--limit", "1"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
+		{name: "project status get", args: []string{"project-status", "get", "project-status-id"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
 		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, contains: "project-id Created project [Backlog]"},
 		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, contains: "project-id Updated project [Started]"},
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, contains: "project-id Archived project [Canceled]"},
@@ -829,6 +831,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,health,project_id", "project-update", "list", "--limit", "1"},
 		{"--json", "project-update", "get", "project-update-id"},
 		{"--json", "--fields", "id,name,status", "project-milestone", "list", "project-id", "--limit", "1"},
+		{"--json", "project-status", "list", "--limit", "1"},
+		{"--json", "project-status", "get", "project-status-id"},
 		{"--json", "--fields", "id,title,parent_type", "document", "list", "--limit", "1"},
 		{"--json", "--fields", "id,name,color", "label", "list", "--limit", "1"},
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
@@ -2227,6 +2231,10 @@ func commandFlowProjectPayload(operation string, fake commandFlowFakeClient) (st
 }
 
 func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient) (string, bool) {
+	if payload, ok := commandFlowProjectStatusPayload(operation); ok {
+		return payload, true
+	}
+
 	switch operation {
 	case "Projects":
 		if fake.emptyProjectList {
@@ -2259,6 +2267,19 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 		return `{"project":{"id":"project-id","name":"Detail project","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "projectMilestone":
 		return `{"projectMilestone":` + commandProjectMilestoneJSON("Launch milestone", "next") + `}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowProjectStatusPayload(operation string) (string, bool) {
+	switch operation {
+	case "projectStatuses":
+		return `{"projectStatuses":{"nodes":[` +
+			commandProjectStatusJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "projectStatus":
+		return `{"projectStatus":` + commandProjectStatusJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -2348,6 +2369,20 @@ func commandProjectUpdateJSON() string {
 		"url":"https://linear.app/project-update/project-update-id",
 		"project":{"id":"project-id","name":"Pinned project"},
 		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func commandProjectStatusJSON() string {
+	return `{
+		"id":"project-status-id",
+		"name":"Backlog",
+		"description":"Ready for planning",
+		"type":"backlog",
+		"color":"#bec2c8",
+		"position":1,
+		"archivedAt":null,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z"
 	}`
 }
 

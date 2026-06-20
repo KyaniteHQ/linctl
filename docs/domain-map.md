@@ -264,6 +264,30 @@ Planned commands:
 
 Only `project-update list` and `project-update get` are implemented in the current top-level CLI. `project updates PROJECT_ID` remains the project-scoped history view.
 
+## ProjectStatus
+
+Use `ProjectStatus` for Linear project lifecycle status configuration. Do not confuse it with `ProjectUpdate`, which is the user-authored project status update feed.
+
+Schema backing:
+
+- Types: `ProjectStatus`, `ProjectStatusConnection`
+- Reads: `Query.projectStatuses`, `Query.projectStatus`
+- Writes: `Mutation.projectStatusCreate`, `Mutation.projectStatusUpdate`, `Mutation.projectStatusArchive`, `Mutation.projectStatusUnarchive`
+- Relevant fields: `ProjectStatus.id`, `ProjectStatus.name`, `ProjectStatus.description`, `ProjectStatus.type`, `ProjectStatus.color`, `ProjectStatus.position`, `ProjectStatus.archivedAt`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `project-status list` | `Query.projectStatuses` | Read-only |
+| `project-status get` | `Query.projectStatus` | Read-only |
+| `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model |
+| `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation |
+| `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics |
+| `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model |
+
+Only `project-status list` and `project-status get` are implemented in the current CLI. ProjectStatus writes are deferred as workspace/admin configuration surface.
+
 ## Cycle
 
 Schema backing:

@@ -1,0 +1,29 @@
+fragment ProjectStatusSummaryFields on ProjectStatus {
+  id
+  name
+  description
+  type
+  color
+  position
+  archivedAt
+  createdAt
+  updatedAt
+}
+
+query projectStatuses($first: Int, $after: String, $includeArchived: Boolean) {
+  projectStatuses(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ProjectStatusSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query projectStatus($id: String!) {
+  projectStatus(id: $id) {
+    ...ProjectStatusSummaryFields
+  }
+}

@@ -126,6 +126,8 @@ linctl project-update list --json --limit 20
 linctl project-update get PROJECT_UPDATE_ID --json
 linctl project-milestone list PROJECT_ID --json --limit 20
 linctl project-milestone get PROJECT_MILESTONE_ID --json
+linctl project-status list --json --limit 20
+linctl project-status get PROJECT_STATUS_ID --json
 linctl document list --json --limit 20
 linctl document get DOCUMENT_ID --json
 linctl label list --json --limit 20
