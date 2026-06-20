@@ -67,7 +67,7 @@ func GetTeamByID(ctx context.Context, graphqlClient graphql.Client, id string) (
 
 // ListTeamMembers returns visible members for one Team.
 func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TeamMemberList, error) {
-	team, err := TeamMembers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := team_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TeamMemberList{}, fmt.Errorf("list team members %s: %w", id, err)
 	}

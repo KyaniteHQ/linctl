@@ -1021,7 +1021,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "issueLabel", contains: "get label label-id"},
 		{name: "team list", args: []string{"team", "list"}, operation: "Teams", contains: "list teams"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, operation: "team", contains: "get team team-id"},
-		{name: "team members", args: []string{"team", "members", "team-id"}, operation: "TeamMembers", contains: "list team members team-id"},
+		{name: "team members", args: []string{"team", "members", "team-id"}, operation: "team_members", contains: "list team members team-id"},
 		{name: "user list", args: []string{"user", "list"}, operation: "users", contains: "list users"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "user", contains: "get user user-id"},
 		{name: "user me", args: []string{"user", "me"}, operation: "viewer", contains: "get viewer user"},
@@ -1304,7 +1304,7 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 		return `{"issueLabel":` + commandLabelJSON("") + `}`, true
 	case "team":
 		return `{"team":` + commandTeamJSON(true) + `}`, true
-	case "TeamMembers":
+	case "team_members":
 		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[` + commandUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "users":
 		return `{"users":{"nodes":[` + commandUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true

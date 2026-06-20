@@ -7871,182 +7871,6 @@ type TargetProjectResponse struct {
 // GetProject returns TargetProjectResponse.Project, and is useful for accessing the field via an interface.
 func (v *TargetProjectResponse) GetProject() TargetProjectProject { return v.Project }
 
-// TeamMembersResponse is returned by TeamMembers on success.
-type TeamMembersResponse struct {
-	// Fetches a specific team by its ID.
-	Team TeamMembersTeam `json:"team"`
-}
-
-// GetTeam returns TeamMembersResponse.Team, and is useful for accessing the field via an interface.
-func (v *TeamMembersResponse) GetTeam() TeamMembersTeam { return v.Team }
-
-// TeamMembersTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
-type TeamMembersTeam struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
-	Key string `json:"key"`
-	// The team's name.
-	Name string `json:"name"`
-	// Users who are members of this team. Supports filtering and pagination.
-	Members TeamMembersTeamMembersUserConnection `json:"members"`
-}
-
-// GetId returns TeamMembersTeam.Id, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeam) GetId() string { return v.Id }
-
-// GetKey returns TeamMembersTeam.Key, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeam) GetKey() string { return v.Key }
-
-// GetName returns TeamMembersTeam.Name, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeam) GetName() string { return v.Name }
-
-// GetMembers returns TeamMembersTeam.Members, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeam) GetMembers() TeamMembersTeamMembersUserConnection { return v.Members }
-
-// TeamMembersTeamMembersUserConnection includes the requested fields of the GraphQL type UserConnection.
-type TeamMembersTeamMembersUserConnection struct {
-	Nodes    []TeamMembersTeamMembersUserConnectionNodesUser `json:"nodes"`
-	PageInfo TeamMembersTeamMembersUserConnectionPageInfo    `json:"pageInfo"`
-}
-
-// GetNodes returns TeamMembersTeamMembersUserConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnection) GetNodes() []TeamMembersTeamMembersUserConnectionNodesUser {
-	return v.Nodes
-}
-
-// GetPageInfo returns TeamMembersTeamMembersUserConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnection) GetPageInfo() TeamMembersTeamMembersUserConnectionPageInfo {
-	return v.PageInfo
-}
-
-// TeamMembersTeamMembersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
-// The GraphQL type's documentation follows.
-//
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
-type TeamMembersTeamMembersUserConnectionNodesUser struct {
-	UserSummaryFields `json:"-"`
-}
-
-// GetId returns TeamMembersTeamMembersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) GetId() string { return v.UserSummaryFields.Id }
-
-// GetName returns TeamMembersTeamMembersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) GetName() string {
-	return v.UserSummaryFields.Name
-}
-
-// GetDisplayName returns TeamMembersTeamMembersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) GetDisplayName() string {
-	return v.UserSummaryFields.DisplayName
-}
-
-// GetEmail returns TeamMembersTeamMembersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) GetEmail() string {
-	return v.UserSummaryFields.Email
-}
-
-// GetActive returns TeamMembersTeamMembersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) GetActive() bool {
-	return v.UserSummaryFields.Active
-}
-
-// GetGuest returns TeamMembersTeamMembersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) GetGuest() bool {
-	return v.UserSummaryFields.Guest
-}
-
-// GetAdmin returns TeamMembersTeamMembersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) GetAdmin() bool {
-	return v.UserSummaryFields.Admin
-}
-
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*TeamMembersTeamMembersUserConnectionNodesUser
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.TeamMembersTeamMembersUserConnectionNodesUser = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.UserSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalTeamMembersTeamMembersUserConnectionNodesUser struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	DisplayName string `json:"displayName"`
-
-	Email string `json:"email"`
-
-	Active bool `json:"active"`
-
-	Guest bool `json:"guest"`
-
-	Admin bool `json:"admin"`
-}
-
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *TeamMembersTeamMembersUserConnectionNodesUser) __premarshalJSON() (*__premarshalTeamMembersTeamMembersUserConnectionNodesUser, error) {
-	var retval __premarshalTeamMembersTeamMembersUserConnectionNodesUser
-
-	retval.Id = v.UserSummaryFields.Id
-	retval.Name = v.UserSummaryFields.Name
-	retval.DisplayName = v.UserSummaryFields.DisplayName
-	retval.Email = v.UserSummaryFields.Email
-	retval.Active = v.UserSummaryFields.Active
-	retval.Guest = v.UserSummaryFields.Guest
-	retval.Admin = v.UserSummaryFields.Admin
-	return &retval, nil
-}
-
-// TeamMembersTeamMembersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-type TeamMembersTeamMembersUserConnectionPageInfo struct {
-	// Indicates if there are more results when paginating forward.
-	HasNextPage bool `json:"hasNextPage"`
-	// Cursor representing the last result in the paginated results.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns TeamMembersTeamMembersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
-
-// GetEndCursor returns TeamMembersTeamMembersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *TeamMembersTeamMembersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
-
 // TeamSummaryFields includes the GraphQL fields of Team requested by the fragment TeamSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -9211,26 +9035,6 @@ type __TargetProjectInput struct {
 // GetId returns __TargetProjectInput.Id, and is useful for accessing the field via an interface.
 func (v *__TargetProjectInput) GetId() string { return v.Id }
 
-// __TeamMembersInput is used internally by genqlient
-type __TeamMembersInput struct {
-	Id              string  `json:"id"`
-	First           *int    `json:"first"`
-	After           *string `json:"after"`
-	IncludeArchived *bool   `json:"includeArchived"`
-}
-
-// GetId returns __TeamMembersInput.Id, and is useful for accessing the field via an interface.
-func (v *__TeamMembersInput) GetId() string { return v.Id }
-
-// GetFirst returns __TeamMembersInput.First, and is useful for accessing the field via an interface.
-func (v *__TeamMembersInput) GetFirst() *int { return v.First }
-
-// GetAfter returns __TeamMembersInput.After, and is useful for accessing the field via an interface.
-func (v *__TeamMembersInput) GetAfter() *string { return v.After }
-
-// GetIncludeArchived returns __TeamMembersInput.IncludeArchived, and is useful for accessing the field via an interface.
-func (v *__TeamMembersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
-
 // __TeamsInput is used internally by genqlient
 type __TeamsInput struct {
 	First           *int    `json:"first"`
@@ -9414,6 +9218,26 @@ type __teamInput struct {
 
 // GetId returns __teamInput.Id, and is useful for accessing the field via an interface.
 func (v *__teamInput) GetId() string { return v.Id }
+
+// __team_membersInput is used internally by genqlient
+type __team_membersInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_membersInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_membersInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_membersInput.First, and is useful for accessing the field via an interface.
+func (v *__team_membersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_membersInput.After, and is useful for accessing the field via an interface.
+func (v *__team_membersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_membersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_membersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __userInput is used internally by genqlient
 type __userInput struct {
@@ -11603,6 +11427,184 @@ func (v *teamTeam) __premarshalJSON() (*__premarshalteamTeam, error) {
 	retval.Organization = v.TeamSummaryFields.Organization
 	return &retval, nil
 }
+
+// team_membersResponse is returned by team_members on success.
+type team_membersResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_membersTeam `json:"team"`
+}
+
+// GetTeam returns team_membersResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_membersResponse) GetTeam() team_membersTeam { return v.Team }
+
+// team_membersTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_membersTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// Users who are members of this team. Supports filtering and pagination.
+	Members team_membersTeamMembersUserConnection `json:"members"`
+}
+
+// GetId returns team_membersTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_membersTeam) GetId() string { return v.Id }
+
+// GetKey returns team_membersTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_membersTeam) GetKey() string { return v.Key }
+
+// GetName returns team_membersTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_membersTeam) GetName() string { return v.Name }
+
+// GetMembers returns team_membersTeam.Members, and is useful for accessing the field via an interface.
+func (v *team_membersTeam) GetMembers() team_membersTeamMembersUserConnection { return v.Members }
+
+// team_membersTeamMembersUserConnection includes the requested fields of the GraphQL type UserConnection.
+type team_membersTeamMembersUserConnection struct {
+	Nodes    []team_membersTeamMembersUserConnectionNodesUser `json:"nodes"`
+	PageInfo team_membersTeamMembersUserConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns team_membersTeamMembersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnection) GetNodes() []team_membersTeamMembersUserConnectionNodesUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_membersTeamMembersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnection) GetPageInfo() team_membersTeamMembersUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_membersTeamMembersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type team_membersTeamMembersUserConnectionNodesUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns team_membersTeamMembersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionNodesUser) GetId() string {
+	return v.UserSummaryFields.Id
+}
+
+// GetName returns team_membersTeamMembersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionNodesUser) GetName() string {
+	return v.UserSummaryFields.Name
+}
+
+// GetDisplayName returns team_membersTeamMembersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionNodesUser) GetDisplayName() string {
+	return v.UserSummaryFields.DisplayName
+}
+
+// GetEmail returns team_membersTeamMembersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionNodesUser) GetEmail() string {
+	return v.UserSummaryFields.Email
+}
+
+// GetActive returns team_membersTeamMembersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionNodesUser) GetActive() bool {
+	return v.UserSummaryFields.Active
+}
+
+// GetGuest returns team_membersTeamMembersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionNodesUser) GetGuest() bool {
+	return v.UserSummaryFields.Guest
+}
+
+// GetAdmin returns team_membersTeamMembersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionNodesUser) GetAdmin() bool {
+	return v.UserSummaryFields.Admin
+}
+
+func (v *team_membersTeamMembersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_membersTeamMembersUserConnectionNodesUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_membersTeamMembersUserConnectionNodesUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_membersTeamMembersUserConnectionNodesUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *team_membersTeamMembersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_membersTeamMembersUserConnectionNodesUser) __premarshalJSON() (*__premarshalteam_membersTeamMembersUserConnectionNodesUser, error) {
+	var retval __premarshalteam_membersTeamMembersUserConnectionNodesUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
+// team_membersTeamMembersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_membersTeamMembersUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_membersTeamMembersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns team_membersTeamMembersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_membersTeamMembersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
 // userResponse is returned by user on success.
 type userResponse struct {
@@ -14739,66 +14741,6 @@ func TargetProject(
 	return data_, err_
 }
 
-// The query executed by TeamMembers.
-const TeamMembers_Operation = `
-query TeamMembers ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
-	team(id: $id) {
-		id
-		key
-		name
-		members(first: $first, after: $after, includeArchived: $includeArchived) {
-			nodes {
-				... UserSummaryFields
-			}
-			pageInfo {
-				hasNextPage
-				endCursor
-			}
-		}
-	}
-}
-fragment UserSummaryFields on User {
-	id
-	name
-	displayName
-	email
-	active
-	guest
-	admin
-}
-`
-
-func TeamMembers(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-	first *int,
-	after *string,
-	includeArchived *bool,
-) (data_ *TeamMembersResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "TeamMembers",
-		Query:  TeamMembers_Operation,
-		Variables: &__TeamMembersInput{
-			Id:              id,
-			First:           first,
-			After:           after,
-			IncludeArchived: includeArchived,
-		},
-	}
-
-	data_ = &TeamMembersResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The query executed by Teams.
 const Teams_Operation = `
 query Teams ($first: Int, $after: String, $includeArchived: Boolean) {
@@ -15717,6 +15659,66 @@ func team(
 	}
 
 	data_ = &teamResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_members.
+const team_members_Operation = `
+query team_members ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		members(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... UserSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func team_members(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_membersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_members",
+		Query:  team_members_Operation,
+		Variables: &__team_membersInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_membersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

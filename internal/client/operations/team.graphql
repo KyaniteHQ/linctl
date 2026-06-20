@@ -4,7 +4,7 @@ query team($id: String!) {
   }
 }
 
-query TeamMembers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+query team_members($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   team(id: $id) {
     id
     key
