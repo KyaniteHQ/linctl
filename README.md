@@ -100,6 +100,16 @@ linctl user get user-id
 linctl user me
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
+linctl initiative list --limit 20
+linctl initiative get initiative-id
+linctl custom-view list --limit 20
+linctl custom-view get custom-view-id
+linctl favorite list --limit 20
+linctl favorite get favorite-id
+linctl emoji list --limit 20
+linctl emoji get emoji-id
+linctl attachment list --limit 20
+linctl attachment get attachment-id
 linctl project usage
 ```
 
@@ -155,13 +165,23 @@ linctl team members team-id --limit 20
 linctl user me
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
+linctl initiative list --limit 20
+linctl initiative get initiative-id
+linctl custom-view list --limit 20
+linctl custom-view get custom-view-id
+linctl favorite list --limit 20
+linctl favorite get favorite-id
+linctl emoji list --limit 20
+linctl emoji get emoji-id
+linctl attachment list --limit 20
+linctl attachment get attachment-id
 linctl --fail-on-empty --sort title --order asc issue list
 linctl --format minimal issue get LIT-123
 ```
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Comment, ProjectUpdate, document, label, team, user, and workflow-state commands are read-only in the current CLI.
+when configured. Comment, ProjectUpdate, document, label, team, user, workflow-state, initiative, custom-view, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 
