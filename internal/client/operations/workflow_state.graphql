@@ -1,0 +1,30 @@
+query workflowStates($first: Int, $after: String, $includeArchived: Boolean) {
+  workflowStates(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...WorkflowStateSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query workflowState($id: String!) {
+  workflowState(id: $id) {
+    ...WorkflowStateSummaryFields
+  }
+}
+
+fragment WorkflowStateSummaryFields on WorkflowState {
+  id
+  name
+  type
+  color
+  position
+  team {
+    id
+    key
+    name
+  }
+}

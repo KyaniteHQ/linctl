@@ -451,7 +451,7 @@ func mustLocalOperations(pattern string) []localOperation {
 }
 
 func mustGeneratedOperations(path string) []string {
-	pattern := regexp.MustCompile(`^func ([A-Z][A-Za-z0-9_]+)\(`)
+	pattern := regexp.MustCompile(`^func ([A-Za-z_][A-Za-z0-9_]*)\(`)
 	names := []string{}
 	scanner := bufio.NewScanner(bytes.NewReader(mustRead(path)))
 	for scanner.Scan() {
@@ -715,18 +715,23 @@ func commandImplemented(command string) bool {
 		"user list":                true,
 		"user get":                 true,
 		"user me":                  true,
+		"workflow-state list":      true,
+		"workflow-state get":       true,
 	}
 	return implemented[command]
 }
 
 func domainCommandBlocked(command string) bool {
 	blocked := map[string]bool{
-		"document create": true,
-		"document update": true,
-		"label create":    true,
-		"label update":    true,
-		"team create":     true,
-		"team update":     true,
+		"document create":        true,
+		"document update":        true,
+		"label create":           true,
+		"label update":           true,
+		"team create":            true,
+		"team update":            true,
+		"workflow-state create":  true,
+		"workflow-state update":  true,
+		"workflow-state archive": true,
 	}
 	return blocked[command]
 }

@@ -10159,6 +10159,76 @@ func (v *ViewerViewerUserOrganization) GetName() string { return v.Name }
 // GetUrlKey returns ViewerViewerUserOrganization.UrlKey, and is useful for accessing the field via an interface.
 func (v *ViewerViewerUserOrganization) GetUrlKey() string { return v.UrlKey }
 
+// WorkflowStateSummaryFields includes the GraphQL fields of WorkflowState requested by the fragment WorkflowStateSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type WorkflowStateSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+	// The state's UI color as a HEX string.
+	Color string `json:"color"`
+	// The position of the state in the team's workflow. States are displayed in
+	// ascending order of position within their type group.
+	Position float64 `json:"position"`
+	// The team that this workflow state belongs to. Each team has its own set of workflow states.
+	Team WorkflowStateSummaryFieldsTeam `json:"team"`
+}
+
+// GetId returns WorkflowStateSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFields) GetId() string { return v.Id }
+
+// GetName returns WorkflowStateSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFields) GetName() string { return v.Name }
+
+// GetType returns WorkflowStateSummaryFields.Type, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFields) GetType() string { return v.Type }
+
+// GetColor returns WorkflowStateSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFields) GetColor() string { return v.Color }
+
+// GetPosition returns WorkflowStateSummaryFields.Position, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFields) GetPosition() float64 { return v.Position }
+
+// GetTeam returns WorkflowStateSummaryFields.Team, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFields) GetTeam() WorkflowStateSummaryFieldsTeam { return v.Team }
+
+// WorkflowStateSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type WorkflowStateSummaryFieldsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns WorkflowStateSummaryFieldsTeam.Id, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFieldsTeam) GetId() string { return v.Id }
+
+// GetKey returns WorkflowStateSummaryFieldsTeam.Key, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFieldsTeam) GetKey() string { return v.Key }
+
+// GetName returns WorkflowStateSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
+func (v *WorkflowStateSummaryFieldsTeam) GetName() string { return v.Name }
+
 // __AllTeamIssuesInput is used internally by genqlient
 type __AllTeamIssuesInput struct {
 	First           *int    `json:"first"`
@@ -10942,6 +11012,283 @@ func (v *__UsersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // GetIncludeDisabled returns __UsersInput.IncludeDisabled, and is useful for accessing the field via an interface.
 func (v *__UsersInput) GetIncludeDisabled() *bool { return v.IncludeDisabled }
+
+// __workflowStateInput is used internally by genqlient
+type __workflowStateInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __workflowStateInput.Id, and is useful for accessing the field via an interface.
+func (v *__workflowStateInput) GetId() string { return v.Id }
+
+// __workflowStatesInput is used internally by genqlient
+type __workflowStatesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __workflowStatesInput.First, and is useful for accessing the field via an interface.
+func (v *__workflowStatesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __workflowStatesInput.After, and is useful for accessing the field via an interface.
+func (v *__workflowStatesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __workflowStatesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__workflowStatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// workflowStateResponse is returned by workflowState on success.
+type workflowStateResponse struct {
+	// One specific workflow state (issue status), looked up by its unique identifier.
+	WorkflowState workflowStateWorkflowState `json:"workflowState"`
+}
+
+// GetWorkflowState returns workflowStateResponse.WorkflowState, and is useful for accessing the field via an interface.
+func (v *workflowStateResponse) GetWorkflowState() workflowStateWorkflowState { return v.WorkflowState }
+
+// workflowStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type workflowStateWorkflowState struct {
+	WorkflowStateSummaryFields `json:"-"`
+}
+
+// GetId returns workflowStateWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *workflowStateWorkflowState) GetId() string { return v.WorkflowStateSummaryFields.Id }
+
+// GetName returns workflowStateWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *workflowStateWorkflowState) GetName() string { return v.WorkflowStateSummaryFields.Name }
+
+// GetType returns workflowStateWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *workflowStateWorkflowState) GetType() string { return v.WorkflowStateSummaryFields.Type }
+
+// GetColor returns workflowStateWorkflowState.Color, and is useful for accessing the field via an interface.
+func (v *workflowStateWorkflowState) GetColor() string { return v.WorkflowStateSummaryFields.Color }
+
+// GetPosition returns workflowStateWorkflowState.Position, and is useful for accessing the field via an interface.
+func (v *workflowStateWorkflowState) GetPosition() float64 {
+	return v.WorkflowStateSummaryFields.Position
+}
+
+// GetTeam returns workflowStateWorkflowState.Team, and is useful for accessing the field via an interface.
+func (v *workflowStateWorkflowState) GetTeam() WorkflowStateSummaryFieldsTeam {
+	return v.WorkflowStateSummaryFields.Team
+}
+
+func (v *workflowStateWorkflowState) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*workflowStateWorkflowState
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.workflowStateWorkflowState = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.WorkflowStateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalworkflowStateWorkflowState struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Color string `json:"color"`
+
+	Position float64 `json:"position"`
+
+	Team WorkflowStateSummaryFieldsTeam `json:"team"`
+}
+
+func (v *workflowStateWorkflowState) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *workflowStateWorkflowState) __premarshalJSON() (*__premarshalworkflowStateWorkflowState, error) {
+	var retval __premarshalworkflowStateWorkflowState
+
+	retval.Id = v.WorkflowStateSummaryFields.Id
+	retval.Name = v.WorkflowStateSummaryFields.Name
+	retval.Type = v.WorkflowStateSummaryFields.Type
+	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Position = v.WorkflowStateSummaryFields.Position
+	retval.Team = v.WorkflowStateSummaryFields.Team
+	return &retval, nil
+}
+
+// workflowStatesResponse is returned by workflowStates on success.
+type workflowStatesResponse struct {
+	// All issue workflow states (issue statuses). Returns a paginated list of
+	// workflow states visible to the authenticated user, across all teams they have access to.
+	WorkflowStates workflowStatesWorkflowStatesWorkflowStateConnection `json:"workflowStates"`
+}
+
+// GetWorkflowStates returns workflowStatesResponse.WorkflowStates, and is useful for accessing the field via an interface.
+func (v *workflowStatesResponse) GetWorkflowStates() workflowStatesWorkflowStatesWorkflowStateConnection {
+	return v.WorkflowStates
+}
+
+// workflowStatesWorkflowStatesWorkflowStateConnection includes the requested fields of the GraphQL type WorkflowStateConnection.
+type workflowStatesWorkflowStatesWorkflowStateConnection struct {
+	Nodes    []workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState `json:"nodes"`
+	PageInfo workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns workflowStatesWorkflowStatesWorkflowStateConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnection) GetNodes() []workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState {
+	return v.Nodes
+}
+
+// GetPageInfo returns workflowStatesWorkflowStatesWorkflowStateConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnection) GetPageInfo() workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo {
+	return v.PageInfo
+}
+
+// workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
+	WorkflowStateSummaryFields `json:"-"`
+}
+
+// GetId returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetId() string {
+	return v.WorkflowStateSummaryFields.Id
+}
+
+// GetName returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetName() string {
+	return v.WorkflowStateSummaryFields.Name
+}
+
+// GetType returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetType() string {
+	return v.WorkflowStateSummaryFields.Type
+}
+
+// GetColor returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Color, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetColor() string {
+	return v.WorkflowStateSummaryFields.Color
+}
+
+// GetPosition returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Position, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetPosition() float64 {
+	return v.WorkflowStateSummaryFields.Position
+}
+
+// GetTeam returns workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Team, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetTeam() WorkflowStateSummaryFieldsTeam {
+	return v.WorkflowStateSummaryFields.Team
+}
+
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.WorkflowStateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalworkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Color string `json:"color"`
+
+	Position float64 `json:"position"`
+
+	Team WorkflowStateSummaryFieldsTeam `json:"team"`
+}
+
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState) __premarshalJSON() (*__premarshalworkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState, error) {
+	var retval __premarshalworkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState
+
+	retval.Id = v.WorkflowStateSummaryFields.Id
+	retval.Name = v.WorkflowStateSummaryFields.Name
+	retval.Type = v.WorkflowStateSummaryFields.Type
+	retval.Color = v.WorkflowStateSummaryFields.Color
+	retval.Position = v.WorkflowStateSummaryFields.Position
+	retval.Team = v.WorkflowStateSummaryFields.Team
+	return &retval, nil
+}
+
+// workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
 
 // The query executed by AllTeamIssues.
 const AllTeamIssues_Operation = `
@@ -14369,6 +14716,108 @@ func ViewerUser(
 	}
 
 	data_ = &ViewerUserResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by workflowState.
+const workflowState_Operation = `
+query workflowState ($id: String!) {
+	workflowState(id: $id) {
+		... WorkflowStateSummaryFields
+	}
+}
+fragment WorkflowStateSummaryFields on WorkflowState {
+	id
+	name
+	type
+	color
+	position
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func workflowState(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *workflowStateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "workflowState",
+		Query:  workflowState_Operation,
+		Variables: &__workflowStateInput{
+			Id: id,
+		},
+	}
+
+	data_ = &workflowStateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by workflowStates.
+const workflowStates_Operation = `
+query workflowStates ($first: Int, $after: String, $includeArchived: Boolean) {
+	workflowStates(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... WorkflowStateSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment WorkflowStateSummaryFields on WorkflowState {
+	id
+	name
+	type
+	color
+	position
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func workflowStates(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *workflowStatesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "workflowStates",
+		Query:  workflowStates_Operation,
+		Variables: &__workflowStatesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &workflowStatesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

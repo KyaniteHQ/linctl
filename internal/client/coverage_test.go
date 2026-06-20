@@ -183,6 +183,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"Users":                `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"UserByID":             `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
 		"ViewerUser":           `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"workflowStates":       `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"workflowState":        `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
 	}
 
 	// When
@@ -251,6 +253,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	user, err := GetUserByID(context.Background(), graphqlClient, "user-id")
 	require.NoError(t, err)
 	viewerUser, err := GetViewerUser(context.Background(), graphqlClient)
+	require.NoError(t, err)
+	workflowStates, err := ListWorkflowStates(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	workflowState, err := GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
 	require.NoError(t, err)
 
 	// Then
@@ -322,6 +328,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, users.Users[0].Admin)
 	require.Equal(t, "Omer", user.DisplayName)
 	require.Equal(t, "Omer", viewerUser.DisplayName)
+	require.True(t, workflowStates.HasNextPage)
+	require.Equal(t, &endCursor, workflowStates.EndCursor)
+	require.Equal(t, "Started", workflowStates.WorkflowStates[0].Name)
+	require.Equal(t, "LIT", workflowStates.WorkflowStates[0].TeamKey)
+	require.Equal(t, "started", workflowState.Type)
+	require.Equal(t, "linctl", workflowState.TeamName)
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
@@ -744,6 +756,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetViewerUser(context.Background(), graphqlClient)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get viewer user")
+
+		_, err = ListWorkflowStates(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list workflow states")
+
+		_, err = GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get workflow state workflow-state-id")
 	})
 
 	t.Run("issue mutations fail when payload omits entity", func(t *testing.T) {

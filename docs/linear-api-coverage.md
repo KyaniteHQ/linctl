@@ -4,8 +4,8 @@ Generated from current local sources and upstream Linear SDK commit `df20561`.
 
 Sources:
 
-- Upstream SDK methods: `/tmp/linctl-upstream-linear/packages/sdk/src/_generated_sdk.ts`
-- Upstream schema roots: `/tmp/linctl-upstream-linear/packages/sdk/src/schema.graphql`
+- Upstream SDK methods: `/tmp/linear-sdk-source/packages/sdk/src/_generated_sdk.ts`
+- Upstream schema roots: `/tmp/linear-sdk-source/packages/sdk/src/schema.graphql`
 - Local generated operations: `internal/client/generated.go`
 - Local GraphQL operations: `internal/client/operations/*.graphql`
 - Repo domain map: `docs/domain-map.md`
@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 30 | 458 |
-| Upstream Query root fields | 158 | 18 | 158 |
+| Upstream SDK root methods | 458 | 31 | 458 |
+| Upstream Query root fields | 158 | 19 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 54 | 54 | 54 |
-| Domain-map commands | 58 | 48 | 58 |
+| Local generated Go operations | 56 | 56 | 56 |
+| Domain-map commands | 64 | 50 | 64 |
 
 ## Upstream SDK Root Methods
 
@@ -482,7 +482,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `viewer` | getter | implemented | local operation or command exists |
 | `webhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhooks` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `workflowState` | method | safe_candidate | read operation may fit future CLI coverage |
+| `workflowState` | method | implemented | local operation or command exists |
 | `workflowStates` | method | implemented | local operation or command exists |
 
 ## Upstream Query Root Fields
@@ -645,7 +645,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `viewer` | `User!` | implemented | root field used by local GraphQL operation |
 | `webhook` | `Webhook!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhooks` | `WebhookConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `workflowState` | `WorkflowState!` | safe_candidate | read operation may fit future CLI coverage |
+| `workflowState` | `WorkflowState!` | implemented | root field used by local GraphQL operation |
 | `workflowStates` | `WorkflowStateConnection!` | implemented | root field used by local GraphQL operation |
 
 ## Upstream Mutation Root Fields
@@ -1075,6 +1075,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `Users` | query | `users` | implemented | `internal/client/generated.go` |
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `ViewerUser` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
+| `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 
 ## Repo Domain-Map Commands
 
@@ -1082,6 +1084,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | --- | --- | --- | --- | --- | --- |
 | Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help` / public CLI tests |
 | Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help` / public CLI tests |
+| Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
 | Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1091,13 +1094,13 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `next --dry-run` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; emits the first candidate without checkout/worktree creation | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `next --dry-run` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age before printing one candidate without checkout/worktree creation | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId` | Team-scoped unless `projectId` is set | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--append` first reads `Issue.description` and appends text before sending `description` | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation | Team-scoped unless `projectId` is set | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description` | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue comment` | `Mutation.commentCreate` | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId` | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project list` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1138,4 +1141,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | User | `user list` | `Query.users` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user get` | `Query.user` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help` / public CLI tests |
+| WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
+| WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 

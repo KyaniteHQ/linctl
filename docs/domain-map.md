@@ -216,3 +216,27 @@ Planned commands:
 | `user me` | `Query.viewer` | Read-only |
 
 User writes are not part of the v1 PM command surface until a later slice proves the exact Linear mutation and safety semantics.
+
+## WorkflowState
+
+Use the schema name `WorkflowState` in code and docs. It is Linear's issue status entity.
+
+Schema backing:
+
+- Types: `WorkflowState`, `WorkflowStateConnection`
+- Reads: `Query.workflowStates`, `Query.workflowState`, `Team.states`
+- Writes: `Mutation.workflowStateCreate`, `Mutation.workflowStateUpdate`, `Mutation.workflowStateArchive`
+- Inputs: `WorkflowStateCreateInput`, `WorkflowStateUpdateInput`
+- Relevant fields: `WorkflowState.id`, `WorkflowState.name`, `WorkflowState.type`, `WorkflowState.color`, `WorkflowState.position`, `WorkflowState.team`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `workflow-state list` | `Query.workflowStates` | Read-only |
+| `workflow-state get` | `Query.workflowState` | Read-only |
+| `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model |
+| `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation |
+| `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics |
+
+Only `workflow-state list` and `workflow-state get` are implemented in the current CLI. WorkflowState writes are deferred as team/admin configuration surface.

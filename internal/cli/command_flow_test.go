@@ -78,6 +78,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "user list", args: []string{"user", "list", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user me", args: []string{"user", "me"}, contains: "user-id Omer <omer@example.com>"},
+		{name: "workflow state list", args: []string{"workflow-state", "list", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
+		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
 	}
 
 	for _, test := range tests {
@@ -936,6 +938,21 @@ func Test_CommandFlows_print_minimal_human_output_when_format_flag_is_set(t *tes
 	require.Equal(t, "LIT-1\n", output.String())
 }
 
+func Test_CommandFlows_print_workflow_state_list_as_json(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--json", "workflow-state", "list", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), `"workflow_states": [`)
+	require.Contains(t, output.String(), `"team_key": "LIT"`)
+}
+
 func Test_CommandFlows_report_operation_errors(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -996,6 +1013,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "user list", args: []string{"user", "list"}, operation: "Users", contains: "list users"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "UserByID", contains: "get user user-id"},
 		{name: "user me", args: []string{"user", "me"}, operation: "ViewerUser", contains: "get viewer user"},
+		{name: "workflow state list", args: []string{"workflow-state", "list"}, operation: "workflowStates", contains: "list workflow states"},
+		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
 	}
 
 	for _, test := range tests {
@@ -1281,6 +1300,10 @@ func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {
 		return `{"user":` + commandUserJSON() + `}`, true
 	case "ViewerUser":
 		return `{"viewer":` + commandUserJSON() + `}`, true
+	case "workflowStates":
+		return `{"workflowStates":{"nodes":[` + commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "workflowState":
+		return `{"workflowState":` + commandWorkflowStateJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -1659,6 +1682,17 @@ func commandUserJSON() string {
 		"active":true,
 		"guest":false,
 		"admin":true
+	}`
+}
+
+func commandWorkflowStateJSON() string {
+	return `{
+		"id":"workflow-state-id",
+		"name":"Started",
+		"type":"started",
+		"color":"#f2c94c",
+		"position":2,
+		"team":{"id":"team-id","key":"LIT","name":"linctl"}
 	}`
 }
 

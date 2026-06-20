@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use the linctl Linear CLI as the control surface for Linear issue, project, Cycle, ProjectMilestone, document, label, team, and user work from agent sessions: reads, target-pinned guarded writes, branch issue lookup, ranked next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL whenever linctl covers the operation.
+description: Use linctl as the Linear control surface for issue, project, Cycle, ProjectMilestone, document, label, team, user, and WorkflowState work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -99,6 +99,8 @@ linctl team members TEAM_ID --json --limit 20
 linctl user list --json --limit 20
 linctl user get USER_ID --json
 linctl user me --json
+linctl workflow-state list --json --limit 20
+linctl workflow-state get WORKFLOW_STATE_ID --json
 ```
 
 `next --dry-run` is a ranked read-only picker: it considers unstarted issues with no active blockers, then ranks by active unblock count, priority, and age. It never creates a branch or worktree.
@@ -130,7 +132,7 @@ linctl project-milestone create PROJECT_ID --name "..." --json
 linctl project-milestone update PROJECT_MILESTONE_ID --name "..." --json
 ```
 
-Unsupported writes: ProjectMilestone delete; Document, label, team, and user writes. Report the limit instead of bypassing `linctl`.
+Unsupported writes: ProjectMilestone delete; Document, label, team, user, and WorkflowState writes. Report the limit instead of bypassing `linctl`.
 
 Completion criterion: the selected command exists above and matches the requested domain.
 
