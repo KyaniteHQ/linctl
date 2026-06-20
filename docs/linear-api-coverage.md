@@ -70,7 +70,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentSyncToSlack` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachments` | method | implemented | local operation or command exists |
 | `attachmentsForURL` | method | implemented | local operation or command exists |
-| `auditEntries` | method | safe_candidate | read operation may fit future CLI coverage |
+| `auditEntries` | method | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
 | `auditEntryTypes` | getter | implemented | local operation or command exists |
 | `authenticationSessions` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | getter | accepted_gap | repo-planned or likely useful CLI domain |
@@ -210,7 +210,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `document` | method | implemented | local operation or command exists |
 | `documentContentHistory` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `documents` | method | implemented | local operation or command exists |
-| `emailIntakeAddress` | method | safe_candidate | read operation may fit future CLI coverage |
+| `emailIntakeAddress` | method | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
 | `emailIntakeAddressRefreshSesDomainStatus` | method | safe_candidate | read operation may fit future CLI coverage |
 | `emailIntakeAddressRotate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -309,7 +309,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueUnsubscribe` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueVcsBranchSearch` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issues` | method | implemented | local operation or command exists |
-| `latestReleaseByAccessKey` | getter | safe_candidate | read operation may fit future CLI coverage |
+| `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `logout` | method | safe_candidate | read operation may fit future CLI coverage |
 | `logoutAllSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -326,8 +326,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organization` | getter | implemented | local operation or command exists |
 | `organizationDeleteChallenge` | getter | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `organizationExists` | method | implemented | local operation or command exists |
-| `organizationInvite` | method | safe_candidate | read operation may fit future CLI coverage |
-| `organizationInvites` | method | safe_candidate | read operation may fit future CLI coverage |
+| `organizationInvite` | method | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
+| `organizationInvites` | method | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationStartTrial` | getter | safe_candidate | read operation may fit future CLI coverage |
 | `organizationStartTrialForPlan` | method | safe_candidate | read operation may fit future CLI coverage |
 | `project` | method | implemented | local operation or command exists |
@@ -348,9 +348,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdate` | method | implemented | local operation or command exists |
 | `projectUpdates` | method | implemented | local operation or command exists |
 | `projects` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `pushSubscriptionTest` | method | safe_candidate | read operation may fit future CLI coverage |
+| `pushSubscriptionTest` | method | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
 | `rateLimitStatus` | getter | implemented | local operation or command exists |
-| `recentReleasesByAccessKey` | method | safe_candidate | read operation may fit future CLI coverage |
+| `recentReleasesByAccessKey` | method | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `refreshGoogleSheetsData` | method | safe_candidate | read operation may fit future CLI coverage |
 | `release` | method | implemented | local operation or command exists |
 | `releaseComplete` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -358,7 +358,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releaseNote` | method | implemented | local operation or command exists |
 | `releaseNotes` | method | implemented | local operation or command exists |
 | `releasePipeline` | method | implemented | local operation or command exists |
-| `releasePipelineByAccessKey` | getter | safe_candidate | read operation may fit future CLI coverage |
+| `releasePipelineByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `releasePipelines` | method | implemented | local operation or command exists |
 | `releaseSearch` | method | implemented | local operation or command exists |
 | `releaseStage` | method | implemented | local operation or command exists |
@@ -381,7 +381,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `searchProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `semanticSearch` | method | implemented | local operation or command exists |
 | `slaConfigurations` | method | implemented | local operation or command exists |
-| `ssoUrlFromEmail` | method | safe_candidate | read operation may fit future CLI coverage |
+| `ssoUrlFromEmail` | method | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
 | `suspendUser` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `team` | method | implemented | local operation or command exists |
 | `teamMembership` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -478,7 +478,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `userSettingsFlagsReset` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `userUnlinkFromIdentityProvider` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `users` | method | implemented | local operation or command exists |
-| `verifyGitHubEnterpriseServerInstallation` | method | safe_candidate | read operation may fit future CLI coverage |
+| `verifyGitHubEnterpriseServerInstallation` | method | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
 | `viewer` | getter | implemented | local operation or command exists |
 | `webhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhooks` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -506,7 +506,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentSources` | `AttachmentSourcesPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `attachments` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
 | `attachmentsForURL` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
-| `auditEntries` | `AuditEntryConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `auditEntries` | `AuditEntryConnection!` | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
 | `auditEntryTypes` | `[AuditEntryType!]!` | implemented | root field used by local GraphQL operation |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | `AuthResolverResponse!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -531,7 +531,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `documentContentHistoryEntries` | `DocumentContentHistoryPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `documentContentHistoryTimeline` | `DocumentContentHistoryTimelinePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `documents` | `DocumentConnection!` | implemented | root field used by local GraphQL operation |
-| `emailIntakeAddress` | `EmailIntakeAddress!` | safe_candidate | read operation may fit future CLI coverage |
+| `emailIntakeAddress` | `EmailIntakeAddress!` | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
 | `emoji` | `Emoji!` | implemented | root field used by local GraphQL operation |
 | `emojis` | `EmojiConnection!` | implemented | root field used by local GraphQL operation |
 | `entityExternalLink` | `EntityExternalLink!` | implemented | root field used by local GraphQL operation |
@@ -573,7 +573,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueToReleases` | `IssueToReleaseConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueVcsBranchSearch` | `Issue` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issues` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
-| `latestReleaseByAccessKey` | `Release` | safe_candidate | read operation may fit future CLI coverage |
+| `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `notification` | `Notification!` | implemented | root field used by local GraphQL operation |
 | `notificationSubscription` | `NotificationSubscription!` | implemented | root field used by local GraphQL operation |
@@ -585,9 +585,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organization` | `Organization!` | implemented | root field used by local GraphQL operation |
 | `organizationDomainClaimRequest` | `OrganizationDomainClaimPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `organizationExists` | `OrganizationExistsPayload!` | implemented | root field used by local GraphQL operation |
-| `organizationInvite` | `OrganizationInvite!` | safe_candidate | read operation may fit future CLI coverage |
+| `organizationInvite` | `OrganizationInvite!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `organizationInvites` | `OrganizationInviteConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | implemented | root field used by local GraphQL operation |
 | `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -603,14 +603,14 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectUpdate` | `ProjectUpdate!` | implemented | root field used by local GraphQL operation |
 | `projectUpdates` | `ProjectUpdateConnection!` | implemented | root field used by local GraphQL operation |
 | `projects` | `ProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
 | `rateLimitStatus` | `RateLimitPayload!` | implemented | root field used by local GraphQL operation |
-| `recentReleasesByAccessKey` | `[Release!]!` | safe_candidate | read operation may fit future CLI coverage |
+| `recentReleasesByAccessKey` | `[Release!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `release` | `Release!` | implemented | root field used by local GraphQL operation |
 | `releaseNote` | `ReleaseNote!` | implemented | root field used by local GraphQL operation |
 | `releaseNotes` | `ReleaseNoteConnection!` | implemented | root field used by local GraphQL operation |
 | `releasePipeline` | `ReleasePipeline!` | implemented | root field used by local GraphQL operation |
-| `releasePipelineByAccessKey` | `ReleasePipeline!` | safe_candidate | read operation may fit future CLI coverage |
+| `releasePipelineByAccessKey` | `ReleasePipeline!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `releasePipelines` | `ReleasePipelineConnection!` | implemented | root field used by local GraphQL operation |
 | `releaseSearch` | `[Release!]!` | implemented | root field used by local GraphQL operation |
 | `releaseStage` | `ReleaseStage!` | implemented | root field used by local GraphQL operation |
@@ -625,7 +625,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `searchProjects` | `ProjectSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `semanticSearch` | `SemanticSearchPayload!` | implemented | root field used by local GraphQL operation |
 | `slaConfigurations` | `[SlaConfiguration!]!` | implemented | root field used by local GraphQL operation |
-| `ssoUrlFromEmail` | `SsoUrlFromEmailResponse!` | safe_candidate | read operation may fit future CLI coverage |
+| `ssoUrlFromEmail` | `SsoUrlFromEmailResponse!` | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
 | `team` | `Team!` | implemented | root field used by local GraphQL operation |
 | `teamMembership` | `TeamMembership!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `teamMemberships` | `TeamMembershipConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -641,7 +641,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `userSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `userSettings` | `UserSettings!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `users` | `UserConnection!` | implemented | root field used by local GraphQL operation |
-| `verifyGitHubEnterpriseServerInstallation` | `GitHubEnterpriseServerInstallVerificationPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `verifyGitHubEnterpriseServerInstallation` | `GitHubEnterpriseServerInstallVerificationPayload!` | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
 | `viewer` | `User!` | implemented | root field used by local GraphQL operation |
 | `webhook` | `Webhook!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhooks` | `WebhookConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |

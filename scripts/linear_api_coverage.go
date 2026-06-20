@@ -874,6 +874,9 @@ func classifyRoot(field rootField, implementedRoots map[string]bool) (string, st
 
 func classifyLoose(name string, kind string) (string, string) {
 	lower := strings.ToLower(name)
+	if status, rationale, ok := explicitRiskClassification(lower); ok {
+		return status, rationale
+	}
 	switch {
 	case strings.Contains(lower, "delete"),
 		strings.Contains(lower, "remove"),
@@ -906,6 +909,93 @@ func classifyLoose(name string, kind string) (string, string) {
 		}
 		return "safe_candidate", "read operation may fit future CLI coverage"
 	}
+}
+
+func explicitRiskClassification(lowerName string) (string, string, bool) {
+	classifications := map[string]struct {
+		status    string
+		rationale string
+	}{
+		"auditentries": {
+			status: "blocked_needs_design",
+			rationale: "audit logs can expose actor, IP, country, and request metadata; " +
+				"needs explicit admin/security output model",
+		},
+		"emailintakeaddress": {
+			status:    "intentionally_excluded",
+			rationale: "email intake administration sits outside the ordinary agent CLI read surface",
+		},
+		"emailintakeaddress_sesdomainidentity": {
+			status:    "intentionally_excluded",
+			rationale: "email domain identity administration sits outside the ordinary agent CLI read surface",
+		},
+		"latestreleasebyaccesskey": {
+			status:    "intentionally_excluded",
+			rationale: accessKeyReleaseRationale(),
+		},
+		"latestreleasebyaccesskey_history": {
+			status:    "intentionally_excluded",
+			rationale: accessKeyReleaseRationale(),
+		},
+		"latestreleasebyaccesskey_links": {
+			status:    "intentionally_excluded",
+			rationale: accessKeyReleaseRationale(),
+		},
+		"organizationinvite": {
+			status:    "intentionally_excluded",
+			rationale: organizationInviteRationale(),
+		},
+		"organizationinvites": {
+			status:    "intentionally_excluded",
+			rationale: organizationInviteRationale(),
+		},
+		"organization_subscription": {
+			status:    "intentionally_excluded",
+			rationale: "organization subscription and billing state is outside the ordinary agent CLI surface",
+		},
+		"pushsubscriptiontest": {
+			status: "intentionally_excluded",
+			rationale: "push subscription diagnostics are notification-device integration plumbing " +
+				"outside the CLI surface",
+		},
+		"recentreleasesbyaccesskey": {
+			status:    "intentionally_excluded",
+			rationale: accessKeyReleaseRationale(),
+		},
+		"releasepipelinebyaccesskey": {
+			status:    "intentionally_excluded",
+			rationale: accessKeyReleaseRationale(),
+		},
+		"releasepipelinebyaccesskey_releases": {
+			status:    "intentionally_excluded",
+			rationale: accessKeyReleaseRationale(),
+		},
+		"releasepipelinebyaccesskey_stages": {
+			status:    "intentionally_excluded",
+			rationale: accessKeyReleaseRationale(),
+		},
+		"ssourlfromemail": {
+			status:    "intentionally_excluded",
+			rationale: "SSO discovery from email belongs to auth flow tooling, not the Linear work CLI",
+		},
+		"verifygithubenterpriseserverinstallation": {
+			status: "intentionally_excluded",
+			rationale: "GitHub Enterprise installation verification is integration administration " +
+				"outside the CLI surface",
+		},
+	}
+	classification, ok := classifications[lowerName]
+	return classification.status, classification.rationale, ok
+}
+
+func accessKeyReleaseRationale() string {
+	return "access-key release reads are unauthenticated sharing surfaces " +
+		"outside the token-scoped agent CLI"
+}
+
+func organizationInviteRationale() string {
+	return "organization invite reads can expose invitee and admin metadata " +
+		"outside an agent-safe CLI surface"
 }
 
 func countImplemented(fields []rootField, implementedRoots map[string]bool) int {
