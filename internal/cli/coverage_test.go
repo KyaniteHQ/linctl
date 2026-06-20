@@ -178,6 +178,10 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Shared:           true,
 		RecentUsageCount: 3,
 	}
+	auditEntryType := client.AuditEntryTypeSummary{
+		Type:        "user_login",
+		Description: "User logged in",
+	}
 	agentActivity := client.AgentActivitySummary{
 		ID:             "agent-activity-id",
 		AgentSessionID: "agent-session-id",
@@ -303,6 +307,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(textCommand, &textOptions, application))
 	require.NoError(t, writeAgentActivity(textCommand, &textOptions, agentActivity))
 	require.NoError(t, writeAgentSkill(textCommand, &textOptions, agentSkill))
+	require.NoError(t, writeAuditEntryType(textCommand, &textOptions, auditEntryType))
 	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(textCommand, &textOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
@@ -339,6 +344,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"app-id Demo App by Kyanite\n"+
 			"agent-activity-id session agent-session-id [action] signal continue\n"+
 			"agent-skill-id Triage Helper shared true recent 3\n"+
+			"user_login User logged in\n"+
 			"kyanite exists true success true\n"+
 			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
 			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
@@ -387,6 +393,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(jsonCommand, &jsonOptions, application))
 	require.NoError(t, writeAgentActivity(jsonCommand, &jsonOptions, agentActivity))
 	require.NoError(t, writeAgentSkill(jsonCommand, &jsonOptions, agentSkill))
+	require.NoError(t, writeAuditEntryType(jsonCommand, &jsonOptions, auditEntryType))
 	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(jsonCommand, &jsonOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
@@ -427,6 +434,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"client_id": "app-client-id"`)
 	require.Contains(t, jsonOut.String(), `"content_type": "action"`)
 	require.Contains(t, jsonOut.String(), `"title": "Triage Helper"`)
+	require.Contains(t, jsonOut.String(), `"description": "User logged in"`)
 	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
 	require.Contains(t, jsonOut.String(), `"remaining_amount": 900`)
 	require.Contains(t, jsonOut.String(), `"type": "issue"`)
@@ -615,6 +623,10 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Shared:           true,
 		RecentUsageCount: 3,
 	}
+	auditEntryType := client.AuditEntryTypeSummary{
+		Type:        "user_login",
+		Description: "User logged in",
+	}
 	agentActivity := client.AgentActivitySummary{
 		ID:             "agent-activity-id",
 		AgentSessionID: "agent-session-id",
@@ -728,6 +740,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(command, &rootOptions{idOnly: true}, application))
 	require.NoError(t, writeAgentActivity(command, &rootOptions{idOnly: true}, agentActivity))
 	require.NoError(t, writeAgentSkill(command, &rootOptions{idOnly: true}, agentSkill))
+	require.NoError(t, writeAuditEntryType(command, &rootOptions{idOnly: true}, auditEntryType))
 	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
 	require.NoError(t, writeEmoji(command, &rootOptions{idOnly: true}, emoji))
 	require.NoError(t, writeAttachment(command, &rootOptions{idOnly: true}, attachment))
@@ -769,6 +782,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "app-id")
 	require.Contains(t, output.String(), "agent-activity-id")
 	require.Contains(t, output.String(), "agent-skill-id")
+	require.Contains(t, output.String(), "user_login")
 	require.Contains(t, output.String(), "favorite-id")
 	require.Contains(t, output.String(), "emoji-id")
 	require.Contains(t, output.String(), "attachment-id")
@@ -813,6 +827,12 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(quietCommand, &rootOptions{quiet: true}, application))
 	require.NoError(t, writeAgentActivity(quietCommand, &rootOptions{quiet: true}, agentActivity))
 	require.NoError(t, writeAgentSkill(quietCommand, &rootOptions{quiet: true}, agentSkill))
+	require.NoError(t, writeAuditEntryType(quietCommand, &rootOptions{quiet: true}, auditEntryType))
+	require.NoError(t, writeAuditEntryTypes(
+		quietCommand,
+		&rootOptions{quiet: true},
+		client.AuditEntryTypeList{AuditEntryTypes: []client.AuditEntryTypeSummary{auditEntryType}},
+	))
 	require.NoError(t, writeOrganizationExists(quietCommand, &rootOptions{quiet: true}, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(quietCommand, &rootOptions{quiet: true}, rateLimitStatus))
 	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
@@ -934,6 +954,15 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 		"notification_subscriptions": []any{
 			map[string]any{"id": "notification-subscription-id", "target_type": "project"},
 		},
+	}, projected)
+
+	projected, err = projectJSONFields(
+		map[string]any{"audit_entry_types": []any{map[string]any{"type": "user_login", "description": "User logged in"}}},
+		"type,description",
+	)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"audit_entry_types": []any{map[string]any{"type": "user_login", "description": "User logged in"}},
 	}, projected)
 
 	projected, err = projectJSONFields(
@@ -1417,6 +1446,21 @@ func Test_CommandFlows_cover_rate_limit_writer_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "write line")
 	})
+}
+
+func Test_CommandFlows_cover_audit_entry_type_writer_errors(t *testing.T) {
+	command := &cobra.Command{}
+	command.SetOut(commandFailingWriter{})
+	types := client.AuditEntryTypeList{
+		AuditEntryTypes: []client.AuditEntryTypeSummary{
+			{Type: "user_login", Description: "User logged in"},
+		},
+	}
+
+	err := writeAuditEntryTypes(command, &rootOptions{}, types)
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "write line")
 }
 
 type countFailingWriter struct {

@@ -17441,6 +17441,31 @@ func (v *attachmentsResponse) GetAttachments() attachmentsAttachmentsAttachmentC
 	return v.Attachments
 }
 
+// auditEntryTypesAuditEntryTypesAuditEntryType includes the requested fields of the GraphQL type AuditEntryType.
+type auditEntryTypesAuditEntryTypesAuditEntryType struct {
+	// The audit entry type.
+	Type string `json:"type"`
+	// Description of the audit entry type.
+	Description string `json:"description"`
+}
+
+// GetType returns auditEntryTypesAuditEntryTypesAuditEntryType.Type, and is useful for accessing the field via an interface.
+func (v *auditEntryTypesAuditEntryTypesAuditEntryType) GetType() string { return v.Type }
+
+// GetDescription returns auditEntryTypesAuditEntryTypesAuditEntryType.Description, and is useful for accessing the field via an interface.
+func (v *auditEntryTypesAuditEntryTypesAuditEntryType) GetDescription() string { return v.Description }
+
+// auditEntryTypesResponse is returned by auditEntryTypes on success.
+type auditEntryTypesResponse struct {
+	// List of audit entry types.
+	AuditEntryTypes []auditEntryTypesAuditEntryTypesAuditEntryType `json:"auditEntryTypes"`
+}
+
+// GetAuditEntryTypes returns auditEntryTypesResponse.AuditEntryTypes, and is useful for accessing the field via an interface.
+func (v *auditEntryTypesResponse) GetAuditEntryTypes() []auditEntryTypesAuditEntryTypesAuditEntryType {
+	return v.AuditEntryTypes
+}
+
 // commentComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
@@ -40779,6 +40804,37 @@ func attachmentsForURL(
 	}
 
 	data_ = &attachmentsForURLResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by auditEntryTypes.
+const auditEntryTypes_Operation = `
+query auditEntryTypes {
+	auditEntryTypes {
+		type
+		description
+	}
+}
+`
+
+func auditEntryTypes(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *auditEntryTypesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "auditEntryTypes",
+		Query:  auditEntryTypes_Operation,
+	}
+
+	data_ = &auditEntryTypesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

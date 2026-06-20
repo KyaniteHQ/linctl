@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 88 | 458 |
-| Upstream Query root fields | 158 | 76 | 158 |
+| Upstream SDK root methods | 458 | 89 | 458 |
+| Upstream Query root fields | 158 | 77 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 138 | 138 | 138 |
-| Domain-map commands | 225 | 118 | 225 |
+| Local generated Go operations | 139 | 139 | 139 |
+| Domain-map commands | 227 | 119 | 227 |
 
 ## Upstream SDK Root Methods
 
@@ -71,7 +71,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachments` | method | implemented | local operation or command exists |
 | `attachmentsForURL` | method | implemented | local operation or command exists |
 | `auditEntries` | method | safe_candidate | read operation may fit future CLI coverage |
-| `auditEntryTypes` | getter | safe_candidate | read operation may fit future CLI coverage |
+| `auditEntryTypes` | getter | implemented | local operation or command exists |
 | `authenticationSessions` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | getter | accepted_gap | repo-planned or likely useful CLI domain |
 | `comment` | method | implemented | local operation or command exists |
@@ -507,7 +507,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachments` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
 | `attachmentsForURL` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
 | `auditEntries` | `AuditEntryConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `auditEntryTypes` | `[AuditEntryType!]!` | safe_candidate | read operation may fit future CLI coverage |
+| `auditEntryTypes` | `[AuditEntryType!]!` | implemented | root field used by local GraphQL operation |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | `AuthResolverResponse!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `comment` | `Comment!` | implemented | root field used by local GraphQL operation |
@@ -1067,6 +1067,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachment` | query | `attachment` | implemented | `internal/client/generated.go` |
 | `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
 | `attachmentsForURL` | query | `attachmentsForURL` | implemented | `internal/client/generated.go` |
+| `auditEntryTypes` | query | `auditEntryTypes` | implemented | `internal/client/generated.go` |
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `customView` | query | `customView` | implemented | `internal/client/generated.go` |
@@ -1167,6 +1168,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | accepted_gap | planned in `docs/domain-map.md` |
 | AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | accepted_gap | planned in `docs/domain-map.md` |
 | AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | accepted_gap | planned in `docs/domain-map.md` |
+| AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | implemented | `linctl --help` / public CLI tests |
+| AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | accepted_gap | planned in `docs/domain-map.md` |
 | Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | implemented | `linctl --help` / public CLI tests |

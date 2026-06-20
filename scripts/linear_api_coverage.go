@@ -628,6 +628,7 @@ func commandImplemented(command string) bool {
 		"agent-activity get":             true,
 		"agent-skill list":               true,
 		"agent-skill get":                true,
+		"audit-entry types":              true,
 		"organization exists":            true,
 		"organization templates":         true,
 		"rate-limit status":              true,

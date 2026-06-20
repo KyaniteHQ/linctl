@@ -36,6 +36,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "agent activity get", args: []string{"agent-activity", "get", "agent-activity-id"}, contains: "agent-activity-id session agent-session-id [action] signal continue"},
 		{name: "agent skill list", args: []string{"agent-skill", "list", "--limit", "1"}, contains: "agent-skill-id Triage Helper shared true recent 3"},
 		{name: "agent skill get", args: []string{"agent-skill", "get", "agent-skill-id"}, contains: "agent-skill-id Triage Helper shared true recent 3"},
+		{name: "audit entry types", args: []string{"audit-entry", "types"}, contains: "user_login User logged in"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
 		{name: "organization templates", args: []string{"organization", "templates", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, contains: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000"},
@@ -515,6 +516,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"agent-activity", "get", "agent-activity-id"},
 			{"agent-skill", "list"},
 			{"agent-skill", "get", "agent-skill-id"},
+			{"audit-entry", "types"},
 			{"organization", "exists", "kyanite"},
 			{"rate-limit", "status"},
 			{"release", "list"},
@@ -736,6 +738,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "agent-activity", "get", "agent-activity-id"},
 		{"--json", "--fields", "id,title,shared", "agent-skill", "list", "--limit", "1"},
 		{"--json", "agent-skill", "get", "agent-skill-id"},
+		{"--json", "--fields", "type,description", "audit-entry", "types"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1143,6 +1146,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "agent activity get", args: []string{"agent-activity", "get", "agent-activity-id"}, operation: "agentActivity", contains: "get agent activity agent-activity-id"},
 		{name: "agent skill list", args: []string{"agent-skill", "list"}, operation: "agentSkills", contains: "list agent skills"},
 		{name: "agent skill get", args: []string{"agent-skill", "get", "agent-skill-id"}, operation: "agentSkill", contains: "get agent skill agent-skill-id"},
+		{name: "audit entry types", args: []string{"audit-entry", "types"}, operation: "auditEntryTypes", contains: "list audit entry types"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
 		{name: "organization templates", args: []string{"organization", "templates"}, operation: "organization_templates", contains: "list organization templates"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, operation: "rateLimitStatus", contains: "operation failed"},
@@ -1692,6 +1696,8 @@ func commandFlowInitiativePayload(operation string) (string, bool) {
 //nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
 func commandFlowExtraReadPayload(operation string) (string, bool) {
 	switch operation {
+	case "auditEntryTypes":
+		return `{"auditEntryTypes":[{"type":"user_login","description":"User logged in"}]}`, true
 	case "notifications":
 		return `{"notifications":{"nodes":[` + commandNotificationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "notification":

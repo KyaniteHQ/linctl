@@ -79,6 +79,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addApplicationCommand(ctx, command, options)
 	addAgentActivityCommand(ctx, command, options)
 	addAgentSkillCommand(ctx, command, options)
+	addAuditEntryCommand(ctx, command, options)
 	addOrganizationCommand(ctx, command, options)
 	addRateLimitCommand(ctx, command, options)
 	addNotificationCommand(ctx, command, options)

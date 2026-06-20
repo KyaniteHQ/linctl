@@ -41,6 +41,7 @@ PY
   fi
   "$binary" agent-activity list --json --limit 5 >/dev/null
   "$binary" agent-skill list --json --limit 5 >/dev/null
+  "$binary" audit-entry types --json >/dev/null
   "$binary" organization exists "$org_url_key" --json >/dev/null
   "$binary" organization templates --json --limit 5 >/dev/null
   "$binary" rate-limit status --json >/dev/null

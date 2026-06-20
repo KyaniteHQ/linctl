@@ -1,0 +1,6 @@
+query auditEntryTypes {
+  auditEntryTypes {
+    type
+    description
+  }
+}

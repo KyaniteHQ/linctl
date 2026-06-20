@@ -194,6 +194,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"agentActivity":          `{"agentActivity":` + agentActivityJSON("action") + `}`,
 		"agentSkills":            `{"agentSkills":{"nodes":[` + agentSkillJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"agentSkill":             `{"agentSkill":` + agentSkillJSON() + `}`,
+		"auditEntryTypes":        `{"auditEntryTypes":[{"type":"user_login","description":"User logged in"}]}`,
 		"organizationExists":     `{"organizationExists":{"success":true,"exists":true}}`,
 		"organization_templates": `{"organization":{"templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"rateLimitStatus":        `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
@@ -329,6 +330,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	agentSkills, err := ListAgentSkills(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	agentSkill, err := GetAgentSkillByID(context.Background(), graphqlClient, "agent-skill-id")
+	require.NoError(t, err)
+	auditEntryTypes, err := ListAuditEntryTypes(context.Background(), graphqlClient)
 	require.NoError(t, err)
 	comments, err := ListIssueComments(context.Background(), graphqlClient, "LIT-12", 2)
 	require.NoError(t, err)
@@ -561,6 +564,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Triage Helper", agentSkills.AgentSkills[0].Title)
 	require.Equal(t, "agent-skill-id", agentSkill.ID)
 	require.Equal(t, "updater-id", agentSkill.LastUpdatedByID)
+	require.Equal(t, "user_login", auditEntryTypes.AuditEntryTypes[0].Type)
+	require.Equal(t, "User logged in", auditEntryTypes.AuditEntryTypes[0].Description)
 	require.Equal(t, "LIT-12", comments.Identifier)
 	require.True(t, comments.HasNextPage)
 	require.Equal(t, &endCursor, comments.EndCursor)
@@ -1252,6 +1257,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetAgentSkillByID(context.Background(), graphqlClient, "agent-skill-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get agent skill agent-skill-id")
+
+		_, err = ListAuditEntryTypes(context.Background(), graphqlClient)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list audit entry types")
 
 		_, err = ListIssueComments(context.Background(), graphqlClient, "LIT-1", 1)
 		require.Error(t, err)

@@ -59,6 +59,24 @@ Planned commands:
 
 Only `agent-skill list` and `agent-skill get` are implemented in the current CLI. AgentSkill writes remain deferred until their guard model is explicit.
 
+## AuditEntry
+
+Schema backing:
+
+- Types: `AuditEntryType`
+- Reads: `Query.auditEntryTypes`
+- Deferred reads: `Query.auditEntries`
+- Relevant fields: `AuditEntryType.type`, `AuditEntryType.description`
+
+Command coverage:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `audit-entry types` | `Query.auditEntryTypes` | Read-only |
+| `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model |
+
+Only `audit-entry types` is implemented in the current CLI. Audit entry listing remains deferred until the security-sensitive output model is explicit.
+
 ## Notification
 
 Schema backing:
