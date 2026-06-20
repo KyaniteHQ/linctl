@@ -109,6 +109,7 @@ linctl favorite get favorite-id
 linctl emoji list --limit 20
 linctl emoji get emoji-id
 linctl attachment list --limit 20
+linctl attachment url https://example.com/spec --limit 20
 linctl attachment get attachment-id
 linctl project usage
 ```
@@ -174,6 +175,7 @@ linctl favorite get favorite-id
 linctl emoji list --limit 20
 linctl emoji get emoji-id
 linctl attachment list --limit 20
+linctl attachment url https://example.com/spec --limit 20
 linctl attachment get attachment-id
 linctl --fail-on-empty --sort title --order asc issue list
 linctl --format minimal issue get LIT-123

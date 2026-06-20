@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 45 | 458 |
-| Upstream Query root fields | 158 | 33 | 158 |
+| Upstream SDK root methods | 458 | 46 | 458 |
+| Upstream Query root fields | 158 | 34 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 70 | 70 | 70 |
-| Domain-map commands | 97 | 64 | 97 |
+| Local generated Go operations | 71 | 71 | 71 |
+| Domain-map commands | 98 | 65 | 98 |
 
 ## Upstream SDK Root Methods
 
@@ -69,7 +69,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentLinkZendesk` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentSyncToSlack` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachments` | method | implemented | local operation or command exists |
-| `attachmentsForURL` | method | safe_candidate | read operation may fit future CLI coverage |
+| `attachmentsForURL` | method | implemented | local operation or command exists |
 | `auditEntries` | method | safe_candidate | read operation may fit future CLI coverage |
 | `auditEntryTypes` | getter | safe_candidate | read operation may fit future CLI coverage |
 | `authenticationSessions` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -505,7 +505,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentIssue` | `Issue!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `attachmentSources` | `AttachmentSourcesPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `attachments` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
-| `attachmentsForURL` | `AttachmentConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `attachmentsForURL` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
 | `auditEntries` | `AuditEntryConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `auditEntryTypes` | `[AuditEntryType!]!` | safe_candidate | read operation may fit future CLI coverage |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -1061,6 +1061,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `attachment` | query | `attachment` | implemented | `internal/client/generated.go` |
 | `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
+| `attachmentsForURL` | query | `attachmentsForURL` | implemented | `internal/client/generated.go` |
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `customView` | query | `customView` | implemented | `internal/client/generated.go` |
@@ -1189,6 +1190,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment get` | `Query.attachment` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | write command needs explicit target and safety semantics |

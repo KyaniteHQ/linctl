@@ -42,6 +42,30 @@ func ListAttachments(ctx context.Context, graphqlClient graphql.Client, limit in
 	}, nil
 }
 
+// ListAttachmentsForURL returns visible issue attachments linked to a URL.
+func ListAttachmentsForURL(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	url string,
+	limit int,
+) (AttachmentList, error) {
+	result, err := attachmentsForURL(ctx, graphqlClient, url, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return AttachmentList{}, fmt.Errorf("list attachments for url %s: %w", url, err)
+	}
+
+	summaries := make([]AttachmentSummary, 0, len(result.AttachmentsForURL.Nodes))
+	for _, node := range result.AttachmentsForURL.Nodes {
+		summaries = append(summaries, attachmentSummary(node.AttachmentSummaryFields))
+	}
+
+	return AttachmentList{
+		Attachments: summaries,
+		HasNextPage: result.AttachmentsForURL.PageInfo.HasNextPage,
+		EndCursor:   result.AttachmentsForURL.PageInfo.EndCursor,
+	}, nil
+}
+
 // GetAttachmentByID returns one attachment by Linear id.
 func GetAttachmentByID(
 	ctx context.Context,

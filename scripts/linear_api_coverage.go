@@ -683,6 +683,7 @@ func commandImplemented(command string) bool {
 		"emoji list":               true,
 		"emoji get":                true,
 		"attachment list":          true,
+		"attachment url":           true,
 		"attachment get":           true,
 	}
 	return implemented[command]

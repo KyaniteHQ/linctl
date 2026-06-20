@@ -93,6 +93,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "emoji list", args: []string{"emoji", "list", "--limit", "1"}, contains: "emoji-id party [custom]"},
 		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, contains: "emoji-id party [custom]"},
 		{name: "attachment list", args: []string{"attachment", "list", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "attachment url", args: []string{"attachment", "url", "https://github.com/kyanite/linctl/pull/1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
 		{name: "attachment get", args: []string{"attachment", "get", "attachment-id"}, contains: "attachment-id Linked PR [github]"},
 	}
 
@@ -647,6 +648,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "emoji", "list", "--limit", "1"},
 		{"--json", "emoji", "get", "emoji-id"},
 		{"--json", "attachment", "list", "--limit", "1"},
+		{"--json", "attachment", "url", "https://github.com/kyanite/linctl/pull/1", "--limit", "1"},
 		{"--json", "attachment", "get", "attachment-id"},
 	}
 
@@ -1056,6 +1058,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "emoji list", args: []string{"emoji", "list"}, operation: "emojis", contains: "list emojis"},
 		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, operation: "emoji", contains: "get emoji emoji-id"},
 		{name: "attachment list", args: []string{"attachment", "list"}, operation: "attachments", contains: "list attachments"},
+		{name: "attachment url", args: []string{"attachment", "url", "https://github.com/kyanite/linctl/pull/1"}, operation: "attachmentsForURL", contains: "list attachments for url https://github.com/kyanite/linctl/pull/1"},
 		{name: "attachment get", args: []string{"attachment", "get", "attachment-id"}, operation: "attachment", contains: "get attachment attachment-id"},
 	}
 
@@ -1382,6 +1385,8 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"emoji":` + commandEmojiJSON() + `}`, true
 	case "attachments":
 		return `{"attachments":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "attachmentsForURL":
+		return `{"attachmentsForURL":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "attachment":
 		return `{"attachment":` + commandAttachmentJSON() + `}`, true
 	default:

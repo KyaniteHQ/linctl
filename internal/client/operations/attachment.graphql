@@ -10,6 +10,18 @@ query attachments($first: Int, $after: String, $includeArchived: Boolean) {
   }
 }
 
+query attachmentsForURL($url: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentsForURL(url: $url, first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...AttachmentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
 query attachment($id: String!) {
   attachment(id: $id) {
     ...AttachmentSummaryFields

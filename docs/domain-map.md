@@ -397,9 +397,10 @@ Planned commands:
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
 | `attachment list` | `Query.attachments` | Read-only |
+| `attachment url` | `Query.attachmentsForURL` | Read-only |
 | `attachment get` | `Query.attachment` | Read-only |
 | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation |
 | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation |
 | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics |
 
-Only `attachment list` and `attachment get` are implemented in the current CLI. Attachment writes are deferred until the owning-issue guard model is explicit.
+Only `attachment list`, `attachment url`, and `attachment get` are implemented in the current CLI. Attachment writes are deferred until the owning-issue guard model is explicit.

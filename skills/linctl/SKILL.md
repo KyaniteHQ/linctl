@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, and WorkflowState work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, initiative, CustomView, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -114,6 +114,7 @@ linctl favorite get FAVORITE_ID --json
 linctl emoji list --json --limit 20
 linctl emoji get EMOJI_ID --json
 linctl attachment list --json --limit 20
+linctl attachment url URL --json --limit 20
 linctl attachment get ATTACHMENT_ID --json
 ```
 
@@ -146,7 +147,7 @@ linctl project-milestone create PROJECT_ID --name "..." --json
 linctl project-milestone update PROJECT_MILESTONE_ID --name "..." --json
 ```
 
-Unsupported writes: comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; Document, label, team, user, and WorkflowState writes. Report the limit instead of bypassing `linctl`.
+Unsupported writes: comment resolve/unresolve/edit/delete; ProjectUpdate create/update/archive; ProjectMilestone delete; Document, label, team, user, WorkflowState, initiative, CustomView, Favorite, Emoji, and Attachment writes. Report the limit instead of bypassing `linctl`.
 
 Completion criterion: the selected command exists above and matches the requested domain.
 

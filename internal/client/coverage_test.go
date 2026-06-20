@@ -198,6 +198,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"emojis":            `{"emojis":{"nodes":[{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"emoji":             `{"emoji":{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}}`,
 		"attachments":       `{"attachments":{"nodes":[{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"attachmentsForURL": `{"attachmentsForURL":{"nodes":[{"id":"attachment-url-id","title":"Linked URL","subtitle":"url source","url":"https://example.com/spec","sourceType":"url"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"attachment":        `{"attachment":{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}}`,
 	}
 
@@ -297,6 +298,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	emoji, err := GetEmojiByID(context.Background(), graphqlClient, "emoji-id")
 	require.NoError(t, err)
 	attachments, err := ListAttachments(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	attachmentsForURL, err := ListAttachmentsForURL(context.Background(), graphqlClient, "https://example.com/spec", 2)
 	require.NoError(t, err)
 	attachment, err := GetAttachmentByID(context.Background(), graphqlClient, "attachment-id")
 	require.NoError(t, err)
@@ -421,6 +424,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, &endCursor, attachments.EndCursor)
 	require.Equal(t, "Linked PR", attachments.Attachments[0].Title)
 	require.Equal(t, "github", attachments.Attachments[0].SourceType)
+	require.True(t, attachmentsForURL.HasNextPage)
+	require.Equal(t, &endCursor, attachmentsForURL.EndCursor)
+	require.Equal(t, "Linked URL", attachmentsForURL.Attachments[0].Title)
+	require.Equal(t, "url", attachmentsForURL.Attachments[0].SourceType)
 	require.Equal(t, "attachment-id", attachment.ID)
 	require.Equal(t, "feat: add thing", attachment.Subtitle)
 }
@@ -905,6 +912,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListAttachments(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list attachments")
+
+		_, err = ListAttachmentsForURL(context.Background(), graphqlClient, "https://example.com/spec", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachments for url https://example.com/spec")
 
 		_, err = GetAttachmentByID(context.Background(), graphqlClient, "attachment-id")
 		require.Error(t, err)
