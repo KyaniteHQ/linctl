@@ -16,6 +16,34 @@ query releasePipeline($id: String!) {
   }
 }
 
+query releasePipeline_releases($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  releasePipeline(id: $id) {
+    releases(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ReleaseSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query releasePipeline_stages($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  releasePipeline(id: $id) {
+    stages(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ReleaseStageSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query releaseStages($first: Int, $after: String, $includeArchived: Boolean) {
   releaseStages(first: $first, after: $after, includeArchived: $includeArchived) {
     nodes {

@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 80 | 458 |
 | Upstream Query root fields | 158 | 68 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 118 | 118 | 118 |
-| Domain-map commands | 198 | 100 | 198 |
+| Local generated Go operations | 120 | 120 | 120 |
+| Domain-map commands | 200 | 102 | 200 |
 
 ## Upstream SDK Root Methods
 
@@ -1111,6 +1111,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releaseNote` | query | `releaseNote` | implemented | `internal/client/generated.go` |
 | `releaseNotes` | query | `releaseNotes` | implemented | `internal/client/generated.go` |
 | `releasePipeline` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
+| `releasePipeline_releases` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
+| `releasePipeline_stages` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
 | `releasePipelines` | query | `releasePipelines` | implemented | `internal/client/generated.go` |
 | `releaseSearch` | query | `releaseSearch` | implemented | `internal/client/generated.go` |
 | `releaseStage` | query | `releaseStage` | implemented | `internal/client/generated.go` |
@@ -1154,6 +1156,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Notification | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Release | `release-pipeline list` | `Query.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-pipeline get` | `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-pipeline releases` | `ReleasePipeline.releases` via `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-pipeline stages` | `ReleasePipeline.stages` via `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-stage list` | `Query.releaseStages` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-stage get` | `Query.releaseStage` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release list` | `Query.releases` | Read-only | implemented | `linctl --help` / public CLI tests |

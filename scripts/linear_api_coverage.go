@@ -631,6 +631,8 @@ func commandImplemented(command string) bool {
 		"notification subscription get":  true,
 		"release-pipeline list":          true,
 		"release-pipeline get":           true,
+		"release-pipeline releases":      true,
+		"release-pipeline stages":        true,
 		"release-stage list":             true,
 		"release-stage get":              true,
 		"release list":                   true,

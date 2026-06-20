@@ -62,6 +62,8 @@ linctl notification subscription list --json --limit 20
 linctl notification subscription get NOTIFICATION_SUBSCRIPTION_ID --json
 linctl release-pipeline list --json --limit 20
 linctl release-pipeline get RELEASE_PIPELINE_ID --json
+linctl release-pipeline releases RELEASE_PIPELINE_ID --json --limit 20
+linctl release-pipeline stages RELEASE_PIPELINE_ID --json --limit 20
 linctl release-stage list --json --limit 20
 linctl release-stage get RELEASE_STAGE_ID --json
 linctl release list --json --limit 20

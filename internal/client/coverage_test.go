@@ -199,6 +199,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"notificationSubscription": `{"notificationSubscription":` + notificationSubscriptionJSON() + `}`,
 		"releasePipelines":         `{"releasePipelines":{"nodes":[` + releasePipelineJSON() + `,` + trashedReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releasePipeline":          `{"releasePipeline":` + releasePipelineJSON() + `}`,
+		"releasePipeline_releases": `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releasePipeline_stages":   `{"releasePipeline":{"stages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"releaseStages":            `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releaseStage":             `{"releaseStage":` + releaseStageJSON() + `}`,
 		"releases":                 `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -330,6 +332,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	releasePipelines, err := ListReleasePipelines(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	releasePipeline, err := GetReleasePipelineByID(context.Background(), graphqlClient, "release-pipeline-id")
+	require.NoError(t, err)
+	releasePipelineReleases, err := ListReleasePipelineReleases(context.Background(), graphqlClient, "release-pipeline-id", 2)
+	require.NoError(t, err)
+	releasePipelineStages, err := ListReleasePipelineStages(context.Background(), graphqlClient, "release-pipeline-id", 2)
 	require.NoError(t, err)
 	releaseStages, err := ListReleaseStages(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -533,6 +539,14 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "scheduled", releasePipelines.ReleasePipelines[0].Type)
 	require.True(t, releasePipeline.IsProduction)
 	require.Equal(t, "template-id", releasePipeline.ReleaseNoteTemplateID)
+	require.True(t, releasePipelineReleases.HasNextPage)
+	require.Equal(t, &endCursor, releasePipelineReleases.EndCursor)
+	require.Equal(t, "release-id", releasePipelineReleases.Releases[0].ID)
+	require.Equal(t, "Production", releasePipelineReleases.Releases[0].PipelineName)
+	require.True(t, releasePipelineStages.HasNextPage)
+	require.Equal(t, &endCursor, releasePipelineStages.EndCursor)
+	require.Equal(t, "release-stage-id", releasePipelineStages.ReleaseStages[0].ID)
+	require.Equal(t, "Production", releasePipelineStages.ReleaseStages[0].PipelineName)
 	require.True(t, releaseStages.HasNextPage)
 	require.Equal(t, &endCursor, releaseStages.EndCursor)
 	require.Equal(t, "Started", releaseStages.ReleaseStages[0].Name)
@@ -1275,6 +1289,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetReleasePipelineByID(context.Background(), graphqlClient, "release-pipeline-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get release pipeline release-pipeline-id")
+
+		_, err = ListReleasePipelineReleases(context.Background(), graphqlClient, "release-pipeline-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release pipeline releases release-pipeline-id")
+
+		_, err = ListReleasePipelineStages(context.Background(), graphqlClient, "release-pipeline-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release pipeline stages release-pipeline-id")
 
 		_, err = ListReleaseStages(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

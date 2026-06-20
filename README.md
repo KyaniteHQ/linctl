@@ -67,6 +67,8 @@ linctl notification subscription list --limit 20
 linctl notification subscription get notification-subscription-id
 linctl release-pipeline list --limit 20
 linctl release-pipeline get release-pipeline-id
+linctl release-pipeline releases release-pipeline-id --limit 20
+linctl release-pipeline stages release-pipeline-id --limit 20
 linctl release-stage list --limit 20
 linctl release-stage get release-stage-id
 linctl release list --limit 20
@@ -179,6 +181,8 @@ linctl notification subscription list --limit 20
 linctl notification subscription get notification-subscription-id
 linctl release-pipeline list --limit 20
 linctl release-pipeline get release-pipeline-id
+linctl release-pipeline releases release-pipeline-id --limit 20
+linctl release-pipeline stages release-pipeline-id --limit 20
 linctl release-stage list --limit 20
 linctl release-stage get release-stage-id
 linctl release list --limit 20

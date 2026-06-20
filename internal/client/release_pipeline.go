@@ -89,6 +89,54 @@ func GetReleasePipelineByID(
 	return releasePipelineSummary(result.ReleasePipeline.ReleasePipelineSummaryFields), nil
 }
 
+// ListReleasePipelineReleases returns releases associated with one Linear release pipeline.
+func ListReleasePipelineReleases(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ReleaseList, error) {
+	result, err := releasePipeline_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ReleaseList{}, fmt.Errorf("list release pipeline releases %s: %w", id, err)
+	}
+
+	summaries := make([]ReleaseSummary, 0, len(result.ReleasePipeline.Releases.Nodes))
+	for _, node := range result.ReleasePipeline.Releases.Nodes {
+		summaries = append(summaries, releaseSummary(node.ReleaseSummaryFields))
+	}
+
+	return ReleaseList{
+		Releases:    summaries,
+		HasNextPage: result.ReleasePipeline.Releases.PageInfo.HasNextPage,
+		EndCursor:   result.ReleasePipeline.Releases.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListReleasePipelineStages returns stages associated with one Linear release pipeline.
+func ListReleasePipelineStages(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ReleaseStageList, error) {
+	result, err := releasePipeline_stages(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ReleaseStageList{}, fmt.Errorf("list release pipeline stages %s: %w", id, err)
+	}
+
+	summaries := make([]ReleaseStageSummary, 0, len(result.ReleasePipeline.Stages.Nodes))
+	for _, node := range result.ReleasePipeline.Stages.Nodes {
+		summaries = append(summaries, releaseStageSummary(node.ReleaseStageSummaryFields))
+	}
+
+	return ReleaseStageList{
+		ReleaseStages: summaries,
+		HasNextPage:   result.ReleasePipeline.Stages.PageInfo.HasNextPage,
+		EndCursor:     result.ReleasePipeline.Stages.PageInfo.EndCursor,
+	}, nil
+}
+
 // ListReleaseStages returns visible Linear release stages.
 func ListReleaseStages(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseStageList, error) {
 	result, err := releaseStages(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))

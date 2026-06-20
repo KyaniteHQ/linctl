@@ -39,6 +39,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, contains: "notification-subscription-id project Roadmap active true"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
+		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "release pipeline stages", args: []string{"release-pipeline", "stages", "release-pipeline-id", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release stage list", args: []string{"release-stage", "list", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release list", args: []string{"release", "list", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
@@ -693,6 +695,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "notification", "subscription", "get", "notification-subscription-id"},
 		{"--json", "release-pipeline", "list", "--limit", "1"},
 		{"--json", "release-pipeline", "get", "release-pipeline-id"},
+		{"--json", "--fields", "id,pipeline_id,stage_id", "release-pipeline", "releases", "release-pipeline-id", "--limit", "1"},
+		{"--json", "--fields", "id,pipeline_id,type", "release-pipeline", "stages", "release-pipeline-id", "--limit", "1"},
 		{"--json", "release-stage", "list", "--limit", "1"},
 		{"--json", "release-stage", "get", "release-stage-id"},
 		{"--json", "release", "list", "--limit", "1"},
@@ -1104,6 +1108,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "notification subscription get", args: []string{"notification", "subscription", "get", "notification-subscription-id"}, operation: "notificationSubscription", contains: "get notification subscription notification-subscription-id"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list"}, operation: "releasePipelines", contains: "list release pipelines"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
+		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id"}, operation: "releasePipeline_releases", contains: "list release pipeline releases release-pipeline-id"},
+		{name: "release pipeline stages", args: []string{"release-pipeline", "stages", "release-pipeline-id"}, operation: "releasePipeline_stages", contains: "list release pipeline stages release-pipeline-id"},
 		{name: "release stage list", args: []string{"release-stage", "list"}, operation: "releaseStages", contains: "list release stages"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, operation: "releaseStage", contains: "get release stage release-stage-id"},
 		{name: "release list", args: []string{"release", "list"}, operation: "releases", contains: "list releases"},
@@ -1566,6 +1572,10 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"releasePipelines":{"nodes":[` + commandReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releasePipeline":
 		return `{"releasePipeline":` + commandReleasePipelineJSON() + `}`, true
+	case "releasePipeline_releases":
+		return `{"releasePipeline":{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "releasePipeline_stages":
+		return `{"releasePipeline":{"stages":{"nodes":[` + commandReleaseStageJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "releaseStages":
 		return `{"releaseStages":{"nodes":[` + commandReleaseStageJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseStage":
