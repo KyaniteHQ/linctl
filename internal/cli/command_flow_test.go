@@ -32,6 +32,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "doctor", args: []string{"doctor"}, contains: "config ok\n token set\n target confirmed LIT/team-id project project-id"},
 		{name: "whoami", args: []string{"whoami"}, contains: "Omer <omer@example.com>"},
 		{name: "application info", args: []string{"application", "info", "app-client-id"}, contains: "app-id Demo App by Kyanite", fake: commandFlowFakeClient{expectedApplicationClientID: "app-client-id"}},
+		{name: "agent skill list", args: []string{"agent-skill", "list", "--limit", "1"}, contains: "agent-skill-id Triage Helper shared true recent 3"},
+		{name: "agent skill get", args: []string{"agent-skill", "get", "agent-skill-id"}, contains: "agent-skill-id Triage Helper shared true recent 3"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
 		{name: "organization templates", args: []string{"organization", "templates", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, contains: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000"},
@@ -507,6 +509,8 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"doctor"},
 			{"whoami"},
 			{"application", "info", "app-client-id"},
+			{"agent-skill", "list"},
+			{"agent-skill", "get", "agent-skill-id"},
 			{"organization", "exists", "kyanite"},
 			{"rate-limit", "status"},
 			{"release", "list"},
@@ -724,6 +728,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "release-note", "list", "--limit", "1"},
 		{"--json", "release-note", "get", "release-note-id"},
 		{"--json", "--fields", "id,client_id,name", "application", "info", "app-client-id"},
+		{"--json", "--fields", "id,title,shared", "agent-skill", "list", "--limit", "1"},
+		{"--json", "agent-skill", "get", "agent-skill-id"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1127,6 +1133,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "doctor target resolve", args: []string{"doctor"}, operation: "Teams", contains: "resolve teams"},
 		{name: "whoami resolve", args: []string{"whoami"}, operation: "Viewer", contains: "resolve viewer"},
 		{name: "application info", args: []string{"application", "info", "app-client-id"}, operation: "applicationInfo", contains: "get application info app-client-id"},
+		{name: "agent skill list", args: []string{"agent-skill", "list"}, operation: "agentSkills", contains: "list agent skills"},
+		{name: "agent skill get", args: []string{"agent-skill", "get", "agent-skill-id"}, operation: "agentSkill", contains: "get agent skill agent-skill-id"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
 		{name: "organization templates", args: []string{"organization", "templates"}, operation: "organization_templates", contains: "list organization templates"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, operation: "rateLimitStatus", contains: "operation failed"},
@@ -1519,6 +1527,10 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 		return `{"organizationExists":{"success":true,"exists":true}}`, nil
 	case "applicationInfo":
 		return commandApplicationInfoPayload(), nil
+	case "agentSkills":
+		return `{"agentSkills":{"nodes":[` + commandAgentSkillJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, nil
+	case "agentSkill":
+		return `{"agentSkill":` + commandAgentSkillJSON() + `}`, nil
 	case "organization_templates":
 		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, nil
 	case "rateLimitStatus":
@@ -1543,6 +1555,28 @@ func commandRateLimitStatusPayload() string {
 
 func commandApplicationInfoPayload() string {
 	return `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`
+}
+
+func commandAgentSkillJSON() string {
+	return `{
+		"id":"agent-skill-id",
+		"title":"Triage Helper",
+		"body":"Use this skill for triage.",
+		"description":"Helps triage issues",
+		"slugId":"triage-helper",
+		"teamId":"team-id",
+		"shared":true,
+		"icon":"sparkles",
+		"color":"#5e6ad2",
+		"recentUsageCount":3,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"lastUsedAt":"2026-06-20T12:00:00Z",
+		"owner":{"id":"owner-id"},
+		"creator":{"id":"creator-id"},
+		"lastUpdatedBy":{"id":"updater-id"}
+	}`
 }
 
 func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {

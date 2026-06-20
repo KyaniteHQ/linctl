@@ -77,6 +77,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addDoctorCommand(ctx, command, options)
 	addWhoamiCommand(ctx, command, options)
 	addApplicationCommand(ctx, command, options)
+	addAgentSkillCommand(ctx, command, options)
 	addOrganizationCommand(ctx, command, options)
 	addRateLimitCommand(ctx, command, options)
 	addNotificationCommand(ctx, command, options)

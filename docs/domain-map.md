@@ -17,6 +17,27 @@ Command names below are either implemented CLI surface or intentionally deferred
 
 The target vocabulary is `org_id`, `team_key`, `team_id`, and optional `project_id`. Do not introduce `workspace` as a flag or JSON key synonym.
 
+## AgentSkill
+
+Schema backing:
+
+- Types: `AgentSkill`, `AgentSkillConnection`
+- Reads: `Query.agentSkills`, `Query.agentSkill`
+- Writes: `Mutation.agentSkillCreate`, `Mutation.agentSkillUpdate`, `Mutation.agentSkillArchive`
+- Relevant fields: `AgentSkill.id`, `AgentSkill.title`, `AgentSkill.body`, `AgentSkill.description`, `AgentSkill.slugId`, `AgentSkill.teamId`, `AgentSkill.shared`, `AgentSkill.recentUsageCount`, `AgentSkill.owner`, `AgentSkill.creator`, `AgentSkill.lastUpdatedBy`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `agent-skill list` | `Query.agentSkills` | Read-only |
+| `agent-skill get` | `Query.agentSkill` | Read-only |
+| `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics |
+| `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation |
+| `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics |
+
+Only `agent-skill list` and `agent-skill get` are implemented in the current CLI. AgentSkill writes remain deferred until their guard model is explicit.
+
 ## Notification
 
 Schema backing:

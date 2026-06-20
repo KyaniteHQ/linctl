@@ -183,6 +183,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"IssueLabels":            `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"issueLabel":             `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
 		"Teams":                  `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"agentSkills":            `{"agentSkills":{"nodes":[` + agentSkillJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"agentSkill":             `{"agentSkill":` + agentSkillJSON() + `}`,
 		"organizationExists":     `{"organizationExists":{"success":true,"exists":true}}`,
 		"organization_templates": `{"organization":{"templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"rateLimitStatus":        `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
@@ -310,6 +312,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	projectMilestone, err := GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
 	require.NoError(t, err)
 	application, err := GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
+	require.NoError(t, err)
+	agentSkills, err := ListAgentSkills(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	agentSkill, err := GetAgentSkillByID(context.Background(), graphqlClient, "agent-skill-id")
 	require.NoError(t, err)
 	comments, err := ListIssueComments(context.Background(), graphqlClient, "LIT-12", 2)
 	require.NoError(t, err)
@@ -523,6 +529,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "app-client-id", application.ClientID)
 	require.Equal(t, "Demo App", application.Name)
 	require.Equal(t, "Kyanite", application.Developer)
+	require.True(t, agentSkills.HasNextPage)
+	require.Equal(t, &endCursor, agentSkills.EndCursor)
+	require.Equal(t, "agent-skill-id", agentSkills.AgentSkills[0].ID)
+	require.Equal(t, "Triage Helper", agentSkills.AgentSkills[0].Title)
+	require.Equal(t, "agent-skill-id", agentSkill.ID)
+	require.Equal(t, "updater-id", agentSkill.LastUpdatedByID)
 	require.Equal(t, "LIT-12", comments.Identifier)
 	require.True(t, comments.HasNextPage)
 	require.Equal(t, &endCursor, comments.EndCursor)
@@ -1198,6 +1210,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get application info app-client-id")
+
+		_, err = ListAgentSkills(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list agent skills")
+
+		_, err = GetAgentSkillByID(context.Background(), graphqlClient, "agent-skill-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get agent skill agent-skill-id")
 
 		_, err = ListIssueComments(context.Background(), graphqlClient, "LIT-1", 1)
 		require.Error(t, err)
@@ -2271,6 +2291,28 @@ func templateJSON() string {
 		"creator":{"id":"creator-id"},
 		"lastUpdatedBy":{"id":"updated-by-id"},
 		"inheritedFrom":{"id":"parent-template-id"}
+	}`
+}
+
+func agentSkillJSON() string {
+	return `{
+		"id":"agent-skill-id",
+		"title":"Triage Helper",
+		"body":"Use this skill for triage.",
+		"description":"Helps triage issues",
+		"slugId":"triage-helper",
+		"teamId":"team-id",
+		"shared":true,
+		"icon":"sparkles",
+		"color":"#5e6ad2",
+		"recentUsageCount":3,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"lastUsedAt":"2026-06-20T12:00:00Z",
+		"owner":{"id":"owner-id"},
+		"creator":{"id":"creator-id"},
+		"lastUpdatedBy":{"id":"updater-id"}
 	}`
 }
 

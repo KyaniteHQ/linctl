@@ -624,6 +624,8 @@ func commandImplemented(command string) bool {
 		"whoami":                         true,
 		"target":                         true,
 		"application info":               true,
+		"agent-skill list":               true,
+		"agent-skill get":                true,
 		"organization exists":            true,
 		"organization templates":         true,
 		"rate-limit status":              true,

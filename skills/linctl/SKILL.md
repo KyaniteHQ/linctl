@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for Application, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for Application, AgentSkill, organization, rate-limit, Notification, ReleasePipeline, ReleaseStage, Release, ReleaseNote, EntityExternalLink, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, TimeSchedule, Template, initiative, InitiativeRelation, InitiativeToProject, InitiativeUpdate, Roadmap, CustomView, Customer, CustomerNeed, CustomerStatus, CustomerTier, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -55,6 +55,8 @@ linctl doctor --json
 linctl target --json
 linctl whoami --json
 linctl application info CLIENT_ID --json
+linctl agent-skill list --json --limit 20
+linctl agent-skill get AGENT_SKILL_ID --json
 linctl organization exists URL_KEY --json
 linctl organization templates --json --limit 20
 linctl rate-limit status --json

@@ -10,6 +10,147 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// AgentSkillSummaryFields includes the GraphQL fields of AgentSkill requested by the fragment AgentSkillSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A user-defined skill that can be saved and reused in conversations with the
+// Linear Agent. Skills can be private to a user or shared with a team.
+type AgentSkillSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The skill's title.
+	Title string `json:"title"`
+	// The skill instructions in markdown format.
+	Body string `json:"body"`
+	// The skill's description. Null if no description has been generated.
+	Description *string `json:"description"`
+	// The skill's unique URL slug.
+	SlugId string `json:"slugId"`
+	// The identifier of the team this skill is shared with.
+	TeamId *string `json:"teamId"`
+	// Whether the skill is shared with everyone in the workspace. When false, only the owner can use the skill.
+	Shared bool `json:"shared"`
+	// The icon of the skill. Null if no icon is set.
+	Icon *string `json:"icon"`
+	// The skill's color. Null if no color is set.
+	Color *string `json:"color"`
+	// The number of times the skill was used by anyone in the workspace in the last 30 days.
+	RecentUsageCount float64 `json:"recentUsageCount"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The time the skill was last used by anyone in the workspace. Null if it has never been used.
+	LastUsedAt *string `json:"lastUsedAt"`
+	// The user who owns the skill.
+	Owner AgentSkillSummaryFieldsOwnerUser `json:"owner"`
+	// The user who created the skill.
+	Creator AgentSkillSummaryFieldsCreatorUser `json:"creator"`
+	// The user who last updated the skill. Null if unknown.
+	LastUpdatedBy *AgentSkillSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+}
+
+// GetId returns AgentSkillSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetId() string { return v.Id }
+
+// GetTitle returns AgentSkillSummaryFields.Title, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetTitle() string { return v.Title }
+
+// GetBody returns AgentSkillSummaryFields.Body, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetBody() string { return v.Body }
+
+// GetDescription returns AgentSkillSummaryFields.Description, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetDescription() *string { return v.Description }
+
+// GetSlugId returns AgentSkillSummaryFields.SlugId, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetSlugId() string { return v.SlugId }
+
+// GetTeamId returns AgentSkillSummaryFields.TeamId, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetTeamId() *string { return v.TeamId }
+
+// GetShared returns AgentSkillSummaryFields.Shared, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetShared() bool { return v.Shared }
+
+// GetIcon returns AgentSkillSummaryFields.Icon, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetIcon() *string { return v.Icon }
+
+// GetColor returns AgentSkillSummaryFields.Color, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetColor() *string { return v.Color }
+
+// GetRecentUsageCount returns AgentSkillSummaryFields.RecentUsageCount, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetRecentUsageCount() float64 { return v.RecentUsageCount }
+
+// GetCreatedAt returns AgentSkillSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns AgentSkillSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns AgentSkillSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetLastUsedAt returns AgentSkillSummaryFields.LastUsedAt, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetLastUsedAt() *string { return v.LastUsedAt }
+
+// GetOwner returns AgentSkillSummaryFields.Owner, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetOwner() AgentSkillSummaryFieldsOwnerUser { return v.Owner }
+
+// GetCreator returns AgentSkillSummaryFields.Creator, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetCreator() AgentSkillSummaryFieldsCreatorUser { return v.Creator }
+
+// GetLastUpdatedBy returns AgentSkillSummaryFields.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFields) GetLastUpdatedBy() *AgentSkillSummaryFieldsLastUpdatedByUser {
+	return v.LastUpdatedBy
+}
+
+// AgentSkillSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type AgentSkillSummaryFieldsCreatorUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns AgentSkillSummaryFieldsCreatorUser.Id, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFieldsCreatorUser) GetId() string { return v.Id }
+
+// AgentSkillSummaryFieldsLastUpdatedByUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type AgentSkillSummaryFieldsLastUpdatedByUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns AgentSkillSummaryFieldsLastUpdatedByUser.Id, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFieldsLastUpdatedByUser) GetId() string { return v.Id }
+
+// AgentSkillSummaryFieldsOwnerUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type AgentSkillSummaryFieldsOwnerUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns AgentSkillSummaryFieldsOwnerUser.Id, and is useful for accessing the field via an interface.
+func (v *AgentSkillSummaryFieldsOwnerUser) GetId() string { return v.Id }
+
 // ApplicationInfoFields includes the GraphQL fields of Application requested by the fragment ApplicationInfoFields.
 // The GraphQL type's documentation follows.
 //
@@ -14418,6 +14559,30 @@ func (v *__TeamsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __TeamsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__TeamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __agentSkillInput is used internally by genqlient
+type __agentSkillInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __agentSkillInput.Id, and is useful for accessing the field via an interface.
+func (v *__agentSkillInput) GetId() string { return v.Id }
+
+// __agentSkillsInput is used internally by genqlient
+type __agentSkillsInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __agentSkillsInput.First, and is useful for accessing the field via an interface.
+func (v *__agentSkillsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __agentSkillsInput.After, and is useful for accessing the field via an interface.
+func (v *__agentSkillsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __agentSkillsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__agentSkillsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __applicationInfoInput is used internally by genqlient
 type __applicationInfoInput struct {
 	ClientId string `json:"clientId"`
@@ -15465,6 +15630,406 @@ func (v *__workflowStatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __workflowStatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__workflowStatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// agentSkillAgentSkill includes the requested fields of the GraphQL type AgentSkill.
+// The GraphQL type's documentation follows.
+//
+// A user-defined skill that can be saved and reused in conversations with the
+// Linear Agent. Skills can be private to a user or shared with a team.
+type agentSkillAgentSkill struct {
+	AgentSkillSummaryFields `json:"-"`
+}
+
+// GetId returns agentSkillAgentSkill.Id, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetId() string { return v.AgentSkillSummaryFields.Id }
+
+// GetTitle returns agentSkillAgentSkill.Title, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetTitle() string { return v.AgentSkillSummaryFields.Title }
+
+// GetBody returns agentSkillAgentSkill.Body, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetBody() string { return v.AgentSkillSummaryFields.Body }
+
+// GetDescription returns agentSkillAgentSkill.Description, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetDescription() *string { return v.AgentSkillSummaryFields.Description }
+
+// GetSlugId returns agentSkillAgentSkill.SlugId, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetSlugId() string { return v.AgentSkillSummaryFields.SlugId }
+
+// GetTeamId returns agentSkillAgentSkill.TeamId, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetTeamId() *string { return v.AgentSkillSummaryFields.TeamId }
+
+// GetShared returns agentSkillAgentSkill.Shared, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetShared() bool { return v.AgentSkillSummaryFields.Shared }
+
+// GetIcon returns agentSkillAgentSkill.Icon, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetIcon() *string { return v.AgentSkillSummaryFields.Icon }
+
+// GetColor returns agentSkillAgentSkill.Color, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetColor() *string { return v.AgentSkillSummaryFields.Color }
+
+// GetRecentUsageCount returns agentSkillAgentSkill.RecentUsageCount, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetRecentUsageCount() float64 {
+	return v.AgentSkillSummaryFields.RecentUsageCount
+}
+
+// GetCreatedAt returns agentSkillAgentSkill.CreatedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetCreatedAt() string { return v.AgentSkillSummaryFields.CreatedAt }
+
+// GetUpdatedAt returns agentSkillAgentSkill.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetUpdatedAt() string { return v.AgentSkillSummaryFields.UpdatedAt }
+
+// GetArchivedAt returns agentSkillAgentSkill.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetArchivedAt() *string { return v.AgentSkillSummaryFields.ArchivedAt }
+
+// GetLastUsedAt returns agentSkillAgentSkill.LastUsedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetLastUsedAt() *string { return v.AgentSkillSummaryFields.LastUsedAt }
+
+// GetOwner returns agentSkillAgentSkill.Owner, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetOwner() AgentSkillSummaryFieldsOwnerUser {
+	return v.AgentSkillSummaryFields.Owner
+}
+
+// GetCreator returns agentSkillAgentSkill.Creator, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetCreator() AgentSkillSummaryFieldsCreatorUser {
+	return v.AgentSkillSummaryFields.Creator
+}
+
+// GetLastUpdatedBy returns agentSkillAgentSkill.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *agentSkillAgentSkill) GetLastUpdatedBy() *AgentSkillSummaryFieldsLastUpdatedByUser {
+	return v.AgentSkillSummaryFields.LastUpdatedBy
+}
+
+func (v *agentSkillAgentSkill) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*agentSkillAgentSkill
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.agentSkillAgentSkill = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AgentSkillSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalagentSkillAgentSkill struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Body string `json:"body"`
+
+	Description *string `json:"description"`
+
+	SlugId string `json:"slugId"`
+
+	TeamId *string `json:"teamId"`
+
+	Shared bool `json:"shared"`
+
+	Icon *string `json:"icon"`
+
+	Color *string `json:"color"`
+
+	RecentUsageCount float64 `json:"recentUsageCount"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	LastUsedAt *string `json:"lastUsedAt"`
+
+	Owner AgentSkillSummaryFieldsOwnerUser `json:"owner"`
+
+	Creator AgentSkillSummaryFieldsCreatorUser `json:"creator"`
+
+	LastUpdatedBy *AgentSkillSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+}
+
+func (v *agentSkillAgentSkill) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *agentSkillAgentSkill) __premarshalJSON() (*__premarshalagentSkillAgentSkill, error) {
+	var retval __premarshalagentSkillAgentSkill
+
+	retval.Id = v.AgentSkillSummaryFields.Id
+	retval.Title = v.AgentSkillSummaryFields.Title
+	retval.Body = v.AgentSkillSummaryFields.Body
+	retval.Description = v.AgentSkillSummaryFields.Description
+	retval.SlugId = v.AgentSkillSummaryFields.SlugId
+	retval.TeamId = v.AgentSkillSummaryFields.TeamId
+	retval.Shared = v.AgentSkillSummaryFields.Shared
+	retval.Icon = v.AgentSkillSummaryFields.Icon
+	retval.Color = v.AgentSkillSummaryFields.Color
+	retval.RecentUsageCount = v.AgentSkillSummaryFields.RecentUsageCount
+	retval.CreatedAt = v.AgentSkillSummaryFields.CreatedAt
+	retval.UpdatedAt = v.AgentSkillSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.AgentSkillSummaryFields.ArchivedAt
+	retval.LastUsedAt = v.AgentSkillSummaryFields.LastUsedAt
+	retval.Owner = v.AgentSkillSummaryFields.Owner
+	retval.Creator = v.AgentSkillSummaryFields.Creator
+	retval.LastUpdatedBy = v.AgentSkillSummaryFields.LastUpdatedBy
+	return &retval, nil
+}
+
+// agentSkillResponse is returned by agentSkill on success.
+type agentSkillResponse struct {
+	// A specific agent skill.
+	AgentSkill agentSkillAgentSkill `json:"agentSkill"`
+}
+
+// GetAgentSkill returns agentSkillResponse.AgentSkill, and is useful for accessing the field via an interface.
+func (v *agentSkillResponse) GetAgentSkill() agentSkillAgentSkill { return v.AgentSkill }
+
+// agentSkillsAgentSkillsAgentSkillConnection includes the requested fields of the GraphQL type AgentSkillConnection.
+type agentSkillsAgentSkillsAgentSkillConnection struct {
+	Nodes    []agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill `json:"nodes"`
+	PageInfo agentSkillsAgentSkillsAgentSkillConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns agentSkillsAgentSkillsAgentSkillConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnection) GetNodes() []agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill {
+	return v.Nodes
+}
+
+// GetPageInfo returns agentSkillsAgentSkillsAgentSkillConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnection) GetPageInfo() agentSkillsAgentSkillsAgentSkillConnectionPageInfo {
+	return v.PageInfo
+}
+
+// agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill includes the requested fields of the GraphQL type AgentSkill.
+// The GraphQL type's documentation follows.
+//
+// A user-defined skill that can be saved and reused in conversations with the
+// Linear Agent. Skills can be private to a user or shared with a team.
+type agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill struct {
+	AgentSkillSummaryFields `json:"-"`
+}
+
+// GetId returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Id, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetId() string {
+	return v.AgentSkillSummaryFields.Id
+}
+
+// GetTitle returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Title, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetTitle() string {
+	return v.AgentSkillSummaryFields.Title
+}
+
+// GetBody returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Body, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetBody() string {
+	return v.AgentSkillSummaryFields.Body
+}
+
+// GetDescription returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Description, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetDescription() *string {
+	return v.AgentSkillSummaryFields.Description
+}
+
+// GetSlugId returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.SlugId, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetSlugId() string {
+	return v.AgentSkillSummaryFields.SlugId
+}
+
+// GetTeamId returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.TeamId, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetTeamId() *string {
+	return v.AgentSkillSummaryFields.TeamId
+}
+
+// GetShared returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Shared, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetShared() bool {
+	return v.AgentSkillSummaryFields.Shared
+}
+
+// GetIcon returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Icon, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetIcon() *string {
+	return v.AgentSkillSummaryFields.Icon
+}
+
+// GetColor returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Color, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetColor() *string {
+	return v.AgentSkillSummaryFields.Color
+}
+
+// GetRecentUsageCount returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.RecentUsageCount, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetRecentUsageCount() float64 {
+	return v.AgentSkillSummaryFields.RecentUsageCount
+}
+
+// GetCreatedAt returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.CreatedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetCreatedAt() string {
+	return v.AgentSkillSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetUpdatedAt() string {
+	return v.AgentSkillSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetArchivedAt() *string {
+	return v.AgentSkillSummaryFields.ArchivedAt
+}
+
+// GetLastUsedAt returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.LastUsedAt, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetLastUsedAt() *string {
+	return v.AgentSkillSummaryFields.LastUsedAt
+}
+
+// GetOwner returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Owner, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetOwner() AgentSkillSummaryFieldsOwnerUser {
+	return v.AgentSkillSummaryFields.Owner
+}
+
+// GetCreator returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.Creator, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetCreator() AgentSkillSummaryFieldsCreatorUser {
+	return v.AgentSkillSummaryFields.Creator
+}
+
+// GetLastUpdatedBy returns agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) GetLastUpdatedBy() *AgentSkillSummaryFieldsLastUpdatedByUser {
+	return v.AgentSkillSummaryFields.LastUpdatedBy
+}
+
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AgentSkillSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalagentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Body string `json:"body"`
+
+	Description *string `json:"description"`
+
+	SlugId string `json:"slugId"`
+
+	TeamId *string `json:"teamId"`
+
+	Shared bool `json:"shared"`
+
+	Icon *string `json:"icon"`
+
+	Color *string `json:"color"`
+
+	RecentUsageCount float64 `json:"recentUsageCount"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	LastUsedAt *string `json:"lastUsedAt"`
+
+	Owner AgentSkillSummaryFieldsOwnerUser `json:"owner"`
+
+	Creator AgentSkillSummaryFieldsCreatorUser `json:"creator"`
+
+	LastUpdatedBy *AgentSkillSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+}
+
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill) __premarshalJSON() (*__premarshalagentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill, error) {
+	var retval __premarshalagentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill
+
+	retval.Id = v.AgentSkillSummaryFields.Id
+	retval.Title = v.AgentSkillSummaryFields.Title
+	retval.Body = v.AgentSkillSummaryFields.Body
+	retval.Description = v.AgentSkillSummaryFields.Description
+	retval.SlugId = v.AgentSkillSummaryFields.SlugId
+	retval.TeamId = v.AgentSkillSummaryFields.TeamId
+	retval.Shared = v.AgentSkillSummaryFields.Shared
+	retval.Icon = v.AgentSkillSummaryFields.Icon
+	retval.Color = v.AgentSkillSummaryFields.Color
+	retval.RecentUsageCount = v.AgentSkillSummaryFields.RecentUsageCount
+	retval.CreatedAt = v.AgentSkillSummaryFields.CreatedAt
+	retval.UpdatedAt = v.AgentSkillSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.AgentSkillSummaryFields.ArchivedAt
+	retval.LastUsedAt = v.AgentSkillSummaryFields.LastUsedAt
+	retval.Owner = v.AgentSkillSummaryFields.Owner
+	retval.Creator = v.AgentSkillSummaryFields.Creator
+	retval.LastUpdatedBy = v.AgentSkillSummaryFields.LastUpdatedBy
+	return &retval, nil
+}
+
+// agentSkillsAgentSkillsAgentSkillConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type agentSkillsAgentSkillsAgentSkillConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns agentSkillsAgentSkillsAgentSkillConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns agentSkillsAgentSkillsAgentSkillConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *agentSkillsAgentSkillsAgentSkillConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// agentSkillsResponse is returned by agentSkills on success.
+type agentSkillsResponse struct {
+	// All agent skills.
+	AgentSkills agentSkillsAgentSkillsAgentSkillConnection `json:"agentSkills"`
+}
+
+// GetAgentSkills returns agentSkillsResponse.AgentSkills, and is useful for accessing the field via an interface.
+func (v *agentSkillsResponse) GetAgentSkills() agentSkillsAgentSkillsAgentSkillConnection {
+	return v.AgentSkills
+}
 
 // applicationInfoApplicationInfoApplication includes the requested fields of the GraphQL type Application.
 // The GraphQL type's documentation follows.
@@ -38807,6 +39372,134 @@ func Viewer(
 	}
 
 	data_ = &ViewerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by agentSkill.
+const agentSkill_Operation = `
+query agentSkill ($id: String!) {
+	agentSkill(id: $id) {
+		... AgentSkillSummaryFields
+	}
+}
+fragment AgentSkillSummaryFields on AgentSkill {
+	id
+	title
+	body
+	description
+	slugId
+	teamId
+	shared
+	icon
+	color
+	recentUsageCount
+	createdAt
+	updatedAt
+	archivedAt
+	lastUsedAt
+	owner {
+		id
+	}
+	creator {
+		id
+	}
+	lastUpdatedBy {
+		id
+	}
+}
+`
+
+func agentSkill(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *agentSkillResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "agentSkill",
+		Query:  agentSkill_Operation,
+		Variables: &__agentSkillInput{
+			Id: id,
+		},
+	}
+
+	data_ = &agentSkillResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by agentSkills.
+const agentSkills_Operation = `
+query agentSkills ($first: Int, $after: String, $includeArchived: Boolean) {
+	agentSkills(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... AgentSkillSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment AgentSkillSummaryFields on AgentSkill {
+	id
+	title
+	body
+	description
+	slugId
+	teamId
+	shared
+	icon
+	color
+	recentUsageCount
+	createdAt
+	updatedAt
+	archivedAt
+	lastUsedAt
+	owner {
+		id
+	}
+	creator {
+		id
+	}
+	lastUpdatedBy {
+		id
+	}
+}
+`
+
+func agentSkills(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *agentSkillsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "agentSkills",
+		Query:  agentSkills_Operation,
+		Variables: &__agentSkillsInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &agentSkillsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 84 | 458 |
-| Upstream Query root fields | 158 | 72 | 158 |
+| Upstream SDK root methods | 458 | 86 | 458 |
+| Upstream Query root fields | 158 | 74 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 132 | 132 | 132 |
-| Domain-map commands | 215 | 114 | 215 |
+| Local generated Go operations | 134 | 134 | 134 |
+| Domain-map commands | 220 | 116 | 220 |
 
 ## Upstream SDK Root Methods
 
@@ -34,8 +34,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSessionCreateOnIssue` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdateExternalUrl` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSkill` | method | safe_candidate | read operation may fit future CLI coverage |
-| `agentSkills` | method | safe_candidate | read operation may fit future CLI coverage |
+| `agentSkill` | method | implemented | local operation or command exists |
+| `agentSkills` | method | implemented | local operation or command exists |
 | `airbyteIntegrationConnect` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `applicationInfo` | method | implemented | local operation or command exists |
 | `archiveCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -496,8 +496,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSession` | `AgentSession!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionSandbox` | `CodingAgentSandboxPayload` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessions` | `AgentSessionConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSkill` | `AgentSkill!` | safe_candidate | read operation may fit future CLI coverage |
-| `agentSkills` | `AgentSkillConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `agentSkill` | `AgentSkill!` | implemented | root field used by local GraphQL operation |
+| `agentSkills` | `AgentSkillConnection!` | implemented | root field used by local GraphQL operation |
 | `applicationInfo` | `Application!` | implemented | root field used by local GraphQL operation |
 | `archivedIntegrations` | `[ArchivedIntegrationPayload!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `archivedTeams` | `[Team!]!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1059,6 +1059,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `TargetProject` | query | `project` | implemented | `internal/client/generated.go` |
 | `Teams` | query | `teams` | implemented | `internal/client/generated.go` |
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `agentSkill` | query | `agentSkill` | implemented | `internal/client/generated.go` |
+| `agentSkills` | query | `agentSkills` | implemented | `internal/client/generated.go` |
 | `applicationInfo` | query | `applicationInfo` | implemented | `internal/client/generated.go` |
 | `attachment` | query | `attachment` | implemented | `internal/client/generated.go` |
 | `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
@@ -1153,6 +1155,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
 | Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only workspace-level templates. | implemented | `linctl --help` / public CLI tests |
 | Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |
+| AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | implemented | `linctl --help` / public CLI tests |
+| AgentSkill | `agent-skill get` | `Query.agentSkill` | Read-only | implemented | `linctl --help` / public CLI tests |
+| AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | accepted_gap | planned in `docs/domain-map.md` |
+| AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | accepted_gap | planned in `docs/domain-map.md` |
+| AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | accepted_gap | planned in `docs/domain-map.md` |
 | Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | implemented | `linctl --help` / public CLI tests |

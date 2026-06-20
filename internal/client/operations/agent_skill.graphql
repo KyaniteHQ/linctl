@@ -1,0 +1,43 @@
+query agentSkills($first: Int, $after: String, $includeArchived: Boolean) {
+  agentSkills(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...AgentSkillSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query agentSkill($id: String!) {
+  agentSkill(id: $id) {
+    ...AgentSkillSummaryFields
+  }
+}
+
+fragment AgentSkillSummaryFields on AgentSkill {
+  id
+  title
+  body
+  description
+  slugId
+  teamId
+  shared
+  icon
+  color
+  recentUsageCount
+  createdAt
+  updatedAt
+  archivedAt
+  lastUsedAt
+  owner {
+    id
+  }
+  creator {
+    id
+  }
+  lastUpdatedBy {
+    id
+  }
+}
