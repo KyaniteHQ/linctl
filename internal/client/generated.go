@@ -3217,6 +3217,60 @@ func (v *EntityExternalLinkSummaryFieldsProject) GetId() string { return v.Id }
 // GetName returns EntityExternalLinkSummaryFieldsProject.Name, and is useful for accessing the field via an interface.
 func (v *EntityExternalLinkSummaryFieldsProject) GetName() string { return v.Name }
 
+// ExternalUserSummaryFields includes the GraphQL fields of ExternalUser requested by the fragment ExternalUserSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// An external user who interacts with Linear through an integrated external
+// service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams)
+// but does not have a Linear account. External users can create issues, post
+// comments, and add reactions from their respective platforms. They are identified
+// by service-specific user IDs and may optionally have an email address. External
+// users are scoped to a single workspace.
+type ExternalUserSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The external user's full name.
+	Name string `json:"name"`
+	// The external user's display name. Unique within each workspace. Can match the display name of an actual user.
+	DisplayName string `json:"displayName"`
+	// A URL to the external user's avatar image. Null if no avatar is available from the external service.
+	AvatarUrl *string `json:"avatarUrl"`
+	// The last time the external user was seen interacting with Linear through their
+	// external service. Defaults to the creation time and is updated on subsequent interactions.
+	LastSeen *string `json:"lastSeen"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+// GetId returns ExternalUserSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetId() string { return v.Id }
+
+// GetName returns ExternalUserSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetName() string { return v.Name }
+
+// GetDisplayName returns ExternalUserSummaryFields.DisplayName, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetDisplayName() string { return v.DisplayName }
+
+// GetAvatarUrl returns ExternalUserSummaryFields.AvatarUrl, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetAvatarUrl() *string { return v.AvatarUrl }
+
+// GetLastSeen returns ExternalUserSummaryFields.LastSeen, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetLastSeen() *string { return v.LastSeen }
+
+// GetCreatedAt returns ExternalUserSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns ExternalUserSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns ExternalUserSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ExternalUserSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
 // FavoriteSummaryFields includes the GraphQL fields of Favorite requested by the fragment FavoriteSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -17247,6 +17301,30 @@ type __entityExternalLinkInput struct {
 // GetId returns __entityExternalLinkInput.Id, and is useful for accessing the field via an interface.
 func (v *__entityExternalLinkInput) GetId() string { return v.Id }
 
+// __externalUserInput is used internally by genqlient
+type __externalUserInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __externalUserInput.Id, and is useful for accessing the field via an interface.
+func (v *__externalUserInput) GetId() string { return v.Id }
+
+// __externalUsersInput is used internally by genqlient
+type __externalUsersInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __externalUsersInput.First, and is useful for accessing the field via an interface.
+func (v *__externalUsersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __externalUsersInput.After, and is useful for accessing the field via an interface.
+func (v *__externalUsersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __externalUsersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__externalUsersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __favoriteInput is used internally by genqlient
 type __favoriteInput struct {
 	Id string `json:"id"`
@@ -22942,6 +23020,292 @@ type entityExternalLinkResponse struct {
 // GetEntityExternalLink returns entityExternalLinkResponse.EntityExternalLink, and is useful for accessing the field via an interface.
 func (v *entityExternalLinkResponse) GetEntityExternalLink() entityExternalLinkEntityExternalLink {
 	return v.EntityExternalLink
+}
+
+// externalUserExternalUser includes the requested fields of the GraphQL type ExternalUser.
+// The GraphQL type's documentation follows.
+//
+// An external user who interacts with Linear through an integrated external
+// service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams)
+// but does not have a Linear account. External users can create issues, post
+// comments, and add reactions from their respective platforms. They are identified
+// by service-specific user IDs and may optionally have an email address. External
+// users are scoped to a single workspace.
+type externalUserExternalUser struct {
+	ExternalUserSummaryFields `json:"-"`
+}
+
+// GetId returns externalUserExternalUser.Id, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetId() string { return v.ExternalUserSummaryFields.Id }
+
+// GetName returns externalUserExternalUser.Name, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetName() string { return v.ExternalUserSummaryFields.Name }
+
+// GetDisplayName returns externalUserExternalUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetDisplayName() string {
+	return v.ExternalUserSummaryFields.DisplayName
+}
+
+// GetAvatarUrl returns externalUserExternalUser.AvatarUrl, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetAvatarUrl() *string {
+	return v.ExternalUserSummaryFields.AvatarUrl
+}
+
+// GetLastSeen returns externalUserExternalUser.LastSeen, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetLastSeen() *string { return v.ExternalUserSummaryFields.LastSeen }
+
+// GetCreatedAt returns externalUserExternalUser.CreatedAt, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetCreatedAt() string {
+	return v.ExternalUserSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns externalUserExternalUser.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetUpdatedAt() string {
+	return v.ExternalUserSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns externalUserExternalUser.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *externalUserExternalUser) GetArchivedAt() *string {
+	return v.ExternalUserSummaryFields.ArchivedAt
+}
+
+func (v *externalUserExternalUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*externalUserExternalUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.externalUserExternalUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ExternalUserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalexternalUserExternalUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	AvatarUrl *string `json:"avatarUrl"`
+
+	LastSeen *string `json:"lastSeen"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+func (v *externalUserExternalUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *externalUserExternalUser) __premarshalJSON() (*__premarshalexternalUserExternalUser, error) {
+	var retval __premarshalexternalUserExternalUser
+
+	retval.Id = v.ExternalUserSummaryFields.Id
+	retval.Name = v.ExternalUserSummaryFields.Name
+	retval.DisplayName = v.ExternalUserSummaryFields.DisplayName
+	retval.AvatarUrl = v.ExternalUserSummaryFields.AvatarUrl
+	retval.LastSeen = v.ExternalUserSummaryFields.LastSeen
+	retval.CreatedAt = v.ExternalUserSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ExternalUserSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.ExternalUserSummaryFields.ArchivedAt
+	return &retval, nil
+}
+
+// externalUserResponse is returned by externalUser on success.
+type externalUserResponse struct {
+	// Retrieves a single external user by their identifier.
+	ExternalUser externalUserExternalUser `json:"externalUser"`
+}
+
+// GetExternalUser returns externalUserResponse.ExternalUser, and is useful for accessing the field via an interface.
+func (v *externalUserResponse) GetExternalUser() externalUserExternalUser { return v.ExternalUser }
+
+// externalUsersExternalUsersExternalUserConnection includes the requested fields of the GraphQL type ExternalUserConnection.
+type externalUsersExternalUsersExternalUserConnection struct {
+	Nodes    []externalUsersExternalUsersExternalUserConnectionNodesExternalUser `json:"nodes"`
+	PageInfo externalUsersExternalUsersExternalUserConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns externalUsersExternalUsersExternalUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnection) GetNodes() []externalUsersExternalUsersExternalUserConnectionNodesExternalUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns externalUsersExternalUsersExternalUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnection) GetPageInfo() externalUsersExternalUsersExternalUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// externalUsersExternalUsersExternalUserConnectionNodesExternalUser includes the requested fields of the GraphQL type ExternalUser.
+// The GraphQL type's documentation follows.
+//
+// An external user who interacts with Linear through an integrated external
+// service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams)
+// but does not have a Linear account. External users can create issues, post
+// comments, and add reactions from their respective platforms. They are identified
+// by service-specific user IDs and may optionally have an email address. External
+// users are scoped to a single workspace.
+type externalUsersExternalUsersExternalUserConnectionNodesExternalUser struct {
+	ExternalUserSummaryFields `json:"-"`
+}
+
+// GetId returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.Id, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetId() string {
+	return v.ExternalUserSummaryFields.Id
+}
+
+// GetName returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.Name, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetName() string {
+	return v.ExternalUserSummaryFields.Name
+}
+
+// GetDisplayName returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetDisplayName() string {
+	return v.ExternalUserSummaryFields.DisplayName
+}
+
+// GetAvatarUrl returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.AvatarUrl, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetAvatarUrl() *string {
+	return v.ExternalUserSummaryFields.AvatarUrl
+}
+
+// GetLastSeen returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.LastSeen, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetLastSeen() *string {
+	return v.ExternalUserSummaryFields.LastSeen
+}
+
+// GetCreatedAt returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.CreatedAt, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetCreatedAt() string {
+	return v.ExternalUserSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetUpdatedAt() string {
+	return v.ExternalUserSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns externalUsersExternalUsersExternalUserConnectionNodesExternalUser.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) GetArchivedAt() *string {
+	return v.ExternalUserSummaryFields.ArchivedAt
+}
+
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*externalUsersExternalUsersExternalUserConnectionNodesExternalUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.externalUsersExternalUsersExternalUserConnectionNodesExternalUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ExternalUserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalexternalUsersExternalUsersExternalUserConnectionNodesExternalUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	AvatarUrl *string `json:"avatarUrl"`
+
+	LastSeen *string `json:"lastSeen"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+}
+
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *externalUsersExternalUsersExternalUserConnectionNodesExternalUser) __premarshalJSON() (*__premarshalexternalUsersExternalUsersExternalUserConnectionNodesExternalUser, error) {
+	var retval __premarshalexternalUsersExternalUsersExternalUserConnectionNodesExternalUser
+
+	retval.Id = v.ExternalUserSummaryFields.Id
+	retval.Name = v.ExternalUserSummaryFields.Name
+	retval.DisplayName = v.ExternalUserSummaryFields.DisplayName
+	retval.AvatarUrl = v.ExternalUserSummaryFields.AvatarUrl
+	retval.LastSeen = v.ExternalUserSummaryFields.LastSeen
+	retval.CreatedAt = v.ExternalUserSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ExternalUserSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.ExternalUserSummaryFields.ArchivedAt
+	return &retval, nil
+}
+
+// externalUsersExternalUsersExternalUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type externalUsersExternalUsersExternalUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns externalUsersExternalUsersExternalUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns externalUsersExternalUsersExternalUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *externalUsersExternalUsersExternalUserConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// externalUsersResponse is returned by externalUsers on success.
+type externalUsersResponse struct {
+	// All external users for the organization. External users are people who
+	// interact with Linear through integrated services (Slack, Jira, GitHub, etc.)
+	// without having a Linear account.
+	ExternalUsers externalUsersExternalUsersExternalUserConnection `json:"externalUsers"`
+}
+
+// GetExternalUsers returns externalUsersResponse.ExternalUsers, and is useful for accessing the field via an interface.
+func (v *externalUsersResponse) GetExternalUsers() externalUsersExternalUsersExternalUserConnection {
+	return v.ExternalUsers
 }
 
 // favoriteFavorite includes the requested fields of the GraphQL type Favorite.
@@ -48209,6 +48573,104 @@ func entityExternalLink(
 	}
 
 	data_ = &entityExternalLinkResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by externalUser.
+const externalUser_Operation = `
+query externalUser ($id: String!) {
+	externalUser(id: $id) {
+		... ExternalUserSummaryFields
+	}
+}
+fragment ExternalUserSummaryFields on ExternalUser {
+	id
+	name
+	displayName
+	avatarUrl
+	lastSeen
+	createdAt
+	updatedAt
+	archivedAt
+}
+`
+
+func externalUser(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *externalUserResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "externalUser",
+		Query:  externalUser_Operation,
+		Variables: &__externalUserInput{
+			Id: id,
+		},
+	}
+
+	data_ = &externalUserResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by externalUsers.
+const externalUsers_Operation = `
+query externalUsers ($first: Int, $after: String, $includeArchived: Boolean) {
+	externalUsers(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... ExternalUserSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment ExternalUserSummaryFields on ExternalUser {
+	id
+	name
+	displayName
+	avatarUrl
+	lastSeen
+	createdAt
+	updatedAt
+	archivedAt
+}
+`
+
+func externalUsers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *externalUsersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "externalUsers",
+		Query:  externalUsers_Operation,
+		Variables: &__externalUsersInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &externalUsersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

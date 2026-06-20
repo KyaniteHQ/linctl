@@ -212,6 +212,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"agentActivity":          `{"agentActivity":` + agentActivityJSON("action") + `}`,
 		"agentSkills":            `{"agentSkills":{"nodes":[` + agentSkillJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"agentSkill":             `{"agentSkill":` + agentSkillJSON() + `}`,
+		"externalUsers":          `{"externalUsers":{"nodes":[` + externalUserJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"externalUser":           `{"externalUser":` + externalUserJSON() + `}`,
 		"auditEntryTypes":        `{"auditEntryTypes":[{"type":"user_login","description":"User logged in"}]}`,
 		"organizationExists":     `{"organizationExists":{"success":true,"exists":true}}`,
 		"organization_templates": `{"organization":{"templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
@@ -400,6 +402,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	agentSkills, err := ListAgentSkills(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	agentSkill, err := GetAgentSkillByID(context.Background(), graphqlClient, "agent-skill-id")
+	require.NoError(t, err)
+	externalUsers, err := ListExternalUsers(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	externalUser, err := GetExternalUserByID(context.Background(), graphqlClient, "external-user-id")
 	require.NoError(t, err)
 	auditEntryTypes, err := ListAuditEntryTypes(context.Background(), graphqlClient)
 	require.NoError(t, err)
@@ -723,6 +729,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Triage Helper", agentSkills.AgentSkills[0].Title)
 	require.Equal(t, "agent-skill-id", agentSkill.ID)
 	require.Equal(t, "updater-id", agentSkill.LastUpdatedByID)
+	require.True(t, externalUsers.HasNextPage)
+	require.Equal(t, &endCursor, externalUsers.EndCursor)
+	require.Equal(t, "external-user-id", externalUsers.ExternalUsers[0].ID)
+	require.Equal(t, "@external", externalUsers.ExternalUsers[0].DisplayName)
+	require.Equal(t, "https://example.com/avatar.png", externalUsers.ExternalUsers[0].AvatarURL)
+	require.Equal(t, "external-user-id", externalUser.ID)
+	require.Equal(t, "2026-06-19T12:00:00Z", externalUser.LastSeen)
 	require.Equal(t, "user_login", auditEntryTypes.AuditEntryTypes[0].Type)
 	require.Equal(t, "User logged in", auditEntryTypes.AuditEntryTypes[0].Description)
 	require.Equal(t, "LIT-12", comments.Identifier)
@@ -1540,6 +1553,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetAgentSkillByID(context.Background(), graphqlClient, "agent-skill-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get agent skill agent-skill-id")
+
+		_, err = ListExternalUsers(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list external users")
+
+		_, err = GetExternalUserByID(context.Background(), graphqlClient, "external-user-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get external user external-user-id")
 
 		_, err = ListAuditEntryTypes(context.Background(), graphqlClient)
 		require.Error(t, err)
@@ -2794,6 +2815,19 @@ func agentSkillJSON() string {
 		"owner":{"id":"owner-id"},
 		"creator":{"id":"creator-id"},
 		"lastUpdatedBy":{"id":"updater-id"}
+	}`
+}
+
+func externalUserJSON() string {
+	return `{
+		"id":"external-user-id",
+		"name":"External User",
+		"displayName":"@external",
+		"avatarUrl":"https://example.com/avatar.png",
+		"lastSeen":"2026-06-19T12:00:00Z",
+		"createdAt":"2026-06-18T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null
 	}`
 }
 

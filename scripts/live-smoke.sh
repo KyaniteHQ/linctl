@@ -90,6 +90,11 @@ PY
     fi
   fi
   "$binary" release-note list --json --limit 5 >/dev/null
+  external_user_json="$("$binary" external-user list --json --limit 5)"
+  external_user_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("external_users", []); print(items[0]["id"] if items else "")' <<<"$external_user_json")"
+  if [[ -n "$external_user_id" ]]; then
+    "$binary" external-user get "$external_user_id" --json >/dev/null
+  fi
   "$binary" time-schedule list --json --limit 5 >/dev/null
   template_json="$("$binary" template list --json --limit 5)"
   template_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("templates", []); print(items[0]["id"] if items else "")' <<<"$template_json")"

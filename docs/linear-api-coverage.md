@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 107 | 458 |
-| Upstream Query root fields | 158 | 95 | 158 |
+| Upstream SDK root methods | 458 | 109 | 458 |
+| Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 165 | 165 | 165 |
-| Domain-map commands | 277 | 145 | 277 |
+| Local generated Go operations | 167 | 167 | 167 |
+| Domain-map commands | 279 | 147 | 279 |
 
 ## Upstream SDK Root Methods
 
@@ -219,8 +219,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `emoji` | method | implemented | local operation or command exists |
 | `emojis` | method | implemented | local operation or command exists |
 | `entityExternalLink` | method | implemented | local operation or command exists |
-| `externalUser` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `externalUsers` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `externalUser` | method | implemented | local operation or command exists |
+| `externalUsers` | method | implemented | local operation or command exists |
 | `favorite` | method | implemented | local operation or command exists |
 | `favorites` | method | implemented | local operation or command exists |
 | `fileUpload` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -535,8 +535,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `emoji` | `Emoji!` | implemented | root field used by local GraphQL operation |
 | `emojis` | `EmojiConnection!` | implemented | root field used by local GraphQL operation |
 | `entityExternalLink` | `EntityExternalLink!` | implemented | root field used by local GraphQL operation |
-| `externalUser` | `ExternalUser!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `externalUsers` | `ExternalUserConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `externalUser` | `ExternalUser!` | implemented | root field used by local GraphQL operation |
+| `externalUsers` | `ExternalUserConnection!` | implemented | root field used by local GraphQL operation |
 | `failuresForOauthWebhooks` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `favorite` | `Favorite!` | implemented | root field used by local GraphQL operation |
 | `favorites` | `FavoriteConnection!` | implemented | root field used by local GraphQL operation |
@@ -1091,6 +1091,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `emoji` | query | `emoji` | implemented | `internal/client/generated.go` |
 | `emojis` | query | `emojis` | implemented | `internal/client/generated.go` |
 | `entityExternalLink` | query | `entityExternalLink` | implemented | `internal/client/generated.go` |
+| `externalUser` | query | `externalUser` | implemented | `internal/client/generated.go` |
+| `externalUsers` | query | `externalUsers` | implemented | `internal/client/generated.go` |
 | `favorite` | query | `favorite` | implemented | `internal/client/generated.go` |
 | `favorite_children` | query | `favorite` | implemented | `internal/client/generated.go` |
 | `favorites` | query | `favorites` | implemented | `internal/client/generated.go` |
@@ -1194,6 +1196,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | accepted_gap | planned in `docs/domain-map.md` |
 | AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | accepted_gap | planned in `docs/domain-map.md` |
 | AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | accepted_gap | planned in `docs/domain-map.md` |
+| ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ExternalUser | `external-user get` | `Query.externalUser` | Read-only | implemented | `linctl --help` / public CLI tests |
 | AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | implemented | `linctl --help` / public CLI tests |
 | AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | accepted_gap | planned in `docs/domain-map.md` |
 | Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help` / public CLI tests |

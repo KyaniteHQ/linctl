@@ -59,6 +59,24 @@ Planned commands:
 
 Only `agent-skill list` and `agent-skill get` are implemented in the current CLI. AgentSkill writes remain deferred until their guard model is explicit.
 
+## ExternalUser
+
+Schema backing:
+
+- Types: `ExternalUser`, `ExternalUserConnection`
+- Reads: `Query.externalUsers`, `Query.externalUser`
+- Writes: none exposed directly; `Mutation.userExternalUserDisconnect` is tracked with the User write surface.
+- Relevant fields: `ExternalUser.id`, `ExternalUser.name`, `ExternalUser.displayName`, `ExternalUser.avatarUrl`, `ExternalUser.lastSeen`, `ExternalUser.createdAt`, `ExternalUser.updatedAt`, `ExternalUser.archivedAt`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `external-user list` | `Query.externalUsers` | Read-only |
+| `external-user get` | `Query.externalUser` | Read-only |
+
+Only `external-user list` and `external-user get` are implemented in the current CLI. `ExternalUser.email` is intentionally omitted from local GraphQL selections and default output.
+
 ## AuditEntry
 
 Schema backing:

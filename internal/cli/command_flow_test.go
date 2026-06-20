@@ -36,6 +36,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "agent activity get", args: []string{"agent-activity", "get", "agent-activity-id"}, contains: "agent-activity-id session agent-session-id [action] signal continue"},
 		{name: "agent skill list", args: []string{"agent-skill", "list", "--limit", "1"}, contains: "agent-skill-id Triage Helper shared true recent 3"},
 		{name: "agent skill get", args: []string{"agent-skill", "get", "agent-skill-id"}, contains: "agent-skill-id Triage Helper shared true recent 3"},
+		{name: "external user list", args: []string{"external-user", "list", "--limit", "1"}, contains: "external-user-id External User @external last_seen 2026-06-19T12:00:00Z"},
+		{name: "external user get", args: []string{"external-user", "get", "external-user-id"}, contains: "external-user-id External User @external last_seen 2026-06-19T12:00:00Z"},
 		{name: "audit entry types", args: []string{"audit-entry", "types"}, contains: "user_login User logged in"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
 		{name: "organization templates", args: []string{"organization", "templates", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
@@ -826,6 +828,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "agent-activity", "get", "agent-activity-id"},
 		{"--json", "--fields", "id,title,shared", "agent-skill", "list", "--limit", "1"},
 		{"--json", "agent-skill", "get", "agent-skill-id"},
+		{"--json", "--fields", "id,display_name,last_seen", "external-user", "list", "--limit", "1"},
+		{"--json", "external-user", "get", "external-user-id"},
 		{"--json", "--fields", "type,description", "audit-entry", "types"},
 		{"--json", "--fields", "type,id,key,title", "semantic-search", "agent search", "--limit", "2"},
 		{"--json", "next", "--dry-run"},
@@ -1362,6 +1366,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "agent activity get", args: []string{"agent-activity", "get", "agent-activity-id"}, operation: "agentActivity", contains: "get agent activity agent-activity-id"},
 		{name: "agent skill list", args: []string{"agent-skill", "list"}, operation: "agentSkills", contains: "list agent skills"},
 		{name: "agent skill get", args: []string{"agent-skill", "get", "agent-skill-id"}, operation: "agentSkill", contains: "get agent skill agent-skill-id"},
+		{name: "external user list", args: []string{"external-user", "list"}, operation: "externalUsers", contains: "list external users"},
+		{name: "external user get", args: []string{"external-user", "get", "external-user-id"}, operation: "externalUser", contains: "get external user external-user-id"},
 		{name: "audit entry types", args: []string{"audit-entry", "types"}, operation: "auditEntryTypes", contains: "list audit entry types"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
 		{name: "organization templates", args: []string{"organization", "templates"}, operation: "organization_templates", contains: "list organization templates"},
@@ -1807,6 +1813,10 @@ func commandFlowBasePayload(operation string) (string, bool) {
 		return `{"agentSkills":{"nodes":[` + commandAgentSkillJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "agentSkill":
 		return `{"agentSkill":` + commandAgentSkillJSON() + `}`, true
+	case "externalUsers":
+		return `{"externalUsers":{"nodes":[` + commandExternalUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "externalUser":
+		return `{"externalUser":` + commandExternalUserJSON() + `}`, true
 	case "organization_templates":
 		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "rateLimitStatus":
@@ -1888,6 +1898,19 @@ func commandAgentSkillJSON() string {
 		"owner":{"id":"owner-id"},
 		"creator":{"id":"creator-id"},
 		"lastUpdatedBy":{"id":"updater-id"}
+	}`
+}
+
+func commandExternalUserJSON() string {
+	return `{
+		"id":"external-user-id",
+		"name":"External User",
+		"displayName":"@external",
+		"avatarUrl":"https://example.com/avatar.png",
+		"lastSeen":"2026-06-19T12:00:00Z",
+		"createdAt":"2026-06-18T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null
 	}`
 }
 

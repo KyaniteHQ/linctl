@@ -1,0 +1,28 @@
+query externalUsers($first: Int, $after: String, $includeArchived: Boolean) {
+  externalUsers(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ExternalUserSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query externalUser($id: String!) {
+  externalUser(id: $id) {
+    ...ExternalUserSummaryFields
+  }
+}
+
+fragment ExternalUserSummaryFields on ExternalUser {
+  id
+  name
+  displayName
+  avatarUrl
+  lastSeen
+  createdAt
+  updatedAt
+  archivedAt
+}

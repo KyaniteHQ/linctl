@@ -259,6 +259,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Shared:           true,
 		RecentUsageCount: 3,
 	}
+	externalUser := client.ExternalUserSummary{
+		ID:          "external-user-id",
+		Name:        "External User",
+		DisplayName: "@external",
+		LastSeen:    "2026-06-19T12:00:00Z",
+	}
 	auditEntryType := client.AuditEntryTypeSummary{
 		Type:        "user_login",
 		Description: "User logged in",
@@ -411,6 +417,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(textCommand, &textOptions, application))
 	require.NoError(t, writeAgentActivity(textCommand, &textOptions, agentActivity))
 	require.NoError(t, writeAgentSkill(textCommand, &textOptions, agentSkill))
+	require.NoError(t, writeExternalUser(textCommand, &textOptions, externalUser))
 	require.NoError(t, writeAuditEntryType(textCommand, &textOptions, auditEntryType))
 	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(textCommand, &textOptions, rateLimitStatus))
@@ -463,6 +470,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"app-id Demo App by Kyanite\n"+
 			"agent-activity-id session agent-session-id [action] signal continue\n"+
 			"agent-skill-id Triage Helper shared true recent 3\n"+
+			"external-user-id External User @external last_seen 2026-06-19T12:00:00Z\n"+
 			"user_login User logged in\n"+
 			"kyanite exists true success true\n"+
 			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
@@ -524,6 +532,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(jsonCommand, &jsonOptions, application))
 	require.NoError(t, writeAgentActivity(jsonCommand, &jsonOptions, agentActivity))
 	require.NoError(t, writeAgentSkill(jsonCommand, &jsonOptions, agentSkill))
+	require.NoError(t, writeExternalUser(jsonCommand, &jsonOptions, externalUser))
 	require.NoError(t, writeAuditEntryType(jsonCommand, &jsonOptions, auditEntryType))
 	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(jsonCommand, &jsonOptions, rateLimitStatus))
@@ -575,6 +584,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"client_id": "app-client-id"`)
 	require.Contains(t, jsonOut.String(), `"content_type": "action"`)
 	require.Contains(t, jsonOut.String(), `"title": "Triage Helper"`)
+	require.Contains(t, jsonOut.String(), `"display_name": "@external"`)
 	require.Contains(t, jsonOut.String(), `"description": "User logged in"`)
 	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
 	require.Contains(t, jsonOut.String(), `"remaining_amount": 900`)
@@ -829,6 +839,12 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Shared:           true,
 		RecentUsageCount: 3,
 	}
+	externalUser := client.ExternalUserSummary{
+		ID:          "external-user-id",
+		Name:        "External User",
+		DisplayName: "@external",
+		LastSeen:    "2026-06-19T12:00:00Z",
+	}
 	auditEntryType := client.AuditEntryTypeSummary{
 		Type:        "user_login",
 		Description: "User logged in",
@@ -969,6 +985,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(command, &rootOptions{idOnly: true}, application))
 	require.NoError(t, writeAgentActivity(command, &rootOptions{idOnly: true}, agentActivity))
 	require.NoError(t, writeAgentSkill(command, &rootOptions{idOnly: true}, agentSkill))
+	require.NoError(t, writeExternalUser(command, &rootOptions{idOnly: true}, externalUser))
 	require.NoError(t, writeAuditEntryType(command, &rootOptions{idOnly: true}, auditEntryType))
 	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
 	require.NoError(t, writeEmoji(command, &rootOptions{idOnly: true}, emoji))
@@ -1074,6 +1091,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeApplicationInfo(quietCommand, &rootOptions{quiet: true}, application))
 	require.NoError(t, writeAgentActivity(quietCommand, &rootOptions{quiet: true}, agentActivity))
 	require.NoError(t, writeAgentSkill(quietCommand, &rootOptions{quiet: true}, agentSkill))
+	require.NoError(t, writeExternalUser(quietCommand, &rootOptions{quiet: true}, externalUser))
 	require.NoError(t, writeAuditEntryType(quietCommand, &rootOptions{quiet: true}, auditEntryType))
 	require.NoError(t, writeAuditEntryTypes(
 		quietCommand,
