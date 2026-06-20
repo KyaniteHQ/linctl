@@ -39,6 +39,13 @@ type TargetOrg struct {
 	URLKey string `json:"url_key"`
 }
 
+// OrganizationExistsStatus reports whether a Linear organization URL key exists.
+type OrganizationExistsStatus struct {
+	URLKey  string `json:"url_key"`
+	Success bool   `json:"success"`
+	Exists  bool   `json:"exists"`
+}
+
 // TargetTeam is the resolved Linear team.
 type TargetTeam struct {
 	ID   string `json:"id"`
@@ -50,6 +57,24 @@ type TargetTeam struct {
 type ResolvedProject struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+// CheckOrganizationExists checks whether a Linear organization URL key exists.
+func CheckOrganizationExists(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	urlKey string,
+) (OrganizationExistsStatus, error) {
+	result, err := organizationExists(ctx, graphqlClient, urlKey)
+	if err != nil {
+		return OrganizationExistsStatus{}, err
+	}
+
+	return OrganizationExistsStatus{
+		URLKey:  urlKey,
+		Success: result.OrganizationExists.Success,
+		Exists:  result.OrganizationExists.Exists,
+	}, nil
 }
 
 // ResolveTarget resolves viewer, organization, team, and optional project from the token.

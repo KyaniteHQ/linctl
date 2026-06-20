@@ -9291,6 +9291,14 @@ func (v *__issuesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __issuesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __organizationExistsInput is used internally by genqlient
+type __organizationExistsInput struct {
+	UrlKey string `json:"urlKey"`
+}
+
+// GetUrlKey returns __organizationExistsInput.UrlKey, and is useful for accessing the field via an interface.
+func (v *__organizationExistsInput) GetUrlKey() string { return v.UrlKey }
+
 // __projectInput is used internally by genqlient
 type __projectInput struct {
 	Id string `json:"id"`
@@ -12457,6 +12465,38 @@ type issuesResponse struct {
 
 // GetIssues returns issuesResponse.Issues, and is useful for accessing the field via an interface.
 func (v *issuesResponse) GetIssues() issuesIssuesIssueConnection { return v.Issues }
+
+// organizationExistsOrganizationExistsOrganizationExistsPayload includes the requested fields of the GraphQL type OrganizationExistsPayload.
+// The GraphQL type's documentation follows.
+//
+// Response for checking whether a workspace exists.
+type organizationExistsOrganizationExistsOrganizationExistsPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// Whether the organization exists.
+	Exists bool `json:"exists"`
+}
+
+// GetSuccess returns organizationExistsOrganizationExistsOrganizationExistsPayload.Success, and is useful for accessing the field via an interface.
+func (v *organizationExistsOrganizationExistsOrganizationExistsPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetExists returns organizationExistsOrganizationExistsOrganizationExistsPayload.Exists, and is useful for accessing the field via an interface.
+func (v *organizationExistsOrganizationExistsOrganizationExistsPayload) GetExists() bool {
+	return v.Exists
+}
+
+// organizationExistsResponse is returned by organizationExists on success.
+type organizationExistsResponse struct {
+	// Checks whether a workspace with the given URL key exists.
+	OrganizationExists organizationExistsOrganizationExistsOrganizationExistsPayload `json:"organizationExists"`
+}
+
+// GetOrganizationExists returns organizationExistsResponse.OrganizationExists, and is useful for accessing the field via an interface.
+func (v *organizationExistsResponse) GetOrganizationExists() organizationExistsOrganizationExistsOrganizationExistsPayload {
+	return v.OrganizationExists
+}
 
 // projectMilestoneProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
@@ -17799,6 +17839,41 @@ func issues(
 	}
 
 	data_ = &issuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by organizationExists.
+const organizationExists_Operation = `
+query organizationExists ($urlKey: String!) {
+	organizationExists(urlKey: $urlKey) {
+		success
+		exists
+	}
+}
+`
+
+func organizationExists(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	urlKey string,
+) (data_ *organizationExistsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "organizationExists",
+		Query:  organizationExists_Operation,
+		Variables: &__organizationExistsInput{
+			UrlKey: urlKey,
+		},
+	}
+
+	data_ = &organizationExistsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

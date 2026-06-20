@@ -182,6 +182,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"IssueLabels":              `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"issueLabel":               `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
 		"Teams":                    `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"organizationExists":       `{"organizationExists":{"success":true,"exists":true}}`,
 		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
 		"team_members":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"users":                    `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -268,6 +269,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	label, err := GetLabelByID(context.Background(), graphqlClient, "label-id")
 	require.NoError(t, err)
 	teams, err := ListTeams(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	organizationExists, err := CheckOrganizationExists(context.Background(), graphqlClient, "kyanite")
 	require.NoError(t, err)
 	team, err := GetTeamByID(context.Background(), graphqlClient, "team-id")
 	require.NoError(t, err)
@@ -388,6 +391,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Empty(t, label.Description)
 	require.True(t, teams.HasNextPage)
 	require.Equal(t, "LIT", teams.Teams[0].Key)
+	require.Equal(t, "kyanite", organizationExists.URLKey)
+	require.True(t, organizationExists.Success)
+	require.True(t, organizationExists.Exists)
 	require.Equal(t, "team body", team.Description)
 	require.Equal(t, "Omer", teamMembers.Members[0].DisplayName)
 	require.Equal(t, &endCursor, teamMembers.EndCursor)
@@ -442,6 +448,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "url", attachmentsForURL.Attachments[0].SourceType)
 	require.Equal(t, "attachment-id", attachment.ID)
 	require.Equal(t, "feat: add thing", attachment.Subtitle)
+}
+
+func Test_CheckOrganizationExists_returns_operation_errors(t *testing.T) {
+	_, err := CheckOrganizationExists(context.Background(), fakeGraphQLClient{}, "missing")
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "missing fake response for organizationExists")
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {

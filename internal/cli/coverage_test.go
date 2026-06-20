@@ -94,6 +94,11 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		ID:             "custom-view-id",
 		HasSubscribers: true,
 	}
+	organizationExistsStatus := client.OrganizationExistsStatus{
+		URLKey:  "kyanite",
+		Success: true,
+		Exists:  true,
+	}
 	favorite := client.FavoriteSummary{
 		ID:   "favorite-id",
 		Type: "issue",
@@ -129,6 +134,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeInitiative(textCommand, &textOptions, initiative))
 	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(textCommand, &textOptions, customViewSubscriberStatus))
+	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
 	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
 	require.NoError(t, writeEmoji(textCommand, &textOptions, emoji))
 	require.NoError(t, writeAttachment(textCommand, &textOptions, attachment))
@@ -141,6 +147,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"user-id Omer <omer@example.com>\ncomment-id Omer First comment\nworkflow-state-id Started [started]\n"+
 			"initiative-id Platform [Active]\ncustom-view-id My issues [Issue]\n"+
 			"custom-view-id has_subscribers true\n"+
+			"kyanite exists true success true\n"+
 			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
 			"attachment-id Linked PR [github]\n",
 		textOut.String(),
@@ -165,6 +172,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeInitiative(jsonCommand, &jsonOptions, initiative))
 	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(jsonCommand, &jsonOptions, customViewSubscriberStatus))
+	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
 	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
 	require.NoError(t, writeEmoji(jsonCommand, &jsonOptions, emoji))
 	require.NoError(t, writeAttachment(jsonCommand, &jsonOptions, attachment))
@@ -182,6 +190,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"status": "Active"`)
 	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
 	require.Contains(t, jsonOut.String(), `"has_subscribers": true`)
+	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
 	require.Contains(t, jsonOut.String(), `"type": "issue"`)
 	require.Contains(t, jsonOut.String(), `"source": "custom"`)
 	require.Contains(t, jsonOut.String(), `"source_type": "github"`)
@@ -272,6 +281,11 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		ID:             "custom-view-id",
 		HasSubscribers: true,
 	}
+	organizationExistsStatus := client.OrganizationExistsStatus{
+		URLKey:  "kyanite",
+		Success: true,
+		Exists:  true,
+	}
 	favorite := client.FavoriteSummary{
 		ID:   "favorite-id",
 		Type: "issue",
@@ -350,6 +364,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeInitiative(quietCommand, &rootOptions{quiet: true}, initiative))
 	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(quietCommand, &rootOptions{quiet: true}, customViewSubscriberStatus))
+	require.NoError(t, writeOrganizationExists(quietCommand, &rootOptions{quiet: true}, organizationExistsStatus))
 	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
 	require.NoError(t, writeEmoji(quietCommand, &rootOptions{quiet: true}, emoji))
 	require.NoError(t, writeAttachment(quietCommand, &rootOptions{quiet: true}, attachment))

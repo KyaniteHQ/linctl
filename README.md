@@ -59,6 +59,7 @@ Inject credentials with `LINCTL_TOKEN` or `LINEAR_API_KEY`; do not commit tokens
 linctl usage
 linctl target --json
 linctl doctor
+linctl organization exists kyanite
 linctl current --json
 linctl next --dry-run
 linctl done
@@ -138,6 +139,7 @@ linctl issue search "needle" --limit 20
 linctl issue deps LIT-123 --limit 20
 linctl issue pr LIT-123
 linctl next --dry-run
+linctl organization exists kyanite
 linctl cycle list --limit 20
 linctl cycle get cycle-id
 linctl cycle create --starts-at 2026-07-01T00:00:00Z --ends-at 2026-07-15T00:00:00Z --name "Planning"
@@ -187,7 +189,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Comment, ProjectUpdate, document, label, team, user, workflow-state, initiative, custom-view, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Organization, comment, ProjectUpdate, document, label, team, user, workflow-state, initiative, custom-view, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

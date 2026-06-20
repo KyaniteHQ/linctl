@@ -20,7 +20,7 @@ var usageTopics = map[string]usagePayload{
 			"Configure a pinned target with org_id, team_key, team_id, and optional project_id in .linctl.toml, " +
 			"then use reads freely and writes fail-closed against that target. " +
 			"Core commands: target, doctor, whoami, current, next, done, issue, comment, cycle, sprint, project, " +
-			"project-milestone, document, label, team, user, workflow-state. " +
+			"project-milestone, organization, document, label, team, user, workflow-state. " +
 			"Use --json for structured output, --profile for named configs, --org/--team/--project for explicit " +
 			"target overrides, and --timeout for request bounds. " +
 			"For scripts, combine --json with --compact or --fields, use --id-only for chaining, --quiet for " +

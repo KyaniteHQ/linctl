@@ -34,7 +34,9 @@ PY
 (
   cd "$smoke_dir"
   "$binary" usage >/dev/null
-  "$binary" target --json >/dev/null
+  target_json="$("$binary" target --json)"
+  org_url_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["org"]["url_key"])' <<<"$target_json")"
+  "$binary" organization exists "$org_url_key" --json >/dev/null
   "$binary" whoami --json >/dev/null
   "$binary" issue usage >/dev/null
   "$binary" issue list --json --limit 5 >/dev/null

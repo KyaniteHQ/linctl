@@ -31,6 +31,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "target", args: []string{"target"}, contains: "org org-id team LIT/team-id project project-id confirmed true"},
 		{name: "doctor", args: []string{"doctor"}, contains: "config ok\n token set\n target confirmed LIT/team-id project project-id"},
 		{name: "whoami", args: []string{"whoami"}, contains: "Omer <omer@example.com>"},
+		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
 		{name: "issue list", args: []string{"issue", "list", "--limit", "1"}, contains: "LIT-1 Listed issue [Todo]"},
 		{name: "issue list state filter", args: []string{"issue", "list", "--state", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
@@ -459,6 +460,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"target"},
 			{"doctor"},
 			{"whoami"},
+			{"organization", "exists", "kyanite"},
 			{"next", "--dry-run"},
 			{"issue", "list"},
 			{"issue", "search", "needle"},
@@ -620,6 +622,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "target"},
 		{"--json", "doctor"},
 		{"--json", "whoami"},
+		{"--json", "organization", "exists", "kyanite"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -998,6 +1001,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "target resolve", args: []string{"target"}, operation: "Teams", contains: "resolve teams"},
 		{name: "doctor target resolve", args: []string{"doctor"}, operation: "Teams", contains: "resolve teams"},
 		{name: "whoami resolve", args: []string{"whoami"}, operation: "Viewer", contains: "resolve viewer"},
+		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
 		{name: "next issues", args: []string{"next", "--dry-run"}, operation: "NextIssuesByTeam", contains: "list next issues"},
 		{name: "issue list target resolve", args: []string{"issue", "list"}, operation: "Teams", contains: "resolve teams"},
@@ -1138,43 +1142,44 @@ func testCommandRuntime(graphqlClient graphql.Client) commandRuntime {
 }
 
 type commandFlowFakeClient struct {
-	emptyIssueList            bool
-	emptyIssueComments        bool
-	emptyIssueProject         bool
-	emptyIssueMine            bool
-	emptyIssueLabel           bool
-	emptyIssueCycle           bool
-	emptyIssueCreatedAfter    bool
-	emptyIssueCreatedBefore   bool
-	emptyIssueHasBlockers     bool
-	emptyIssueBlocks          bool
-	emptyIssueBlockedBy       bool
-	emptyIssueAllTeams        bool
-	emptyIssueSearch          bool
-	emptyNextIssues           bool
-	rankedNextIssues          bool
-	expectedStateType         string
-	expectedProjectID         string
-	expectedAssigneeID        string
-	expectedLabelID           string
-	expectedCycleID           string
-	expectedCreatedAfter      string
-	expectedCreatedBefore     string
-	expectedBlockedBy         string
-	expectedIssueDeps         string
-	expectedSearchQuery       string
-	emptyProjectList          bool
-	emptyProjectMembers       bool
-	emptyProjectUpdates       bool
-	emptyProjectMilestones    bool
-	expectedCommentBody       string
-	expectedCommentParentID   string
-	expectedCreateDescription string
-	expectedUpdateDescription string
-	expectedStartAssigneeID   string
-	expectedStartStateID      string
-	failOperation             string
-	multiIssueList            bool
+	emptyIssueList             bool
+	emptyIssueComments         bool
+	emptyIssueProject          bool
+	emptyIssueMine             bool
+	emptyIssueLabel            bool
+	emptyIssueCycle            bool
+	emptyIssueCreatedAfter     bool
+	emptyIssueCreatedBefore    bool
+	emptyIssueHasBlockers      bool
+	emptyIssueBlocks           bool
+	emptyIssueBlockedBy        bool
+	emptyIssueAllTeams         bool
+	emptyIssueSearch           bool
+	emptyNextIssues            bool
+	rankedNextIssues           bool
+	expectedStateType          string
+	expectedProjectID          string
+	expectedAssigneeID         string
+	expectedLabelID            string
+	expectedCycleID            string
+	expectedCreatedAfter       string
+	expectedCreatedBefore      string
+	expectedBlockedBy          string
+	expectedIssueDeps          string
+	expectedSearchQuery        string
+	emptyProjectList           bool
+	emptyProjectMembers        bool
+	emptyProjectUpdates        bool
+	emptyProjectMilestones     bool
+	expectedCommentBody        string
+	expectedCommentParentID    string
+	expectedCreateDescription  string
+	expectedUpdateDescription  string
+	expectedStartAssigneeID    string
+	expectedStartStateID       string
+	expectedOrganizationURLKey string
+	failOperation              string
+	multiIssueList             bool
 }
 
 func (client commandFlowFakeClient) MakeRequest(
@@ -1237,7 +1242,18 @@ func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Re
 	if client.expectedIssueDeps != "" && request.OpName == "IssueDependencies" {
 		return requireRequestVariable(request, []string{"id"}, client.expectedIssueDeps, "issue deps id")
 	}
+	if err := client.requireExpectedOrganizationVariables(request); err != nil {
+		return err
+	}
 	return client.requireExpectedIssueStartVariables(request)
+}
+
+func (client commandFlowFakeClient) requireExpectedOrganizationVariables(request *graphql.Request) error {
+	if client.expectedOrganizationURLKey != "" && request.OpName == "organizationExists" {
+		return requireRequestVariable(request, []string{"urlKey"}, client.expectedOrganizationURLKey, "organization url key")
+	}
+
+	return nil
 }
 
 func (client commandFlowFakeClient) requireExpectedIssueStartVariables(request *graphql.Request) error {
@@ -1312,6 +1328,8 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, nil
 	case "TargetProject":
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, nil
+	case "organizationExists":
+		return `{"organizationExists":{"success":true,"exists":true}}`, nil
 	}
 	if payload, ok := commandFlowIssuePayload(operation, fake); ok {
 		return payload, nil

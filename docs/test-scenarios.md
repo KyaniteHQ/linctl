@@ -389,9 +389,15 @@ Success is pass/fail:
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+74. Organization exists
+   - Success: `linctl organization exists URL_KEY` reports whether a Linear organization URL key exists through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/organization_exists`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
-All seventy-three local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All seventy-four local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

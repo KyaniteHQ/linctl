@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 47 | 458 |
-| Upstream Query root fields | 158 | 35 | 158 |
+| Upstream SDK root methods | 458 | 48 | 458 |
+| Upstream Query root fields | 158 | 36 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 73 | 73 | 73 |
-| Domain-map commands | 100 | 67 | 100 |
+| Local generated Go operations | 74 | 74 | 74 |
+| Domain-map commands | 101 | 68 | 101 |
 
 ## Upstream SDK Root Methods
 
@@ -325,7 +325,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `notifications` | method | safe_candidate | read operation may fit future CLI coverage |
 | `organization` | getter | implemented | local operation or command exists |
 | `organizationDeleteChallenge` | getter | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationExists` | method | safe_candidate | read operation may fit future CLI coverage |
+| `organizationExists` | method | implemented | local operation or command exists |
 | `organizationInvite` | method | safe_candidate | read operation may fit future CLI coverage |
 | `organizationInvites` | method | safe_candidate | read operation may fit future CLI coverage |
 | `organizationStartTrial` | getter | safe_candidate | read operation may fit future CLI coverage |
@@ -584,7 +584,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `oauthApplications` | `[OAuthApplication!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `organization` | `Organization!` | implemented | root field used by local GraphQL operation |
 | `organizationDomainClaimRequest` | `OrganizationDomainClaimPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `organizationExists` | `OrganizationExistsPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `organizationExists` | `OrganizationExistsPayload!` | implemented | root field used by local GraphQL operation |
 | `organizationInvite` | `OrganizationInvite!` | safe_candidate | read operation may fit future CLI coverage |
 | `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `organizationInvites` | `OrganizationInviteConnection!` | safe_candidate | read operation may fit future CLI coverage |
@@ -1082,6 +1082,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
 | `issue_comments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issues` | query | `issues` | implemented | `internal/client/generated.go` |
+| `organizationExists` | query | `organizationExists` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
@@ -1102,6 +1103,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help` / public CLI tests |
 | Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help` / public CLI tests |
 | Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
+| Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |

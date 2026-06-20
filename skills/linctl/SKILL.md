@@ -1,6 +1,6 @@
 ---
 name: linctl
-description: Use linctl as the Linear control surface for issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, initiative, CustomView, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
+description: Use linctl as the Linear control surface for organization, issue, comment, project, ProjectUpdate, Cycle, ProjectMilestone, document, label, team, user, WorkflowState, initiative, CustomView, Favorite, Emoji, and Attachment work: reads, guarded writes, branch lookup, next-work preview, doctor checks, and live smoke. Prefer it over Linear MCP, ad hoc API calls, or hand-written GraphQL when linctl covers the operation.
 ---
 
 # linctl
@@ -54,6 +54,7 @@ Read commands:
 linctl doctor --json
 linctl target --json
 linctl whoami --json
+linctl organization exists URL_KEY --json
 linctl current --json
 linctl next --dry-run
 linctl issue id

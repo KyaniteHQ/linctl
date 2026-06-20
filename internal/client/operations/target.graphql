@@ -20,6 +20,13 @@ query Organization {
   }
 }
 
+query organizationExists($urlKey: String!) {
+  organizationExists(urlKey: $urlKey) {
+    success
+    exists
+  }
+}
+
 query Teams($first: Int, $after: String, $includeArchived: Boolean) {
   teams(first: $first, after: $after, includeArchived: $includeArchived) {
     nodes {

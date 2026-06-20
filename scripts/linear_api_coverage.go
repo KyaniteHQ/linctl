@@ -622,6 +622,7 @@ func commandImplemented(command string) bool {
 	implemented := map[string]bool{
 		"whoami":                   true,
 		"target":                   true,
+		"organization exists":      true,
 		"issue list":               true,
 		"issue search":             true,
 		"issue get":                true,
