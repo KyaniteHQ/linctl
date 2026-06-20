@@ -93,6 +93,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	addWorkflowStateCommand(ctx, command, &options)
 	addTimeScheduleCommand(ctx, command, &options)
 	addInitiativeCommand(ctx, command, &options)
+	addInitiativeUpdateCommand(ctx, command, &options)
 	addRoadmapCommand(ctx, command, &options)
 	addCustomViewCommand(ctx, command, &options)
 	addCustomerCommand(ctx, command, &options)

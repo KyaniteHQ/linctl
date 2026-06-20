@@ -90,6 +90,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Name:   "Platform",
 		Status: "Active",
 	}
+	initiativeUpdate := client.InitiativeUpdateSummary{
+		ID:          "initiative-update-id",
+		Body:        "First initiative update",
+		Health:      "onTrack",
+		DisplayName: "Omer",
+	}
 	roadmap := client.RoadmapSummary{
 		ID:     "roadmap-id",
 		Name:   "Platform roadmap",
@@ -219,6 +225,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(textCommand, &textOptions, timeSchedule))
 	require.NoError(t, writeInitiative(textCommand, &textOptions, initiative))
+	require.NoError(t, writeInitiativeUpdate(textCommand, &textOptions, initiativeUpdate))
 	require.NoError(t, writeRoadmap(textCommand, &textOptions, roadmap))
 	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(textCommand, &textOptions, customViewSubscriberStatus))
@@ -245,7 +252,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"user-id Omer <omer@example.com>\ncomment-id Omer First comment\nworkflow-state-id Started [started]\n"+
 			"time-schedule-id Primary on-call entries 1\n"+
-			"initiative-id Platform [Active]\nroadmap-id Platform roadmap platform-roadmap\n"+
+			"initiative-id Platform [Active]\ninitiative-update-id onTrack Omer First initiative update\n"+
+			"roadmap-id Platform roadmap platform-roadmap\n"+
 			"custom-view-id My issues [Issue]\n"+
 			"custom-view-id has_subscribers true\n"+
 			"customer-id Acme [Active] needs 3\n"+
@@ -283,6 +291,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(jsonCommand, &jsonOptions, timeSchedule))
 	require.NoError(t, writeInitiative(jsonCommand, &jsonOptions, initiative))
+	require.NoError(t, writeInitiativeUpdate(jsonCommand, &jsonOptions, initiativeUpdate))
 	require.NoError(t, writeRoadmap(jsonCommand, &jsonOptions, roadmap))
 	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(jsonCommand, &jsonOptions, customViewSubscriberStatus))
@@ -314,6 +323,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"type": "started"`)
 	require.Contains(t, jsonOut.String(), `"entry_count": 1`)
 	require.Contains(t, jsonOut.String(), `"status": "Active"`)
+	require.Contains(t, jsonOut.String(), `"body": "First initiative update"`)
 	require.Contains(t, jsonOut.String(), `"slug_id": "platform-roadmap"`)
 	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
 	require.Contains(t, jsonOut.String(), `"has_subscribers": true`)
@@ -414,6 +424,12 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		ID:     "initiative-id",
 		Name:   "Platform",
 		Status: "Active",
+	}
+	initiativeUpdate := client.InitiativeUpdateSummary{
+		ID:          "initiative-update-id",
+		Body:        "First initiative update",
+		Health:      "onTrack",
+		DisplayName: "Omer",
 	}
 	roadmap := client.RoadmapSummary{
 		ID:     "roadmap-id",
@@ -539,6 +555,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeWorkflowState(command, &rootOptions{idOnly: true}, workflowState))
 	require.NoError(t, writeTimeSchedule(command, &rootOptions{idOnly: true}, timeSchedule))
 	require.NoError(t, writeInitiative(command, &rootOptions{idOnly: true}, initiative))
+	require.NoError(t, writeInitiativeUpdate(command, &rootOptions{idOnly: true}, initiativeUpdate))
 	require.NoError(t, writeRoadmap(command, &rootOptions{idOnly: true}, roadmap))
 	require.NoError(t, writeCustomView(command, &rootOptions{idOnly: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(command, &rootOptions{idOnly: true}, customViewSubscriberStatus))
@@ -571,6 +588,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "workflow-state-id")
 	require.Contains(t, output.String(), "time-schedule-id")
 	require.Contains(t, output.String(), "initiative-id")
+	require.Contains(t, output.String(), "initiative-update-id")
 	require.Contains(t, output.String(), "roadmap-id")
 	require.Contains(t, output.String(), "custom-view-id")
 	require.Contains(t, output.String(), "customer-id")
@@ -604,6 +622,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeWorkflowState(quietCommand, &rootOptions{quiet: true}, workflowState))
 	require.NoError(t, writeTimeSchedule(quietCommand, &rootOptions{quiet: true}, timeSchedule))
 	require.NoError(t, writeInitiative(quietCommand, &rootOptions{quiet: true}, initiative))
+	require.NoError(t, writeInitiativeUpdate(quietCommand, &rootOptions{quiet: true}, initiativeUpdate))
 	require.NoError(t, writeRoadmap(quietCommand, &rootOptions{quiet: true}, roadmap))
 	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
 	require.NoError(t, writeCustomViewSubscriberStatus(quietCommand, &rootOptions{quiet: true}, customViewSubscriberStatus))

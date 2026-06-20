@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 74 | 458 |
-| Upstream Query root fields | 158 | 62 | 158 |
+| Upstream SDK root methods | 458 | 76 | 458 |
+| Upstream Query root fields | 158 | 64 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 112 | 112 | 112 |
-| Domain-map commands | 182 | 94 | 182 |
+| Local generated Go operations | 114 | 114 | 114 |
+| Domain-map commands | 188 | 96 | 188 |
 
 ## Upstream SDK Root Methods
 
@@ -232,8 +232,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiativeRelations` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeToProject` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeToProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeUpdate` | method | safe_candidate | read operation may fit future CLI coverage |
-| `initiativeUpdates` | method | safe_candidate | read operation may fit future CLI coverage |
+| `initiativeUpdate` | method | implemented | local operation or command exists |
+| `initiativeUpdates` | method | implemented | local operation or command exists |
 | `initiatives` | method | implemented | local operation or command exists |
 | `integration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationAsksConnectChannel` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -546,8 +546,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiativeRelations` | `InitiativeRelationConnection!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeToProject` | `InitiativeToProject!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeToProjects` | `InitiativeToProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeUpdate` | `InitiativeUpdate!` | safe_candidate | read operation may fit future CLI coverage |
-| `initiativeUpdates` | `InitiativeUpdateConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `initiativeUpdate` | `InitiativeUpdate!` | implemented | root field used by local GraphQL operation |
+| `initiativeUpdates` | `InitiativeUpdateConnection!` | implemented | root field used by local GraphQL operation |
 | `initiatives` | `InitiativeConnection!` | implemented | root field used by local GraphQL operation |
 | `integration` | `Integration!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationHasScopes` | `IntegrationHasScopesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -1084,6 +1084,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `favorite_children` | query | `favorite` | implemented | `internal/client/generated.go` |
 | `favorites` | query | `favorites` | implemented | `internal/client/generated.go` |
 | `initiative` | query | `initiative` | implemented | `internal/client/generated.go` |
+| `initiativeUpdate` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
+| `initiativeUpdates` | query | `initiativeUpdates` | implemented | `internal/client/generated.go` |
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
@@ -1259,6 +1261,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeUpdate | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeUpdate | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeUpdate | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | Roadmap | `roadmap list` | `Query.roadmaps` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Roadmap | `roadmap get` | `Query.roadmap` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Roadmap | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model | blocked_needs_design | write command needs explicit target and safety semantics |

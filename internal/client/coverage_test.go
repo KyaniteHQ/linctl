@@ -217,6 +217,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"timeSchedule":             `{"timeSchedule":{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}}`,
 		"initiatives":              `{"initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"initiative":               `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
+		"initiativeUpdates":        `{"initiativeUpdates":{"nodes":[{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiativeUpdate":         `{"initiativeUpdate":{"id":"initiative-update-id","body":"First initiative update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/initiative-update/initiative-update-id","slugId":"initiative-update-slug","commentCount":1,"initiative":{"id":"initiative-id","name":"Platform"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
 		"roadmaps":                 `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"roadmap":                  `{"roadmap":{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}}`,
 		"customViews":              `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -360,6 +362,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	initiatives, err := ListInitiatives(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	initiative, err := GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
+	require.NoError(t, err)
+	initiativeUpdates, err := ListInitiativeUpdates(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	initiativeUpdate, err := GetInitiativeUpdateByID(context.Background(), graphqlClient, "initiative-update-id")
 	require.NoError(t, err)
 	roadmaps, err := ListRoadmaps(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -559,6 +565,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "2026-12-31", initiatives.Initiatives[0].TargetDate)
 	require.Equal(t, "initiative-id", initiative.ID)
 	require.Equal(t, "Platform initiative", initiative.Description)
+	require.True(t, initiativeUpdates.HasNextPage)
+	require.Equal(t, &endCursor, initiativeUpdates.EndCursor)
+	require.Equal(t, "initiative-update-id", initiativeUpdates.Updates[0].ID)
+	require.Equal(t, "Platform", initiativeUpdates.Updates[0].InitiativeName)
+	require.Equal(t, 1, initiativeUpdates.Updates[0].CommentCount)
+	require.Equal(t, "initiative-update-id", initiativeUpdate.ID)
+	require.Equal(t, "First initiative update", initiativeUpdate.Body)
 	require.True(t, roadmaps.HasNextPage)
 	require.Equal(t, &endCursor, roadmaps.EndCursor)
 	require.Equal(t, "Platform roadmap", roadmaps.Roadmaps[0].Name)
@@ -1114,6 +1127,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetInitiativeByID(context.Background(), graphqlClient, "initiative-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get initiative initiative-id")
+
+		_, err = ListInitiativeUpdates(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list initiative updates")
+
+		_, err = GetInitiativeUpdateByID(context.Background(), graphqlClient, "initiative-update-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get initiative update initiative-update-id")
 
 		_, err = ListRoadmaps(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

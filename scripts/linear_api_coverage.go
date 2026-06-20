@@ -594,7 +594,7 @@ func implementedRootSet(operations []localOperation) map[string]bool {
 	implemented := map[string]bool{}
 	for _, operation := range operations {
 		for _, field := range operation.RootFields {
-			implemented[field] = true
+			implemented[rootKey(operation.Kind, field)] = true
 		}
 	}
 	return implemented
@@ -694,6 +694,8 @@ func commandImplemented(command string) bool {
 		"time-schedule get":              true,
 		"initiative list":                true,
 		"initiative get":                 true,
+		"initiative-update list":         true,
+		"initiative-update get":          true,
 		"roadmap list":                   true,
 		"roadmap get":                    true,
 		"custom-view list":               true,
@@ -721,58 +723,62 @@ func commandImplemented(command string) bool {
 
 func domainCommandBlocked(command string) bool {
 	blocked := map[string]bool{
-		"document create":               true,
-		"document update":               true,
-		"comment resolve":               true,
-		"comment unresolve":             true,
-		"project-update create":         true,
-		"project-update update":         true,
-		"project-update archive":        true,
-		"label create":                  true,
-		"label update":                  true,
-		"team create":                   true,
-		"team update":                   true,
-		"workflow-state create":         true,
-		"workflow-state update":         true,
-		"workflow-state archive":        true,
-		"time-schedule create":          true,
-		"time-schedule update":          true,
-		"time-schedule delete":          true,
-		"time-schedule upsert-external": true,
-		"initiative create":             true,
-		"initiative update":             true,
-		"initiative archive":            true,
-		"roadmap create":                true,
-		"roadmap update":                true,
-		"roadmap archive":               true,
-		"roadmap delete":                true,
-		"custom-view create":            true,
-		"custom-view update":            true,
-		"customer create":               true,
-		"customer update":               true,
-		"customer archive":              true,
-		"customer-need create":          true,
-		"customer-need update":          true,
-		"customer-need archive":         true,
-		"customer-need delete":          true,
-		"customer-status create":        true,
-		"customer-status update":        true,
-		"customer-status delete":        true,
-		"customer-tier create":          true,
-		"customer-tier update":          true,
-		"customer-tier delete":          true,
-		"favorite create":               true,
-		"favorite update":               true,
-		"emoji create":                  true,
-		"attachment create":             true,
-		"attachment update":             true,
-		"notification archive":          true,
-		"notification archive all":      true,
-		"notification update":           true,
-		"notification mark read all":    true,
-		"notification mark unread all":  true,
-		"notification snooze all":       true,
-		"notification unsnooze all":     true,
+		"document create":                                   true,
+		"document update":                                   true,
+		"comment resolve":                                   true,
+		"comment unresolve":                                 true,
+		"project-update create":                             true,
+		"project-update update":                             true,
+		"project-update archive":                            true,
+		"label create":                                      true,
+		"label update":                                      true,
+		"team create":                                       true,
+		"team update":                                       true,
+		"workflow-state create":                             true,
+		"workflow-state update":                             true,
+		"workflow-state archive":                            true,
+		"time-schedule create":                              true,
+		"time-schedule update":                              true,
+		"time-schedule delete":                              true,
+		"time-schedule upsert-external":                     true,
+		"initiative-update create":                          true,
+		"initiative-update update":                          true,
+		"initiative-update archive":                         true,
+		"initiative-update unarchive":                       true,
+		"initiative create":                                 true,
+		"initiative update":                                 true,
+		"initiative archive":                                true,
+		"roadmap create":                                    true,
+		"roadmap update":                                    true,
+		"roadmap archive":                                   true,
+		"roadmap delete":                                    true,
+		"custom-view create":                                true,
+		"custom-view update":                                true,
+		"customer create":                                   true,
+		"customer update":                                   true,
+		"customer archive":                                  true,
+		"customer-need create":                              true,
+		"customer-need update":                              true,
+		"customer-need archive":                             true,
+		"customer-need delete":                              true,
+		"customer-status create":                            true,
+		"customer-status update":                            true,
+		"customer-status delete":                            true,
+		"customer-tier create":                              true,
+		"customer-tier update":                              true,
+		"customer-tier delete":                              true,
+		"favorite create":                                   true,
+		"favorite update":                                   true,
+		"emoji create":                                      true,
+		"attachment create":                                 true,
+		"attachment update":                                 true,
+		"notification archive":                              true,
+		"notification archive all":                          true,
+		"notification update":                               true,
+		"notification mark read all":                        true,
+		"notification mark unread all":                      true,
+		"notification snooze all":                           true,
+		"notification unsnooze all":                         true,
 		"notification category channel subscription update": true,
 		"notification subscription create":                  true,
 		"notification subscription update":                  true,
@@ -817,7 +823,7 @@ func classifyName(
 }
 
 func classifyRoot(field rootField, implementedRoots map[string]bool) (string, string) {
-	if implementedRoots[field.Name] {
+	if implementedRoots[rootKey(field.Kind, field.Name)] {
 		return "implemented", "root field used by local GraphQL operation"
 	}
 	return classifyLoose(field.Name, field.Kind)
@@ -862,7 +868,7 @@ func classifyLoose(name string, kind string) (string, string) {
 func countImplemented(fields []rootField, implementedRoots map[string]bool) int {
 	count := 0
 	for _, field := range fields {
-		if implementedRoots[field.Name] {
+		if implementedRoots[rootKey(field.Kind, field.Name)] {
 			count++
 		}
 	}
@@ -880,12 +886,30 @@ func countImplementedSDK(methods []sdkMethod, implementedRoots map[string]bool) 
 }
 
 func sdkImplemented(name string, implementedRoots map[string]bool) bool {
+	kind := "query"
+	if likelyMutationRoot(name) {
+		kind = "mutation"
+	}
 	for _, candidate := range sdkRootCandidates(name) {
-		if implementedRoots[candidate] {
+		if implementedRoots[rootKey(kind, candidate)] {
 			return true
 		}
 	}
 	return false
+}
+
+func rootKey(kind string, name string) string {
+	return strings.ToLower(kind) + ":" + name
+}
+
+func likelyMutationRoot(name string) bool {
+	lower := strings.ToLower(name)
+	return hasWritePrefix(lower) ||
+		strings.Contains(lower, "delete") ||
+		strings.Contains(lower, "remove") ||
+		strings.Contains(lower, "revoke") ||
+		strings.Contains(lower, "resolve") ||
+		strings.Contains(lower, "suspend")
 }
 
 func sdkRootCandidates(name string) []string {

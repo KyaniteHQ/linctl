@@ -416,6 +416,31 @@ Planned commands:
 
 Only `initiative list` and `initiative get` are implemented in the current CLI. Initiative writes are deferred as organization-scoped planning surface.
 
+## InitiativeUpdate
+
+Use `InitiativeUpdate` for Linear initiative status updates. Avoid calling these generic comments or notes.
+
+Schema backing:
+
+- Types: `InitiativeUpdate`, `InitiativeUpdateConnection`
+- Reads: `Query.initiativeUpdates`, `Query.initiativeUpdate`
+- Writes: `Mutation.initiativeUpdateCreate`, `Mutation.initiativeUpdateUpdate`, `Mutation.initiativeUpdateArchive`, `Mutation.initiativeUpdateUnarchive`
+- Inputs: `InitiativeUpdateCreateInput`, `InitiativeUpdateUpdateInput`
+- Relevant fields: `InitiativeUpdate.id`, `InitiativeUpdate.body`, `InitiativeUpdate.health`, `InitiativeUpdate.createdAt`, `InitiativeUpdate.updatedAt`, `InitiativeUpdate.url`, `InitiativeUpdate.slugId`, `InitiativeUpdate.commentCount`, `InitiativeUpdate.initiative`, `InitiativeUpdate.user`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `initiative-update list` | `Query.initiativeUpdates` | Read-only |
+| `initiative-update get` | `Query.initiativeUpdate` | Read-only |
+| `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting |
+| `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation |
+| `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics |
+| `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics |
+
+Only `initiative-update list` and `initiative-update get` are implemented in the current CLI. InitiativeUpdate writes and reminders are deferred until their guard model is explicit.
+
 ## Roadmap
 
 Use the schema name `Roadmap` in code and docs. It is Linear's deprecated roadmap grouping for projects; prefer `Initiative` for new planning workflows.
