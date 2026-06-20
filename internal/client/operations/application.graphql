@@ -1,0 +1,15 @@
+query applicationInfo($clientId: String!) {
+  applicationInfo(clientId: $clientId) {
+    ...ApplicationInfoFields
+  }
+}
+
+fragment ApplicationInfoFields on Application {
+  id
+  clientId
+  name
+  description
+  developer
+  developerUrl
+  imageUrl
+}

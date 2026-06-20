@@ -31,6 +31,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "target", args: []string{"target"}, contains: "org org-id team LIT/team-id project project-id confirmed true"},
 		{name: "doctor", args: []string{"doctor"}, contains: "config ok\n token set\n target confirmed LIT/team-id project project-id"},
 		{name: "whoami", args: []string{"whoami"}, contains: "Omer <omer@example.com>"},
+		{name: "application info", args: []string{"application", "info", "app-client-id"}, contains: "app-id Demo App by Kyanite", fake: commandFlowFakeClient{expectedApplicationClientID: "app-client-id"}},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
 		{name: "organization templates", args: []string{"organization", "templates", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, contains: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000"},
@@ -505,6 +506,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"target"},
 			{"doctor"},
 			{"whoami"},
+			{"application", "info", "app-client-id"},
 			{"organization", "exists", "kyanite"},
 			{"rate-limit", "status"},
 			{"release", "list"},
@@ -721,6 +723,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,label,url", "external-link", "get", "release-link-id"},
 		{"--json", "release-note", "list", "--limit", "1"},
 		{"--json", "release-note", "get", "release-note-id"},
+		{"--json", "--fields", "id,client_id,name", "application", "info", "app-client-id"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1123,6 +1126,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "target resolve", args: []string{"target"}, operation: "Teams", contains: "resolve teams"},
 		{name: "doctor target resolve", args: []string{"doctor"}, operation: "Teams", contains: "resolve teams"},
 		{name: "whoami resolve", args: []string{"whoami"}, operation: "Viewer", contains: "resolve viewer"},
+		{name: "application info", args: []string{"application", "info", "app-client-id"}, operation: "applicationInfo", contains: "get application info app-client-id"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
 		{name: "organization templates", args: []string{"organization", "templates"}, operation: "organization_templates", contains: "list organization templates"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, operation: "rateLimitStatus", contains: "operation failed"},
@@ -1309,45 +1313,46 @@ func testCommandRuntime(graphqlClient graphql.Client) commandRuntime {
 }
 
 type commandFlowFakeClient struct {
-	emptyIssueList             bool
-	emptyIssueComments         bool
-	emptyIssueProject          bool
-	emptyIssueMine             bool
-	emptyIssueLabel            bool
-	emptyIssueCycle            bool
-	emptyIssueCreatedAfter     bool
-	emptyIssueCreatedBefore    bool
-	emptyIssueHasBlockers      bool
-	emptyIssueBlocks           bool
-	emptyIssueBlockedBy        bool
-	emptyIssueAllTeams         bool
-	emptyIssueSearch           bool
-	emptyNextIssues            bool
-	rankedNextIssues           bool
-	expectedStateType          string
-	expectedProjectID          string
-	expectedAssigneeID         string
-	expectedLabelID            string
-	expectedCycleID            string
-	expectedCreatedAfter       string
-	expectedCreatedBefore      string
-	expectedBlockedBy          string
-	expectedIssueDeps          string
-	expectedSearchQuery        string
-	expectedReleaseSearchTerm  string
-	emptyProjectList           bool
-	emptyProjectMembers        bool
-	emptyProjectUpdates        bool
-	emptyProjectMilestones     bool
-	expectedCommentBody        string
-	expectedCommentParentID    string
-	expectedCreateDescription  string
-	expectedUpdateDescription  string
-	expectedStartAssigneeID    string
-	expectedStartStateID       string
-	expectedOrganizationURLKey string
-	failOperation              string
-	multiIssueList             bool
+	emptyIssueList              bool
+	emptyIssueComments          bool
+	emptyIssueProject           bool
+	emptyIssueMine              bool
+	emptyIssueLabel             bool
+	emptyIssueCycle             bool
+	emptyIssueCreatedAfter      bool
+	emptyIssueCreatedBefore     bool
+	emptyIssueHasBlockers       bool
+	emptyIssueBlocks            bool
+	emptyIssueBlockedBy         bool
+	emptyIssueAllTeams          bool
+	emptyIssueSearch            bool
+	emptyNextIssues             bool
+	rankedNextIssues            bool
+	expectedStateType           string
+	expectedProjectID           string
+	expectedAssigneeID          string
+	expectedLabelID             string
+	expectedCycleID             string
+	expectedCreatedAfter        string
+	expectedCreatedBefore       string
+	expectedBlockedBy           string
+	expectedIssueDeps           string
+	expectedSearchQuery         string
+	expectedReleaseSearchTerm   string
+	emptyProjectList            bool
+	emptyProjectMembers         bool
+	emptyProjectUpdates         bool
+	emptyProjectMilestones      bool
+	expectedCommentBody         string
+	expectedCommentParentID     string
+	expectedCreateDescription   string
+	expectedUpdateDescription   string
+	expectedStartAssigneeID     string
+	expectedStartStateID        string
+	expectedOrganizationURLKey  string
+	expectedApplicationClientID string
+	failOperation               string
+	multiIssueList              bool
 }
 
 func (client commandFlowFakeClient) MakeRequest(
@@ -1409,6 +1414,9 @@ func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Re
 	}
 	if err := client.requireExpectedOrganizationVariables(request); err != nil {
 		return err
+	}
+	if client.expectedApplicationClientID != "" && request.OpName == "applicationInfo" {
+		return requireRequestVariable(request, []string{"clientId"}, client.expectedApplicationClientID, "application client id")
 	}
 	return client.requireExpectedIssueStartVariables(request)
 }
@@ -1509,6 +1517,8 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, nil
 	case "organizationExists":
 		return `{"organizationExists":{"success":true,"exists":true}}`, nil
+	case "applicationInfo":
+		return commandApplicationInfoPayload(), nil
 	case "organization_templates":
 		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, nil
 	case "rateLimitStatus":
@@ -1529,6 +1539,10 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 
 func commandRateLimitStatusPayload() string {
 	return `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`
+}
+
+func commandApplicationInfoPayload() string {
+	return `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`
 }
 
 func commandFlowPeopleAndReferencePayload(operation string) (string, bool) {

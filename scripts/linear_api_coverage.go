@@ -623,6 +623,7 @@ func commandImplemented(command string) bool {
 	implemented := map[string]bool{
 		"whoami":                         true,
 		"target":                         true,
+		"application info":               true,
 		"organization exists":            true,
 		"organization templates":         true,
 		"rate-limit status":              true,

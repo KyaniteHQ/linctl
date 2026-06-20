@@ -174,6 +174,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"projectUpdate":          `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
 		"ProjectMilestones":      `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"projectMilestone":       `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
+		"applicationInfo":        `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
 		"issue_comments":         `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"comments":               `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"comment":                `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
@@ -307,6 +308,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	projectMilestones, err := ListProjectMilestones(context.Background(), graphqlClient, "project-id", 2)
 	require.NoError(t, err)
 	projectMilestone, err := GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
+	require.NoError(t, err)
+	application, err := GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
 	require.NoError(t, err)
 	comments, err := ListIssueComments(context.Background(), graphqlClient, "LIT-12", 2)
 	require.NoError(t, err)
@@ -516,6 +519,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "project-milestone-id", projectMilestone.ID)
 	require.Equal(t, "Launch milestone", projectMilestone.Name)
 	require.Equal(t, "next", projectMilestone.Status)
+	require.Equal(t, "app-id", application.ID)
+	require.Equal(t, "app-client-id", application.ClientID)
+	require.Equal(t, "Demo App", application.Name)
+	require.Equal(t, "Kyanite", application.Developer)
 	require.Equal(t, "LIT-12", comments.Identifier)
 	require.True(t, comments.HasNextPage)
 	require.Equal(t, &endCursor, comments.EndCursor)
@@ -1187,6 +1194,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get project milestone project-milestone-id")
+
+		_, err = GetApplicationInfo(context.Background(), graphqlClient, "app-client-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get application info app-client-id")
 
 		_, err = ListIssueComments(context.Background(), graphqlClient, "LIT-1", 1)
 		require.Error(t, err)

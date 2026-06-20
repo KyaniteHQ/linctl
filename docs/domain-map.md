@@ -10,6 +10,7 @@ Command names below are either implemented CLI surface or intentionally deferred
 | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. |
 | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. |
 | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. |
+| `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. |
 | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. |
 | `organization templates` | `Organization.templates` via `Query.organization` | Read-only workspace-level templates. |
 | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. |

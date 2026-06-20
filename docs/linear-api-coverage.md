@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 83 | 458 |
-| Upstream Query root fields | 158 | 71 | 158 |
+| Upstream SDK root methods | 458 | 84 | 458 |
+| Upstream Query root fields | 158 | 72 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 131 | 131 | 131 |
-| Domain-map commands | 214 | 113 | 214 |
+| Local generated Go operations | 132 | 132 | 132 |
+| Domain-map commands | 215 | 114 | 215 |
 
 ## Upstream SDK Root Methods
 
@@ -37,7 +37,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSkill` | method | safe_candidate | read operation may fit future CLI coverage |
 | `agentSkills` | method | safe_candidate | read operation may fit future CLI coverage |
 | `airbyteIntegrationConnect` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `applicationInfo` | method | safe_candidate | read operation may fit future CLI coverage |
+| `applicationInfo` | method | implemented | local operation or command exists |
 | `archiveCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archiveCycle` | method | implemented | local operation or command exists |
 | `archiveInitiative` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -498,7 +498,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSessions` | `AgentSessionConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSkill` | `AgentSkill!` | safe_candidate | read operation may fit future CLI coverage |
 | `agentSkills` | `AgentSkillConnection!` | safe_candidate | read operation may fit future CLI coverage |
-| `applicationInfo` | `Application!` | safe_candidate | read operation may fit future CLI coverage |
+| `applicationInfo` | `Application!` | implemented | root field used by local GraphQL operation |
 | `archivedIntegrations` | `[ArchivedIntegrationPayload!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `archivedTeams` | `[Team!]!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachment` | `Attachment!` | implemented | root field used by local GraphQL operation |
@@ -1059,6 +1059,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `TargetProject` | query | `project` | implemented | `internal/client/generated.go` |
 | `Teams` | query | `teams` | implemented | `internal/client/generated.go` |
 | `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
+| `applicationInfo` | query | `applicationInfo` | implemented | `internal/client/generated.go` |
 | `attachment` | query | `attachment` | implemented | `internal/client/generated.go` |
 | `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
 | `attachmentsForURL` | query | `attachmentsForURL` | implemented | `internal/client/generated.go` |
@@ -1148,6 +1149,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help` / public CLI tests |
 | Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help` / public CLI tests |
 | Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
+| Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | implemented | `linctl --help` / public CLI tests |
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
 | Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only workspace-level templates. | implemented | `linctl --help` / public CLI tests |
 | Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |

@@ -36,6 +36,9 @@ PY
   "$binary" usage >/dev/null
   target_json="$("$binary" target --json)"
   org_url_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["org"]["url_key"])' <<<"$target_json")"
+  if [[ -n "${LINCTL_APPLICATION_CLIENT_ID:-}" ]]; then
+    "$binary" application info "$LINCTL_APPLICATION_CLIENT_ID" --json >/dev/null
+  fi
   "$binary" organization exists "$org_url_key" --json >/dev/null
   "$binary" organization templates --json --limit 5 >/dev/null
   "$binary" rate-limit status --json >/dev/null

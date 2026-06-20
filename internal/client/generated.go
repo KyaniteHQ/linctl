@@ -10,6 +10,50 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// ApplicationInfoFields includes the GraphQL fields of Application requested by the fragment ApplicationInfoFields.
+// The GraphQL type's documentation follows.
+//
+// Public-facing information about an OAuth application. Contains only the fields
+// that are safe to display to users during the authorization flow, excluding
+// sensitive data like client secrets and internal configuration.
+type ApplicationInfoFields struct {
+	// OAuth application's ID.
+	Id string `json:"id"`
+	// OAuth application's client ID.
+	ClientId string `json:"clientId"`
+	// Application name.
+	Name string `json:"name"`
+	// Information about the application.
+	Description *string `json:"description"`
+	// Name of the developer.
+	Developer string `json:"developer"`
+	// URL of the developer's website, homepage, or documentation.
+	DeveloperUrl string `json:"developerUrl"`
+	// Image of the application.
+	ImageUrl *string `json:"imageUrl"`
+}
+
+// GetId returns ApplicationInfoFields.Id, and is useful for accessing the field via an interface.
+func (v *ApplicationInfoFields) GetId() string { return v.Id }
+
+// GetClientId returns ApplicationInfoFields.ClientId, and is useful for accessing the field via an interface.
+func (v *ApplicationInfoFields) GetClientId() string { return v.ClientId }
+
+// GetName returns ApplicationInfoFields.Name, and is useful for accessing the field via an interface.
+func (v *ApplicationInfoFields) GetName() string { return v.Name }
+
+// GetDescription returns ApplicationInfoFields.Description, and is useful for accessing the field via an interface.
+func (v *ApplicationInfoFields) GetDescription() *string { return v.Description }
+
+// GetDeveloper returns ApplicationInfoFields.Developer, and is useful for accessing the field via an interface.
+func (v *ApplicationInfoFields) GetDeveloper() string { return v.Developer }
+
+// GetDeveloperUrl returns ApplicationInfoFields.DeveloperUrl, and is useful for accessing the field via an interface.
+func (v *ApplicationInfoFields) GetDeveloperUrl() string { return v.DeveloperUrl }
+
+// GetImageUrl returns ApplicationInfoFields.ImageUrl, and is useful for accessing the field via an interface.
+func (v *ApplicationInfoFields) GetImageUrl() *string { return v.ImageUrl }
+
 // AttachmentSummaryFields includes the GraphQL fields of Attachment requested by the fragment AttachmentSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -14374,6 +14418,14 @@ func (v *__TeamsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __TeamsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__TeamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __applicationInfoInput is used internally by genqlient
+type __applicationInfoInput struct {
+	ClientId string `json:"clientId"`
+}
+
+// GetClientId returns __applicationInfoInput.ClientId, and is useful for accessing the field via an interface.
+func (v *__applicationInfoInput) GetClientId() string { return v.ClientId }
+
 // __attachmentInput is used internally by genqlient
 type __attachmentInput struct {
 	Id string `json:"id"`
@@ -15413,6 +15465,123 @@ func (v *__workflowStatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __workflowStatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__workflowStatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// applicationInfoApplicationInfoApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// Public-facing information about an OAuth application. Contains only the fields
+// that are safe to display to users during the authorization flow, excluding
+// sensitive data like client secrets and internal configuration.
+type applicationInfoApplicationInfoApplication struct {
+	ApplicationInfoFields `json:"-"`
+}
+
+// GetId returns applicationInfoApplicationInfoApplication.Id, and is useful for accessing the field via an interface.
+func (v *applicationInfoApplicationInfoApplication) GetId() string { return v.ApplicationInfoFields.Id }
+
+// GetClientId returns applicationInfoApplicationInfoApplication.ClientId, and is useful for accessing the field via an interface.
+func (v *applicationInfoApplicationInfoApplication) GetClientId() string {
+	return v.ApplicationInfoFields.ClientId
+}
+
+// GetName returns applicationInfoApplicationInfoApplication.Name, and is useful for accessing the field via an interface.
+func (v *applicationInfoApplicationInfoApplication) GetName() string {
+	return v.ApplicationInfoFields.Name
+}
+
+// GetDescription returns applicationInfoApplicationInfoApplication.Description, and is useful for accessing the field via an interface.
+func (v *applicationInfoApplicationInfoApplication) GetDescription() *string {
+	return v.ApplicationInfoFields.Description
+}
+
+// GetDeveloper returns applicationInfoApplicationInfoApplication.Developer, and is useful for accessing the field via an interface.
+func (v *applicationInfoApplicationInfoApplication) GetDeveloper() string {
+	return v.ApplicationInfoFields.Developer
+}
+
+// GetDeveloperUrl returns applicationInfoApplicationInfoApplication.DeveloperUrl, and is useful for accessing the field via an interface.
+func (v *applicationInfoApplicationInfoApplication) GetDeveloperUrl() string {
+	return v.ApplicationInfoFields.DeveloperUrl
+}
+
+// GetImageUrl returns applicationInfoApplicationInfoApplication.ImageUrl, and is useful for accessing the field via an interface.
+func (v *applicationInfoApplicationInfoApplication) GetImageUrl() *string {
+	return v.ApplicationInfoFields.ImageUrl
+}
+
+func (v *applicationInfoApplicationInfoApplication) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*applicationInfoApplicationInfoApplication
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.applicationInfoApplicationInfoApplication = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ApplicationInfoFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalapplicationInfoApplicationInfoApplication struct {
+	Id string `json:"id"`
+
+	ClientId string `json:"clientId"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Developer string `json:"developer"`
+
+	DeveloperUrl string `json:"developerUrl"`
+
+	ImageUrl *string `json:"imageUrl"`
+}
+
+func (v *applicationInfoApplicationInfoApplication) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *applicationInfoApplicationInfoApplication) __premarshalJSON() (*__premarshalapplicationInfoApplicationInfoApplication, error) {
+	var retval __premarshalapplicationInfoApplicationInfoApplication
+
+	retval.Id = v.ApplicationInfoFields.Id
+	retval.ClientId = v.ApplicationInfoFields.ClientId
+	retval.Name = v.ApplicationInfoFields.Name
+	retval.Description = v.ApplicationInfoFields.Description
+	retval.Developer = v.ApplicationInfoFields.Developer
+	retval.DeveloperUrl = v.ApplicationInfoFields.DeveloperUrl
+	retval.ImageUrl = v.ApplicationInfoFields.ImageUrl
+	return &retval, nil
+}
+
+// applicationInfoResponse is returned by applicationInfo on success.
+type applicationInfoResponse struct {
+	// Retrieves public information about an OAuth application by its client ID. Used
+	// during the authorization flow to display application details to the user.
+	ApplicationInfo applicationInfoApplicationInfoApplication `json:"applicationInfo"`
+}
+
+// GetApplicationInfo returns applicationInfoResponse.ApplicationInfo, and is useful for accessing the field via an interface.
+func (v *applicationInfoResponse) GetApplicationInfo() applicationInfoApplicationInfoApplication {
+	return v.ApplicationInfo
+}
 
 // attachmentAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
@@ -38638,6 +38807,49 @@ func Viewer(
 	}
 
 	data_ = &ViewerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by applicationInfo.
+const applicationInfo_Operation = `
+query applicationInfo ($clientId: String!) {
+	applicationInfo(clientId: $clientId) {
+		... ApplicationInfoFields
+	}
+}
+fragment ApplicationInfoFields on Application {
+	id
+	clientId
+	name
+	description
+	developer
+	developerUrl
+	imageUrl
+}
+`
+
+func applicationInfo(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	clientId string,
+) (data_ *applicationInfoResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "applicationInfo",
+		Query:  applicationInfo_Operation,
+		Variables: &__applicationInfoInput{
+			ClientId: clientId,
+		},
+	}
+
+	data_ = &applicationInfoResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -164,6 +164,13 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Success: true,
 		Exists:  true,
 	}
+	application := client.ApplicationInfo{
+		ID:           "app-id",
+		ClientID:     "app-client-id",
+		Name:         "Demo App",
+		Developer:    "Kyanite",
+		DeveloperURL: "https://example.com",
+	}
 	rateLimitStatus := client.RateLimitStatus{
 		Identifier: "api-key",
 		Kind:       "api",
@@ -274,6 +281,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomerNeed(textCommand, &textOptions, customerNeed))
 	require.NoError(t, writeCustomerStatus(textCommand, &textOptions, customerStatus))
 	require.NoError(t, writeCustomerTier(textCommand, &textOptions, customerTier))
+	require.NoError(t, writeApplicationInfo(textCommand, &textOptions, application))
 	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(textCommand, &textOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
@@ -307,6 +315,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"customer-need-id Acme LIT-1 priority 1\n"+
 			"customer-status-id Active #00ff00 1\n"+
 			"customer-tier-id Enterprise #0000ff 2\n"+
+			"app-id Demo App by Kyanite\n"+
 			"kyanite exists true success true\n"+
 			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
 			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
@@ -352,6 +361,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeCustomerNeed(jsonCommand, &jsonOptions, customerNeed))
 	require.NoError(t, writeCustomerStatus(jsonCommand, &jsonOptions, customerStatus))
 	require.NoError(t, writeCustomerTier(jsonCommand, &jsonOptions, customerTier))
+	require.NoError(t, writeApplicationInfo(jsonCommand, &jsonOptions, application))
 	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(jsonCommand, &jsonOptions, rateLimitStatus))
 	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
@@ -389,6 +399,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"customer_name": "Acme"`)
 	require.Contains(t, jsonOut.String(), `"display_name": "Active"`)
 	require.Contains(t, jsonOut.String(), `"display_name": "Enterprise"`)
+	require.Contains(t, jsonOut.String(), `"client_id": "app-client-id"`)
 	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
 	require.Contains(t, jsonOut.String(), `"remaining_amount": 900`)
 	require.Contains(t, jsonOut.String(), `"type": "issue"`)
@@ -563,6 +574,13 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 			{Type: "complexity", AllowedAmount: 1000, RemainingAmount: 900, Reset: 1720000000000},
 		},
 	}
+	application := client.ApplicationInfo{
+		ID:           "app-id",
+		ClientID:     "app-client-id",
+		Name:         "Demo App",
+		Developer:    "Kyanite",
+		DeveloperURL: "https://example.com",
+	}
 	favorite := client.FavoriteSummary{
 		ID:   "favorite-id",
 		Type: "issue",
@@ -661,6 +679,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomerNeed(command, &rootOptions{idOnly: true}, customerNeed))
 	require.NoError(t, writeCustomerStatus(command, &rootOptions{idOnly: true}, customerStatus))
 	require.NoError(t, writeCustomerTier(command, &rootOptions{idOnly: true}, customerTier))
+	require.NoError(t, writeApplicationInfo(command, &rootOptions{idOnly: true}, application))
 	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
 	require.NoError(t, writeEmoji(command, &rootOptions{idOnly: true}, emoji))
 	require.NoError(t, writeAttachment(command, &rootOptions{idOnly: true}, attachment))
@@ -699,6 +718,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "customer-need-id")
 	require.Contains(t, output.String(), "customer-status-id")
 	require.Contains(t, output.String(), "customer-tier-id")
+	require.Contains(t, output.String(), "app-id")
 	require.Contains(t, output.String(), "favorite-id")
 	require.Contains(t, output.String(), "emoji-id")
 	require.Contains(t, output.String(), "attachment-id")
@@ -740,6 +760,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeCustomerNeed(quietCommand, &rootOptions{quiet: true}, customerNeed))
 	require.NoError(t, writeCustomerStatus(quietCommand, &rootOptions{quiet: true}, customerStatus))
 	require.NoError(t, writeCustomerTier(quietCommand, &rootOptions{quiet: true}, customerTier))
+	require.NoError(t, writeApplicationInfo(quietCommand, &rootOptions{quiet: true}, application))
 	require.NoError(t, writeOrganizationExists(quietCommand, &rootOptions{quiet: true}, organizationExistsStatus))
 	require.NoError(t, writeRateLimitStatus(quietCommand, &rootOptions{quiet: true}, rateLimitStatus))
 	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
