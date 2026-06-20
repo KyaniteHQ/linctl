@@ -33,6 +33,7 @@ type localOperation struct {
 	Name       string
 	Kind       string
 	RootFields []string
+	Path       string
 }
 
 type domainCommand struct {
@@ -45,10 +46,12 @@ type domainCommand struct {
 func main() {
 	upstreamDir := flag.String("upstream", "/tmp/linctl-upstream-linear", "upstream linear repo checkout")
 	outputPath := flag.String("output", "docs/linear-api-coverage.md", "coverage ledger path")
+	operationAuditPath := flag.String("operation-audit", "", "optional SDK operation audit output path")
 	flag.Parse()
 
 	upstreamSchemaPath := filepath.Join(*upstreamDir, "packages/sdk/src/schema.graphql")
 	upstreamSDKPath := filepath.Join(*upstreamDir, "packages/sdk/src/_generated_sdk.ts")
+	upstreamDocumentsPath := filepath.Join(*upstreamDir, "packages/sdk/src/_generated_documents.graphql")
 	localOperationsPattern := "internal/client/operations/*.graphql"
 	localGeneratedPath := "internal/client/generated.go"
 	domainMapPath := "docs/domain-map.md"
@@ -59,6 +62,7 @@ func main() {
 	localOperations := mustLocalOperations(localOperationsPattern)
 	localGenerated := mustGeneratedOperations(localGeneratedPath)
 	domainCommands := mustDomainCommands(domainMapPath)
+	sdkOperations := mustSDKOperations(upstreamDocumentsPath)
 
 	implementedRoots := implementedRootSet(localOperations)
 	localOperationNames := mapSet(localGenerated)
@@ -84,6 +88,14 @@ func main() {
 	// #nosec G306 -- this generated markdown ledger is intended to be world-readable repo documentation.
 	if err := os.WriteFile(*outputPath, output.Bytes(), 0o644); err != nil {
 		fail(err)
+	}
+	if *operationAuditPath != "" {
+		var audit bytes.Buffer
+		writeSDKOperationAudit(&audit, upstreamDocumentsPath, sdkOperations, localOperations)
+		// #nosec G306 -- this generated markdown audit is intended to be world-readable repo documentation.
+		if err := os.WriteFile(*operationAuditPath, audit.Bytes(), 0o644); err != nil {
+			fail(err)
+		}
 	}
 }
 
@@ -247,6 +259,83 @@ func writeDomainCommandTable(output *bytes.Buffer, commands []domainCommand, com
 	fmt.Fprintf(output, "\n")
 }
 
+func writeSDKOperationAudit(
+	output *bytes.Buffer,
+	upstreamDocumentsPath string,
+	sdkOperations []sdkMethod,
+	localOperations []localOperation,
+) {
+	localOperationNames := operationNameSet(localOperations)
+	missingOperations := missingSDKOperations(sdkOperations, localOperationNames)
+	riskCounts := riskCountSet(missingOperations)
+	domainOperations := operationsByDomain(missingOperations)
+
+	fmt.Fprintf(output, "# linctl SDK operation coverage audit\n\n")
+	fmt.Fprintf(output, "Generated from `%s`.\n\n", upstreamDocumentsPath)
+	fmt.Fprintf(output, "## Counts\n\n")
+	fmt.Fprintf(output, "- Official SDK operation total: %d\n", len(sdkOperations))
+	fmt.Fprintf(output, "- Current linctl operation total: %d\n", len(localOperations))
+	fmt.Fprintf(
+		output,
+		"- Implemented by exact or case-insensitive operation name: %d\n",
+		len(sdkOperations)-len(missingOperations),
+	)
+	fmt.Fprintf(output, "- Missing SDK operation total: %d\n\n", len(missingOperations))
+
+	fmt.Fprintf(output, "## Implementation order\n\n")
+	fmt.Fprintf(
+		output,
+		"1. Read-only operations in existing CLI domains: issue, comment, project, "+
+			"ProjectMilestone, Cycle, document, label, team, user, viewer, organization.\n",
+	)
+	fmt.Fprintf(
+		output,
+		"2. Read-only operations in adjacent execution domains: attachment, initiative, "+
+			"roadmap, release, customer, custom view, notification.\n",
+	)
+	fmt.Fprintf(
+		output,
+		"3. Safe create/update operations only after the resource has an explicit "+
+			"team-scoped or resource-scoped guard and a target-mismatch test.\n",
+	)
+	fmt.Fprintf(
+		output,
+		"4. Destructive, admin, integration, auth, security, and organization-wide "+
+			"operations stay blocked until their guard model is documented.\n\n",
+	)
+
+	fmt.Fprintf(output, "## Current linctl operations\n\n")
+	for _, operation := range localOperations {
+		fmt.Fprintf(output, "- `%s %s` - `%s`\n", operation.Kind, operation.Name, operation.Path)
+	}
+	fmt.Fprintf(output, "\n")
+
+	fmt.Fprintf(output, "## Risk notes\n\n")
+	for _, risk := range sortedRiskNames(riskCounts) {
+		fmt.Fprintf(output, "- %d: %s\n", riskCounts[risk], risk)
+	}
+	fmt.Fprintf(output, "\n")
+
+	fmt.Fprintf(output, "## Missing operations by domain/resource\n\n")
+	for _, domain := range sortedDomainNames(domainOperations) {
+		operations := domainOperations[domain]
+		queryCount := countOperationsByKind(operations, "query")
+		mutationCount := countOperationsByKind(operations, "mutation")
+		fmt.Fprintf(
+			output,
+			"### %s (%d missing: %d queries, %d mutations)\n\n",
+			domain,
+			len(operations),
+			queryCount,
+			mutationCount,
+		)
+		for _, operation := range operations {
+			fmt.Fprintf(output, "- `%s %s` - %s\n", operation.Kind, operation.Name, operationRisk(operation))
+		}
+		fmt.Fprintf(output, "\n")
+	}
+}
+
 func mustRootFields(path string, typeName string) []rootField {
 	source := mustRead(path)
 	document, err := parser.ParseSchema(&ast.Source{Name: path, Input: string(source)})
@@ -302,6 +391,28 @@ func mustSDKMethods(path string) []sdkMethod {
 	return methods
 }
 
+func mustSDKOperations(path string) []sdkMethod {
+	source := mustRead(path)
+	document, err := parser.ParseQuery(&ast.Source{Name: path, Input: string(source)})
+	if err != nil {
+		fail(err)
+	}
+	operations := make([]sdkMethod, 0, len(document.Operations))
+	for _, operation := range document.Operations {
+		operations = append(operations, sdkMethod{
+			Name: operation.Name,
+			Kind: string(operation.Operation),
+		})
+	}
+	sort.Slice(operations, func(left int, right int) bool {
+		if operations[left].Name == operations[right].Name {
+			return operations[left].Kind < operations[right].Kind
+		}
+		return operations[left].Name < operations[right].Name
+	})
+	return operations
+}
+
 func mustLocalOperations(pattern string) []localOperation {
 	paths, err := filepath.Glob(pattern)
 	if err != nil {
@@ -329,6 +440,7 @@ func mustLocalOperations(pattern string) []localOperation {
 				Name:       operation.Name,
 				Kind:       string(operation.Operation),
 				RootFields: fields,
+				Path:       path,
 			})
 		}
 	}
@@ -381,6 +493,148 @@ func mustDomainCommands(path string) []domainCommand {
 		fail(err)
 	}
 	return commands
+}
+
+func operationNameSet(operations []localOperation) map[string]bool {
+	names := map[string]bool{}
+	for _, operation := range operations {
+		names[operation.Name] = true
+		names[strings.ToLower(operation.Name)] = true
+	}
+	return names
+}
+
+func missingSDKOperations(sdkOperations []sdkMethod, localOperationNames map[string]bool) []sdkMethod {
+	missing := []sdkMethod{}
+	for _, operation := range sdkOperations {
+		if localOperationNames[operation.Name] || localOperationNames[strings.ToLower(operation.Name)] {
+			continue
+		}
+		missing = append(missing, operation)
+	}
+	return missing
+}
+
+func riskCountSet(operations []sdkMethod) map[string]int {
+	counts := map[string]int{}
+	for _, operation := range operations {
+		counts[operationRisk(operation)]++
+	}
+	return counts
+}
+
+func operationsByDomain(operations []sdkMethod) map[string][]sdkMethod {
+	byDomain := map[string][]sdkMethod{}
+	for _, operation := range operations {
+		domain := operationDomain(operation.Name)
+		byDomain[domain] = append(byDomain[domain], operation)
+	}
+	for _, operations := range byDomain {
+		sort.Slice(operations, func(left int, right int) bool {
+			if operations[left].Name == operations[right].Name {
+				return operations[left].Kind < operations[right].Kind
+			}
+			return operations[left].Name < operations[right].Name
+		})
+	}
+	return byDomain
+}
+
+func operationDomain(name string) string {
+	if before, _, found := strings.Cut(name, "_"); found {
+		return before
+	}
+	return name
+}
+
+func operationRisk(operation sdkMethod) string {
+	lower := strings.ToLower(operation.Name)
+	switch {
+	case operation.Kind == "mutation" && containsAny(lower, []string{
+		"delete",
+		"remove",
+		"archive",
+		"unarchive",
+		"trash",
+		"detach",
+		"logout",
+		"revoke",
+	}):
+		return "destructive/admin: defer until explicit guard and cleanup semantics exist"
+	case operation.Kind == "mutation" && containsAny(lower, []string{
+		"admin",
+		"organization",
+		"workspace",
+		"team",
+		"permission",
+		"role",
+		"invite",
+		"integration",
+		"oauth",
+		"apikey",
+		"scim",
+		"saml",
+		"webhook",
+	}):
+		return "admin/security-sensitive write: defer until authority and target guard model are explicit"
+	case operation.Kind == "mutation":
+		return "write: requires target-pinned guard and mismatch test before exposure"
+	case containsAny(lower, []string{
+		"admin",
+		"user",
+		"customer",
+		"company",
+		"email",
+		"token",
+		"secret",
+		"key",
+	}):
+		return "read may expose sensitive/admin data: keep JSON explicit and avoid secret/token printing"
+	default:
+		return "read-only candidate"
+	}
+}
+
+func containsAny(value string, candidates []string) bool {
+	for _, candidate := range candidates {
+		if strings.Contains(value, candidate) {
+			return true
+		}
+	}
+	return false
+}
+
+func sortedRiskNames(riskCounts map[string]int) []string {
+	names := make([]string, 0, len(riskCounts))
+	for name := range riskCounts {
+		names = append(names, name)
+	}
+	sort.Slice(names, func(left int, right int) bool {
+		if riskCounts[names[left]] == riskCounts[names[right]] {
+			return names[left] < names[right]
+		}
+		return riskCounts[names[left]] > riskCounts[names[right]]
+	})
+	return names
+}
+
+func sortedDomainNames(domainOperations map[string][]sdkMethod) []string {
+	names := make([]string, 0, len(domainOperations))
+	for name := range domainOperations {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
+}
+
+func countOperationsByKind(operations []sdkMethod, kind string) int {
+	count := 0
+	for _, operation := range operations {
+		if operation.Kind == kind {
+			count++
+		}
+	}
+	return count
 }
 
 func implementedRootSet(operations []localOperation) map[string]bool {
