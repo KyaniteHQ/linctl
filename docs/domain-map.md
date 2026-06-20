@@ -704,6 +704,30 @@ Command status:
 
 Only `initiative-to-project list` and `initiative-to-project get` are implemented in the current CLI. InitiativeToProject writes are deferred until their endpoint guard model is explicit.
 
+## RoadmapToProject
+
+Use `RoadmapToProject` for deprecated Linear associations between Roadmaps and Projects. Prefer `InitiativeToProject` for new workflows when Linear offers both surfaces.
+
+Schema backing:
+
+- Types: `RoadmapToProject`, `RoadmapToProjectConnection`
+- Reads: `Query.roadmapToProjects`, `Query.roadmapToProject`
+- Writes: `Mutation.roadmapToProjectCreate`, `Mutation.roadmapToProjectUpdate`, `Mutation.roadmapToProjectDelete`
+- Inputs: `RoadmapToProjectCreateInput`, `RoadmapToProjectUpdateInput`
+- Relevant fields: `RoadmapToProject.id`, `RoadmapToProject.roadmap`, `RoadmapToProject.project`, `RoadmapToProject.sortOrder`, `RoadmapToProject.createdAt`, `RoadmapToProject.updatedAt`, `RoadmapToProject.archivedAt`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `roadmap-to-project list` | `Query.roadmapToProjects` | Read-only |
+| `roadmap-to-project get` | `Query.roadmapToProject` | Read-only |
+| `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation |
+| `roadmap-to-project update` | `Mutation.roadmapToProjectUpdate` | Blocked: deprecated update must resolve and compare both Roadmap and Project endpoints before mutation |
+| `roadmap-to-project delete` | `Mutation.roadmapToProjectDelete` | Blocked: destructive deprecated association command needs explicit safety semantics |
+
+Only `roadmap-to-project list` and `roadmap-to-project get` are implemented in the current CLI. RoadmapToProject writes are deferred until their endpoint guard model is explicit.
+
 ## InitiativeUpdate
 
 Use `InitiativeUpdate` for Linear initiative status updates. Avoid calling these generic comments or notes.

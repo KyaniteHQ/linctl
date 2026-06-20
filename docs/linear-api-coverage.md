@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 101 | 458 |
-| Upstream Query root fields | 158 | 89 | 158 |
+| Upstream SDK root methods | 458 | 103 | 458 |
+| Upstream Query root fields | 158 | 91 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 159 | 159 | 159 |
-| Domain-map commands | 265 | 139 | 265 |
+| Local generated Go operations | 161 | 161 | 161 |
+| Domain-map commands | 270 | 141 | 270 |
 
 ## Upstream SDK Root Methods
 
@@ -371,8 +371,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `resendOrganizationInvite` | method | safe_candidate | read operation may fit future CLI coverage |
 | `resendOrganizationInviteByEmail` | method | safe_candidate | read operation may fit future CLI coverage |
 | `roadmap` | method | implemented | local operation or command exists |
-| `roadmapToProject` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `roadmapToProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `roadmapToProject` | method | implemented | local operation or command exists |
+| `roadmapToProjects` | method | implemented | local operation or command exists |
 | `roadmaps` | method | implemented | local operation or command exists |
 | `rotateSecretWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `samlTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -617,8 +617,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releaseStages` | `ReleaseStageConnection!` | implemented | root field used by local GraphQL operation |
 | `releases` | `ReleaseConnection!` | implemented | root field used by local GraphQL operation |
 | `roadmap` | `Roadmap!` | implemented | root field used by local GraphQL operation |
-| `roadmapToProject` | `RoadmapToProject!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `roadmapToProjects` | `RoadmapToProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `roadmapToProject` | `RoadmapToProject!` | implemented | root field used by local GraphQL operation |
+| `roadmapToProjects` | `RoadmapToProjectConnection!` | implemented | root field used by local GraphQL operation |
 | `roadmaps` | `RoadmapConnection!` | implemented | root field used by local GraphQL operation |
 | `searchDocuments` | `DocumentSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `searchIssues` | `IssueSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1146,6 +1146,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `release_links` | query | `release` | implemented | `internal/client/generated.go` |
 | `releases` | query | `releases` | implemented | `internal/client/generated.go` |
 | `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
+| `roadmapToProject` | query | `roadmapToProject` | implemented | `internal/client/generated.go` |
+| `roadmapToProjects` | query | `roadmapToProjects` | implemented | `internal/client/generated.go` |
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
 | `semanticSearch` | query | `semanticSearch` | implemented | `internal/client/generated.go` |
 | `slaConfigurations` | query | `slaConfigurations` | implemented | `internal/client/generated.go` |
@@ -1377,6 +1379,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | InitiativeToProject | `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | InitiativeToProject | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | InitiativeToProject | `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| RoadmapToProject | `roadmap-to-project list` | `Query.roadmapToProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
+| RoadmapToProject | `roadmap-to-project get` | `Query.roadmapToProject` | Read-only | implemented | `linctl --help` / public CLI tests |
+| RoadmapToProject | `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| RoadmapToProject | `roadmap-to-project update` | `Mutation.roadmapToProjectUpdate` | Blocked: deprecated update must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| RoadmapToProject | `roadmap-to-project delete` | `Mutation.roadmapToProjectDelete` | Blocked: destructive deprecated association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | write command needs explicit target and safety semantics |

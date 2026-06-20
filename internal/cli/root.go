@@ -117,6 +117,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addInitiativeToProjectCommand(ctx, command, options)
 	addInitiativeUpdateCommand(ctx, command, options)
 	addRoadmapCommand(ctx, command, options)
+	addRoadmapToProjectCommand(ctx, command, options)
 	addCustomViewCommand(ctx, command, options)
 	addCustomerCommand(ctx, command, options)
 	addCustomerNeedCommand(ctx, command, options)

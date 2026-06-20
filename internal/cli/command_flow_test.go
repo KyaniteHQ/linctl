@@ -146,6 +146,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "initiative update get", args: []string{"initiative-update", "get", "initiative-update-id"}, contains: "initiative-update-id onTrack Omer First initiative update"},
 		{name: "roadmap list", args: []string{"roadmap", "list", "--limit", "1"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
 		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
+		{name: "roadmap to project list", args: []string{"roadmap-to-project", "list", "--limit", "1"}, contains: "roadmap-to-project-id Platform roadmap -> Pinned project order 1"},
+		{name: "roadmap to project get", args: []string{"roadmap-to-project", "get", "roadmap-to-project-id"}, contains: "roadmap-to-project-id Platform roadmap -> Pinned project order 1"},
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, contains: "custom-view-id has_subscribers true"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
@@ -872,6 +874,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "initiative-update", "get", "initiative-update-id"},
 		{"--json", "roadmap", "list", "--limit", "1"},
 		{"--json", "roadmap", "get", "roadmap-id"},
+		{"--json", "--fields", "id,roadmap_id,project_id", "roadmap-to-project", "list", "--limit", "1"},
+		{"--json", "roadmap-to-project", "get", "roadmap-to-project-id"},
 		{"--json", "custom-view", "list", "--limit", "1"},
 		{"--json", "custom-view", "subscribers", "custom-view-id"},
 		{"--json", "custom-view", "get", "custom-view-id"},
@@ -1453,6 +1457,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "initiative update get", args: []string{"initiative-update", "get", "initiative-update-id"}, operation: "initiativeUpdate", contains: "get initiative update initiative-update-id"},
 		{name: "roadmap list", args: []string{"roadmap", "list"}, operation: "roadmaps", contains: "list roadmaps"},
 		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, operation: "roadmap", contains: "get roadmap roadmap-id"},
+		{name: "roadmap to project list", args: []string{"roadmap-to-project", "list"}, operation: "roadmapToProjects", contains: "list roadmap to projects"},
+		{name: "roadmap to project get", args: []string{"roadmap-to-project", "get", "roadmap-to-project-id"}, operation: "roadmapToProject", contains: "get roadmap to project roadmap-to-project-id"},
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, operation: "customViewHasSubscribers", contains: "get custom view subscribers custom-view-id"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
@@ -1920,6 +1926,7 @@ func commandFlowStateAndCommentPayload(operation string, fake commandFlowFakeCli
 	return commandFlowInitiativePayload(operation, fake)
 }
 
+//nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
 func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "initiatives":
@@ -1942,6 +1949,10 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 		return `{"initiativeToProjects":{"nodes":[` + commandInitiativeToProjectJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeToProject":
 		return `{"initiativeToProject":` + commandInitiativeToProjectJSON() + `}`, true
+	case "roadmapToProjects":
+		return `{"roadmapToProjects":{"nodes":[` + commandRoadmapToProjectJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "roadmapToProject":
+		return `{"roadmapToProject":` + commandRoadmapToProjectJSON() + `}`, true
 	case "initiativeUpdates":
 		return `{"initiativeUpdates":{"nodes":[` + commandInitiativeUpdateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeUpdate":
@@ -2545,6 +2556,18 @@ func commandInitiativeToProjectJSON() string {
 		"updatedAt":"2026-06-19T12:00:00Z",
 		"archivedAt":null,
 		"initiative":{"id":"initiative-id","name":"Platform"},
+		"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}
+	}`
+}
+
+func commandRoadmapToProjectJSON() string {
+	return `{
+		"id":"roadmap-to-project-id",
+		"sortOrder":"1",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"roadmap":{"id":"roadmap-id","name":"Platform roadmap"},
 		"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}
 	}`
 }

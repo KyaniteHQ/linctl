@@ -1,3 +1,4 @@
+//nolint:dupl // Minimal association read glue is intentionally uniform across project-association domains.
 package client
 
 import (

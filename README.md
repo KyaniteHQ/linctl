@@ -162,6 +162,8 @@ linctl initiative-update list --limit 20
 linctl initiative-update get initiative-update-id
 linctl roadmap list --limit 20
 linctl roadmap get roadmap-id
+linctl roadmap-to-project list --limit 20
+linctl roadmap-to-project get roadmap-to-project-id
 linctl custom-view list --limit 20
 linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
@@ -302,6 +304,8 @@ linctl initiative-update list --limit 20
 linctl initiative-update get initiative-update-id
 linctl roadmap list --limit 20
 linctl roadmap get roadmap-id
+linctl roadmap-to-project list --limit 20
+linctl roadmap-to-project get roadmap-to-project-id
 linctl custom-view list --limit 20
 linctl custom-view subscribers custom-view-id
 linctl custom-view get custom-view-id
@@ -331,7 +335,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Application, AgentActivity, AgentSkill, AuditEntry, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, semantic-search, comment, ProjectUpdate, ProjectRelation, document, label, team, TeamMembership, user, workflow-state, time-schedule, TriageResponsibility, SLA configuration, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Application, AgentActivity, AgentSkill, AuditEntry, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, semantic-search, comment, ProjectUpdate, ProjectRelation, document, label, team, TeamMembership, user, workflow-state, time-schedule, TriageResponsibility, SLA configuration, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, roadmap-to-project, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 
