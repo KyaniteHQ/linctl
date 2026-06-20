@@ -624,6 +624,7 @@ func commandImplemented(command string) bool {
 		"whoami":                         true,
 		"target":                         true,
 		"organization exists":            true,
+		"organization templates":         true,
 		"rate-limit status":              true,
 		"notification list":              true,
 		"notification get":               true,

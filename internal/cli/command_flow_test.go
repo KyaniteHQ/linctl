@@ -32,6 +32,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "doctor", args: []string{"doctor"}, contains: "config ok\n token set\n target confirmed LIT/team-id project project-id"},
 		{name: "whoami", args: []string{"whoami"}, contains: "Omer <omer@example.com>"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, contains: "kyanite exists true success true", fake: commandFlowFakeClient{expectedOrganizationURLKey: "kyanite"}},
+		{name: "organization templates", args: []string{"organization", "templates", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, contains: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000"},
 		{name: "notification list", args: []string{"notification", "list", "--limit", "1"}, contains: "notification-id issueMention [mentions] Mentioned you"},
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, contains: "notification-id issueMention [mentions] Mentioned you"},
@@ -699,6 +700,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "doctor"},
 		{"--json", "whoami"},
 		{"--json", "organization", "exists", "kyanite"},
+		{"--json", "--fields", "id,name,type,team_key", "organization", "templates", "--limit", "1"},
 		{"--json", "rate-limit", "status"},
 		{"--json", "notification", "list", "--limit", "1"},
 		{"--json", "notification", "get", "notification-id"},
@@ -1122,6 +1124,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "doctor target resolve", args: []string{"doctor"}, operation: "Teams", contains: "resolve teams"},
 		{name: "whoami resolve", args: []string{"whoami"}, operation: "Viewer", contains: "resolve viewer"},
 		{name: "organization exists", args: []string{"organization", "exists", "kyanite"}, operation: "organizationExists", contains: "operation failed"},
+		{name: "organization templates", args: []string{"organization", "templates"}, operation: "organization_templates", contains: "list organization templates"},
 		{name: "rate limit status", args: []string{"rate-limit", "status"}, operation: "rateLimitStatus", contains: "operation failed"},
 		{name: "notification list", args: []string{"notification", "list"}, operation: "notifications", contains: "list notifications"},
 		{name: "notification get", args: []string{"notification", "get", "notification-id"}, operation: "notification", contains: "get notification notification-id"},
@@ -1506,6 +1509,8 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, nil
 	case "organizationExists":
 		return `{"organizationExists":{"success":true,"exists":true}}`, nil
+	case "organization_templates":
+		return `{"organization":{"templates":{"nodes":[` + commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, nil
 	case "rateLimitStatus":
 		return commandRateLimitStatusPayload(), nil
 	}

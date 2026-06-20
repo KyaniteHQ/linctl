@@ -10,6 +10,7 @@ import (
 )
 
 func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
 	command := &cobra.Command{
 		Use:   "organization",
 		Short: "Read Linear organization metadata",
@@ -31,6 +32,25 @@ func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeOrganizationExists(command, options, status)
 		},
 	})
+	templatesCommand := &cobra.Command{
+		Use:   "templates",
+		Short: "List workspace-level Linear templates",
+		Args:  cobra.NoArgs,
+		RunE: func(command *cobra.Command, _ []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				nil,
+				options,
+				limit,
+				loadOrganizationTemplateList,
+				templatePageWithItems,
+				writeTemplate,
+			)
+		},
+	}
+	templatesCommand.Flags().IntVar(&limit, "limit", limit, "maximum organization templates to return")
+	command.AddCommand(templatesCommand)
 	root.AddCommand(command)
 }
 
@@ -53,4 +73,14 @@ func writeOrganizationExists(
 		status.Exists,
 		status.Success,
 	)
+}
+
+func loadOrganizationTemplateList(
+	ctx context.Context,
+	runtime commandRuntime,
+	_ []string,
+	limit int,
+) (client.TemplateList, []client.TemplateSummary, error) {
+	templates, err := client.ListOrganizationTemplates(ctx, runtime.graphqlClient, limit)
+	return templates, templates.Templates, err
 }

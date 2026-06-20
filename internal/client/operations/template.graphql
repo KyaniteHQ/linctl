@@ -4,6 +4,20 @@ query templates {
   }
 }
 
+query organization_templates($first: Int, $after: String, $includeArchived: Boolean) {
+  organization {
+    templates(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TemplateSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query template($id: String!) {
   template(id: $id) {
     ...TemplateSummaryFields

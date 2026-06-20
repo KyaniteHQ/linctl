@@ -14994,6 +14994,22 @@ type __organizationExistsInput struct {
 // GetUrlKey returns __organizationExistsInput.UrlKey, and is useful for accessing the field via an interface.
 func (v *__organizationExistsInput) GetUrlKey() string { return v.UrlKey }
 
+// __organization_templatesInput is used internally by genqlient
+type __organization_templatesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __organization_templatesInput.First, and is useful for accessing the field via an interface.
+func (v *__organization_templatesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __organization_templatesInput.After, and is useful for accessing the field via an interface.
+func (v *__organization_templatesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __organization_templatesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__organization_templatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __projectInput is used internally by genqlient
 type __projectInput struct {
 	Id string `json:"id"`
@@ -30360,6 +30376,249 @@ func (v *organizationExistsResponse) GetOrganizationExists() organizationExistsO
 	return v.OrganizationExists
 }
 
+// organization_templatesOrganization includes the requested fields of the GraphQL type Organization.
+// The GraphQL type's documentation follows.
+//
+// A workspace (referred to as Organization in the API). Workspaces are the
+// root-level container for all teams, users, projects, issues, and settings. Every
+// user belongs to at least one workspace, and all data is scoped within a
+// workspace boundary.
+type organization_templatesOrganization struct {
+	// Workspace-level templates (not associated with any specific team). These
+	// templates are available across all teams in the workspace.
+	Templates organization_templatesOrganizationTemplatesTemplateConnection `json:"templates"`
+}
+
+// GetTemplates returns organization_templatesOrganization.Templates, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganization) GetTemplates() organization_templatesOrganizationTemplatesTemplateConnection {
+	return v.Templates
+}
+
+// organization_templatesOrganizationTemplatesTemplateConnection includes the requested fields of the GraphQL type TemplateConnection.
+type organization_templatesOrganizationTemplatesTemplateConnection struct {
+	Nodes    []organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate `json:"nodes"`
+	PageInfo organization_templatesOrganizationTemplatesTemplateConnectionPageInfo        `json:"pageInfo"`
+}
+
+// GetNodes returns organization_templatesOrganizationTemplatesTemplateConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnection) GetNodes() []organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate {
+	return v.Nodes
+}
+
+// GetPageInfo returns organization_templatesOrganizationTemplatesTemplateConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnection) GetPageInfo() organization_templatesOrganizationTemplatesTemplateConnectionPageInfo {
+	return v.PageInfo
+}
+
+// organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store
+// pre-filled field values and content as JSON data. They can be scoped to a
+// specific team or shared across the entire workspace. Team-scoped templates may
+// be inherited from parent teams.
+type organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate struct {
+	TemplateSummaryFields `json:"-"`
+}
+
+// GetId returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Id, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetId() string {
+	return v.TemplateSummaryFields.Id
+}
+
+// GetName returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Name, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetName() string {
+	return v.TemplateSummaryFields.Name
+}
+
+// GetType returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Type, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetType() string {
+	return v.TemplateSummaryFields.Type
+}
+
+// GetDescription returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Description, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetDescription() *string {
+	return v.TemplateSummaryFields.Description
+}
+
+// GetIcon returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Icon, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetIcon() *string {
+	return v.TemplateSummaryFields.Icon
+}
+
+// GetColor returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Color, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetColor() *string {
+	return v.TemplateSummaryFields.Color
+}
+
+// GetSortOrder returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.SortOrder, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetSortOrder() float64 {
+	return v.TemplateSummaryFields.SortOrder
+}
+
+// GetLastAppliedAt returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetLastAppliedAt() *string {
+	return v.TemplateSummaryFields.LastAppliedAt
+}
+
+// GetCreatedAt returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.CreatedAt, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetCreatedAt() string {
+	return v.TemplateSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetUpdatedAt() string {
+	return v.TemplateSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetArchivedAt() *string {
+	return v.TemplateSummaryFields.ArchivedAt
+}
+
+// GetTeam returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Team, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetTeam() *TemplateSummaryFieldsTeam {
+	return v.TemplateSummaryFields.Team
+}
+
+// GetPipeline returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Pipeline, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetPipeline() *TemplateSummaryFieldsPipelineReleasePipeline {
+	return v.TemplateSummaryFields.Pipeline
+}
+
+// GetCreator returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.Creator, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetCreator() *TemplateSummaryFieldsCreatorUser {
+	return v.TemplateSummaryFields.Creator
+}
+
+// GetLastUpdatedBy returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.LastUpdatedBy, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetLastUpdatedBy() *TemplateSummaryFieldsLastUpdatedByUser {
+	return v.TemplateSummaryFields.LastUpdatedBy
+}
+
+// GetInheritedFrom returns organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate.InheritedFrom, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) GetInheritedFrom() *TemplateSummaryFieldsInheritedFromTemplate {
+	return v.TemplateSummaryFields.InheritedFrom
+}
+
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TemplateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalorganization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Type string `json:"type"`
+
+	Description *string `json:"description"`
+
+	Icon *string `json:"icon"`
+
+	Color *string `json:"color"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Team *TemplateSummaryFieldsTeam `json:"team"`
+
+	Pipeline *TemplateSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+
+	Creator *TemplateSummaryFieldsCreatorUser `json:"creator"`
+
+	LastUpdatedBy *TemplateSummaryFieldsLastUpdatedByUser `json:"lastUpdatedBy"`
+
+	InheritedFrom *TemplateSummaryFieldsInheritedFromTemplate `json:"inheritedFrom"`
+}
+
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate) __premarshalJSON() (*__premarshalorganization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate, error) {
+	var retval __premarshalorganization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate
+
+	retval.Id = v.TemplateSummaryFields.Id
+	retval.Name = v.TemplateSummaryFields.Name
+	retval.Type = v.TemplateSummaryFields.Type
+	retval.Description = v.TemplateSummaryFields.Description
+	retval.Icon = v.TemplateSummaryFields.Icon
+	retval.Color = v.TemplateSummaryFields.Color
+	retval.SortOrder = v.TemplateSummaryFields.SortOrder
+	retval.LastAppliedAt = v.TemplateSummaryFields.LastAppliedAt
+	retval.CreatedAt = v.TemplateSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TemplateSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.TemplateSummaryFields.ArchivedAt
+	retval.Team = v.TemplateSummaryFields.Team
+	retval.Pipeline = v.TemplateSummaryFields.Pipeline
+	retval.Creator = v.TemplateSummaryFields.Creator
+	retval.LastUpdatedBy = v.TemplateSummaryFields.LastUpdatedBy
+	retval.InheritedFrom = v.TemplateSummaryFields.InheritedFrom
+	return &retval, nil
+}
+
+// organization_templatesOrganizationTemplatesTemplateConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type organization_templatesOrganizationTemplatesTemplateConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns organization_templatesOrganizationTemplatesTemplateConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns organization_templatesOrganizationTemplatesTemplateConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *organization_templatesOrganizationTemplatesTemplateConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// organization_templatesResponse is returned by organization_templates on success.
+type organization_templatesResponse struct {
+	// The authenticated user's workspace.
+	Organization organization_templatesOrganization `json:"organization"`
+}
+
+// GetOrganization returns organization_templatesResponse.Organization, and is useful for accessing the field via an interface.
+func (v *organization_templatesResponse) GetOrganization() organization_templatesOrganization {
+	return v.Organization
+}
+
 // projectMilestoneProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
@@ -41033,6 +41292,82 @@ func organizationExists(
 	}
 
 	data_ = &organizationExistsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by organization_templates.
+const organization_templates_Operation = `
+query organization_templates ($first: Int, $after: String, $includeArchived: Boolean) {
+	organization {
+		templates(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TemplateSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TemplateSummaryFields on Template {
+	id
+	name
+	type
+	description
+	icon
+	color
+	sortOrder
+	lastAppliedAt
+	createdAt
+	updatedAt
+	archivedAt
+	team {
+		id
+		key
+		name
+	}
+	pipeline {
+		id
+	}
+	creator {
+		id
+	}
+	lastUpdatedBy {
+		id
+	}
+	inheritedFrom {
+		id
+	}
+}
+`
+
+func organization_templates(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *organization_templatesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "organization_templates",
+		Query:  organization_templates_Operation,
+		Variables: &__organization_templatesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &organization_templatesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

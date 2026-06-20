@@ -168,24 +168,25 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "detail",
 			Status: "Started",
 		}) + `}`,
-		"project_members":    `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"ProjectUpdates":     `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectUpdates":     `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"projectUpdate":      `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"ProjectMilestones":  `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectMilestone":   `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
-		"issue_comments":     `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"comments":           `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"comment":            `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"Documents":          `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"document":           `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
-		"IssueLabels":        `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"issueLabel":         `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
-		"Teams":              `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"organizationExists": `{"organizationExists":{"success":true,"exists":true}}`,
-		"rateLimitStatus":    `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
-		"notifications":      `{"notifications":{"nodes":[` + notificationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"notification":       `{"notification":` + notificationJSON() + `}`,
+		"project_members":        `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"ProjectUpdates":         `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectUpdates":         `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectUpdate":          `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"ProjectMilestones":      `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectMilestone":       `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
+		"issue_comments":         `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"comments":               `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"comment":                `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"Documents":              `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"document":               `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
+		"IssueLabels":            `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issueLabel":             `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`,
+		"Teams":                  `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"organizationExists":     `{"organizationExists":{"success":true,"exists":true}}`,
+		"organization_templates": `{"organization":{"templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"rateLimitStatus":        `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`,
+		"notifications":          `{"notifications":{"nodes":[` + notificationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"notification":           `{"notification":` + notificationJSON() + `}`,
 		"notificationSubscriptions": `{"notificationSubscriptions":{"nodes":[` + strings.Join([]string{
 			notificationSubscriptionJSON(),
 			notificationSubscriptionTargetJSON("CustomerNotificationSubscription", "customer", `{"id":"customer-id","name":"Acme"}`, false, false),
@@ -386,6 +387,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	timeSchedules, err := ListTimeSchedules(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	timeSchedule, err := GetTimeScheduleByID(context.Background(), graphqlClient, "time-schedule-id")
+	require.NoError(t, err)
+	organizationTemplates, err := ListOrganizationTemplates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	templates, err := ListTemplates(context.Background(), graphqlClient, 1)
 	require.NoError(t, err)
@@ -642,6 +645,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, 1, timeSchedule.EntryCount)
 	require.Equal(t, "integration-id", timeSchedule.IntegrationID)
 	require.Equal(t, "omer@example.com", timeSchedule.Entries[0].UserEmail)
+	require.True(t, organizationTemplates.HasNextPage)
+	require.Equal(t, &endCursor, organizationTemplates.EndCursor)
+	require.Equal(t, "Bug report", organizationTemplates.Templates[0].Name)
 	require.Equal(t, 2, templates.TotalCount)
 	require.Len(t, templates.Templates, 1)
 	require.Equal(t, "Bug report", templates.Templates[0].Name)
@@ -1249,6 +1255,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetTimeScheduleByID(context.Background(), graphqlClient, "time-schedule-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get time schedule time-schedule-id")
+
+		_, err = ListOrganizationTemplates(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list organization templates")
 
 		_, err = ListTemplates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

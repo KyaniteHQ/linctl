@@ -31,8 +31,30 @@ type TemplateSummary struct {
 
 // TemplateList is a local page of Linear templates.
 type TemplateList struct {
-	Templates  []TemplateSummary `json:"templates"`
-	TotalCount int               `json:"total_count"`
+	Templates   []TemplateSummary `json:"templates"`
+	TotalCount  int               `json:"total_count"`
+	HasNextPage bool              `json:"has_next_page,omitempty"`
+	EndCursor   *string           `json:"end_cursor,omitempty"`
+}
+
+// ListOrganizationTemplates returns workspace-level Linear templates.
+func ListOrganizationTemplates(ctx context.Context, graphqlClient graphql.Client, limit int) (TemplateList, error) {
+	result, err := organization_templates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return TemplateList{}, fmt.Errorf("list organization templates: %w", err)
+	}
+
+	summaries := make([]TemplateSummary, 0, len(result.Organization.Templates.Nodes))
+	for _, node := range result.Organization.Templates.Nodes {
+		summaries = append(summaries, templateSummary(node.TemplateSummaryFields))
+	}
+
+	return TemplateList{
+		Templates:   summaries,
+		TotalCount:  len(summaries),
+		HasNextPage: result.Organization.Templates.PageInfo.HasNextPage,
+		EndCursor:   result.Organization.Templates.PageInfo.EndCursor,
+	}, nil
 }
 
 // ListTemplates returns visible Linear templates.

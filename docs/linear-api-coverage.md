@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 83 | 458 |
 | Upstream Query root fields | 158 | 71 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 130 | 130 | 130 |
-| Domain-map commands | 213 | 112 | 213 |
+| Local generated Go operations | 131 | 131 | 131 |
+| Domain-map commands | 214 | 113 | 214 |
 
 ## Upstream SDK Root Methods
 
@@ -1106,6 +1106,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `notificationSubscriptions` | query | `notificationSubscriptions` | implemented | `internal/client/generated.go` |
 | `notifications` | query | `notifications` | implemented | `internal/client/generated.go` |
 | `organizationExists` | query | `organizationExists` | implemented | `internal/client/generated.go` |
+| `organization_templates` | query | `organization` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
@@ -1148,6 +1149,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help` / public CLI tests |
 | Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
+| Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only workspace-level templates. | implemented | `linctl --help` / public CLI tests |
 | Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help` / public CLI tests |

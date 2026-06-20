@@ -60,6 +60,7 @@ linctl usage
 linctl target --json
 linctl doctor
 linctl organization exists kyanite
+linctl organization templates --limit 20
 linctl rate-limit status
 linctl notification list --limit 20
 linctl notification get notification-id
@@ -184,6 +185,7 @@ linctl issue deps LIT-123 --limit 20
 linctl issue pr LIT-123
 linctl next --dry-run
 linctl organization exists kyanite
+linctl organization templates --limit 20
 linctl rate-limit status
 linctl notification list --limit 20
 linctl notification get notification-id

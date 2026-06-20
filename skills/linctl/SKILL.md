@@ -55,6 +55,7 @@ linctl doctor --json
 linctl target --json
 linctl whoami --json
 linctl organization exists URL_KEY --json
+linctl organization templates --json --limit 20
 linctl rate-limit status --json
 linctl notification list --json --limit 20
 linctl notification get NOTIFICATION_ID --json
