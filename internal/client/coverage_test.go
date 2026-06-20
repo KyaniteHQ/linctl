@@ -194,6 +194,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"customViews":       `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customView":        `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
 		"favorites":         `{"favorites":{"nodes":[{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"favorite_children": `{"favorite":{"children":{"nodes":[{"id":"favorite-child-id","type":"project","folderName":null,"url":"https://linear.app/kyanite/project/project-id"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"favorite":          `{"favorite":{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}}`,
 		"emojis":            `{"emojis":{"nodes":[{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"emoji":             `{"emoji":{"id":"emoji-id","name":"party","url":"https://linear.app/kyanite/emoji/party.png","source":"custom"}}`,
@@ -290,6 +291,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	customView, err := GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
 	require.NoError(t, err)
 	favorites, err := ListFavorites(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	favoriteChildren, err := ListFavoriteChildren(context.Background(), graphqlClient, "favorite-folder-id", 2)
 	require.NoError(t, err)
 	favorite, err := GetFavoriteByID(context.Background(), graphqlClient, "favorite-id")
 	require.NoError(t, err)
@@ -412,6 +415,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, favorites.HasNextPage)
 	require.Equal(t, &endCursor, favorites.EndCursor)
 	require.Equal(t, "issue", favorites.Favorites[0].Type)
+	require.True(t, favoriteChildren.HasNextPage)
+	require.Equal(t, &endCursor, favoriteChildren.EndCursor)
+	require.Equal(t, "favorite-child-id", favoriteChildren.Favorites[0].ID)
+	require.Equal(t, "project", favoriteChildren.Favorites[0].Type)
 	require.Equal(t, "favorite-id", favorite.ID)
 	require.Equal(t, "https://linear.app/kyanite/issue/LIT-1", favorite.URL)
 	require.True(t, emojis.HasNextPage)
@@ -896,6 +903,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListFavorites(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list favorites")
+
+		_, err = ListFavoriteChildren(context.Background(), graphqlClient, "favorite-folder-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list favorite children favorite-folder-id")
 
 		_, err = GetFavoriteByID(context.Background(), graphqlClient, "favorite-id")
 		require.Error(t, err)

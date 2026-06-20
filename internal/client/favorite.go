@@ -41,6 +41,30 @@ func ListFavorites(ctx context.Context, graphqlClient graphql.Client, limit int)
 	}, nil
 }
 
+// ListFavoriteChildren returns child favorites under a folder favorite.
+func ListFavoriteChildren(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (FavoriteList, error) {
+	result, err := favorite_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return FavoriteList{}, fmt.Errorf("list favorite children %s: %w", id, err)
+	}
+
+	summaries := make([]FavoriteSummary, 0, len(result.Favorite.Children.Nodes))
+	for _, node := range result.Favorite.Children.Nodes {
+		summaries = append(summaries, favoriteSummary(node.FavoriteSummaryFields))
+	}
+
+	return FavoriteList{
+		Favorites:   summaries,
+		HasNextPage: result.Favorite.Children.PageInfo.HasNextPage,
+		EndCursor:   result.Favorite.Children.PageInfo.EndCursor,
+	}, nil
+}
+
 // GetFavoriteByID returns one favorite by Linear id.
 func GetFavoriteByID(
 	ctx context.Context,

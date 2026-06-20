@@ -9147,6 +9147,26 @@ type __favoriteInput struct {
 // GetId returns __favoriteInput.Id, and is useful for accessing the field via an interface.
 func (v *__favoriteInput) GetId() string { return v.Id }
 
+// __favorite_childrenInput is used internally by genqlient
+type __favorite_childrenInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __favorite_childrenInput.Id, and is useful for accessing the field via an interface.
+func (v *__favorite_childrenInput) GetId() string { return v.Id }
+
+// GetFirst returns __favorite_childrenInput.First, and is useful for accessing the field via an interface.
+func (v *__favorite_childrenInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __favorite_childrenInput.After, and is useful for accessing the field via an interface.
+func (v *__favorite_childrenInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __favorite_childrenInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__favorite_childrenInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __favoritesInput is used internally by genqlient
 type __favoritesInput struct {
 	First           *int    `json:"first"`
@@ -11085,6 +11105,154 @@ type favoriteResponse struct {
 
 // GetFavorite returns favoriteResponse.Favorite, and is useful for accessing the field via an interface.
 func (v *favoriteResponse) GetFavorite() favoriteFavorite { return v.Favorite }
+
+// favorite_childrenFavorite includes the requested fields of the GraphQL type Favorite.
+// The GraphQL type's documentation follows.
+//
+// A user's bookmarked item that appears in their sidebar for quick access.
+// Favorites can reference various entity types including issues, projects, cycles,
+// views, documents, initiatives, labels, users, customers, dashboards, and pull
+// requests. Favorites can be organized into folders and ordered by the user. Each
+// favorite is owned by a single user and links to exactly one target entity (or is
+// a folder containing other favorites).
+type favorite_childrenFavorite struct {
+	// Children of the favorite. Only applies to favorites of type folder.
+	Children favorite_childrenFavoriteChildrenFavoriteConnection `json:"children"`
+}
+
+// GetChildren returns favorite_childrenFavorite.Children, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavorite) GetChildren() favorite_childrenFavoriteChildrenFavoriteConnection {
+	return v.Children
+}
+
+// favorite_childrenFavoriteChildrenFavoriteConnection includes the requested fields of the GraphQL type FavoriteConnection.
+type favorite_childrenFavoriteChildrenFavoriteConnection struct {
+	Nodes    []favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite `json:"nodes"`
+	PageInfo favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo        `json:"pageInfo"`
+}
+
+// GetNodes returns favorite_childrenFavoriteChildrenFavoriteConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnection) GetNodes() []favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite {
+	return v.Nodes
+}
+
+// GetPageInfo returns favorite_childrenFavoriteChildrenFavoriteConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnection) GetPageInfo() favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo {
+	return v.PageInfo
+}
+
+// favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite includes the requested fields of the GraphQL type Favorite.
+// The GraphQL type's documentation follows.
+//
+// A user's bookmarked item that appears in their sidebar for quick access.
+// Favorites can reference various entity types including issues, projects, cycles,
+// views, documents, initiatives, labels, users, customers, dashboards, and pull
+// requests. Favorites can be organized into folders and ordered by the user. Each
+// favorite is owned by a single user and links to exactly one target entity (or is
+// a folder containing other favorites).
+type favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite struct {
+	FavoriteSummaryFields `json:"-"`
+}
+
+// GetId returns favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite.Id, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite) GetId() string {
+	return v.FavoriteSummaryFields.Id
+}
+
+// GetType returns favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite.Type, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite) GetType() string {
+	return v.FavoriteSummaryFields.Type
+}
+
+// GetFolderName returns favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite.FolderName, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite) GetFolderName() *string {
+	return v.FavoriteSummaryFields.FolderName
+}
+
+// GetUrl returns favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite.Url, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite) GetUrl() *string {
+	return v.FavoriteSummaryFields.Url
+}
+
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.FavoriteSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalfavorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	FolderName *string `json:"folderName"`
+
+	Url *string `json:"url"`
+}
+
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite) __premarshalJSON() (*__premarshalfavorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite, error) {
+	var retval __premarshalfavorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite
+
+	retval.Id = v.FavoriteSummaryFields.Id
+	retval.Type = v.FavoriteSummaryFields.Type
+	retval.FolderName = v.FavoriteSummaryFields.FolderName
+	retval.Url = v.FavoriteSummaryFields.Url
+	return &retval, nil
+}
+
+// favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *favorite_childrenFavoriteChildrenFavoriteConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// favorite_childrenResponse is returned by favorite_children on success.
+type favorite_childrenResponse struct {
+	// A specific favorite by ID.
+	Favorite favorite_childrenFavorite `json:"favorite"`
+}
+
+// GetFavorite returns favorite_childrenResponse.Favorite, and is useful for accessing the field via an interface.
+func (v *favorite_childrenResponse) GetFavorite() favorite_childrenFavorite { return v.Favorite }
 
 // favoritesFavoritesFavoriteConnection includes the requested fields of the GraphQL type FavoriteConnection.
 type favoritesFavoritesFavoriteConnection struct {
@@ -17041,6 +17209,60 @@ func favorite(
 	}
 
 	data_ = &favoriteResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by favorite_children.
+const favorite_children_Operation = `
+query favorite_children ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	favorite(id: $id) {
+		children(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... FavoriteSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment FavoriteSummaryFields on Favorite {
+	id
+	type
+	folderName
+	url
+}
+`
+
+func favorite_children(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *favorite_childrenResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "favorite_children",
+		Query:  favorite_children_Operation,
+		Variables: &__favorite_childrenInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &favorite_childrenResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -11,18 +11,47 @@ import (
 )
 
 func addFavoriteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(ctx, root, options, readListGetSpec[client.FavoriteList, client.FavoriteSummary]{
-		Use:           "favorite",
-		Short:         "Read Linear favorites",
-		ListShort:     "List the authenticated user's favorites",
-		LimitHelp:     "maximum favorites to return",
-		GetUse:        "get FAVORITE_ID",
-		GetShort:      "Get one favorite by id",
-		LoadList:      loadFavoriteList,
-		PageWithItems: favoritePageWithItems,
-		LoadGet:       loadFavorite,
-		WriteItem:     writeFavorite,
-	})
+	favoriteCommand := addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.FavoriteList, client.FavoriteSummary]{
+			Use:           "favorite",
+			Short:         "Read Linear favorites",
+			ListShort:     "List the authenticated user's favorites",
+			LimitHelp:     "maximum favorites to return",
+			GetUse:        "get FAVORITE_ID",
+			GetShort:      "Get one favorite by id",
+			LoadList:      loadFavoriteList,
+			PageWithItems: favoritePageWithItems,
+			LoadGet:       loadFavorite,
+			WriteItem:     writeFavorite,
+		},
+	)
+	addFavoriteChildrenCommand(ctx, favoriteCommand, options)
+}
+
+func addFavoriteChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "children FAVORITE_ID",
+		Short: "List children of a folder favorite",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadFavoriteChildren,
+				favoritePageWithItems,
+				writeFavorite,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum favorites to return")
+	root.AddCommand(command)
 }
 
 func writeFavorite(
@@ -59,6 +88,16 @@ func loadFavorite(
 	id string,
 ) (client.FavoriteSummary, error) {
 	return client.GetFavoriteByID(ctx, runtime.graphqlClient, id)
+}
+
+func loadFavoriteChildren(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.FavoriteList, []client.FavoriteSummary, error) {
+	favorites, err := client.ListFavoriteChildren(ctx, runtime.graphqlClient, args[0], limit)
+	return favorites, favorites.Favorites, err
 }
 
 func favoritePageWithItems(

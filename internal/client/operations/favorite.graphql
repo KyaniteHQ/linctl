@@ -16,6 +16,20 @@ query favorite($id: String!) {
   }
 }
 
+query favorite_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  favorite(id: $id) {
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...FavoriteSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment FavoriteSummaryFields on Favorite {
   id
   type

@@ -679,6 +679,7 @@ func commandImplemented(command string) bool {
 		"custom-view list":         true,
 		"custom-view get":          true,
 		"favorite list":            true,
+		"favorite children":        true,
 		"favorite get":             true,
 		"emoji list":               true,
 		"emoji get":                true,

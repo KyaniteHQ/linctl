@@ -340,7 +340,7 @@ Use the schema name `Favorite` in code and docs. It is the authenticated user's 
 Schema backing:
 
 - Types: `Favorite`, `FavoriteConnection`
-- Reads: `Query.favorites`, `Query.favorite`
+- Reads: `Query.favorites`, `Query.favorite`, `Favorite.children`
 - Writes: `Mutation.createFavorite`, `Mutation.updateFavorite`, `Mutation.deleteFavorite`
 - Inputs: `FavoriteCreateInput`, `FavoriteUpdateInput`
 - Relevant fields: `Favorite.id`, `Favorite.type`, `Favorite.folderName`, `Favorite.url`
@@ -350,12 +350,13 @@ Planned commands:
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
 | `favorite list` | `Query.favorites` | Read-only |
+| `favorite children` | `Favorite.children` via `Query.favorite` | Read-only |
 | `favorite get` | `Query.favorite` | Read-only |
 | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model |
 | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation |
 | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics |
 
-Only `favorite list` and `favorite get` are implemented in the current CLI. Favorite writes are deferred as viewer-scoped personalization surface.
+Only `favorite list`, `favorite children`, and `favorite get` are implemented in the current CLI. Favorite writes are deferred as viewer-scoped personalization surface.
 
 ## Emoji
 

@@ -105,6 +105,7 @@ linctl initiative get initiative-id
 linctl custom-view list --limit 20
 linctl custom-view get custom-view-id
 linctl favorite list --limit 20
+linctl favorite children favorite-folder-id --limit 20
 linctl favorite get favorite-id
 linctl emoji list --limit 20
 linctl emoji get emoji-id
@@ -171,6 +172,7 @@ linctl initiative get initiative-id
 linctl custom-view list --limit 20
 linctl custom-view get custom-view-id
 linctl favorite list --limit 20
+linctl favorite children favorite-folder-id --limit 20
 linctl favorite get favorite-id
 linctl emoji list --limit 20
 linctl emoji get emoji-id

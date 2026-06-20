@@ -89,6 +89,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "favorite list", args: []string{"favorite", "list", "--limit", "1"}, contains: "favorite-id [issue]"},
+		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id", "--limit", "1"}, contains: "favorite-child-id [project]"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, contains: "favorite-id [issue]"},
 		{name: "emoji list", args: []string{"emoji", "list", "--limit", "1"}, contains: "emoji-id party [custom]"},
 		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, contains: "emoji-id party [custom]"},
@@ -644,6 +645,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "custom-view", "list", "--limit", "1"},
 		{"--json", "custom-view", "get", "custom-view-id"},
 		{"--json", "favorite", "list", "--limit", "1"},
+		{"--json", "favorite", "children", "favorite-folder-id", "--limit", "1"},
 		{"--json", "favorite", "get", "favorite-id"},
 		{"--json", "emoji", "list", "--limit", "1"},
 		{"--json", "emoji", "get", "emoji-id"},
@@ -1054,6 +1056,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
 		{name: "favorite list", args: []string{"favorite", "list"}, operation: "favorites", contains: "list favorites"},
+		{name: "favorite children", args: []string{"favorite", "children", "favorite-folder-id"}, operation: "favorite_children", contains: "list favorite children favorite-folder-id"},
 		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, operation: "favorite", contains: "get favorite favorite-id"},
 		{name: "emoji list", args: []string{"emoji", "list"}, operation: "emojis", contains: "list emojis"},
 		{name: "emoji get", args: []string{"emoji", "get", "emoji-id"}, operation: "emoji", contains: "get emoji emoji-id"},
@@ -1377,6 +1380,8 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"customView":` + commandCustomViewJSON() + `}`, true
 	case "favorites":
 		return `{"favorites":{"nodes":[` + commandFavoriteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "favorite_children":
+		return `{"favorite":{"children":{"nodes":[` + commandFavoriteChildJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "favorite":
 		return `{"favorite":` + commandFavoriteJSON() + `}`, true
 	case "emojis":
@@ -1832,6 +1837,15 @@ func commandFavoriteJSON() string {
 		"type":"issue",
 		"folderName":null,
 		"url":"https://linear.app/kyanite/issue/LIT-1"
+	}`
+}
+
+func commandFavoriteChildJSON() string {
+	return `{
+		"id":"favorite-child-id",
+		"type":"project",
+		"folderName":null,
+		"url":"https://linear.app/kyanite/project/project-id"
 	}`
 }
 

@@ -110,6 +110,7 @@ linctl initiative get INITIATIVE_ID --json
 linctl custom-view list --json --limit 20
 linctl custom-view get CUSTOM_VIEW_ID --json
 linctl favorite list --json --limit 20
+linctl favorite children FAVORITE_ID --json --limit 20
 linctl favorite get FAVORITE_ID --json
 linctl emoji list --json --limit 20
 linctl emoji get EMOJI_ID --json
