@@ -75,6 +75,8 @@ linctl release-stage releases release-stage-id --limit 20
 linctl release list --limit 20
 linctl release search "mobile" --limit 20
 linctl release get release-id
+linctl release history release-id --limit 20
+linctl release links release-id --limit 20
 linctl release-note list --limit 20
 linctl release-note get release-note-id
 linctl current --json
@@ -190,6 +192,8 @@ linctl release-stage releases release-stage-id --limit 20
 linctl release list --limit 20
 linctl release search "mobile" --limit 20
 linctl release get release-id
+linctl release history release-id --limit 20
+linctl release links release-id --limit 20
 linctl release-note list --limit 20
 linctl release-note get release-note-id
 linctl cycle list --limit 20

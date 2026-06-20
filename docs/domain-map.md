@@ -51,8 +51,8 @@ Only `notification list`, `notification get`, `notification subscription list`, 
 Schema backing:
 
 - Types: `Release`, `ReleasePipeline`, `ReleaseStage`, `ReleaseNote`, `IssueToRelease`
-- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `ReleasePipeline.releases`, `ReleasePipeline.stages`, `Query.releaseStages`, `Query.releaseStage`, `ReleaseStage.releases`, `Query.releases`, `Query.release`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`
-- Deferred reads: nested release documents/issues/history/links and access-key release reads
+- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `ReleasePipeline.releases`, `ReleasePipeline.stages`, `Query.releaseStages`, `Query.releaseStage`, `ReleaseStage.releases`, `Query.releases`, `Query.release`, `Release.history`, `Release.links`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`
+- Deferred reads: nested release documents/issues and access-key release reads
 - Writes: `Mutation.releasePipelineCreate`, `Mutation.releasePipelineUpdate`, `Mutation.releasePipelineArchive`, `Mutation.releasePipelineDelete`, `Mutation.releaseStageCreate`, `Mutation.releaseStageUpdate`, `Mutation.releaseStageArchive`, `Mutation.releaseStageUnarchive`, plus Release/ReleaseNote/IssueToRelease create/update/archive/delete/sync/complete mutations
 - Relevant fields: `Release.id`, `Release.name`, `Release.slugId`, `Release.version`, `Release.pipeline`, `Release.stage`, `Release.issueCount`, `ReleaseNote.id`, `ReleaseNote.title`, `ReleaseNote.slugId`, `ReleaseNote.pipeline`, `ReleaseNote.releaseCount`, `ReleasePipeline.id`, `ReleasePipeline.name`, `ReleasePipeline.slugId`, `ReleasePipeline.type`, `ReleasePipeline.isProduction`, `ReleasePipeline.approximateReleaseCount`, `ReleaseStage.id`, `ReleaseStage.name`, `ReleaseStage.type`, `ReleaseStage.pipeline`
 
@@ -70,6 +70,8 @@ Planned commands:
 | `release list` | `Query.releases` | Read-only |
 | `release search` | `Query.releaseSearch` | Read-only |
 | `release get` | `Query.release` | Read-only |
+| `release history` | `Release.history` via `Query.release` | Read-only |
+| `release links` | `Release.links` via `Query.release` | Read-only |
 | `release-note list` | `Query.releaseNotes` | Read-only |
 | `release-note get` | `Query.releaseNote` | Read-only |
 | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics |

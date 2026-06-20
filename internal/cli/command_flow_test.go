@@ -47,6 +47,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "release list", args: []string{"release", "list", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
 		{name: "release search", args: []string{"release", "search", "mobile", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3", fake: commandFlowFakeClient{expectedReleaseSearchTerm: "mobile"}},
 		{name: "release get", args: []string{"release", "get", "release-id"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "release history", args: []string{"release", "history", "release-id", "--limit", "1"}, contains: "release-history-id release release-id entries 1"},
+		{name: "release links", args: []string{"release", "links", "release-id", "--limit", "1"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
 		{name: "release note list", args: []string{"release-note", "list", "--limit", "1"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
 		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
 		{name: "next dry run", args: []string{"next", "--dry-run"}, contains: "LIT-27 Next issue [Todo]"},
@@ -704,6 +706,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "release", "list", "--limit", "1"},
 		{"--json", "release", "search", "mobile", "--limit", "1"},
 		{"--json", "release", "get", "release-id"},
+		{"--json", "--fields", "id,release_id,entry_count", "release", "history", "release-id", "--limit", "1"},
+		{"--json", "--fields", "id,label,url", "release", "links", "release-id", "--limit", "1"},
 		{"--json", "release-note", "list", "--limit", "1"},
 		{"--json", "release-note", "get", "release-note-id"},
 		{"--json", "next", "--dry-run"},
@@ -1118,6 +1122,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "release list", args: []string{"release", "list"}, operation: "releases", contains: "list releases"},
 		{name: "release search", args: []string{"release", "search", "mobile"}, operation: "releaseSearch", contains: "search releases"},
 		{name: "release get", args: []string{"release", "get", "release-id"}, operation: "release", contains: "get release release-id"},
+		{name: "release history", args: []string{"release", "history", "release-id"}, operation: "release_history", contains: "list release history release-id"},
+		{name: "release links", args: []string{"release", "links", "release-id"}, operation: "release_links", contains: "list release links release-id"},
 		{name: "release note list", args: []string{"release-note", "list"}, operation: "releaseNotes", contains: "list release notes"},
 		{name: "release note get", args: []string{"release-note", "get", "release-note-id"}, operation: "releaseNote", contains: "get release note release-note-id"},
 		{name: "next target resolve", args: []string{"next", "--dry-run"}, operation: "Teams", contains: "resolve teams"},
@@ -1591,6 +1597,10 @@ func commandFlowExtraReadPayload(operation string) (string, bool) {
 		return `{"releaseSearch":[` + commandReleaseJSON() + `]}`, true
 	case "release":
 		return `{"release":` + commandReleaseJSON() + `}`, true
+	case "release_history":
+		return `{"release":{"history":{"nodes":[` + commandReleaseHistoryJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "release_links":
+		return `{"release":{"links":{"nodes":[` + commandEntityExternalLinkJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "releaseNotes":
 		return `{"releaseNotes":{"nodes":[` + commandReleaseNoteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseNote":
@@ -2348,6 +2358,32 @@ func commandReleaseJSON() string {
 		"stage":{"id":"release-stage-id","name":"Started","type":"started"},
 		"releaseNotes":[{"id":"release-note-id","title":"Launch notes","slugId":"launch-notes"}],
 		"creator":{"id":"user-id","displayName":"Omer"}
+	}`
+}
+
+func commandReleaseHistoryJSON() string {
+	return `{
+		"id":"release-history-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"entries":[{"type":"stage","from":"planned","to":"started"}],
+		"release":{"id":"release-id"}
+	}`
+}
+
+func commandEntityExternalLinkJSON() string {
+	return `{
+		"id":"release-link-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"url":"https://example.com/runbook",
+		"label":"Runbook",
+		"sortOrder":1.5,
+		"creator":{"id":"user-id","displayName":"Omer"},
+		"initiative":null,
+		"project":null
 	}`
 }
 

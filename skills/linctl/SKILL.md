@@ -70,6 +70,8 @@ linctl release-stage releases RELEASE_STAGE_ID --json --limit 20
 linctl release list --json --limit 20
 linctl release search TERM --json --limit 20
 linctl release get RELEASE_ID --json
+linctl release history RELEASE_ID --json --limit 20
+linctl release links RELEASE_ID --json --limit 20
 linctl release-note list --json --limit 20
 linctl release-note get RELEASE_NOTE_ID --json
 linctl current --json

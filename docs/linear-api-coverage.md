@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 80 | 458 |
 | Upstream Query root fields | 158 | 68 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 121 | 121 | 121 |
-| Domain-map commands | 201 | 103 | 201 |
+| Local generated Go operations | 123 | 123 | 123 |
+| Domain-map commands | 203 | 105 | 203 |
 
 ## Upstream SDK Root Methods
 
@@ -1118,6 +1118,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releaseStage` | query | `releaseStage` | implemented | `internal/client/generated.go` |
 | `releaseStage_releases` | query | `releaseStage` | implemented | `internal/client/generated.go` |
 | `releaseStages` | query | `releaseStages` | implemented | `internal/client/generated.go` |
+| `release_history` | query | `release` | implemented | `internal/client/generated.go` |
+| `release_links` | query | `release` | implemented | `internal/client/generated.go` |
 | `releases` | query | `releases` | implemented | `internal/client/generated.go` |
 | `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
@@ -1165,6 +1167,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `release list` | `Query.releases` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release search` | `Query.releaseSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release get` | `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release history` | `Release.history` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release links` | `Release.links` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-note list` | `Query.releaseNotes` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-note get` | `Query.releaseNote` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |

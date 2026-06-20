@@ -207,6 +207,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"releases":                 `{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"release":                  `{"release":` + releaseJSON() + `}`,
 		"releaseSearch":            `{"releaseSearch":[` + releaseJSON() + `]}`,
+		"release_history":          `{"release":{"history":{"nodes":[` + releaseHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"release_links":            `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"releaseNotes":             `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releaseNote":              `{"releaseNote":` + releaseNoteJSON() + `}`,
 		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
@@ -347,6 +349,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	releases, err := ListReleases(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	release, err := GetReleaseByID(context.Background(), graphqlClient, "release-id")
+	require.NoError(t, err)
+	releaseHistory, err := ListReleaseHistory(context.Background(), graphqlClient, "release-id", 2)
+	require.NoError(t, err)
+	releaseLinks, err := ListReleaseLinks(context.Background(), graphqlClient, "release-id", 2)
 	require.NoError(t, err)
 	releaseSearch, err := SearchReleases(context.Background(), graphqlClient, "mobile", 2)
 	require.NoError(t, err)
@@ -566,6 +572,22 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "v1.2.3", release.Version)
 	require.Equal(t, "Omer", release.CreatorName)
 	require.Equal(t, 1, release.ReleaseNoteCount)
+	require.True(t, releaseHistory.HasNextPage)
+	require.Equal(t, &endCursor, releaseHistory.EndCursor)
+	require.Equal(t, "release-history-id", releaseHistory.History[0].ID)
+	require.Equal(t, "release-id", releaseHistory.History[0].ReleaseID)
+	require.Equal(t, 1, releaseHistory.History[0].EntryCount)
+	require.JSONEq(t, `[{"from":"planned","to":"started","type":"stage"}]`, string(releaseHistory.History[0].Entries))
+	require.True(t, releaseLinks.HasNextPage)
+	require.Equal(t, &endCursor, releaseLinks.EndCursor)
+	require.Equal(t, "release-link-id", releaseLinks.Links[0].ID)
+	require.Equal(t, "Runbook", releaseLinks.Links[0].Label)
+	require.Equal(t, "https://example.com/runbook", releaseLinks.Links[0].URL)
+	require.Equal(t, "user-id", releaseLinks.Links[0].CreatorID)
+	require.Equal(t, "initiative-id", releaseLinks.Links[1].InitiativeID)
+	require.Equal(t, "Platform", releaseLinks.Links[1].InitiativeName)
+	require.Equal(t, "project-id", releaseLinks.Links[1].ProjectID)
+	require.Equal(t, "Pinned project", releaseLinks.Links[1].ProjectName)
 	require.Equal(t, "release-id", releaseSearch.Releases[0].ID)
 	require.True(t, releaseNotes.HasNextPage)
 	require.Equal(t, &endCursor, releaseNotes.EndCursor)
@@ -1324,6 +1346,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetReleaseByID(context.Background(), graphqlClient, "release-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get release release-id")
+
+		_, err = ListReleaseHistory(context.Background(), graphqlClient, "release-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release history release-id")
+
+		_, err = ListReleaseLinks(context.Background(), graphqlClient, "release-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release links release-id")
 
 		_, err = SearchReleases(context.Background(), graphqlClient, "mobile", 1)
 		require.Error(t, err)
@@ -2138,6 +2168,47 @@ func releaseJSON() string {
 		"stage":{"id":"release-stage-id","name":"Started","type":"started"},
 		"releaseNotes":[{"id":"release-note-id","title":"Launch notes","slugId":"launch-notes"}],
 		"creator":{"id":"user-id","displayName":"Omer"}
+	}`
+}
+
+func releaseHistoryJSON() string {
+	return `{
+		"id":"release-history-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"entries":[{"type":"stage","from":"planned","to":"started"}],
+		"release":{"id":"release-id"}
+	}`
+}
+
+func entityExternalLinkJSON() string {
+	return `{
+		"id":"release-link-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"url":"https://example.com/runbook",
+		"label":"Runbook",
+		"sortOrder":1.5,
+		"creator":{"id":"user-id","displayName":"Omer"},
+		"initiative":null,
+		"project":null
+	}`
+}
+
+func entityExternalLinkWithParentsJSON() string {
+	return `{
+		"id":"release-link-parent-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"url":"https://example.com/plan",
+		"label":"Plan",
+		"sortOrder":2,
+		"creator":null,
+		"initiative":{"id":"initiative-id","name":"Platform"},
+		"project":{"id":"project-id","name":"Pinned project"}
 	}`
 }
 

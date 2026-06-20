@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
@@ -43,6 +44,48 @@ type ReleaseList struct {
 	Releases    []ReleaseSummary `json:"releases"`
 	HasNextPage bool             `json:"has_next_page"`
 	EndCursor   *string          `json:"end_cursor,omitempty"`
+}
+
+// ReleaseHistorySummary is the compact release history model used by read-only commands.
+type ReleaseHistorySummary struct {
+	ID         string          `json:"id"`
+	ReleaseID  string          `json:"release_id"`
+	EntryCount int             `json:"entry_count"`
+	Entries    json.RawMessage `json:"entries"`
+	CreatedAt  string          `json:"created_at"`
+	UpdatedAt  string          `json:"updated_at"`
+	ArchivedAt string          `json:"archived_at,omitempty"`
+}
+
+// ReleaseHistoryList is a page of Linear release history records.
+type ReleaseHistoryList struct {
+	History     []ReleaseHistorySummary `json:"history"`
+	HasNextPage bool                    `json:"has_next_page"`
+	EndCursor   *string                 `json:"end_cursor,omitempty"`
+}
+
+// EntityExternalLinkSummary is the compact external link model used by read-only commands.
+type EntityExternalLinkSummary struct {
+	ID             string  `json:"id"`
+	Label          string  `json:"label"`
+	URL            string  `json:"url"`
+	SortOrder      float64 `json:"sort_order"`
+	CreatedAt      string  `json:"created_at"`
+	UpdatedAt      string  `json:"updated_at"`
+	ArchivedAt     string  `json:"archived_at,omitempty"`
+	CreatorID      string  `json:"creator_id,omitempty"`
+	CreatorName    string  `json:"creator_name,omitempty"`
+	InitiativeID   string  `json:"initiative_id,omitempty"`
+	InitiativeName string  `json:"initiative_name,omitempty"`
+	ProjectID      string  `json:"project_id,omitempty"`
+	ProjectName    string  `json:"project_name,omitempty"`
+}
+
+// EntityExternalLinkList is a page of Linear external links.
+type EntityExternalLinkList struct {
+	Links       []EntityExternalLinkSummary `json:"links"`
+	HasNextPage bool                        `json:"has_next_page"`
+	EndCursor   *string                     `json:"end_cursor,omitempty"`
 }
 
 // ReleaseNoteSummary is the compact release note model used by read-only commands.
@@ -100,6 +143,54 @@ func GetReleaseByID(ctx context.Context, graphqlClient graphql.Client, id string
 	}
 
 	return releaseSummary(result.Release.ReleaseSummaryFields), nil
+}
+
+// ListReleaseHistory returns history records associated with one Linear release.
+func ListReleaseHistory(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ReleaseHistoryList, error) {
+	result, err := release_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ReleaseHistoryList{}, fmt.Errorf("list release history %s: %w", id, err)
+	}
+
+	history := make([]ReleaseHistorySummary, 0, len(result.Release.History.Nodes))
+	for _, node := range result.Release.History.Nodes {
+		history = append(history, releaseHistorySummary(node.ReleaseHistorySummaryFields))
+	}
+
+	return ReleaseHistoryList{
+		History:     history,
+		HasNextPage: result.Release.History.PageInfo.HasNextPage,
+		EndCursor:   result.Release.History.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListReleaseLinks returns external links associated with one Linear release.
+func ListReleaseLinks(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (EntityExternalLinkList, error) {
+	result, err := release_links(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return EntityExternalLinkList{}, fmt.Errorf("list release links %s: %w", id, err)
+	}
+
+	links := make([]EntityExternalLinkSummary, 0, len(result.Release.Links.Nodes))
+	for _, node := range result.Release.Links.Nodes {
+		links = append(links, entityExternalLinkSummary(node.EntityExternalLinkSummaryFields))
+	}
+
+	return EntityExternalLinkList{
+		Links:       links,
+		HasNextPage: result.Release.Links.PageInfo.HasNextPage,
+		EndCursor:   result.Release.Links.PageInfo.EndCursor,
+	}, nil
 }
 
 // SearchReleases returns Linear releases matching a term.
@@ -177,6 +268,50 @@ func releaseSummary(fields ReleaseSummaryFields) ReleaseSummary {
 	if fields.Creator != nil {
 		summary.CreatorID = fields.Creator.Id
 		summary.CreatorName = fields.Creator.DisplayName
+	}
+
+	return summary
+}
+
+func releaseHistorySummary(fields ReleaseHistorySummaryFields) ReleaseHistorySummary {
+	entryCount := 0
+	var entries []json.RawMessage
+	if err := json.Unmarshal(fields.Entries, &entries); err == nil {
+		entryCount = len(entries)
+	}
+
+	return ReleaseHistorySummary{
+		ID:         fields.Id,
+		ReleaseID:  fields.Release.Id,
+		EntryCount: entryCount,
+		Entries:    fields.Entries,
+		CreatedAt:  fields.CreatedAt,
+		UpdatedAt:  fields.UpdatedAt,
+		ArchivedAt: stringValue(fields.ArchivedAt),
+	}
+}
+
+func entityExternalLinkSummary(fields EntityExternalLinkSummaryFields) EntityExternalLinkSummary {
+	summary := EntityExternalLinkSummary{
+		ID:         fields.Id,
+		Label:      fields.Label,
+		URL:        fields.Url,
+		SortOrder:  fields.SortOrder,
+		CreatedAt:  fields.CreatedAt,
+		UpdatedAt:  fields.UpdatedAt,
+		ArchivedAt: stringValue(fields.ArchivedAt),
+	}
+	if fields.Creator != nil {
+		summary.CreatorID = fields.Creator.Id
+		summary.CreatorName = fields.Creator.DisplayName
+	}
+	if fields.Initiative != nil {
+		summary.InitiativeID = fields.Initiative.Id
+		summary.InitiativeName = fields.Initiative.Name
+	}
+	if fields.Project != nil {
+		summary.ProjectID = fields.Project.Id
+		summary.ProjectName = fields.Project.Name
 	}
 
 	return summary

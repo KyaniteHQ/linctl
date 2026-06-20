@@ -56,7 +56,12 @@ PY
   if [[ -n "$release_stage_id" ]]; then
     "$binary" release-stage releases "$release_stage_id" --json --limit 5 >/dev/null
   fi
-  "$binary" release list --json --limit 5 >/dev/null
+  release_json="$("$binary" release list --json --limit 5)"
+  release_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("releases", []); print(items[0]["id"] if items else "")' <<<"$release_json")"
+  if [[ -n "$release_id" ]]; then
+    "$binary" release history "$release_id" --json --limit 5 >/dev/null
+    "$binary" release links "$release_id" --json --limit 5 >/dev/null
+  fi
   "$binary" release-note list --json --limit 5 >/dev/null
   "$binary" time-schedule list --json --limit 5 >/dev/null
   "$binary" initiative-relation list --json --limit 5 >/dev/null

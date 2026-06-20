@@ -16,6 +16,34 @@ query release($id: String!) {
   }
 }
 
+query release_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  release(id: $id) {
+    history(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ReleaseHistorySummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query release_links($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  release(id: $id) {
+    links(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...EntityExternalLinkSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query releaseSearch($term: String, $first: Int) {
   releaseSearch(term: $term, first: $first) {
     ...ReleaseSummaryFields
@@ -77,6 +105,39 @@ fragment ReleaseSummaryFields on Release {
   creator {
     id
     displayName
+  }
+}
+
+fragment ReleaseHistorySummaryFields on ReleaseHistory {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  entries
+  release {
+    id
+  }
+}
+
+fragment EntityExternalLinkSummaryFields on EntityExternalLink {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  url
+  label
+  sortOrder
+  creator {
+    id
+    displayName
+  }
+  initiative {
+    id
+    name
+  }
+  project {
+    id
+    name
   }
 }
 

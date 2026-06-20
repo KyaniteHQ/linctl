@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"strings"
@@ -212,6 +213,18 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		StageName:    "Started",
 		IssueCount:   3,
 	}
+	releaseHistory := client.ReleaseHistorySummary{
+		ID:         "release-history-id",
+		ReleaseID:  "release-id",
+		EntryCount: 1,
+		Entries:    json.RawMessage(`[{"type":"stage"}]`),
+	}
+	releaseLink := client.EntityExternalLinkSummary{
+		ID:        "release-link-id",
+		Label:     "Runbook",
+		URL:       "https://example.com/runbook",
+		SortOrder: 1.5,
+	}
 	releaseNote := client.ReleaseNoteSummary{
 		ID:           "release-note-id",
 		Title:        "Launch notes",
@@ -257,6 +270,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeReleasePipeline(textCommand, &textOptions, releasePipeline))
 	require.NoError(t, writeReleaseStage(textCommand, &textOptions, releaseStage))
 	require.NoError(t, writeRelease(textCommand, &textOptions, release))
+	require.NoError(t, writeReleaseHistory(textCommand, &textOptions, releaseHistory))
+	require.NoError(t, writeEntityExternalLink(textCommand, &textOptions, releaseLink))
 	require.NoError(t, writeReleaseNote(textCommand, &textOptions, releaseNote))
 	require.Equal(
 		t,
@@ -285,6 +300,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"release-pipeline-id Production production releases 4\n"+
 			"release-stage-id Started [started] pipeline Production\n"+
 			"release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3\n"+
+			"release-history-id release release-id entries 1\n"+
+			"release-link-id Runbook https://example.com/runbook order 1.5\n"+
 			"release-note-id Launch notes pipeline Production releases 2\n",
 		textOut.String(),
 	)
@@ -327,6 +344,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeReleasePipeline(jsonCommand, &jsonOptions, releasePipeline))
 	require.NoError(t, writeReleaseStage(jsonCommand, &jsonOptions, releaseStage))
 	require.NoError(t, writeRelease(jsonCommand, &jsonOptions, release))
+	require.NoError(t, writeReleaseHistory(jsonCommand, &jsonOptions, releaseHistory))
+	require.NoError(t, writeEntityExternalLink(jsonCommand, &jsonOptions, releaseLink))
 	require.NoError(t, writeReleaseNote(jsonCommand, &jsonOptions, releaseNote))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
@@ -560,6 +579,18 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		StageName:    "Started",
 		IssueCount:   3,
 	}
+	releaseHistory := client.ReleaseHistorySummary{
+		ID:         "release-history-id",
+		ReleaseID:  "release-id",
+		EntryCount: 1,
+		Entries:    json.RawMessage(`[{"type":"stage"}]`),
+	}
+	releaseLink := client.EntityExternalLinkSummary{
+		ID:        "release-link-id",
+		Label:     "Runbook",
+		URL:       "https://example.com/runbook",
+		SortOrder: 1.5,
+	}
 	releaseNote := client.ReleaseNoteSummary{
 		ID:           "release-note-id",
 		Title:        "Launch notes",
@@ -605,6 +636,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeReleasePipeline(command, &rootOptions{idOnly: true}, releasePipeline))
 	require.NoError(t, writeReleaseStage(command, &rootOptions{idOnly: true}, releaseStage))
 	require.NoError(t, writeRelease(command, &rootOptions{idOnly: true}, release))
+	require.NoError(t, writeReleaseHistory(command, &rootOptions{idOnly: true}, releaseHistory))
+	require.NoError(t, writeEntityExternalLink(command, &rootOptions{idOnly: true}, releaseLink))
 	require.NoError(t, writeReleaseNote(command, &rootOptions{idOnly: true}, releaseNote))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
@@ -639,6 +672,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "release-pipeline-id")
 	require.Contains(t, output.String(), "release-stage-id")
 	require.Contains(t, output.String(), "release-id")
+	require.Contains(t, output.String(), "release-history-id")
+	require.Contains(t, output.String(), "release-link-id")
 	require.Contains(t, output.String(), "release-note-id")
 	require.Equal(t, "-", emptyDash(""))
 
@@ -678,6 +713,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeReleasePipeline(quietCommand, &rootOptions{quiet: true}, releasePipeline))
 	require.NoError(t, writeReleaseStage(quietCommand, &rootOptions{quiet: true}, releaseStage))
 	require.NoError(t, writeRelease(quietCommand, &rootOptions{quiet: true}, release))
+	require.NoError(t, writeReleaseHistory(quietCommand, &rootOptions{quiet: true}, releaseHistory))
+	require.NoError(t, writeEntityExternalLink(quietCommand, &rootOptions{quiet: true}, releaseLink))
 	require.NoError(t, writeReleaseNote(quietCommand, &rootOptions{quiet: true}, releaseNote))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")

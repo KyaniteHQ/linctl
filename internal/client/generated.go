@@ -1747,6 +1747,133 @@ func (v *EmojiSummaryFields) GetUrl() string { return v.Url }
 // GetSource returns EmojiSummaryFields.Source, and is useful for accessing the field via an interface.
 func (v *EmojiSummaryFields) GetSource() string { return v.Source }
 
+// EntityExternalLinkSummaryFields includes the GraphQL fields of EntityExternalLink requested by the fragment EntityExternalLinkSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// An external link attached to a Linear entity such as an initiative, project,
+// team, release, or cycle. External links provide a way to reference related
+// resources outside of Linear (e.g., documentation, design files, dashboards)
+// directly from the entity's resources section. Each link has a URL, display
+// label, and sort order within its parent entity.
+type EntityExternalLinkSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The link's URL.
+	Url string `json:"url"`
+	// The link's label.
+	Label string `json:"label"`
+	// The sort order of this link within the parent entity's resources list. Links
+	// are sorted together with documents and other resources attached to the entity.
+	SortOrder float64 `json:"sortOrder"`
+	// The user who created the link.
+	Creator *EntityExternalLinkSummaryFieldsCreatorUser `json:"creator"`
+	// The initiative that the link is associated with.
+	Initiative *EntityExternalLinkSummaryFieldsInitiative `json:"initiative"`
+	// The project that the link is associated with.
+	Project *EntityExternalLinkSummaryFieldsProject `json:"project"`
+}
+
+// GetId returns EntityExternalLinkSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns EntityExternalLinkSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns EntityExternalLinkSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns EntityExternalLinkSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetUrl returns EntityExternalLinkSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetUrl() string { return v.Url }
+
+// GetLabel returns EntityExternalLinkSummaryFields.Label, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetLabel() string { return v.Label }
+
+// GetSortOrder returns EntityExternalLinkSummaryFields.SortOrder, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetSortOrder() float64 { return v.SortOrder }
+
+// GetCreator returns EntityExternalLinkSummaryFields.Creator, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetCreator() *EntityExternalLinkSummaryFieldsCreatorUser {
+	return v.Creator
+}
+
+// GetInitiative returns EntityExternalLinkSummaryFields.Initiative, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetInitiative() *EntityExternalLinkSummaryFieldsInitiative {
+	return v.Initiative
+}
+
+// GetProject returns EntityExternalLinkSummaryFields.Project, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFields) GetProject() *EntityExternalLinkSummaryFieldsProject {
+	return v.Project
+}
+
+// EntityExternalLinkSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type EntityExternalLinkSummaryFieldsCreatorUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns EntityExternalLinkSummaryFieldsCreatorUser.Id, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFieldsCreatorUser) GetId() string { return v.Id }
+
+// GetDisplayName returns EntityExternalLinkSummaryFieldsCreatorUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFieldsCreatorUser) GetDisplayName() string { return v.DisplayName }
+
+// EntityExternalLinkSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business
+// goal. Initiatives can contain multiple projects, have their own status updates
+// and health tracking, and can be organized hierarchically with parent-child relationships.
+type EntityExternalLinkSummaryFieldsInitiative struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the initiative.
+	Name string `json:"name"`
+}
+
+// GetId returns EntityExternalLinkSummaryFieldsInitiative.Id, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFieldsInitiative) GetId() string { return v.Id }
+
+// GetName returns EntityExternalLinkSummaryFieldsInitiative.Name, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFieldsInitiative) GetName() string { return v.Name }
+
+// EntityExternalLinkSummaryFieldsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type EntityExternalLinkSummaryFieldsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+}
+
+// GetId returns EntityExternalLinkSummaryFieldsProject.Id, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFieldsProject) GetId() string { return v.Id }
+
+// GetName returns EntityExternalLinkSummaryFieldsProject.Name, and is useful for accessing the field via an interface.
+func (v *EntityExternalLinkSummaryFieldsProject) GetName() string { return v.Name }
+
 // FavoriteSummaryFields includes the GraphQL fields of Favorite requested by the fragment FavoriteSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -11746,6 +11873,65 @@ func (v *ProjectsTeamProjectsProjectConnectionPageInfo) GetHasNextPage() bool { 
 // GetEndCursor returns ProjectsTeamProjectsProjectConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *ProjectsTeamProjectsProjectConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// ReleaseHistorySummaryFields includes the GraphQL fields of ReleaseHistory requested by the fragment ReleaseHistorySummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A release history record containing a batch of chronologically ordered change
+// events for a release. Each record holds up to 30 entries, and new records are
+// created once the current record is full and a time window has elapsed. Tracks
+// changes to name, description, version, stage, dates, pipeline, and archive status.
+type ReleaseHistorySummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The events that happened while recording that history.
+	Entries json.RawMessage `json:"entries"`
+	// The release that this history record tracks changes for.
+	Release ReleaseHistorySummaryFieldsRelease `json:"release"`
+}
+
+// GetId returns ReleaseHistorySummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *ReleaseHistorySummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns ReleaseHistorySummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ReleaseHistorySummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns ReleaseHistorySummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ReleaseHistorySummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns ReleaseHistorySummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ReleaseHistorySummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetEntries returns ReleaseHistorySummaryFields.Entries, and is useful for accessing the field via an interface.
+func (v *ReleaseHistorySummaryFields) GetEntries() json.RawMessage { return v.Entries }
+
+// GetRelease returns ReleaseHistorySummaryFields.Release, and is useful for accessing the field via an interface.
+func (v *ReleaseHistorySummaryFields) GetRelease() ReleaseHistorySummaryFieldsRelease {
+	return v.Release
+}
+
+// ReleaseHistorySummaryFieldsRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type ReleaseHistorySummaryFieldsRelease struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns ReleaseHistorySummaryFieldsRelease.Id, and is useful for accessing the field via an interface.
+func (v *ReleaseHistorySummaryFieldsRelease) GetId() string { return v.Id }
+
 // The generation status of a release note's body content.
 type ReleaseNoteGenerationStatus string
 
@@ -14690,6 +14876,46 @@ func (v *__releaseStagesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __releaseStagesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__releaseStagesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __release_historyInput is used internally by genqlient
+type __release_historyInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __release_historyInput.Id, and is useful for accessing the field via an interface.
+func (v *__release_historyInput) GetId() string { return v.Id }
+
+// GetFirst returns __release_historyInput.First, and is useful for accessing the field via an interface.
+func (v *__release_historyInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __release_historyInput.After, and is useful for accessing the field via an interface.
+func (v *__release_historyInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __release_historyInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__release_historyInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __release_linksInput is used internally by genqlient
+type __release_linksInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __release_linksInput.Id, and is useful for accessing the field via an interface.
+func (v *__release_linksInput) GetId() string { return v.Id }
+
+// GetFirst returns __release_linksInput.First, and is useful for accessing the field via an interface.
+func (v *__release_linksInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __release_linksInput.After, and is useful for accessing the field via an interface.
+func (v *__release_linksInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __release_linksInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__release_linksInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __releasesInput is used internally by genqlient
 type __releasesInput struct {
@@ -31991,6 +32217,361 @@ func (v *releaseStagesResponse) GetReleaseStages() releaseStagesReleaseStagesRel
 	return v.ReleaseStages
 }
 
+// release_historyRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type release_historyRelease struct {
+	// History entries associated with the release.
+	History release_historyReleaseHistoryReleaseHistoryConnection `json:"history"`
+}
+
+// GetHistory returns release_historyRelease.History, and is useful for accessing the field via an interface.
+func (v *release_historyRelease) GetHistory() release_historyReleaseHistoryReleaseHistoryConnection {
+	return v.History
+}
+
+// release_historyReleaseHistoryReleaseHistoryConnection includes the requested fields of the GraphQL type ReleaseHistoryConnection.
+type release_historyReleaseHistoryReleaseHistoryConnection struct {
+	Nodes    []release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory `json:"nodes"`
+	PageInfo release_historyReleaseHistoryReleaseHistoryConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns release_historyReleaseHistoryReleaseHistoryConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnection) GetNodes() []release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory {
+	return v.Nodes
+}
+
+// GetPageInfo returns release_historyReleaseHistoryReleaseHistoryConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnection) GetPageInfo() release_historyReleaseHistoryReleaseHistoryConnectionPageInfo {
+	return v.PageInfo
+}
+
+// release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory includes the requested fields of the GraphQL type ReleaseHistory.
+// The GraphQL type's documentation follows.
+//
+// A release history record containing a batch of chronologically ordered change
+// events for a release. Each record holds up to 30 entries, and new records are
+// created once the current record is full and a time window has elapsed. Tracks
+// changes to name, description, version, stage, dates, pipeline, and archive status.
+type release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory struct {
+	ReleaseHistorySummaryFields `json:"-"`
+}
+
+// GetId returns release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory.Id, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) GetId() string {
+	return v.ReleaseHistorySummaryFields.Id
+}
+
+// GetCreatedAt returns release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory.CreatedAt, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) GetCreatedAt() string {
+	return v.ReleaseHistorySummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) GetUpdatedAt() string {
+	return v.ReleaseHistorySummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) GetArchivedAt() *string {
+	return v.ReleaseHistorySummaryFields.ArchivedAt
+}
+
+// GetEntries returns release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory.Entries, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) GetEntries() json.RawMessage {
+	return v.ReleaseHistorySummaryFields.Entries
+}
+
+// GetRelease returns release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory.Release, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) GetRelease() ReleaseHistorySummaryFieldsRelease {
+	return v.ReleaseHistorySummaryFields.Release
+}
+
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ReleaseHistorySummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalrelease_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Entries json.RawMessage `json:"entries"`
+
+	Release ReleaseHistorySummaryFieldsRelease `json:"release"`
+}
+
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory) __premarshalJSON() (*__premarshalrelease_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory, error) {
+	var retval __premarshalrelease_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory
+
+	retval.Id = v.ReleaseHistorySummaryFields.Id
+	retval.CreatedAt = v.ReleaseHistorySummaryFields.CreatedAt
+	retval.UpdatedAt = v.ReleaseHistorySummaryFields.UpdatedAt
+	retval.ArchivedAt = v.ReleaseHistorySummaryFields.ArchivedAt
+	retval.Entries = v.ReleaseHistorySummaryFields.Entries
+	retval.Release = v.ReleaseHistorySummaryFields.Release
+	return &retval, nil
+}
+
+// release_historyReleaseHistoryReleaseHistoryConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type release_historyReleaseHistoryReleaseHistoryConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns release_historyReleaseHistoryReleaseHistoryConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns release_historyReleaseHistoryReleaseHistoryConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *release_historyReleaseHistoryReleaseHistoryConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// release_historyResponse is returned by release_history on success.
+type release_historyResponse struct {
+	// Fetch a single release by its UUID or slug identifier.
+	Release release_historyRelease `json:"release"`
+}
+
+// GetRelease returns release_historyResponse.Release, and is useful for accessing the field via an interface.
+func (v *release_historyResponse) GetRelease() release_historyRelease { return v.Release }
+
+// release_linksRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type release_linksRelease struct {
+	// Links associated with the release.
+	Links release_linksReleaseLinksEntityExternalLinkConnection `json:"links"`
+}
+
+// GetLinks returns release_linksRelease.Links, and is useful for accessing the field via an interface.
+func (v *release_linksRelease) GetLinks() release_linksReleaseLinksEntityExternalLinkConnection {
+	return v.Links
+}
+
+// release_linksReleaseLinksEntityExternalLinkConnection includes the requested fields of the GraphQL type EntityExternalLinkConnection.
+type release_linksReleaseLinksEntityExternalLinkConnection struct {
+	Nodes    []release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink `json:"nodes"`
+	PageInfo release_linksReleaseLinksEntityExternalLinkConnectionPageInfo                  `json:"pageInfo"`
+}
+
+// GetNodes returns release_linksReleaseLinksEntityExternalLinkConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnection) GetNodes() []release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink {
+	return v.Nodes
+}
+
+// GetPageInfo returns release_linksReleaseLinksEntityExternalLinkConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnection) GetPageInfo() release_linksReleaseLinksEntityExternalLinkConnectionPageInfo {
+	return v.PageInfo
+}
+
+// release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink includes the requested fields of the GraphQL type EntityExternalLink.
+// The GraphQL type's documentation follows.
+//
+// An external link attached to a Linear entity such as an initiative, project,
+// team, release, or cycle. External links provide a way to reference related
+// resources outside of Linear (e.g., documentation, design files, dashboards)
+// directly from the entity's resources section. Each link has a URL, display
+// label, and sort order within its parent entity.
+type release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink struct {
+	EntityExternalLinkSummaryFields `json:"-"`
+}
+
+// GetId returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.Id, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetId() string {
+	return v.EntityExternalLinkSummaryFields.Id
+}
+
+// GetCreatedAt returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.CreatedAt, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetCreatedAt() string {
+	return v.EntityExternalLinkSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetUpdatedAt() string {
+	return v.EntityExternalLinkSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetArchivedAt() *string {
+	return v.EntityExternalLinkSummaryFields.ArchivedAt
+}
+
+// GetUrl returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.Url, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetUrl() string {
+	return v.EntityExternalLinkSummaryFields.Url
+}
+
+// GetLabel returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.Label, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetLabel() string {
+	return v.EntityExternalLinkSummaryFields.Label
+}
+
+// GetSortOrder returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.SortOrder, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetSortOrder() float64 {
+	return v.EntityExternalLinkSummaryFields.SortOrder
+}
+
+// GetCreator returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.Creator, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetCreator() *EntityExternalLinkSummaryFieldsCreatorUser {
+	return v.EntityExternalLinkSummaryFields.Creator
+}
+
+// GetInitiative returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.Initiative, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetInitiative() *EntityExternalLinkSummaryFieldsInitiative {
+	return v.EntityExternalLinkSummaryFields.Initiative
+}
+
+// GetProject returns release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink.Project, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) GetProject() *EntityExternalLinkSummaryFieldsProject {
+	return v.EntityExternalLinkSummaryFields.Project
+}
+
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.EntityExternalLinkSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalrelease_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Url string `json:"url"`
+
+	Label string `json:"label"`
+
+	SortOrder float64 `json:"sortOrder"`
+
+	Creator *EntityExternalLinkSummaryFieldsCreatorUser `json:"creator"`
+
+	Initiative *EntityExternalLinkSummaryFieldsInitiative `json:"initiative"`
+
+	Project *EntityExternalLinkSummaryFieldsProject `json:"project"`
+}
+
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink) __premarshalJSON() (*__premarshalrelease_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink, error) {
+	var retval __premarshalrelease_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink
+
+	retval.Id = v.EntityExternalLinkSummaryFields.Id
+	retval.CreatedAt = v.EntityExternalLinkSummaryFields.CreatedAt
+	retval.UpdatedAt = v.EntityExternalLinkSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.EntityExternalLinkSummaryFields.ArchivedAt
+	retval.Url = v.EntityExternalLinkSummaryFields.Url
+	retval.Label = v.EntityExternalLinkSummaryFields.Label
+	retval.SortOrder = v.EntityExternalLinkSummaryFields.SortOrder
+	retval.Creator = v.EntityExternalLinkSummaryFields.Creator
+	retval.Initiative = v.EntityExternalLinkSummaryFields.Initiative
+	retval.Project = v.EntityExternalLinkSummaryFields.Project
+	return &retval, nil
+}
+
+// release_linksReleaseLinksEntityExternalLinkConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type release_linksReleaseLinksEntityExternalLinkConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns release_linksReleaseLinksEntityExternalLinkConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns release_linksReleaseLinksEntityExternalLinkConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *release_linksReleaseLinksEntityExternalLinkConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// release_linksResponse is returned by release_links on success.
+type release_linksResponse struct {
+	// Fetch a single release by its UUID or slug identifier.
+	Release release_linksRelease `json:"release"`
+}
+
+// GetRelease returns release_linksResponse.Release, and is useful for accessing the field via an interface.
+func (v *release_linksResponse) GetRelease() release_linksRelease { return v.Release }
+
 // releasesReleasesReleaseConnection includes the requested fields of the GraphQL type ReleaseConnection.
 type releasesReleasesReleaseConnection struct {
 	Nodes    []releasesReleasesReleaseConnectionNodesRelease `json:"nodes"`
@@ -39683,6 +40264,133 @@ func releaseStages(
 	}
 
 	data_ = &releaseStagesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by release_history.
+const release_history_Operation = `
+query release_history ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	release(id: $id) {
+		history(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ReleaseHistorySummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ReleaseHistorySummaryFields on ReleaseHistory {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	entries
+	release {
+		id
+	}
+}
+`
+
+func release_history(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *release_historyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "release_history",
+		Query:  release_history_Operation,
+		Variables: &__release_historyInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &release_historyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by release_links.
+const release_links_Operation = `
+query release_links ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	release(id: $id) {
+		links(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... EntityExternalLinkSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment EntityExternalLinkSummaryFields on EntityExternalLink {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	url
+	label
+	sortOrder
+	creator {
+		id
+		displayName
+	}
+	initiative {
+		id
+		name
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func release_links(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *release_linksResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "release_links",
+		Query:  release_links_Operation,
+		Variables: &__release_linksInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &release_linksResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
