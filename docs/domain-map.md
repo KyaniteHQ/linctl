@@ -332,3 +332,27 @@ Planned commands:
 | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics |
 
 Only `custom-view list` and `custom-view get` are implemented in the current CLI. CustomView writes are deferred as organization-scoped view configuration surface.
+
+## Favorite
+
+Use the schema name `Favorite` in code and docs. It is the authenticated user's bookmarked entity in the Linear sidebar.
+
+Schema backing:
+
+- Types: `Favorite`, `FavoriteConnection`
+- Reads: `Query.favorites`, `Query.favorite`
+- Writes: `Mutation.createFavorite`, `Mutation.updateFavorite`, `Mutation.deleteFavorite`
+- Inputs: `FavoriteCreateInput`, `FavoriteUpdateInput`
+- Relevant fields: `Favorite.id`, `Favorite.type`, `Favorite.folderName`, `Favorite.url`
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `favorite list` | `Query.favorites` | Read-only |
+| `favorite get` | `Query.favorite` | Read-only |
+| `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model |
+| `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation |
+| `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics |
+
+Only `favorite list` and `favorite get` are implemented in the current CLI. Favorite writes are deferred as viewer-scoped personalization surface.

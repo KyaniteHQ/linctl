@@ -88,6 +88,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, contains: "initiative-id Platform [Active]"},
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
+		{name: "favorite list", args: []string{"favorite", "list", "--limit", "1"}, contains: "favorite-id [issue]"},
+		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, contains: "favorite-id [issue]"},
 	}
 
 	for _, test := range tests {
@@ -636,6 +638,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "initiative", "get", "initiative-id"},
 		{"--json", "custom-view", "list", "--limit", "1"},
 		{"--json", "custom-view", "get", "custom-view-id"},
+		{"--json", "favorite", "list", "--limit", "1"},
+		{"--json", "favorite", "get", "favorite-id"},
 	}
 
 	for _, args := range tests {
@@ -1039,6 +1043,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "initiative get", args: []string{"initiative", "get", "initiative-id"}, operation: "initiative", contains: "get initiative initiative-id"},
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
+		{name: "favorite list", args: []string{"favorite", "list"}, operation: "favorites", contains: "list favorites"},
+		{name: "favorite get", args: []string{"favorite", "get", "favorite-id"}, operation: "favorite", contains: "get favorite favorite-id"},
 	}
 
 	for _, test := range tests {
@@ -1347,6 +1353,10 @@ func commandFlowStateAndCommentPayload(operation string) (string, bool) {
 		return `{"customViews":{"nodes":[` + commandCustomViewJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customView":
 		return `{"customView":` + commandCustomViewJSON() + `}`, true
+	case "favorites":
+		return `{"favorites":{"nodes":[` + commandFavoriteJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "favorite":
+		return `{"favorite":` + commandFavoriteJSON() + `}`, true
 	default:
 		return "", false
 	}
@@ -1781,6 +1791,15 @@ func commandCustomViewJSON() string {
 		"shared":true,
 		"color":"#5e6ad2",
 		"slugId":"my-issues"
+	}`
+}
+
+func commandFavoriteJSON() string {
+	return `{
+		"id":"favorite-id",
+		"type":"issue",
+		"folderName":null,
+		"url":"https://linear.app/kyanite/issue/LIT-1"
 	}`
 }
 

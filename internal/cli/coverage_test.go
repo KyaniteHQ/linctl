@@ -90,6 +90,11 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Name:      "My issues",
 		ModelName: "Issue",
 	}
+	favorite := client.FavoriteSummary{
+		ID:   "favorite-id",
+		Type: "issue",
+		URL:  "https://linear.app/kyanite/issue/LIT-1",
+	}
 
 	textOut := bytes.Buffer{}
 	textCommand := &cobra.Command{}
@@ -109,6 +114,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
 	require.NoError(t, writeInitiative(textCommand, &textOptions, initiative))
 	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
+	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
 	require.Equal(
 		t,
 		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
@@ -116,7 +122,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-milestone-id Launch milestone [next]\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"user-id Omer <omer@example.com>\ncomment-id Omer First comment\nworkflow-state-id Started [started]\n"+
-			"initiative-id Platform [Active]\ncustom-view-id My issues [Issue]\n",
+			"initiative-id Platform [Active]\ncustom-view-id My issues [Issue]\n"+
+			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\n",
 		textOut.String(),
 	)
 
@@ -138,6 +145,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
 	require.NoError(t, writeInitiative(jsonCommand, &jsonOptions, initiative))
 	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
+	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
@@ -151,6 +159,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"type": "started"`)
 	require.Contains(t, jsonOut.String(), `"status": "Active"`)
 	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
+	require.Contains(t, jsonOut.String(), `"type": "issue"`)
 }
 
 func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
@@ -234,6 +243,11 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		Name:      "My issues",
 		ModelName: "Issue",
 	}
+	favorite := client.FavoriteSummary{
+		ID:   "favorite-id",
+		Type: "issue",
+		URL:  "https://linear.app/kyanite/issue/LIT-1",
+	}
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
@@ -255,6 +269,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeWorkflowState(command, &rootOptions{idOnly: true}, workflowState))
 	require.NoError(t, writeInitiative(command, &rootOptions{idOnly: true}, initiative))
 	require.NoError(t, writeCustomView(command, &rootOptions{idOnly: true}, customView))
+	require.NoError(t, writeFavorite(command, &rootOptions{idOnly: true}, favorite))
 	require.Contains(t, output.String(), "project=Pinned project")
 	require.Contains(t, output.String(), "issue-id")
 	require.Contains(t, output.String(), "starts_at=2026-07-01T00:00:00Z")
@@ -271,6 +286,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, output.String(), "workflow-state-id")
 	require.Contains(t, output.String(), "initiative-id")
 	require.Contains(t, output.String(), "custom-view-id")
+	require.Contains(t, output.String(), "favorite-id")
 	require.Equal(t, "-", emptyDash(""))
 
 	quietOutput := bytes.Buffer{}
@@ -289,6 +305,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeWorkflowState(quietCommand, &rootOptions{quiet: true}, workflowState))
 	require.NoError(t, writeInitiative(quietCommand, &rootOptions{quiet: true}, initiative))
 	require.NoError(t, writeCustomView(quietCommand, &rootOptions{quiet: true}, customView))
+	require.NoError(t, writeFavorite(quietCommand, &rootOptions{quiet: true}, favorite))
 	require.NoError(t, writeScalar(quietCommand, &rootOptions{quiet: true}, "title", "quiet"))
 	wrote, err := writeIDOnly(quietCommand, &rootOptions{idOnly: true, quiet: true}, "issue-id")
 	require.NoError(t, err)

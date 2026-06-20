@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 39 | 458 |
-| Upstream Query root fields | 158 | 27 | 158 |
+| Upstream SDK root methods | 458 | 41 | 458 |
+| Upstream Query root fields | 158 | 29 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 64 | 64 | 64 |
-| Domain-map commands | 83 | 58 | 83 |
+| Local generated Go operations | 66 | 66 | 66 |
+| Domain-map commands | 88 | 60 | 88 |
 
 ## Upstream SDK Root Methods
 
@@ -221,8 +221,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `entityExternalLink` | method | safe_candidate | read operation may fit future CLI coverage |
 | `externalUser` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `externalUsers` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `favorite` | method | safe_candidate | read operation may fit future CLI coverage |
-| `favorites` | method | safe_candidate | read operation may fit future CLI coverage |
+| `favorite` | method | implemented | local operation or command exists |
+| `favorites` | method | implemented | local operation or command exists |
 | `fileUpload` | method | safe_candidate | read operation may fit future CLI coverage |
 | `googleUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `imageUploadFromUrl` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -538,8 +538,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `externalUser` | `ExternalUser!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `externalUsers` | `ExternalUserConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `failuresForOauthWebhooks` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `favorite` | `Favorite!` | safe_candidate | read operation may fit future CLI coverage |
-| `favorites` | `FavoriteConnection!` | safe_candidate | read operation may fit future CLI coverage |
+| `favorite` | `Favorite!` | implemented | root field used by local GraphQL operation |
+| `favorites` | `FavoriteConnection!` | implemented | root field used by local GraphQL operation |
 | `fetchData` | `FetchDataPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiative` | `Initiative!` | implemented | root field used by local GraphQL operation |
 | `initiativeRelation` | `InitiativeRelation!` | safe_candidate | read operation may fit future CLI coverage |
@@ -1066,6 +1066,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
+| `favorite` | query | `favorite` | implemented | `internal/client/generated.go` |
+| `favorites` | query | `favorites` | implemented | `internal/client/generated.go` |
 | `initiative` | query | `initiative` | implemented | `internal/client/generated.go` |
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
@@ -1173,4 +1175,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | CustomView | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Favorite | `favorite list` | `Query.favorites` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Favorite | `favorite get` | `Query.favorite` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Favorite | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Favorite | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Favorite | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 

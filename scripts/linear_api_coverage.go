@@ -678,6 +678,8 @@ func commandImplemented(command string) bool {
 		"initiative get":           true,
 		"custom-view list":         true,
 		"custom-view get":          true,
+		"favorite list":            true,
+		"favorite get":             true,
 	}
 	return implemented[command]
 }
@@ -703,6 +705,8 @@ func domainCommandBlocked(command string) bool {
 		"initiative archive":     true,
 		"custom-view create":     true,
 		"custom-view update":     true,
+		"favorite create":        true,
+		"favorite update":        true,
 	}
 	return blocked[command]
 }

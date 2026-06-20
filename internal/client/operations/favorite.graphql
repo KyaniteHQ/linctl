@@ -1,0 +1,24 @@
+query favorites($first: Int, $after: String, $includeArchived: Boolean) {
+  favorites(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...FavoriteSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query favorite($id: String!) {
+  favorite(id: $id) {
+    ...FavoriteSummaryFields
+  }
+}
+
+fragment FavoriteSummaryFields on Favorite {
+  id
+  type
+  folderName
+  url
+}

@@ -1268,6 +1268,40 @@ type DocumentsResponse struct {
 // GetDocuments returns DocumentsResponse.Documents, and is useful for accessing the field via an interface.
 func (v *DocumentsResponse) GetDocuments() DocumentsDocumentsDocumentConnection { return v.Documents }
 
+// FavoriteSummaryFields includes the GraphQL fields of Favorite requested by the fragment FavoriteSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A user's bookmarked item that appears in their sidebar for quick access.
+// Favorites can reference various entity types including issues, projects, cycles,
+// views, documents, initiatives, labels, users, customers, dashboards, and pull
+// requests. Favorites can be organized into folders and ordered by the user. Each
+// favorite is owned by a single user and links to exactly one target entity (or is
+// a folder containing other favorites).
+type FavoriteSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The type of entity this favorite references, such as 'issue', 'project',
+	// 'cycle', 'customView', 'document', 'folder', etc. Determines which associated
+	// entity field is populated.
+	Type string `json:"type"`
+	// The name of the folder. Only applies to favorites of type folder.
+	FolderName *string `json:"folderName"`
+	// URL of the favorited entity. Folders return 'null' value.
+	Url *string `json:"url"`
+}
+
+// GetId returns FavoriteSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *FavoriteSummaryFields) GetId() string { return v.Id }
+
+// GetType returns FavoriteSummaryFields.Type, and is useful for accessing the field via an interface.
+func (v *FavoriteSummaryFields) GetType() string { return v.Type }
+
+// GetFolderName returns FavoriteSummaryFields.FolderName, and is useful for accessing the field via an interface.
+func (v *FavoriteSummaryFields) GetFolderName() *string { return v.FolderName }
+
+// GetUrl returns FavoriteSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *FavoriteSummaryFields) GetUrl() *string { return v.Url }
+
 type InitiativeStatus string
 
 const (
@@ -8968,6 +9002,30 @@ type __documentInput struct {
 // GetId returns __documentInput.Id, and is useful for accessing the field via an interface.
 func (v *__documentInput) GetId() string { return v.Id }
 
+// __favoriteInput is used internally by genqlient
+type __favoriteInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __favoriteInput.Id, and is useful for accessing the field via an interface.
+func (v *__favoriteInput) GetId() string { return v.Id }
+
+// __favoritesInput is used internally by genqlient
+type __favoritesInput struct {
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFirst returns __favoritesInput.First, and is useful for accessing the field via an interface.
+func (v *__favoritesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __favoritesInput.After, and is useful for accessing the field via an interface.
+func (v *__favoritesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __favoritesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__favoritesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __initiativeInput is used internally by genqlient
 type __initiativeInput struct {
 	Id string `json:"id"`
@@ -10229,6 +10287,218 @@ type documentResponse struct {
 
 // GetDocument returns documentResponse.Document, and is useful for accessing the field via an interface.
 func (v *documentResponse) GetDocument() documentDocument { return v.Document }
+
+// favoriteFavorite includes the requested fields of the GraphQL type Favorite.
+// The GraphQL type's documentation follows.
+//
+// A user's bookmarked item that appears in their sidebar for quick access.
+// Favorites can reference various entity types including issues, projects, cycles,
+// views, documents, initiatives, labels, users, customers, dashboards, and pull
+// requests. Favorites can be organized into folders and ordered by the user. Each
+// favorite is owned by a single user and links to exactly one target entity (or is
+// a folder containing other favorites).
+type favoriteFavorite struct {
+	FavoriteSummaryFields `json:"-"`
+}
+
+// GetId returns favoriteFavorite.Id, and is useful for accessing the field via an interface.
+func (v *favoriteFavorite) GetId() string { return v.FavoriteSummaryFields.Id }
+
+// GetType returns favoriteFavorite.Type, and is useful for accessing the field via an interface.
+func (v *favoriteFavorite) GetType() string { return v.FavoriteSummaryFields.Type }
+
+// GetFolderName returns favoriteFavorite.FolderName, and is useful for accessing the field via an interface.
+func (v *favoriteFavorite) GetFolderName() *string { return v.FavoriteSummaryFields.FolderName }
+
+// GetUrl returns favoriteFavorite.Url, and is useful for accessing the field via an interface.
+func (v *favoriteFavorite) GetUrl() *string { return v.FavoriteSummaryFields.Url }
+
+func (v *favoriteFavorite) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*favoriteFavorite
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.favoriteFavorite = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.FavoriteSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalfavoriteFavorite struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	FolderName *string `json:"folderName"`
+
+	Url *string `json:"url"`
+}
+
+func (v *favoriteFavorite) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *favoriteFavorite) __premarshalJSON() (*__premarshalfavoriteFavorite, error) {
+	var retval __premarshalfavoriteFavorite
+
+	retval.Id = v.FavoriteSummaryFields.Id
+	retval.Type = v.FavoriteSummaryFields.Type
+	retval.FolderName = v.FavoriteSummaryFields.FolderName
+	retval.Url = v.FavoriteSummaryFields.Url
+	return &retval, nil
+}
+
+// favoriteResponse is returned by favorite on success.
+type favoriteResponse struct {
+	// A specific favorite by ID.
+	Favorite favoriteFavorite `json:"favorite"`
+}
+
+// GetFavorite returns favoriteResponse.Favorite, and is useful for accessing the field via an interface.
+func (v *favoriteResponse) GetFavorite() favoriteFavorite { return v.Favorite }
+
+// favoritesFavoritesFavoriteConnection includes the requested fields of the GraphQL type FavoriteConnection.
+type favoritesFavoritesFavoriteConnection struct {
+	Nodes    []favoritesFavoritesFavoriteConnectionNodesFavorite `json:"nodes"`
+	PageInfo favoritesFavoritesFavoriteConnectionPageInfo        `json:"pageInfo"`
+}
+
+// GetNodes returns favoritesFavoritesFavoriteConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnection) GetNodes() []favoritesFavoritesFavoriteConnectionNodesFavorite {
+	return v.Nodes
+}
+
+// GetPageInfo returns favoritesFavoritesFavoriteConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnection) GetPageInfo() favoritesFavoritesFavoriteConnectionPageInfo {
+	return v.PageInfo
+}
+
+// favoritesFavoritesFavoriteConnectionNodesFavorite includes the requested fields of the GraphQL type Favorite.
+// The GraphQL type's documentation follows.
+//
+// A user's bookmarked item that appears in their sidebar for quick access.
+// Favorites can reference various entity types including issues, projects, cycles,
+// views, documents, initiatives, labels, users, customers, dashboards, and pull
+// requests. Favorites can be organized into folders and ordered by the user. Each
+// favorite is owned by a single user and links to exactly one target entity (or is
+// a folder containing other favorites).
+type favoritesFavoritesFavoriteConnectionNodesFavorite struct {
+	FavoriteSummaryFields `json:"-"`
+}
+
+// GetId returns favoritesFavoritesFavoriteConnectionNodesFavorite.Id, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnectionNodesFavorite) GetId() string {
+	return v.FavoriteSummaryFields.Id
+}
+
+// GetType returns favoritesFavoritesFavoriteConnectionNodesFavorite.Type, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnectionNodesFavorite) GetType() string {
+	return v.FavoriteSummaryFields.Type
+}
+
+// GetFolderName returns favoritesFavoritesFavoriteConnectionNodesFavorite.FolderName, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnectionNodesFavorite) GetFolderName() *string {
+	return v.FavoriteSummaryFields.FolderName
+}
+
+// GetUrl returns favoritesFavoritesFavoriteConnectionNodesFavorite.Url, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnectionNodesFavorite) GetUrl() *string {
+	return v.FavoriteSummaryFields.Url
+}
+
+func (v *favoritesFavoritesFavoriteConnectionNodesFavorite) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*favoritesFavoritesFavoriteConnectionNodesFavorite
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.favoritesFavoritesFavoriteConnectionNodesFavorite = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.FavoriteSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalfavoritesFavoritesFavoriteConnectionNodesFavorite struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	FolderName *string `json:"folderName"`
+
+	Url *string `json:"url"`
+}
+
+func (v *favoritesFavoritesFavoriteConnectionNodesFavorite) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *favoritesFavoritesFavoriteConnectionNodesFavorite) __premarshalJSON() (*__premarshalfavoritesFavoritesFavoriteConnectionNodesFavorite, error) {
+	var retval __premarshalfavoritesFavoritesFavoriteConnectionNodesFavorite
+
+	retval.Id = v.FavoriteSummaryFields.Id
+	retval.Type = v.FavoriteSummaryFields.Type
+	retval.FolderName = v.FavoriteSummaryFields.FolderName
+	retval.Url = v.FavoriteSummaryFields.Url
+	return &retval, nil
+}
+
+// favoritesFavoritesFavoriteConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type favoritesFavoritesFavoriteConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns favoritesFavoritesFavoriteConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns favoritesFavoritesFavoriteConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *favoritesFavoritesFavoriteConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// favoritesResponse is returned by favorites on success.
+type favoritesResponse struct {
+	// The authenticated user's favorites. Returns all bookmarked items that appear in the user's sidebar.
+	Favorites favoritesFavoritesFavoriteConnection `json:"favorites"`
+}
+
+// GetFavorites returns favoritesResponse.Favorites, and is useful for accessing the field via an interface.
+func (v *favoritesResponse) GetFavorites() favoritesFavoritesFavoriteConnection { return v.Favorites }
 
 // initiativeInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
@@ -15785,6 +16055,96 @@ func document(
 	}
 
 	data_ = &documentResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by favorite.
+const favorite_Operation = `
+query favorite ($id: String!) {
+	favorite(id: $id) {
+		... FavoriteSummaryFields
+	}
+}
+fragment FavoriteSummaryFields on Favorite {
+	id
+	type
+	folderName
+	url
+}
+`
+
+func favorite(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *favoriteResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "favorite",
+		Query:  favorite_Operation,
+		Variables: &__favoriteInput{
+			Id: id,
+		},
+	}
+
+	data_ = &favoriteResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by favorites.
+const favorites_Operation = `
+query favorites ($first: Int, $after: String, $includeArchived: Boolean) {
+	favorites(first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... FavoriteSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment FavoriteSummaryFields on Favorite {
+	id
+	type
+	folderName
+	url
+}
+`
+
+func favorites(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *favoritesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "favorites",
+		Query:  favorites_Operation,
+		Variables: &__favoritesInput{
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &favoritesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

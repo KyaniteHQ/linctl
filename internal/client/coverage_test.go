@@ -193,6 +193,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"initiative":        `{"initiative":{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}}`,
 		"customViews":       `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customView":        `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
+		"favorites":         `{"favorites":{"nodes":[{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"favorite":          `{"favorite":{"id":"favorite-id","type":"issue","folderName":null,"url":"https://linear.app/kyanite/issue/LIT-1"}}`,
 	}
 
 	// When
@@ -281,6 +283,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	customViews, err := ListCustomViews(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	customView, err := GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
+	require.NoError(t, err)
+	favorites, err := ListFavorites(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
+	favorite, err := GetFavoriteByID(context.Background(), graphqlClient, "favorite-id")
 	require.NoError(t, err)
 
 	// Then
@@ -388,6 +394,11 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, customViews.CustomViews[0].Shared)
 	require.Equal(t, "custom-view-id", customView.ID)
 	require.Equal(t, "Saved issue view", customView.Description)
+	require.True(t, favorites.HasNextPage)
+	require.Equal(t, &endCursor, favorites.EndCursor)
+	require.Equal(t, "issue", favorites.Favorites[0].Type)
+	require.Equal(t, "favorite-id", favorite.ID)
+	require.Equal(t, "https://linear.app/kyanite/issue/LIT-1", favorite.URL)
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
@@ -850,6 +861,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetCustomViewByID(context.Background(), graphqlClient, "custom-view-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get custom view custom-view-id")
+
+		_, err = ListFavorites(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list favorites")
+
+		_, err = GetFavoriteByID(context.Background(), graphqlClient, "favorite-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get favorite favorite-id")
 	})
 
 	t.Run("issue mutations fail when payload omits entity", func(t *testing.T) {
