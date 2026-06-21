@@ -114,6 +114,10 @@ linctl issue title
 linctl issue url
 linctl issue branch LIT-123
 linctl issue deps LIT-123 --limit 20
+linctl issue figma-file-key-search FIGMA_FILE_KEY --limit 20
+linctl issue priority-values
+linctl issue filter-suggestion "started issues" --team-id TEAM_ID
+linctl issue title-suggestion "Customer asks for faster exports"
 linctl issue attachments LIT-123 --limit 20
 linctl issue children LIT-123 --limit 20
 linctl issue documents LIT-123 --limit 20
@@ -340,6 +344,10 @@ linctl issue list --blocks --limit 20
 linctl issue list --blocked-by LIT-123 --limit 20
 linctl issue list --all-teams --limit 20
 linctl issue search "needle" --limit 20
+linctl issue figma-file-key-search FIGMA_FILE_KEY --limit 20
+linctl issue priority-values
+linctl issue filter-suggestion "started issues" --team-id TEAM_ID
+linctl issue title-suggestion "Customer asks for faster exports"
 linctl issue deps LIT-123 --limit 20
 linctl issue attachments LIT-123 --limit 20
 linctl issue children LIT-123 --limit 20

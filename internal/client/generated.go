@@ -21690,6 +21690,42 @@ func (v *__initiativesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __initiativesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__initiativesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issueFigmaFileKeySearchInput is used internally by genqlient
+type __issueFigmaFileKeySearchInput struct {
+	FileKey         string  `json:"fileKey"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetFileKey returns __issueFigmaFileKeySearchInput.FileKey, and is useful for accessing the field via an interface.
+func (v *__issueFigmaFileKeySearchInput) GetFileKey() string { return v.FileKey }
+
+// GetFirst returns __issueFigmaFileKeySearchInput.First, and is useful for accessing the field via an interface.
+func (v *__issueFigmaFileKeySearchInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueFigmaFileKeySearchInput.After, and is useful for accessing the field via an interface.
+func (v *__issueFigmaFileKeySearchInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueFigmaFileKeySearchInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueFigmaFileKeySearchInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueFilterSuggestionInput is used internally by genqlient
+type __issueFilterSuggestionInput struct {
+	Prompt    string  `json:"prompt"`
+	TeamId    *string `json:"teamId"`
+	ProjectId *string `json:"projectId"`
+}
+
+// GetPrompt returns __issueFilterSuggestionInput.Prompt, and is useful for accessing the field via an interface.
+func (v *__issueFilterSuggestionInput) GetPrompt() string { return v.Prompt }
+
+// GetTeamId returns __issueFilterSuggestionInput.TeamId, and is useful for accessing the field via an interface.
+func (v *__issueFilterSuggestionInput) GetTeamId() *string { return v.TeamId }
+
+// GetProjectId returns __issueFilterSuggestionInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__issueFilterSuggestionInput) GetProjectId() *string { return v.ProjectId }
+
 // __issueInput is used internally by genqlient
 type __issueInput struct {
 	Id string `json:"id"`
@@ -21793,6 +21829,14 @@ func (v *__issueSearchInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __issueSearchInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueSearchInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueTitleSuggestionFromCustomerRequestInput is used internally by genqlient
+type __issueTitleSuggestionFromCustomerRequestInput struct {
+	Request string `json:"request"`
+}
+
+// GetRequest returns __issueTitleSuggestionFromCustomerRequestInput.Request, and is useful for accessing the field via an interface.
+func (v *__issueTitleSuggestionFromCustomerRequestInput) GetRequest() string { return v.Request }
 
 // __issueToReleaseInput is used internally by genqlient
 type __issueToReleaseInput struct {
@@ -37197,6 +37241,225 @@ func (v *initiativesResponse) GetInitiatives() initiativesInitiativesInitiativeC
 	return v.Initiatives
 }
 
+// issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection struct {
+	Nodes    []issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection) GetNodes() []issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection) GetPageInfo() issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalissueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue, error) {
+	var retval __premarshalissueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueFigmaFileKeySearchResponse is returned by issueFigmaFileKeySearch on success.
+type issueFigmaFileKeySearchResponse struct {
+	// Find issues that are related to a given Figma file key.
+	IssueFigmaFileKeySearch issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection `json:"issueFigmaFileKeySearch"`
+}
+
+// GetIssueFigmaFileKeySearch returns issueFigmaFileKeySearchResponse.IssueFigmaFileKeySearch, and is useful for accessing the field via an interface.
+func (v *issueFigmaFileKeySearchResponse) GetIssueFigmaFileKeySearch() issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection {
+	return v.IssueFigmaFileKeySearch
+}
+
+// issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload includes the requested fields of the GraphQL type IssueFilterSuggestionPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an AI-generated issue filter suggestion based on a text prompt.
+type issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload struct {
+	// The json filter that is suggested.
+	Filter *json.RawMessage `json:"filter"`
+	// The log id of the prompt, that created this filter.
+	LogId *string `json:"logId"`
+}
+
+// GetFilter returns issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload.Filter, and is useful for accessing the field via an interface.
+func (v *issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload) GetFilter() *json.RawMessage {
+	return v.Filter
+}
+
+// GetLogId returns issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload.LogId, and is useful for accessing the field via an interface.
+func (v *issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload) GetLogId() *string {
+	return v.LogId
+}
+
+// issueFilterSuggestionResponse is returned by issueFilterSuggestion on success.
+type issueFilterSuggestionResponse struct {
+	// Suggests filters for an issue view based on a text prompt.
+	IssueFilterSuggestion issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload `json:"issueFilterSuggestion"`
+}
+
+// GetIssueFilterSuggestion returns issueFilterSuggestionResponse.IssueFilterSuggestion, and is useful for accessing the field via an interface.
+func (v *issueFilterSuggestionResponse) GetIssueFilterSuggestion() issueFilterSuggestionIssueFilterSuggestionIssueFilterSuggestionPayload {
+	return v.IssueFilterSuggestion
+}
+
 // issueIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -37844,6 +38107,36 @@ type issueLabel_issuesResponse struct {
 // GetIssueLabel returns issueLabel_issuesResponse.IssueLabel, and is useful for accessing the field via an interface.
 func (v *issueLabel_issuesResponse) GetIssueLabel() issueLabel_issuesIssueLabel { return v.IssueLabel }
 
+// issuePriorityValuesIssuePriorityValuesIssuePriorityValue includes the requested fields of the GraphQL type IssuePriorityValue.
+// The GraphQL type's documentation follows.
+//
+// A mapping of an issue priority value to its human-readable label.
+type issuePriorityValuesIssuePriorityValuesIssuePriorityValue struct {
+	// Priority's number value.
+	Priority int `json:"priority"`
+	// Priority's label.
+	Label string `json:"label"`
+}
+
+// GetPriority returns issuePriorityValuesIssuePriorityValuesIssuePriorityValue.Priority, and is useful for accessing the field via an interface.
+func (v *issuePriorityValuesIssuePriorityValuesIssuePriorityValue) GetPriority() int {
+	return v.Priority
+}
+
+// GetLabel returns issuePriorityValuesIssuePriorityValuesIssuePriorityValue.Label, and is useful for accessing the field via an interface.
+func (v *issuePriorityValuesIssuePriorityValuesIssuePriorityValue) GetLabel() string { return v.Label }
+
+// issuePriorityValuesResponse is returned by issuePriorityValues on success.
+type issuePriorityValuesResponse struct {
+	// Issue priority values and corresponding labels.
+	IssuePriorityValues []issuePriorityValuesIssuePriorityValuesIssuePriorityValue `json:"issuePriorityValues"`
+}
+
+// GetIssuePriorityValues returns issuePriorityValuesResponse.IssuePriorityValues, and is useful for accessing the field via an interface.
+func (v *issuePriorityValuesResponse) GetIssuePriorityValues() []issuePriorityValuesIssuePriorityValuesIssuePriorityValue {
+	return v.IssuePriorityValues
+}
+
 // issueRelationIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
@@ -38301,6 +38594,38 @@ type issueSearchResponse struct {
 // GetIssueSearch returns issueSearchResponse.IssueSearch, and is useful for accessing the field via an interface.
 func (v *issueSearchResponse) GetIssueSearch() issueSearchIssueSearchIssueConnection {
 	return v.IssueSearch
+}
+
+// issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload includes the requested fields of the GraphQL type IssueTitleSuggestionFromCustomerRequestPayload.
+// The GraphQL type's documentation follows.
+//
+// Return type for AI-generated issue title suggestions based on customer request content.
+type issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload struct {
+	// The AI-suggested issue title based on the customer request content.
+	Title string `json:"title"`
+	// [Internal] The evaluation log ID of the AI response, for tracing and debugging.
+	LogId *string `json:"logId"`
+}
+
+// GetTitle returns issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload.Title, and is useful for accessing the field via an interface.
+func (v *issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload) GetTitle() string {
+	return v.Title
+}
+
+// GetLogId returns issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload.LogId, and is useful for accessing the field via an interface.
+func (v *issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload) GetLogId() *string {
+	return v.LogId
+}
+
+// issueTitleSuggestionFromCustomerRequestResponse is returned by issueTitleSuggestionFromCustomerRequest on success.
+type issueTitleSuggestionFromCustomerRequestResponse struct {
+	// Suggests an issue title based on a customer request message using AI summarization.
+	IssueTitleSuggestionFromCustomerRequest issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload `json:"issueTitleSuggestionFromCustomerRequest"`
+}
+
+// GetIssueTitleSuggestionFromCustomerRequest returns issueTitleSuggestionFromCustomerRequestResponse.IssueTitleSuggestionFromCustomerRequest, and is useful for accessing the field via an interface.
+func (v *issueTitleSuggestionFromCustomerRequestResponse) GetIssueTitleSuggestionFromCustomerRequest() issueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestIssueTitleSuggestionFromCustomerRequestPayload {
+	return v.IssueTitleSuggestionFromCustomerRequest
 }
 
 // issueToReleaseIssueToRelease includes the requested fields of the GraphQL type IssueToRelease.
@@ -82775,6 +83100,119 @@ func issue(
 	return data_, err_
 }
 
+// The query executed by issueFigmaFileKeySearch.
+const issueFigmaFileKeySearch_Operation = `
+query issueFigmaFileKeySearch ($fileKey: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueFigmaFileKeySearch(fileKey: $fileKey, first: $first, after: $after, includeArchived: $includeArchived) {
+		nodes {
+			... IssueSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issueFigmaFileKeySearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	fileKey string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueFigmaFileKeySearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueFigmaFileKeySearch",
+		Query:  issueFigmaFileKeySearch_Operation,
+		Variables: &__issueFigmaFileKeySearchInput{
+			FileKey:         fileKey,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueFigmaFileKeySearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueFilterSuggestion.
+const issueFilterSuggestion_Operation = `
+query issueFilterSuggestion ($prompt: String!, $teamId: String, $projectId: String) {
+	issueFilterSuggestion(prompt: $prompt, teamId: $teamId, projectId: $projectId) {
+		filter
+		logId
+	}
+}
+`
+
+func issueFilterSuggestion(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	prompt string,
+	teamId *string,
+	projectId *string,
+) (data_ *issueFilterSuggestionResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueFilterSuggestion",
+		Query:  issueFilterSuggestion_Operation,
+		Variables: &__issueFilterSuggestionInput{
+			Prompt:    prompt,
+			TeamId:    teamId,
+			ProjectId: projectId,
+		},
+	}
+
+	data_ = &issueFilterSuggestionResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by issueLabel.
 const issueLabel_Operation = `
 query issueLabel ($id: String!) {
@@ -82950,6 +83388,37 @@ func issueLabel_issues(
 	}
 
 	data_ = &issueLabel_issuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issuePriorityValues.
+const issuePriorityValues_Operation = `
+query issuePriorityValues {
+	issuePriorityValues {
+		priority
+		label
+	}
+}
+`
+
+func issuePriorityValues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *issuePriorityValuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issuePriorityValues",
+		Query:  issuePriorityValues_Operation,
+	}
+
+	data_ = &issuePriorityValuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -83138,6 +83607,41 @@ func issueSearch(
 	}
 
 	data_ = &issueSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueTitleSuggestionFromCustomerRequest.
+const issueTitleSuggestionFromCustomerRequest_Operation = `
+query issueTitleSuggestionFromCustomerRequest ($request: String!) {
+	issueTitleSuggestionFromCustomerRequest(request: $request) {
+		title
+		logId
+	}
+}
+`
+
+func issueTitleSuggestionFromCustomerRequest(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	request string,
+) (data_ *issueTitleSuggestionFromCustomerRequestResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueTitleSuggestionFromCustomerRequest",
+		Query:  issueTitleSuggestionFromCustomerRequest_Operation,
+		Variables: &__issueTitleSuggestionFromCustomerRequestInput{
+			Request: request,
+		},
+	}
+
+	data_ = &issueTitleSuggestionFromCustomerRequestResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

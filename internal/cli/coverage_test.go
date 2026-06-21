@@ -1140,6 +1140,21 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeJSONValue(quietCommand, &rootOptions{quiet: true}, issue))
 	require.NoError(t, writeIssueBotActor(quietCommand, &rootOptions{quiet: true}, issueBotActor))
 	require.NoError(t, writeIssueStateSpan(quietCommand, &rootOptions{quiet: true}, issueStateSpan))
+	require.NoError(t, writeIssuePriorityValues(
+		quietCommand,
+		&rootOptions{quiet: true},
+		[]client.IssuePriorityValue{{Priority: 1, Label: "Urgent"}},
+	))
+	require.NoError(t, writeIssueFilterSuggestion(
+		quietCommand,
+		&rootOptions{quiet: true},
+		client.IssueFilterSuggestion{Filter: json.RawMessage(`{"state":{"type":{"eq":"started"}}}`), LogID: "log-id"},
+	))
+	require.NoError(t, writeIssueTitleSuggestion(
+		quietCommand,
+		&rootOptions{quiet: true},
+		client.IssueTitleSuggestion{Title: "Improve exports", LogID: "log-id"},
+	))
 	require.NoError(t, writeCycle(quietCommand, &rootOptions{quiet: true}, cycle))
 	require.NoError(t, writeProject(quietCommand, &rootOptions{quiet: true}, project))
 	require.NoError(t, writeProjectUpdate(quietCommand, &rootOptions{quiet: true}, projectUpdate))
@@ -1310,6 +1325,41 @@ func Test_CliRenderHelpers_write_project_filter_suggestion_output(t *testing.T) 
 	quietCommand.SetOut(&quietOutput)
 	require.NoError(t, writeProjectFilterSuggestion(quietCommand, &rootOptions{quiet: true}, suggestion))
 	require.Empty(t, quietOutput.String())
+}
+
+func Test_CliRenderHelpers_write_issue_utility_output(t *testing.T) {
+	priorityValues := []client.IssuePriorityValue{{Priority: 1, Label: "Urgent"}}
+	filterSuggestion := client.IssueFilterSuggestion{
+		Filter: json.RawMessage(`{"state":{"type":{"eq":"started"}}}`),
+		LogID:  "issue-filter-log-id",
+	}
+	titleSuggestion := client.IssueTitleSuggestion{Title: "Improve exports", LogID: "title-log-id"}
+
+	textOutput := bytes.Buffer{}
+	textCommand := &cobra.Command{}
+	textCommand.SetOut(&textOutput)
+	require.NoError(t, writeIssuePriorityValues(textCommand, &rootOptions{}, priorityValues))
+	require.NoError(t, writeIssueFilterSuggestion(textCommand, &rootOptions{}, filterSuggestion))
+	require.NoError(t, writeIssueTitleSuggestion(textCommand, &rootOptions{}, titleSuggestion))
+	require.Contains(t, textOutput.String(), "1 Urgent")
+	require.Contains(t, textOutput.String(), `log_id=issue-filter-log-id`)
+	require.Contains(t, textOutput.String(), `log_id=title-log-id title=Improve exports`)
+
+	jsonOutput := bytes.Buffer{}
+	jsonCommand := &cobra.Command{}
+	jsonCommand.SetOut(&jsonOutput)
+	require.NoError(t, writeIssuePriorityValues(jsonCommand, &rootOptions{json: true}, priorityValues))
+	require.NoError(t, writeIssueFilterSuggestion(jsonCommand, &rootOptions{json: true}, filterSuggestion))
+	require.NoError(t, writeIssueTitleSuggestion(jsonCommand, &rootOptions{json: true}, titleSuggestion))
+	require.Contains(t, jsonOutput.String(), `"label": "Urgent"`)
+	require.Contains(t, jsonOutput.String(), `"log_id": "issue-filter-log-id"`)
+	require.Contains(t, jsonOutput.String(), `"title": "Improve exports"`)
+
+	errorCommand := &cobra.Command{}
+	errorCommand.SetOut(commandFailingWriter{})
+	require.Error(t, writeIssuePriorityValues(errorCommand, &rootOptions{}, priorityValues))
+	require.Error(t, writeIssueFilterSuggestion(errorCommand, &rootOptions{}, filterSuggestion))
+	require.Error(t, writeIssueTitleSuggestion(errorCommand, &rootOptions{}, titleSuggestion))
 }
 
 func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
@@ -1666,6 +1716,7 @@ func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
 		{name: "issue list all teams", args: []string{"--fail-on-empty", "issue", "list", "--all-teams"}, fake: commandFlowFakeClient{emptyIssueAllTeams: true}},
 		{name: "issue comments", args: []string{"--fail-on-empty", "issue", "comments", "LIT-1"}, fake: commandFlowFakeClient{emptyIssueComments: true}},
 		{name: "issue search", args: []string{"--fail-on-empty", "issue", "search", "needle"}, fake: commandFlowFakeClient{emptyIssueSearch: true}},
+		{name: "issue figma file key search", args: []string{"--fail-on-empty", "issue", "figma-file-key-search", "figma-key"}, fake: commandFlowFakeClient{emptyIssueFigmaSearch: true}},
 		{name: "project list", args: []string{"--fail-on-empty", "project", "list"}, fake: commandFlowFakeClient{emptyProjectList: true}},
 		{name: "project members", args: []string{"--fail-on-empty", "project", "members", "project-id"}, fake: commandFlowFakeClient{emptyProjectMembers: true}},
 	}

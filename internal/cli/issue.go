@@ -19,6 +19,10 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	}
 	addIssueListCommand(ctx, issueCommand, options)
 	addIssueSearchCommand(ctx, issueCommand, options)
+	addIssueFigmaFileKeySearchCommand(ctx, issueCommand, options)
+	addIssuePriorityValuesCommand(ctx, issueCommand, options)
+	addIssueFilterSuggestionCommand(ctx, issueCommand, options)
+	addIssueTitleSuggestionCommand(ctx, issueCommand, options)
 	addIssueVCSBranchSearchCommand(ctx, issueCommand, options)
 	addIssueGetCommand(ctx, issueCommand, options)
 	addIssueDepsCommand(ctx, issueCommand, options)
@@ -347,6 +351,113 @@ func addIssueSearchCommand(ctx context.Context, root *cobra.Command, options *ro
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
 	root.AddCommand(command)
+}
+
+func addIssueFigmaFileKeySearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "figma-file-key-search FILE_KEY",
+		Short: "Search issues linked to a Figma file key",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			issues, err := client.SearchIssuesByFigmaFileKey(ctx, runtime.graphqlClient, args[0], limit)
+			if err != nil {
+				return err
+			}
+			if err := ensureNonEmpty(options, len(issues.Issues)); err != nil {
+				return err
+			}
+			issues.Issues, err = sortByJSONField(issues.Issues, options.sortField, options.sortOrder)
+			if err != nil {
+				return err
+			}
+			if options.json {
+				return writeJSONValue(command, options, issues)
+			}
+
+			return writeIssues(command, options, issues.Issues)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
+	root.AddCommand(command)
+}
+
+func addIssuePriorityValuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "priority-values",
+		Short: "List issue priority values",
+		Args:  cobra.NoArgs,
+		RunE: func(command *cobra.Command, _ []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			values, err := client.ListIssuePriorityValues(ctx, runtime.graphqlClient)
+			if err != nil {
+				return err
+			}
+
+			return writeIssuePriorityValues(command, options, values)
+		},
+	})
+}
+
+func addIssueFilterSuggestionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	teamID := ""
+	projectID := ""
+	command := &cobra.Command{
+		Use:   "filter-suggestion PROMPT",
+		Short: "Suggest an issue filter from a text prompt",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			if teamID != "" && projectID != "" {
+				return errors.New("issue filter suggestion: use only one of --team-id or --project-id")
+			}
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			suggestion, err := client.GetIssueFilterSuggestion(
+				ctx,
+				runtime.graphqlClient,
+				args[0],
+				teamID,
+				projectID,
+			)
+			if err != nil {
+				return err
+			}
+
+			return writeIssueFilterSuggestion(command, options, suggestion)
+		},
+	}
+	command.Flags().StringVar(&teamID, "team-id", teamID, "optional team id for team-scoped issue views")
+	command.Flags().StringVar(&projectID, "project-id", projectID, "optional project id for project-scoped issue views")
+	root.AddCommand(command)
+}
+
+func addIssueTitleSuggestionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "title-suggestion REQUEST",
+		Short: "Suggest an issue title from customer request text",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			suggestion, err := client.GetIssueTitleSuggestionFromCustomerRequest(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeIssueTitleSuggestion(command, options, suggestion)
+		},
+	})
 }
 
 func addIssueVCSBranchSearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -1403,6 +1514,66 @@ func issueSharedAccessFieldsText(fields []string) string {
 	}
 
 	return strings.Join(fields, ",")
+}
+
+func writeIssuePriorityValues(
+	command *cobra.Command,
+	options *rootOptions,
+	values []client.IssuePriorityValue,
+) error {
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, values)
+	}
+	for _, value := range values {
+		if err := render.WriteLine(command.OutOrStdout(), "%d %s", value.Priority, value.Label); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func writeIssueFilterSuggestion(
+	command *cobra.Command,
+	options *rootOptions,
+	suggestion client.IssueFilterSuggestion,
+) error {
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, suggestion)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"log_id=%s filter=%s",
+		emptyDash(suggestion.LogID),
+		emptyDash(string(suggestion.Filter)),
+	)
+}
+
+func writeIssueTitleSuggestion(
+	command *cobra.Command,
+	options *rootOptions,
+	suggestion client.IssueTitleSuggestion,
+) error {
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, suggestion)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"log_id=%s title=%s",
+		emptyDash(suggestion.LogID),
+		emptyDash(suggestion.Title),
+	)
 }
 
 func writeIssues(command *cobra.Command, options *rootOptions, issues []client.IssueSummary) error {

@@ -308,6 +308,39 @@ query issueSearch($teamId: ID!, $query: String!, $first: Int, $after: String, $i
   }
 }
 
+query issueFigmaFileKeySearch($fileKey: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueFigmaFileKeySearch(fileKey: $fileKey, first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query issuePriorityValues {
+  issuePriorityValues {
+    priority
+    label
+  }
+}
+
+query issueFilterSuggestion($prompt: String!, $teamId: String, $projectId: String) {
+  issueFilterSuggestion(prompt: $prompt, teamId: $teamId, projectId: $projectId) {
+    filter
+    logId
+  }
+}
+
+query issueTitleSuggestionFromCustomerRequest($request: String!) {
+  issueTitleSuggestionFromCustomerRequest(request: $request) {
+    title
+    logId
+  }
+}
+
 query issue($id: String!) {
   issue(id: $id) {
     description

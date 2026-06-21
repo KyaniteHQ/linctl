@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
@@ -44,6 +45,24 @@ type IssueList struct {
 	Issues      []IssueSummary `json:"issues"`
 	HasNextPage bool           `json:"has_next_page"`
 	EndCursor   *string        `json:"end_cursor,omitempty"`
+}
+
+// IssuePriorityValue is a Linear issue priority number and label.
+type IssuePriorityValue struct {
+	Priority int    `json:"priority"`
+	Label    string `json:"label"`
+}
+
+// IssueFilterSuggestion is an AI-generated issue filter suggestion.
+type IssueFilterSuggestion struct {
+	Filter json.RawMessage `json:"filter,omitempty"`
+	LogID  string          `json:"log_id,omitempty"`
+}
+
+// IssueTitleSuggestion is an AI-generated issue title suggestion.
+type IssueTitleSuggestion struct {
+	Title string `json:"title"`
+	LogID string `json:"log_id,omitempty"`
 }
 
 // IssueHistorySummary is compact issue history metadata without raw change payloads.
@@ -498,6 +517,92 @@ func SearchIssuesByTeam(
 		Issues:      summaries,
 		HasNextPage: issues.IssueSearch.PageInfo.HasNextPage,
 		EndCursor:   issues.IssueSearch.PageInfo.EndCursor,
+	}, nil
+}
+
+// SearchIssuesByFigmaFileKey searches issues associated with a Figma file key.
+func SearchIssuesByFigmaFileKey(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	fileKey string,
+	limit int,
+) (IssueList, error) {
+	issues, err := issueFigmaFileKeySearch(ctx, graphqlClient, fileKey, &limit, nil, boolPtr(true))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("search issues by Figma file key: %w", err)
+	}
+
+	summaries := make([]IssueSummary, 0, len(issues.IssueFigmaFileKeySearch.Nodes))
+	for _, issue := range issues.IssueFigmaFileKeySearch.Nodes {
+		summaries = append(summaries, figmaFileKeyIssueSummary(issue))
+	}
+
+	return IssueList{
+		Issues:      summaries,
+		HasNextPage: issues.IssueFigmaFileKeySearch.PageInfo.HasNextPage,
+		EndCursor:   issues.IssueFigmaFileKeySearch.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListIssuePriorityValues returns Linear issue priority labels.
+func ListIssuePriorityValues(ctx context.Context, graphqlClient graphql.Client) ([]IssuePriorityValue, error) {
+	result, err := issuePriorityValues(ctx, graphqlClient)
+	if err != nil {
+		return nil, fmt.Errorf("list issue priority values: %w", err)
+	}
+
+	values := make([]IssuePriorityValue, 0, len(result.IssuePriorityValues))
+	for _, value := range result.IssuePriorityValues {
+		values = append(values, IssuePriorityValue(value))
+	}
+
+	return values, nil
+}
+
+// GetIssueFilterSuggestion returns a JSON issue filter suggestion for a prompt.
+func GetIssueFilterSuggestion(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	prompt string,
+	teamID string,
+	projectID string,
+) (IssueFilterSuggestion, error) {
+	suggestion, err := issueFilterSuggestion(
+		ctx,
+		graphqlClient,
+		prompt,
+		optionalString(teamID),
+		optionalString(projectID),
+	)
+	if err != nil {
+		return IssueFilterSuggestion{}, fmt.Errorf("get issue filter suggestion: %w", err)
+	}
+
+	filter := json.RawMessage(nil)
+	if suggestion.IssueFilterSuggestion.Filter != nil {
+		filter = *suggestion.IssueFilterSuggestion.Filter
+	}
+
+	return IssueFilterSuggestion{
+		Filter: filter,
+		LogID:  stringValue(suggestion.IssueFilterSuggestion.LogId),
+	}, nil
+}
+
+// GetIssueTitleSuggestionFromCustomerRequest returns a title suggestion for customer request text.
+func GetIssueTitleSuggestionFromCustomerRequest(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	request string,
+) (IssueTitleSuggestion, error) {
+	suggestion, err := issueTitleSuggestionFromCustomerRequest(ctx, graphqlClient, request)
+	if err != nil {
+		return IssueTitleSuggestion{}, fmt.Errorf("get issue title suggestion: %w", err)
+	}
+
+	return IssueTitleSuggestion{
+		Title: suggestion.IssueTitleSuggestionFromCustomerRequest.Title,
+		LogID: stringValue(suggestion.IssueTitleSuggestionFromCustomerRequest.LogId),
 	}, nil
 }
 
@@ -1294,6 +1399,12 @@ func issueDependencyHasNextPage(issue IssueDependenciesIssue) bool {
 }
 
 func searchIssueSummary(issue issueSearchIssueSearchIssueConnectionNodesIssue) IssueSummary {
+	return issueSummaryFromFields(issue.IssueSummaryFields)
+}
+
+func figmaFileKeyIssueSummary(
+	issue issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue,
+) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 

@@ -151,6 +151,16 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"issueFigmaFileKeySearch": `{"issueFigmaFileKeySearch":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-41",
+			Title:      "Figma issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issuePriorityValues":                     `{"issuePriorityValues":[{"priority":1,"label":"Urgent"},{"priority":0,"label":"No priority"}]}`,
+		"issueFilterSuggestion":                   `{"issueFilterSuggestion":{"filter":{"state":{"type":{"eq":"started"}}},"logId":"issue-filter-log-id"}}`,
+		"issueTitleSuggestionFromCustomerRequest": `{"issueTitleSuggestionFromCustomerRequest":{"title":"Improve exports","logId":"title-log-id"}}`,
 		"searchDocuments": `{"searchDocuments":{"nodes":[` + strings.Join([]string{
 			searchDocumentJSON(),
 			searchDocumentJSONWithParent(
@@ -586,6 +596,24 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	dependencies, err := GetIssueDependencies(context.Background(), graphqlClient, "LIT-1", 2)
 	require.NoError(t, err)
 	searchIssues, err := SearchIssuesByTeam(context.Background(), graphqlClient, "team-id", "needle", 2)
+	require.NoError(t, err)
+	figmaIssues, err := SearchIssuesByFigmaFileKey(context.Background(), graphqlClient, "figma-key", 2)
+	require.NoError(t, err)
+	issuePriorityValues, err := ListIssuePriorityValues(context.Background(), graphqlClient)
+	require.NoError(t, err)
+	issueFilterSuggestion, err := GetIssueFilterSuggestion(
+		context.Background(),
+		graphqlClient,
+		"started issues",
+		"team-id",
+		"",
+	)
+	require.NoError(t, err)
+	issueTitleSuggestion, err := GetIssueTitleSuggestionFromCustomerRequest(
+		context.Background(),
+		graphqlClient,
+		"Customer asks for faster exports",
+	)
 	require.NoError(t, err)
 	issue, err := GetIssueByID(context.Background(), graphqlClient, "LIT-11")
 	require.NoError(t, err)
@@ -1104,6 +1132,15 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "LIT-24", dependencies.BlockedBy[0].Identifier)
 	require.True(t, dependencies.HasNextPage)
 	require.Equal(t, "LIT-13", searchIssues.Issues[0].Identifier)
+	require.Equal(t, "LIT-41", figmaIssues.Issues[0].Identifier)
+	require.True(t, figmaIssues.HasNextPage)
+	require.Equal(t, &endCursor, figmaIssues.EndCursor)
+	require.Equal(t, 1, issuePriorityValues[0].Priority)
+	require.Equal(t, "Urgent", issuePriorityValues[0].Label)
+	require.JSONEq(t, `{"state":{"type":{"eq":"started"}}}`, string(issueFilterSuggestion.Filter))
+	require.Equal(t, "issue-filter-log-id", issueFilterSuggestion.LogID)
+	require.Equal(t, "Improve exports", issueTitleSuggestion.Title)
+	require.Equal(t, "title-log-id", issueTitleSuggestion.LogID)
 	require.Equal(t, "LIT-11", issue.Identifier)
 	require.True(t, issueAttachments.HasNextPage)
 	require.Equal(t, &endCursor, issueAttachments.EndCursor)
@@ -2179,6 +2216,26 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = SearchIssuesByTeam(context.Background(), graphqlClient, "team-id", "needle", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "search issues")
+
+		_, err = SearchIssuesByFigmaFileKey(context.Background(), graphqlClient, "figma-key", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "search issues by Figma file key")
+
+		_, err = ListIssuePriorityValues(context.Background(), graphqlClient)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue priority values")
+
+		_, err = GetIssueFilterSuggestion(context.Background(), graphqlClient, "started issues", "team-id", "")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue filter suggestion")
+
+		_, err = GetIssueTitleSuggestionFromCustomerRequest(
+			context.Background(),
+			graphqlClient,
+			"Customer asks for faster exports",
+		)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue title suggestion")
 
 		_, err = GetIssueByID(context.Background(), graphqlClient, "LIT-1")
 		require.Error(t, err)

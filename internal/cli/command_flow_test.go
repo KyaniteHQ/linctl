@@ -94,6 +94,10 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1", "--limit", "1"}, contains: "LIT-23 Blocked by issue [Todo]", fake: commandFlowFakeClient{expectedBlockedBy: "LIT-1"}},
 		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams", "--limit", "1"}, contains: "LIT-20 All-team issue [Todo]"},
 		{name: "issue search", args: []string{"issue", "search", "needle", "--limit", "1"}, contains: "LIT-3 Search result [Todo]", fake: commandFlowFakeClient{expectedSearchQuery: "needle"}},
+		{name: "issue figma file key search", args: []string{"issue", "figma-file-key-search", "figma-key", "--limit", "1"}, contains: "LIT-41 Figma issue [Todo]", fake: commandFlowFakeClient{expectedIssueFigmaFileKey: "figma-key"}},
+		{name: "issue priority values", args: []string{"issue", "priority-values"}, contains: "1 Urgent"},
+		{name: "issue filter suggestion", args: []string{"issue", "filter-suggestion", "started issues", "--team-id", "team-id"}, contains: `log_id=issue-filter-log-id filter={"state":{"type":{"eq":"started"}}}`, fake: commandFlowFakeClient{expectedIssueFilterPrompt: "started issues", expectedIssueFilterTeamID: "team-id"}},
+		{name: "issue title suggestion", args: []string{"issue", "title-suggestion", "Customer asks for faster exports"}, contains: "log_id=title-log-id title=Improve exports", fake: commandFlowFakeClient{expectedIssueTitleRequest: "Customer asks for faster exports"}},
 		{name: "issue vcs branch search get", args: []string{"issue", "vcs-branch-search", "get", "omer/branch", "--json"}, contains: `"identifier": "LIT-40"`},
 		{name: "issue vcs branch attachments", args: []string{"issue", "vcs-branch-search", "attachments", "omer/branch", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
 		{name: "issue vcs branch bot actor", args: []string{"issue", "vcs-branch-search", "bot-actor", "omer/branch"}, contains: "issue-id bot bot-actor-id GitHub [github]"},
@@ -703,6 +707,10 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"next", "--dry-run"},
 			{"issue", "list"},
 			{"issue", "search", "needle"},
+			{"issue", "figma-file-key-search", "figma-key"},
+			{"issue", "priority-values"},
+			{"issue", "filter-suggestion", "started issues"},
+			{"issue", "title-suggestion", "Customer asks for faster exports"},
 			{"issue", "get", "LIT-1"},
 			{"issue", "deps", "LIT-1"},
 			{"issue", "pr", "LIT-1"},
@@ -1084,6 +1092,10 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "comment", "LIT-1", "--body", "Looks good"},
 		{"--json", "issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"},
 		{"--json", "--fields", "id,display_name", "issue", "comments", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "identifier,title", "issue", "figma-file-key-search", "figma-key", "--limit", "1"},
+		{"--json", "issue", "priority-values"},
+		{"--json", "issue", "filter-suggestion", "started issues"},
+		{"--json", "issue", "title-suggestion", "Customer asks for faster exports"},
 		{"--json", "--fields", "id,display_name", "comment", "list", "--limit", "1"},
 		{"--json", "comment", "get", "comment-id"},
 		{"--json", "--fields", "id,display_name", "initiative-update", "comments", "initiative-update-id", "--limit", "1"},
@@ -2026,6 +2038,10 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams"}, operation: "issues", contains: "list issues"},
 		{name: "issue search target resolve", args: []string{"issue", "search", "needle"}, operation: "Teams", contains: "resolve teams"},
 		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "issueSearch", contains: "search issues"},
+		{name: "issue figma file key search", args: []string{"issue", "figma-file-key-search", "figma-key"}, operation: "issueFigmaFileKeySearch", contains: "search issues by Figma file key"},
+		{name: "issue priority values", args: []string{"issue", "priority-values"}, operation: "issuePriorityValues", contains: "list issue priority values"},
+		{name: "issue filter suggestion", args: []string{"issue", "filter-suggestion", "started issues"}, operation: "issueFilterSuggestion", contains: "get issue filter suggestion"},
+		{name: "issue title suggestion", args: []string{"issue", "title-suggestion", "Customer asks for faster exports"}, operation: "issueTitleSuggestionFromCustomerRequest", contains: "get issue title suggestion"},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1"}, operation: "IssueDependencies", contains: "get issue dependencies LIT-1"},
 		{name: "issue attachments", args: []string{"issue", "attachments", "LIT-1"}, operation: "issue_attachments", contains: "list issue attachments LIT-1"},
@@ -2253,6 +2269,7 @@ type commandFlowFakeClient struct {
 	emptyIssueBlockedBy           bool
 	emptyIssueAllTeams            bool
 	emptyIssueSearch              bool
+	emptyIssueFigmaSearch         bool
 	emptyNextIssues               bool
 	rankedNextIssues              bool
 	expectedStateType             string
@@ -2265,6 +2282,10 @@ type commandFlowFakeClient struct {
 	expectedBlockedBy             string
 	expectedIssueDeps             string
 	expectedSearchQuery           string
+	expectedIssueFigmaFileKey     string
+	expectedIssueFilterPrompt     string
+	expectedIssueFilterTeamID     string
+	expectedIssueTitleRequest     string
 	expectedReleaseSearchTerm     string
 	expectedSemanticSearchQuery   string
 	expectedTypedSearchTerm       string
@@ -2362,6 +2383,9 @@ func (client commandFlowFakeClient) requireExpectedSearchVariables(request *grap
 	if client.expectedSearchQuery != "" && request.OpName == "issueSearch" {
 		return requireRequestVariable(request, []string{"query"}, client.expectedSearchQuery, "search query")
 	}
+	if err := client.requireExpectedIssueUtilityVariables(request); err != nil {
+		return err
+	}
 	if client.expectedReleaseSearchTerm != "" && request.OpName == "releaseSearch" {
 		return requireRequestVariable(request, []string{"term"}, client.expectedReleaseSearchTerm, "release search term")
 	}
@@ -2376,6 +2400,35 @@ func (client commandFlowFakeClient) requireExpectedSearchVariables(request *grap
 	}
 	if client.expectedIssueDeps != "" && request.OpName == "IssueDependencies" {
 		return requireRequestVariable(request, []string{"id"}, client.expectedIssueDeps, "issue deps id")
+	}
+
+	return nil
+}
+
+func (client commandFlowFakeClient) requireExpectedIssueUtilityVariables(request *graphql.Request) error {
+	if client.expectedIssueFigmaFileKey != "" && request.OpName == "issueFigmaFileKeySearch" {
+		return requireRequestVariable(request, []string{"fileKey"}, client.expectedIssueFigmaFileKey, "figma file key")
+	}
+	if client.expectedIssueFilterPrompt != "" && request.OpName == "issueFilterSuggestion" {
+		if err := requireRequestVariable(
+			request,
+			[]string{"prompt"},
+			client.expectedIssueFilterPrompt,
+			"issue filter prompt",
+		); err != nil {
+			return err
+		}
+	}
+	if client.expectedIssueFilterTeamID != "" && request.OpName == "issueFilterSuggestion" {
+		return requireRequestVariable(request, []string{"teamId"}, client.expectedIssueFilterTeamID, "issue filter team id")
+	}
+	if client.expectedIssueTitleRequest != "" && request.OpName == "issueTitleSuggestionFromCustomerRequest" {
+		return requireRequestVariable(
+			request,
+			[]string{"request"},
+			client.expectedIssueTitleRequest,
+			"issue title request",
+		)
 	}
 
 	return nil
@@ -3257,6 +3310,9 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 	if payload, ok := commandFlowIssueChildPayload(operation, fake); ok {
 		return payload, true
 	}
+	if payload, ok := commandFlowIssueUtilityPayload(operation, fake); ok {
+		return payload, true
+	}
 
 	switch operation {
 	case "issueSearch":
@@ -3289,6 +3345,26 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 			return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[{"id":"comment-id","body":"First comment","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowIssueUtilityPayload(operation string, fake commandFlowFakeClient) (string, bool) {
+	switch operation {
+	case "issueFigmaFileKeySearch":
+		if fake.emptyIssueFigmaSearch {
+			return `{"issueFigmaFileKeySearch":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		}
+		return `{"issueFigmaFileKeySearch":{"nodes":[` +
+			commandIssueJSON("LIT-41", "Figma issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "issuePriorityValues":
+		return `{"issuePriorityValues":[{"priority":1,"label":"Urgent"},{"priority":0,"label":"No priority"}]}`, true
+	case "issueFilterSuggestion":
+		return `{"issueFilterSuggestion":{"filter":{"state":{"type":{"eq":"started"}}},"logId":"issue-filter-log-id"}}`, true
+	case "issueTitleSuggestionFromCustomerRequest":
+		return `{"issueTitleSuggestionFromCustomerRequest":{"title":"Improve exports","logId":"title-log-id"}}`, true
 	default:
 		return "", false
 	}

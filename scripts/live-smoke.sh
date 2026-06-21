@@ -76,6 +76,9 @@ PY
   "$binary" user my-team-memberships --json --limit 5 >/dev/null
   "$binary" user my-teams --json --limit 5 >/dev/null
   "$binary" issue usage >/dev/null
+  "$binary" issue priority-values --json >/dev/null
+  "$binary" issue filter-suggestion "started issues" --json >/dev/null
+  "$binary" issue title-suggestion "Customer asks for faster exports" --json >/dev/null
   issue_json="$("$binary" issue list --json --limit 5)"
   issue_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0]["id"] if items else "")' <<<"$issue_json")"
   issue_branch_name="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0].get("branch_name", "") if items else "")' <<<"$issue_json")"

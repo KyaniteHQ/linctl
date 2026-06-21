@@ -80,7 +80,11 @@ Success is pass/fail:
    - Success: `linctl issue search QUERY --limit N` lists matching issues in the resolved team.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_search`.
 
-12. Issue project filter
+12. Issue read utilities
+   - Success: `linctl issue figma-file-key-search FILE_KEY --limit N`, `linctl issue priority-values`, `linctl issue filter-suggestion PROMPT`, and `linctl issue title-suggestion REQUEST` expose compact issue utility reads.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_figma_file_key_search`, `issue_priority_values`, `issue_filter_suggestion`, and `issue_title_suggestion`.
+
+13. Issue project filter
    - Success: `linctl issue list --project PROJECT_ID --limit N` lists issues attached to that project in the resolved team.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_list_project_filter`.
 

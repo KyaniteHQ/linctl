@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 117 | 458 |
-| Upstream Query root fields | 158 | 105 | 158 |
+| Upstream SDK root methods | 458 | 121 | 458 |
+| Upstream Query root fields | 158 | 109 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 312 | 312 | 312 |
-| Domain-map commands | 403 | 271 | 403 |
+| Local generated Go operations | 316 | 316 | 316 |
+| Domain-map commands | 407 | 275 | 407 |
 
 ## Upstream SDK Root Methods
 
@@ -277,8 +277,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issue` | method | implemented | local operation or command exists |
 | `issueAddLabel` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueExternalSyncDisable` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueFigmaFileKeySearch` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueFilterSuggestion` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueFigmaFileKeySearch` | method | implemented | local operation or command exists |
+| `issueFilterSuggestion` | method | implemented | local operation or command exists |
 | `issueImportCheckCSV` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueImportCheckSync` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueImportCreateAsana` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -292,7 +292,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueLabelRestore` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueLabelRetire` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueLabels` | method | implemented | local operation or command exists |
-| `issuePriorityValues` | getter | accepted_gap | repo-planned or likely useful CLI domain |
+| `issuePriorityValues` | getter | implemented | local operation or command exists |
 | `issueRelation` | method | implemented | local operation or command exists |
 | `issueRelations` | method | implemented | local operation or command exists |
 | `issueReminder` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -301,7 +301,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueSearch` | method | implemented | local operation or command exists |
 | `issueShare` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueSubscribe` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueTitleSuggestionFromCustomerRequest` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueTitleSuggestionFromCustomerRequest` | method | implemented | local operation or command exists |
 | `issueToRelease` | method | implemented | local operation or command exists |
 | `issueToReleaseDeleteByIssueAndRelease` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueToReleases` | method | implemented | local operation or command exists |
@@ -556,19 +556,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `integrations` | `IntegrationConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettings` | `IntegrationsSettings!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `issue` | `Issue!` | implemented | root field used by local GraphQL operation |
-| `issueFigmaFileKeySearch` | `IssueConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueFilterSuggestion` | `IssueFilterSuggestionPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueFigmaFileKeySearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
+| `issueFilterSuggestion` | `IssueFilterSuggestionPayload!` | implemented | root field used by local GraphQL operation |
 | `issueImportCheckCSV` | `IssueImportCheckPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueImportCheckSync` | `IssueImportSyncCheckPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueImportJqlCheck` | `IssueImportJqlCheckPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueLabel` | `IssueLabel!` | implemented | root field used by local GraphQL operation |
 | `issueLabels` | `IssueLabelConnection!` | implemented | root field used by local GraphQL operation |
-| `issuePriorityValues` | `[IssuePriorityValue!]!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issuePriorityValues` | `[IssuePriorityValue!]!` | implemented | root field used by local GraphQL operation |
 | `issueRelation` | `IssueRelation!` | implemented | root field used by local GraphQL operation |
 | `issueRelations` | `IssueRelationConnection!` | implemented | root field used by local GraphQL operation |
 | `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueSearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
-| `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | implemented | root field used by local GraphQL operation |
 | `issueToRelease` | `IssueToRelease!` | implemented | root field used by local GraphQL operation |
 | `issueToReleases` | `IssueToReleaseConnection!` | implemented | root field used by local GraphQL operation |
 | `issueVcsBranchSearch` | `Issue` | implemented | root field used by local GraphQL operation |
@@ -1138,12 +1138,16 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiative_subInitiatives` | query | `initiative` | implemented | `internal/client/generated.go` |
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
+| `issueFigmaFileKeySearch` | query | `issueFigmaFileKeySearch` | implemented | `internal/client/generated.go` |
+| `issueFilterSuggestion` | query | `issueFilterSuggestion` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `issueLabel_children` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `issueLabel_issues` | query | `issueLabel` | implemented | `internal/client/generated.go` |
+| `issuePriorityValues` | query | `issuePriorityValues` | implemented | `internal/client/generated.go` |
 | `issueRelation` | query | `issueRelation` | implemented | `internal/client/generated.go` |
 | `issueRelations` | query | `issueRelations` | implemented | `internal/client/generated.go` |
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
+| `issueTitleSuggestionFromCustomerRequest` | query | `issueTitleSuggestionFromCustomerRequest` | implemented | `internal/client/generated.go` |
 | `issueToRelease` | query | `issueToRelease` | implemented | `internal/client/generated.go` |
 | `issueToReleases` | query | `issueToReleases` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
@@ -1409,6 +1413,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title plus log id only | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
