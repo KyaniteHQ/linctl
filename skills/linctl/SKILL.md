@@ -121,6 +121,15 @@ linctl issue list --blocked-by LIT-123 --limit 20
 linctl issue list --all-teams --limit 20
 linctl issue search "needle" --limit 20
 linctl issue deps LIT-123 --limit 20
+linctl issue attachments LIT-123 --json --limit 20
+linctl issue children LIT-123 --json --limit 20
+linctl issue documents LIT-123 --json --limit 20
+linctl issue former-attachments LIT-123 --json --limit 20
+linctl issue history LIT-123 --json --limit 20
+linctl issue inverse-relations LIT-123 --json --limit 20
+linctl issue labels LIT-123 --json --limit 20
+linctl issue relations LIT-123 --json --limit 20
+linctl issue releases LIT-123 --json --limit 20
 linctl issue comments LIT-123 --limit 20
 linctl issue-relation list --json --limit 20
 linctl issue-relation get ISSUE_RELATION_ID --json
@@ -293,6 +302,8 @@ Branch-driven work:
 linctl doctor --json
 linctl current --json
 linctl issue deps LIT-123 --limit 20
+linctl issue attachments LIT-123 --json --limit 20
+linctl issue children LIT-123 --json --limit 20
 linctl issue pr
 linctl done --json
 ```

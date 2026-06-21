@@ -1,3 +1,4 @@
+//nolint:dupl // Issue child read commands intentionally share the same list-command shape.
 package cli
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
 func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -18,6 +20,15 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addIssueSearchCommand(ctx, issueCommand, options)
 	addIssueGetCommand(ctx, issueCommand, options)
 	addIssueDepsCommand(ctx, issueCommand, options)
+	addIssueAttachmentsCommand(ctx, issueCommand, options)
+	addIssueChildrenCommand(ctx, issueCommand, options)
+	addIssueDocumentsCommand(ctx, issueCommand, options)
+	addIssueFormerAttachmentsCommand(ctx, issueCommand, options)
+	addIssueHistoryCommand(ctx, issueCommand, options)
+	addIssueInverseRelationsCommand(ctx, issueCommand, options)
+	addIssueLabelsCommand(ctx, issueCommand, options)
+	addIssueRelationsCommand(ctx, issueCommand, options)
+	addIssueReleasesCommand(ctx, issueCommand, options)
 	addIssuePRCommand(ctx, issueCommand, options)
 	addIssueCreateCommand(ctx, issueCommand, options)
 	addIssueUpdateCommand(ctx, issueCommand, options)
@@ -348,6 +359,336 @@ func addIssueGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 			return writeIssue(command, options, issue)
 		},
 	})
+}
+
+func addIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"attachments ISSUE_ID",
+		"List issue attachments",
+		"attachments",
+		func(runtime commandRuntime, issueID string, limit int) (client.AttachmentList, error) {
+			return client.ListIssueAttachments(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.AttachmentList) int {
+			return len(list.Attachments)
+		},
+		func(list client.AttachmentList) (client.AttachmentList, error) {
+			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
+			list.Attachments = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.AttachmentSummary) error {
+			return writeAttachment(command, options, item)
+		},
+		func(list client.AttachmentList) []client.AttachmentSummary {
+			return list.Attachments
+		},
+	)
+}
+
+func addIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"children ISSUE_ID",
+		"List issue children",
+		"child issues",
+		func(runtime commandRuntime, issueID string, limit int) (client.IssueList, error) {
+			return client.ListIssueChildren(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.IssueList) int {
+			return len(list.Issues)
+		},
+		func(list client.IssueList) (client.IssueList, error) {
+			items, err := sortByJSONField(list.Issues, options.sortField, options.sortOrder)
+			list.Issues = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.IssueSummary) error {
+			return writeIssue(command, options, item)
+		},
+		func(list client.IssueList) []client.IssueSummary {
+			return list.Issues
+		},
+	)
+}
+
+func addIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"documents ISSUE_ID",
+		"List issue documents",
+		"documents",
+		func(runtime commandRuntime, issueID string, limit int) (client.DocumentList, error) {
+			return client.ListIssueDocuments(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.DocumentList) int {
+			return len(list.Documents)
+		},
+		func(list client.DocumentList) (client.DocumentList, error) {
+			items, err := sortByJSONField(list.Documents, options.sortField, options.sortOrder)
+			list.Documents = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.DocumentSummary) error {
+			return writeDocument(command, options, item)
+		},
+		func(list client.DocumentList) []client.DocumentSummary {
+			return list.Documents
+		},
+	)
+}
+
+func addIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"former-attachments ISSUE_ID",
+		"List former issue attachments",
+		"former attachments",
+		func(runtime commandRuntime, issueID string, limit int) (client.AttachmentList, error) {
+			return client.ListIssueFormerAttachments(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.AttachmentList) int {
+			return len(list.Attachments)
+		},
+		func(list client.AttachmentList) (client.AttachmentList, error) {
+			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
+			list.Attachments = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.AttachmentSummary) error {
+			return writeAttachment(command, options, item)
+		},
+		func(list client.AttachmentList) []client.AttachmentSummary {
+			return list.Attachments
+		},
+	)
+}
+
+func addIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"history ISSUE_ID",
+		"List issue history metadata",
+		"history entries",
+		func(runtime commandRuntime, issueID string, limit int) (client.IssueHistoryList, error) {
+			return client.ListIssueHistory(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.IssueHistoryList) int {
+			return len(list.History)
+		},
+		func(list client.IssueHistoryList) (client.IssueHistoryList, error) {
+			items, err := sortByJSONField(list.History, options.sortField, options.sortOrder)
+			list.History = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.IssueHistorySummary) error {
+			return writeIssueHistory(command, options, item)
+		},
+		func(list client.IssueHistoryList) []client.IssueHistorySummary {
+			return list.History
+		},
+	)
+}
+
+func addIssueInverseRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueRelationChildListCommand(
+		ctx,
+		root,
+		options,
+		"inverse-relations ISSUE_ID",
+		"List issue inverse relations",
+		"inverse relations",
+		func(ctx context.Context, runtime commandRuntime, issueID string, limit int) (client.IssueRelationList, error) {
+			return client.ListIssueInverseRelations(ctx, runtime.graphqlClient, issueID, limit)
+		},
+	)
+}
+
+func addIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"labels ISSUE_ID",
+		"List issue labels",
+		"labels",
+		func(runtime commandRuntime, issueID string, limit int) (client.LabelList, error) {
+			return client.ListIssueLabels(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.LabelList) int {
+			return len(list.Labels)
+		},
+		func(list client.LabelList) (client.LabelList, error) {
+			items, err := sortByJSONField(list.Labels, options.sortField, options.sortOrder)
+			list.Labels = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.LabelSummary) error {
+			return writeLabel(command, options, item)
+		},
+		func(list client.LabelList) []client.LabelSummary {
+			return list.Labels
+		},
+	)
+}
+
+func addIssueRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueRelationChildListCommand(
+		ctx,
+		root,
+		options,
+		"relations ISSUE_ID",
+		"List issue relations",
+		"relations",
+		func(ctx context.Context, runtime commandRuntime, issueID string, limit int) (client.IssueRelationList, error) {
+			return client.ListIssueRelationsForIssue(ctx, runtime.graphqlClient, issueID, limit)
+		},
+	)
+}
+
+func addIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"releases ISSUE_ID",
+		"List issue releases",
+		"releases",
+		func(runtime commandRuntime, issueID string, limit int) (client.ReleaseList, error) {
+			return client.ListIssueReleases(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.ReleaseList) int {
+			return len(list.Releases)
+		},
+		func(list client.ReleaseList) (client.ReleaseList, error) {
+			items, err := sortByJSONField(list.Releases, options.sortField, options.sortOrder)
+			list.Releases = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.ReleaseSummary) error {
+			return writeRelease(command, options, item)
+		},
+		func(list client.ReleaseList) []client.ReleaseSummary {
+			return list.Releases
+		},
+	)
+}
+
+func addIssueRelationChildListCommand(
+	ctx context.Context,
+	root *cobra.Command,
+	options *rootOptions,
+	use string,
+	short string,
+	limitHelp string,
+	fetch func(context.Context, commandRuntime, string, int) (client.IssueRelationList, error),
+) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		use,
+		short,
+		limitHelp,
+		func(runtime commandRuntime, issueID string, limit int) (client.IssueRelationList, error) {
+			return fetch(ctx, runtime, issueID, limit)
+		},
+		func(list client.IssueRelationList) int {
+			return len(list.Relations)
+		},
+		func(list client.IssueRelationList) (client.IssueRelationList, error) {
+			items, err := sortByJSONField(list.Relations, options.sortField, options.sortOrder)
+			list.Relations = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.IssueRelationSummary) error {
+			return writeIssueRelation(command, options, item)
+		},
+		func(list client.IssueRelationList) []client.IssueRelationSummary {
+			return list.Relations
+		},
+	)
+}
+
+func addIssueChildListCommand[List any, Item any](
+	ctx context.Context,
+	root *cobra.Command,
+	options *rootOptions,
+	use string,
+	short string,
+	limitHelp string,
+	fetch func(commandRuntime, string, int) (List, error),
+	count func(List) int,
+	sortList func(List) (List, error),
+	writeItem func(*cobra.Command, Item) error,
+	items func(List) []Item,
+) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   use,
+		Short: short,
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			list, err := fetch(runtime, args[0], limit)
+			if err != nil {
+				return err
+			}
+			if err := ensureNonEmpty(options, count(list)); err != nil {
+				return err
+			}
+			list, err = sortList(list)
+			if err != nil {
+				return err
+			}
+			if options.json {
+				return writeJSONValue(command, options, list)
+			}
+			for _, item := range items(list) {
+				if err := writeItem(command, item); err != nil {
+					return err
+				}
+			}
+
+			return nil
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum "+limitHelp+" to return")
+	root.AddCommand(command)
+}
+
+func writeIssueHistory(command *cobra.Command, options *rootOptions, history client.IssueHistorySummary) error {
+	if wrote, err := writeIDOnly(command, options, history.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, history)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s issue %s updated_description %t",
+		history.ID,
+		history.IssueID,
+		history.UpdatedDescription,
+	)
 }
 
 func writeIssues(command *cobra.Command, options *rootOptions, issues []client.IssueSummary) error {

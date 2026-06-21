@@ -358,6 +358,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		EntryCount: 1,
 		Entries:    json.RawMessage(`[{"type":"stage"}]`),
 	}
+	issueHistory := client.IssueHistorySummary{
+		ID:                 "issue-history-id",
+		IssueID:            "issue-id",
+		ActorID:            "user-id",
+		UpdatedDescription: true,
+	}
 	releaseLink := client.EntityExternalLinkSummary{
 		ID:        "release-link-id",
 		Label:     "Runbook",
@@ -432,6 +438,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeReleaseStage(textCommand, &textOptions, releaseStage))
 	require.NoError(t, writeRelease(textCommand, &textOptions, release))
 	require.NoError(t, writeReleaseHistory(textCommand, &textOptions, releaseHistory))
+	require.NoError(t, writeIssueHistory(textCommand, &textOptions, issueHistory))
 	require.NoError(t, writeEntityExternalLink(textCommand, &textOptions, releaseLink))
 	require.NoError(t, writeReleaseNote(textCommand, &textOptions, releaseNote))
 	require.Equal(
@@ -484,6 +491,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"release-stage-id Started [started] pipeline Production\n"+
 			"release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3\n"+
 			"release-history-id release release-id entries 1\n"+
+			"issue-history-id issue issue-id updated_description true\n"+
 			"release-link-id Runbook https://example.com/runbook order 1.5\n"+
 			"release-note-id Launch notes pipeline Production releases 2\n",
 		textOut.String(),
@@ -548,6 +556,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeReleaseStage(jsonCommand, &jsonOptions, releaseStage))
 	require.NoError(t, writeRelease(jsonCommand, &jsonOptions, release))
 	require.NoError(t, writeReleaseHistory(jsonCommand, &jsonOptions, releaseHistory))
+	require.NoError(t, writeIssueHistory(jsonCommand, &jsonOptions, issueHistory))
 	require.NoError(t, writeEntityExternalLink(jsonCommand, &jsonOptions, releaseLink))
 	require.NoError(t, writeReleaseNote(jsonCommand, &jsonOptions, releaseNote))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)

@@ -208,6 +208,15 @@ Planned commands:
 | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only |
 | `issue get` | `Query.issue` | Read-only |
 | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only |
+| `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only |
+| `issue children` | `Issue.children` via `Query.issue` | Read-only |
+| `issue documents` | `Issue.documents` via `Query.issue` | Read-only |
+| `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only |
+| `issue history` | `Issue.history` via `Query.issue`; returns compact metadata only, not raw change payloads or content fields | Read-only |
+| `issue inverse-relations` | `Issue.inverseRelations` via `Query.issue` | Read-only |
+| `issue labels` | `Issue.labels` via `Query.issue` | Read-only |
+| `issue relations` | `Issue.relations` via `Query.issue` | Read-only |
+| `issue releases` | `Issue.releases` via `Query.issue` | Read-only |
 | `issue id` | Current checkout issue identifier from git/jj context | Read-only |
 | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
 | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
@@ -222,6 +231,8 @@ Planned commands:
 | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project |
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
+
+Issue customer-need child reads and shared-access/state-history reads remain deferred because the default summaries need a narrower output model before they can satisfy the no body/blob/secret/default-sensitive-payload rule.
 
 ## IssueRelation
 

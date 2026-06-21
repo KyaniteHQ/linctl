@@ -93,6 +93,15 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue search", args: []string{"issue", "search", "needle", "--limit", "1"}, contains: "LIT-3 Search result [Todo]", fake: commandFlowFakeClient{expectedSearchQuery: "needle"}},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1", "--limit", "2"}, contains: "blocked_by:\nLIT-24 Blocker issue [Todo]", fake: commandFlowFakeClient{expectedIssueDeps: "LIT-1"}},
+		{name: "issue attachments", args: []string{"issue", "attachments", "LIT-1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "issue children", args: []string{"issue", "children", "LIT-1", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "issue documents", args: []string{"issue", "documents", "LIT-1", "--limit", "1"}, contains: "document-id Spec [issue]"},
+		{name: "issue former attachments", args: []string{"issue", "former-attachments", "LIT-1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "issue history", args: []string{"issue", "history", "LIT-1", "--limit", "1"}, contains: "issue-history-id issue issue-id updated_description true"},
+		{name: "issue inverse relations", args: []string{"issue", "inverse-relations", "LIT-1", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
+		{name: "issue labels", args: []string{"issue", "labels", "LIT-1", "--limit", "1"}, contains: "label-id Bug #ff0000"},
+		{name: "issue relations", args: []string{"issue", "relations", "LIT-1", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
+		{name: "issue releases", args: []string{"issue", "releases", "LIT-1", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
 		{name: "issue relation list", args: []string{"issue-relation", "list", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, contains: `gh pr create --title "LIT-1 Detail issue" --body "https://linear.app/kyanite/issue/LIT-1"`},
@@ -823,6 +832,31 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		require.Contains(t, err.Error(), `sort field "missing" is not present`)
 	})
 
+	t.Run("issue child list returns writer errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(commandFailingWriter{})
+		command.SetArgs([]string{"issue", "history", "LIT-1"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("issue child list reports sort errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--sort", "missing", "issue", "children", "LIT-1"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	})
+
 	t.Run("document list returns writer errors", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{})
 		defer restore()
@@ -891,6 +925,15 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
 		{"--json", "issue", "deps", "LIT-1", "--limit", "2"},
+		{"--json", "issue", "attachments", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "issue", "children", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,title,parent_type", "issue", "documents", "LIT-1", "--limit", "1"},
+		{"--json", "issue", "former-attachments", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,issue_id,updated_description", "issue", "history", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,type,issue_identifier,related_issue_identifier", "issue", "inverse-relations", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,name,color", "issue", "labels", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,type,issue_identifier,related_issue_identifier", "issue", "relations", "LIT-1", "--limit", "1"},
+		{"--json", "--fields", "id,name,version", "issue", "releases", "LIT-1", "--limit", "1"},
 		{"--json", "--fields", "id,type,issue_identifier,related_issue_identifier", "issue-relation", "list", "--limit", "1"},
 		{"--json", "issue-relation", "get", "issue-relation-id"},
 		{"--json", "--fields", "id,issue_id,release_id", "issue-to-release", "list", "--limit", "1"},
@@ -1041,23 +1084,37 @@ func Test_CommandFlows_project_json_fields_when_fields_flag_is_set(t *testing.T)
 }
 
 func Test_CommandFlows_print_only_id_when_id_only_flag_is_set(t *testing.T) {
-	output := bytes.Buffer{}
-	restore := useCommandRuntime(t, commandFlowFakeClient{})
-	defer restore()
-	command := NewRootCommand(context.Background(), BuildInfo{})
-	command.SetOut(&output)
-	command.SetArgs([]string{"--id-only", "issue", "get", "LIT-1"})
+	tests := []struct {
+		name   string
+		args   []string
+		output string
+	}{
+		{name: "issue get", args: []string{"--id-only", "issue", "get", "LIT-1"}, output: "issue-id\n"},
+		{name: "issue history", args: []string{"--id-only", "issue", "history", "LIT-1"}, output: "issue-history-id\n"},
+	}
 
-	err := command.ExecuteContext(context.Background())
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
 
-	require.NoError(t, err)
-	require.Equal(t, "issue-id\n", output.String())
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Equal(t, test.output, output.String())
+		})
+	}
 }
 
 func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing.T) {
 	tests := [][]string{
 		{"--quiet", "doctor"},
 		{"--quiet", "issue", "get", "LIT-1"},
+		{"--quiet", "issue", "history", "LIT-1"},
 	}
 
 	for _, args := range tests {
@@ -1087,6 +1144,35 @@ func Test_CommandFlows_fail_on_empty_list_when_fail_on_empty_flag_is_set(t *test
 
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "empty result")
+}
+
+func Test_CommandFlows_fail_on_empty_issue_child_list_when_fail_on_empty_flag_is_set(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{emptyIssueChildren: true})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"--fail-on-empty", "issue", "children", "LIT-1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "empty result")
+}
+
+func Test_CommandFlows_issue_child_list_reports_runtime_errors(t *testing.T) {
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, errors.New("runtime failed")
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"issue", "children", "LIT-1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "runtime failed")
 }
 
 func Test_CommandFlows_fail_on_empty_project_updates_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -1502,6 +1588,15 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue search", args: []string{"issue", "search", "needle"}, operation: "issueSearch", contains: "search issues"},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1"}, operation: "IssueDependencies", contains: "get issue dependencies LIT-1"},
+		{name: "issue attachments", args: []string{"issue", "attachments", "LIT-1"}, operation: "issue_attachments", contains: "list issue attachments LIT-1"},
+		{name: "issue children", args: []string{"issue", "children", "LIT-1"}, operation: "issue_children", contains: "list issue children LIT-1"},
+		{name: "issue documents", args: []string{"issue", "documents", "LIT-1"}, operation: "issue_documents", contains: "list issue documents LIT-1"},
+		{name: "issue former attachments", args: []string{"issue", "former-attachments", "LIT-1"}, operation: "issue_formerAttachments", contains: "list issue former attachments LIT-1"},
+		{name: "issue history", args: []string{"issue", "history", "LIT-1"}, operation: "issue_history", contains: "list issue history LIT-1"},
+		{name: "issue inverse relations", args: []string{"issue", "inverse-relations", "LIT-1"}, operation: "issue_inverseRelations", contains: "list issue inverse relations LIT-1"},
+		{name: "issue labels", args: []string{"issue", "labels", "LIT-1"}, operation: "issue_labels", contains: "list issue labels LIT-1"},
+		{name: "issue relations", args: []string{"issue", "relations", "LIT-1"}, operation: "issue_relations", contains: "list issue relations LIT-1"},
+		{name: "issue releases", args: []string{"issue", "releases", "LIT-1"}, operation: "issue_releases", contains: "list issue releases LIT-1"},
 		{name: "issue relation list", args: []string{"issue-relation", "list"}, operation: "issueRelations", contains: "list issue relations"},
 		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, operation: "issueRelation", contains: "get issue relation issue-relation-id"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
@@ -1690,6 +1785,7 @@ func testCommandRuntime(graphqlClient graphql.Client) commandRuntime {
 
 type commandFlowFakeClient struct {
 	emptyIssueList              bool
+	emptyIssueChildren          bool
 	emptyIssueComments          bool
 	emptyIssueProject           bool
 	emptyIssueMine              bool
@@ -2363,6 +2459,9 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 	if payload, ok := commandFlowIssueListPayload(operation, fake); ok {
 		return payload, true
 	}
+	if payload, ok := commandFlowIssueChildPayload(operation, fake); ok {
+		return payload, true
+	}
 
 	switch operation {
 	case "issueSearch":
@@ -2395,6 +2494,41 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 			return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[{"id":"comment-id","body":"First comment","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowIssueChildPayload(operation string, fake commandFlowFakeClient) (string, bool) {
+	switch operation {
+	case "issue_attachments":
+		return `{"issue":{"attachments":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_children":
+		if fake.emptyIssueChildren {
+			return `{"issue":{"children":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+		}
+		return `{"issue":{"children":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_documents":
+		return `{"issue":{"documents":{"nodes":[` +
+			commandDocumentJSON(
+				"Spec",
+				`"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null`,
+			) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_formerAttachments":
+		return `{"issue":{"formerAttachments":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_history":
+		return `{"issue":{"history":{"nodes":[` + commandIssueHistoryJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_inverseRelations":
+		return `{"issue":{"inverseRelations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_labels":
+		return `{"issue":{"labels":{"nodes":[` + commandLabelJSON("label body") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_relations":
+		return `{"issue":{"relations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_releases":
+		return `{"issue":{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
@@ -2759,6 +2893,18 @@ func commandIssueToReleaseJSON() string {
 		"archivedAt":null,
 		"issue":{"id":"issue-id"},
 		"release":{"id":"release-id"}
+	}`
+}
+
+func commandIssueHistoryJSON() string {
+	return `{
+		"id":"issue-history-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"actorId":"user-id",
+		"updatedDescription":true,
+		"issue":{"id":"issue-id"}
 	}`
 }
 

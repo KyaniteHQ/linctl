@@ -64,7 +64,19 @@ PY
   "$binary" user my-team-memberships --json --limit 5 >/dev/null
   "$binary" user my-teams --json --limit 5 >/dev/null
   "$binary" issue usage >/dev/null
-  "$binary" issue list --json --limit 5 >/dev/null
+  issue_json="$("$binary" issue list --json --limit 5)"
+  issue_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0]["id"] if items else "")' <<<"$issue_json")"
+  if [[ -n "$issue_id" ]]; then
+    "$binary" issue attachments "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue children "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue documents "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue former-attachments "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue history "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue inverse-relations "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue labels "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue relations "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue releases "$issue_id" --json --limit 5 >/dev/null
+  fi
   "$binary" issue-relation list --json --limit 5 >/dev/null
   "$binary" issue-to-release list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null

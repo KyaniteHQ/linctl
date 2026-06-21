@@ -980,6 +980,10 @@ Success is pass/fail:
    - Success: `linctl release documents|issues RELEASE_ID --limit N` and `linctl release-pipeline teams RELEASE_PIPELINE_ID --limit N` list safe child resources for one Release or ReleasePipeline through the public CLI and JSON output controls without selecting body, blob, secret, archive payload, or document-content fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/release_documents`, `Test_CommandFlows_execute_read_and_write_commands/release_issues`, `Test_CommandFlows_execute_read_and_write_commands/release_pipeline_teams`; `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+182. Issue child reads
+   - Success: `linctl issue attachments|children|documents|former-attachments|history|inverse-relations|labels|relations|releases ISSUE_ID --limit N` lists safe child resources for one Issue through the public CLI and JSON output controls without selecting body, blob, secret, shared-access, state-history, raw change, or customer-need content fields by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_children`, `Test_CommandFlows_execute_read_and_write_commands/issue_documents`, `Test_CommandFlows_execute_read_and_write_commands/issue_former_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_history`, `Test_CommandFlows_execute_read_and_write_commands/issue_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_labels`, `Test_CommandFlows_execute_read_and_write_commands/issue_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_releases`; `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.

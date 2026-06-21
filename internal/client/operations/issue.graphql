@@ -344,6 +344,140 @@ query issue_comments($id: String!, $first: Int, $after: String, $includeArchived
   }
 }
 
+query issue_attachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...AttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    documents(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...DocumentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_formerAttachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...AttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    history(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        createdAt
+        updatedAt
+        archivedAt
+        actorId
+        updatedDescription
+        issue {
+          id
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_inverseRelations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_labels($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    labels(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_relations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    relations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_releases($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    releases(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ReleaseSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query CompletedWorkflowStates($teamId: ID!, $first: Int) {
   workflowStates(filter: { team: { id: { eq: $teamId } }, type: { eq: "completed" } }, first: $first) {
     nodes {

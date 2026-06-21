@@ -158,6 +158,15 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			State:      "Done",
 			StateType:  "completed",
 		}) + `}`,
+		"issue_attachments":       `{"issue":{"attachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_children":          `{"issue":{"children":{"nodes":[` + issueJSON(issueFixture{Identifier: "LIT-31", Title: "child issue", StateID: "todo", State: "Todo", StateType: "unstarted"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_documents":         `{"issue":{"documents":{"nodes":[{"id":"issue-document-id","title":"Issue spec","slugId":"issue-spec","archivedAt":null,"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_formerAttachments": `{"issue":{"formerAttachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_history":           `{"issue":{"history":{"nodes":[` + issueHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_inverseRelations":  `{"issue":{"inverseRelations":{"nodes":[` + issueRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_labels":            `{"issue":{"labels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_relations":         `{"issue":{"relations":{"nodes":[` + issueRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_releases":          `{"issue":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"Projects": `{"team":{"projects":{"nodes":[` + projectJSON(projectFixture{
 			ID:     "project-id",
 			Name:   "listed",
@@ -459,6 +468,24 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	searchIssues, err := SearchIssuesByTeam(context.Background(), graphqlClient, "team-id", "needle", 2)
 	require.NoError(t, err)
 	issue, err := GetIssueByID(context.Background(), graphqlClient, "LIT-11")
+	require.NoError(t, err)
+	issueAttachments, err := ListIssueAttachments(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueChildren, err := ListIssueChildren(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueDocuments, err := ListIssueDocuments(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueFormerAttachments, err := ListIssueFormerAttachments(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueHistory, err := ListIssueHistory(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueInverseRelations, err := ListIssueInverseRelations(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueLabels, err := ListIssueLabels(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueScopedRelations, err := ListIssueRelationsForIssue(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueReleases, err := ListIssueReleases(context.Background(), graphqlClient, "LIT-1", 2)
 	require.NoError(t, err)
 	projects, err := ListProjectsByTeam(context.Background(), graphqlClient, "team-id", 2)
 	require.NoError(t, err)
@@ -829,6 +856,21 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, dependencies.HasNextPage)
 	require.Equal(t, "LIT-13", searchIssues.Issues[0].Identifier)
 	require.Equal(t, "LIT-11", issue.Identifier)
+	require.True(t, issueAttachments.HasNextPage)
+	require.Equal(t, &endCursor, issueAttachments.EndCursor)
+	require.Equal(t, "project-attachment-id", issueAttachments.Attachments[0].ID)
+	require.Equal(t, "LIT-31", issueChildren.Issues[0].Identifier)
+	require.Equal(t, "Issue spec", issueDocuments.Documents[0].Title)
+	require.Equal(t, "issue", issueDocuments.Documents[0].ParentType)
+	require.Equal(t, "project-attachment-id", issueFormerAttachments.Attachments[0].ID)
+	require.Equal(t, "issue-history-id", issueHistory.History[0].ID)
+	require.Equal(t, "issue-id", issueHistory.History[0].IssueID)
+	require.Equal(t, "user-id", issueHistory.History[0].ActorID)
+	require.True(t, issueHistory.History[0].UpdatedDescription)
+	require.Equal(t, "issue-relation-id", issueInverseRelations.Relations[0].ID)
+	require.Equal(t, "Bug", issueLabels.Labels[0].Name)
+	require.Equal(t, "issue-relation-id", issueScopedRelations.Relations[0].ID)
+	require.Equal(t, "release-id", issueReleases.Releases[0].ID)
 	require.True(t, projects.HasNextPage)
 	require.Equal(t, "listed", projects.Projects[0].Name)
 	require.Equal(t, "detail", project.Name)
@@ -1711,6 +1753,42 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetIssueDependencies(context.Background(), graphqlClient, "LIT-1", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get issue dependencies LIT-1")
+
+		_, err = ListIssueAttachments(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue attachments LIT-1")
+
+		_, err = ListIssueChildren(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue children LIT-1")
+
+		_, err = ListIssueDocuments(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue documents LIT-1")
+
+		_, err = ListIssueFormerAttachments(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue former attachments LIT-1")
+
+		_, err = ListIssueHistory(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue history LIT-1")
+
+		_, err = ListIssueInverseRelations(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue inverse relations LIT-1")
+
+		_, err = ListIssueLabels(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue labels LIT-1")
+
+		_, err = ListIssueRelationsForIssue(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue relations LIT-1")
+
+		_, err = ListIssueReleases(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue releases LIT-1")
 
 		_, err = ListProjectsByTeam(context.Background(), graphqlClient, "team-id", 1)
 		require.Error(t, err)
@@ -3485,6 +3563,18 @@ func projectHistoryJSON() string {
 	}`
 }
 
+func issueHistoryJSON() string {
+	return `{
+		"id":"issue-history-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"actorId":"user-id",
+		"updatedDescription":true,
+		"issue":{"id":"issue-id"}
+	}`
+}
+
 func projectAttachmentJSON() string {
 	return `{
 		"id":"project-attachment-id",
@@ -3492,6 +3582,18 @@ func projectAttachmentJSON() string {
 		"subtitle":"overview",
 		"url":"https://example.com/project-link",
 		"sourceType":"github"
+	}`
+}
+
+func issueRelationJSON() string {
+	return `{
+		"id":"issue-relation-id",
+		"type":"blocks",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},
+		"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}
 	}`
 }
 
