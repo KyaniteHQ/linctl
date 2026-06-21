@@ -420,9 +420,9 @@ Only `project-relation list` and `project-relation get` are implemented in the c
 Schema backing:
 
 - Types: `Cycle`, `CycleConnection`
-- Reads: `Query.cycles`, `Query.cycle`, `Team.cycles`
+- Reads: `Query.cycles`, `Query.cycle`, `Cycle.issues`, `Cycle.uncompletedIssuesUponClose`, `Team.cycles`
 - Writes: `Mutation.cycleCreate`, `Mutation.cycleUpdate`, `Mutation.cycleArchive`, `Mutation.cycleShiftAll`, `Mutation.cycleStartUpcomingCycleToday`
-- Relevant fields: `Cycle.id`, `Cycle.number`, `Cycle.name`, `Cycle.startsAt`, `Cycle.endsAt`, `Cycle.completedAt`, `Cycle.team`, `Cycle.issues`, `Cycle.progress`
+- Relevant fields: `Cycle.id`, `Cycle.number`, `Cycle.name`, `Cycle.startsAt`, `Cycle.endsAt`, `Cycle.completedAt`, `Cycle.team`, `Cycle.issues`, `Cycle.uncompletedIssuesUponClose`, `Cycle.progress`
 
 Planned commands:
 
@@ -430,6 +430,8 @@ Planned commands:
 | --- | --- | --- |
 | `cycle list` | `Query.cycles` | Read-only |
 | `cycle get` | `Query.cycle` | Read-only |
+| `cycle issues` | `Cycle.issues` | Read-only |
+| `cycle uncompleted-issues` | `Cycle.uncompletedIssuesUponClose` | Read-only |
 | `cycle create` | `Mutation.cycleCreate` | Team-scoped |
 | `cycle update` | `Mutation.cycleUpdate` | Team-scoped |
 | `cycle archive` | `Mutation.cycleArchive` | Team-scoped |

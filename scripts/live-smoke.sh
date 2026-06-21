@@ -98,6 +98,12 @@ PY
   "$binary" project-status list --json --limit 5 >/dev/null
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null
+  cycle_json="$("$binary" cycle list --json --limit 5)"
+  cycle_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("cycles", []); print(items[0]["id"] if items else "")' <<<"$cycle_json")"
+  if [[ -n "$cycle_id" ]]; then
+    "$binary" cycle issues "$cycle_id" --json --limit 5 >/dev/null
+    "$binary" cycle uncompleted-issues "$cycle_id" --json --limit 5 >/dev/null
+  fi
   "$binary" team cycles "$team_id" --json --limit 5 >/dev/null
   "$binary" team issues "$team_id" --json --limit 5 >/dev/null
   "$binary" team labels "$team_id" --json --limit 5 >/dev/null

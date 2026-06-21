@@ -131,6 +131,8 @@ linctl issue reply LIT-123 comment-id --body "thread reply"
 linctl issue usage
 linctl cycle list --limit 20
 linctl cycle get cycle-id
+linctl cycle issues cycle-id --limit 20
+linctl cycle uncompleted-issues cycle-id --limit 20
 linctl cycle create --starts-at 2026-07-01T00:00:00Z --ends-at 2026-07-15T00:00:00Z --name "Planning"
 linctl cycle update cycle-id --name "Updated planning"
 linctl cycle archive cycle-id
@@ -327,6 +329,8 @@ linctl external-user list --limit 20
 linctl external-user get external-user-id
 linctl cycle list --limit 20
 linctl cycle get cycle-id
+linctl cycle issues cycle-id --limit 20
+linctl cycle uncompleted-issues cycle-id --limit 20
 linctl cycle create --starts-at 2026-07-01T00:00:00Z --ends-at 2026-07-15T00:00:00Z --name "Planning"
 linctl cycle update cycle-id --name "Updated planning"
 linctl cycle archive cycle-id

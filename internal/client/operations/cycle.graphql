@@ -36,6 +36,36 @@ query CycleReport($id: String!, $first: Int, $after: String, $includeArchived: B
   }
 }
 
+query cycle_issues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  cycle(id: $id) {
+    ...CycleSummaryFields
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query cycle_uncompletedIssuesUponClose($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  cycle(id: $id) {
+    ...CycleSummaryFields
+    uncompletedIssuesUponClose(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 mutation CycleCreate($input: CycleCreateInput!) {
   cycleCreate(input: $input) {
     success

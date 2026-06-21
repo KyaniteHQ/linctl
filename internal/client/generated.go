@@ -17303,6 +17303,48 @@ type __cycleInput struct {
 // GetId returns __cycleInput.Id, and is useful for accessing the field via an interface.
 func (v *__cycleInput) GetId() string { return v.Id }
 
+// __cycle_issuesInput is used internally by genqlient
+type __cycle_issuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __cycle_issuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__cycle_issuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __cycle_issuesInput.First, and is useful for accessing the field via an interface.
+func (v *__cycle_issuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __cycle_issuesInput.After, and is useful for accessing the field via an interface.
+func (v *__cycle_issuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __cycle_issuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__cycle_issuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __cycle_uncompletedIssuesUponCloseInput is used internally by genqlient
+type __cycle_uncompletedIssuesUponCloseInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __cycle_uncompletedIssuesUponCloseInput.Id, and is useful for accessing the field via an interface.
+func (v *__cycle_uncompletedIssuesUponCloseInput) GetId() string { return v.Id }
+
+// GetFirst returns __cycle_uncompletedIssuesUponCloseInput.First, and is useful for accessing the field via an interface.
+func (v *__cycle_uncompletedIssuesUponCloseInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __cycle_uncompletedIssuesUponCloseInput.After, and is useful for accessing the field via an interface.
+func (v *__cycle_uncompletedIssuesUponCloseInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __cycle_uncompletedIssuesUponCloseInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__cycle_uncompletedIssuesUponCloseInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
 // __cyclesInput is used internally by genqlient
 type __cyclesInput struct {
 	TeamId          string  `json:"teamId"`
@@ -24202,6 +24244,620 @@ type cycleResponse struct {
 
 // GetCycle returns cycleResponse.Cycle, and is useful for accessing the field via an interface.
 func (v *cycleResponse) GetCycle() cycleCycle { return v.Cycle }
+
+// cycle_issuesCycle includes the requested fields of the GraphQL type Cycle.
+// The GraphQL type's documentation follows.
+//
+// A time-boxed iteration (similar to a sprint) used for planning and tracking
+// work. Cycles belong to a team and have defined start and end dates. Issues are
+// assigned to cycles for time-based planning, and progress is tracked via
+// completed, in-progress, and total scope. Cycles are automatically completed when
+// their end date passes, and uncompleted issues can be carried over to the next cycle.
+type cycle_issuesCycle struct {
+	CycleSummaryFields `json:"-"`
+	// Issues that are currently assigned to this cycle.
+	Issues cycle_issuesCycleIssuesIssueConnection `json:"issues"`
+}
+
+// GetIssues returns cycle_issuesCycle.Issues, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetIssues() cycle_issuesCycleIssuesIssueConnection { return v.Issues }
+
+// GetId returns cycle_issuesCycle.Id, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetId() string { return v.CycleSummaryFields.Id }
+
+// GetNumber returns cycle_issuesCycle.Number, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetNumber() float64 { return v.CycleSummaryFields.Number }
+
+// GetName returns cycle_issuesCycle.Name, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetName() *string { return v.CycleSummaryFields.Name }
+
+// GetDescription returns cycle_issuesCycle.Description, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetDescription() *string { return v.CycleSummaryFields.Description }
+
+// GetStartsAt returns cycle_issuesCycle.StartsAt, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetStartsAt() string { return v.CycleSummaryFields.StartsAt }
+
+// GetEndsAt returns cycle_issuesCycle.EndsAt, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetEndsAt() string { return v.CycleSummaryFields.EndsAt }
+
+// GetCompletedAt returns cycle_issuesCycle.CompletedAt, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetCompletedAt() *string { return v.CycleSummaryFields.CompletedAt }
+
+// GetProgress returns cycle_issuesCycle.Progress, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetProgress() float64 { return v.CycleSummaryFields.Progress }
+
+// GetTeam returns cycle_issuesCycle.Team, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycle) GetTeam() CycleSummaryFieldsTeam { return v.CycleSummaryFields.Team }
+
+func (v *cycle_issuesCycle) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*cycle_issuesCycle
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.cycle_issuesCycle = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CycleSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcycle_issuesCycle struct {
+	Issues cycle_issuesCycleIssuesIssueConnection `json:"issues"`
+
+	Id string `json:"id"`
+
+	Number float64 `json:"number"`
+
+	Name *string `json:"name"`
+
+	Description *string `json:"description"`
+
+	StartsAt string `json:"startsAt"`
+
+	EndsAt string `json:"endsAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	Progress float64 `json:"progress"`
+
+	Team CycleSummaryFieldsTeam `json:"team"`
+}
+
+func (v *cycle_issuesCycle) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *cycle_issuesCycle) __premarshalJSON() (*__premarshalcycle_issuesCycle, error) {
+	var retval __premarshalcycle_issuesCycle
+
+	retval.Issues = v.Issues
+	retval.Id = v.CycleSummaryFields.Id
+	retval.Number = v.CycleSummaryFields.Number
+	retval.Name = v.CycleSummaryFields.Name
+	retval.Description = v.CycleSummaryFields.Description
+	retval.StartsAt = v.CycleSummaryFields.StartsAt
+	retval.EndsAt = v.CycleSummaryFields.EndsAt
+	retval.CompletedAt = v.CycleSummaryFields.CompletedAt
+	retval.Progress = v.CycleSummaryFields.Progress
+	retval.Team = v.CycleSummaryFields.Team
+	return &retval, nil
+}
+
+// cycle_issuesCycleIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type cycle_issuesCycleIssuesIssueConnection struct {
+	Nodes    []cycle_issuesCycleIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo cycle_issuesCycleIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns cycle_issuesCycleIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnection) GetNodes() []cycle_issuesCycleIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns cycle_issuesCycleIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnection) GetPageInfo() cycle_issuesCycleIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// cycle_issuesCycleIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type cycle_issuesCycleIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns cycle_issuesCycleIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*cycle_issuesCycleIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.cycle_issuesCycleIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcycle_issuesCycleIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *cycle_issuesCycleIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalcycle_issuesCycleIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalcycle_issuesCycleIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// cycle_issuesCycleIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type cycle_issuesCycleIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns cycle_issuesCycleIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns cycle_issuesCycleIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *cycle_issuesCycleIssuesIssueConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// cycle_issuesResponse is returned by cycle_issues on success.
+type cycle_issuesResponse struct {
+	// One specific cycle, looked up by ID or slug.
+	Cycle cycle_issuesCycle `json:"cycle"`
+}
+
+// GetCycle returns cycle_issuesResponse.Cycle, and is useful for accessing the field via an interface.
+func (v *cycle_issuesResponse) GetCycle() cycle_issuesCycle { return v.Cycle }
+
+// cycle_uncompletedIssuesUponCloseCycle includes the requested fields of the GraphQL type Cycle.
+// The GraphQL type's documentation follows.
+//
+// A time-boxed iteration (similar to a sprint) used for planning and tracking
+// work. Cycles belong to a team and have defined start and end dates. Issues are
+// assigned to cycles for time-based planning, and progress is tracked via
+// completed, in-progress, and total scope. Cycles are automatically completed when
+// their end date passes, and uncompleted issues can be carried over to the next cycle.
+type cycle_uncompletedIssuesUponCloseCycle struct {
+	CycleSummaryFields `json:"-"`
+	// Issues that were still open (not completed) when the cycle was closed. These issues may have been moved to the next cycle.
+	UncompletedIssuesUponClose cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection `json:"uncompletedIssuesUponClose"`
+}
+
+// GetUncompletedIssuesUponClose returns cycle_uncompletedIssuesUponCloseCycle.UncompletedIssuesUponClose, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetUncompletedIssuesUponClose() cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection {
+	return v.UncompletedIssuesUponClose
+}
+
+// GetId returns cycle_uncompletedIssuesUponCloseCycle.Id, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetId() string { return v.CycleSummaryFields.Id }
+
+// GetNumber returns cycle_uncompletedIssuesUponCloseCycle.Number, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetNumber() float64 {
+	return v.CycleSummaryFields.Number
+}
+
+// GetName returns cycle_uncompletedIssuesUponCloseCycle.Name, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetName() *string { return v.CycleSummaryFields.Name }
+
+// GetDescription returns cycle_uncompletedIssuesUponCloseCycle.Description, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetDescription() *string {
+	return v.CycleSummaryFields.Description
+}
+
+// GetStartsAt returns cycle_uncompletedIssuesUponCloseCycle.StartsAt, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetStartsAt() string {
+	return v.CycleSummaryFields.StartsAt
+}
+
+// GetEndsAt returns cycle_uncompletedIssuesUponCloseCycle.EndsAt, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetEndsAt() string {
+	return v.CycleSummaryFields.EndsAt
+}
+
+// GetCompletedAt returns cycle_uncompletedIssuesUponCloseCycle.CompletedAt, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetCompletedAt() *string {
+	return v.CycleSummaryFields.CompletedAt
+}
+
+// GetProgress returns cycle_uncompletedIssuesUponCloseCycle.Progress, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetProgress() float64 {
+	return v.CycleSummaryFields.Progress
+}
+
+// GetTeam returns cycle_uncompletedIssuesUponCloseCycle.Team, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycle) GetTeam() CycleSummaryFieldsTeam {
+	return v.CycleSummaryFields.Team
+}
+
+func (v *cycle_uncompletedIssuesUponCloseCycle) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*cycle_uncompletedIssuesUponCloseCycle
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.cycle_uncompletedIssuesUponCloseCycle = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CycleSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcycle_uncompletedIssuesUponCloseCycle struct {
+	UncompletedIssuesUponClose cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection `json:"uncompletedIssuesUponClose"`
+
+	Id string `json:"id"`
+
+	Number float64 `json:"number"`
+
+	Name *string `json:"name"`
+
+	Description *string `json:"description"`
+
+	StartsAt string `json:"startsAt"`
+
+	EndsAt string `json:"endsAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	Progress float64 `json:"progress"`
+
+	Team CycleSummaryFieldsTeam `json:"team"`
+}
+
+func (v *cycle_uncompletedIssuesUponCloseCycle) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *cycle_uncompletedIssuesUponCloseCycle) __premarshalJSON() (*__premarshalcycle_uncompletedIssuesUponCloseCycle, error) {
+	var retval __premarshalcycle_uncompletedIssuesUponCloseCycle
+
+	retval.UncompletedIssuesUponClose = v.UncompletedIssuesUponClose
+	retval.Id = v.CycleSummaryFields.Id
+	retval.Number = v.CycleSummaryFields.Number
+	retval.Name = v.CycleSummaryFields.Name
+	retval.Description = v.CycleSummaryFields.Description
+	retval.StartsAt = v.CycleSummaryFields.StartsAt
+	retval.EndsAt = v.CycleSummaryFields.EndsAt
+	retval.CompletedAt = v.CycleSummaryFields.CompletedAt
+	retval.Progress = v.CycleSummaryFields.Progress
+	retval.Team = v.CycleSummaryFields.Team
+	return &retval, nil
+}
+
+// cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection struct {
+	Nodes    []cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection) GetNodes() []cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnection) GetPageInfo() cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalcycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue, error) {
+	var retval __premarshalcycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// cycle_uncompletedIssuesUponCloseResponse is returned by cycle_uncompletedIssuesUponClose on success.
+type cycle_uncompletedIssuesUponCloseResponse struct {
+	// One specific cycle, looked up by ID or slug.
+	Cycle cycle_uncompletedIssuesUponCloseCycle `json:"cycle"`
+}
+
+// GetCycle returns cycle_uncompletedIssuesUponCloseResponse.Cycle, and is useful for accessing the field via an interface.
+func (v *cycle_uncompletedIssuesUponCloseResponse) GetCycle() cycle_uncompletedIssuesUponCloseCycle {
+	return v.Cycle
+}
 
 // cyclesCyclesCycleConnection includes the requested fields of the GraphQL type CycleConnection.
 type cyclesCyclesCycleConnection struct {
@@ -59887,6 +60543,190 @@ func cycle(
 	}
 
 	data_ = &cycleResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by cycle_issues.
+const cycle_issues_Operation = `
+query cycle_issues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	cycle(id: $id) {
+		... CycleSummaryFields
+		issues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CycleSummaryFields on Cycle {
+	id
+	number
+	name
+	description
+	startsAt
+	endsAt
+	completedAt
+	progress
+	team {
+		id
+		key
+		name
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func cycle_issues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *cycle_issuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "cycle_issues",
+		Query:  cycle_issues_Operation,
+		Variables: &__cycle_issuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &cycle_issuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by cycle_uncompletedIssuesUponClose.
+const cycle_uncompletedIssuesUponClose_Operation = `
+query cycle_uncompletedIssuesUponClose ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	cycle(id: $id) {
+		... CycleSummaryFields
+		uncompletedIssuesUponClose(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CycleSummaryFields on Cycle {
+	id
+	number
+	name
+	description
+	startsAt
+	endsAt
+	completedAt
+	progress
+	team {
+		id
+		key
+		name
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func cycle_uncompletedIssuesUponClose(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *cycle_uncompletedIssuesUponCloseResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "cycle_uncompletedIssuesUponClose",
+		Query:  cycle_uncompletedIssuesUponClose_Operation,
+		Variables: &__cycle_uncompletedIssuesUponCloseInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &cycle_uncompletedIssuesUponCloseResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
@@ -16,6 +17,8 @@ func addCycleCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	}
 	addCycleListCommand(ctx, cycleCommand, options)
 	addCycleGetCommand(ctx, cycleCommand, options)
+	addCycleIssuesCommand(ctx, cycleCommand, options)
+	addCycleUncompletedIssuesCommand(ctx, cycleCommand, options)
 	addCycleCreateCommand(ctx, cycleCommand, options)
 	addCycleUpdateCommand(ctx, cycleCommand, options)
 	addCycleArchiveCommand(ctx, cycleCommand, options)
@@ -87,6 +90,76 @@ func addCycleGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 			return writeCycle(command, options, cycle)
 		},
 	})
+}
+
+func addCycleIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "issues CYCLE_ID",
+		Short: "List Issues assigned to one Cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runCycleIssueListCommand(ctx, command, options, args[0], limit, client.ListCycleIssues)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum Issues to return")
+	root.AddCommand(command)
+}
+
+func addCycleUncompletedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "uncompleted-issues CYCLE_ID",
+		Short: "List Issues left open when one Cycle closed",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runCycleIssueListCommand(
+				ctx,
+				command,
+				options,
+				args[0],
+				limit,
+				client.ListCycleUncompletedIssuesUponClose,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum Issues to return")
+	root.AddCommand(command)
+}
+
+func runCycleIssueListCommand(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	id string,
+	limit int,
+	load func(context.Context, graphql.Client, string, int) (client.CycleIssueList, error),
+) error {
+	runtime, err := buildCommandRuntime(ctx, options)
+	if err != nil {
+		return err
+	}
+	issueList, err := load(ctx, runtime.graphqlClient, id, limit)
+	if err != nil {
+		return err
+	}
+	if err := ensureNonEmpty(options, len(issueList.Issues)); err != nil {
+		return err
+	}
+	issueList.Issues, err = sortByJSONField(issueList.Issues, options.sortField, options.sortOrder)
+	if err != nil {
+		return err
+	}
+	if options.json {
+		return writeJSONValue(command, options, issueList)
+	}
+	for _, issue := range issueList.Issues {
+		if err := writeIssue(command, options, issue); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func writeCycle(command *cobra.Command, options *rootOptions, cycle client.CycleSummary) error {

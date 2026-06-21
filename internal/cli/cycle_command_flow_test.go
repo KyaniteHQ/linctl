@@ -329,6 +329,125 @@ func Test_CycleCommandFlows_report_sprint_issue_writer_error(t *testing.T) {
 	require.Contains(t, err.Error(), "second write failed")
 }
 
+func Test_CycleCommandFlows_list_cycle_issues(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"cycle", "issues", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "LIT-1 Cycle issue [Started]")
+}
+
+func Test_CycleCommandFlows_list_cycle_issues_json(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--json", "cycle", "issues", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), `"cycle": {`)
+	require.Contains(t, output.String(), `"identifier": "LIT-1"`)
+}
+
+func Test_CycleCommandFlows_list_cycle_uncompleted_issues(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"cycle", "uncompleted-issues", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "LIT-2 Carry issue [Todo]")
+}
+
+func Test_CycleCommandFlows_list_cycle_issue_edges(t *testing.T) {
+	tests := []struct {
+		name        string
+		args        []string
+		fake        cycleCommandFlowFakeClient
+		wantMessage string
+	}{
+		{
+			name:        "runtime",
+			args:        []string{"cycle", "issues", "cycle-id"},
+			wantMessage: "runtime failed",
+		},
+		{
+			name:        "operation",
+			args:        []string{"cycle", "issues", "cycle-id"},
+			fake:        cycleCommandFlowFakeClient{failOperation: "cycle_issues"},
+			wantMessage: "cycle_issues failed",
+		},
+		{
+			name:        "uncompleted operation",
+			args:        []string{"cycle", "uncompleted-issues", "cycle-id"},
+			fake:        cycleCommandFlowFakeClient{failOperation: "cycle_uncompletedIssuesUponClose"},
+			wantMessage: "cycle_uncompletedissuesuponclose failed",
+		},
+		{
+			name:        "empty",
+			args:        []string{"--fail-on-empty", "cycle", "issues", "cycle-id"},
+			fake:        cycleCommandFlowFakeClient{emptyReport: true},
+			wantMessage: "empty result",
+		},
+		{
+			name:        "sort",
+			args:        []string{"--sort", "missing", "cycle", "issues", "cycle-id"},
+			wantMessage: `sort field "missing" is not present`,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var restore func()
+			if test.name == "runtime" {
+				original := buildCommandRuntime
+				buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+					return commandRuntime{}, errors.New("runtime failed")
+				}
+				restore = func() {
+					buildCommandRuntime = original
+				}
+			} else {
+				restore = useCommandRuntime(t, test.fake)
+			}
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.Error(t, err)
+			require.Contains(t, err.Error(), test.wantMessage)
+		})
+	}
+}
+
+func Test_CycleCommandFlows_list_cycle_issue_writer_error(t *testing.T) {
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(commandFailingWriter{})
+	command.SetArgs([]string{"cycle", "issues", "cycle-id"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "write failed")
+}
+
 func Test_CycleCommandFlows_report_cycle_get_runtime_error(t *testing.T) {
 	original := buildCommandRuntime
 	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
@@ -574,6 +693,10 @@ func (writer *cycleCommandFailingSecondWriter) Write(payload []byte) (int, error
 }
 
 func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport bool) (string, bool) {
+	if payload, ok := cycleCommandFlowCyclePayload(operation, emptyCycles, emptyReport); ok {
+		return payload, true
+	}
+
 	switch operation {
 	case "Viewer":
 		return `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`, true
@@ -581,6 +704,13 @@ func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport boo
 		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "TargetProject":
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, true
+	default:
+		return "", false
+	}
+}
+
+func cycleCommandFlowCyclePayload(operation string, emptyCycles bool, emptyReport bool) (string, bool) {
+	switch operation {
 	case "cycles":
 		if emptyCycles {
 			return `{"cycles":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
@@ -599,6 +729,16 @@ func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport boo
 			return `{"cycle":{"id":"cycle-id","number":12,"name":"Current sprint","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"cycle":{"id":"cycle-id","number":12,"name":"Current sprint","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issues":{"nodes":[{"id":"issue-id","identifier":"LIT-1","title":"Ship report","branchName":"omer/ship-report","url":"https://linear.app/issue/LIT-1","priority":1,"priorityLabel":"Urgent","team":{"id":"team-id","key":"LIT","name":"linctl"},"state":{"id":"started","name":"Started","type":"started"},"assignee":{"id":"user-id","name":"omer","displayName":"Omer"},"project":{"id":"project-id","name":"Pinned project"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "cycle_issues":
+		if emptyReport {
+			return `{"cycle":{"id":"cycle-id","number":12,"name":"Current cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+		}
+		return `{"cycle":{"id":"cycle-id","number":12,"name":"Current cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issues":{"nodes":[{"id":"issue-id","identifier":"LIT-1","title":"Cycle issue","branchName":"omer/cycle-issue","url":"https://linear.app/issue/LIT-1","priority":1,"priorityLabel":"Urgent","team":{"id":"team-id","key":"LIT","name":"linctl"},"state":{"id":"started","name":"Started","type":"started"},"assignee":{"id":"user-id","name":"omer","displayName":"Omer"},"project":{"id":"project-id","name":"Pinned project"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "cycle_uncompletedIssuesUponClose":
+		if emptyReport {
+			return `{"cycle":{"id":"cycle-id","number":12,"name":"Closed cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2026-01-15T00:00:00Z","completedAt":"2026-01-15T00:00:00Z","progress":0.75,"team":{"id":"team-id","key":"LIT","name":"linctl"},"uncompletedIssuesUponClose":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+		}
+		return `{"cycle":{"id":"cycle-id","number":12,"name":"Closed cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2026-01-15T00:00:00Z","completedAt":"2026-01-15T00:00:00Z","progress":0.75,"team":{"id":"team-id","key":"LIT","name":"linctl"},"uncompletedIssuesUponClose":{"nodes":[{"id":"issue-id-2","identifier":"LIT-2","title":"Carry issue","branchName":"omer/carry-issue","url":"https://linear.app/issue/LIT-2","priority":2,"priorityLabel":"High","team":{"id":"team-id","key":"LIT","name":"linctl"},"state":{"id":"todo","name":"Todo","type":"unstarted"},"assignee":null,"project":null}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}

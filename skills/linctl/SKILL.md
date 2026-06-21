@@ -138,6 +138,8 @@ linctl comment list --json --limit 20
 linctl comment get COMMENT_ID --json
 linctl cycle list --json --limit 20
 linctl cycle get CYCLE_ID --json
+linctl cycle issues CYCLE_ID --json --limit 20
+linctl cycle uncompleted-issues CYCLE_ID --json --limit 20
 linctl sprint current --json
 linctl sprint report CYCLE_ID --json --limit 20
 linctl project list --json --limit 20

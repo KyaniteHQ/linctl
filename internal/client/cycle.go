@@ -41,6 +41,14 @@ type SprintReport struct {
 	EndCursor   *string        `json:"end_cursor,omitempty"`
 }
 
+// CycleIssueList is a page of Issues associated with one Cycle.
+type CycleIssueList struct {
+	Cycle       CycleSummary   `json:"cycle"`
+	Issues      []IssueSummary `json:"issues"`
+	HasNextPage bool           `json:"has_next_page"`
+	EndCursor   *string        `json:"end_cursor,omitempty"`
+}
+
 // CycleCreateRequest describes a guarded Cycle create in the pinned team.
 type CycleCreateRequest struct {
 	Name        string
@@ -145,6 +153,51 @@ func GetSprintReport(ctx context.Context, graphqlClient graphql.Client, id strin
 		Issues:      issues,
 		HasNextPage: report.Cycle.Issues.PageInfo.HasNextPage,
 		EndCursor:   report.Cycle.Issues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListCycleIssues returns Issues assigned to one Cycle.
+func ListCycleIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (CycleIssueList, error) {
+	issuePage, err := cycle_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return CycleIssueList{}, fmt.Errorf("list cycle issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(issuePage.Cycle.Issues.Nodes))
+	for _, issue := range issuePage.Cycle.Issues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return CycleIssueList{
+		Cycle:       cycleSummary(issuePage.Cycle.CycleSummaryFields),
+		Issues:      issues,
+		HasNextPage: issuePage.Cycle.Issues.PageInfo.HasNextPage,
+		EndCursor:   issuePage.Cycle.Issues.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListCycleUncompletedIssuesUponClose returns Issues left open when one Cycle closed.
+func ListCycleUncompletedIssuesUponClose(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (CycleIssueList, error) {
+	issuePage, err := cycle_uncompletedIssuesUponClose(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return CycleIssueList{}, fmt.Errorf("list cycle uncompleted issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(issuePage.Cycle.UncompletedIssuesUponClose.Nodes))
+	for _, issue := range issuePage.Cycle.UncompletedIssuesUponClose.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return CycleIssueList{
+		Cycle:       cycleSummary(issuePage.Cycle.CycleSummaryFields),
+		Issues:      issues,
+		HasNextPage: issuePage.Cycle.UncompletedIssuesUponClose.PageInfo.HasNextPage,
+		EndCursor:   issuePage.Cycle.UncompletedIssuesUponClose.PageInfo.EndCursor,
 	}, nil
 }
 

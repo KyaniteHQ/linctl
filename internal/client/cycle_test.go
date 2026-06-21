@@ -120,6 +120,71 @@ func Test_GetSprintReport_wraps_graphql_errors(t *testing.T) {
 	require.Contains(t, err.Error(), "sprint report cycle-id")
 }
 
+func Test_ListCycleIssues_returns_issue_page(t *testing.T) {
+	endCursor := "cursor-1"
+	graphqlClient := fakeGraphQLClient{
+		"cycle_issues": `{"cycle":{"id":"cycle-id","number":12,"name":"Current cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "Ship cycle issue",
+			StateID:    "started",
+			State:      "Started",
+			StateType:  "started",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+	}
+
+	issues, err := ListCycleIssues(context.Background(), graphqlClient, "cycle-id", 1)
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id", issues.Cycle.ID)
+	require.Equal(t, "Current cycle", issues.Cycle.Name)
+	require.Equal(t, "LIT-1", issues.Issues[0].Identifier)
+	require.Equal(t, "Ship cycle issue", issues.Issues[0].Title)
+	require.True(t, issues.HasNextPage)
+	require.Equal(t, &endCursor, issues.EndCursor)
+}
+
+func Test_ListCycleIssues_wraps_graphql_errors(t *testing.T) {
+	_, err := ListCycleIssues(context.Background(), errorGraphQLClient{err: errors.New("network down")}, "cycle-id", 1)
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "list cycle issues cycle-id")
+}
+
+func Test_ListCycleUncompletedIssuesUponClose_returns_issue_page(t *testing.T) {
+	endCursor := "cursor-1"
+	graphqlClient := fakeGraphQLClient{
+		"cycle_uncompletedIssuesUponClose": `{"cycle":{"id":"cycle-id","number":12,"name":"Closed cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2026-01-15T00:00:00Z","completedAt":"2026-01-15T00:00:00Z","progress":0.75,"team":{"id":"team-id","key":"LIT","name":"linctl"},"uncompletedIssuesUponClose":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-2",
+			Title:      "Carry issue forward",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+	}
+
+	issues, err := ListCycleUncompletedIssuesUponClose(context.Background(), graphqlClient, "cycle-id", 1)
+
+	require.NoError(t, err)
+	require.Equal(t, "cycle-id", issues.Cycle.ID)
+	require.Equal(t, "Closed cycle", issues.Cycle.Name)
+	require.Equal(t, "LIT-2", issues.Issues[0].Identifier)
+	require.Equal(t, "Carry issue forward", issues.Issues[0].Title)
+	require.True(t, issues.HasNextPage)
+	require.Equal(t, &endCursor, issues.EndCursor)
+}
+
+func Test_ListCycleUncompletedIssuesUponClose_wraps_graphql_errors(t *testing.T) {
+	_, err := ListCycleUncompletedIssuesUponClose(
+		context.Background(),
+		errorGraphQLClient{err: errors.New("network down")},
+		"cycle-id",
+		1,
+	)
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "list cycle uncompleted issues cycle-id")
+}
+
 func Test_CycleStatus_describes_completion_and_date_edges(t *testing.T) {
 	require.Equal(t, "completed", cycleStatus("2026-01-01T00:00:00Z", "2099-01-01T00:00:00Z", "2026-01-02T00:00:00Z"))
 	require.Equal(t, "future", cycleStatus("2099-01-01T00:00:00Z", "2099-02-01T00:00:00Z", ""))

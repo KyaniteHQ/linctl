@@ -700,6 +700,8 @@ func commandImplemented(command string) bool {
 		"comment get":                            true,
 		"cycle list":                             true,
 		"cycle get":                              true,
+		"cycle issues":                           true,
+		"cycle uncompleted-issues":               true,
 		"cycle create":                           true,
 		"cycle update":                           true,
 		"cycle archive":                          true,

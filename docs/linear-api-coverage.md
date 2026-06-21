@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 220 | 220 | 220 |
-| Domain-map commands | 332 | 200 | 332 |
+| Local generated Go operations | 222 | 222 | 222 |
+| Domain-map commands | 334 | 202 | 334 |
 
 ## Upstream SDK Root Methods
 
@@ -1089,6 +1089,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customerTiers` | query | `customerTiers` | implemented | `internal/client/generated.go` |
 | `customers` | query | `customers` | implemented | `internal/client/generated.go` |
 | `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
+| `cycle_issues` | query | `cycle` | implemented | `internal/client/generated.go` |
+| `cycle_uncompletedIssuesUponClose` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
 | `emoji` | query | `emoji` | implemented | `internal/client/generated.go` |
@@ -1399,6 +1401,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | ProjectRelation | `project-relation delete` | `Mutation.projectRelationDelete` | Blocked: destructive command needs explicit project dependency safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Cycle | `cycle list` | `Query.cycles` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Cycle | `cycle get` | `Query.cycle` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Cycle | `cycle issues` | `Cycle.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Cycle | `cycle uncompleted-issues` | `Cycle.uncompletedIssuesUponClose` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Cycle | `cycle create` | `Mutation.cycleCreate` | Team-scoped | implemented | `linctl --help` / public CLI tests |
 | Cycle | `cycle update` | `Mutation.cycleUpdate` | Team-scoped | implemented | `linctl --help` / public CLI tests |
 | Cycle | `cycle archive` | `Mutation.cycleArchive` | Team-scoped | implemented | `linctl --help` / public CLI tests |

@@ -186,6 +186,11 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CycleCommandFlows_get_cycle`;
      `go test ./internal/client`, `Test_GetCycleByID_returns_cycle`.
 
+35. Cycle issue child reads
+   - Success: `linctl cycle issues CYCLE_ID --limit N` lists Issues assigned to one Cycle, and `linctl cycle uncompleted-issues CYCLE_ID --limit N` lists Issues left open when a closed Cycle completed.
+   - Evidence: `go test ./internal/cli`, `Test_CycleCommandFlows_list_cycle_issues`, `Test_CycleCommandFlows_list_cycle_uncompleted_issues`;
+     `go test ./internal/client`, `Test_ListCycleIssues_returns_issue_page`, `Test_ListCycleUncompletedIssuesUponClose_returns_issue_page`.
+
 35. ProjectMilestone get
    - Success: `linctl project-milestone get PROJECT_MILESTONE_ID` reads one ProjectMilestone by id through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_get_project_milestone`;
