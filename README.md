@@ -173,6 +173,8 @@ linctl document list --limit 20
 linctl document get document-id
 linctl label list --limit 20
 linctl label get label-id
+linctl label children label-id --limit 20
+linctl label issues label-id --limit 20
 linctl team list --limit 20
 linctl team get team-id
 linctl team cycles team-id --limit 20
@@ -378,6 +380,8 @@ linctl project-relation list --limit 20
 linctl project-relation get project-relation-id
 linctl document list --limit 20
 linctl label list --limit 20
+linctl label children label-id --limit 20
+linctl label issues label-id --limit 20
 linctl team cycles team-id --limit 20
 linctl team issues team-id --limit 20
 linctl team labels team-id --limit 20

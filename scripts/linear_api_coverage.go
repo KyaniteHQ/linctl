@@ -747,6 +747,8 @@ func commandImplemented(command string) bool {
 		"document get":                           true,
 		"label list":                             true,
 		"label get":                              true,
+		"label children":                         true,
+		"label issues":                           true,
 		"team list":                              true,
 		"team get":                               true,
 		"team cycles":                            true,

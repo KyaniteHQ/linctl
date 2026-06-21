@@ -177,6 +177,8 @@ linctl document list --json --limit 20
 linctl document get DOCUMENT_ID --json
 linctl label list --json --limit 20
 linctl label get LABEL_ID --json
+linctl label children LABEL_ID --json --limit 20
+linctl label issues LABEL_ID --json --limit 20
 linctl team list --json --limit 20
 linctl team get TEAM_ID --json
 linctl team cycles TEAM_ID --json --limit 20

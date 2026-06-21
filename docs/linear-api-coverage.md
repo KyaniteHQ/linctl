@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 222 | 222 | 222 |
-| Domain-map commands | 334 | 202 | 334 |
+| Local generated Go operations | 224 | 224 | 224 |
+| Domain-map commands | 336 | 204 | 336 |
 
 ## Upstream SDK Root Methods
 
@@ -1115,6 +1115,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
 | `issue` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
+| `issueLabel_children` | query | `issueLabel` | implemented | `internal/client/generated.go` |
+| `issueLabel_issues` | query | `issueLabel` | implemented | `internal/client/generated.go` |
 | `issueRelation` | query | `issueRelation` | implemented | `internal/client/generated.go` |
 | `issueRelations` | query | `issueRelations` | implemented | `internal/client/generated.go` |
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
@@ -1421,6 +1423,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Document | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Label | `label list` | `Query.issueLabels` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Label | `label get` | `Query.issueLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Label | `label children` | `IssueLabel.children` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Label | `label issues` | `IssueLabel.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Label | `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes | blocked_needs_design | write command needs explicit target and safety semantics |
 | Label | `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |

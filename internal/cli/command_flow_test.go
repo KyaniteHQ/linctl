@@ -151,6 +151,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "document get", args: []string{"document", "get", "document-id"}, contains: "document-id Team note [team]"},
 		{name: "label list", args: []string{"label", "list", "--limit", "1"}, contains: "label-id Bug #ff0000"},
 		{name: "label get", args: []string{"label", "get", "label-id"}, contains: "label-id Bug #ff0000"},
+		{name: "label children", args: []string{"label", "children", "label-id", "--limit", "1"}, contains: "child-label-id Mobile #56ccf2"},
+		{name: "label issues", args: []string{"label", "issues", "label-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "team list", args: []string{"team", "list", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, contains: "team-id LIT linctl"},
 		{name: "team cycles", args: []string{"team", "cycles", "team-id", "--limit", "1"}, contains: "cycle-id Planning cycle [active]"},
@@ -1308,6 +1310,41 @@ func Test_CommandFlows_project_child_reads_cover_json_and_sort_branches(t *testi
 	})
 }
 
+func Test_CommandFlows_label_child_reads_cover_json_pages(t *testing.T) {
+	tests := []struct {
+		name     string
+		args     []string
+		contains string
+	}{
+		{
+			name:     "label children json",
+			args:     []string{"label", "children", "label-id", "--json"},
+			contains: `"label_name": "Bug"`,
+		},
+		{
+			name:     "label issues json",
+			args:     []string{"label", "issues", "label-id", "--json"},
+			contains: `"identifier": "LIT-1"`,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Contains(t, output.String(), test.contains)
+		})
+	}
+}
+
 func Test_CommandFlows_fail_on_empty_project_milestones_when_fail_on_empty_flag_is_set(t *testing.T) {
 	restore := useCommandRuntime(t, commandFlowFakeClient{emptyProjectMilestones: true})
 	defer restore()
@@ -1737,6 +1774,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "document get", args: []string{"document", "get", "document-id"}, operation: "document", contains: "get document document-id"},
 		{name: "label list", args: []string{"label", "list"}, operation: "IssueLabels", contains: "list labels"},
 		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "issueLabel", contains: "get label label-id"},
+		{name: "label children", args: []string{"label", "children", "label-id"}, operation: "issueLabel_children", contains: "list label children label-id"},
+		{name: "label issues", args: []string{"label", "issues", "label-id"}, operation: "issueLabel_issues", contains: "list label issues label-id"},
 		{name: "team list", args: []string{"team", "list"}, operation: "Teams", contains: "list teams"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, operation: "team", contains: "get team team-id"},
 		{name: "team cycles", args: []string{"team", "cycles", "team-id"}, operation: "team_cycles", contains: "list team cycles team-id"},
@@ -2285,6 +2324,9 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 	if payload, ok := commandFlowUserChildPayload(operation); ok {
 		return payload, true
 	}
+	if payload, ok := commandFlowLabelChildPayload(operation); ok {
+		return payload, true
+	}
 
 	switch operation {
 	case "Documents":
@@ -2544,6 +2586,21 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"attachmentsForURL":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "attachment":
 		return `{"attachment":` + commandAttachmentJSON() + `}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowLabelChildPayload(operation string) (string, bool) {
+	switch operation {
+	case "issueLabel_children":
+		return `{"issueLabel":{"id":"label-id","name":"Bug","children":{"nodes":[` +
+			commandNamedLabelJSON("child-label-id", "Mobile", "#56ccf2", "child label") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueLabel_issues":
+		return `{"issueLabel":{"id":"label-id","name":"Bug","issues":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
@@ -3223,16 +3280,20 @@ func commandDocumentJSON(title string, parents string) string {
 }
 
 func commandLabelJSON(description string) string {
+	return commandNamedLabelJSON("label-id", "Bug", "#ff0000", description)
+}
+
+func commandNamedLabelJSON(id string, name string, color string, description string) string {
 	descriptionPayload := "null"
 	if description != "" {
 		descriptionPayload = `"` + description + `"`
 	}
 
 	return `{
-		"id":"label-id",
-		"name":"Bug",
+		"id":"` + id + `",
+		"name":"` + name + `",
 		"description":` + descriptionPayload + `,
-		"color":"#ff0000",
+		"color":"` + color + `",
 		"isGroup":false,
 		"team":{"id":"team-id","key":"LIT","name":"linctl"}
 	}`

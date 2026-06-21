@@ -26,6 +26,24 @@ type LabelList struct {
 	EndCursor   *string        `json:"end_cursor,omitempty"`
 }
 
+// LabelChildList is a page of child labels for one IssueLabel group.
+type LabelChildList struct {
+	LabelID     string         `json:"label_id"`
+	LabelName   string         `json:"label_name"`
+	Labels      []LabelSummary `json:"labels"`
+	HasNextPage bool           `json:"has_next_page"`
+	EndCursor   *string        `json:"end_cursor,omitempty"`
+}
+
+// LabelIssueList is a page of issues associated with one IssueLabel.
+type LabelIssueList struct {
+	LabelID     string         `json:"label_id"`
+	LabelName   string         `json:"label_name"`
+	Issues      []IssueSummary `json:"issues"`
+	HasNextPage bool           `json:"has_next_page"`
+	EndCursor   *string        `json:"end_cursor,omitempty"`
+}
+
 // ListLabels returns visible IssueLabels.
 func ListLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (LabelList, error) {
 	labels, err := IssueLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -53,6 +71,53 @@ func GetLabelByID(ctx context.Context, graphqlClient graphql.Client, id string) 
 	}
 
 	return labelSummary(label.IssueLabel.IssueLabelSummaryFields), nil
+}
+
+// ListLabelChildren returns child labels under one IssueLabel group.
+func ListLabelChildren(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (LabelChildList, error) {
+	childPage, err := issueLabel_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return LabelChildList{}, fmt.Errorf("list label children %s: %w", id, err)
+	}
+
+	labels := make([]LabelSummary, 0, len(childPage.IssueLabel.Children.Nodes))
+	for _, label := range childPage.IssueLabel.Children.Nodes {
+		labels = append(labels, labelSummary(label.IssueLabelSummaryFields))
+	}
+
+	return LabelChildList{
+		LabelID:     childPage.IssueLabel.Id,
+		LabelName:   childPage.IssueLabel.Name,
+		Labels:      labels,
+		HasNextPage: childPage.IssueLabel.Children.PageInfo.HasNextPage,
+		EndCursor:   childPage.IssueLabel.Children.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListLabelIssues returns issues associated with one IssueLabel.
+func ListLabelIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (LabelIssueList, error) {
+	issuePage, err := issueLabel_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return LabelIssueList{}, fmt.Errorf("list label issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(issuePage.IssueLabel.Issues.Nodes))
+	for _, issue := range issuePage.IssueLabel.Issues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return LabelIssueList{
+		LabelID:     issuePage.IssueLabel.Id,
+		LabelName:   issuePage.IssueLabel.Name,
+		Issues:      issues,
+		HasNextPage: issuePage.IssueLabel.Issues.PageInfo.HasNextPage,
+		EndCursor:   issuePage.IssueLabel.Issues.PageInfo.EndCursor,
+	}, nil
 }
 
 func labelSummary(label IssueLabelSummaryFields) LabelSummary {

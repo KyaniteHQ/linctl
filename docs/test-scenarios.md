@@ -254,6 +254,11 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/label_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+47. Label child reads
+   - Success: `linctl label children LABEL_ID --limit N` lists child IssueLabels under one IssueLabel group, and `linctl label issues LABEL_ID --limit N` lists Issues associated with one IssueLabel.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/label_children`, `Test_CommandFlows_execute_read_and_write_commands/label_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 47. Team list
    - Success: `linctl team list --limit N` lists visible teams through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_list`;

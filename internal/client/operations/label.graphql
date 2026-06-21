@@ -16,6 +16,38 @@ query issueLabel($id: String!) {
   }
 }
 
+query issueLabel_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueLabel(id: $id) {
+    id
+    name
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueLabel_issues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueLabel(id: $id) {
+    id
+    name
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment IssueLabelSummaryFields on IssueLabel {
   id
   name

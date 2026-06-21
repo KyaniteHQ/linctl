@@ -507,10 +507,10 @@ CLI name `label` maps to Linear schema type `IssueLabel`.
 Schema backing:
 
 - Types: `IssueLabel`, `IssueLabelConnection`
-- Reads: `Query.issueLabels`, `Query.issueLabel`, `Team.labels`
+- Reads: `Query.issueLabels`, `Query.issueLabel`, `IssueLabel.children`, `IssueLabel.issues`, `Team.labels`
 - Writes: `Mutation.issueLabelCreate`, `Mutation.issueLabelUpdate`, `Mutation.issueLabelDelete`
 - Inputs: `IssueLabelCreateInput`, `IssueLabelUpdateInput`
-- Relevant fields: `IssueLabel.id`, `IssueLabel.name`, `IssueLabel.description`, `IssueLabel.color`, `IssueLabel.team`, `IssueLabel.issues`
+- Relevant fields: `IssueLabel.id`, `IssueLabel.name`, `IssueLabel.description`, `IssueLabel.color`, `IssueLabel.team`, `IssueLabel.children`, `IssueLabel.issues`
 
 Planned commands:
 
@@ -518,11 +518,13 @@ Planned commands:
 | --- | --- | --- |
 | `label list` | `Query.issueLabels` | Read-only |
 | `label get` | `Query.issueLabel` | Read-only |
+| `label children` | `IssueLabel.children` | Read-only |
+| `label issues` | `IssueLabel.issues` | Read-only |
 | `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes |
 | `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation |
 | `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics |
 
-Only `label list` and `label get` are implemented in the current CLI. Label writes are deferred until the team-scope guard is designed.
+Only read-only label commands are implemented in the current CLI. Label writes are deferred until the team-scope guard is designed.
 
 ## Team
 
