@@ -3605,6 +3605,145 @@ var AllFeedSummarySchedule = []FeedSummarySchedule{
 	FeedSummaryScheduleNever,
 }
 
+// GitAutomationStateSummaryFields includes the GraphQL fields of GitAutomationState requested by the fragment GitAutomationStateSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A Git automation rule that automatically transitions issues to a specified
+// workflow state when a Git event occurs (e.g., when a PR is opened, move the
+// linked issue to 'In Review'). Each rule is scoped to a team and optionally to a
+// specific target branch. When no target branch is specified, the rule acts as the
+// default for all branches. Target-branch-specific rules override the defaults.
+type GitAutomationStateSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The Git event that triggers this automation rule (e.g., branch created, PR opened for review, or PR merged).
+	Event GitAutomationStates `json:"event"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The workflow state that linked issues will be transitioned to when the Git
+	// event fires. Null if this rule is configured to take no action, overriding any
+	// default rule for the same event.
+	State *GitAutomationStateSummaryFieldsStateWorkflowState `json:"state"`
+	// The target branch that this automation rule applies to. When set, this rule
+	// only fires for pull requests targeting the specified branch pattern,
+	// overriding any default rule for the same event. Null if this is a default rule
+	// that applies to all branches.
+	TargetBranch *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch `json:"targetBranch"`
+}
+
+// GetId returns GitAutomationStateSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFields) GetId() string { return v.Id }
+
+// GetEvent returns GitAutomationStateSummaryFields.Event, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFields) GetEvent() GitAutomationStates { return v.Event }
+
+// GetCreatedAt returns GitAutomationStateSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns GitAutomationStateSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns GitAutomationStateSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetState returns GitAutomationStateSummaryFields.State, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFields) GetState() *GitAutomationStateSummaryFieldsStateWorkflowState {
+	return v.State
+}
+
+// GetTargetBranch returns GitAutomationStateSummaryFields.TargetBranch, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFields) GetTargetBranch() *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch {
+	return v.TargetBranch
+}
+
+// GitAutomationStateSummaryFieldsStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type GitAutomationStateSummaryFieldsStateWorkflowState struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+}
+
+// GetId returns GitAutomationStateSummaryFieldsStateWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFieldsStateWorkflowState) GetId() string { return v.Id }
+
+// GetName returns GitAutomationStateSummaryFieldsStateWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFieldsStateWorkflowState) GetName() string { return v.Name }
+
+// GetType returns GitAutomationStateSummaryFieldsStateWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFieldsStateWorkflowState) GetType() string { return v.Type }
+
+// GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch includes the requested fields of the GraphQL type GitAutomationTargetBranch.
+// The GraphQL type's documentation follows.
+//
+// A target branch definition used by Git automation rules to scope automations to
+// specific branches. The branch can be specified as an exact name (e.g., 'main')
+// or as a regular expression pattern (e.g., 'release/.*'). Each target branch
+// belongs to a team and can have multiple automation rules associated with it,
+// which override the team's default automation rules when a PR targets a matching branch.
+type GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The branch name or pattern to match against pull request target branches.
+	// Interpreted as a literal branch name unless isRegex is true, in which case it
+	// is treated as a regular expression.
+	BranchPattern string `json:"branchPattern"`
+	// Whether the branch pattern should be interpreted as a regular expression. When
+	// false, the pattern is matched as an exact branch name.
+	IsRegex bool `json:"isRegex"`
+}
+
+// GetId returns GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch.Id, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch) GetId() string {
+	return v.Id
+}
+
+// GetBranchPattern returns GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch.BranchPattern, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch) GetBranchPattern() string {
+	return v.BranchPattern
+}
+
+// GetIsRegex returns GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch.IsRegex, and is useful for accessing the field via an interface.
+func (v *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch) GetIsRegex() bool {
+	return v.IsRegex
+}
+
+// The Git events that can trigger an automation rule. Each value corresponds to a
+// pull/merge request lifecycle event (e.g., branch created, PR opened for review, PR merged).
+type GitAutomationStates string
+
+const (
+	GitAutomationStatesDraft     GitAutomationStates = "draft"
+	GitAutomationStatesStart     GitAutomationStates = "start"
+	GitAutomationStatesReview    GitAutomationStates = "review"
+	GitAutomationStatesMergeable GitAutomationStates = "mergeable"
+	GitAutomationStatesMerge     GitAutomationStates = "merge"
+)
+
+var AllGitAutomationStates = []GitAutomationStates{
+	GitAutomationStatesDraft,
+	GitAutomationStatesStart,
+	GitAutomationStatesReview,
+	GitAutomationStatesMergeable,
+	GitAutomationStatesMerge,
+}
+
 // InitiativeHistorySummaryFields includes the GraphQL fields of InitiativeHistory requested by the fragment InitiativeHistorySummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -21025,6 +21164,14 @@ type __customerNeedInput struct {
 // GetId returns __customerNeedInput.Id, and is useful for accessing the field via an interface.
 func (v *__customerNeedInput) GetId() *string { return v.Id }
 
+// __customerNeed_projectAttachmentInput is used internally by genqlient
+type __customerNeed_projectAttachmentInput struct {
+	Id *string `json:"id"`
+}
+
+// GetId returns __customerNeed_projectAttachmentInput.Id, and is useful for accessing the field via an interface.
+func (v *__customerNeed_projectAttachmentInput) GetId() *string { return v.Id }
+
 // __customerNeedsInput is used internally by genqlient
 type __customerNeedsInput struct {
 	First           *int    `json:"first"`
@@ -23265,6 +23412,26 @@ func (v *__roadmapToProjectsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __roadmapToProjectsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__roadmapToProjectsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __roadmap_projectsInput is used internally by genqlient
+type __roadmap_projectsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __roadmap_projectsInput.Id, and is useful for accessing the field via an interface.
+func (v *__roadmap_projectsInput) GetId() string { return v.Id }
+
+// GetFirst returns __roadmap_projectsInput.First, and is useful for accessing the field via an interface.
+func (v *__roadmap_projectsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __roadmap_projectsInput.After, and is useful for accessing the field via an interface.
+func (v *__roadmap_projectsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __roadmap_projectsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__roadmap_projectsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __roadmapsInput is used internally by genqlient
 type __roadmapsInput struct {
 	First           *int    `json:"first"`
@@ -23404,6 +23571,26 @@ func (v *__team_cyclesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __team_cyclesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__team_cyclesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __team_gitAutomationStatesInput is used internally by genqlient
+type __team_gitAutomationStatesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __team_gitAutomationStatesInput.Id, and is useful for accessing the field via an interface.
+func (v *__team_gitAutomationStatesInput) GetId() string { return v.Id }
+
+// GetFirst returns __team_gitAutomationStatesInput.First, and is useful for accessing the field via an interface.
+func (v *__team_gitAutomationStatesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __team_gitAutomationStatesInput.After, and is useful for accessing the field via an interface.
+func (v *__team_gitAutomationStatesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __team_gitAutomationStatesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__team_gitAutomationStatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __team_issuesInput is used internally by genqlient
 type __team_issuesInput struct {
@@ -23900,6 +24087,26 @@ type __workflowStateInput struct {
 
 // GetId returns __workflowStateInput.Id, and is useful for accessing the field via an interface.
 func (v *__workflowStateInput) GetId() string { return v.Id }
+
+// __workflowState_issuesInput is used internally by genqlient
+type __workflowState_issuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __workflowState_issuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__workflowState_issuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __workflowState_issuesInput.First, and is useful for accessing the field via an interface.
+func (v *__workflowState_issuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __workflowState_issuesInput.After, and is useful for accessing the field via an interface.
+func (v *__workflowState_issuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __workflowState_issuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__workflowState_issuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __workflowStatesInput is used internally by genqlient
 type __workflowStatesInput struct {
@@ -31261,6 +31468,134 @@ type customerNeedResponse struct {
 
 // GetCustomerNeed returns customerNeedResponse.CustomerNeed, and is useful for accessing the field via an interface.
 func (v *customerNeedResponse) GetCustomerNeed() customerNeedCustomerNeed { return v.CustomerNeed }
+
+// customerNeed_projectAttachmentCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type customerNeed_projectAttachmentCustomerNeed struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The project attachment linked to this need. Populated when the need originates
+	// from an intake source or when a URL is manually provided for a project-level
+	// need. Provides a link back to the original source of the customer feedback.
+	// Mutually exclusive with attachment.
+	ProjectAttachment *customerNeed_projectAttachmentCustomerNeedProjectAttachment `json:"projectAttachment"`
+}
+
+// GetId returns customerNeed_projectAttachmentCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentCustomerNeed) GetId() string { return v.Id }
+
+// GetProjectAttachment returns customerNeed_projectAttachmentCustomerNeed.ProjectAttachment, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentCustomerNeed) GetProjectAttachment() *customerNeed_projectAttachmentCustomerNeedProjectAttachment {
+	return v.ProjectAttachment
+}
+
+// customerNeed_projectAttachmentCustomerNeedProjectAttachment includes the requested fields of the GraphQL type ProjectAttachment.
+// The GraphQL type's documentation follows.
+//
+// An attachment (link, reference, or integration data) associated with a project.
+// Attachments are typically created by integrations and contain metadata for
+// rendering in the client.
+type customerNeed_projectAttachmentCustomerNeedProjectAttachment struct {
+	ProjectAttachmentSummaryFields `json:"-"`
+}
+
+// GetId returns customerNeed_projectAttachmentCustomerNeedProjectAttachment.Id, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) GetId() string {
+	return v.ProjectAttachmentSummaryFields.Id
+}
+
+// GetTitle returns customerNeed_projectAttachmentCustomerNeedProjectAttachment.Title, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) GetTitle() string {
+	return v.ProjectAttachmentSummaryFields.Title
+}
+
+// GetSubtitle returns customerNeed_projectAttachmentCustomerNeedProjectAttachment.Subtitle, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) GetSubtitle() *string {
+	return v.ProjectAttachmentSummaryFields.Subtitle
+}
+
+// GetUrl returns customerNeed_projectAttachmentCustomerNeedProjectAttachment.Url, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) GetUrl() string {
+	return v.ProjectAttachmentSummaryFields.Url
+}
+
+// GetSourceType returns customerNeed_projectAttachmentCustomerNeedProjectAttachment.SourceType, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) GetSourceType() *string {
+	return v.ProjectAttachmentSummaryFields.SourceType
+}
+
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*customerNeed_projectAttachmentCustomerNeedProjectAttachment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.customerNeed_projectAttachmentCustomerNeedProjectAttachment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectAttachmentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalcustomerNeed_projectAttachmentCustomerNeedProjectAttachment struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Subtitle *string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	SourceType *string `json:"sourceType"`
+}
+
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *customerNeed_projectAttachmentCustomerNeedProjectAttachment) __premarshalJSON() (*__premarshalcustomerNeed_projectAttachmentCustomerNeedProjectAttachment, error) {
+	var retval __premarshalcustomerNeed_projectAttachmentCustomerNeedProjectAttachment
+
+	retval.Id = v.ProjectAttachmentSummaryFields.Id
+	retval.Title = v.ProjectAttachmentSummaryFields.Title
+	retval.Subtitle = v.ProjectAttachmentSummaryFields.Subtitle
+	retval.Url = v.ProjectAttachmentSummaryFields.Url
+	retval.SourceType = v.ProjectAttachmentSummaryFields.SourceType
+	return &retval, nil
+}
+
+// customerNeed_projectAttachmentResponse is returned by customerNeed_projectAttachment on success.
+type customerNeed_projectAttachmentResponse struct {
+	// Retrieves a single customer need by ID or hash.
+	CustomerNeed customerNeed_projectAttachmentCustomerNeed `json:"customerNeed"`
+}
+
+// GetCustomerNeed returns customerNeed_projectAttachmentResponse.CustomerNeed, and is useful for accessing the field via an interface.
+func (v *customerNeed_projectAttachmentResponse) GetCustomerNeed() customerNeed_projectAttachmentCustomerNeed {
+	return v.CustomerNeed
+}
 
 // customerNeedsCustomerNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
 type customerNeedsCustomerNeedsCustomerNeedConnection struct {
@@ -63588,6 +63923,197 @@ func (v *roadmapToProjectsRoadmapToProjectsRoadmapToProjectConnectionPageInfo) G
 	return v.EndCursor
 }
 
+// roadmap_projectsResponse is returned by roadmap_projects on success.
+type roadmap_projectsResponse struct {
+	// [Deprecated] Returns a single roadmap by its identifier. Use initiatives instead.
+	Roadmap roadmap_projectsRoadmap `json:"roadmap"`
+}
+
+// GetRoadmap returns roadmap_projectsResponse.Roadmap, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsResponse) GetRoadmap() roadmap_projectsRoadmap { return v.Roadmap }
+
+// roadmap_projectsRoadmap includes the requested fields of the GraphQL type Roadmap.
+// The GraphQL type's documentation follows.
+//
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
+// supersedes this entity and provides richer hierarchy and tracking capabilities.
+type roadmap_projectsRoadmap struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the roadmap.
+	Name string `json:"name"`
+	// Projects associated with the roadmap.
+	Projects roadmap_projectsRoadmapProjectsProjectConnection `json:"projects"`
+}
+
+// GetId returns roadmap_projectsRoadmap.Id, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmap) GetId() string { return v.Id }
+
+// GetName returns roadmap_projectsRoadmap.Name, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmap) GetName() string { return v.Name }
+
+// GetProjects returns roadmap_projectsRoadmap.Projects, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmap) GetProjects() roadmap_projectsRoadmapProjectsProjectConnection {
+	return v.Projects
+}
+
+// roadmap_projectsRoadmapProjectsProjectConnection includes the requested fields of the GraphQL type ProjectConnection.
+type roadmap_projectsRoadmapProjectsProjectConnection struct {
+	Nodes    []roadmap_projectsRoadmapProjectsProjectConnectionNodesProject `json:"nodes"`
+	PageInfo roadmap_projectsRoadmapProjectsProjectConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns roadmap_projectsRoadmapProjectsProjectConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnection) GetNodes() []roadmap_projectsRoadmapProjectsProjectConnectionNodesProject {
+	return v.Nodes
+}
+
+// GetPageInfo returns roadmap_projectsRoadmapProjectsProjectConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnection) GetPageInfo() roadmap_projectsRoadmapProjectsProjectConnectionPageInfo {
+	return v.PageInfo
+}
+
+// roadmap_projectsRoadmapProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type roadmap_projectsRoadmapProjectsProjectConnectionNodesProject struct {
+	ProjectSummaryFields `json:"-"`
+}
+
+// GetId returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Id, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetId() string {
+	return v.ProjectSummaryFields.Id
+}
+
+// GetName returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Name, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetName() string {
+	return v.ProjectSummaryFields.Name
+}
+
+// GetDescription returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Description, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetDescription() string {
+	return v.ProjectSummaryFields.Description
+}
+
+// GetSlugId returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetSlugId() string {
+	return v.ProjectSummaryFields.SlugId
+}
+
+// GetUrl returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Url, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetUrl() string {
+	return v.ProjectSummaryFields.Url
+}
+
+// GetPriority returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Priority, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetPriority() int {
+	return v.ProjectSummaryFields.Priority
+}
+
+// GetStatus returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Status, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetStatus() ProjectSummaryFieldsStatusProjectStatus {
+	return v.ProjectSummaryFields.Status
+}
+
+// GetLead returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Lead, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetLead() *ProjectSummaryFieldsLeadUser {
+	return v.ProjectSummaryFields.Lead
+}
+
+// GetTeams returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.Teams, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetTeams() ProjectSummaryFieldsTeamsTeamConnection {
+	return v.ProjectSummaryFields.Teams
+}
+
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*roadmap_projectsRoadmapProjectsProjectConnectionNodesProject
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.roadmap_projectsRoadmapProjectsProjectConnectionNodesProject = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalroadmap_projectsRoadmapProjectsProjectConnectionNodesProject struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description string `json:"description"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Priority int `json:"priority"`
+
+	Status ProjectSummaryFieldsStatusProjectStatus `json:"status"`
+
+	Lead *ProjectSummaryFieldsLeadUser `json:"lead"`
+
+	Teams ProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
+}
+
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) __premarshalJSON() (*__premarshalroadmap_projectsRoadmapProjectsProjectConnectionNodesProject, error) {
+	var retval __premarshalroadmap_projectsRoadmapProjectsProjectConnectionNodesProject
+
+	retval.Id = v.ProjectSummaryFields.Id
+	retval.Name = v.ProjectSummaryFields.Name
+	retval.Description = v.ProjectSummaryFields.Description
+	retval.SlugId = v.ProjectSummaryFields.SlugId
+	retval.Url = v.ProjectSummaryFields.Url
+	retval.Priority = v.ProjectSummaryFields.Priority
+	retval.Status = v.ProjectSummaryFields.Status
+	retval.Lead = v.ProjectSummaryFields.Lead
+	retval.Teams = v.ProjectSummaryFields.Teams
+	return &retval, nil
+}
+
+// roadmap_projectsRoadmapProjectsProjectConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type roadmap_projectsRoadmapProjectsProjectConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns roadmap_projectsRoadmapProjectsProjectConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns roadmap_projectsRoadmapProjectsProjectConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // roadmapsResponse is returned by roadmaps on success.
 type roadmapsResponse struct {
 	// [Deprecated] Returns all roadmaps in the workspace. Use initiatives instead.
@@ -65076,6 +65602,191 @@ func (v *team_cyclesTeamCyclesCycleConnectionPageInfo) GetHasNextPage() bool { r
 
 // GetEndCursor returns team_cyclesTeamCyclesCycleConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *team_cyclesTeamCyclesCycleConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// team_gitAutomationStatesResponse is returned by team_gitAutomationStates on success.
+type team_gitAutomationStatesResponse struct {
+	// Fetches a specific team by its ID.
+	Team team_gitAutomationStatesTeam `json:"team"`
+}
+
+// GetTeam returns team_gitAutomationStatesResponse.Team, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesResponse) GetTeam() team_gitAutomationStatesTeam { return v.Team }
+
+// team_gitAutomationStatesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type team_gitAutomationStatesTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+	// The Git automation states for the team.
+	GitAutomationStates team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection `json:"gitAutomationStates"`
+}
+
+// GetId returns team_gitAutomationStatesTeam.Id, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeam) GetId() string { return v.Id }
+
+// GetKey returns team_gitAutomationStatesTeam.Key, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeam) GetKey() string { return v.Key }
+
+// GetName returns team_gitAutomationStatesTeam.Name, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeam) GetName() string { return v.Name }
+
+// GetGitAutomationStates returns team_gitAutomationStatesTeam.GitAutomationStates, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeam) GetGitAutomationStates() team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection {
+	return v.GitAutomationStates
+}
+
+// team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection includes the requested fields of the GraphQL type GitAutomationStateConnection.
+type team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection struct {
+	Nodes    []team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState `json:"nodes"`
+	PageInfo team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo                  `json:"pageInfo"`
+}
+
+// GetNodes returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection) GetNodes() []team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState {
+	return v.Nodes
+}
+
+// GetPageInfo returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnection) GetPageInfo() team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo {
+	return v.PageInfo
+}
+
+// team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState includes the requested fields of the GraphQL type GitAutomationState.
+// The GraphQL type's documentation follows.
+//
+// A Git automation rule that automatically transitions issues to a specified
+// workflow state when a Git event occurs (e.g., when a PR is opened, move the
+// linked issue to 'In Review'). Each rule is scoped to a team and optionally to a
+// specific target branch. When no target branch is specified, the rule acts as the
+// default for all branches. Target-branch-specific rules override the defaults.
+type team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState struct {
+	GitAutomationStateSummaryFields `json:"-"`
+}
+
+// GetId returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState.Id, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) GetId() string {
+	return v.GitAutomationStateSummaryFields.Id
+}
+
+// GetEvent returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState.Event, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) GetEvent() GitAutomationStates {
+	return v.GitAutomationStateSummaryFields.Event
+}
+
+// GetCreatedAt returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState.CreatedAt, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) GetCreatedAt() string {
+	return v.GitAutomationStateSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) GetUpdatedAt() string {
+	return v.GitAutomationStateSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) GetArchivedAt() *string {
+	return v.GitAutomationStateSummaryFields.ArchivedAt
+}
+
+// GetState returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState.State, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) GetState() *GitAutomationStateSummaryFieldsStateWorkflowState {
+	return v.GitAutomationStateSummaryFields.State
+}
+
+// GetTargetBranch returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState.TargetBranch, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) GetTargetBranch() *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch {
+	return v.GitAutomationStateSummaryFields.TargetBranch
+}
+
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.GitAutomationStateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalteam_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState struct {
+	Id string `json:"id"`
+
+	Event GitAutomationStates `json:"event"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	State *GitAutomationStateSummaryFieldsStateWorkflowState `json:"state"`
+
+	TargetBranch *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch `json:"targetBranch"`
+}
+
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState) __premarshalJSON() (*__premarshalteam_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState, error) {
+	var retval __premarshalteam_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState
+
+	retval.Id = v.GitAutomationStateSummaryFields.Id
+	retval.Event = v.GitAutomationStateSummaryFields.Event
+	retval.CreatedAt = v.GitAutomationStateSummaryFields.CreatedAt
+	retval.UpdatedAt = v.GitAutomationStateSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.GitAutomationStateSummaryFields.ArchivedAt
+	retval.State = v.GitAutomationStateSummaryFields.State
+	retval.TargetBranch = v.GitAutomationStateSummaryFields.TargetBranch
+	return &retval, nil
+}
+
+// team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
 
 // team_issuesResponse is returned by team_issues on success.
 type team_issuesResponse struct {
@@ -74466,6 +75177,223 @@ func (v *workflowStateWorkflowState) __premarshalJSON() (*__premarshalworkflowSt
 	return &retval, nil
 }
 
+// workflowState_issuesResponse is returned by workflowState_issues on success.
+type workflowState_issuesResponse struct {
+	// One specific workflow state (issue status), looked up by its unique identifier.
+	WorkflowState workflowState_issuesWorkflowState `json:"workflowState"`
+}
+
+// GetWorkflowState returns workflowState_issuesResponse.WorkflowState, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesResponse) GetWorkflowState() workflowState_issuesWorkflowState {
+	return v.WorkflowState
+}
+
+// workflowState_issuesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type workflowState_issuesWorkflowState struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// Issues that currently have this workflow state. Returns a paginated and filterable list of issues.
+	Issues workflowState_issuesWorkflowStateIssuesIssueConnection `json:"issues"`
+}
+
+// GetId returns workflowState_issuesWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowState) GetId() string { return v.Id }
+
+// GetName returns workflowState_issuesWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowState) GetName() string { return v.Name }
+
+// GetIssues returns workflowState_issuesWorkflowState.Issues, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowState) GetIssues() workflowState_issuesWorkflowStateIssuesIssueConnection {
+	return v.Issues
+}
+
+// workflowState_issuesWorkflowStateIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type workflowState_issuesWorkflowStateIssuesIssueConnection struct {
+	Nodes    []workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns workflowState_issuesWorkflowStateIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnection) GetNodes() []workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns workflowState_issuesWorkflowStateIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnection) GetPageInfo() workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalworkflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalworkflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalworkflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // workflowStatesResponse is returned by workflowStates on success.
 type workflowStatesResponse struct {
 	// All issue workflow states (issue statuses). Returns a paginated list of
@@ -79676,6 +80604,50 @@ func customerNeed(
 	}
 
 	data_ = &customerNeedResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by customerNeed_projectAttachment.
+const customerNeed_projectAttachment_Operation = `
+query customerNeed_projectAttachment ($id: String) {
+	customerNeed(id: $id) {
+		id
+		projectAttachment {
+			... ProjectAttachmentSummaryFields
+		}
+	}
+}
+fragment ProjectAttachmentSummaryFields on ProjectAttachment {
+	id
+	title
+	subtitle
+	url
+	sourceType
+}
+`
+
+func customerNeed_projectAttachment(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id *string,
+) (data_ *customerNeed_projectAttachmentResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "customerNeed_projectAttachment",
+		Query:  customerNeed_projectAttachment_Operation,
+		Variables: &__customerNeed_projectAttachmentInput{
+			Id: id,
+		},
+	}
+
+	data_ = &customerNeed_projectAttachmentResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -88475,6 +89447,81 @@ func roadmapToProjects(
 	return data_, err_
 }
 
+// The query executed by roadmap_projects.
+const roadmap_projects_Operation = `
+query roadmap_projects ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	roadmap(id: $id) {
+		id
+		name
+		projects(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ProjectSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ProjectSummaryFields on Project {
+	id
+	name
+	description
+	slugId
+	url
+	priority
+	status {
+		id
+		name
+		type
+	}
+	lead {
+		id
+		name
+		displayName
+	}
+	teams(first: 50) {
+		nodes {
+			id
+			key
+			name
+		}
+	}
+}
+`
+
+func roadmap_projects(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *roadmap_projectsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "roadmap_projects",
+		Query:  roadmap_projects_Operation,
+		Variables: &__roadmap_projectsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &roadmap_projectsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by roadmaps.
 const roadmaps_Operation = `
 query roadmaps ($first: Int, $after: String, $includeArchived: Boolean) {
@@ -89086,6 +90133,74 @@ func team_cycles(
 	}
 
 	data_ = &team_cyclesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by team_gitAutomationStates.
+const team_gitAutomationStates_Operation = `
+query team_gitAutomationStates ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	team(id: $id) {
+		id
+		key
+		name
+		gitAutomationStates(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... GitAutomationStateSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment GitAutomationStateSummaryFields on GitAutomationState {
+	id
+	event
+	createdAt
+	updatedAt
+	archivedAt
+	state {
+		id
+		name
+		type
+	}
+	targetBranch {
+		id
+		branchPattern
+		isRegex
+	}
+}
+`
+
+func team_gitAutomationStates(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *team_gitAutomationStatesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "team_gitAutomationStates",
+		Query:  team_gitAutomationStates_Operation,
+		Variables: &__team_gitAutomationStatesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &team_gitAutomationStatesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -92603,6 +93718,84 @@ func workflowState(
 	}
 
 	data_ = &workflowStateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by workflowState_issues.
+const workflowState_issues_Operation = `
+query workflowState_issues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	workflowState(id: $id) {
+		id
+		name
+		issues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func workflowState_issues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *workflowState_issuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "workflowState_issues",
+		Query:  workflowState_issues_Operation,
+		Variables: &__workflowState_issuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &workflowState_issuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

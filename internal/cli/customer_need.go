@@ -11,17 +11,43 @@ import (
 )
 
 func addCustomerNeedCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(ctx, root, options, readListGetSpec[client.CustomerNeedList, client.CustomerNeedSummary]{
-		Use:           "customer-need",
-		Short:         "Read Linear customer needs",
-		ListShort:     "List visible Linear customer needs",
-		LimitHelp:     "maximum customer needs to return",
-		GetUse:        "get CUSTOMER_NEED_ID",
-		GetShort:      "Get one customer need by id",
-		LoadList:      loadCustomerNeedList,
-		PageWithItems: customerNeedPageWithItems,
-		LoadGet:       loadCustomerNeed,
-		WriteItem:     writeCustomerNeed,
+	customerNeedCommand := addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.CustomerNeedList, client.CustomerNeedSummary]{
+			Use:           "customer-need",
+			Short:         "Read Linear customer needs",
+			ListShort:     "List visible Linear customer needs",
+			LimitHelp:     "maximum customer needs to return",
+			GetUse:        "get CUSTOMER_NEED_ID",
+			GetShort:      "Get one customer need by id",
+			LoadList:      loadCustomerNeedList,
+			PageWithItems: customerNeedPageWithItems,
+			LoadGet:       loadCustomerNeed,
+			WriteItem:     writeCustomerNeed,
+		},
+	)
+	addCustomerNeedProjectAttachmentCommand(ctx, customerNeedCommand, options)
+}
+
+func addCustomerNeedProjectAttachmentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "project-attachment CUSTOMER_NEED_ID",
+		Short: "Get the project attachment linked to one customer need",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			attachment, err := client.GetCustomerNeedProjectAttachment(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeCustomerNeedProjectAttachment(command, options, attachment)
+		},
 	})
 }
 
@@ -47,6 +73,31 @@ func writeCustomerNeed(
 		emptyDash(need.CustomerName),
 		emptyDash(need.Issue),
 		need.Priority,
+	)
+}
+
+func writeCustomerNeedProjectAttachment(
+	command *cobra.Command,
+	options *rootOptions,
+	attachment client.CustomerNeedProjectAttachment,
+) error {
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, attachment)
+	}
+	if attachment.Attachment == nil {
+		return render.WriteLine(command.OutOrStdout(), "%s project_attachment -", attachment.CustomerNeedID)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s project_attachment %s %s [%s]",
+		attachment.CustomerNeedID,
+		attachment.Attachment.ID,
+		attachment.Attachment.Title,
+		attachment.Attachment.SourceType,
 	)
 }
 

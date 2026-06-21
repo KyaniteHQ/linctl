@@ -16,6 +16,22 @@ query roadmap($id: String!) {
   }
 }
 
+query roadmap_projects($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  roadmap(id: $id) {
+    id
+    name
+    projects(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment RoadmapSummaryFields on Roadmap {
   id
   name

@@ -32,6 +32,15 @@ type RoadmapList struct {
 	EndCursor   *string          `json:"end_cursor,omitempty"`
 }
 
+// RoadmapProjectList is a page of Projects associated with one Roadmap.
+type RoadmapProjectList struct {
+	RoadmapID   string           `json:"roadmap_id"`
+	RoadmapName string           `json:"roadmap_name"`
+	Projects    []ProjectSummary `json:"projects"`
+	HasNextPage bool             `json:"has_next_page"`
+	EndCursor   *string          `json:"end_cursor,omitempty"`
+}
+
 // ListRoadmaps returns visible Linear roadmaps.
 func ListRoadmaps(ctx context.Context, graphqlClient graphql.Client, limit int) (RoadmapList, error) {
 	result, err := roadmaps(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -59,6 +68,32 @@ func GetRoadmapByID(ctx context.Context, graphqlClient graphql.Client, id string
 	}
 
 	return roadmapSummary(result.Roadmap.RoadmapSummaryFields), nil
+}
+
+// ListRoadmapProjects returns Projects associated with one Roadmap.
+func ListRoadmapProjects(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (RoadmapProjectList, error) {
+	result, err := roadmap_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return RoadmapProjectList{}, fmt.Errorf("list roadmap projects %s: %w", id, err)
+	}
+
+	projects := make([]ProjectSummary, 0, len(result.Roadmap.Projects.Nodes))
+	for _, project := range result.Roadmap.Projects.Nodes {
+		projects = append(projects, projectSummaryFromFields(project.ProjectSummaryFields))
+	}
+
+	return RoadmapProjectList{
+		RoadmapID:   result.Roadmap.Id,
+		RoadmapName: result.Roadmap.Name,
+		Projects:    projects,
+		HasNextPage: result.Roadmap.Projects.PageInfo.HasNextPage,
+		EndCursor:   result.Roadmap.Projects.PageInfo.EndCursor,
+	}, nil
 }
 
 func roadmapSummary(fields RoadmapSummaryFields) RoadmapSummary {

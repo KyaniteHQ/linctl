@@ -582,6 +582,7 @@ Planned commands:
 | `team projects` | `Team.projects` | Read-only |
 | `team release-pipelines` | `Team.releasePipelines` | Read-only |
 | `team states` | `Team.states` | Read-only |
+| `team git-automation-states` | `Team.gitAutomationStates` | Read-only, rule/state/target-branch metadata only |
 | `team templates` | `Team.templates` | Read-only |
 | `team-membership list` | `Query.teamMemberships` | Read-only |
 | `team-membership get` | `Query.teamMembership` | Read-only |
@@ -589,7 +590,7 @@ Planned commands:
 | `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation |
 | `team-membership delete` | `Mutation.teamMembershipDelete` | Blocked: destructive membership command needs explicit admin safety semantics |
 
-Team list/get, the read-only Team child-list commands above, and `team-membership list/get` are implemented in the current CLI. `Team.gitAutomationStates` is deferred with automation settings because branch automation patterns belong with guarded automation/admin design. Team creation, metadata mutation, and membership writes are deferred as organization/admin surface.
+Team list/get, the read-only Team child-list commands above, and `team-membership list/get` are implemented in the current CLI. `team git-automation-states` exposes rule/state/target-branch metadata without write controls. Team creation, metadata mutation, and membership writes are deferred as organization/admin surface.
 
 ## User
 
@@ -649,11 +650,12 @@ Planned commands:
 | --- | --- | --- |
 | `workflow-state list` | `Query.workflowStates` | Read-only |
 | `workflow-state get` | `Query.workflowState` | Read-only |
+| `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only |
 | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model |
 | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation |
 | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics |
 
-Only `workflow-state list` and `workflow-state get` are implemented in the current CLI. WorkflowState writes are deferred as team/admin configuration surface.
+`workflow-state list`, `workflow-state get`, and `workflow-state issues` are implemented in the current CLI. WorkflowState writes are deferred as team/admin configuration surface.
 
 ## TimeSchedule
 
@@ -924,7 +926,7 @@ Use the schema name `Roadmap` in code and docs. It is Linear's deprecated roadma
 Schema backing:
 
 - Types: `Roadmap`, `RoadmapConnection`
-- Reads: `Query.roadmaps`, `Query.roadmap`
+- Reads: `Query.roadmaps`, `Query.roadmap`, `Roadmap.projects`
 - Writes: `Mutation.roadmapCreate`, `Mutation.roadmapUpdate`, `Mutation.roadmapArchive`, `Mutation.roadmapDelete`
 - Inputs: `RoadmapCreateInput`, `RoadmapUpdateInput`
 - Relevant fields: `Roadmap.id`, `Roadmap.name`, `Roadmap.description`, `Roadmap.color`, `Roadmap.slugId`, `Roadmap.sortOrder`, `Roadmap.url`, `Roadmap.creator`, `Roadmap.owner`
@@ -935,12 +937,13 @@ Command status:
 | --- | --- | --- |
 | `roadmap list` | `Query.roadmaps` | Read-only |
 | `roadmap get` | `Query.roadmap` | Read-only |
+| `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Read-only |
 | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model |
 | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
 | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics |
 | `roadmap delete` | `Mutation.roadmapDelete` | Blocked: destructive command needs explicit safety semantics |
 
-Only `roadmap list` and `roadmap get` are implemented in the current CLI. Roadmap writes and roadmap-project associations are deferred; prefer Initiative commands for current Linear planning workflows.
+`roadmap list`, `roadmap get`, and `roadmap projects` are implemented in the current CLI. Roadmap writes and roadmap-project association writes are deferred; prefer Initiative commands for current Linear planning workflows.
 
 ## CustomView
 
@@ -984,7 +987,7 @@ Use the schema name `Customer` in code and docs. It is Linear's customer organiz
 Schema backing:
 
 - Types: `Customer`, `CustomerConnection`, `CustomerNeed`, `CustomerNeedConnection`, `CustomerStatus`, `CustomerStatusConnection`, `CustomerTier`, `CustomerTierConnection`
-- Reads: `Query.customers`, `Query.customer`, `Query.customerNeeds`, `Query.customerNeed`, `Query.customerStatuses`, `Query.customerStatus`, `Query.customerTiers`, `Query.customerTier`
+- Reads: `Query.customers`, `Query.customer`, `Query.customerNeeds`, `Query.customerNeed`, `CustomerNeed.projectAttachment`, `Query.customerStatuses`, `Query.customerStatus`, `Query.customerTiers`, `Query.customerTier`
 - Writes: `Mutation.customerCreate`, `Mutation.customerUpdate`, `Mutation.customerArchive`, `Mutation.customerNeedCreate`, `Mutation.customerNeedUpdate`, `Mutation.customerNeedArchive`, `Mutation.customerNeedDelete`, `Mutation.customerStatusCreate`, `Mutation.customerStatusUpdate`, `Mutation.customerStatusDelete`, `Mutation.customerTierCreate`, `Mutation.customerTierUpdate`, `Mutation.customerTierDelete`
 - Inputs: `CustomerCreateInput`, `CustomerUpdateInput`, `CustomerNeedCreateInput`, `CustomerNeedUpdateInput`, `CustomerStatusCreateInput`, `CustomerStatusUpdateInput`, `CustomerTierCreateInput`, `CustomerTierUpdateInput`
 - Relevant fields: `Customer.id`, `Customer.name`, `Customer.domains`, `Customer.externalIds`, `Customer.status`, `Customer.tier`, `Customer.owner`, `Customer.approximateNeedCount`, `Customer.slugId`, `Customer.url`, `CustomerNeed.id`, `CustomerNeed.customer`, `CustomerNeed.issue`, `CustomerNeed.project`, `CustomerNeed.priority`, `CustomerNeed.content`, `CustomerStatus.id`, `CustomerStatus.displayName`, `CustomerStatus.color`, `CustomerStatus.position`, `CustomerTier.id`, `CustomerTier.displayName`, `CustomerTier.color`, `CustomerTier.position`
@@ -997,6 +1000,7 @@ Command status:
 | `customer get` | `Query.customer` | Read-only |
 | `customer-need list` | `Query.customerNeeds` | Read-only |
 | `customer-need get` | `Query.customerNeed` | Read-only |
+| `customer-need project-attachment` | `CustomerNeed.projectAttachment` via `Query.customerNeed` | Read-only, metadata-only projection |
 | `customer-status list` | `Query.customerStatuses` | Read-only |
 | `customer-status get` | `Query.customerStatus` | Read-only |
 | `customer-tier list` | `Query.customerTiers` | Read-only |

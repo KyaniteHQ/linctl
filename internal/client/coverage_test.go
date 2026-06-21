@@ -323,7 +323,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"team_projects":         `{"team":{"id":"team-id","key":"LIT","name":"linctl","projects":{"nodes":[` + projectJSON(projectFixture{ID: "project-id", Name: "Team project", Status: "Backlog"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"team_releasePipelines": `{"team":{"id":"team-id","key":"LIT","name":"linctl","releasePipelines":{"nodes":[` + releasePipelineJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"team_states":           `{"team":{"id":"team-id","key":"LIT","name":"linctl","states":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"team_templates":        `{"team":{"id":"team-id","key":"LIT","name":"linctl","templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_gitAutomationStates": `{"team":{"id":"team-id","key":"LIT","name":"linctl","gitAutomationStates":{"nodes":[` +
+			gitAutomationStateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"team_templates": `{"team":{"id":"team-id","key":"LIT","name":"linctl","templates":{"nodes":[` + templateJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"agentActivities": `{"agentActivities":{"nodes":[` + strings.Join([]string{
 			agentActivityJSON("action"),
 			agentActivityJSON("elicitation"),
@@ -453,10 +455,17 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"viewer_teamMemberships":       `{"viewer":{"teamMemberships":{"nodes":[{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"viewer_teams":                 `{"viewer":{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"workflowStates":               `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"workflowState":                `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
+		"viewer_teamMemberships": `{"viewer":{"teamMemberships":{"nodes":[{"id":"team-membership-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"owner":true,"sortOrder":1.5,"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false},"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"viewer_teams":           `{"viewer":{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"workflowStates":         `{"workflowStates":{"nodes":[{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"workflowState":          `{"workflowState":{"id":"workflow-state-id","name":"Started","type":"started","color":"#f2c94c","position":2,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`,
+		"workflowState_issues": `{"workflowState":{"id":"workflow-state-id","name":"Started","issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-55",
+			Title:      "Workflow state issue",
+			StateID:    "workflow-state-id",
+			State:      "Started",
+			StateType:  "started",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"timeSchedules":                `{"timeSchedules":{"nodes":[{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"timeSchedule":                 `{"timeSchedule":{"id":"time-schedule-id","name":"Primary on-call","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"externalId":"pd-primary","externalUrl":"https://example.com/schedule","integration":{"id":"integration-id"},"entries":[{"startsAt":"2026-06-20T00:00:00Z","endsAt":"2026-06-21T00:00:00Z","userId":"user-id","userEmail":"omer@example.com"}]}}`,
 		"templates":                    `{"templates":[` + templateJSON() + `,` + strings.Replace(templateJSON(), "template-id", "template-two-id", 1) + `]}`,
@@ -486,6 +495,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			`],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"roadmaps":                 `{"roadmaps":{"nodes":[{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"roadmap":                  `{"roadmap":{"id":"roadmap-id","name":"Platform roadmap","description":"Roadmap body","color":"#5e6ad2","slugId":"platform-roadmap","sortOrder":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","url":"https://linear.app/kyanite/roadmap/platform-roadmap","creator":{"id":"user-id","displayName":"Omer"},"owner":{"id":"owner-id","displayName":"Owner"}}}`,
+		"roadmap_projects":         `{"roadmap":{"id":"roadmap-id","name":"Platform roadmap","projects":{"nodes":[` + projectJSON(projectFixture{ID: "roadmap-project-id", Name: "Roadmap project", Status: "Backlog"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"customViews":              `{"customViews":{"nodes":[{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customViewHasSubscribers": `{"customViewHasSubscribers":{"hasSubscribers":true}}`,
 		"customView":               `{"customView":{"id":"custom-view-id","name":"My issues","description":"Saved issue view","modelName":"Issue","shared":true,"color":"#5e6ad2","slugId":"my-issues"}}`,
@@ -512,6 +522,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"customer":                                   `{"customer":{"id":"customer-id","name":"Acme","domains":["acme.example"],"externalIds":["crm-acme"],"slackChannelId":"slack-channel-id","status":{"id":"status-id","name":"Active"},"tier":{"id":"tier-id","name":"Enterprise"},"owner":{"id":"user-id","displayName":"Omer"},"revenue":120000,"size":42,"approximateNeedCount":3,"slugId":"acme","url":"https://linear.app/kyanite/customer/acme"}}`,
 		"customerNeeds":                              `{"customerNeeds":{"nodes":[{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customerNeed":                               `{"customerNeed":{"id":"customer-need-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:01:00Z","archivedAt":null,"priority":1,"body":"Need body","content":"Need content","url":"https://example.com/need","customer":{"id":"customer-id","name":"Acme"},"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},"project":{"id":"project-id","name":"Customer project"}}}`,
+		"customerNeed_projectAttachment":             `{"customerNeed":{"id":"customer-need-id","projectAttachment":` + projectAttachmentJSON() + `}}`,
 		"customerStatuses":                           `{"customerStatuses":{"nodes":[{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"customerStatus":                             `{"customerStatus":{"id":"customer-status-id","name":"active","displayName":"Active","color":"#00ff00","description":"Active customers","position":1,"archivedAt":null}}`,
 		"customerTiers":                              `{"customerTiers":{"nodes":[{"id":"customer-tier-id","name":"enterprise","displayName":"Enterprise","color":"#0000ff","description":"Enterprise customers","position":2,"archivedAt":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -859,6 +870,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	teamWorkflowStates, err := ListTeamWorkflowStates(context.Background(), graphqlClient, "team-id", 2)
 	require.NoError(t, err)
+	teamGitAutomationStates, err := ListTeamGitAutomationStates(context.Background(), graphqlClient, "team-id", 2)
+	require.NoError(t, err)
 	teamTemplates, err := ListTeamTemplates(context.Background(), graphqlClient, "team-id", 2)
 	require.NoError(t, err)
 	users, err := ListUsers(context.Background(), graphqlClient, 2)
@@ -892,6 +905,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	workflowStates, err := ListWorkflowStates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	workflowState, err := GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
+	require.NoError(t, err)
+	workflowStateIssues, err := ListWorkflowStateIssues(context.Background(), graphqlClient, "workflow-state-id", 2)
 	require.NoError(t, err)
 	timeSchedules, err := ListTimeSchedules(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -959,6 +974,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	roadmap, err := GetRoadmapByID(context.Background(), graphqlClient, "roadmap-id")
 	require.NoError(t, err)
+	roadmapProjects, err := ListRoadmapProjects(context.Background(), graphqlClient, "roadmap-id", 2)
+	require.NoError(t, err)
 	customViews, err := ListCustomViews(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	customViewSubscribers, err := GetCustomViewSubscriberStatus(context.Background(), graphqlClient, "custom-view-id")
@@ -996,6 +1013,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	customerNeeds, err := ListCustomerNeeds(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	customerNeed, err := GetCustomerNeedByID(context.Background(), graphqlClient, "customer-need-id")
+	require.NoError(t, err)
+	customerNeedProjectAttachment, err := GetCustomerNeedProjectAttachment(
+		context.Background(),
+		graphqlClient,
+		"customer-need-id",
+	)
 	require.NoError(t, err)
 	customerStatuses, err := ListCustomerStatuses(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -1330,6 +1353,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Team project", teamProjects.Projects[0].Name)
 	require.Equal(t, "release-pipeline-id", teamReleasePipelines.ReleasePipelines[0].ID)
 	require.Equal(t, "workflow-state-id", teamWorkflowStates.WorkflowStates[0].ID)
+	require.Equal(t, "git-automation-state-id", teamGitAutomationStates.States[0].ID)
+	require.Equal(t, "review", teamGitAutomationStates.States[0].Event)
+	require.Equal(t, "Started", teamGitAutomationStates.States[0].StateName)
+	require.Equal(t, "main", teamGitAutomationStates.States[0].TargetBranchPattern)
 	require.Equal(t, "template-id", teamTemplates.Templates[0].ID)
 	require.Equal(t, "team-membership-id", teamMembership.ID)
 	require.Equal(t, "omer@example.com", teamMembership.Email)
@@ -1507,6 +1534,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "LIT", workflowStates.WorkflowStates[0].TeamKey)
 	require.Equal(t, "started", workflowState.Type)
 	require.Equal(t, "linctl", workflowState.TeamName)
+	require.True(t, workflowStateIssues.HasNextPage)
+	require.Equal(t, "workflow-state-id", workflowStateIssues.WorkflowStateID)
+	require.Equal(t, "LIT-55", workflowStateIssues.Issues[0].Identifier)
 	require.True(t, timeSchedules.HasNextPage)
 	require.Equal(t, &endCursor, timeSchedules.EndCursor)
 	require.Equal(t, "Primary on-call", timeSchedules.TimeSchedules[0].Name)
@@ -1608,6 +1638,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Platform roadmap", roadmaps.Roadmaps[0].Name)
 	require.Equal(t, "roadmap-id", roadmap.ID)
 	require.Equal(t, "Owner", roadmap.OwnerDisplayName)
+	require.True(t, roadmapProjects.HasNextPage)
+	require.Equal(t, "roadmap-id", roadmapProjects.RoadmapID)
+	require.Equal(t, "Roadmap project", roadmapProjects.Projects[0].Name)
 	require.True(t, customViews.HasNextPage)
 	require.Equal(t, &endCursor, customViews.EndCursor)
 	require.Equal(t, "My issues", customViews.CustomViews[0].Name)
@@ -1650,6 +1683,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Acme", customerNeeds.Needs[0].CustomerName)
 	require.Equal(t, "LIT-1", customerNeed.Issue)
 	require.Equal(t, "Need content", customerNeed.Content)
+	require.Equal(t, "customer-need-id", customerNeedProjectAttachment.CustomerNeedID)
+	require.NotNil(t, customerNeedProjectAttachment.Attachment)
+	require.Equal(t, "project-attachment-id", customerNeedProjectAttachment.Attachment.ID)
 	require.True(t, customerStatuses.HasNextPage)
 	require.Equal(t, &endCursor, customerStatuses.EndCursor)
 	require.Equal(t, "Active", customerStatuses.Statuses[0].DisplayName)
@@ -2480,6 +2516,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list team states team-id")
 
+		_, err = ListTeamGitAutomationStates(context.Background(), graphqlClient, "team-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list team git automation states team-id")
+
 		_, err = ListTeamTemplates(context.Background(), graphqlClient, "team-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list team templates team-id")
@@ -2547,6 +2587,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetWorkflowStateByID(context.Background(), graphqlClient, "workflow-state-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get workflow state workflow-state-id")
+
+		_, err = ListWorkflowStateIssues(context.Background(), graphqlClient, "workflow-state-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list workflow state issues workflow-state-id")
 
 		_, err = ListTimeSchedules(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -2660,6 +2704,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get roadmap roadmap-id")
 
+		_, err = ListRoadmapProjects(context.Background(), graphqlClient, "roadmap-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list roadmap projects roadmap-id")
+
 		_, err = ListCustomViews(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list custom views")
@@ -2719,6 +2767,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetCustomerNeedByID(context.Background(), graphqlClient, "customer-need-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get customer need customer-need-id")
+
+		_, err = GetCustomerNeedProjectAttachment(context.Background(), graphqlClient, "customer-need-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get customer need project attachment customer-need-id")
 
 		_, err = ListCustomerStatuses(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -3861,6 +3913,14 @@ func Test_ClientReadScenarios_return_user_settings(t *testing.T) {
 	require.Error(t, err)
 	_, err = GetUserSettingsTheme(context.Background(), graphqlClient, "desktop", "sepia")
 	require.Error(t, err)
+	_, err = GetUserSettingsCustomTheme(context.Background(), graphqlClient, "watch", "light")
+	require.Error(t, err)
+	_, err = GetUserSettingsCustomTheme(context.Background(), graphqlClient, "desktop", "sepia")
+	require.Error(t, err)
+	_, err = GetUserSettingsCustomSidebarTheme(context.Background(), graphqlClient, "watch", "light")
+	require.Error(t, err)
+	_, err = GetUserSettingsCustomSidebarTheme(context.Background(), graphqlClient, "desktop", "sepia")
+	require.Error(t, err)
 }
 
 func Test_ClientReadScenarios_cover_user_settings_error_and_null_branches(t *testing.T) {
@@ -4623,6 +4683,18 @@ func projectAttachmentJSON() string {
 		"subtitle":"overview",
 		"url":"https://example.com/project-link",
 		"sourceType":"github"
+	}`
+}
+
+func gitAutomationStateJSON() string {
+	return `{
+		"id":"git-automation-state-id",
+		"event":"review",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"state":{"id":"workflow-state-id","name":"Started","type":"started"},
+		"targetBranch":{"id":"target-branch-id","branchPattern":"main","isRegex":false}
 	}`
 }
 

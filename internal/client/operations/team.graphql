@@ -140,6 +140,23 @@ query team_states($id: String!, $first: Int, $after: String, $includeArchived: B
   }
 }
 
+query team_gitAutomationStates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  team(id: $id) {
+    id
+    key
+    name
+    gitAutomationStates(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...GitAutomationStateSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query team_templates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   team(id: $id) {
     id
@@ -167,5 +184,23 @@ fragment TeamSummaryFields on Team {
     id
     name
     urlKey
+  }
+}
+
+fragment GitAutomationStateSummaryFields on GitAutomationState {
+  id
+  event
+  createdAt
+  updatedAt
+  archivedAt
+  state {
+    id
+    name
+    type
+  }
+  targetBranch {
+    id
+    branchPattern
+    isRegex
   }
 }

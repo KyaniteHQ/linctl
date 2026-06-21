@@ -16,6 +16,15 @@ query customerNeed($id: String) {
   }
 }
 
+query customerNeed_projectAttachment($id: String) {
+  customerNeed(id: $id) {
+    id
+    projectAttachment {
+      ...ProjectAttachmentSummaryFields
+    }
+  }
+}
+
 fragment CustomerNeedSummaryFields on CustomerNeed {
   id
   createdAt

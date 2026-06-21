@@ -189,8 +189,13 @@ PY
   "$binary" team memberships "$team_id" --json --limit 5 >/dev/null
   "$binary" team projects "$team_id" --json --limit 5 >/dev/null
   "$binary" team release-pipelines "$team_id" --json --limit 5 >/dev/null
-  "$binary" team states "$team_id" --json --limit 5 >/dev/null
+  team_states_json="$("$binary" team states "$team_id" --json --limit 5)"
+  workflow_state_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("workflow_states", []); print(items[0]["id"] if items else "")' <<<"$team_states_json")"
+  "$binary" team git-automation-states "$team_id" --json --limit 5 >/dev/null
   "$binary" team templates "$team_id" --json --limit 5 >/dev/null
+  if [[ -n "$workflow_state_id" ]]; then
+    "$binary" workflow-state issues "$workflow_state_id" --json --limit 5 >/dev/null
+  fi
   "$binary" team-membership list --json --limit 5 >/dev/null
   "$binary" notification list --json --limit 5 >/dev/null
   "$binary" notification subscription list --json --limit 5 >/dev/null
@@ -258,7 +263,11 @@ PY
   if [[ -n "$initiative_update_id" ]]; then
     "$binary" initiative-update comments "$initiative_update_id" --json --limit 5 >/dev/null
   fi
-  "$binary" roadmap list --json --limit 5 >/dev/null
+  roadmap_json="$("$binary" roadmap list --json --limit 5)"
+  roadmap_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("roadmaps", []); print(items[0]["id"] if items else "")' <<<"$roadmap_json")"
+  if [[ -n "$roadmap_id" ]]; then
+    "$binary" roadmap projects "$roadmap_id" --json --limit 5 >/dev/null
+  fi
   "$binary" roadmap-to-project list --json --limit 5 >/dev/null
   custom_view_json="$("$binary" custom-view list --json --limit 5)"
   custom_view_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("custom_views", []); print(items[0]["id"] if items else "")' <<<"$custom_view_json")"
@@ -275,7 +284,11 @@ PY
     "$binary" custom-view preference-values "$custom_view_id" --json >/dev/null
   fi
   "$binary" customer list --json --limit 5 >/dev/null
-  "$binary" customer-need list --json --limit 5 >/dev/null
+  customer_need_json="$("$binary" customer-need list --json --limit 5)"
+  customer_need_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("customer_needs", []); print(items[0]["id"] if items else "")' <<<"$customer_need_json")"
+  if [[ -n "$customer_need_id" ]]; then
+    "$binary" customer-need project-attachment "$customer_need_id" --json >/dev/null
+  fi
   "$binary" customer-status list --json --limit 5 >/dev/null
   "$binary" customer-tier list --json --limit 5 >/dev/null
 )

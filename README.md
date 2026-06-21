@@ -217,6 +217,7 @@ linctl team memberships team-id --limit 20
 linctl team projects team-id --limit 20
 linctl team release-pipelines team-id --limit 20
 linctl team states team-id --limit 20
+linctl team git-automation-states team-id --limit 20
 linctl team templates team-id --limit 20
 linctl team-membership list --limit 20
 linctl team-membership get team-membership-id
@@ -247,6 +248,7 @@ linctl user my-team-memberships --limit 20
 linctl user my-teams --limit 20
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
+linctl workflow-state issues workflow-state-id --limit 20
 linctl time-schedule list --limit 20
 linctl time-schedule get time-schedule-id
 linctl template list --limit 20
@@ -268,6 +270,7 @@ linctl initiative-update get initiative-update-id
 linctl initiative-update comments initiative-update-id --limit 20
 linctl roadmap list --limit 20
 linctl roadmap get roadmap-id
+linctl roadmap projects roadmap-id --limit 20
 linctl roadmap-to-project list --limit 20
 linctl roadmap-to-project get roadmap-to-project-id
 linctl custom-view list --limit 20
@@ -285,6 +288,7 @@ linctl customer list --limit 20
 linctl customer get customer-id
 linctl customer-need list --limit 20
 linctl customer-need get customer-need-id
+linctl customer-need project-attachment customer-need-id
 linctl customer-status list --limit 20
 linctl customer-status get customer-status-id
 linctl customer-tier list --limit 20
@@ -462,6 +466,7 @@ linctl team memberships team-id --limit 20
 linctl team projects team-id --limit 20
 linctl team release-pipelines team-id --limit 20
 linctl team states team-id --limit 20
+linctl team git-automation-states team-id --limit 20
 linctl team templates team-id --limit 20
 linctl team-membership list --limit 20
 linctl team-membership get team-membership-id
@@ -490,6 +495,7 @@ linctl user my-team-memberships --limit 20
 linctl user my-teams --limit 20
 linctl workflow-state list --limit 20
 linctl workflow-state get workflow-state-id
+linctl workflow-state issues workflow-state-id --limit 20
 linctl time-schedule list --limit 20
 linctl time-schedule get time-schedule-id
 linctl template list --limit 20
@@ -510,6 +516,7 @@ linctl initiative-update list --limit 20
 linctl initiative-update get initiative-update-id
 linctl roadmap list --limit 20
 linctl roadmap get roadmap-id
+linctl roadmap projects roadmap-id --limit 20
 linctl roadmap-to-project list --limit 20
 linctl roadmap-to-project get roadmap-to-project-id
 linctl custom-view list --limit 20
@@ -527,6 +534,7 @@ linctl customer list --limit 20
 linctl customer get customer-id
 linctl customer-need list --limit 20
 linctl customer-need get customer-need-id
+linctl customer-need project-attachment customer-need-id
 linctl customer-status list --limit 20
 linctl customer-status get customer-status-id
 linctl customer-tier list --limit 20

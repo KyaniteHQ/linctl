@@ -195,6 +195,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "team projects", args: []string{"team", "projects", "team-id", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "team release pipelines", args: []string{"team", "release-pipelines", "team-id", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "team states", args: []string{"team", "states", "team-id", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
+		{name: "team git automation states", args: []string{"team", "git-automation-states", "team-id", "--limit", "1"}, contains: "git-automation-state-id review state Started target main"},
 		{name: "team templates", args: []string{"team", "templates", "team-id", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
 		{name: "team membership list", args: []string{"team-membership", "list", "--limit", "1"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
 		{name: "team membership get", args: []string{"team-membership", "get", "team-membership-id"}, contains: "team-membership-id LIT Omer owner true order 1.50"},
@@ -246,6 +247,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "user my teams", args: []string{"user", "my-teams", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "workflow state list", args: []string{"workflow-state", "list", "--limit", "1"}, contains: "workflow-state-id Started [started]"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, contains: "workflow-state-id Started [started]"},
+		{name: "workflow state issues", args: []string{"workflow-state", "issues", "workflow-state-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "time schedule list", args: []string{"time-schedule", "list", "--limit", "1"}, contains: "time-schedule-id Primary on-call entries 1"},
 		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, contains: "time-schedule-id Primary on-call entries 1"},
 		{name: "template list", args: []string{"template", "list", "--limit", "1"}, contains: "template-id Bug report [issue] team LIT"},
@@ -267,6 +269,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "initiative update comments", args: []string{"initiative-update", "comments", "initiative-update-id", "--limit", "1"}, contains: "comment-id Omer 2026-06-19T12:00:00Z"},
 		{name: "roadmap list", args: []string{"roadmap", "list", "--limit", "1"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
 		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
+		{name: "roadmap projects", args: []string{"roadmap", "projects", "roadmap-id", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "roadmap to project list", args: []string{"roadmap-to-project", "list", "--limit", "1"}, contains: "roadmap-to-project-id Platform roadmap -> Pinned project order 1"},
 		{name: "roadmap to project get", args: []string{"roadmap-to-project", "get", "roadmap-to-project-id"}, contains: "roadmap-to-project-id Platform roadmap -> Pinned project order 1"},
 		{name: "custom view list", args: []string{"custom-view", "list", "--limit", "1"}, contains: "custom-view-id My issues [Issue]"},
@@ -284,6 +287,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, contains: "customer-id Acme [Active] needs 3"},
 		{name: "customer need list", args: []string{"customer-need", "list", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
 		{name: "customer need get", args: []string{"customer-need", "get", "customer-need-id"}, contains: "customer-need-id Acme LIT-1 priority 1"},
+		{name: "customer need project attachment", args: []string{"customer-need", "project-attachment", "customer-need-id"}, contains: "customer-need-id project_attachment attachment-id Linked PR [github]"},
 		{name: "customer status list", args: []string{"customer-status", "list", "--limit", "1"}, contains: "customer-status-id Active #00ff00 1"},
 		{name: "customer status get", args: []string{"customer-status", "get", "customer-status-id"}, contains: "customer-status-id Active #00ff00 1"},
 		{name: "customer tier list", args: []string{"customer-tier", "list", "--limit", "1"}, contains: "customer-tier-id Enterprise #0000ff 2"},
@@ -749,6 +753,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"custom-view", "user-preferences", "custom-view-id"},
 			{"custom-view", "user-preferences", "values", "custom-view-id"},
 			{"custom-view", "preference-values", "custom-view-id"},
+			{"customer-need", "project-attachment", "customer-need-id"},
 			{"sla-configuration", "list", "team-id"},
 		}
 		for _, args := range commands {
@@ -1108,6 +1113,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,name,status", "team", "projects", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,name,type", "team", "release-pipelines", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,name,type", "team", "states", "team-id", "--limit", "1"},
+		{"--json", "team", "git-automation-states", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,name,type,team_key", "team", "templates", "team-id", "--limit", "1"},
 		{"--json", "--fields", "id,team_key,user_id,owner", "team-membership", "list", "--limit", "1"},
 		{"--json", "team-membership", "get", "team-membership-id"},
@@ -1141,6 +1147,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "initiative-update", "get", "initiative-update-id"},
 		{"--json", "roadmap", "list", "--limit", "1"},
 		{"--json", "roadmap", "get", "roadmap-id"},
+		{"--json", "--fields", "id,name,status", "roadmap", "projects", "roadmap-id", "--limit", "1"},
 		{"--json", "--fields", "id,roadmap_id,project_id", "roadmap-to-project", "list", "--limit", "1"},
 		{"--json", "roadmap-to-project", "get", "roadmap-to-project-id"},
 		{"--json", "custom-view", "list", "--limit", "1"},
@@ -1158,6 +1165,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "customer", "get", "customer-id"},
 		{"--json", "customer-need", "list", "--limit", "1"},
 		{"--json", "customer-need", "get", "customer-need-id"},
+		{"--json", "customer-need", "project-attachment", "customer-need-id"},
 		{"--json", "customer-status", "list", "--limit", "1"},
 		{"--json", "customer-status", "get", "customer-status-id"},
 		{"--json", "customer-tier", "list", "--limit", "1"},
@@ -1230,6 +1238,7 @@ func Test_CommandFlows_print_only_id_when_id_only_flag_is_set(t *testing.T) {
 	}{
 		{name: "issue get", args: []string{"--id-only", "issue", "get", "LIT-1"}, output: "issue-id\n"},
 		{name: "issue history", args: []string{"--id-only", "issue", "history", "LIT-1"}, output: "issue-history-id\n"},
+		{name: "team git automation states", args: []string{"--id-only", "team", "git-automation-states", "team-id"}, output: "git-automation-state-id\n"},
 	}
 
 	for _, test := range tests {
@@ -1254,6 +1263,8 @@ func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing
 		{"--quiet", "doctor"},
 		{"--quiet", "issue", "get", "LIT-1"},
 		{"--quiet", "issue", "history", "LIT-1"},
+		{"--quiet", "team", "git-automation-states", "team-id"},
+		{"--quiet", "customer-need", "project-attachment", "customer-need-id"},
 	}
 
 	for _, args := range tests {
@@ -1271,6 +1282,20 @@ func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing
 			require.Empty(t, output.String())
 		})
 	}
+}
+
+func Test_CommandFlows_customer_need_project_attachment_handles_missing_attachment(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{missingCustomerNeedAttachment: true})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"customer-need", "project-attachment", "customer-need-id"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "customer-need-id project_attachment -\n", output.String())
 }
 
 func Test_CommandFlows_fail_on_empty_list_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -1887,19 +1912,43 @@ func Test_CommandFlows_print_minimal_human_output_when_format_flag_is_set(t *tes
 	require.Equal(t, "LIT-1\n", output.String())
 }
 
-func Test_CommandFlows_print_workflow_state_list_as_json(t *testing.T) {
-	output := bytes.Buffer{}
-	restore := useCommandRuntime(t, commandFlowFakeClient{})
-	defer restore()
-	command := NewRootCommand(context.Background(), BuildInfo{})
-	command.SetOut(&output)
-	command.SetArgs([]string{"--json", "workflow-state", "list", "--limit", "1"})
+func Test_CommandFlows_print_workflow_state_pages_as_json(t *testing.T) {
+	tests := []struct {
+		name     string
+		args     []string
+		contains string
+		also     string
+	}{
+		{
+			name:     "list",
+			args:     []string{"--json", "workflow-state", "list", "--limit", "1"},
+			contains: `"workflow_states": [`,
+			also:     `"team_key": "LIT"`,
+		},
+		{
+			name:     "issues",
+			args:     []string{"--json", "workflow-state", "issues", "workflow-state-id", "--limit", "1"},
+			contains: `"issues": [`,
+			also:     `"identifier": "LIT-1"`,
+		},
+	}
 
-	err := command.ExecuteContext(context.Background())
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
 
-	require.NoError(t, err)
-	require.Contains(t, output.String(), `"workflow_states": [`)
-	require.Contains(t, output.String(), `"team_key": "LIT"`)
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Contains(t, output.String(), test.contains)
+			require.Contains(t, output.String(), test.also)
+		})
+	}
 }
 
 func Test_CommandFlows_report_operation_errors(t *testing.T) {
@@ -2048,6 +2097,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "team projects", args: []string{"team", "projects", "team-id"}, operation: "team_projects", contains: "list team projects team-id"},
 		{name: "team release pipelines", args: []string{"team", "release-pipelines", "team-id"}, operation: "team_releasePipelines", contains: "list team release pipelines team-id"},
 		{name: "team states", args: []string{"team", "states", "team-id"}, operation: "team_states", contains: "list team states team-id"},
+		{name: "team git automation states", args: []string{"team", "git-automation-states", "team-id"}, operation: "team_gitAutomationStates", contains: "list team git automation states team-id"},
 		{name: "team templates", args: []string{"team", "templates", "team-id"}, operation: "team_templates", contains: "list team templates team-id"},
 		{name: "user list", args: []string{"user", "list"}, operation: "users", contains: "list users"},
 		{name: "user get", args: []string{"user", "get", "user-id"}, operation: "user", contains: "get user user-id"},
@@ -2065,6 +2115,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "user my teams", args: []string{"user", "my-teams"}, operation: "viewer_teams", contains: "list viewer teams"},
 		{name: "workflow state list", args: []string{"workflow-state", "list"}, operation: "workflowStates", contains: "list workflow states"},
 		{name: "workflow state get", args: []string{"workflow-state", "get", "workflow-state-id"}, operation: "workflowState", contains: "get workflow state workflow-state-id"},
+		{name: "workflow state issues", args: []string{"workflow-state", "issues", "workflow-state-id"}, operation: "workflowState_issues", contains: "list workflow state issues workflow-state-id"},
 		{name: "time schedule list", args: []string{"time-schedule", "list"}, operation: "timeSchedules", contains: "list time schedules"},
 		{name: "time schedule get", args: []string{"time-schedule", "get", "time-schedule-id"}, operation: "timeSchedule", contains: "get time schedule time-schedule-id"},
 		{name: "template list", args: []string{"template", "list"}, operation: "templates", contains: "list templates"},
@@ -2086,6 +2137,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "initiative update comments", args: []string{"initiative-update", "comments", "initiative-update-id"}, operation: "initiativeUpdate_comments", contains: "list initiative update comments initiative-update-id"},
 		{name: "roadmap list", args: []string{"roadmap", "list"}, operation: "roadmaps", contains: "list roadmaps"},
 		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, operation: "roadmap", contains: "get roadmap roadmap-id"},
+		{name: "roadmap projects", args: []string{"roadmap", "projects", "roadmap-id"}, operation: "roadmap_projects", contains: "list roadmap projects roadmap-id"},
 		{name: "roadmap to project list", args: []string{"roadmap-to-project", "list"}, operation: "roadmapToProjects", contains: "list roadmap to projects"},
 		{name: "roadmap to project get", args: []string{"roadmap-to-project", "get", "roadmap-to-project-id"}, operation: "roadmapToProject", contains: "get roadmap to project roadmap-to-project-id"},
 		{name: "custom view list", args: []string{"custom-view", "list"}, operation: "customViews", contains: "list custom views"},
@@ -2103,6 +2155,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, operation: "customer", contains: "get customer customer-id"},
 		{name: "customer need list", args: []string{"customer-need", "list"}, operation: "customerNeeds", contains: "list customer needs"},
 		{name: "customer need get", args: []string{"customer-need", "get", "customer-need-id"}, operation: "customerNeed", contains: "get customer need customer-need-id"},
+		{name: "customer need project attachment", args: []string{"customer-need", "project-attachment", "customer-need-id"}, operation: "customerNeed_projectAttachment", contains: "get customer need project attachment customer-need-id"},
 		{name: "customer status list", args: []string{"customer-status", "list"}, operation: "customerStatuses", contains: "list customer statuses"},
 		{name: "customer status get", args: []string{"customer-status", "get", "customer-status-id"}, operation: "customerStatus", contains: "get customer status customer-status-id"},
 		{name: "customer tier list", args: []string{"customer-tier", "list"}, operation: "customerTiers", contains: "list customer tiers"},
@@ -2186,56 +2239,57 @@ func testCommandRuntime(graphqlClient graphql.Client) commandRuntime {
 }
 
 type commandFlowFakeClient struct {
-	emptyIssueList              bool
-	emptyIssueChildren          bool
-	emptyIssueComments          bool
-	emptyIssueProject           bool
-	emptyIssueMine              bool
-	emptyIssueLabel             bool
-	emptyIssueCycle             bool
-	emptyIssueCreatedAfter      bool
-	emptyIssueCreatedBefore     bool
-	emptyIssueHasBlockers       bool
-	emptyIssueBlocks            bool
-	emptyIssueBlockedBy         bool
-	emptyIssueAllTeams          bool
-	emptyIssueSearch            bool
-	emptyNextIssues             bool
-	rankedNextIssues            bool
-	expectedStateType           string
-	expectedProjectID           string
-	expectedAssigneeID          string
-	expectedLabelID             string
-	expectedCycleID             string
-	expectedCreatedAfter        string
-	expectedCreatedBefore       string
-	expectedBlockedBy           string
-	expectedIssueDeps           string
-	expectedSearchQuery         string
-	expectedReleaseSearchTerm   string
-	expectedSemanticSearchQuery string
-	expectedTypedSearchTerm     string
-	emptyReleaseSearch          bool
-	emptyProjectList            bool
-	emptyProjectMembers         bool
-	emptyProjectUpdates         bool
-	emptyProjectMilestones      bool
-	emptySLAConfigurations      bool
-	emptySemanticSearch         bool
-	emptySearchDocuments        bool
-	emptySearchIssues           bool
-	emptySearchProjects         bool
-	emptyViewerDrafts           bool
-	expectedCommentBody         string
-	expectedCommentParentID     string
-	expectedCreateDescription   string
-	expectedUpdateDescription   string
-	expectedStartAssigneeID     string
-	expectedStartStateID        string
-	expectedOrganizationURLKey  string
-	expectedApplicationClientID string
-	failOperation               string
-	multiIssueList              bool
+	emptyIssueList                bool
+	emptyIssueChildren            bool
+	emptyIssueComments            bool
+	emptyIssueProject             bool
+	emptyIssueMine                bool
+	emptyIssueLabel               bool
+	emptyIssueCycle               bool
+	emptyIssueCreatedAfter        bool
+	emptyIssueCreatedBefore       bool
+	emptyIssueHasBlockers         bool
+	emptyIssueBlocks              bool
+	emptyIssueBlockedBy           bool
+	emptyIssueAllTeams            bool
+	emptyIssueSearch              bool
+	emptyNextIssues               bool
+	rankedNextIssues              bool
+	expectedStateType             string
+	expectedProjectID             string
+	expectedAssigneeID            string
+	expectedLabelID               string
+	expectedCycleID               string
+	expectedCreatedAfter          string
+	expectedCreatedBefore         string
+	expectedBlockedBy             string
+	expectedIssueDeps             string
+	expectedSearchQuery           string
+	expectedReleaseSearchTerm     string
+	expectedSemanticSearchQuery   string
+	expectedTypedSearchTerm       string
+	emptyReleaseSearch            bool
+	emptyProjectList              bool
+	emptyProjectMembers           bool
+	emptyProjectUpdates           bool
+	emptyProjectMilestones        bool
+	emptySLAConfigurations        bool
+	emptySemanticSearch           bool
+	emptySearchDocuments          bool
+	emptySearchIssues             bool
+	emptySearchProjects           bool
+	emptyViewerDrafts             bool
+	expectedCommentBody           string
+	expectedCommentParentID       string
+	expectedCreateDescription     string
+	expectedUpdateDescription     string
+	expectedStartAssigneeID       string
+	expectedStartStateID          string
+	expectedOrganizationURLKey    string
+	expectedApplicationClientID   string
+	missingCustomerNeedAttachment bool
+	failOperation                 string
+	multiIssueList                bool
 }
 
 func (client commandFlowFakeClient) MakeRequest(
@@ -2590,6 +2644,9 @@ func commandFlowTeamChildPayload(operation string) (string, bool) {
 	case "team_states":
 		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","states":{"nodes":[` +
 			commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "team_gitAutomationStates":
+		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","gitAutomationStates":{"nodes":[` +
+			commandGitAutomationStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "team_templates":
 		return `{"team":{"id":"team-id","key":"LIT","name":"linctl","templates":{"nodes":[` +
 			commandTemplateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
@@ -2766,6 +2823,10 @@ func commandFlowStateAndCommentPayload(operation string, fake commandFlowFakeCli
 		return `{"workflowStates":{"nodes":[` + commandWorkflowStateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "workflowState":
 		return `{"workflowState":` + commandWorkflowStateJSON() + `}`, true
+	case "workflowState_issues":
+		return `{"workflowState":{"id":"workflow-state-id","name":"Started","issues":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "state-id", "Todo", "backlog") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	}
 
 	return commandFlowInitiativePayload(operation, fake)
@@ -2940,6 +3001,10 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"roadmaps":{"nodes":[` + commandRoadmapJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "roadmap":
 		return `{"roadmap":` + commandRoadmapJSON() + `}`, true
+	case "roadmap_projects":
+		return `{"roadmap":{"id":"roadmap-id","name":"Platform roadmap","projects":{"nodes":[` +
+			commandProjectJSON("Listed project", "Backlog", "backlog") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "customViews":
 		return `{"customViews":{"nodes":[` + commandCustomViewJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customViewHasSubscribers":
@@ -2970,6 +3035,11 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"customerNeeds":{"nodes":[` + commandCustomerNeedJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customerNeed":
 		return `{"customerNeed":` + commandCustomerNeedJSON() + `}`, true
+	case "customerNeed_projectAttachment":
+		if fake.missingCustomerNeedAttachment {
+			return `{"customerNeed":{"id":"customer-need-id","projectAttachment":null}}`, true
+		}
+		return `{"customerNeed":{"id":"customer-need-id","projectAttachment":` + commandAttachmentJSON() + `}}`, true
 	case "customerStatuses":
 		return `{"customerStatuses":{"nodes":[` + commandCustomerStatusJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "customerStatus":
@@ -4212,6 +4282,18 @@ func commandAttachmentJSON() string {
 		"subtitle":"feat: add thing",
 		"url":"https://github.com/kyanite/linctl/pull/1",
 		"sourceType":"github"
+	}`
+}
+
+func commandGitAutomationStateJSON() string {
+	return `{
+		"id":"git-automation-state-id",
+		"event":"review",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"state":{"id":"workflow-state-id","name":"Started","type":"started"},
+		"targetBranch":{"id":"target-branch-id","branchPattern":"main","isRegex":false}
 	}`
 }
 

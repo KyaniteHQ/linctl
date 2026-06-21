@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 117 | 458 |
 | Upstream Query root fields | 158 | 105 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 308 | 308 | 308 |
-| Domain-map commands | 399 | 267 | 399 |
+| Local generated Go operations | 312 | 312 | 312 |
+| Domain-map commands | 403 | 271 | 403 |
 
 ## Upstream SDK Root Methods
 
@@ -1101,6 +1101,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customViews` | query | `customViews` | implemented | `internal/client/generated.go` |
 | `customer` | query | `customer` | implemented | `internal/client/generated.go` |
 | `customerNeed` | query | `customerNeed` | implemented | `internal/client/generated.go` |
+| `customerNeed_projectAttachment` | query | `customerNeed` | implemented | `internal/client/generated.go` |
 | `customerNeeds` | query | `customerNeeds` | implemented | `internal/client/generated.go` |
 | `customerStatus` | query | `customerStatus` | implemented | `internal/client/generated.go` |
 | `customerStatuses` | query | `customerStatuses` | implemented | `internal/client/generated.go` |
@@ -1242,6 +1243,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
 | `roadmapToProject` | query | `roadmapToProject` | implemented | `internal/client/generated.go` |
 | `roadmapToProjects` | query | `roadmapToProjects` | implemented | `internal/client/generated.go` |
+| `roadmap_projects` | query | `roadmap` | implemented | `internal/client/generated.go` |
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
 | `searchDocuments` | query | `searchDocuments` | implemented | `internal/client/generated.go` |
 | `searchIssues` | query | `searchIssues` | implemented | `internal/client/generated.go` |
@@ -1252,6 +1254,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `teamMembership` | query | `teamMembership` | implemented | `internal/client/generated.go` |
 | `teamMemberships` | query | `teamMemberships` | implemented | `internal/client/generated.go` |
 | `team_cycles` | query | `team` | implemented | `internal/client/generated.go` |
+| `team_gitAutomationStates` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_issues` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_labels` | query | `team` | implemented | `internal/client/generated.go` |
 | `team_members` | query | `team` | implemented | `internal/client/generated.go` |
@@ -1314,6 +1317,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `viewer_teamMemberships` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `viewer_teams` | query | `viewer` | implemented | `internal/client/generated.go` |
 | `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
+| `workflowState_issues` | query | `workflowState` | implemented | `internal/client/generated.go` |
 | `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 
 ## Repo Domain-Map Commands
@@ -1554,6 +1558,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Team | `team projects` | `Team.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team release-pipelines` | `Team.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team states` | `Team.states` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team git-automation-states` | `Team.gitAutomationStates` | Read-only, rule/state/target-branch metadata only | implemented | `linctl --help` / public CLI tests |
 | Team | `team templates` | `Team.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team-membership list` | `Query.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team-membership get` | `Query.teamMembership` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1587,6 +1592,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | User | `user my-teams` | `User.teams` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
+| WorkflowState | `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
@@ -1647,6 +1653,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | InitiativeUpdate | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | Roadmap | `roadmap list` | `Query.roadmaps` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Roadmap | `roadmap get` | `Query.roadmap` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Roadmap | `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Roadmap | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | Roadmap | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Roadmap | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
@@ -1669,6 +1676,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Customer | `customer get` | `Query.customer` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer-need list` | `Query.customerNeeds` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer-need get` | `Query.customerNeed` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer-need project-attachment` | `CustomerNeed.projectAttachment` via `Query.customerNeed` | Read-only, metadata-only projection | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer-status list` | `Query.customerStatuses` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer-status get` | `Query.customerStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer-tier list` | `Query.customerTiers` | Read-only | implemented | `linctl --help` / public CLI tests |

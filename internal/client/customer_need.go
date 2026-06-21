@@ -33,6 +33,12 @@ type CustomerNeedList struct {
 	EndCursor   *string               `json:"end_cursor,omitempty"`
 }
 
+// CustomerNeedProjectAttachment is the metadata-only ProjectAttachment linked to a customer need.
+type CustomerNeedProjectAttachment struct {
+	CustomerNeedID string             `json:"customer_need_id"`
+	Attachment     *AttachmentSummary `json:"attachment,omitempty"`
+}
+
 // ListCustomerNeeds returns visible Linear customer needs.
 func ListCustomerNeeds(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerNeedList, error) {
 	result, err := customerNeeds(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -60,6 +66,29 @@ func GetCustomerNeedByID(ctx context.Context, graphqlClient graphql.Client, id s
 	}
 
 	return customerNeedSummary(result.CustomerNeed.CustomerNeedSummaryFields), nil
+}
+
+// GetCustomerNeedProjectAttachment returns the metadata-only ProjectAttachment linked to one customer need.
+func GetCustomerNeedProjectAttachment(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (CustomerNeedProjectAttachment, error) {
+	result, err := customerNeed_projectAttachment(ctx, graphqlClient, &id)
+	if err != nil {
+		return CustomerNeedProjectAttachment{}, fmt.Errorf("get customer need project attachment %s: %w", id, err)
+	}
+
+	attachment := (*AttachmentSummary)(nil)
+	if result.CustomerNeed.ProjectAttachment != nil {
+		summary := projectAttachmentSummary(result.CustomerNeed.ProjectAttachment.ProjectAttachmentSummaryFields)
+		attachment = &summary
+	}
+
+	return CustomerNeedProjectAttachment{
+		CustomerNeedID: result.CustomerNeed.Id,
+		Attachment:     attachment,
+	}, nil
 }
 
 func customerNeedSummary(fields CustomerNeedSummaryFields) CustomerNeedSummary {

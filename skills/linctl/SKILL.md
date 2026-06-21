@@ -218,6 +218,7 @@ linctl team memberships TEAM_ID --json --limit 20
 linctl team projects TEAM_ID --json --limit 20
 linctl team release-pipelines TEAM_ID --json --limit 20
 linctl team states TEAM_ID --json --limit 20
+linctl team git-automation-states TEAM_ID --json --limit 20
 linctl team templates TEAM_ID --json --limit 20
 linctl team-membership list --json --limit 20
 linctl team-membership get TEAM_MEMBERSHIP_ID --json
@@ -248,6 +249,7 @@ linctl user my-team-memberships --json --limit 20
 linctl user my-teams --json --limit 20
 linctl workflow-state list --json --limit 20
 linctl workflow-state get WORKFLOW_STATE_ID --json
+linctl workflow-state issues WORKFLOW_STATE_ID --json --limit 20
 linctl time-schedule list --json --limit 20
 linctl time-schedule get TIME_SCHEDULE_ID --json
 linctl template list --json --limit 20
@@ -269,6 +271,7 @@ linctl initiative-update get INITIATIVE_UPDATE_ID --json
 linctl initiative-update comments INITIATIVE_UPDATE_ID --json --limit 20
 linctl roadmap list --json --limit 20
 linctl roadmap get ROADMAP_ID --json
+linctl roadmap projects ROADMAP_ID --json --limit 20
 linctl roadmap-to-project list --json --limit 20
 linctl roadmap-to-project get ROADMAP_TO_PROJECT_ID --json
 linctl custom-view list --json --limit 20
@@ -286,6 +289,7 @@ linctl customer list --json --limit 20
 linctl customer get CUSTOMER_ID --json
 linctl customer-need list --json --limit 20
 linctl customer-need get CUSTOMER_NEED_ID --json
+linctl customer-need project-attachment CUSTOMER_NEED_ID --json
 linctl customer-status list --json --limit 20
 linctl customer-status get CUSTOMER_STATUS_ID --json
 linctl customer-tier list --json --limit 20

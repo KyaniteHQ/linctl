@@ -24,6 +24,7 @@ func addTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	addTeamProjectsCommand(ctx, teamCommand, options)
 	addTeamReleasePipelinesCommand(ctx, teamCommand, options)
 	addTeamStatesCommand(ctx, teamCommand, options)
+	addTeamGitAutomationStatesCommand(ctx, teamCommand, options)
 	addTeamTemplatesCommand(ctx, teamCommand, options)
 	root.AddCommand(teamCommand)
 }
@@ -222,6 +223,29 @@ func addTeamStatesCommand(ctx context.Context, root *cobra.Command, options *roo
 	root.AddCommand(command)
 }
 
+func addTeamGitAutomationStatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "git-automation-states TEAM_ID",
+		Short: "List team Git automation states",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadTeamGitAutomationStates,
+				gitAutomationStatePageWithItems,
+				writeGitAutomationState,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum Git automation states to return")
+	root.AddCommand(command)
+}
+
 func addTeamTemplatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	limit := 50
 	command := &cobra.Command{
@@ -251,6 +275,31 @@ func writeTeam(command *cobra.Command, options *rootOptions, team client.TeamSum
 	}
 
 	return render.WriteLine(command.OutOrStdout(), "%s %s %s", team.ID, team.Key, team.Name)
+}
+
+func writeGitAutomationState(
+	command *cobra.Command,
+	options *rootOptions,
+	state client.GitAutomationStateSummary,
+) error {
+	if wrote, err := writeIDOnly(command, options, state.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, state)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s %s state %s target %s",
+		state.ID,
+		state.Event,
+		emptyDash(state.StateName),
+		emptyDash(state.TargetBranchPattern),
+	)
 }
 
 func loadTeamList(
@@ -353,6 +402,16 @@ func loadTeamStates(
 	return states, states.WorkflowStates, err
 }
 
+func loadTeamGitAutomationStates(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.GitAutomationStateList, []client.GitAutomationStateSummary, error) {
+	states, err := client.ListTeamGitAutomationStates(ctx, runtime.graphqlClient, args[0], limit)
+	return states, states.States, err
+}
+
 func loadTeamTemplates(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -375,5 +434,13 @@ func issuePageWithItems(page client.IssueList, issues []client.IssueSummary) cli
 
 func projectPageWithItems(page client.ProjectList, projects []client.ProjectSummary) client.ProjectList {
 	page.Projects = projects
+	return page
+}
+
+func gitAutomationStatePageWithItems(
+	page client.GitAutomationStateList,
+	states []client.GitAutomationStateSummary,
+) client.GitAutomationStateList {
+	page.States = states
 	return page
 }

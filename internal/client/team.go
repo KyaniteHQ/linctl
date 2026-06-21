@@ -36,6 +36,31 @@ type TeamMemberList struct {
 	EndCursor   *string       `json:"end_cursor,omitempty"`
 }
 
+// GitAutomationStateSummary is the compact Git automation rule model used by read-only commands.
+type GitAutomationStateSummary struct {
+	ID                  string `json:"id"`
+	Event               string `json:"event"`
+	CreatedAt           string `json:"created_at"`
+	UpdatedAt           string `json:"updated_at"`
+	ArchivedAt          string `json:"archived_at,omitempty"`
+	StateID             string `json:"state_id,omitempty"`
+	StateName           string `json:"state_name,omitempty"`
+	StateType           string `json:"state_type,omitempty"`
+	TargetBranchID      string `json:"target_branch_id,omitempty"`
+	TargetBranchPattern string `json:"target_branch_pattern,omitempty"`
+	TargetBranchIsRegex bool   `json:"target_branch_is_regex"`
+}
+
+// GitAutomationStateList is a page of Git automation rules associated with one Team.
+type GitAutomationStateList struct {
+	TeamID      string                      `json:"team_id"`
+	TeamKey     string                      `json:"team_key"`
+	TeamName    string                      `json:"team_name"`
+	States      []GitAutomationStateSummary `json:"git_automation_states"`
+	HasNextPage bool                        `json:"has_next_page"`
+	EndCursor   *string                     `json:"end_cursor,omitempty"`
+}
+
 // ListTeams returns visible teams.
 func ListTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
 	teams, err := Teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -235,6 +260,33 @@ func ListTeamWorkflowStates(
 	}, nil
 }
 
+// ListTeamGitAutomationStates returns Git automation rules associated with one Team.
+func ListTeamGitAutomationStates(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (GitAutomationStateList, error) {
+	team, err := team_gitAutomationStates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return GitAutomationStateList{}, fmt.Errorf("list team git automation states %s: %w", id, err)
+	}
+
+	states := make([]GitAutomationStateSummary, 0, len(team.Team.GitAutomationStates.Nodes))
+	for _, state := range team.Team.GitAutomationStates.Nodes {
+		states = append(states, gitAutomationStateSummary(state.GitAutomationStateSummaryFields))
+	}
+
+	return GitAutomationStateList{
+		TeamID:      team.Team.Id,
+		TeamKey:     team.Team.Key,
+		TeamName:    team.Team.Name,
+		States:      states,
+		HasNextPage: team.Team.GitAutomationStates.PageInfo.HasNextPage,
+		EndCursor:   team.Team.GitAutomationStates.PageInfo.EndCursor,
+	}, nil
+}
+
 // ListTeamTemplates returns Templates associated with one Team.
 func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TemplateList, error) {
 	team, err := team_templates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
@@ -275,6 +327,28 @@ func teamSummary(team TeamSummaryFields) TeamSummary {
 		OrgName:     team.Organization.Name,
 		OrgURLKey:   team.Organization.UrlKey,
 	}
+}
+
+func gitAutomationStateSummary(fields GitAutomationStateSummaryFields) GitAutomationStateSummary {
+	summary := GitAutomationStateSummary{
+		ID:         fields.Id,
+		Event:      string(fields.Event),
+		CreatedAt:  fields.CreatedAt,
+		UpdatedAt:  fields.UpdatedAt,
+		ArchivedAt: stringValue(fields.ArchivedAt),
+	}
+	if fields.State != nil {
+		summary.StateID = fields.State.Id
+		summary.StateName = fields.State.Name
+		summary.StateType = fields.State.Type
+	}
+	if fields.TargetBranch != nil {
+		summary.TargetBranchID = fields.TargetBranch.Id
+		summary.TargetBranchPattern = fields.TargetBranch.BranchPattern
+		summary.TargetBranchIsRegex = fields.TargetBranch.IsRegex
+	}
+
+	return summary
 }
 
 func teamSummaryFromConnection(team TeamsTeamsTeamConnectionNodesTeam) TeamSummary {

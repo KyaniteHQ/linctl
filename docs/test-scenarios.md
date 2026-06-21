@@ -1023,24 +1023,34 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_states`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-179. Team templates
+179. Team Git automation states
+   - Success: `linctl team git-automation-states TEAM_ID --limit N` lists Git automation rule metadata for one Team without exposing source, secret, or write payloads.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_git_automation_states`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+180. Team templates
    - Success: `linctl team templates TEAM_ID --limit N` lists Templates associated with one Team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_templates`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-180. Project child reads
+181. Simple child metadata reads
+   - Success: `linctl roadmap projects ROADMAP_ID --limit N`, `linctl workflow-state issues WORKFLOW_STATE_ID --limit N`, and `linctl customer-need project-attachment CUSTOMER_NEED_ID` expose safe child metadata without body, blob, metadata/source JSON, or secret fields by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/roadmap_projects`, `Test_CommandFlows_execute_read_and_write_commands/workflow_state_issues`, `Test_CommandFlows_execute_read_and_write_commands/customer_need_project_attachment`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+182. Project child reads
    - Success: `linctl project attachments|documents|external-links|history|initiative-links|initiatives|inverse-relations|issues|comments|labels|needs|relations|teams PROJECT_ID --limit N` lists safe child resources for one Project through the public CLI and JSON output controls without selecting draft, body, blob, secret, source, or metadata payload fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_attachments`, `Test_CommandFlows_execute_read_and_write_commands/project_documents`, `Test_CommandFlows_execute_read_and_write_commands/project_external_links`, `Test_CommandFlows_execute_read_and_write_commands/project_history`, `Test_CommandFlows_execute_read_and_write_commands/project_initiative_links`, `Test_CommandFlows_execute_read_and_write_commands/project_initiatives`, `Test_CommandFlows_execute_read_and_write_commands/project_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_issues`, `Test_CommandFlows_execute_read_and_write_commands/project_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_labels`, `Test_CommandFlows_execute_read_and_write_commands/project_needs`, `Test_CommandFlows_execute_read_and_write_commands/project_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_teams`.
 
-181. Release child reads
+183. Release child reads
    - Success: `linctl release documents|issues RELEASE_ID --limit N` and `linctl release-pipeline teams RELEASE_PIPELINE_ID --limit N` list safe child resources for one Release or ReleasePipeline through the public CLI and JSON output controls without selecting body, blob, secret, archive payload, or document-content fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/release_documents`, `Test_CommandFlows_execute_read_and_write_commands/release_issues`, `Test_CommandFlows_execute_read_and_write_commands/release_pipeline_teams`; `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-182. Issue child reads
+184. Issue child reads
    - Success: `linctl issue attachments|bot-actor|children|documents|former-attachments|former-needs|history|inverse-relations|labels|needs|relations|releases|shared-access|state-history|subscribers ISSUE_ID --limit N` lists safe child resources for one Issue through the public CLI and JSON output controls without selecting body, blob, secret, shared user details, raw change, or customer-need content fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_bot_actor`, `Test_CommandFlows_execute_read_and_write_commands/issue_children`, `Test_CommandFlows_execute_read_and_write_commands/issue_documents`, `Test_CommandFlows_execute_read_and_write_commands/issue_former_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_history`, `Test_CommandFlows_execute_read_and_write_commands/issue_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_labels`, `Test_CommandFlows_execute_read_and_write_commands/issue_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_releases`, `Test_CommandFlows_execute_read_and_write_commands/issue_state_history`, `Test_CommandFlows_execute_read_and_write_commands/issue_subscribers`; `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-182a. Issue VCS branch search projections
+184a. Issue VCS branch search projections
    - Success: `linctl issue vcs-branch-search get|attachments|bot-actor|children|comments|documents|former-attachments|former-needs|history|inverse-relations|labels|needs|relations|releases|shared-access|state-history|subscribers BRANCH_NAME --limit N` reads safe metadata for the Issue matched by a VCS branch without selecting comment body, customer-need content, shared user details, blob, source, or secret fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_vcs_branch_*`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.

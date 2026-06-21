@@ -26,6 +26,15 @@ type WorkflowStateList struct {
 	EndCursor      *string                `json:"end_cursor,omitempty"`
 }
 
+// WorkflowStateIssueList is a page of Issues currently associated with one WorkflowState.
+type WorkflowStateIssueList struct {
+	WorkflowStateID   string         `json:"workflow_state_id"`
+	WorkflowStateName string         `json:"workflow_state_name"`
+	Issues            []IssueSummary `json:"issues"`
+	HasNextPage       bool           `json:"has_next_page"`
+	EndCursor         *string        `json:"end_cursor,omitempty"`
+}
+
 // ListWorkflowStates returns visible workflow states.
 func ListWorkflowStates(ctx context.Context, graphqlClient graphql.Client, limit int) (WorkflowStateList, error) {
 	states, err := workflowStates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -57,6 +66,32 @@ func GetWorkflowStateByID(
 	}
 
 	return workflowStateSummary(state.WorkflowState.WorkflowStateSummaryFields), nil
+}
+
+// ListWorkflowStateIssues returns Issues currently associated with one WorkflowState.
+func ListWorkflowStateIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (WorkflowStateIssueList, error) {
+	state, err := workflowState_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return WorkflowStateIssueList{}, fmt.Errorf("list workflow state issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(state.WorkflowState.Issues.Nodes))
+	for _, issue := range state.WorkflowState.Issues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return WorkflowStateIssueList{
+		WorkflowStateID:   state.WorkflowState.Id,
+		WorkflowStateName: state.WorkflowState.Name,
+		Issues:            issues,
+		HasNextPage:       state.WorkflowState.Issues.PageInfo.HasNextPage,
+		EndCursor:         state.WorkflowState.Issues.PageInfo.EndCursor,
+	}, nil
 }
 
 func workflowStateSummary(state WorkflowStateSummaryFields) WorkflowStateSummary {

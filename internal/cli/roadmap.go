@@ -11,18 +11,47 @@ import (
 )
 
 func addRoadmapCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(ctx, root, options, readListGetSpec[client.RoadmapList, client.RoadmapSummary]{
-		Use:           "roadmap",
-		Short:         "Read Linear roadmaps",
-		ListShort:     "List visible Linear roadmaps",
-		LimitHelp:     "maximum roadmaps to return",
-		GetUse:        "get ROADMAP_ID",
-		GetShort:      "Get one roadmap by id",
-		LoadList:      loadRoadmapList,
-		PageWithItems: roadmapPageWithItems,
-		LoadGet:       loadRoadmap,
-		WriteItem:     writeRoadmap,
-	})
+	roadmapCommand := addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.RoadmapList, client.RoadmapSummary]{
+			Use:           "roadmap",
+			Short:         "Read Linear roadmaps",
+			ListShort:     "List visible Linear roadmaps",
+			LimitHelp:     "maximum roadmaps to return",
+			GetUse:        "get ROADMAP_ID",
+			GetShort:      "Get one roadmap by id",
+			LoadList:      loadRoadmapList,
+			PageWithItems: roadmapPageWithItems,
+			LoadGet:       loadRoadmap,
+			WriteItem:     writeRoadmap,
+		},
+	)
+	addRoadmapProjectsCommand(ctx, roadmapCommand, options)
+}
+
+func addRoadmapProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "projects ROADMAP_ID",
+		Short: "List projects associated with one roadmap",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadRoadmapProjects,
+				roadmapProjectPageWithItems,
+				writeProject,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
+	root.AddCommand(command)
 }
 
 func writeRoadmap(
@@ -66,5 +95,23 @@ func roadmapPageWithItems(
 	roadmaps []client.RoadmapSummary,
 ) client.RoadmapList {
 	page.Roadmaps = roadmaps
+	return page
+}
+
+func loadRoadmapProjects(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.RoadmapProjectList, []client.ProjectSummary, error) {
+	projects, err := client.ListRoadmapProjects(ctx, runtime.graphqlClient, args[0], limit)
+	return projects, projects.Projects, err
+}
+
+func roadmapProjectPageWithItems(
+	page client.RoadmapProjectList,
+	projects []client.ProjectSummary,
+) client.RoadmapProjectList {
+	page.Projects = projects
 	return page
 }
