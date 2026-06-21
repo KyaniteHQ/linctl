@@ -3458,6 +3458,21 @@ func (v *FavoriteSummaryFields) GetFolderName() *string { return v.FolderName }
 // GetUrl returns FavoriteSummaryFields.Url, and is useful for accessing the field via an interface.
 func (v *FavoriteSummaryFields) GetUrl() *string { return v.Url }
 
+// Cadence to generate feed summary
+type FeedSummarySchedule string
+
+const (
+	FeedSummaryScheduleDaily  FeedSummarySchedule = "daily"
+	FeedSummaryScheduleWeekly FeedSummarySchedule = "weekly"
+	FeedSummaryScheduleNever  FeedSummarySchedule = "never"
+)
+
+var AllFeedSummarySchedule = []FeedSummarySchedule{
+	FeedSummaryScheduleDaily,
+	FeedSummaryScheduleWeekly,
+	FeedSummaryScheduleNever,
+}
+
 // InitiativeHistorySummaryFields includes the GraphQL fields of InitiativeHistory requested by the fragment InitiativeHistorySummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -8584,6 +8599,2230 @@ var AllNotificationCategory = []NotificationCategory{
 	NotificationCategoryFeed,
 	NotificationCategoryBilling,
 	NotificationCategorySystem,
+}
+
+// NotificationCategoryPreferencesFields includes the GraphQL fields of NotificationCategoryPreferences requested by the fragment NotificationCategoryPreferencesFields.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type NotificationCategoryPreferencesFields struct {
+	// The preferences for notifications about apps and integrations.
+	AppsAndIntegrations NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences `json:"appsAndIntegrations"`
+	// The preferences for notifications about assignments.
+	Assignments NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences `json:"assignments"`
+	// The preferences for billing notifications.
+	Billing NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences `json:"billing"`
+	// The preferences for notifications about comments and replies.
+	CommentsAndReplies NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences `json:"commentsAndReplies"`
+	// The preferences for customer notifications.
+	Customers NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences `json:"customers"`
+	// The preferences for notifications about document changes.
+	DocumentChanges NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences `json:"documentChanges"`
+	// The preferences for feed summary notifications.
+	Feed NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences `json:"feed"`
+	// The preferences for notifications about mentions.
+	Mentions NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences `json:"mentions"`
+	// The preferences for notifications about posts and updates.
+	PostsAndUpdates NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences `json:"postsAndUpdates"`
+	// The preferences for notifications about reactions.
+	Reactions NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences `json:"reactions"`
+	// The preferences for notifications about reminders.
+	Reminders NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences `json:"reminders"`
+	// The preferences for notifications about reviews.
+	Reviews NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences `json:"reviews"`
+	// The preferences for notifications about status changes.
+	StatusChanges NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences `json:"statusChanges"`
+	// The preferences for notifications about subscriptions.
+	Subscriptions NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences `json:"subscriptions"`
+	// The preferences for system notifications.
+	System NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences `json:"system"`
+	// The preferences for triage notifications.
+	Triage NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences `json:"triage"`
+}
+
+// GetAppsAndIntegrations returns NotificationCategoryPreferencesFields.AppsAndIntegrations, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetAppsAndIntegrations() NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences {
+	return v.AppsAndIntegrations
+}
+
+// GetAssignments returns NotificationCategoryPreferencesFields.Assignments, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetAssignments() NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences {
+	return v.Assignments
+}
+
+// GetBilling returns NotificationCategoryPreferencesFields.Billing, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetBilling() NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences {
+	return v.Billing
+}
+
+// GetCommentsAndReplies returns NotificationCategoryPreferencesFields.CommentsAndReplies, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetCommentsAndReplies() NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences {
+	return v.CommentsAndReplies
+}
+
+// GetCustomers returns NotificationCategoryPreferencesFields.Customers, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetCustomers() NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences {
+	return v.Customers
+}
+
+// GetDocumentChanges returns NotificationCategoryPreferencesFields.DocumentChanges, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetDocumentChanges() NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences {
+	return v.DocumentChanges
+}
+
+// GetFeed returns NotificationCategoryPreferencesFields.Feed, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetFeed() NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences {
+	return v.Feed
+}
+
+// GetMentions returns NotificationCategoryPreferencesFields.Mentions, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetMentions() NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences {
+	return v.Mentions
+}
+
+// GetPostsAndUpdates returns NotificationCategoryPreferencesFields.PostsAndUpdates, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetPostsAndUpdates() NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences {
+	return v.PostsAndUpdates
+}
+
+// GetReactions returns NotificationCategoryPreferencesFields.Reactions, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetReactions() NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences {
+	return v.Reactions
+}
+
+// GetReminders returns NotificationCategoryPreferencesFields.Reminders, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetReminders() NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences {
+	return v.Reminders
+}
+
+// GetReviews returns NotificationCategoryPreferencesFields.Reviews, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetReviews() NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences {
+	return v.Reviews
+}
+
+// GetStatusChanges returns NotificationCategoryPreferencesFields.StatusChanges, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetStatusChanges() NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences {
+	return v.StatusChanges
+}
+
+// GetSubscriptions returns NotificationCategoryPreferencesFields.Subscriptions, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetSubscriptions() NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences {
+	return v.Subscriptions
+}
+
+// GetSystem returns NotificationCategoryPreferencesFields.System, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetSystem() NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences {
+	return v.System
+}
+
+// GetTriage returns NotificationCategoryPreferencesFields.Triage, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFields) GetTriage() NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences {
+	return v.Triage
+}
+
+// NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences) __premarshalJSON() (*__premarshalNotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences, error) {
+	var retval __premarshalNotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// NotificationChannelPreferencesFields includes the GraphQL fields of NotificationChannelPreferences requested by the fragment NotificationChannelPreferencesFields.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type NotificationChannelPreferencesFields struct {
+	// Whether notifications are currently enabled for desktop.
+	Desktop bool `json:"desktop"`
+	// Whether notifications are currently enabled for email.
+	Email bool `json:"email"`
+	// Whether notifications are currently enabled for mobile.
+	Mobile bool `json:"mobile"`
+	// Whether notifications are currently enabled for Slack.
+	Slack bool `json:"slack"`
+}
+
+// GetDesktop returns NotificationChannelPreferencesFields.Desktop, and is useful for accessing the field via an interface.
+func (v *NotificationChannelPreferencesFields) GetDesktop() bool { return v.Desktop }
+
+// GetEmail returns NotificationChannelPreferencesFields.Email, and is useful for accessing the field via an interface.
+func (v *NotificationChannelPreferencesFields) GetEmail() bool { return v.Email }
+
+// GetMobile returns NotificationChannelPreferencesFields.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationChannelPreferencesFields) GetMobile() bool { return v.Mobile }
+
+// GetSlack returns NotificationChannelPreferencesFields.Slack, and is useful for accessing the field via an interface.
+func (v *NotificationChannelPreferencesFields) GetSlack() bool { return v.Slack }
+
+// NotificationDeliveryPreferencesChannelFields includes the GraphQL fields of NotificationDeliveryPreferencesChannel requested by the fragment NotificationDeliveryPreferencesChannelFields.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type NotificationDeliveryPreferencesChannelFields struct {
+	// [DEPRECATED] Whether notifications are enabled for this channel. Use notificationChannelPreferences instead.
+	NotificationsDisabled *bool `json:"notificationsDisabled"`
+	// The schedule for notifications on this channel.
+	Schedule *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetNotificationsDisabled returns NotificationDeliveryPreferencesChannelFields.NotificationsDisabled, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFields) GetNotificationsDisabled() *bool {
+	return v.NotificationsDisabled
+}
+
+// GetSchedule returns NotificationDeliveryPreferencesChannelFields.Schedule, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFields) GetSchedule() *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule struct {
+	NotificationDeliveryPreferencesScheduleFields `json:"-"`
+}
+
+// GetDisabled returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Disabled, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetDisabled() *bool {
+	return v.NotificationDeliveryPreferencesScheduleFields.Disabled
+}
+
+// GetFriday returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Friday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetFriday() NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Friday
+}
+
+// GetMonday returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Monday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetMonday() NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Monday
+}
+
+// GetSaturday returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Saturday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetSaturday() NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Saturday
+}
+
+// GetSunday returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Sunday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetSunday() NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Sunday
+}
+
+// GetThursday returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Thursday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetThursday() NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Thursday
+}
+
+// GetTuesday returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Tuesday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetTuesday() NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Tuesday
+}
+
+// GetWednesday returns NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule.Wednesday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) GetWednesday() NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Wednesday
+}
+
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesScheduleFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule struct {
+	Disabled *bool `json:"disabled"`
+
+	Friday NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay `json:"friday"`
+
+	Monday NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay `json:"monday"`
+
+	Saturday NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay `json:"saturday"`
+
+	Sunday NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay `json:"sunday"`
+
+	Thursday NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay `json:"thursday"`
+
+	Tuesday NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay `json:"tuesday"`
+
+	Wednesday NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay `json:"wednesday"`
+}
+
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule, error) {
+	var retval __premarshalNotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule
+
+	retval.Disabled = v.NotificationDeliveryPreferencesScheduleFields.Disabled
+	retval.Friday = v.NotificationDeliveryPreferencesScheduleFields.Friday
+	retval.Monday = v.NotificationDeliveryPreferencesScheduleFields.Monday
+	retval.Saturday = v.NotificationDeliveryPreferencesScheduleFields.Saturday
+	retval.Sunday = v.NotificationDeliveryPreferencesScheduleFields.Sunday
+	retval.Thursday = v.NotificationDeliveryPreferencesScheduleFields.Thursday
+	retval.Tuesday = v.NotificationDeliveryPreferencesScheduleFields.Tuesday
+	retval.Wednesday = v.NotificationDeliveryPreferencesScheduleFields.Wednesday
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesDayFields includes the GraphQL fields of NotificationDeliveryPreferencesDay requested by the fragment NotificationDeliveryPreferencesDayFields.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesDayFields struct {
+	// The start time of the notification delivery window in HH:MM military time
+	// format (e.g., '09:00'). Must be earlier than 'end'.
+	Start *string `json:"start"`
+	// The end time of the notification delivery window in HH:MM military time format
+	// (e.g., '18:00'). Must be later than 'start'.
+	End *string `json:"end"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesDayFields.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesDayFields) GetStart() *string { return v.Start }
+
+// GetEnd returns NotificationDeliveryPreferencesDayFields.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesDayFields) GetEnd() *string { return v.End }
+
+// NotificationDeliveryPreferencesFields includes the GraphQL fields of NotificationDeliveryPreferences requested by the fragment NotificationDeliveryPreferencesFields.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type NotificationDeliveryPreferencesFields struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns NotificationDeliveryPreferencesFields.Mobile, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesFields) GetMobile() *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel struct {
+	NotificationDeliveryPreferencesChannelFields `json:"-"`
+}
+
+// GetNotificationsDisabled returns NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel.NotificationsDisabled, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel) GetNotificationsDisabled() *bool {
+	return v.NotificationDeliveryPreferencesChannelFields.NotificationsDisabled
+}
+
+// GetSchedule returns NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel) GetSchedule() *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule {
+	return v.NotificationDeliveryPreferencesChannelFields.Schedule
+}
+
+func (v *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesChannelFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel struct {
+	NotificationsDisabled *bool `json:"notificationsDisabled"`
+
+	Schedule *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+func (v *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel, error) {
+	var retval __premarshalNotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel
+
+	retval.NotificationsDisabled = v.NotificationDeliveryPreferencesChannelFields.NotificationsDisabled
+	retval.Schedule = v.NotificationDeliveryPreferencesChannelFields.Schedule
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesScheduleFields includes the GraphQL fields of NotificationDeliveryPreferencesSchedule requested by the fragment NotificationDeliveryPreferencesScheduleFields.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type NotificationDeliveryPreferencesScheduleFields struct {
+	// Whether the entire delivery schedule is disabled. When true, notifications are
+	// delivered at any time regardless of the per-day settings.
+	Disabled *bool `json:"disabled"`
+	// Delivery preferences for Friday.
+	Friday NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay `json:"friday"`
+	// Delivery preferences for Monday.
+	Monday NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay `json:"monday"`
+	// Delivery preferences for Saturday.
+	Saturday NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay `json:"saturday"`
+	// Delivery preferences for Sunday.
+	Sunday NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay `json:"sunday"`
+	// Delivery preferences for Thursday.
+	Thursday NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay `json:"thursday"`
+	// Delivery preferences for Tuesday.
+	Tuesday NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay `json:"tuesday"`
+	// Delivery preferences for Wednesday.
+	Wednesday NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay `json:"wednesday"`
+}
+
+// GetDisabled returns NotificationDeliveryPreferencesScheduleFields.Disabled, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetDisabled() *bool { return v.Disabled }
+
+// GetFriday returns NotificationDeliveryPreferencesScheduleFields.Friday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetFriday() NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay {
+	return v.Friday
+}
+
+// GetMonday returns NotificationDeliveryPreferencesScheduleFields.Monday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetMonday() NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay {
+	return v.Monday
+}
+
+// GetSaturday returns NotificationDeliveryPreferencesScheduleFields.Saturday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetSaturday() NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay {
+	return v.Saturday
+}
+
+// GetSunday returns NotificationDeliveryPreferencesScheduleFields.Sunday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetSunday() NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay {
+	return v.Sunday
+}
+
+// GetThursday returns NotificationDeliveryPreferencesScheduleFields.Thursday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetThursday() NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay {
+	return v.Thursday
+}
+
+// GetTuesday returns NotificationDeliveryPreferencesScheduleFields.Tuesday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetTuesday() NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay {
+	return v.Tuesday
+}
+
+// GetWednesday returns NotificationDeliveryPreferencesScheduleFields.Wednesday, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFields) GetWednesday() NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay {
+	return v.Wednesday
+}
+
+// NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshalNotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshalNotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshalNotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshalNotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshalNotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshalNotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalNotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshalNotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshalNotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
 }
 
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of NotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
@@ -16687,6 +18926,719 @@ var AllUserContextViewType = []UserContextViewType{
 	UserContextViewTypeAssigned,
 }
 
+// UserSettingsCustomSidebarThemeFields includes the GraphQL fields of UserSettingsCustomSidebarTheme requested by the fragment UserSettingsCustomSidebarThemeFields.
+// The GraphQL type's documentation follows.
+//
+// Custom sidebar theme definition with accent, base colors and contrast.
+type UserSettingsCustomSidebarThemeFields struct {
+	// The accent color in LCH format.
+	Accent []float64 `json:"accent"`
+	// The base color in LCH format.
+	Base []float64 `json:"base"`
+	// The contrast value.
+	Contrast int `json:"contrast"`
+}
+
+// GetAccent returns UserSettingsCustomSidebarThemeFields.Accent, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomSidebarThemeFields) GetAccent() []float64 { return v.Accent }
+
+// GetBase returns UserSettingsCustomSidebarThemeFields.Base, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomSidebarThemeFields) GetBase() []float64 { return v.Base }
+
+// GetContrast returns UserSettingsCustomSidebarThemeFields.Contrast, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomSidebarThemeFields) GetContrast() int { return v.Contrast }
+
+// UserSettingsCustomThemeFields includes the GraphQL fields of UserSettingsCustomTheme requested by the fragment UserSettingsCustomThemeFields.
+// The GraphQL type's documentation follows.
+//
+// Custom theme definition with accent, base colors, contrast, and optional sidebar theme.
+type UserSettingsCustomThemeFields struct {
+	// The accent color in LCH format.
+	Accent []float64 `json:"accent"`
+	// The base color in LCH format.
+	Base []float64 `json:"base"`
+	// The contrast value.
+	Contrast int `json:"contrast"`
+	// Optional sidebar theme colors.
+	Sidebar *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme `json:"sidebar"`
+}
+
+// GetAccent returns UserSettingsCustomThemeFields.Accent, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomThemeFields) GetAccent() []float64 { return v.Accent }
+
+// GetBase returns UserSettingsCustomThemeFields.Base, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomThemeFields) GetBase() []float64 { return v.Base }
+
+// GetContrast returns UserSettingsCustomThemeFields.Contrast, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomThemeFields) GetContrast() int { return v.Contrast }
+
+// GetSidebar returns UserSettingsCustomThemeFields.Sidebar, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomThemeFields) GetSidebar() *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme {
+	return v.Sidebar
+}
+
+// UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme includes the requested fields of the GraphQL type UserSettingsCustomSidebarTheme.
+// The GraphQL type's documentation follows.
+//
+// Custom sidebar theme definition with accent, base colors and contrast.
+type UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme struct {
+	UserSettingsCustomSidebarThemeFields `json:"-"`
+}
+
+// GetAccent returns UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme.Accent, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme) GetAccent() []float64 {
+	return v.UserSettingsCustomSidebarThemeFields.Accent
+}
+
+// GetBase returns UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme.Base, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme) GetBase() []float64 {
+	return v.UserSettingsCustomSidebarThemeFields.Base
+}
+
+// GetContrast returns UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme.Contrast, and is useful for accessing the field via an interface.
+func (v *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme) GetContrast() int {
+	return v.UserSettingsCustomSidebarThemeFields.Contrast
+}
+
+func (v *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSettingsCustomSidebarThemeFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalUserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme struct {
+	Accent []float64 `json:"accent"`
+
+	Base []float64 `json:"base"`
+
+	Contrast int `json:"contrast"`
+}
+
+func (v *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme) __premarshalJSON() (*__premarshalUserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme, error) {
+	var retval __premarshalUserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme
+
+	retval.Accent = v.UserSettingsCustomSidebarThemeFields.Accent
+	retval.Base = v.UserSettingsCustomSidebarThemeFields.Base
+	retval.Contrast = v.UserSettingsCustomSidebarThemeFields.Contrast
+	return &retval, nil
+}
+
+// UserSettingsSummaryFields includes the GraphQL fields of UserSettings requested by the fragment UserSettingsSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type UserSettingsSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// Whether to auto-assign newly created issues to the current user by default.
+	AutoAssignToSelf bool `json:"autoAssignToSelf"`
+	// The user's last seen time for the pulse feed.
+	FeedLastSeenTime *string `json:"feedLastSeenTime"`
+	// The user's preferred schedule for receiving feed summary digests. Null if the
+	// user has not set a preference and will use the workspace default.
+	FeedSummarySchedule *FeedSummarySchedule `json:"feedSummarySchedule"`
+	// Whether to show full user names instead of display names.
+	ShowFullUserNames bool `json:"showFullUserNames"`
+	// Whether this user is subscribed to receive changelog emails about Linear product updates.
+	SubscribedToChangelog bool `json:"subscribedToChangelog"`
+	// Whether this user is subscribed to receive Data Processing Agreement (DPA) related emails.
+	SubscribedToDPA bool `json:"subscribedToDPA"`
+	// Whether this user is subscribed to receive email notifications when their workspace invitations are accepted.
+	SubscribedToInviteAccepted bool `json:"subscribedToInviteAccepted"`
+	// Whether this user is subscribed to receive emails about privacy policy and legal updates.
+	SubscribedToPrivacyLegalUpdates bool `json:"subscribedToPrivacyLegalUpdates"`
+	// The user that these settings belong to.
+	User UserSettingsSummaryFieldsUser `json:"user"`
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences UserSettingsSummaryFieldsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+	// The user's notification channel preferences, indicating which notification
+	// delivery channels (email, in-app, mobile push, Slack) are enabled.
+	NotificationChannelPreferences UserSettingsSummaryFieldsNotificationChannelPreferences `json:"notificationChannelPreferences"`
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences UserSettingsSummaryFieldsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetId returns UserSettingsSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns UserSettingsSummaryFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns UserSettingsSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns UserSettingsSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetAutoAssignToSelf returns UserSettingsSummaryFields.AutoAssignToSelf, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetAutoAssignToSelf() bool { return v.AutoAssignToSelf }
+
+// GetFeedLastSeenTime returns UserSettingsSummaryFields.FeedLastSeenTime, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetFeedLastSeenTime() *string { return v.FeedLastSeenTime }
+
+// GetFeedSummarySchedule returns UserSettingsSummaryFields.FeedSummarySchedule, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetFeedSummarySchedule() *FeedSummarySchedule {
+	return v.FeedSummarySchedule
+}
+
+// GetShowFullUserNames returns UserSettingsSummaryFields.ShowFullUserNames, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetShowFullUserNames() bool { return v.ShowFullUserNames }
+
+// GetSubscribedToChangelog returns UserSettingsSummaryFields.SubscribedToChangelog, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetSubscribedToChangelog() bool { return v.SubscribedToChangelog }
+
+// GetSubscribedToDPA returns UserSettingsSummaryFields.SubscribedToDPA, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetSubscribedToDPA() bool { return v.SubscribedToDPA }
+
+// GetSubscribedToInviteAccepted returns UserSettingsSummaryFields.SubscribedToInviteAccepted, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetSubscribedToInviteAccepted() bool {
+	return v.SubscribedToInviteAccepted
+}
+
+// GetSubscribedToPrivacyLegalUpdates returns UserSettingsSummaryFields.SubscribedToPrivacyLegalUpdates, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetSubscribedToPrivacyLegalUpdates() bool {
+	return v.SubscribedToPrivacyLegalUpdates
+}
+
+// GetUser returns UserSettingsSummaryFields.User, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetUser() UserSettingsSummaryFieldsUser { return v.User }
+
+// GetNotificationCategoryPreferences returns UserSettingsSummaryFields.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetNotificationCategoryPreferences() UserSettingsSummaryFieldsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// GetNotificationChannelPreferences returns UserSettingsSummaryFields.NotificationChannelPreferences, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetNotificationChannelPreferences() UserSettingsSummaryFieldsNotificationChannelPreferences {
+	return v.NotificationChannelPreferences
+}
+
+// GetNotificationDeliveryPreferences returns UserSettingsSummaryFields.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFields) GetNotificationDeliveryPreferences() UserSettingsSummaryFieldsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// UserSettingsSummaryFieldsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type UserSettingsSummaryFieldsNotificationCategoryPreferences struct {
+	NotificationCategoryPreferencesFields `json:"-"`
+}
+
+// GetAppsAndIntegrations returns UserSettingsSummaryFieldsNotificationCategoryPreferences.AppsAndIntegrations, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetAppsAndIntegrations() NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.AppsAndIntegrations
+}
+
+// GetAssignments returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Assignments, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetAssignments() NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Assignments
+}
+
+// GetBilling returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Billing, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetBilling() NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Billing
+}
+
+// GetCommentsAndReplies returns UserSettingsSummaryFieldsNotificationCategoryPreferences.CommentsAndReplies, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetCommentsAndReplies() NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.CommentsAndReplies
+}
+
+// GetCustomers returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Customers, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetCustomers() NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Customers
+}
+
+// GetDocumentChanges returns UserSettingsSummaryFieldsNotificationCategoryPreferences.DocumentChanges, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetDocumentChanges() NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.DocumentChanges
+}
+
+// GetFeed returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Feed, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetFeed() NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Feed
+}
+
+// GetMentions returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Mentions, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetMentions() NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Mentions
+}
+
+// GetPostsAndUpdates returns UserSettingsSummaryFieldsNotificationCategoryPreferences.PostsAndUpdates, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetPostsAndUpdates() NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.PostsAndUpdates
+}
+
+// GetReactions returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Reactions, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetReactions() NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Reactions
+}
+
+// GetReminders returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Reminders, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetReminders() NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Reminders
+}
+
+// GetReviews returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Reviews, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetReviews() NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Reviews
+}
+
+// GetStatusChanges returns UserSettingsSummaryFieldsNotificationCategoryPreferences.StatusChanges, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetStatusChanges() NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.StatusChanges
+}
+
+// GetSubscriptions returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Subscriptions, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetSubscriptions() NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Subscriptions
+}
+
+// GetSystem returns UserSettingsSummaryFieldsNotificationCategoryPreferences.System, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetSystem() NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.System
+}
+
+// GetTriage returns UserSettingsSummaryFieldsNotificationCategoryPreferences.Triage, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) GetTriage() NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Triage
+}
+
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*UserSettingsSummaryFieldsNotificationCategoryPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.UserSettingsSummaryFieldsNotificationCategoryPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationCategoryPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalUserSettingsSummaryFieldsNotificationCategoryPreferences struct {
+	AppsAndIntegrations NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences `json:"appsAndIntegrations"`
+
+	Assignments NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences `json:"assignments"`
+
+	Billing NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences `json:"billing"`
+
+	CommentsAndReplies NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences `json:"commentsAndReplies"`
+
+	Customers NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences `json:"customers"`
+
+	DocumentChanges NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences `json:"documentChanges"`
+
+	Feed NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences `json:"feed"`
+
+	Mentions NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences `json:"mentions"`
+
+	PostsAndUpdates NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences `json:"postsAndUpdates"`
+
+	Reactions NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences `json:"reactions"`
+
+	Reminders NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences `json:"reminders"`
+
+	Reviews NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences `json:"reviews"`
+
+	StatusChanges NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences `json:"statusChanges"`
+
+	Subscriptions NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences `json:"subscriptions"`
+
+	System NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences `json:"system"`
+
+	Triage NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences `json:"triage"`
+}
+
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) __premarshalJSON() (*__premarshalUserSettingsSummaryFieldsNotificationCategoryPreferences, error) {
+	var retval __premarshalUserSettingsSummaryFieldsNotificationCategoryPreferences
+
+	retval.AppsAndIntegrations = v.NotificationCategoryPreferencesFields.AppsAndIntegrations
+	retval.Assignments = v.NotificationCategoryPreferencesFields.Assignments
+	retval.Billing = v.NotificationCategoryPreferencesFields.Billing
+	retval.CommentsAndReplies = v.NotificationCategoryPreferencesFields.CommentsAndReplies
+	retval.Customers = v.NotificationCategoryPreferencesFields.Customers
+	retval.DocumentChanges = v.NotificationCategoryPreferencesFields.DocumentChanges
+	retval.Feed = v.NotificationCategoryPreferencesFields.Feed
+	retval.Mentions = v.NotificationCategoryPreferencesFields.Mentions
+	retval.PostsAndUpdates = v.NotificationCategoryPreferencesFields.PostsAndUpdates
+	retval.Reactions = v.NotificationCategoryPreferencesFields.Reactions
+	retval.Reminders = v.NotificationCategoryPreferencesFields.Reminders
+	retval.Reviews = v.NotificationCategoryPreferencesFields.Reviews
+	retval.StatusChanges = v.NotificationCategoryPreferencesFields.StatusChanges
+	retval.Subscriptions = v.NotificationCategoryPreferencesFields.Subscriptions
+	retval.System = v.NotificationCategoryPreferencesFields.System
+	retval.Triage = v.NotificationCategoryPreferencesFields.Triage
+	return &retval, nil
+}
+
+// UserSettingsSummaryFieldsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type UserSettingsSummaryFieldsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns UserSettingsSummaryFieldsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns UserSettingsSummaryFieldsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns UserSettingsSummaryFieldsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns UserSettingsSummaryFieldsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *UserSettingsSummaryFieldsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*UserSettingsSummaryFieldsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.UserSettingsSummaryFieldsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalUserSettingsSummaryFieldsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *UserSettingsSummaryFieldsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *UserSettingsSummaryFieldsNotificationChannelPreferences) __premarshalJSON() (*__premarshalUserSettingsSummaryFieldsNotificationChannelPreferences, error) {
+	var retval __premarshalUserSettingsSummaryFieldsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// UserSettingsSummaryFieldsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type UserSettingsSummaryFieldsNotificationDeliveryPreferences struct {
+	NotificationDeliveryPreferencesFields `json:"-"`
+}
+
+// GetMobile returns UserSettingsSummaryFieldsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsNotificationDeliveryPreferences) GetMobile() *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel {
+	return v.NotificationDeliveryPreferencesFields.Mobile
+}
+
+func (v *UserSettingsSummaryFieldsNotificationDeliveryPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*UserSettingsSummaryFieldsNotificationDeliveryPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.UserSettingsSummaryFieldsNotificationDeliveryPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalUserSettingsSummaryFieldsNotificationDeliveryPreferences struct {
+	Mobile *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+func (v *UserSettingsSummaryFieldsNotificationDeliveryPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *UserSettingsSummaryFieldsNotificationDeliveryPreferences) __premarshalJSON() (*__premarshalUserSettingsSummaryFieldsNotificationDeliveryPreferences, error) {
+	var retval __premarshalUserSettingsSummaryFieldsNotificationDeliveryPreferences
+
+	retval.Mobile = v.NotificationDeliveryPreferencesFields.Mobile
+	return &retval, nil
+}
+
+// UserSettingsSummaryFieldsUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type UserSettingsSummaryFieldsUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns UserSettingsSummaryFieldsUser.Id, and is useful for accessing the field via an interface.
+func (v *UserSettingsSummaryFieldsUser) GetId() string { return v.Id }
+
+// Device type for theme
+type UserSettingsThemeDeviceType string
+
+const (
+	UserSettingsThemeDeviceTypeDesktop   UserSettingsThemeDeviceType = "desktop"
+	UserSettingsThemeDeviceTypeMobileweb UserSettingsThemeDeviceType = "mobileWeb"
+)
+
+var AllUserSettingsThemeDeviceType = []UserSettingsThemeDeviceType{
+	UserSettingsThemeDeviceTypeDesktop,
+	UserSettingsThemeDeviceTypeMobileweb,
+}
+
+// UserSettingsThemeFields includes the GraphQL fields of UserSettingsTheme requested by the fragment UserSettingsThemeFields.
+// The GraphQL type's documentation follows.
+//
+// The user's resolved theme configuration for a specific color mode and device type.
+type UserSettingsThemeFields struct {
+	// The theme preset.
+	Preset UserSettingsThemePreset `json:"preset"`
+	// The custom theme definition, only present when preset is 'custom'.
+	Custom *UserSettingsThemeFieldsCustomUserSettingsCustomTheme `json:"custom"`
+}
+
+// GetPreset returns UserSettingsThemeFields.Preset, and is useful for accessing the field via an interface.
+func (v *UserSettingsThemeFields) GetPreset() UserSettingsThemePreset { return v.Preset }
+
+// GetCustom returns UserSettingsThemeFields.Custom, and is useful for accessing the field via an interface.
+func (v *UserSettingsThemeFields) GetCustom() *UserSettingsThemeFieldsCustomUserSettingsCustomTheme {
+	return v.Custom
+}
+
+// UserSettingsThemeFieldsCustomUserSettingsCustomTheme includes the requested fields of the GraphQL type UserSettingsCustomTheme.
+// The GraphQL type's documentation follows.
+//
+// Custom theme definition with accent, base colors, contrast, and optional sidebar theme.
+type UserSettingsThemeFieldsCustomUserSettingsCustomTheme struct {
+	UserSettingsCustomThemeFields `json:"-"`
+}
+
+// GetAccent returns UserSettingsThemeFieldsCustomUserSettingsCustomTheme.Accent, and is useful for accessing the field via an interface.
+func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) GetAccent() []float64 {
+	return v.UserSettingsCustomThemeFields.Accent
+}
+
+// GetBase returns UserSettingsThemeFieldsCustomUserSettingsCustomTheme.Base, and is useful for accessing the field via an interface.
+func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) GetBase() []float64 {
+	return v.UserSettingsCustomThemeFields.Base
+}
+
+// GetContrast returns UserSettingsThemeFieldsCustomUserSettingsCustomTheme.Contrast, and is useful for accessing the field via an interface.
+func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) GetContrast() int {
+	return v.UserSettingsCustomThemeFields.Contrast
+}
+
+// GetSidebar returns UserSettingsThemeFieldsCustomUserSettingsCustomTheme.Sidebar, and is useful for accessing the field via an interface.
+func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) GetSidebar() *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme {
+	return v.UserSettingsCustomThemeFields.Sidebar
+}
+
+func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*UserSettingsThemeFieldsCustomUserSettingsCustomTheme
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.UserSettingsThemeFieldsCustomUserSettingsCustomTheme = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSettingsCustomThemeFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalUserSettingsThemeFieldsCustomUserSettingsCustomTheme struct {
+	Accent []float64 `json:"accent"`
+
+	Base []float64 `json:"base"`
+
+	Contrast int `json:"contrast"`
+
+	Sidebar *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme `json:"sidebar"`
+}
+
+func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) __premarshalJSON() (*__premarshalUserSettingsThemeFieldsCustomUserSettingsCustomTheme, error) {
+	var retval __premarshalUserSettingsThemeFieldsCustomUserSettingsCustomTheme
+
+	retval.Accent = v.UserSettingsCustomThemeFields.Accent
+	retval.Base = v.UserSettingsCustomThemeFields.Base
+	retval.Contrast = v.UserSettingsCustomThemeFields.Contrast
+	retval.Sidebar = v.UserSettingsCustomThemeFields.Sidebar
+	return &retval, nil
+}
+
+// Theme color mode
+type UserSettingsThemeMode string
+
+const (
+	UserSettingsThemeModeLight UserSettingsThemeMode = "light"
+	UserSettingsThemeModeDark  UserSettingsThemeMode = "dark"
+)
+
+var AllUserSettingsThemeMode = []UserSettingsThemeMode{
+	UserSettingsThemeModeLight,
+	UserSettingsThemeModeDark,
+}
+
+// Theme preset options
+type UserSettingsThemePreset string
+
+const (
+	UserSettingsThemePresetSystem      UserSettingsThemePreset = "system"
+	UserSettingsThemePresetLight       UserSettingsThemePreset = "light"
+	UserSettingsThemePresetPurelight   UserSettingsThemePreset = "pureLight"
+	UserSettingsThemePresetDark        UserSettingsThemePreset = "dark"
+	UserSettingsThemePresetMagicblue   UserSettingsThemePreset = "magicBlue"
+	UserSettingsThemePresetClassicdark UserSettingsThemePreset = "classicDark"
+	UserSettingsThemePresetCustom      UserSettingsThemePreset = "custom"
+)
+
+var AllUserSettingsThemePreset = []UserSettingsThemePreset{
+	UserSettingsThemePresetSystem,
+	UserSettingsThemePresetLight,
+	UserSettingsThemePresetPurelight,
+	UserSettingsThemePresetDark,
+	UserSettingsThemePresetMagicblue,
+	UserSettingsThemePresetClassicdark,
+	UserSettingsThemePresetCustom,
+}
+
 // UserSummaryFields includes the GraphQL fields of User requested by the fragment UserSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -20408,6 +23360,46 @@ type __userInput struct {
 
 // GetId returns __userInput.Id, and is useful for accessing the field via an interface.
 func (v *__userInput) GetId() string { return v.Id }
+
+// __userSettings_themeInput is used internally by genqlient
+type __userSettings_themeInput struct {
+	DeviceType *UserSettingsThemeDeviceType `json:"deviceType"`
+	Mode       *UserSettingsThemeMode       `json:"mode"`
+}
+
+// GetDeviceType returns __userSettings_themeInput.DeviceType, and is useful for accessing the field via an interface.
+func (v *__userSettings_themeInput) GetDeviceType() *UserSettingsThemeDeviceType { return v.DeviceType }
+
+// GetMode returns __userSettings_themeInput.Mode, and is useful for accessing the field via an interface.
+func (v *__userSettings_themeInput) GetMode() *UserSettingsThemeMode { return v.Mode }
+
+// __userSettings_theme_customInput is used internally by genqlient
+type __userSettings_theme_customInput struct {
+	DeviceType *UserSettingsThemeDeviceType `json:"deviceType"`
+	Mode       *UserSettingsThemeMode       `json:"mode"`
+}
+
+// GetDeviceType returns __userSettings_theme_customInput.DeviceType, and is useful for accessing the field via an interface.
+func (v *__userSettings_theme_customInput) GetDeviceType() *UserSettingsThemeDeviceType {
+	return v.DeviceType
+}
+
+// GetMode returns __userSettings_theme_customInput.Mode, and is useful for accessing the field via an interface.
+func (v *__userSettings_theme_customInput) GetMode() *UserSettingsThemeMode { return v.Mode }
+
+// __userSettings_theme_custom_sidebarInput is used internally by genqlient
+type __userSettings_theme_custom_sidebarInput struct {
+	DeviceType *UserSettingsThemeDeviceType `json:"deviceType"`
+	Mode       *UserSettingsThemeMode       `json:"mode"`
+}
+
+// GetDeviceType returns __userSettings_theme_custom_sidebarInput.DeviceType, and is useful for accessing the field via an interface.
+func (v *__userSettings_theme_custom_sidebarInput) GetDeviceType() *UserSettingsThemeDeviceType {
+	return v.DeviceType
+}
+
+// GetMode returns __userSettings_theme_custom_sidebarInput.Mode, and is useful for accessing the field via an interface.
+func (v *__userSettings_theme_custom_sidebarInput) GetMode() *UserSettingsThemeMode { return v.Mode }
 
 // __user_assignedIssuesInput is used internally by genqlient
 type __user_assignedIssuesInput struct {
@@ -61609,6 +64601,4240 @@ type userResponse struct {
 // GetUser returns userResponse.User, and is useful for accessing the field via an interface.
 func (v *userResponse) GetUser() userUser { return v.User }
 
+// userSettingsResponse is returned by userSettings on success.
+type userSettingsResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettingsUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettingsResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettingsResponse) GetUserSettings() userSettingsUserSettings { return v.UserSettings }
+
+// userSettingsUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettingsUserSettings struct {
+	UserSettingsSummaryFields `json:"-"`
+}
+
+// GetId returns userSettingsUserSettings.Id, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetId() string { return v.UserSettingsSummaryFields.Id }
+
+// GetCreatedAt returns userSettingsUserSettings.CreatedAt, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetCreatedAt() string {
+	return v.UserSettingsSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns userSettingsUserSettings.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetUpdatedAt() string {
+	return v.UserSettingsSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns userSettingsUserSettings.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetArchivedAt() *string {
+	return v.UserSettingsSummaryFields.ArchivedAt
+}
+
+// GetAutoAssignToSelf returns userSettingsUserSettings.AutoAssignToSelf, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetAutoAssignToSelf() bool {
+	return v.UserSettingsSummaryFields.AutoAssignToSelf
+}
+
+// GetFeedLastSeenTime returns userSettingsUserSettings.FeedLastSeenTime, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetFeedLastSeenTime() *string {
+	return v.UserSettingsSummaryFields.FeedLastSeenTime
+}
+
+// GetFeedSummarySchedule returns userSettingsUserSettings.FeedSummarySchedule, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetFeedSummarySchedule() *FeedSummarySchedule {
+	return v.UserSettingsSummaryFields.FeedSummarySchedule
+}
+
+// GetShowFullUserNames returns userSettingsUserSettings.ShowFullUserNames, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetShowFullUserNames() bool {
+	return v.UserSettingsSummaryFields.ShowFullUserNames
+}
+
+// GetSubscribedToChangelog returns userSettingsUserSettings.SubscribedToChangelog, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetSubscribedToChangelog() bool {
+	return v.UserSettingsSummaryFields.SubscribedToChangelog
+}
+
+// GetSubscribedToDPA returns userSettingsUserSettings.SubscribedToDPA, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetSubscribedToDPA() bool {
+	return v.UserSettingsSummaryFields.SubscribedToDPA
+}
+
+// GetSubscribedToInviteAccepted returns userSettingsUserSettings.SubscribedToInviteAccepted, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetSubscribedToInviteAccepted() bool {
+	return v.UserSettingsSummaryFields.SubscribedToInviteAccepted
+}
+
+// GetSubscribedToPrivacyLegalUpdates returns userSettingsUserSettings.SubscribedToPrivacyLegalUpdates, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetSubscribedToPrivacyLegalUpdates() bool {
+	return v.UserSettingsSummaryFields.SubscribedToPrivacyLegalUpdates
+}
+
+// GetUser returns userSettingsUserSettings.User, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetUser() UserSettingsSummaryFieldsUser {
+	return v.UserSettingsSummaryFields.User
+}
+
+// GetNotificationCategoryPreferences returns userSettingsUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetNotificationCategoryPreferences() UserSettingsSummaryFieldsNotificationCategoryPreferences {
+	return v.UserSettingsSummaryFields.NotificationCategoryPreferences
+}
+
+// GetNotificationChannelPreferences returns userSettingsUserSettings.NotificationChannelPreferences, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetNotificationChannelPreferences() UserSettingsSummaryFieldsNotificationChannelPreferences {
+	return v.UserSettingsSummaryFields.NotificationChannelPreferences
+}
+
+// GetNotificationDeliveryPreferences returns userSettingsUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettingsUserSettings) GetNotificationDeliveryPreferences() UserSettingsSummaryFieldsNotificationDeliveryPreferences {
+	return v.UserSettingsSummaryFields.NotificationDeliveryPreferences
+}
+
+func (v *userSettingsUserSettings) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettingsUserSettings
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettingsUserSettings = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSettingsSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettingsUserSettings struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	AutoAssignToSelf bool `json:"autoAssignToSelf"`
+
+	FeedLastSeenTime *string `json:"feedLastSeenTime"`
+
+	FeedSummarySchedule *FeedSummarySchedule `json:"feedSummarySchedule"`
+
+	ShowFullUserNames bool `json:"showFullUserNames"`
+
+	SubscribedToChangelog bool `json:"subscribedToChangelog"`
+
+	SubscribedToDPA bool `json:"subscribedToDPA"`
+
+	SubscribedToInviteAccepted bool `json:"subscribedToInviteAccepted"`
+
+	SubscribedToPrivacyLegalUpdates bool `json:"subscribedToPrivacyLegalUpdates"`
+
+	User UserSettingsSummaryFieldsUser `json:"user"`
+
+	NotificationCategoryPreferences UserSettingsSummaryFieldsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+
+	NotificationChannelPreferences UserSettingsSummaryFieldsNotificationChannelPreferences `json:"notificationChannelPreferences"`
+
+	NotificationDeliveryPreferences UserSettingsSummaryFieldsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+func (v *userSettingsUserSettings) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettingsUserSettings) __premarshalJSON() (*__premarshaluserSettingsUserSettings, error) {
+	var retval __premarshaluserSettingsUserSettings
+
+	retval.Id = v.UserSettingsSummaryFields.Id
+	retval.CreatedAt = v.UserSettingsSummaryFields.CreatedAt
+	retval.UpdatedAt = v.UserSettingsSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.UserSettingsSummaryFields.ArchivedAt
+	retval.AutoAssignToSelf = v.UserSettingsSummaryFields.AutoAssignToSelf
+	retval.FeedLastSeenTime = v.UserSettingsSummaryFields.FeedLastSeenTime
+	retval.FeedSummarySchedule = v.UserSettingsSummaryFields.FeedSummarySchedule
+	retval.ShowFullUserNames = v.UserSettingsSummaryFields.ShowFullUserNames
+	retval.SubscribedToChangelog = v.UserSettingsSummaryFields.SubscribedToChangelog
+	retval.SubscribedToDPA = v.UserSettingsSummaryFields.SubscribedToDPA
+	retval.SubscribedToInviteAccepted = v.UserSettingsSummaryFields.SubscribedToInviteAccepted
+	retval.SubscribedToPrivacyLegalUpdates = v.UserSettingsSummaryFields.SubscribedToPrivacyLegalUpdates
+	retval.User = v.UserSettingsSummaryFields.User
+	retval.NotificationCategoryPreferences = v.UserSettingsSummaryFields.NotificationCategoryPreferences
+	retval.NotificationChannelPreferences = v.UserSettingsSummaryFields.NotificationChannelPreferences
+	retval.NotificationDeliveryPreferences = v.UserSettingsSummaryFields.NotificationDeliveryPreferences
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferencesResponse is returned by userSettings_notificationCategoryPreferences on success.
+type userSettings_notificationCategoryPreferencesResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferencesUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferencesResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesResponse) GetUserSettings() userSettings_notificationCategoryPreferencesUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferencesUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferencesUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferencesUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences struct {
+	NotificationCategoryPreferencesFields `json:"-"`
+}
+
+// GetAppsAndIntegrations returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.AppsAndIntegrations, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetAppsAndIntegrations() NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.AppsAndIntegrations
+}
+
+// GetAssignments returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Assignments, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetAssignments() NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Assignments
+}
+
+// GetBilling returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Billing, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetBilling() NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Billing
+}
+
+// GetCommentsAndReplies returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.CommentsAndReplies, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetCommentsAndReplies() NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.CommentsAndReplies
+}
+
+// GetCustomers returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Customers, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetCustomers() NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Customers
+}
+
+// GetDocumentChanges returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.DocumentChanges, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetDocumentChanges() NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.DocumentChanges
+}
+
+// GetFeed returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Feed, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetFeed() NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Feed
+}
+
+// GetMentions returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Mentions, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetMentions() NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Mentions
+}
+
+// GetPostsAndUpdates returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.PostsAndUpdates, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetPostsAndUpdates() NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.PostsAndUpdates
+}
+
+// GetReactions returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Reactions, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetReactions() NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Reactions
+}
+
+// GetReminders returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Reminders, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetReminders() NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Reminders
+}
+
+// GetReviews returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Reviews, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetReviews() NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Reviews
+}
+
+// GetStatusChanges returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.StatusChanges, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetStatusChanges() NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.StatusChanges
+}
+
+// GetSubscriptions returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Subscriptions, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetSubscriptions() NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Subscriptions
+}
+
+// GetSystem returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.System, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetSystem() NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.System
+}
+
+// GetTriage returns userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences.Triage, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) GetTriage() NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences {
+	return v.NotificationCategoryPreferencesFields.Triage
+}
+
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationCategoryPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences struct {
+	AppsAndIntegrations NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences `json:"appsAndIntegrations"`
+
+	Assignments NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences `json:"assignments"`
+
+	Billing NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences `json:"billing"`
+
+	CommentsAndReplies NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences `json:"commentsAndReplies"`
+
+	Customers NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences `json:"customers"`
+
+	DocumentChanges NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences `json:"documentChanges"`
+
+	Feed NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences `json:"feed"`
+
+	Mentions NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences `json:"mentions"`
+
+	PostsAndUpdates NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences `json:"postsAndUpdates"`
+
+	Reactions NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences `json:"reactions"`
+
+	Reminders NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences `json:"reminders"`
+
+	Reviews NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences `json:"reviews"`
+
+	StatusChanges NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences `json:"statusChanges"`
+
+	Subscriptions NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences `json:"subscriptions"`
+
+	System NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences `json:"system"`
+
+	Triage NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences `json:"triage"`
+}
+
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences
+
+	retval.AppsAndIntegrations = v.NotificationCategoryPreferencesFields.AppsAndIntegrations
+	retval.Assignments = v.NotificationCategoryPreferencesFields.Assignments
+	retval.Billing = v.NotificationCategoryPreferencesFields.Billing
+	retval.CommentsAndReplies = v.NotificationCategoryPreferencesFields.CommentsAndReplies
+	retval.Customers = v.NotificationCategoryPreferencesFields.Customers
+	retval.DocumentChanges = v.NotificationCategoryPreferencesFields.DocumentChanges
+	retval.Feed = v.NotificationCategoryPreferencesFields.Feed
+	retval.Mentions = v.NotificationCategoryPreferencesFields.Mentions
+	retval.PostsAndUpdates = v.NotificationCategoryPreferencesFields.PostsAndUpdates
+	retval.Reactions = v.NotificationCategoryPreferencesFields.Reactions
+	retval.Reminders = v.NotificationCategoryPreferencesFields.Reminders
+	retval.Reviews = v.NotificationCategoryPreferencesFields.Reviews
+	retval.StatusChanges = v.NotificationCategoryPreferencesFields.StatusChanges
+	retval.Subscriptions = v.NotificationCategoryPreferencesFields.Subscriptions
+	retval.System = v.NotificationCategoryPreferencesFields.System
+	retval.Triage = v.NotificationCategoryPreferencesFields.Triage
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_appsAndIntegrationsResponse is returned by userSettings_notificationCategoryPreferences_appsAndIntegrations on success.
+type userSettings_notificationCategoryPreferences_appsAndIntegrationsResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_appsAndIntegrationsResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsResponse) GetUserSettings() userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about apps and integrations.
+	AppsAndIntegrations userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences `json:"appsAndIntegrations"`
+}
+
+// GetAppsAndIntegrations returns userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferences.AppsAndIntegrations, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferences) GetAppsAndIntegrations() userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences {
+	return v.AppsAndIntegrations
+}
+
+// userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_appsAndIntegrationsUserSettingsNotificationCategoryPreferencesAppsAndIntegrationsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_assignmentsResponse is returned by userSettings_notificationCategoryPreferences_assignments on success.
+type userSettings_notificationCategoryPreferences_assignmentsResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_assignmentsUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_assignmentsResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_assignmentsResponse) GetUserSettings() userSettings_notificationCategoryPreferences_assignmentsUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_assignmentsUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_assignmentsUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_assignmentsUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about assignments.
+	Assignments userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences `json:"assignments"`
+}
+
+// GetAssignments returns userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferences.Assignments, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferences) GetAssignments() userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences {
+	return v.Assignments
+}
+
+// userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_assignmentsUserSettingsNotificationCategoryPreferencesAssignmentsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_billingResponse is returned by userSettings_notificationCategoryPreferences_billing on success.
+type userSettings_notificationCategoryPreferences_billingResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_billingUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_billingResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_billingResponse) GetUserSettings() userSettings_notificationCategoryPreferences_billingUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_billingUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_billingUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_billingUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_billingUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for billing notifications.
+	Billing userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences `json:"billing"`
+}
+
+// GetBilling returns userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferences.Billing, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferences) GetBilling() userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences {
+	return v.Billing
+}
+
+// userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_billingUserSettingsNotificationCategoryPreferencesBillingNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_commentsAndRepliesResponse is returned by userSettings_notificationCategoryPreferences_commentsAndReplies on success.
+type userSettings_notificationCategoryPreferences_commentsAndRepliesResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_commentsAndRepliesResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesResponse) GetUserSettings() userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about comments and replies.
+	CommentsAndReplies userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences `json:"commentsAndReplies"`
+}
+
+// GetCommentsAndReplies returns userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferences.CommentsAndReplies, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferences) GetCommentsAndReplies() userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences {
+	return v.CommentsAndReplies
+}
+
+// userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_commentsAndRepliesUserSettingsNotificationCategoryPreferencesCommentsAndRepliesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_customersResponse is returned by userSettings_notificationCategoryPreferences_customers on success.
+type userSettings_notificationCategoryPreferences_customersResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_customersUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_customersResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_customersResponse) GetUserSettings() userSettings_notificationCategoryPreferences_customersUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_customersUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_customersUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_customersUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_customersUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for customer notifications.
+	Customers userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences `json:"customers"`
+}
+
+// GetCustomers returns userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferences.Customers, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferences) GetCustomers() userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences {
+	return v.Customers
+}
+
+// userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_customersUserSettingsNotificationCategoryPreferencesCustomersNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_documentChangesResponse is returned by userSettings_notificationCategoryPreferences_documentChanges on success.
+type userSettings_notificationCategoryPreferences_documentChangesResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_documentChangesUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_documentChangesResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_documentChangesResponse) GetUserSettings() userSettings_notificationCategoryPreferences_documentChangesUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_documentChangesUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_documentChangesUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_documentChangesUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about document changes.
+	DocumentChanges userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences `json:"documentChanges"`
+}
+
+// GetDocumentChanges returns userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferences.DocumentChanges, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferences) GetDocumentChanges() userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences {
+	return v.DocumentChanges
+}
+
+// userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_documentChangesUserSettingsNotificationCategoryPreferencesDocumentChangesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_feedResponse is returned by userSettings_notificationCategoryPreferences_feed on success.
+type userSettings_notificationCategoryPreferences_feedResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_feedUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_feedResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_feedResponse) GetUserSettings() userSettings_notificationCategoryPreferences_feedUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_feedUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_feedUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_feedUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_feedUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for feed summary notifications.
+	Feed userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences `json:"feed"`
+}
+
+// GetFeed returns userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferences.Feed, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferences) GetFeed() userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences {
+	return v.Feed
+}
+
+// userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_feedUserSettingsNotificationCategoryPreferencesFeedNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_mentionsResponse is returned by userSettings_notificationCategoryPreferences_mentions on success.
+type userSettings_notificationCategoryPreferences_mentionsResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_mentionsUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_mentionsResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_mentionsResponse) GetUserSettings() userSettings_notificationCategoryPreferences_mentionsUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_mentionsUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_mentionsUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_mentionsUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about mentions.
+	Mentions userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences `json:"mentions"`
+}
+
+// GetMentions returns userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferences.Mentions, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferences) GetMentions() userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences {
+	return v.Mentions
+}
+
+// userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_mentionsUserSettingsNotificationCategoryPreferencesMentionsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_postsAndUpdatesResponse is returned by userSettings_notificationCategoryPreferences_postsAndUpdates on success.
+type userSettings_notificationCategoryPreferences_postsAndUpdatesResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_postsAndUpdatesResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesResponse) GetUserSettings() userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about posts and updates.
+	PostsAndUpdates userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences `json:"postsAndUpdates"`
+}
+
+// GetPostsAndUpdates returns userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferences.PostsAndUpdates, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferences) GetPostsAndUpdates() userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences {
+	return v.PostsAndUpdates
+}
+
+// userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_postsAndUpdatesUserSettingsNotificationCategoryPreferencesPostsAndUpdatesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_reactionsResponse is returned by userSettings_notificationCategoryPreferences_reactions on success.
+type userSettings_notificationCategoryPreferences_reactionsResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_reactionsUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_reactionsResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reactionsResponse) GetUserSettings() userSettings_notificationCategoryPreferences_reactionsUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_reactionsUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_reactionsUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_reactionsUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about reactions.
+	Reactions userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences `json:"reactions"`
+}
+
+// GetReactions returns userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferences.Reactions, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferences) GetReactions() userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences {
+	return v.Reactions
+}
+
+// userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_reactionsUserSettingsNotificationCategoryPreferencesReactionsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_remindersResponse is returned by userSettings_notificationCategoryPreferences_reminders on success.
+type userSettings_notificationCategoryPreferences_remindersResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_remindersUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_remindersResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_remindersResponse) GetUserSettings() userSettings_notificationCategoryPreferences_remindersUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_remindersUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_remindersUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_remindersUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about reminders.
+	Reminders userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences `json:"reminders"`
+}
+
+// GetReminders returns userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferences.Reminders, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferences) GetReminders() userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences {
+	return v.Reminders
+}
+
+// userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_remindersUserSettingsNotificationCategoryPreferencesRemindersNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_reviewsResponse is returned by userSettings_notificationCategoryPreferences_reviews on success.
+type userSettings_notificationCategoryPreferences_reviewsResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_reviewsUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_reviewsResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reviewsResponse) GetUserSettings() userSettings_notificationCategoryPreferences_reviewsUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_reviewsUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_reviewsUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_reviewsUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about reviews.
+	Reviews userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences `json:"reviews"`
+}
+
+// GetReviews returns userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferences.Reviews, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferences) GetReviews() userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences {
+	return v.Reviews
+}
+
+// userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_reviewsUserSettingsNotificationCategoryPreferencesReviewsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_statusChangesResponse is returned by userSettings_notificationCategoryPreferences_statusChanges on success.
+type userSettings_notificationCategoryPreferences_statusChangesResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_statusChangesUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_statusChangesResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_statusChangesResponse) GetUserSettings() userSettings_notificationCategoryPreferences_statusChangesUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_statusChangesUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_statusChangesUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_statusChangesUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about status changes.
+	StatusChanges userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences `json:"statusChanges"`
+}
+
+// GetStatusChanges returns userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferences.StatusChanges, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferences) GetStatusChanges() userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences {
+	return v.StatusChanges
+}
+
+// userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_statusChangesUserSettingsNotificationCategoryPreferencesStatusChangesNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_subscriptionsResponse is returned by userSettings_notificationCategoryPreferences_subscriptions on success.
+type userSettings_notificationCategoryPreferences_subscriptionsResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_subscriptionsUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_subscriptionsResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_subscriptionsResponse) GetUserSettings() userSettings_notificationCategoryPreferences_subscriptionsUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_subscriptionsUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_subscriptionsUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_subscriptionsUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for notifications about subscriptions.
+	Subscriptions userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences `json:"subscriptions"`
+}
+
+// GetSubscriptions returns userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferences.Subscriptions, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferences) GetSubscriptions() userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences {
+	return v.Subscriptions
+}
+
+// userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_subscriptionsUserSettingsNotificationCategoryPreferencesSubscriptionsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_systemResponse is returned by userSettings_notificationCategoryPreferences_system on success.
+type userSettings_notificationCategoryPreferences_systemResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_systemUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_systemResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_systemResponse) GetUserSettings() userSettings_notificationCategoryPreferences_systemUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_systemUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_systemUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_systemUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_systemUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for system notifications.
+	System userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences `json:"system"`
+}
+
+// GetSystem returns userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferences.System, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferences) GetSystem() userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences {
+	return v.System
+}
+
+// userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_systemUserSettingsNotificationCategoryPreferencesSystemNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationCategoryPreferences_triageResponse is returned by userSettings_notificationCategoryPreferences_triage on success.
+type userSettings_notificationCategoryPreferences_triageResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationCategoryPreferences_triageUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationCategoryPreferences_triageResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_triageResponse) GetUserSettings() userSettings_notificationCategoryPreferences_triageUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationCategoryPreferences_triageUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationCategoryPreferences_triageUserSettings struct {
+	// The user's notification category preferences, indicating which notification
+	// categories are enabled or disabled per notification channel.
+	NotificationCategoryPreferences userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
+}
+
+// GetNotificationCategoryPreferences returns userSettings_notificationCategoryPreferences_triageUserSettings.NotificationCategoryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_triageUserSettings) GetNotificationCategoryPreferences() userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferences {
+	return v.NotificationCategoryPreferences
+}
+
+// userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's fully resolved notification category preferences. Each category maps to
+// channel preferences indicating whether mobile, desktop, email, and Slack
+// delivery are enabled.
+type userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferences struct {
+	// The preferences for triage notifications.
+	Triage userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences `json:"triage"`
+}
+
+// GetTriage returns userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferences.Triage, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferences) GetTriage() userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences {
+	return v.Triage
+}
+
+// userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationCategoryPreferences_triageUserSettingsNotificationCategoryPreferencesTriageNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationChannelPreferencesResponse is returned by userSettings_notificationChannelPreferences on success.
+type userSettings_notificationChannelPreferencesResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationChannelPreferencesUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationChannelPreferencesResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationChannelPreferencesResponse) GetUserSettings() userSettings_notificationChannelPreferencesUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationChannelPreferencesUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationChannelPreferencesUserSettings struct {
+	// The user's notification channel preferences, indicating which notification
+	// delivery channels (email, in-app, mobile push, Slack) are enabled.
+	NotificationChannelPreferences userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences `json:"notificationChannelPreferences"`
+}
+
+// GetNotificationChannelPreferences returns userSettings_notificationChannelPreferencesUserSettings.NotificationChannelPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationChannelPreferencesUserSettings) GetNotificationChannelPreferences() userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences {
+	return v.NotificationChannelPreferences
+}
+
+// userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's resolved notification channel preferences, indicating whether each
+// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+type userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences struct {
+	NotificationChannelPreferencesFields `json:"-"`
+}
+
+// GetDesktop returns userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences.Desktop, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences) GetDesktop() bool {
+	return v.NotificationChannelPreferencesFields.Desktop
+}
+
+// GetEmail returns userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences.Email, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences) GetEmail() bool {
+	return v.NotificationChannelPreferencesFields.Email
+}
+
+// GetMobile returns userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences) GetMobile() bool {
+	return v.NotificationChannelPreferencesFields.Mobile
+}
+
+// GetSlack returns userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences.Slack, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences) GetSlack() bool {
+	return v.NotificationChannelPreferencesFields.Slack
+}
+
+func (v *userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationChannelPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences struct {
+	Desktop bool `json:"desktop"`
+
+	Email bool `json:"email"`
+
+	Mobile bool `json:"mobile"`
+
+	Slack bool `json:"slack"`
+}
+
+func (v *userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences, error) {
+	var retval __premarshaluserSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences
+
+	retval.Desktop = v.NotificationChannelPreferencesFields.Desktop
+	retval.Email = v.NotificationChannelPreferencesFields.Email
+	retval.Mobile = v.NotificationChannelPreferencesFields.Mobile
+	retval.Slack = v.NotificationChannelPreferencesFields.Slack
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferencesResponse is returned by userSettings_notificationDeliveryPreferences on success.
+type userSettings_notificationDeliveryPreferencesResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferencesUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferencesResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferencesResponse) GetUserSettings() userSettings_notificationDeliveryPreferencesUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferencesUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferencesUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferencesUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferencesUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences struct {
+	NotificationDeliveryPreferencesFields `json:"-"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences) GetMobile() *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel {
+	return v.NotificationDeliveryPreferencesFields.Mobile
+}
+
+func (v *userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences struct {
+	Mobile *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+func (v *userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences
+
+	retval.Mobile = v.NotificationDeliveryPreferencesFields.Mobile
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobileResponse is returned by userSettings_notificationDeliveryPreferences_mobile on success.
+type userSettings_notificationDeliveryPreferences_mobileResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobileUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobileResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobileResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobileUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobileUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobileUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobileUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobileUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	NotificationDeliveryPreferencesChannelFields `json:"-"`
+}
+
+// GetNotificationsDisabled returns userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.NotificationsDisabled, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetNotificationsDisabled() *bool {
+	return v.NotificationDeliveryPreferencesChannelFields.NotificationsDisabled
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule {
+	return v.NotificationDeliveryPreferencesChannelFields.Schedule
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesChannelFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	NotificationsDisabled *bool `json:"notificationsDisabled"`
+
+	Schedule *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+
+	retval.NotificationsDisabled = v.NotificationDeliveryPreferencesChannelFields.NotificationsDisabled
+	retval.Schedule = v.NotificationDeliveryPreferencesChannelFields.Schedule
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_scheduleResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule on success.
+type userSettings_notificationDeliveryPreferences_mobile_scheduleResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_scheduleResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	NotificationDeliveryPreferencesScheduleFields `json:"-"`
+}
+
+// GetDisabled returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Disabled, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetDisabled() *bool {
+	return v.NotificationDeliveryPreferencesScheduleFields.Disabled
+}
+
+// GetFriday returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Friday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetFriday() NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Friday
+}
+
+// GetMonday returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Monday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetMonday() NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Monday
+}
+
+// GetSaturday returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Saturday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetSaturday() NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Saturday
+}
+
+// GetSunday returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Sunday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetSunday() NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Sunday
+}
+
+// GetThursday returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Thursday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetThursday() NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Thursday
+}
+
+// GetTuesday returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Tuesday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetTuesday() NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Tuesday
+}
+
+// GetWednesday returns userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Wednesday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetWednesday() NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay {
+	return v.NotificationDeliveryPreferencesScheduleFields.Wednesday
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesScheduleFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	Disabled *bool `json:"disabled"`
+
+	Friday NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay `json:"friday"`
+
+	Monday NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay `json:"monday"`
+
+	Saturday NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay `json:"saturday"`
+
+	Sunday NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay `json:"sunday"`
+
+	Thursday NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay `json:"thursday"`
+
+	Tuesday NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay `json:"tuesday"`
+
+	Wednesday NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay `json:"wednesday"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule
+
+	retval.Disabled = v.NotificationDeliveryPreferencesScheduleFields.Disabled
+	retval.Friday = v.NotificationDeliveryPreferencesScheduleFields.Friday
+	retval.Monday = v.NotificationDeliveryPreferencesScheduleFields.Monday
+	retval.Saturday = v.NotificationDeliveryPreferencesScheduleFields.Saturday
+	retval.Sunday = v.NotificationDeliveryPreferencesScheduleFields.Sunday
+	retval.Thursday = v.NotificationDeliveryPreferencesScheduleFields.Thursday
+	retval.Tuesday = v.NotificationDeliveryPreferencesScheduleFields.Tuesday
+	retval.Wednesday = v.NotificationDeliveryPreferencesScheduleFields.Wednesday
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_fridayResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule_friday on success.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_schedule_fridayResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	// Delivery preferences for Friday.
+	Friday userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay `json:"friday"`
+}
+
+// GetFriday returns userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Friday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetFriday() userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay {
+	return v.Friday
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_mondayResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule_monday on success.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_schedule_mondayResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	// Delivery preferences for Monday.
+	Monday userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay `json:"monday"`
+}
+
+// GetMonday returns userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Monday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetMonday() userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay {
+	return v.Monday
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule_saturday on success.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	// Delivery preferences for Saturday.
+	Saturday userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay `json:"saturday"`
+}
+
+// GetSaturday returns userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Saturday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetSaturday() userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay {
+	return v.Saturday
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_sundayResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule_sunday on success.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_schedule_sundayResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	// Delivery preferences for Sunday.
+	Sunday userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay `json:"sunday"`
+}
+
+// GetSunday returns userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Sunday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetSunday() userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay {
+	return v.Sunday
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule_thursday on success.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	// Delivery preferences for Thursday.
+	Thursday userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay `json:"thursday"`
+}
+
+// GetThursday returns userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Thursday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetThursday() userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay {
+	return v.Thursday
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday on success.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	// Delivery preferences for Tuesday.
+	Tuesday userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay `json:"tuesday"`
+}
+
+// GetTuesday returns userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Tuesday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetTuesday() userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay {
+	return v.Tuesday
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayResponse is returned by userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday on success.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayResponse) GetUserSettings() userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings struct {
+	// The notification delivery preferences for the user. Note: notificationDisabled
+	// field is deprecated in favor of notificationChannelPreferences.
+	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
+}
+
+// GetNotificationDeliveryPreferences returns userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings.NotificationDeliveryPreferences, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings) GetNotificationDeliveryPreferences() userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferences {
+	return v.NotificationDeliveryPreferences
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferences includes the requested fields of the GraphQL type NotificationDeliveryPreferences.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery preferences across channels. Currently only supports mobile channel delivery scheduling.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferences struct {
+	// The delivery preferences for the mobile channel.
+	Mobile *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel `json:"mobile"`
+}
+
+// GetMobile returns userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferences.Mobile, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferences) GetMobile() *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel {
+	return v.Mobile
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
+// The GraphQL type's documentation follows.
+//
+// Delivery preferences for a specific notification channel, including an optional
+// delivery schedule that restricts when notifications are sent.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
+	// The schedule for notifications on this channel.
+	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
+}
+
+// GetSchedule returns userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel.Schedule, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel) GetSchedule() *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule {
+	return v.Schedule
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
+// The GraphQL type's documentation follows.
+//
+// A user's weekly notification delivery schedule, defining delivery windows for
+// each day of the week. Notifications outside these windows are held and delivered
+// when the window opens.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
+	// Delivery preferences for Wednesday.
+	Wednesday userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay `json:"wednesday"`
+}
+
+// GetWednesday returns userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule.Wednesday, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule) GetWednesday() userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay {
+	return v.Wednesday
+}
+
+// userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
+// The GraphQL type's documentation follows.
+//
+// A user's notification delivery window for a specific day of the week. Defines
+// the time range during which notifications will be delivered.
+type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay struct {
+	NotificationDeliveryPreferencesDayFields `json:"-"`
+}
+
+// GetStart returns userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay.Start, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay) GetStart() *string {
+	return v.NotificationDeliveryPreferencesDayFields.Start
+}
+
+// GetEnd returns userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay.End, and is useful for accessing the field via an interface.
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay) GetEnd() *string {
+	return v.NotificationDeliveryPreferencesDayFields.End
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationDeliveryPreferencesDayFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay struct {
+	Start *string `json:"start"`
+
+	End *string `json:"end"`
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay) __premarshalJSON() (*__premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay, error) {
+	var retval __premarshaluserSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay
+
+	retval.Start = v.NotificationDeliveryPreferencesDayFields.Start
+	retval.End = v.NotificationDeliveryPreferencesDayFields.End
+	return &retval, nil
+}
+
+// userSettings_themeResponse is returned by userSettings_theme on success.
+type userSettings_themeResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_themeUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_themeResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_themeResponse) GetUserSettings() userSettings_themeUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_themeUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_themeUserSettings struct {
+	// The user's theme configuration for the specified color mode (light/dark) and
+	// device type (desktop/mobile). Returns null if no valid theme preset is configured.
+	Theme *userSettings_themeUserSettingsTheme `json:"theme"`
+}
+
+// GetTheme returns userSettings_themeUserSettings.Theme, and is useful for accessing the field via an interface.
+func (v *userSettings_themeUserSettings) GetTheme() *userSettings_themeUserSettingsTheme {
+	return v.Theme
+}
+
+// userSettings_themeUserSettingsTheme includes the requested fields of the GraphQL type UserSettingsTheme.
+// The GraphQL type's documentation follows.
+//
+// The user's resolved theme configuration for a specific color mode and device type.
+type userSettings_themeUserSettingsTheme struct {
+	UserSettingsThemeFields `json:"-"`
+}
+
+// GetPreset returns userSettings_themeUserSettingsTheme.Preset, and is useful for accessing the field via an interface.
+func (v *userSettings_themeUserSettingsTheme) GetPreset() UserSettingsThemePreset {
+	return v.UserSettingsThemeFields.Preset
+}
+
+// GetCustom returns userSettings_themeUserSettingsTheme.Custom, and is useful for accessing the field via an interface.
+func (v *userSettings_themeUserSettingsTheme) GetCustom() *UserSettingsThemeFieldsCustomUserSettingsCustomTheme {
+	return v.UserSettingsThemeFields.Custom
+}
+
+func (v *userSettings_themeUserSettingsTheme) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_themeUserSettingsTheme
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_themeUserSettingsTheme = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSettingsThemeFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_themeUserSettingsTheme struct {
+	Preset UserSettingsThemePreset `json:"preset"`
+
+	Custom *UserSettingsThemeFieldsCustomUserSettingsCustomTheme `json:"custom"`
+}
+
+func (v *userSettings_themeUserSettingsTheme) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_themeUserSettingsTheme) __premarshalJSON() (*__premarshaluserSettings_themeUserSettingsTheme, error) {
+	var retval __premarshaluserSettings_themeUserSettingsTheme
+
+	retval.Preset = v.UserSettingsThemeFields.Preset
+	retval.Custom = v.UserSettingsThemeFields.Custom
+	return &retval, nil
+}
+
+// userSettings_theme_customResponse is returned by userSettings_theme_custom on success.
+type userSettings_theme_customResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_theme_customUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_theme_customResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_customResponse) GetUserSettings() userSettings_theme_customUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_theme_customUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_theme_customUserSettings struct {
+	// The user's theme configuration for the specified color mode (light/dark) and
+	// device type (desktop/mobile). Returns null if no valid theme preset is configured.
+	Theme *userSettings_theme_customUserSettingsTheme `json:"theme"`
+}
+
+// GetTheme returns userSettings_theme_customUserSettings.Theme, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_customUserSettings) GetTheme() *userSettings_theme_customUserSettingsTheme {
+	return v.Theme
+}
+
+// userSettings_theme_customUserSettingsTheme includes the requested fields of the GraphQL type UserSettingsTheme.
+// The GraphQL type's documentation follows.
+//
+// The user's resolved theme configuration for a specific color mode and device type.
+type userSettings_theme_customUserSettingsTheme struct {
+	// The custom theme definition, only present when preset is 'custom'.
+	Custom *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme `json:"custom"`
+}
+
+// GetCustom returns userSettings_theme_customUserSettingsTheme.Custom, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_customUserSettingsTheme) GetCustom() *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme {
+	return v.Custom
+}
+
+// userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme includes the requested fields of the GraphQL type UserSettingsCustomTheme.
+// The GraphQL type's documentation follows.
+//
+// Custom theme definition with accent, base colors, contrast, and optional sidebar theme.
+type userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme struct {
+	UserSettingsCustomThemeFields `json:"-"`
+}
+
+// GetAccent returns userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme.Accent, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme) GetAccent() []float64 {
+	return v.UserSettingsCustomThemeFields.Accent
+}
+
+// GetBase returns userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme.Base, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme) GetBase() []float64 {
+	return v.UserSettingsCustomThemeFields.Base
+}
+
+// GetContrast returns userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme.Contrast, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme) GetContrast() int {
+	return v.UserSettingsCustomThemeFields.Contrast
+}
+
+// GetSidebar returns userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme.Sidebar, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme) GetSidebar() *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme {
+	return v.UserSettingsCustomThemeFields.Sidebar
+}
+
+func (v *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSettingsCustomThemeFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme struct {
+	Accent []float64 `json:"accent"`
+
+	Base []float64 `json:"base"`
+
+	Contrast int `json:"contrast"`
+
+	Sidebar *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme `json:"sidebar"`
+}
+
+func (v *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme) __premarshalJSON() (*__premarshaluserSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme, error) {
+	var retval __premarshaluserSettings_theme_customUserSettingsThemeCustomUserSettingsCustomTheme
+
+	retval.Accent = v.UserSettingsCustomThemeFields.Accent
+	retval.Base = v.UserSettingsCustomThemeFields.Base
+	retval.Contrast = v.UserSettingsCustomThemeFields.Contrast
+	retval.Sidebar = v.UserSettingsCustomThemeFields.Sidebar
+	return &retval, nil
+}
+
+// userSettings_theme_custom_sidebarResponse is returned by userSettings_theme_custom_sidebar on success.
+type userSettings_theme_custom_sidebarResponse struct {
+	// The authenticated user's notification and UI settings.
+	UserSettings userSettings_theme_custom_sidebarUserSettings `json:"userSettings"`
+}
+
+// GetUserSettings returns userSettings_theme_custom_sidebarResponse.UserSettings, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_custom_sidebarResponse) GetUserSettings() userSettings_theme_custom_sidebarUserSettings {
+	return v.UserSettings
+}
+
+// userSettings_theme_custom_sidebarUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// Per-user settings and preferences for a workspace member. Includes notification
+// delivery preferences, email subscription settings, notification category and
+// channel preferences, theme configuration, and various UI preferences. Each user
+// has exactly one UserSettings record per workspace.
+type userSettings_theme_custom_sidebarUserSettings struct {
+	// The user's theme configuration for the specified color mode (light/dark) and
+	// device type (desktop/mobile). Returns null if no valid theme preset is configured.
+	Theme *userSettings_theme_custom_sidebarUserSettingsTheme `json:"theme"`
+}
+
+// GetTheme returns userSettings_theme_custom_sidebarUserSettings.Theme, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_custom_sidebarUserSettings) GetTheme() *userSettings_theme_custom_sidebarUserSettingsTheme {
+	return v.Theme
+}
+
+// userSettings_theme_custom_sidebarUserSettingsTheme includes the requested fields of the GraphQL type UserSettingsTheme.
+// The GraphQL type's documentation follows.
+//
+// The user's resolved theme configuration for a specific color mode and device type.
+type userSettings_theme_custom_sidebarUserSettingsTheme struct {
+	// The custom theme definition, only present when preset is 'custom'.
+	Custom *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomTheme `json:"custom"`
+}
+
+// GetCustom returns userSettings_theme_custom_sidebarUserSettingsTheme.Custom, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_custom_sidebarUserSettingsTheme) GetCustom() *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomTheme {
+	return v.Custom
+}
+
+// userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomTheme includes the requested fields of the GraphQL type UserSettingsCustomTheme.
+// The GraphQL type's documentation follows.
+//
+// Custom theme definition with accent, base colors, contrast, and optional sidebar theme.
+type userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomTheme struct {
+	// Optional sidebar theme colors.
+	Sidebar *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme `json:"sidebar"`
+}
+
+// GetSidebar returns userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomTheme.Sidebar, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomTheme) GetSidebar() *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme {
+	return v.Sidebar
+}
+
+// userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme includes the requested fields of the GraphQL type UserSettingsCustomSidebarTheme.
+// The GraphQL type's documentation follows.
+//
+// Custom sidebar theme definition with accent, base colors and contrast.
+type userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme struct {
+	UserSettingsCustomSidebarThemeFields `json:"-"`
+}
+
+// GetAccent returns userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme.Accent, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme) GetAccent() []float64 {
+	return v.UserSettingsCustomSidebarThemeFields.Accent
+}
+
+// GetBase returns userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme.Base, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme) GetBase() []float64 {
+	return v.UserSettingsCustomSidebarThemeFields.Base
+}
+
+// GetContrast returns userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme.Contrast, and is useful for accessing the field via an interface.
+func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme) GetContrast() int {
+	return v.UserSettingsCustomSidebarThemeFields.Contrast
+}
+
+func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSettingsCustomSidebarThemeFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaluserSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme struct {
+	Accent []float64 `json:"accent"`
+
+	Base []float64 `json:"base"`
+
+	Contrast int `json:"contrast"`
+}
+
+func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme) __premarshalJSON() (*__premarshaluserSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme, error) {
+	var retval __premarshaluserSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCustomThemeSidebarUserSettingsCustomSidebarTheme
+
+	retval.Accent = v.UserSettingsCustomSidebarThemeFields.Accent
+	retval.Base = v.UserSettingsCustomSidebarThemeFields.Base
+	retval.Contrast = v.UserSettingsCustomSidebarThemeFields.Contrast
+	return &retval, nil
+}
+
 // userUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
@@ -78835,6 +86061,1577 @@ func user(
 	}
 
 	data_ = &userResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings.
+const userSettings_Operation = `
+query userSettings {
+	userSettings {
+		... UserSettingsSummaryFields
+	}
+}
+fragment UserSettingsSummaryFields on UserSettings {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	autoAssignToSelf
+	feedLastSeenTime
+	feedSummarySchedule
+	showFullUserNames
+	subscribedToChangelog
+	subscribedToDPA
+	subscribedToInviteAccepted
+	subscribedToPrivacyLegalUpdates
+	user {
+		id
+	}
+	notificationCategoryPreferences {
+		... NotificationCategoryPreferencesFields
+	}
+	notificationChannelPreferences {
+		... NotificationChannelPreferencesFields
+	}
+	notificationDeliveryPreferences {
+		... NotificationDeliveryPreferencesFields
+	}
+}
+fragment NotificationCategoryPreferencesFields on NotificationCategoryPreferences {
+	appsAndIntegrations {
+		... NotificationChannelPreferencesFields
+	}
+	assignments {
+		... NotificationChannelPreferencesFields
+	}
+	billing {
+		... NotificationChannelPreferencesFields
+	}
+	commentsAndReplies {
+		... NotificationChannelPreferencesFields
+	}
+	customers {
+		... NotificationChannelPreferencesFields
+	}
+	documentChanges {
+		... NotificationChannelPreferencesFields
+	}
+	feed {
+		... NotificationChannelPreferencesFields
+	}
+	mentions {
+		... NotificationChannelPreferencesFields
+	}
+	postsAndUpdates {
+		... NotificationChannelPreferencesFields
+	}
+	reactions {
+		... NotificationChannelPreferencesFields
+	}
+	reminders {
+		... NotificationChannelPreferencesFields
+	}
+	reviews {
+		... NotificationChannelPreferencesFields
+	}
+	statusChanges {
+		... NotificationChannelPreferencesFields
+	}
+	subscriptions {
+		... NotificationChannelPreferencesFields
+	}
+	system {
+		... NotificationChannelPreferencesFields
+	}
+	triage {
+		... NotificationChannelPreferencesFields
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+fragment NotificationDeliveryPreferencesFields on NotificationDeliveryPreferences {
+	mobile {
+		... NotificationDeliveryPreferencesChannelFields
+	}
+}
+fragment NotificationDeliveryPreferencesChannelFields on NotificationDeliveryPreferencesChannel {
+	notificationsDisabled
+	schedule {
+		... NotificationDeliveryPreferencesScheduleFields
+	}
+}
+fragment NotificationDeliveryPreferencesScheduleFields on NotificationDeliveryPreferencesSchedule {
+	disabled
+	friday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	monday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	saturday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	sunday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	thursday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	tuesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	wednesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettingsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings",
+		Query:  userSettings_Operation,
+	}
+
+	data_ = &userSettingsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences.
+const userSettings_notificationCategoryPreferences_Operation = `
+query userSettings_notificationCategoryPreferences {
+	userSettings {
+		notificationCategoryPreferences {
+			... NotificationCategoryPreferencesFields
+		}
+	}
+}
+fragment NotificationCategoryPreferencesFields on NotificationCategoryPreferences {
+	appsAndIntegrations {
+		... NotificationChannelPreferencesFields
+	}
+	assignments {
+		... NotificationChannelPreferencesFields
+	}
+	billing {
+		... NotificationChannelPreferencesFields
+	}
+	commentsAndReplies {
+		... NotificationChannelPreferencesFields
+	}
+	customers {
+		... NotificationChannelPreferencesFields
+	}
+	documentChanges {
+		... NotificationChannelPreferencesFields
+	}
+	feed {
+		... NotificationChannelPreferencesFields
+	}
+	mentions {
+		... NotificationChannelPreferencesFields
+	}
+	postsAndUpdates {
+		... NotificationChannelPreferencesFields
+	}
+	reactions {
+		... NotificationChannelPreferencesFields
+	}
+	reminders {
+		... NotificationChannelPreferencesFields
+	}
+	reviews {
+		... NotificationChannelPreferencesFields
+	}
+	statusChanges {
+		... NotificationChannelPreferencesFields
+	}
+	subscriptions {
+		... NotificationChannelPreferencesFields
+	}
+	system {
+		... NotificationChannelPreferencesFields
+	}
+	triage {
+		... NotificationChannelPreferencesFields
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferencesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences",
+		Query:  userSettings_notificationCategoryPreferences_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferencesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_appsAndIntegrations.
+const userSettings_notificationCategoryPreferences_appsAndIntegrations_Operation = `
+query userSettings_notificationCategoryPreferences_appsAndIntegrations {
+	userSettings {
+		notificationCategoryPreferences {
+			appsAndIntegrations {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_appsAndIntegrations(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_appsAndIntegrationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_appsAndIntegrations",
+		Query:  userSettings_notificationCategoryPreferences_appsAndIntegrations_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_appsAndIntegrationsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_assignments.
+const userSettings_notificationCategoryPreferences_assignments_Operation = `
+query userSettings_notificationCategoryPreferences_assignments {
+	userSettings {
+		notificationCategoryPreferences {
+			assignments {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_assignments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_assignmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_assignments",
+		Query:  userSettings_notificationCategoryPreferences_assignments_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_assignmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_billing.
+const userSettings_notificationCategoryPreferences_billing_Operation = `
+query userSettings_notificationCategoryPreferences_billing {
+	userSettings {
+		notificationCategoryPreferences {
+			billing {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_billing(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_billingResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_billing",
+		Query:  userSettings_notificationCategoryPreferences_billing_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_billingResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_commentsAndReplies.
+const userSettings_notificationCategoryPreferences_commentsAndReplies_Operation = `
+query userSettings_notificationCategoryPreferences_commentsAndReplies {
+	userSettings {
+		notificationCategoryPreferences {
+			commentsAndReplies {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_commentsAndReplies(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_commentsAndRepliesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_commentsAndReplies",
+		Query:  userSettings_notificationCategoryPreferences_commentsAndReplies_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_commentsAndRepliesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_customers.
+const userSettings_notificationCategoryPreferences_customers_Operation = `
+query userSettings_notificationCategoryPreferences_customers {
+	userSettings {
+		notificationCategoryPreferences {
+			customers {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_customers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_customersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_customers",
+		Query:  userSettings_notificationCategoryPreferences_customers_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_customersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_documentChanges.
+const userSettings_notificationCategoryPreferences_documentChanges_Operation = `
+query userSettings_notificationCategoryPreferences_documentChanges {
+	userSettings {
+		notificationCategoryPreferences {
+			documentChanges {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_documentChanges(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_documentChangesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_documentChanges",
+		Query:  userSettings_notificationCategoryPreferences_documentChanges_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_documentChangesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_feed.
+const userSettings_notificationCategoryPreferences_feed_Operation = `
+query userSettings_notificationCategoryPreferences_feed {
+	userSettings {
+		notificationCategoryPreferences {
+			feed {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_feed(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_feedResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_feed",
+		Query:  userSettings_notificationCategoryPreferences_feed_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_feedResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_mentions.
+const userSettings_notificationCategoryPreferences_mentions_Operation = `
+query userSettings_notificationCategoryPreferences_mentions {
+	userSettings {
+		notificationCategoryPreferences {
+			mentions {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_mentions(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_mentionsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_mentions",
+		Query:  userSettings_notificationCategoryPreferences_mentions_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_mentionsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_postsAndUpdates.
+const userSettings_notificationCategoryPreferences_postsAndUpdates_Operation = `
+query userSettings_notificationCategoryPreferences_postsAndUpdates {
+	userSettings {
+		notificationCategoryPreferences {
+			postsAndUpdates {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_postsAndUpdates(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_postsAndUpdatesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_postsAndUpdates",
+		Query:  userSettings_notificationCategoryPreferences_postsAndUpdates_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_postsAndUpdatesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_reactions.
+const userSettings_notificationCategoryPreferences_reactions_Operation = `
+query userSettings_notificationCategoryPreferences_reactions {
+	userSettings {
+		notificationCategoryPreferences {
+			reactions {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_reactions(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_reactionsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_reactions",
+		Query:  userSettings_notificationCategoryPreferences_reactions_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_reactionsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_reminders.
+const userSettings_notificationCategoryPreferences_reminders_Operation = `
+query userSettings_notificationCategoryPreferences_reminders {
+	userSettings {
+		notificationCategoryPreferences {
+			reminders {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_reminders(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_remindersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_reminders",
+		Query:  userSettings_notificationCategoryPreferences_reminders_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_remindersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_reviews.
+const userSettings_notificationCategoryPreferences_reviews_Operation = `
+query userSettings_notificationCategoryPreferences_reviews {
+	userSettings {
+		notificationCategoryPreferences {
+			reviews {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_reviews(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_reviewsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_reviews",
+		Query:  userSettings_notificationCategoryPreferences_reviews_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_reviewsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_statusChanges.
+const userSettings_notificationCategoryPreferences_statusChanges_Operation = `
+query userSettings_notificationCategoryPreferences_statusChanges {
+	userSettings {
+		notificationCategoryPreferences {
+			statusChanges {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_statusChanges(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_statusChangesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_statusChanges",
+		Query:  userSettings_notificationCategoryPreferences_statusChanges_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_statusChangesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_subscriptions.
+const userSettings_notificationCategoryPreferences_subscriptions_Operation = `
+query userSettings_notificationCategoryPreferences_subscriptions {
+	userSettings {
+		notificationCategoryPreferences {
+			subscriptions {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_subscriptions(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_subscriptionsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_subscriptions",
+		Query:  userSettings_notificationCategoryPreferences_subscriptions_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_subscriptionsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_system.
+const userSettings_notificationCategoryPreferences_system_Operation = `
+query userSettings_notificationCategoryPreferences_system {
+	userSettings {
+		notificationCategoryPreferences {
+			system {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_system(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_systemResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_system",
+		Query:  userSettings_notificationCategoryPreferences_system_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_systemResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationCategoryPreferences_triage.
+const userSettings_notificationCategoryPreferences_triage_Operation = `
+query userSettings_notificationCategoryPreferences_triage {
+	userSettings {
+		notificationCategoryPreferences {
+			triage {
+				... NotificationChannelPreferencesFields
+			}
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationCategoryPreferences_triage(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationCategoryPreferences_triageResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationCategoryPreferences_triage",
+		Query:  userSettings_notificationCategoryPreferences_triage_Operation,
+	}
+
+	data_ = &userSettings_notificationCategoryPreferences_triageResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationChannelPreferences.
+const userSettings_notificationChannelPreferences_Operation = `
+query userSettings_notificationChannelPreferences {
+	userSettings {
+		notificationChannelPreferences {
+			... NotificationChannelPreferencesFields
+		}
+	}
+}
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+	desktop
+	email
+	mobile
+	slack
+}
+`
+
+func userSettings_notificationChannelPreferences(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationChannelPreferencesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationChannelPreferences",
+		Query:  userSettings_notificationChannelPreferences_Operation,
+	}
+
+	data_ = &userSettings_notificationChannelPreferencesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences.
+const userSettings_notificationDeliveryPreferences_Operation = `
+query userSettings_notificationDeliveryPreferences {
+	userSettings {
+		notificationDeliveryPreferences {
+			... NotificationDeliveryPreferencesFields
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesFields on NotificationDeliveryPreferences {
+	mobile {
+		... NotificationDeliveryPreferencesChannelFields
+	}
+}
+fragment NotificationDeliveryPreferencesChannelFields on NotificationDeliveryPreferencesChannel {
+	notificationsDisabled
+	schedule {
+		... NotificationDeliveryPreferencesScheduleFields
+	}
+}
+fragment NotificationDeliveryPreferencesScheduleFields on NotificationDeliveryPreferencesSchedule {
+	disabled
+	friday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	monday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	saturday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	sunday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	thursday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	tuesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	wednesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferencesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences",
+		Query:  userSettings_notificationDeliveryPreferences_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferencesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile.
+const userSettings_notificationDeliveryPreferences_mobile_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				... NotificationDeliveryPreferencesChannelFields
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesChannelFields on NotificationDeliveryPreferencesChannel {
+	notificationsDisabled
+	schedule {
+		... NotificationDeliveryPreferencesScheduleFields
+	}
+}
+fragment NotificationDeliveryPreferencesScheduleFields on NotificationDeliveryPreferencesSchedule {
+	disabled
+	friday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	monday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	saturday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	sunday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	thursday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	tuesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	wednesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobileResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobileResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					... NotificationDeliveryPreferencesScheduleFields
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesScheduleFields on NotificationDeliveryPreferencesSchedule {
+	disabled
+	friday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	monday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	saturday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	sunday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	thursday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	tuesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+	wednesday {
+		... NotificationDeliveryPreferencesDayFields
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_scheduleResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_scheduleResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule_friday.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_friday_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule_friday {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					friday {
+						... NotificationDeliveryPreferencesDayFields
+					}
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule_friday(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule_friday",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_friday_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_schedule_fridayResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule_monday.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_monday_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule_monday {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					monday {
+						... NotificationDeliveryPreferencesDayFields
+					}
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule_monday(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule_monday",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_monday_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_schedule_mondayResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule_saturday.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_saturday_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule_saturday {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					saturday {
+						... NotificationDeliveryPreferencesDayFields
+					}
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule_saturday(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule_saturday",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_saturday_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule_sunday.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_sunday_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule_sunday {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					sunday {
+						... NotificationDeliveryPreferencesDayFields
+					}
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule_sunday(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule_sunday",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_sunday_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_schedule_sundayResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule_thursday.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_thursday_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule_thursday {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					thursday {
+						... NotificationDeliveryPreferencesDayFields
+					}
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule_thursday(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule_thursday",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_thursday_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					tuesday {
+						... NotificationDeliveryPreferencesDayFields
+					}
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday.
+const userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday_Operation = `
+query userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday {
+	userSettings {
+		notificationDeliveryPreferences {
+			mobile {
+				schedule {
+					wednesday {
+						... NotificationDeliveryPreferencesDayFields
+					}
+				}
+			}
+		}
+	}
+}
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+	start
+	end
+}
+`
+
+func userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday",
+		Query:  userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday_Operation,
+	}
+
+	data_ = &userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_theme.
+const userSettings_theme_Operation = `
+query userSettings_theme ($deviceType: UserSettingsThemeDeviceType, $mode: UserSettingsThemeMode) {
+	userSettings {
+		theme(deviceType: $deviceType, mode: $mode) {
+			... UserSettingsThemeFields
+		}
+	}
+}
+fragment UserSettingsThemeFields on UserSettingsTheme {
+	preset
+	custom {
+		... UserSettingsCustomThemeFields
+	}
+}
+fragment UserSettingsCustomThemeFields on UserSettingsCustomTheme {
+	accent
+	base
+	contrast
+	sidebar {
+		... UserSettingsCustomSidebarThemeFields
+	}
+}
+fragment UserSettingsCustomSidebarThemeFields on UserSettingsCustomSidebarTheme {
+	accent
+	base
+	contrast
+}
+`
+
+func userSettings_theme(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	deviceType *UserSettingsThemeDeviceType,
+	mode *UserSettingsThemeMode,
+) (data_ *userSettings_themeResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_theme",
+		Query:  userSettings_theme_Operation,
+		Variables: &__userSettings_themeInput{
+			DeviceType: deviceType,
+			Mode:       mode,
+		},
+	}
+
+	data_ = &userSettings_themeResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_theme_custom.
+const userSettings_theme_custom_Operation = `
+query userSettings_theme_custom ($deviceType: UserSettingsThemeDeviceType, $mode: UserSettingsThemeMode) {
+	userSettings {
+		theme(deviceType: $deviceType, mode: $mode) {
+			custom {
+				... UserSettingsCustomThemeFields
+			}
+		}
+	}
+}
+fragment UserSettingsCustomThemeFields on UserSettingsCustomTheme {
+	accent
+	base
+	contrast
+	sidebar {
+		... UserSettingsCustomSidebarThemeFields
+	}
+}
+fragment UserSettingsCustomSidebarThemeFields on UserSettingsCustomSidebarTheme {
+	accent
+	base
+	contrast
+}
+`
+
+func userSettings_theme_custom(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	deviceType *UserSettingsThemeDeviceType,
+	mode *UserSettingsThemeMode,
+) (data_ *userSettings_theme_customResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_theme_custom",
+		Query:  userSettings_theme_custom_Operation,
+		Variables: &__userSettings_theme_customInput{
+			DeviceType: deviceType,
+			Mode:       mode,
+		},
+	}
+
+	data_ = &userSettings_theme_customResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by userSettings_theme_custom_sidebar.
+const userSettings_theme_custom_sidebar_Operation = `
+query userSettings_theme_custom_sidebar ($deviceType: UserSettingsThemeDeviceType, $mode: UserSettingsThemeMode) {
+	userSettings {
+		theme(deviceType: $deviceType, mode: $mode) {
+			custom {
+				sidebar {
+					... UserSettingsCustomSidebarThemeFields
+				}
+			}
+		}
+	}
+}
+fragment UserSettingsCustomSidebarThemeFields on UserSettingsCustomSidebarTheme {
+	accent
+	base
+	contrast
+}
+`
+
+func userSettings_theme_custom_sidebar(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	deviceType *UserSettingsThemeDeviceType,
+	mode *UserSettingsThemeMode,
+) (data_ *userSettings_theme_custom_sidebarResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "userSettings_theme_custom_sidebar",
+		Query:  userSettings_theme_custom_sidebar_Operation,
+		Variables: &__userSettings_theme_custom_sidebarInput{
+			DeviceType: deviceType,
+			Mode:       mode,
+		},
+	}
+
+	data_ = &userSettings_theme_custom_sidebarResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

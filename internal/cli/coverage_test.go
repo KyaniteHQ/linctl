@@ -2146,6 +2146,100 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 	})
 }
 
+func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.T) {
+	runtimeErrorCommands := [][]string{
+		{"user", "settings", "get"},
+		{"user", "settings", "notification-categories"},
+		{"user", "settings", "notification-category", "assignments"},
+		{"user", "settings", "notification-channels"},
+		{"user", "settings", "notification-delivery"},
+		{"user", "settings", "mobile-delivery"},
+		{"user", "settings", "mobile-schedule"},
+		{"user", "settings", "mobile-schedule-day", "monday"},
+		{"user", "settings", "theme"},
+		{"user", "settings", "custom-theme"},
+		{"user", "settings", "custom-sidebar-theme"},
+	}
+	for _, args := range runtimeErrorCommands {
+		t.Run("runtime "+strings.Join(args, " "), func(t *testing.T) {
+			original := buildCommandRuntime
+			buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+				return commandRuntime{}, errors.New("runtime failed")
+			}
+			defer func() {
+				buildCommandRuntime = original
+			}()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetArgs(args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.Error(t, err)
+			require.Contains(t, err.Error(), "runtime failed")
+		})
+	}
+
+	operationErrorCommands := []struct {
+		args      []string
+		operation string
+		contains  string
+	}{
+		{args: []string{"user", "settings", "get"}, operation: "userSettings", contains: "get user settings"},
+		{args: []string{"user", "settings", "notification-categories"}, operation: "userSettings_notificationCategoryPreferences", contains: "get user settings notification categories"},
+		{args: []string{"user", "settings", "notification-category", "assignments"}, operation: "userSettings_notificationCategoryPreferences_assignments", contains: "get user settings category assignments"},
+		{args: []string{"user", "settings", "notification-channels"}, operation: "userSettings_notificationChannelPreferences", contains: "get user settings notification channels"},
+		{args: []string{"user", "settings", "notification-delivery"}, operation: "userSettings_notificationDeliveryPreferences", contains: "get user settings notification delivery"},
+		{args: []string{"user", "settings", "mobile-delivery"}, operation: "userSettings_notificationDeliveryPreferences_mobile", contains: "get user settings mobile delivery"},
+		{args: []string{"user", "settings", "mobile-schedule"}, operation: "userSettings_notificationDeliveryPreferences_mobile_schedule", contains: "get user settings mobile schedule"},
+		{args: []string{"user", "settings", "mobile-schedule-day", "monday"}, operation: "userSettings_notificationDeliveryPreferences_mobile_schedule_monday", contains: "get user settings mobile schedule monday"},
+		{args: []string{"user", "settings", "theme"}, operation: "userSettings_theme", contains: "get user settings theme"},
+		{args: []string{"user", "settings", "custom-theme"}, operation: "userSettings_theme_custom", contains: "get user settings custom theme"},
+		{args: []string{"user", "settings", "custom-sidebar-theme"}, operation: "userSettings_theme_custom_sidebar", contains: "get user settings custom sidebar theme"},
+	}
+	for _, test := range operationErrorCommands {
+		t.Run("operation "+test.operation, func(t *testing.T) {
+			restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: test.operation})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.Error(t, err)
+			require.Contains(t, err.Error(), test.contains)
+		})
+	}
+
+	command := &cobra.Command{}
+	output := bytes.Buffer{}
+	command.SetOut(&output)
+	settings := client.UserSettingsSummary{ID: "settings-id", UserID: "user-id"}
+	require.NoError(t, writeUserSettings(command, &rootOptions{idOnly: true}, settings))
+	require.NoError(t, writeUserSettings(command, &rootOptions{quiet: true}, settings))
+	require.NoError(t, writeUserSettingsValue(command, &rootOptions{quiet: true}, settings, "settings"))
+	require.NoError(t, writeUserSettingsValue(command, &rootOptions{json: true}, settings, "settings"))
+	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{quiet: true}, nil, "nullable"))
+	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{json: true}, nil, "nullable"))
+	require.NoError(t, writeUserSettingsNullableValue(command, &rootOptions{}, nil, "nullable"))
+	require.Empty(t, pointerString(nil))
+	require.Equal(t, "value", pointerString(stringPointerForUserSettingsTest("value")))
+
+	err := runUserSettingsThemeCommand(
+		context.Background(),
+		command,
+		&rootOptions{},
+		commandRuntime{},
+		"unknown",
+		"desktop",
+		"light",
+	)
+	require.Error(t, err)
+}
+
+func stringPointerForUserSettingsTest(value string) *string {
+	return &value
+}
+
 func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 	t.Run("issue header", func(t *testing.T) {
 		command := &cobra.Command{}

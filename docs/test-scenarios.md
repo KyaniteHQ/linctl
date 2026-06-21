@@ -833,6 +833,11 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_drafts`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+143a. User settings
+   - Success: `linctl user settings ...` reads authenticated-user notification preferences, mobile delivery windows, and theme settings without calendar hashes, raw unsubscribe arrays, user email, or body-like payloads by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_settings_get`, `Test_CommandFlows_execute_read_and_write_commands/user_settings_notification_categories`, `Test_CommandFlows_execute_read_and_write_commands/user_settings_theme`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_user_settings`.
+
 144. User assigned issues
    - Success: `linctl user assigned-issues USER_ID --limit N` lists issues assigned to one User without issue body content.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_assigned_issues`;

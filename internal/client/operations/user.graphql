@@ -176,6 +176,346 @@ query viewer_teams($first: Int, $after: String, $includeArchived: Boolean) {
   }
 }
 
+query userSettings {
+  userSettings {
+    ...UserSettingsSummaryFields
+  }
+}
+
+query userSettings_notificationCategoryPreferences {
+  userSettings {
+    notificationCategoryPreferences {
+      ...NotificationCategoryPreferencesFields
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_appsAndIntegrations {
+  userSettings {
+    notificationCategoryPreferences {
+      appsAndIntegrations {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_assignments {
+  userSettings {
+    notificationCategoryPreferences {
+      assignments {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_billing {
+  userSettings {
+    notificationCategoryPreferences {
+      billing {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_commentsAndReplies {
+  userSettings {
+    notificationCategoryPreferences {
+      commentsAndReplies {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_customers {
+  userSettings {
+    notificationCategoryPreferences {
+      customers {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_documentChanges {
+  userSettings {
+    notificationCategoryPreferences {
+      documentChanges {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_feed {
+  userSettings {
+    notificationCategoryPreferences {
+      feed {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_mentions {
+  userSettings {
+    notificationCategoryPreferences {
+      mentions {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_postsAndUpdates {
+  userSettings {
+    notificationCategoryPreferences {
+      postsAndUpdates {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_reactions {
+  userSettings {
+    notificationCategoryPreferences {
+      reactions {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_reminders {
+  userSettings {
+    notificationCategoryPreferences {
+      reminders {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_reviews {
+  userSettings {
+    notificationCategoryPreferences {
+      reviews {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_statusChanges {
+  userSettings {
+    notificationCategoryPreferences {
+      statusChanges {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_subscriptions {
+  userSettings {
+    notificationCategoryPreferences {
+      subscriptions {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_system {
+  userSettings {
+    notificationCategoryPreferences {
+      system {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationCategoryPreferences_triage {
+  userSettings {
+    notificationCategoryPreferences {
+      triage {
+        ...NotificationChannelPreferencesFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationChannelPreferences {
+  userSettings {
+    notificationChannelPreferences {
+      ...NotificationChannelPreferencesFields
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences {
+  userSettings {
+    notificationDeliveryPreferences {
+      ...NotificationDeliveryPreferencesFields
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        ...NotificationDeliveryPreferencesChannelFields
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          ...NotificationDeliveryPreferencesScheduleFields
+        }
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule_friday {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          friday {
+            ...NotificationDeliveryPreferencesDayFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule_monday {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          monday {
+            ...NotificationDeliveryPreferencesDayFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule_saturday {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          saturday {
+            ...NotificationDeliveryPreferencesDayFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule_sunday {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          sunday {
+            ...NotificationDeliveryPreferencesDayFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule_thursday {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          thursday {
+            ...NotificationDeliveryPreferencesDayFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          tuesday {
+            ...NotificationDeliveryPreferencesDayFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday {
+  userSettings {
+    notificationDeliveryPreferences {
+      mobile {
+        schedule {
+          wednesday {
+            ...NotificationDeliveryPreferencesDayFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query userSettings_theme($deviceType: UserSettingsThemeDeviceType, $mode: UserSettingsThemeMode) {
+  userSettings {
+    theme(deviceType: $deviceType, mode: $mode) {
+      ...UserSettingsThemeFields
+    }
+  }
+}
+
+query userSettings_theme_custom($deviceType: UserSettingsThemeDeviceType, $mode: UserSettingsThemeMode) {
+  userSettings {
+    theme(deviceType: $deviceType, mode: $mode) {
+      custom {
+        ...UserSettingsCustomThemeFields
+      }
+    }
+  }
+}
+
+query userSettings_theme_custom_sidebar($deviceType: UserSettingsThemeDeviceType, $mode: UserSettingsThemeMode) {
+  userSettings {
+    theme(deviceType: $deviceType, mode: $mode) {
+      custom {
+        sidebar {
+          ...UserSettingsCustomSidebarThemeFields
+        }
+      }
+    }
+  }
+}
+
 fragment UserSummaryFields on User {
   id
   name
@@ -221,4 +561,154 @@ fragment DraftSummaryFields on Draft {
     key
     name
   }
+}
+
+fragment UserSettingsSummaryFields on UserSettings {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  autoAssignToSelf
+  feedLastSeenTime
+  feedSummarySchedule
+  showFullUserNames
+  subscribedToChangelog
+  subscribedToDPA
+  subscribedToInviteAccepted
+  subscribedToPrivacyLegalUpdates
+  user {
+    id
+  }
+  notificationCategoryPreferences {
+    ...NotificationCategoryPreferencesFields
+  }
+  notificationChannelPreferences {
+    ...NotificationChannelPreferencesFields
+  }
+  notificationDeliveryPreferences {
+    ...NotificationDeliveryPreferencesFields
+  }
+}
+
+fragment NotificationCategoryPreferencesFields on NotificationCategoryPreferences {
+  appsAndIntegrations {
+    ...NotificationChannelPreferencesFields
+  }
+  assignments {
+    ...NotificationChannelPreferencesFields
+  }
+  billing {
+    ...NotificationChannelPreferencesFields
+  }
+  commentsAndReplies {
+    ...NotificationChannelPreferencesFields
+  }
+  customers {
+    ...NotificationChannelPreferencesFields
+  }
+  documentChanges {
+    ...NotificationChannelPreferencesFields
+  }
+  feed {
+    ...NotificationChannelPreferencesFields
+  }
+  mentions {
+    ...NotificationChannelPreferencesFields
+  }
+  postsAndUpdates {
+    ...NotificationChannelPreferencesFields
+  }
+  reactions {
+    ...NotificationChannelPreferencesFields
+  }
+  reminders {
+    ...NotificationChannelPreferencesFields
+  }
+  reviews {
+    ...NotificationChannelPreferencesFields
+  }
+  statusChanges {
+    ...NotificationChannelPreferencesFields
+  }
+  subscriptions {
+    ...NotificationChannelPreferencesFields
+  }
+  system {
+    ...NotificationChannelPreferencesFields
+  }
+  triage {
+    ...NotificationChannelPreferencesFields
+  }
+}
+
+fragment NotificationChannelPreferencesFields on NotificationChannelPreferences {
+  desktop
+  email
+  mobile
+  slack
+}
+
+fragment NotificationDeliveryPreferencesFields on NotificationDeliveryPreferences {
+  mobile {
+    ...NotificationDeliveryPreferencesChannelFields
+  }
+}
+
+fragment NotificationDeliveryPreferencesChannelFields on NotificationDeliveryPreferencesChannel {
+  notificationsDisabled
+  schedule {
+    ...NotificationDeliveryPreferencesScheduleFields
+  }
+}
+
+fragment NotificationDeliveryPreferencesScheduleFields on NotificationDeliveryPreferencesSchedule {
+  disabled
+  friday {
+    ...NotificationDeliveryPreferencesDayFields
+  }
+  monday {
+    ...NotificationDeliveryPreferencesDayFields
+  }
+  saturday {
+    ...NotificationDeliveryPreferencesDayFields
+  }
+  sunday {
+    ...NotificationDeliveryPreferencesDayFields
+  }
+  thursday {
+    ...NotificationDeliveryPreferencesDayFields
+  }
+  tuesday {
+    ...NotificationDeliveryPreferencesDayFields
+  }
+  wednesday {
+    ...NotificationDeliveryPreferencesDayFields
+  }
+}
+
+fragment NotificationDeliveryPreferencesDayFields on NotificationDeliveryPreferencesDay {
+  start
+  end
+}
+
+fragment UserSettingsThemeFields on UserSettingsTheme {
+  preset
+  custom {
+    ...UserSettingsCustomThemeFields
+  }
+}
+
+fragment UserSettingsCustomThemeFields on UserSettingsCustomTheme {
+  accent
+  base
+  contrast
+  sidebar {
+    ...UserSettingsCustomSidebarThemeFields
+  }
+}
+
+fragment UserSettingsCustomSidebarThemeFields on UserSettingsCustomSidebarTheme {
+  accent
+  base
+  contrast
 }

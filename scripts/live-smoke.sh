@@ -54,6 +54,17 @@ PY
   viewer_json="$("$binary" whoami --json)"
   user_id="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["id"])' <<<"$viewer_json")"
   "$binary" user drafts --json --limit 5 >/dev/null
+  "$binary" user settings get --json >/dev/null
+  "$binary" user settings notification-categories --json >/dev/null
+  "$binary" user settings notification-category assignments --json >/dev/null
+  "$binary" user settings notification-channels --json >/dev/null
+  "$binary" user settings notification-delivery --json >/dev/null
+  "$binary" user settings mobile-delivery --json >/dev/null
+  "$binary" user settings mobile-schedule --json >/dev/null
+  "$binary" user settings mobile-schedule-day monday --json >/dev/null
+  "$binary" user settings theme --json --device-type desktop --mode light >/dev/null
+  "$binary" user settings custom-theme --json --device-type desktop --mode light >/dev/null
+  "$binary" user settings custom-sidebar-theme --json --device-type desktop --mode light >/dev/null
   "$binary" user assigned-issues "$user_id" --json --limit 5 >/dev/null
   "$binary" user created-issues "$user_id" --json --limit 5 >/dev/null
   "$binary" user delegated-issues "$user_id" --json --limit 5 >/dev/null

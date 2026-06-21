@@ -218,6 +218,17 @@ linctl user list --json --limit 20
 linctl user get USER_ID --json
 linctl user me --json
 linctl user drafts --json --limit 20
+linctl user settings get --json
+linctl user settings notification-categories --json
+linctl user settings notification-category assignments --json
+linctl user settings notification-channels --json
+linctl user settings notification-delivery --json
+linctl user settings mobile-delivery --json
+linctl user settings mobile-schedule --json
+linctl user settings mobile-schedule-day monday --json
+linctl user settings theme --json --device-type desktop --mode light
+linctl user settings custom-theme --json --device-type desktop --mode light
+linctl user settings custom-sidebar-theme --json --device-type desktop --mode light
 linctl user assigned-issues USER_ID --json --limit 20
 linctl user created-issues USER_ID --json --limit 20
 linctl user delegated-issues USER_ID --json --limit 20

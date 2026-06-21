@@ -192,6 +192,38 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "user get", args: []string{"user", "get", "user-id"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user me", args: []string{"user", "me"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "user drafts", args: []string{"user", "drafts", "--limit", "1"}, contains: "draft-id issue LIT-3 Draft issue"},
+		{name: "user settings get", args: []string{"user", "settings", "get"}, contains: "settings-id user=user-id auto_assign=true full_names=false"},
+		{name: "user settings notification categories", args: []string{"user", "settings", "notification-categories", "--json"}, contains: `"apps_and_integrations"`},
+		{name: "user settings apps integrations", args: []string{"user", "settings", "notification-category", "apps-and-integrations"}, contains: "apps-and-integrations desktop=true email=false mobile=true slack=false"},
+		{name: "user settings assignments", args: []string{"user", "settings", "notification-category", "assignments"}, contains: "assignments desktop=true email=false mobile=true slack=false"},
+		{name: "user settings billing", args: []string{"user", "settings", "notification-category", "billing"}, contains: "billing desktop=true email=false mobile=true slack=false"},
+		{name: "user settings comments replies", args: []string{"user", "settings", "notification-category", "comments-and-replies"}, contains: "comments-and-replies desktop=true email=false mobile=true slack=false"},
+		{name: "user settings customers", args: []string{"user", "settings", "notification-category", "customers"}, contains: "customers desktop=true email=false mobile=true slack=false"},
+		{name: "user settings document changes", args: []string{"user", "settings", "notification-category", "document-changes"}, contains: "document-changes desktop=true email=false mobile=true slack=false"},
+		{name: "user settings feed", args: []string{"user", "settings", "notification-category", "feed"}, contains: "feed desktop=true email=false mobile=true slack=false"},
+		{name: "user settings mentions", args: []string{"user", "settings", "notification-category", "mentions"}, contains: "mentions desktop=true email=false mobile=true slack=false"},
+		{name: "user settings posts updates", args: []string{"user", "settings", "notification-category", "posts-and-updates"}, contains: "posts-and-updates desktop=true email=false mobile=true slack=false"},
+		{name: "user settings reactions", args: []string{"user", "settings", "notification-category", "reactions"}, contains: "reactions desktop=true email=false mobile=true slack=false"},
+		{name: "user settings reminders", args: []string{"user", "settings", "notification-category", "reminders"}, contains: "reminders desktop=true email=false mobile=true slack=false"},
+		{name: "user settings reviews", args: []string{"user", "settings", "notification-category", "reviews"}, contains: "reviews desktop=true email=false mobile=true slack=false"},
+		{name: "user settings status changes", args: []string{"user", "settings", "notification-category", "status-changes"}, contains: "status-changes desktop=true email=false mobile=true slack=false"},
+		{name: "user settings subscriptions", args: []string{"user", "settings", "notification-category", "subscriptions"}, contains: "subscriptions desktop=true email=false mobile=true slack=false"},
+		{name: "user settings system", args: []string{"user", "settings", "notification-category", "system"}, contains: "system desktop=true email=false mobile=true slack=false"},
+		{name: "user settings triage", args: []string{"user", "settings", "notification-category", "triage"}, contains: "triage desktop=true email=false mobile=true slack=false"},
+		{name: "user settings channels", args: []string{"user", "settings", "notification-channels"}, contains: "channels desktop=true email=false mobile=true slack=false"},
+		{name: "user settings delivery", args: []string{"user", "settings", "notification-delivery"}, contains: "notification delivery"},
+		{name: "user settings mobile delivery", args: []string{"user", "settings", "mobile-delivery"}, contains: "mobile delivery"},
+		{name: "user settings mobile schedule", args: []string{"user", "settings", "mobile-schedule"}, contains: "mobile schedule"},
+		{name: "user settings friday", args: []string{"user", "settings", "mobile-schedule-day", "friday"}, contains: "friday start=09:00 end=18:00"},
+		{name: "user settings monday", args: []string{"user", "settings", "mobile-schedule-day", "monday"}, contains: "monday start=09:00 end=18:00"},
+		{name: "user settings saturday", args: []string{"user", "settings", "mobile-schedule-day", "saturday"}, contains: "saturday start=09:00 end=18:00"},
+		{name: "user settings sunday", args: []string{"user", "settings", "mobile-schedule-day", "sunday"}, contains: "sunday start=09:00 end=18:00"},
+		{name: "user settings thursday", args: []string{"user", "settings", "mobile-schedule-day", "thursday"}, contains: "thursday start=09:00 end=18:00"},
+		{name: "user settings tuesday", args: []string{"user", "settings", "mobile-schedule-day", "tuesday"}, contains: "tuesday start=09:00 end=18:00"},
+		{name: "user settings wednesday", args: []string{"user", "settings", "mobile-schedule-day", "wednesday"}, contains: "wednesday start=09:00 end=18:00"},
+		{name: "user settings theme", args: []string{"user", "settings", "theme", "--device-type", "desktop", "--mode", "dark"}, contains: "theme device_type=desktop mode=dark"},
+		{name: "user settings custom theme", args: []string{"user", "settings", "custom-theme", "--json"}, contains: `"contrast": 50`},
+		{name: "user settings custom sidebar theme", args: []string{"user", "settings", "custom-sidebar-theme", "--json"}, contains: `"accent"`},
 		{name: "user assigned issues", args: []string{"user", "assigned-issues", "user-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "user created issues", args: []string{"user", "created-issues", "user-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "user delegated issues", args: []string{"user", "delegated-issues", "user-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
@@ -2543,6 +2575,7 @@ func commandFlowTeamChildPayload(operation string) (string, bool) {
 	}
 }
 
+//nolint:gocyclo // The command-flow fake is intentionally centralized by operation name.
 func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	if payload, ok := commandFlowTeamChildPayload(operation); ok {
 		return payload, true
@@ -2585,6 +2618,9 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 		}
 		return `{"viewer":{"drafts":{"nodes":[` + commandDraftJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	}
+	if payload, ok := commandFlowUserSettingsPayload(operation); ok {
+		return payload, true
+	}
 
 	return commandFlowStateAndCommentPayload(operation, fake)
 }
@@ -2614,6 +2650,87 @@ func commandFlowUserChildPayload(operation string) (string, bool) {
 	default:
 		return "", false
 	}
+}
+
+//nolint:gocyclo // Each branch mirrors a distinct official UserSettings operation.
+func commandFlowUserSettingsPayload(operation string) (string, bool) {
+	switch operation {
+	case "userSettings":
+		return `{"userSettings":` + commandUserSettingsJSON() + `}`, true
+	case "userSettings_notificationCategoryPreferences":
+		return `{"userSettings":{"notificationCategoryPreferences":` + commandNotificationCategoriesJSON() + `}}`, true
+	case "userSettings_notificationCategoryPreferences_appsAndIntegrations":
+		return commandUserSettingsCategoryPayload("appsAndIntegrations"), true
+	case "userSettings_notificationCategoryPreferences_assignments":
+		return commandUserSettingsCategoryPayload("assignments"), true
+	case "userSettings_notificationCategoryPreferences_billing":
+		return commandUserSettingsCategoryPayload("billing"), true
+	case "userSettings_notificationCategoryPreferences_commentsAndReplies":
+		return commandUserSettingsCategoryPayload("commentsAndReplies"), true
+	case "userSettings_notificationCategoryPreferences_customers":
+		return commandUserSettingsCategoryPayload("customers"), true
+	case "userSettings_notificationCategoryPreferences_documentChanges":
+		return commandUserSettingsCategoryPayload("documentChanges"), true
+	case "userSettings_notificationCategoryPreferences_feed":
+		return commandUserSettingsCategoryPayload("feed"), true
+	case "userSettings_notificationCategoryPreferences_mentions":
+		return commandUserSettingsCategoryPayload("mentions"), true
+	case "userSettings_notificationCategoryPreferences_postsAndUpdates":
+		return commandUserSettingsCategoryPayload("postsAndUpdates"), true
+	case "userSettings_notificationCategoryPreferences_reactions":
+		return commandUserSettingsCategoryPayload("reactions"), true
+	case "userSettings_notificationCategoryPreferences_reminders":
+		return commandUserSettingsCategoryPayload("reminders"), true
+	case "userSettings_notificationCategoryPreferences_reviews":
+		return commandUserSettingsCategoryPayload("reviews"), true
+	case "userSettings_notificationCategoryPreferences_statusChanges":
+		return commandUserSettingsCategoryPayload("statusChanges"), true
+	case "userSettings_notificationCategoryPreferences_subscriptions":
+		return commandUserSettingsCategoryPayload("subscriptions"), true
+	case "userSettings_notificationCategoryPreferences_system":
+		return commandUserSettingsCategoryPayload("system"), true
+	case "userSettings_notificationCategoryPreferences_triage":
+		return commandUserSettingsCategoryPayload("triage"), true
+	case "userSettings_notificationChannelPreferences":
+		return `{"userSettings":{"notificationChannelPreferences":` + commandNotificationChannelJSON() + `}}`, true
+	case "userSettings_notificationDeliveryPreferences":
+		return `{"userSettings":{"notificationDeliveryPreferences":` + commandNotificationDeliveryPreferencesJSON() + `}}`, true
+	case "userSettings_notificationDeliveryPreferences_mobile":
+		return `{"userSettings":{"notificationDeliveryPreferences":{"mobile":` + commandNotificationDeliveryChannelJSON() + `}}}`, true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule":
+		return `{"userSettings":{"notificationDeliveryPreferences":{"mobile":{"schedule":` + commandNotificationDeliveryScheduleJSON() + `}}}}`, true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule_friday":
+		return commandUserSettingsScheduleDayPayload("friday"), true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule_monday":
+		return commandUserSettingsScheduleDayPayload("monday"), true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule_saturday":
+		return commandUserSettingsScheduleDayPayload("saturday"), true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule_sunday":
+		return commandUserSettingsScheduleDayPayload("sunday"), true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule_thursday":
+		return commandUserSettingsScheduleDayPayload("thursday"), true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday":
+		return commandUserSettingsScheduleDayPayload("tuesday"), true
+	case "userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday":
+		return commandUserSettingsScheduleDayPayload("wednesday"), true
+	case "userSettings_theme":
+		return `{"userSettings":{"theme":` + commandUserSettingsThemeJSON(true) + `}}`, true
+	case "userSettings_theme_custom":
+		return `{"userSettings":{"theme":{"custom":` + commandUserSettingsCustomThemeJSON(true) + `}}}`, true
+	case "userSettings_theme_custom_sidebar":
+		return `{"userSettings":{"theme":{"custom":{"sidebar":` + commandUserSettingsCustomSidebarThemeJSON() + `}}}}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandUserSettingsCategoryPayload(category string) string {
+	return `{"userSettings":{"notificationCategoryPreferences":{"` + category + `":` + commandNotificationChannelJSON() + `}}}`
+}
+
+func commandUserSettingsScheduleDayPayload(day string) string {
+	return `{"userSettings":{"notificationDeliveryPreferences":{"mobile":{"schedule":{"` + day + `":` +
+		commandNotificationDeliveryDayJSON() + `}}}}}`
 }
 
 func commandFlowStateAndCommentPayload(operation string, fake commandFlowFakeClient) (string, bool) {
@@ -4286,6 +4403,101 @@ func commandActorBotJSON() string {
 		"userDisplayName":"octocat",
 		"avatarUrl":"https://example.com/github.png"
 	}`
+}
+
+func commandUserSettingsJSON() string {
+	return `{
+		"id":"settings-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"autoAssignToSelf":true,
+		"feedLastSeenTime":null,
+		"feedSummarySchedule":"daily",
+		"showFullUserNames":false,
+		"subscribedToChangelog":true,
+		"subscribedToDPA":false,
+		"subscribedToInviteAccepted":true,
+		"subscribedToPrivacyLegalUpdates":true,
+		"user":{"id":"user-id"},
+		"notificationCategoryPreferences":` + commandNotificationCategoriesJSON() + `,
+		"notificationChannelPreferences":` + commandNotificationChannelJSON() + `,
+		"notificationDeliveryPreferences":` + commandNotificationDeliveryPreferencesJSON() + `
+	}`
+}
+
+func commandNotificationCategoriesJSON() string {
+	channel := commandNotificationChannelJSON()
+	return `{
+		"appsAndIntegrations":` + channel + `,
+		"assignments":` + channel + `,
+		"billing":` + channel + `,
+		"commentsAndReplies":` + channel + `,
+		"customers":` + channel + `,
+		"documentChanges":` + channel + `,
+		"feed":` + channel + `,
+		"mentions":` + channel + `,
+		"postsAndUpdates":` + channel + `,
+		"reactions":` + channel + `,
+		"reminders":` + channel + `,
+		"reviews":` + channel + `,
+		"statusChanges":` + channel + `,
+		"subscriptions":` + channel + `,
+		"system":` + channel + `,
+		"triage":` + channel + `
+	}`
+}
+
+func commandNotificationChannelJSON() string {
+	return `{"desktop":true,"email":false,"mobile":true,"slack":false}`
+}
+
+func commandNotificationDeliveryPreferencesJSON() string {
+	return `{"mobile":` + commandNotificationDeliveryChannelJSON() + `}`
+}
+
+func commandNotificationDeliveryChannelJSON() string {
+	return `{"notificationsDisabled":false,"schedule":` + commandNotificationDeliveryScheduleJSON() + `}`
+}
+
+func commandNotificationDeliveryScheduleJSON() string {
+	day := commandNotificationDeliveryDayJSON()
+	return `{
+		"disabled":false,
+		"friday":` + day + `,
+		"monday":` + day + `,
+		"saturday":` + day + `,
+		"sunday":` + day + `,
+		"thursday":` + day + `,
+		"tuesday":` + day + `,
+		"wednesday":` + day + `
+	}`
+}
+
+func commandNotificationDeliveryDayJSON() string {
+	return `{"start":"09:00","end":"18:00"}`
+}
+
+func commandUserSettingsThemeJSON(includeCustom bool) string {
+	custom := "null"
+	if includeCustom {
+		custom = commandUserSettingsCustomThemeJSON(true)
+	}
+
+	return `{"preset":"custom","custom":` + custom + `}`
+}
+
+func commandUserSettingsCustomThemeJSON(includeSidebar bool) string {
+	sidebar := "null"
+	if includeSidebar {
+		sidebar = commandUserSettingsCustomSidebarThemeJSON()
+	}
+
+	return `{"accent":[50.5,20.5,10.5],"base":[90.5,0,0],"contrast":50,"sidebar":` + sidebar + `}`
+}
+
+func commandUserSettingsCustomSidebarThemeJSON() string {
+	return `{"accent":[60.5,20.5,10.5],"base":[20.5,0,0],"contrast":70}`
 }
 
 func commandNullableStringJSON(value string) string {

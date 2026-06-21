@@ -585,9 +585,9 @@ Team list/get, the read-only Team child-list commands above, and `team-membershi
 
 Schema backing:
 
-- Types: `User`, `UserConnection`
-- Reads: `Query.users`, `Query.user`, `Query.viewer`, `User.assignedIssues`, `User.createdIssues`, `User.delegatedIssues`, `User.teamMemberships`, `User.teams`, `User.drafts`, `Team.members`, `Project.members`
-- Relevant fields: `User.id`, `User.name`, `User.displayName`, `User.email`, `User.active`, `User.guest`, `User.admin`, `User.url`, `User.assignedIssues`, `User.teams`, `Draft.id`, `Draft.issue`, `Draft.project`, `Draft.projectUpdate`, `Draft.initiative`, `Draft.initiativeUpdate`, `Draft.parentComment`, `Draft.customerNeed`, `Draft.team`
+- Types: `User`, `UserConnection`, `UserSettings`
+- Reads: `Query.users`, `Query.user`, `Query.viewer`, `Query.userSettings`, `User.assignedIssues`, `User.createdIssues`, `User.delegatedIssues`, `User.teamMemberships`, `User.teams`, `User.drafts`, `Team.members`, `Project.members`, `UserSettings.notificationCategoryPreferences`, `UserSettings.notificationChannelPreferences`, `UserSettings.notificationDeliveryPreferences`, `UserSettings.theme`
+- Relevant fields: `User.id`, `User.name`, `User.displayName`, `User.email`, `User.active`, `User.guest`, `User.admin`, `User.url`, `User.assignedIssues`, `User.teams`, `Draft.id`, `Draft.issue`, `Draft.project`, `Draft.projectUpdate`, `Draft.initiative`, `Draft.initiativeUpdate`, `Draft.parentComment`, `Draft.customerNeed`, `Draft.team`, `UserSettings.id`, `UserSettings.user.id`, notification channel booleans, mobile delivery windows, theme preset and custom color values
 
 Planned commands:
 
@@ -597,6 +597,17 @@ Planned commands:
 | `user get` | `Query.user` | Read-only |
 | `user me` | `Query.viewer` | Read-only |
 | `user drafts` | `User.drafts` via `Query.viewer` | Read-only |
+| `user settings get` | `Query.userSettings` | Read-only |
+| `user settings notification-categories` | `Query.userSettings.notificationCategoryPreferences` | Read-only |
+| `user settings notification-category CATEGORY` | `Query.userSettings.notificationCategoryPreferences.<category>` | Read-only |
+| `user settings notification-channels` | `Query.userSettings.notificationChannelPreferences` | Read-only |
+| `user settings notification-delivery` | `Query.userSettings.notificationDeliveryPreferences` | Read-only |
+| `user settings mobile-delivery` | `Query.userSettings.notificationDeliveryPreferences.mobile` | Read-only |
+| `user settings mobile-schedule` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule` | Read-only |
+| `user settings mobile-schedule-day DAY` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule.<day>` | Read-only |
+| `user settings theme` | `Query.userSettings.theme` | Read-only |
+| `user settings custom-theme` | `Query.userSettings.theme.custom` | Read-only |
+| `user settings custom-sidebar-theme` | `Query.userSettings.theme.custom.sidebar` | Read-only |
 | `user assigned-issues` | `User.assignedIssues` | Read-only |
 | `user created-issues` | `User.createdIssues` | Read-only |
 | `user delegated-issues` | `User.delegatedIssues` | Read-only |
@@ -608,7 +619,7 @@ Planned commands:
 | `user my-team-memberships` | `User.teamMemberships` via `Query.viewer` | Read-only |
 | `user my-teams` | `User.teams` via `Query.viewer` | Read-only |
 
-The read-only user commands are implemented in the current CLI. Draft reads intentionally omit draft body/data and return parent metadata only. User issue-list commands use compact issue summaries and do not include body content. User writes are not part of the v1 PM command surface until a later slice proves the exact Linear mutation and safety semantics.
+The read-only user commands are implemented in the current CLI. Draft reads intentionally omit draft body/data and return parent metadata only. User settings reads omit calendar hashes, raw unsubscribe arrays, and user email by default; they expose compact preference booleans, delivery windows, and theme colors. User issue-list commands use compact issue summaries and do not include body content. User writes are not part of the v1 PM command surface until a later slice proves the exact Linear mutation and safety semantics.
 
 ## WorkflowState
 

@@ -214,6 +214,17 @@ linctl user list --limit 20
 linctl user get user-id
 linctl user me
 linctl user drafts --limit 20
+linctl user settings get
+linctl user settings notification-categories
+linctl user settings notification-category assignments
+linctl user settings notification-channels
+linctl user settings notification-delivery
+linctl user settings mobile-delivery
+linctl user settings mobile-schedule
+linctl user settings mobile-schedule-day monday
+linctl user settings theme --device-type desktop --mode light
+linctl user settings custom-theme --device-type desktop --mode light
+linctl user settings custom-sidebar-theme --device-type desktop --mode light
 linctl user assigned-issues user-id --limit 20
 linctl user created-issues user-id --limit 20
 linctl user delegated-issues user-id --limit 20
@@ -441,6 +452,17 @@ linctl team-membership list --limit 20
 linctl team-membership get team-membership-id
 linctl user me
 linctl user drafts --limit 20
+linctl user settings get
+linctl user settings notification-categories
+linctl user settings notification-category assignments
+linctl user settings notification-channels
+linctl user settings notification-delivery
+linctl user settings mobile-delivery
+linctl user settings mobile-schedule
+linctl user settings mobile-schedule-day monday
+linctl user settings theme --device-type desktop --mode light
+linctl user settings custom-theme --device-type desktop --mode light
+linctl user settings custom-sidebar-theme --device-type desktop --mode light
 linctl user assigned-issues user-id --limit 20
 linctl user created-issues user-id --limit 20
 linctl user delegated-issues user-id --limit 20

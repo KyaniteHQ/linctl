@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 114 | 458 |
-| Upstream Query root fields | 158 | 102 | 158 |
+| Upstream SDK root methods | 458 | 115 | 458 |
+| Upstream Query root fields | 158 | 103 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 261 | 261 | 261 |
-| Domain-map commands | 373 | 241 | 373 |
+| Local generated Go operations | 293 | 293 | 293 |
+| Domain-map commands | 384 | 252 | 384 |
 
 ## Upstream SDK Root Methods
 
@@ -474,7 +474,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `userRevokeAllSessions` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userRevokeSession` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `userSettings` | getter | accepted_gap | repo-planned or likely useful CLI domain |
+| `userSettings` | getter | implemented | local operation or command exists |
 | `userSettingsFlagsReset` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `userUnlinkFromIdentityProvider` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `users` | method | implemented | local operation or command exists |
@@ -639,7 +639,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `triageResponsibility` | `TriageResponsibility!` | implemented | root field used by local GraphQL operation |
 | `user` | `User!` | implemented | root field used by local GraphQL operation |
 | `userSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `userSettings` | `UserSettings!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `userSettings` | `UserSettings!` | implemented | root field used by local GraphQL operation |
 | `users` | `UserConnection!` | implemented | root field used by local GraphQL operation |
 | `verifyGitHubEnterpriseServerInstallation` | `GitHubEnterpriseServerInstallVerificationPayload!` | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
 | `viewer` | `User!` | implemented | root field used by local GraphQL operation |
@@ -1253,6 +1253,38 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `triageResponsibility` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
 | `triageResponsibility_manualSelection` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
 | `user` | query | `user` | implemented | `internal/client/generated.go` |
+| `userSettings` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_appsAndIntegrations` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_assignments` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_billing` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_commentsAndReplies` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_customers` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_documentChanges` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_feed` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_mentions` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_postsAndUpdates` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_reactions` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_reminders` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_reviews` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_statusChanges` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_subscriptions` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_system` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_triage` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationChannelPreferences` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_friday` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_monday` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_saturday` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_sunday` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_thursday` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_theme` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_theme_custom` | query | `userSettings` | implemented | `internal/client/generated.go` |
+| `userSettings_theme_custom_sidebar` | query | `userSettings` | implemented | `internal/client/generated.go` |
 | `user_assignedIssues` | query | `user` | implemented | `internal/client/generated.go` |
 | `user_createdIssues` | query | `user` | implemented | `internal/client/generated.go` |
 | `user_delegatedIssues` | query | `user` | implemented | `internal/client/generated.go` |
@@ -1507,6 +1539,17 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | User | `user get` | `Query.user` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user drafts` | `User.drafts` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings get` | `Query.userSettings` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings notification-categories` | `Query.userSettings.notificationCategoryPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings notification-category CATEGORY` | `Query.userSettings.notificationCategoryPreferences.<category>` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings notification-channels` | `Query.userSettings.notificationChannelPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings notification-delivery` | `Query.userSettings.notificationDeliveryPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings mobile-delivery` | `Query.userSettings.notificationDeliveryPreferences.mobile` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings mobile-schedule` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings mobile-schedule-day DAY` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule.<day>` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings theme` | `Query.userSettings.theme` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings custom-theme` | `Query.userSettings.theme.custom` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user settings custom-sidebar-theme` | `Query.userSettings.theme.custom.sidebar` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user assigned-issues` | `User.assignedIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user created-issues` | `User.createdIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user delegated-issues` | `User.delegatedIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
