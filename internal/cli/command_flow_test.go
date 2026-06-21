@@ -55,6 +55,9 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, contains: "triage-responsibility-id manual users user-id,other-user-id"},
 		{name: "SLA configuration list", args: []string{"sla-configuration", "list", "team-id"}, contains: "sla-configuration-id First response sla 3600000 type all removes false"},
 		{name: "semantic search", args: []string{"semantic-search", "agent search", "--limit", "2"}, contains: "issue issue-id LIT-3 Search result", fake: commandFlowFakeClient{expectedSemanticSearchQuery: "agent search"}},
+		{name: "search documents", args: []string{"search", "documents", "agent search", "--limit", "1"}, contains: "search-document-id Search spec [team]", fake: commandFlowFakeClient{expectedTypedSearchTerm: "agent search"}},
+		{name: "search issues", args: []string{"search", "issues", "agent search", "--limit", "1"}, contains: "LIT-30 Search issue [Todo]", fake: commandFlowFakeClient{expectedTypedSearchTerm: "agent search"}},
+		{name: "search projects", args: []string{"search", "projects", "agent search", "--limit", "1"}, contains: "search-project-id Search project [Backlog]", fake: commandFlowFakeClient{expectedTypedSearchTerm: "agent search"}},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list", "--limit", "1"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
@@ -604,6 +607,9 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"triage-responsibility", "manual-selection", "triage-responsibility-id"},
 			{"organization", "exists", "kyanite"},
 			{"semantic-search", "agent search"},
+			{"search", "documents", "agent search"},
+			{"search", "issues", "agent search"},
+			{"search", "projects", "agent search"},
 			{"rate-limit", "status"},
 			{"release", "list"},
 			{"release", "search", "mobile"},
@@ -836,6 +842,49 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 		require.Contains(t, err.Error(), `sort field "missing" is not present`)
 	})
 
+	t.Run("typed search returns writer errors", func(t *testing.T) {
+		tests := [][]string{
+			{"search", "documents", "agent search"},
+			{"search", "issues", "agent search"},
+			{"search", "projects", "agent search"},
+		}
+		for _, args := range tests {
+			t.Run(strings.Join(args[:2], " "), func(t *testing.T) {
+				restore := useCommandRuntime(t, commandFlowFakeClient{})
+				defer restore()
+				command := NewRootCommand(context.Background(), BuildInfo{})
+				command.SetOut(commandFailingWriter{})
+				command.SetArgs(args)
+
+				err := command.ExecuteContext(context.Background())
+
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "write line")
+			})
+		}
+	})
+
+	t.Run("typed search reports sort errors", func(t *testing.T) {
+		tests := [][]string{
+			{"--sort", "missing", "search", "documents", "agent search"},
+			{"--sort", "missing", "search", "issues", "agent search"},
+			{"--sort", "missing", "search", "projects", "agent search"},
+		}
+		for _, args := range tests {
+			t.Run(strings.Join(args[2:4], " "), func(t *testing.T) {
+				restore := useCommandRuntime(t, commandFlowFakeClient{})
+				defer restore()
+				command := NewRootCommand(context.Background(), BuildInfo{})
+				command.SetArgs(args)
+
+				err := command.ExecuteContext(context.Background())
+
+				require.Error(t, err)
+				require.Contains(t, err.Error(), `sort field "missing" is not present`)
+			})
+		}
+	})
+
 	t.Run("issue child list returns writer errors", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{})
 		defer restore()
@@ -925,6 +974,9 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "external-user", "get", "external-user-id"},
 		{"--json", "--fields", "type,description", "audit-entry", "types"},
 		{"--json", "--fields", "type,id,key,title", "semantic-search", "agent search", "--limit", "2"},
+		{"--json", "--fields", "id,title,parent_type", "search", "documents", "agent search", "--limit", "1"},
+		{"--json", "--fields", "id,identifier,title", "search", "issues", "agent search", "--limit", "1"},
+		{"--json", "--fields", "id,name,slug_id", "search", "projects", "agent search", "--limit", "1"},
 		{"--json", "next", "--dry-run"},
 		{"--json", "issue", "list", "--limit", "1"},
 		{"--json", "issue", "search", "needle", "--limit", "1"},
@@ -1409,6 +1461,43 @@ func Test_CommandFlows_fail_on_empty_semantic_search_when_fail_on_empty_flag_is_
 	require.Contains(t, err.Error(), "empty result")
 }
 
+func Test_CommandFlows_fail_on_empty_typed_search_when_fail_on_empty_flag_is_set(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		fake commandFlowFakeClient
+	}{
+		{
+			name: "documents",
+			args: []string{"--fail-on-empty", "search", "documents", "agent search"},
+			fake: commandFlowFakeClient{emptySearchDocuments: true},
+		},
+		{
+			name: "issues",
+			args: []string{"--fail-on-empty", "search", "issues", "agent search"},
+			fake: commandFlowFakeClient{emptySearchIssues: true},
+		},
+		{
+			name: "projects",
+			args: []string{"--fail-on-empty", "search", "projects", "agent search"},
+			fake: commandFlowFakeClient{emptySearchProjects: true},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			restore := useCommandRuntime(t, test.fake)
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.Error(t, err)
+			require.Contains(t, err.Error(), "empty result")
+		})
+	}
+}
+
 func Test_CommandFlows_semantic_search_honors_id_only_and_quiet(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -1417,6 +1506,88 @@ func Test_CommandFlows_semantic_search_honors_id_only_and_quiet(t *testing.T) {
 	}{
 		{name: "id only", args: []string{"--id-only", "semantic-search", "agent search"}, output: "issue-id\n"},
 		{name: "quiet", args: []string{"--quiet", "semantic-search", "agent search"}, output: ""},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Equal(t, test.output, output.String())
+		})
+	}
+}
+
+func Test_CommandFlows_typed_search_writers_emit_json(t *testing.T) {
+	tests := []struct {
+		name  string
+		write func(*cobra.Command, *rootOptions) error
+		want  string
+	}{
+		{
+			name: "document",
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeSearchDocument(command, options, client.SearchDocumentSummary{
+					ID:    "search-document-id",
+					Title: "Search spec",
+				})
+			},
+			want: `{"id":"search-document-id","title":"Search spec","slug_id":"","url":""}`,
+		},
+		{
+			name: "issue",
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeSearchIssue(command, options, client.SearchIssueSummary{
+					ID:         "search-issue-id",
+					Identifier: "LIT-30",
+					Title:      "Search issue",
+				})
+			},
+			want: `{"id":"search-issue-id","identifier":"LIT-30","title":"Search issue","url":"","team_id":"","team_key":"","team_name":"","state_id":"","state_name":"","state_type":""}`,
+		},
+		{
+			name: "project",
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeSearchProject(command, options, client.SearchProjectSummary{
+					ID:   "search-project-id",
+					Name: "Search project",
+				})
+			},
+			want: `{"id":"search-project-id","name":"Search project","slug_id":"","url":"","status":{"id":"","name":"","type":""},"teams":null}`,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			command := &cobra.Command{}
+			command.SetOut(&output)
+
+			err := test.write(command, &rootOptions{json: true})
+
+			require.NoError(t, err)
+			require.JSONEq(t, test.want, output.String())
+		})
+	}
+}
+
+func Test_CommandFlows_typed_search_honors_id_only_and_quiet(t *testing.T) {
+	tests := []struct {
+		name   string
+		args   []string
+		output string
+	}{
+		{name: "documents id only", args: []string{"--id-only", "search", "documents", "agent search"}, output: "search-document-id\n"},
+		{name: "documents quiet", args: []string{"--quiet", "search", "documents", "agent search"}, output: ""},
+		{name: "issues id only", args: []string{"--id-only", "search", "issues", "agent search"}, output: "search-issue-id\n"},
+		{name: "issues quiet", args: []string{"--quiet", "search", "issues", "agent search"}, output: ""},
+		{name: "projects id only", args: []string{"--id-only", "search", "projects", "agent search"}, output: "search-project-id\n"},
+		{name: "projects quiet", args: []string{"--quiet", "search", "projects", "agent search"}, output: ""},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -1682,6 +1853,9 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "triage responsibility manual selection", args: []string{"triage-responsibility", "manual-selection", "triage-responsibility-id"}, operation: "triageResponsibility_manualSelection", contains: "get triage responsibility manual selection triage-responsibility-id"},
 		{name: "SLA configuration list", args: []string{"sla-configuration", "list", "team-id"}, operation: "slaConfigurations", contains: "list SLA configurations team-id"},
 		{name: "semantic search", args: []string{"semantic-search", "agent search"}, operation: "semanticSearch", contains: "semantic search"},
+		{name: "search documents", args: []string{"search", "documents", "agent search"}, operation: "searchDocuments", contains: "search documents"},
+		{name: "search issues", args: []string{"search", "issues", "agent search"}, operation: "searchIssues", contains: "search issues"},
+		{name: "search projects", args: []string{"search", "projects", "agent search"}, operation: "searchProjects", contains: "search projects"},
 		{name: "release pipeline list", args: []string{"release-pipeline", "list"}, operation: "releasePipelines", contains: "list release pipelines"},
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id"}, operation: "releasePipeline_releases", contains: "list release pipeline releases release-pipeline-id"},
@@ -1953,6 +2127,7 @@ type commandFlowFakeClient struct {
 	expectedSearchQuery         string
 	expectedReleaseSearchTerm   string
 	expectedSemanticSearchQuery string
+	expectedTypedSearchTerm     string
 	emptyReleaseSearch          bool
 	emptyProjectList            bool
 	emptyProjectMembers         bool
@@ -1960,6 +2135,9 @@ type commandFlowFakeClient struct {
 	emptyProjectMilestones      bool
 	emptySLAConfigurations      bool
 	emptySemanticSearch         bool
+	emptySearchDocuments        bool
+	emptySearchIssues           bool
+	emptySearchProjects         bool
 	emptyViewerDrafts           bool
 	expectedCommentBody         string
 	expectedCommentParentID     string
@@ -2048,6 +2226,12 @@ func (client commandFlowFakeClient) requireExpectedSearchVariables(request *grap
 	}
 	if client.expectedSemanticSearchQuery != "" && request.OpName == "semanticSearch" {
 		return requireRequestVariable(request, []string{"query"}, client.expectedSemanticSearchQuery, "semantic search query")
+	}
+	if client.expectedTypedSearchTerm != "" &&
+		(request.OpName == "searchDocuments" ||
+			request.OpName == "searchIssues" ||
+			request.OpName == "searchProjects") {
+		return requireRequestVariable(request, []string{"term"}, client.expectedTypedSearchTerm, "typed search term")
 	}
 	if client.expectedIssueDeps != "" && request.OpName == "IssueDependencies" {
 		return requireRequestVariable(request, []string{"id"}, client.expectedIssueDeps, "issue deps id")
@@ -2483,6 +2667,21 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 			return `{"semanticSearch":{"results":[]}}`, true
 		}
 		return `{"semanticSearch":{"results":[` + commandSemanticSearchResultJSON() + `]}}`, true
+	case "searchDocuments":
+		if fake.emptySearchDocuments {
+			return `{"searchDocuments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null},"totalCount":0}}`, true
+		}
+		return `{"searchDocuments":{"nodes":[` + commandSearchDocumentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null},"totalCount":1}}`, true
+	case "searchIssues":
+		if fake.emptySearchIssues {
+			return `{"searchIssues":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null},"totalCount":0}}`, true
+		}
+		return `{"searchIssues":{"nodes":[` + commandSearchIssueJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null},"totalCount":1}}`, true
+	case "searchProjects":
+		if fake.emptySearchProjects {
+			return `{"searchProjects":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null},"totalCount":0}}`, true
+		}
+		return `{"searchProjects":{"nodes":[` + commandSearchProjectJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null},"totalCount":1}}`, true
 	case "releasePipelines":
 		return `{"releasePipelines":{"nodes":[` + commandReleasePipelineJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releasePipeline":
@@ -3688,6 +3887,45 @@ func commandSemanticSearchResultJSON() string {
 		"project":null,
 		"initiative":null,
 		"document":null
+	}`
+}
+
+func commandSearchDocumentJSON() string {
+	return `{
+		"id":"search-document-id",
+		"title":"Search spec",
+		"slugId":"search-spec",
+		"url":"https://linear.app/kyanite/document/search-spec",
+		"project":null,
+		"initiative":null,
+		"team":{"id":"team-id","key":"LIT","name":"linctl"},
+		"issue":null,
+		"release":null,
+		"cycle":null
+	}`
+}
+
+func commandSearchIssueJSON() string {
+	return `{
+		"id":"search-issue-id",
+		"identifier":"LIT-30",
+		"title":"Search issue",
+		"url":"https://linear.app/kyanite/issue/LIT-30",
+		"team":{"id":"team-id","key":"LIT","name":"linctl"},
+		"state":{"id":"state-id","name":"Todo","type":"unstarted"},
+		"project":{"id":"project-id","name":"Pinned project"}
+	}`
+}
+
+func commandSearchProjectJSON() string {
+	return `{
+		"id":"search-project-id",
+		"name":"Search project",
+		"slugId":"search-project",
+		"url":"https://linear.app/kyanite/project/search-project",
+		"status":{"id":"status-id","name":"Backlog","type":"backlog"},
+		"lead":{"id":"user-id","name":"omer","displayName":"Omer"},
+		"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl"}]}
 	}`
 }
 

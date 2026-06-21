@@ -814,6 +814,12 @@ Success is pass/fail:
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+142a. Typed search
+   - Success: `linctl search documents|issues|projects QUERY --limit N` returns compact typed search results without archive payloads, metadata, comments, document content, or project content by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/search_documents`, `Test_CommandFlows_execute_read_and_write_commands/search_issues`, `Test_CommandFlows_execute_read_and_write_commands/search_projects`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 143. User drafts
    - Success: `linctl user drafts --limit N` lists authenticated-user draft parent metadata without draft body/data.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/user_drafts`;

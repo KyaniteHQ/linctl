@@ -1,0 +1,135 @@
+query searchDocuments($term: String!, $first: Int, $after: String) {
+  searchDocuments(
+    term: $term
+    first: $first
+    after: $after
+    includeArchived: false
+    includeComments: false
+  ) {
+    nodes {
+      ...SearchDocumentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query searchIssues($term: String!, $first: Int, $after: String) {
+  searchIssues(
+    term: $term
+    first: $first
+    after: $after
+    includeArchived: false
+    includeComments: false
+  ) {
+    nodes {
+      ...SearchIssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query searchProjects($term: String!, $first: Int, $after: String) {
+  searchProjects(
+    term: $term
+    first: $first
+    after: $after
+    includeArchived: false
+    includeComments: false
+  ) {
+    nodes {
+      ...SearchProjectSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+fragment SearchDocumentSummaryFields on DocumentSearchResult {
+  id
+  title
+  slugId
+  url
+  project {
+    id
+    name
+  }
+  initiative {
+    id
+    name
+  }
+  team {
+    id
+    key
+    name
+  }
+  issue {
+    id
+    identifier
+    title
+  }
+  release {
+    id
+    name
+  }
+  cycle {
+    id
+    number
+    name
+  }
+}
+
+fragment SearchIssueSummaryFields on IssueSearchResult {
+  id
+  identifier
+  title
+  url
+  team {
+    id
+    key
+    name
+  }
+  state {
+    id
+    name
+    type
+  }
+  project {
+    id
+    name
+  }
+}
+
+fragment SearchProjectSummaryFields on ProjectSearchResult {
+  id
+  name
+  slugId
+  url
+  status {
+    id
+    name
+    type
+  }
+  lead {
+    id
+    name
+    displayName
+  }
+  teams(first: 50) {
+    nodes {
+      id
+      key
+      name
+    }
+  }
+}

@@ -81,6 +81,9 @@ linctl triage-responsibility get triage-responsibility-id
 linctl triage-responsibility manual-selection triage-responsibility-id
 linctl sla-configuration list team-id
 linctl semantic-search "agent search" --limit 20
+linctl search documents "agent search" --limit 20
+linctl search issues "agent search" --limit 20
+linctl search projects "agent search" --limit 20
 linctl release-pipeline list --limit 20
 linctl release-pipeline get release-pipeline-id
 linctl release-pipeline releases release-pipeline-id --limit 20
@@ -309,6 +312,9 @@ linctl triage-responsibility get triage-responsibility-id
 linctl triage-responsibility manual-selection triage-responsibility-id
 linctl sla-configuration list team-id
 linctl semantic-search "agent search" --limit 20
+linctl search documents "agent search" --limit 20
+linctl search issues "agent search" --limit 20
+linctl search projects "agent search" --limit 20
 linctl release-pipeline list --limit 20
 linctl release-pipeline get release-pipeline-id
 linctl release-pipeline releases release-pipeline-id --limit 20
@@ -464,7 +470,7 @@ linctl --format minimal issue get LIT-123
 
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Application, AgentActivity, AgentSkill, ExternalUser, AuditEntry, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, issue-to-release, semantic-search, comment, IssueRelation, ProjectUpdate, ProjectRelation, document, label, team, TeamMembership, user, workflow-state, time-schedule, TriageResponsibility, SLA configuration, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, roadmap-to-project, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Application, AgentActivity, AgentSkill, ExternalUser, AuditEntry, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, issue-to-release, semantic-search, typed search, comment, IssueRelation, ProjectUpdate, ProjectRelation, document, label, team, TeamMembership, user, workflow-state, time-schedule, TriageResponsibility, SLA configuration, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, roadmap-to-project, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

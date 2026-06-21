@@ -14806,6 +14806,456 @@ var AllSLADayCountType = []SLADayCountType{
 	SLADayCountTypeOnlybusinessdays,
 }
 
+// SearchDocumentSummaryFields includes the GraphQL fields of DocumentSearchResult requested by the fragment SearchDocumentSummaryFields.
+type SearchDocumentSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The title of the document. An empty string indicates an untitled document.
+	Title string `json:"title"`
+	// The document's unique URL slug, used to construct human-readable URLs.
+	SlugId string `json:"slugId"`
+	// The canonical url for the document.
+	Url string `json:"url"`
+	// The project that the document is associated with. Null if the document belongs to a different parent entity type.
+	Project *SearchDocumentSummaryFieldsProject `json:"project"`
+	// The initiative that the document is associated with. Null if the document belongs to a different parent entity type.
+	Initiative *SearchDocumentSummaryFieldsInitiative `json:"initiative"`
+	// [Internal] The team that the document is associated with. Null if the document belongs to a different parent entity type.
+	Team *SearchDocumentSummaryFieldsTeam `json:"team"`
+	// The issue that the document is associated with. Null if the document belongs to a different parent entity type.
+	Issue *SearchDocumentSummaryFieldsIssue `json:"issue"`
+	// The release that the document is associated with. Null if the document belongs to a different parent entity type.
+	Release *SearchDocumentSummaryFieldsRelease `json:"release"`
+	// [Internal] The cycle that the document is associated with. Null if the document belongs to a different parent entity type.
+	Cycle *SearchDocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+// GetId returns SearchDocumentSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetId() string { return v.Id }
+
+// GetTitle returns SearchDocumentSummaryFields.Title, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetTitle() string { return v.Title }
+
+// GetSlugId returns SearchDocumentSummaryFields.SlugId, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetSlugId() string { return v.SlugId }
+
+// GetUrl returns SearchDocumentSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetUrl() string { return v.Url }
+
+// GetProject returns SearchDocumentSummaryFields.Project, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetProject() *SearchDocumentSummaryFieldsProject {
+	return v.Project
+}
+
+// GetInitiative returns SearchDocumentSummaryFields.Initiative, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetInitiative() *SearchDocumentSummaryFieldsInitiative {
+	return v.Initiative
+}
+
+// GetTeam returns SearchDocumentSummaryFields.Team, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetTeam() *SearchDocumentSummaryFieldsTeam { return v.Team }
+
+// GetIssue returns SearchDocumentSummaryFields.Issue, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetIssue() *SearchDocumentSummaryFieldsIssue { return v.Issue }
+
+// GetRelease returns SearchDocumentSummaryFields.Release, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetRelease() *SearchDocumentSummaryFieldsRelease {
+	return v.Release
+}
+
+// GetCycle returns SearchDocumentSummaryFields.Cycle, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFields) GetCycle() *SearchDocumentSummaryFieldsCycle { return v.Cycle }
+
+// SearchDocumentSummaryFieldsCycle includes the requested fields of the GraphQL type Cycle.
+// The GraphQL type's documentation follows.
+//
+// A time-boxed iteration (similar to a sprint) used for planning and tracking
+// work. Cycles belong to a team and have defined start and end dates. Issues are
+// assigned to cycles for time-based planning, and progress is tracked via
+// completed, in-progress, and total scope. Cycles are automatically completed when
+// their end date passes, and uncompleted issues can be carried over to the next cycle.
+type SearchDocumentSummaryFieldsCycle struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The auto-incrementing number of the cycle, unique within its team. This value
+	// is assigned automatically by the database and cannot be set on creation.
+	Number float64 `json:"number"`
+	// The custom name of the cycle. If not set, the cycle is displayed using its number (e.g., "Cycle 5").
+	Name *string `json:"name"`
+}
+
+// GetId returns SearchDocumentSummaryFieldsCycle.Id, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsCycle) GetId() string { return v.Id }
+
+// GetNumber returns SearchDocumentSummaryFieldsCycle.Number, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsCycle) GetNumber() float64 { return v.Number }
+
+// GetName returns SearchDocumentSummaryFieldsCycle.Name, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsCycle) GetName() *string { return v.Name }
+
+// SearchDocumentSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
+// The GraphQL type's documentation follows.
+//
+// An initiative is a high-level strategic grouping of projects toward a business
+// goal. Initiatives can contain multiple projects, have their own status updates
+// and health tracking, and can be organized hierarchically with parent-child relationships.
+type SearchDocumentSummaryFieldsInitiative struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the initiative.
+	Name string `json:"name"`
+}
+
+// GetId returns SearchDocumentSummaryFieldsInitiative.Id, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsInitiative) GetId() string { return v.Id }
+
+// GetName returns SearchDocumentSummaryFieldsInitiative.Name, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsInitiative) GetName() string { return v.Name }
+
+// SearchDocumentSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type SearchDocumentSummaryFieldsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// The issue's title. This is the primary human-readable summary of the work item.
+	Title string `json:"title"`
+}
+
+// GetId returns SearchDocumentSummaryFieldsIssue.Id, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns SearchDocumentSummaryFieldsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetTitle returns SearchDocumentSummaryFieldsIssue.Title, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsIssue) GetTitle() string { return v.Title }
+
+// SearchDocumentSummaryFieldsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type SearchDocumentSummaryFieldsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+}
+
+// GetId returns SearchDocumentSummaryFieldsProject.Id, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsProject) GetId() string { return v.Id }
+
+// GetName returns SearchDocumentSummaryFieldsProject.Name, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsProject) GetName() string { return v.Name }
+
+// SearchDocumentSummaryFieldsRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type SearchDocumentSummaryFieldsRelease struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the release.
+	Name string `json:"name"`
+}
+
+// GetId returns SearchDocumentSummaryFieldsRelease.Id, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsRelease) GetId() string { return v.Id }
+
+// GetName returns SearchDocumentSummaryFieldsRelease.Name, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsRelease) GetName() string { return v.Name }
+
+// SearchDocumentSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type SearchDocumentSummaryFieldsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns SearchDocumentSummaryFieldsTeam.Id, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsTeam) GetId() string { return v.Id }
+
+// GetKey returns SearchDocumentSummaryFieldsTeam.Key, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsTeam) GetKey() string { return v.Key }
+
+// GetName returns SearchDocumentSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
+func (v *SearchDocumentSummaryFieldsTeam) GetName() string { return v.Name }
+
+// SearchIssueSummaryFields includes the GraphQL fields of IssueSearchResult requested by the fragment SearchIssueSummaryFields.
+type SearchIssueSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// The issue's title. This is the primary human-readable summary of the work item.
+	Title string `json:"title"`
+	// Issue URL.
+	Url string `json:"url"`
+	// The team that the issue belongs to. Every issue must belong to exactly one
+	// team, which determines the available workflow states, labels, and other
+	// team-specific configuration.
+	Team SearchIssueSummaryFieldsTeam `json:"team"`
+	// The workflow state (issue status) that the issue is currently in. Workflow
+	// states represent the issue's progress through the team's workflow, such as
+	// Triage, Todo, In Progress, Done, or Canceled.
+	State SearchIssueSummaryFieldsStateWorkflowState `json:"state"`
+	// The project that the issue is associated with. Null if the issue is not part of any project.
+	Project *SearchIssueSummaryFieldsProject `json:"project"`
+}
+
+// GetId returns SearchIssueSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFields) GetId() string { return v.Id }
+
+// GetIdentifier returns SearchIssueSummaryFields.Identifier, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFields) GetIdentifier() string { return v.Identifier }
+
+// GetTitle returns SearchIssueSummaryFields.Title, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFields) GetTitle() string { return v.Title }
+
+// GetUrl returns SearchIssueSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFields) GetUrl() string { return v.Url }
+
+// GetTeam returns SearchIssueSummaryFields.Team, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFields) GetTeam() SearchIssueSummaryFieldsTeam { return v.Team }
+
+// GetState returns SearchIssueSummaryFields.State, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFields) GetState() SearchIssueSummaryFieldsStateWorkflowState {
+	return v.State
+}
+
+// GetProject returns SearchIssueSummaryFields.Project, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFields) GetProject() *SearchIssueSummaryFieldsProject { return v.Project }
+
+// SearchIssueSummaryFieldsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type SearchIssueSummaryFieldsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+}
+
+// GetId returns SearchIssueSummaryFieldsProject.Id, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsProject) GetId() string { return v.Id }
+
+// GetName returns SearchIssueSummaryFieldsProject.Name, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsProject) GetName() string { return v.Name }
+
+// SearchIssueSummaryFieldsStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type SearchIssueSummaryFieldsStateWorkflowState struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+}
+
+// GetId returns SearchIssueSummaryFieldsStateWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsStateWorkflowState) GetId() string { return v.Id }
+
+// GetName returns SearchIssueSummaryFieldsStateWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsStateWorkflowState) GetName() string { return v.Name }
+
+// GetType returns SearchIssueSummaryFieldsStateWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsStateWorkflowState) GetType() string { return v.Type }
+
+// SearchIssueSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type SearchIssueSummaryFieldsTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns SearchIssueSummaryFieldsTeam.Id, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsTeam) GetId() string { return v.Id }
+
+// GetKey returns SearchIssueSummaryFieldsTeam.Key, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsTeam) GetKey() string { return v.Key }
+
+// GetName returns SearchIssueSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
+func (v *SearchIssueSummaryFieldsTeam) GetName() string { return v.Name }
+
+// SearchProjectSummaryFields includes the GraphQL fields of ProjectSearchResult requested by the fragment SearchProjectSummaryFields.
+type SearchProjectSummaryFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+	// The project's unique URL slug, used to construct human-readable URLs.
+	SlugId string `json:"slugId"`
+	// Project URL.
+	Url string `json:"url"`
+	// The current project status. Defines the project's position in its lifecycle
+	// (e.g., backlog, planned, started, paused, completed, canceled).
+	Status SearchProjectSummaryFieldsStatusProjectStatus `json:"status"`
+	// The user who leads the project. The project lead is typically responsible for
+	// posting status updates and driving the project to completion. Null if no lead is assigned.
+	Lead *SearchProjectSummaryFieldsLeadUser `json:"lead"`
+	// Teams associated with this project.
+	Teams SearchProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
+}
+
+// GetId returns SearchProjectSummaryFields.Id, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFields) GetId() string { return v.Id }
+
+// GetName returns SearchProjectSummaryFields.Name, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFields) GetName() string { return v.Name }
+
+// GetSlugId returns SearchProjectSummaryFields.SlugId, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFields) GetSlugId() string { return v.SlugId }
+
+// GetUrl returns SearchProjectSummaryFields.Url, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFields) GetUrl() string { return v.Url }
+
+// GetStatus returns SearchProjectSummaryFields.Status, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFields) GetStatus() SearchProjectSummaryFieldsStatusProjectStatus {
+	return v.Status
+}
+
+// GetLead returns SearchProjectSummaryFields.Lead, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFields) GetLead() *SearchProjectSummaryFieldsLeadUser { return v.Lead }
+
+// GetTeams returns SearchProjectSummaryFields.Teams, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFields) GetTeams() SearchProjectSummaryFieldsTeamsTeamConnection {
+	return v.Teams
+}
+
+// SearchProjectSummaryFieldsLeadUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type SearchProjectSummaryFieldsLeadUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's full name.
+	Name string `json:"name"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns SearchProjectSummaryFieldsLeadUser.Id, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsLeadUser) GetId() string { return v.Id }
+
+// GetName returns SearchProjectSummaryFieldsLeadUser.Name, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsLeadUser) GetName() string { return v.Name }
+
+// GetDisplayName returns SearchProjectSummaryFieldsLeadUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsLeadUser) GetDisplayName() string { return v.DisplayName }
+
+// SearchProjectSummaryFieldsStatusProjectStatus includes the requested fields of the GraphQL type ProjectStatus.
+// The GraphQL type's documentation follows.
+//
+// A custom project status within a workspace. Statuses are grouped by type
+// (backlog, planned, started, paused, completed, canceled) and define the
+// lifecycle stages a project can move through. Each workspace can customize the
+// names and colors of its project statuses.
+type SearchProjectSummaryFieldsStatusProjectStatus struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the status.
+	Name string `json:"name"`
+	// The category type of the project status (e.g., backlog, planned, started,
+	// paused, completed, canceled). Determines the status's behavior and position in
+	// the project lifecycle.
+	Type ProjectStatusType `json:"type"`
+}
+
+// GetId returns SearchProjectSummaryFieldsStatusProjectStatus.Id, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsStatusProjectStatus) GetId() string { return v.Id }
+
+// GetName returns SearchProjectSummaryFieldsStatusProjectStatus.Name, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsStatusProjectStatus) GetName() string { return v.Name }
+
+// GetType returns SearchProjectSummaryFieldsStatusProjectStatus.Type, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsStatusProjectStatus) GetType() ProjectStatusType { return v.Type }
+
+// SearchProjectSummaryFieldsTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
+type SearchProjectSummaryFieldsTeamsTeamConnection struct {
+	Nodes []SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam `json:"nodes"`
+}
+
+// GetNodes returns SearchProjectSummaryFieldsTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsTeamsTeamConnection) GetNodes() []SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam {
+	return v.Nodes
+}
+
+// SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The team's unique key, used as a prefix in issue identifiers (e.g., 'ENG' in 'ENG-123') and in URLs.
+	Key string `json:"key"`
+	// The team's name.
+	Name string `json:"name"`
+}
+
+// GetId returns SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam.Id, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetId() string { return v.Id }
+
+// GetKey returns SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam.Key, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetKey() string { return v.Key }
+
+// GetName returns SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam.Name, and is useful for accessing the field via an interface.
+func (v *SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetName() string { return v.Name }
+
 // SemanticSearchResultSummaryFields includes the GraphQL fields of SemanticSearchResult requested by the fragment SemanticSearchResultSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -18980,6 +19430,54 @@ func (v *__roadmapsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __roadmapsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__roadmapsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __searchDocumentsInput is used internally by genqlient
+type __searchDocumentsInput struct {
+	Term  string  `json:"term"`
+	First *int    `json:"first"`
+	After *string `json:"after"`
+}
+
+// GetTerm returns __searchDocumentsInput.Term, and is useful for accessing the field via an interface.
+func (v *__searchDocumentsInput) GetTerm() string { return v.Term }
+
+// GetFirst returns __searchDocumentsInput.First, and is useful for accessing the field via an interface.
+func (v *__searchDocumentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __searchDocumentsInput.After, and is useful for accessing the field via an interface.
+func (v *__searchDocumentsInput) GetAfter() *string { return v.After }
+
+// __searchIssuesInput is used internally by genqlient
+type __searchIssuesInput struct {
+	Term  string  `json:"term"`
+	First *int    `json:"first"`
+	After *string `json:"after"`
+}
+
+// GetTerm returns __searchIssuesInput.Term, and is useful for accessing the field via an interface.
+func (v *__searchIssuesInput) GetTerm() string { return v.Term }
+
+// GetFirst returns __searchIssuesInput.First, and is useful for accessing the field via an interface.
+func (v *__searchIssuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __searchIssuesInput.After, and is useful for accessing the field via an interface.
+func (v *__searchIssuesInput) GetAfter() *string { return v.After }
+
+// __searchProjectsInput is used internally by genqlient
+type __searchProjectsInput struct {
+	Term  string  `json:"term"`
+	First *int    `json:"first"`
+	After *string `json:"after"`
+}
+
+// GetTerm returns __searchProjectsInput.Term, and is useful for accessing the field via an interface.
+func (v *__searchProjectsInput) GetTerm() string { return v.Term }
+
+// GetFirst returns __searchProjectsInput.First, and is useful for accessing the field via an interface.
+func (v *__searchProjectsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __searchProjectsInput.After, and is useful for accessing the field via an interface.
+func (v *__searchProjectsInput) GetAfter() *string { return v.After }
 
 // __semanticSearchInput is used internally by genqlient
 type __semanticSearchInput struct {
@@ -51025,6 +51523,496 @@ func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetHasNextPage() bool { retu
 // GetEndCursor returns roadmapsRoadmapsRoadmapConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
 func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
 
+// searchDocumentsResponse is returned by searchDocuments on success.
+type searchDocumentsResponse struct {
+	// Search documents by text query using full-text and vector search. Results are
+	// ranked by relevance unless an orderBy parameter is specified. Rate-limited to
+	// 30 requests per minute.
+	SearchDocuments searchDocumentsSearchDocumentsDocumentSearchPayload `json:"searchDocuments"`
+}
+
+// GetSearchDocuments returns searchDocumentsResponse.SearchDocuments, and is useful for accessing the field via an interface.
+func (v *searchDocumentsResponse) GetSearchDocuments() searchDocumentsSearchDocumentsDocumentSearchPayload {
+	return v.SearchDocuments
+}
+
+// searchDocumentsSearchDocumentsDocumentSearchPayload includes the requested fields of the GraphQL type DocumentSearchPayload.
+type searchDocumentsSearchDocumentsDocumentSearchPayload struct {
+	Nodes    []searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult `json:"nodes"`
+	PageInfo searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo                    `json:"pageInfo"`
+	// Total number of matching results before pagination is applied.
+	TotalCount float64 `json:"totalCount"`
+}
+
+// GetNodes returns searchDocumentsSearchDocumentsDocumentSearchPayload.Nodes, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayload) GetNodes() []searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult {
+	return v.Nodes
+}
+
+// GetPageInfo returns searchDocumentsSearchDocumentsDocumentSearchPayload.PageInfo, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayload) GetPageInfo() searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo {
+	return v.PageInfo
+}
+
+// GetTotalCount returns searchDocumentsSearchDocumentsDocumentSearchPayload.TotalCount, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayload) GetTotalCount() float64 {
+	return v.TotalCount
+}
+
+// searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult includes the requested fields of the GraphQL type DocumentSearchResult.
+type searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult struct {
+	SearchDocumentSummaryFields `json:"-"`
+}
+
+// GetId returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Id, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetId() string {
+	return v.SearchDocumentSummaryFields.Id
+}
+
+// GetTitle returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Title, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetTitle() string {
+	return v.SearchDocumentSummaryFields.Title
+}
+
+// GetSlugId returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.SlugId, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetSlugId() string {
+	return v.SearchDocumentSummaryFields.SlugId
+}
+
+// GetUrl returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Url, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetUrl() string {
+	return v.SearchDocumentSummaryFields.Url
+}
+
+// GetProject returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Project, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetProject() *SearchDocumentSummaryFieldsProject {
+	return v.SearchDocumentSummaryFields.Project
+}
+
+// GetInitiative returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Initiative, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetInitiative() *SearchDocumentSummaryFieldsInitiative {
+	return v.SearchDocumentSummaryFields.Initiative
+}
+
+// GetTeam returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Team, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetTeam() *SearchDocumentSummaryFieldsTeam {
+	return v.SearchDocumentSummaryFields.Team
+}
+
+// GetIssue returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Issue, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetIssue() *SearchDocumentSummaryFieldsIssue {
+	return v.SearchDocumentSummaryFields.Issue
+}
+
+// GetRelease returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Release, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetRelease() *SearchDocumentSummaryFieldsRelease {
+	return v.SearchDocumentSummaryFields.Release
+}
+
+// GetCycle returns searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult.Cycle, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) GetCycle() *SearchDocumentSummaryFieldsCycle {
+	return v.SearchDocumentSummaryFields.Cycle
+}
+
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.SearchDocumentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalsearchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Project *SearchDocumentSummaryFieldsProject `json:"project"`
+
+	Initiative *SearchDocumentSummaryFieldsInitiative `json:"initiative"`
+
+	Team *SearchDocumentSummaryFieldsTeam `json:"team"`
+
+	Issue *SearchDocumentSummaryFieldsIssue `json:"issue"`
+
+	Release *SearchDocumentSummaryFieldsRelease `json:"release"`
+
+	Cycle *SearchDocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult) __premarshalJSON() (*__premarshalsearchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult, error) {
+	var retval __premarshalsearchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult
+
+	retval.Id = v.SearchDocumentSummaryFields.Id
+	retval.Title = v.SearchDocumentSummaryFields.Title
+	retval.SlugId = v.SearchDocumentSummaryFields.SlugId
+	retval.Url = v.SearchDocumentSummaryFields.Url
+	retval.Project = v.SearchDocumentSummaryFields.Project
+	retval.Initiative = v.SearchDocumentSummaryFields.Initiative
+	retval.Team = v.SearchDocumentSummaryFields.Team
+	retval.Issue = v.SearchDocumentSummaryFields.Issue
+	retval.Release = v.SearchDocumentSummaryFields.Release
+	retval.Cycle = v.SearchDocumentSummaryFields.Cycle
+	return &retval, nil
+}
+
+// searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo includes the requested fields of the GraphQL type PageInfo.
+type searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// searchIssuesResponse is returned by searchIssues on success.
+type searchIssuesResponse struct {
+	// Search issues by text query using full-text and vector search. Results are
+	// ranked by relevance unless an orderBy parameter is specified. Supports
+	// optional issue filters and comment inclusion. Rate-limited to 30 requests per minute.
+	SearchIssues searchIssuesSearchIssuesIssueSearchPayload `json:"searchIssues"`
+}
+
+// GetSearchIssues returns searchIssuesResponse.SearchIssues, and is useful for accessing the field via an interface.
+func (v *searchIssuesResponse) GetSearchIssues() searchIssuesSearchIssuesIssueSearchPayload {
+	return v.SearchIssues
+}
+
+// searchIssuesSearchIssuesIssueSearchPayload includes the requested fields of the GraphQL type IssueSearchPayload.
+type searchIssuesSearchIssuesIssueSearchPayload struct {
+	Nodes    []searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult `json:"nodes"`
+	PageInfo searchIssuesSearchIssuesIssueSearchPayloadPageInfo                 `json:"pageInfo"`
+	// Total number of matching results before pagination is applied.
+	TotalCount float64 `json:"totalCount"`
+}
+
+// GetNodes returns searchIssuesSearchIssuesIssueSearchPayload.Nodes, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayload) GetNodes() []searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult {
+	return v.Nodes
+}
+
+// GetPageInfo returns searchIssuesSearchIssuesIssueSearchPayload.PageInfo, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayload) GetPageInfo() searchIssuesSearchIssuesIssueSearchPayloadPageInfo {
+	return v.PageInfo
+}
+
+// GetTotalCount returns searchIssuesSearchIssuesIssueSearchPayload.TotalCount, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayload) GetTotalCount() float64 { return v.TotalCount }
+
+// searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult includes the requested fields of the GraphQL type IssueSearchResult.
+type searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult struct {
+	SearchIssueSummaryFields `json:"-"`
+}
+
+// GetId returns searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult.Id, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) GetId() string {
+	return v.SearchIssueSummaryFields.Id
+}
+
+// GetIdentifier returns searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult.Identifier, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) GetIdentifier() string {
+	return v.SearchIssueSummaryFields.Identifier
+}
+
+// GetTitle returns searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult.Title, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) GetTitle() string {
+	return v.SearchIssueSummaryFields.Title
+}
+
+// GetUrl returns searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult.Url, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) GetUrl() string {
+	return v.SearchIssueSummaryFields.Url
+}
+
+// GetTeam returns searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult.Team, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) GetTeam() SearchIssueSummaryFieldsTeam {
+	return v.SearchIssueSummaryFields.Team
+}
+
+// GetState returns searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult.State, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) GetState() SearchIssueSummaryFieldsStateWorkflowState {
+	return v.SearchIssueSummaryFields.State
+}
+
+// GetProject returns searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult.Project, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) GetProject() *SearchIssueSummaryFieldsProject {
+	return v.SearchIssueSummaryFields.Project
+}
+
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.SearchIssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalsearchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	Url string `json:"url"`
+
+	Team SearchIssueSummaryFieldsTeam `json:"team"`
+
+	State SearchIssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Project *SearchIssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult) __premarshalJSON() (*__premarshalsearchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult, error) {
+	var retval __premarshalsearchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult
+
+	retval.Id = v.SearchIssueSummaryFields.Id
+	retval.Identifier = v.SearchIssueSummaryFields.Identifier
+	retval.Title = v.SearchIssueSummaryFields.Title
+	retval.Url = v.SearchIssueSummaryFields.Url
+	retval.Team = v.SearchIssueSummaryFields.Team
+	retval.State = v.SearchIssueSummaryFields.State
+	retval.Project = v.SearchIssueSummaryFields.Project
+	return &retval, nil
+}
+
+// searchIssuesSearchIssuesIssueSearchPayloadPageInfo includes the requested fields of the GraphQL type PageInfo.
+type searchIssuesSearchIssuesIssueSearchPayloadPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns searchIssuesSearchIssuesIssueSearchPayloadPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns searchIssuesSearchIssuesIssueSearchPayloadPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *searchIssuesSearchIssuesIssueSearchPayloadPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// searchProjectsResponse is returned by searchProjects on success.
+type searchProjectsResponse struct {
+	// Search projects by text query using full-text and vector search. Results are
+	// ranked by relevance unless an orderBy parameter is specified. Rate-limited to
+	// 30 requests per minute.
+	SearchProjects searchProjectsSearchProjectsProjectSearchPayload `json:"searchProjects"`
+}
+
+// GetSearchProjects returns searchProjectsResponse.SearchProjects, and is useful for accessing the field via an interface.
+func (v *searchProjectsResponse) GetSearchProjects() searchProjectsSearchProjectsProjectSearchPayload {
+	return v.SearchProjects
+}
+
+// searchProjectsSearchProjectsProjectSearchPayload includes the requested fields of the GraphQL type ProjectSearchPayload.
+type searchProjectsSearchProjectsProjectSearchPayload struct {
+	Nodes    []searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult `json:"nodes"`
+	PageInfo searchProjectsSearchProjectsProjectSearchPayloadPageInfo                   `json:"pageInfo"`
+	// Total number of matching results before pagination is applied.
+	TotalCount float64 `json:"totalCount"`
+}
+
+// GetNodes returns searchProjectsSearchProjectsProjectSearchPayload.Nodes, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayload) GetNodes() []searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult {
+	return v.Nodes
+}
+
+// GetPageInfo returns searchProjectsSearchProjectsProjectSearchPayload.PageInfo, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayload) GetPageInfo() searchProjectsSearchProjectsProjectSearchPayloadPageInfo {
+	return v.PageInfo
+}
+
+// GetTotalCount returns searchProjectsSearchProjectsProjectSearchPayload.TotalCount, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayload) GetTotalCount() float64 {
+	return v.TotalCount
+}
+
+// searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult includes the requested fields of the GraphQL type ProjectSearchResult.
+type searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult struct {
+	SearchProjectSummaryFields `json:"-"`
+}
+
+// GetId returns searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult.Id, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) GetId() string {
+	return v.SearchProjectSummaryFields.Id
+}
+
+// GetName returns searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult.Name, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) GetName() string {
+	return v.SearchProjectSummaryFields.Name
+}
+
+// GetSlugId returns searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult.SlugId, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) GetSlugId() string {
+	return v.SearchProjectSummaryFields.SlugId
+}
+
+// GetUrl returns searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult.Url, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) GetUrl() string {
+	return v.SearchProjectSummaryFields.Url
+}
+
+// GetStatus returns searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult.Status, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) GetStatus() SearchProjectSummaryFieldsStatusProjectStatus {
+	return v.SearchProjectSummaryFields.Status
+}
+
+// GetLead returns searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult.Lead, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) GetLead() *SearchProjectSummaryFieldsLeadUser {
+	return v.SearchProjectSummaryFields.Lead
+}
+
+// GetTeams returns searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult.Teams, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) GetTeams() SearchProjectSummaryFieldsTeamsTeamConnection {
+	return v.SearchProjectSummaryFields.Teams
+}
+
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.SearchProjectSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalsearchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Status SearchProjectSummaryFieldsStatusProjectStatus `json:"status"`
+
+	Lead *SearchProjectSummaryFieldsLeadUser `json:"lead"`
+
+	Teams SearchProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
+}
+
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult) __premarshalJSON() (*__premarshalsearchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult, error) {
+	var retval __premarshalsearchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult
+
+	retval.Id = v.SearchProjectSummaryFields.Id
+	retval.Name = v.SearchProjectSummaryFields.Name
+	retval.SlugId = v.SearchProjectSummaryFields.SlugId
+	retval.Url = v.SearchProjectSummaryFields.Url
+	retval.Status = v.SearchProjectSummaryFields.Status
+	retval.Lead = v.SearchProjectSummaryFields.Lead
+	retval.Teams = v.SearchProjectSummaryFields.Teams
+	return &retval, nil
+}
+
+// searchProjectsSearchProjectsProjectSearchPayloadPageInfo includes the requested fields of the GraphQL type PageInfo.
+type searchProjectsSearchProjectsProjectSearchPayloadPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns searchProjectsSearchProjectsProjectSearchPayloadPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns searchProjectsSearchProjectsProjectSearchPayloadPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *searchProjectsSearchProjectsProjectSearchPayloadPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // semanticSearchResponse is returned by semanticSearch on success.
 type semanticSearchResponse struct {
 	// Search for issues, projects, initiatives, and documents using natural
@@ -68152,6 +69140,217 @@ func roadmaps(
 	}
 
 	data_ = &roadmapsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by searchDocuments.
+const searchDocuments_Operation = `
+query searchDocuments ($term: String!, $first: Int, $after: String) {
+	searchDocuments(term: $term, first: $first, after: $after, includeArchived: false, includeComments: false) {
+		nodes {
+			... SearchDocumentSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		totalCount
+	}
+}
+fragment SearchDocumentSummaryFields on DocumentSearchResult {
+	id
+	title
+	slugId
+	url
+	project {
+		id
+		name
+	}
+	initiative {
+		id
+		name
+	}
+	team {
+		id
+		key
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	release {
+		id
+		name
+	}
+	cycle {
+		id
+		number
+		name
+	}
+}
+`
+
+func searchDocuments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	term string,
+	first *int,
+	after *string,
+) (data_ *searchDocumentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "searchDocuments",
+		Query:  searchDocuments_Operation,
+		Variables: &__searchDocumentsInput{
+			Term:  term,
+			First: first,
+			After: after,
+		},
+	}
+
+	data_ = &searchDocumentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by searchIssues.
+const searchIssues_Operation = `
+query searchIssues ($term: String!, $first: Int, $after: String) {
+	searchIssues(term: $term, first: $first, after: $after, includeArchived: false, includeComments: false) {
+		nodes {
+			... SearchIssueSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		totalCount
+	}
+}
+fragment SearchIssueSummaryFields on IssueSearchResult {
+	id
+	identifier
+	title
+	url
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func searchIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	term string,
+	first *int,
+	after *string,
+) (data_ *searchIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "searchIssues",
+		Query:  searchIssues_Operation,
+		Variables: &__searchIssuesInput{
+			Term:  term,
+			First: first,
+			After: after,
+		},
+	}
+
+	data_ = &searchIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by searchProjects.
+const searchProjects_Operation = `
+query searchProjects ($term: String!, $first: Int, $after: String) {
+	searchProjects(term: $term, first: $first, after: $after, includeArchived: false, includeComments: false) {
+		nodes {
+			... SearchProjectSummaryFields
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		totalCount
+	}
+}
+fragment SearchProjectSummaryFields on ProjectSearchResult {
+	id
+	name
+	slugId
+	url
+	status {
+		id
+		name
+		type
+	}
+	lead {
+		id
+		name
+		displayName
+	}
+	teams(first: 50) {
+		nodes {
+			id
+			key
+			name
+		}
+	}
+}
+`
+
+func searchProjects(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	term string,
+	first *int,
+	after *string,
+) (data_ *searchProjectsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "searchProjects",
+		Query:  searchProjects_Operation,
+		Variables: &__searchProjectsInput{
+			Term:  term,
+			First: first,
+			After: after,
+		},
+	}
+
+	data_ = &searchProjectsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

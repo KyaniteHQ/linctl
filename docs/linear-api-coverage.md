@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 109 | 458 |
-| Upstream Query root fields | 158 | 97 | 158 |
+| Upstream SDK root methods | 458 | 112 | 458 |
+| Upstream Query root fields | 158 | 100 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 226 | 226 | 226 |
-| Domain-map commands | 338 | 206 | 338 |
+| Local generated Go operations | 229 | 229 | 229 |
+| Domain-map commands | 341 | 209 | 341 |
 
 ## Upstream SDK Root Methods
 
@@ -376,9 +376,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `roadmaps` | method | implemented | local operation or command exists |
 | `rotateSecretWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `samlTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `searchDocuments` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `searchIssues` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `searchProjects` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `searchDocuments` | method | implemented | local operation or command exists |
+| `searchIssues` | method | implemented | local operation or command exists |
+| `searchProjects` | method | implemented | local operation or command exists |
 | `semanticSearch` | method | implemented | local operation or command exists |
 | `slaConfigurations` | method | implemented | local operation or command exists |
 | `ssoUrlFromEmail` | method | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
@@ -620,9 +620,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `roadmapToProject` | `RoadmapToProject!` | implemented | root field used by local GraphQL operation |
 | `roadmapToProjects` | `RoadmapToProjectConnection!` | implemented | root field used by local GraphQL operation |
 | `roadmaps` | `RoadmapConnection!` | implemented | root field used by local GraphQL operation |
-| `searchDocuments` | `DocumentSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `searchIssues` | `IssueSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `searchProjects` | `ProjectSearchPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `searchDocuments` | `DocumentSearchPayload!` | implemented | root field used by local GraphQL operation |
+| `searchIssues` | `IssueSearchPayload!` | implemented | root field used by local GraphQL operation |
+| `searchProjects` | `ProjectSearchPayload!` | implemented | root field used by local GraphQL operation |
 | `semanticSearch` | `SemanticSearchPayload!` | implemented | root field used by local GraphQL operation |
 | `slaConfigurations` | `[SlaConfiguration!]!` | implemented | root field used by local GraphQL operation |
 | `ssoUrlFromEmail` | `SsoUrlFromEmailResponse!` | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
@@ -1196,6 +1196,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `roadmapToProject` | query | `roadmapToProject` | implemented | `internal/client/generated.go` |
 | `roadmapToProjects` | query | `roadmapToProjects` | implemented | `internal/client/generated.go` |
 | `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
+| `searchDocuments` | query | `searchDocuments` | implemented | `internal/client/generated.go` |
+| `searchIssues` | query | `searchIssues` | implemented | `internal/client/generated.go` |
+| `searchProjects` | query | `searchProjects` | implemented | `internal/client/generated.go` |
 | `semanticSearch` | query | `semanticSearch` | implemented | `internal/client/generated.go` |
 | `slaConfigurations` | query | `slaConfigurations` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
@@ -1482,6 +1485,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | TriageResponsibility | `triage-responsibility delete` | `Mutation.triageResponsibilityDelete` | Blocked: destructive team triage configuration command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | SLA Configuration | `sla-configuration list` | `Query.slaConfigurations` | Read-only | implemented | `linctl --help` / public CLI tests |
 | SemanticSearch | `semantic-search` | `Query.semanticSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Search | `search documents` | `Query.searchDocuments` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Search | `search issues` | `Query.searchIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Search | `search projects` | `Query.searchProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |

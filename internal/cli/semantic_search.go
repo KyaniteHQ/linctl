@@ -1,3 +1,4 @@
+//nolint:dupl // Search command glue is intentionally uniform across search surfaces.
 package cli
 
 import (

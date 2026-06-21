@@ -703,6 +703,28 @@ Command status:
 
 Only `semantic-search` is implemented in the current CLI. Results intentionally omit body/content snippets so the command stays a compact reference lookup.
 
+## Search
+
+Use `search` for Linear's typed full-text/vector search roots. These commands return compact result summaries and intentionally omit archive payloads, metadata, comments, descriptions, document content, and project content by default.
+
+Schema backing:
+
+- Types: `DocumentSearchPayload`, `IssueSearchPayload`, `ProjectSearchPayload`, `DocumentSearchResult`, `IssueSearchResult`, `ProjectSearchResult`
+- Reads: `Query.searchDocuments`, `Query.searchIssues`, `Query.searchProjects`
+- Writes: none
+- Inputs: required `term`, optional pagination in the client layer
+- Relevant fields: compact identity, URL, status/team/project/parent fields only
+
+Planned commands:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `search documents` | `Query.searchDocuments` | Read-only |
+| `search issues` | `Query.searchIssues` | Read-only |
+| `search projects` | `Query.searchProjects` | Read-only |
+
+Only typed read commands are implemented. Archive payload and metadata variants are intentionally not exposed as default workflow.
+
 ## Template
 
 Use the schema name `Template` in code and docs. It is Linear's reusable issue, project, document, and release-note template entity.

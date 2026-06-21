@@ -76,6 +76,9 @@ linctl triage-responsibility get TRIAGE_RESPONSIBILITY_ID --json
 linctl triage-responsibility manual-selection TRIAGE_RESPONSIBILITY_ID --json
 linctl sla-configuration list TEAM_ID_OR_KEY --json
 linctl semantic-search QUERY --json --limit 20
+linctl search documents QUERY --json --limit 20
+linctl search issues QUERY --json --limit 20
+linctl search projects QUERY --json --limit 20
 linctl release-pipeline list --json --limit 20
 linctl release-pipeline get RELEASE_PIPELINE_ID --json
 linctl release-pipeline releases RELEASE_PIPELINE_ID --json --limit 20

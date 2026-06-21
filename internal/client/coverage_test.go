@@ -151,6 +151,36 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"searchDocuments": `{"searchDocuments":{"nodes":[` + strings.Join([]string{
+			searchDocumentJSON(),
+			searchDocumentJSONWithParent(
+				"search-project-document-id",
+				"Project search spec",
+				`"project":{"id":"project-id","name":"Pinned project"},"initiative":null,"team":null,"issue":null,"release":null,"cycle":null`,
+			),
+			searchDocumentJSONWithParent(
+				"search-initiative-document-id",
+				"Initiative search spec",
+				`"project":null,"initiative":{"id":"initiative-id","name":"Platform"},"team":null,"issue":null,"release":null,"cycle":null`,
+			),
+			searchDocumentJSONWithParent(
+				"search-issue-document-id",
+				"Issue search spec",
+				`"project":null,"initiative":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-30","title":"Search issue"},"release":null,"cycle":null`,
+			),
+			searchDocumentJSONWithParent(
+				"search-release-document-id",
+				"Release search spec",
+				`"project":null,"initiative":null,"team":null,"issue":null,"release":{"id":"release-id","name":"Mobile"},"cycle":null`,
+			),
+			searchDocumentJSONWithParent(
+				"search-cycle-document-id",
+				"Cycle search spec",
+				`"project":null,"initiative":null,"team":null,"issue":null,"release":null,"cycle":{"id":"cycle-id","number":12,"name":"Planning cycle"}`,
+			),
+		}, ",") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"},"totalCount":6}}`,
+		"searchIssues":   `{"searchIssues":{"nodes":[` + searchIssueJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"},"totalCount":1}}`,
+		"searchProjects": `{"searchProjects":{"nodes":[` + searchProjectJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"},"totalCount":1}}`,
 		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-11",
 			Title:      "detail issue",
@@ -659,6 +689,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	semanticSearch, err := SearchSemantic(context.Background(), graphqlClient, "agent search", 2)
 	require.NoError(t, err)
+	documentSearch, err := SearchDocuments(context.Background(), graphqlClient, "agent search", 2)
+	require.NoError(t, err)
+	issueSearch, err := SearchIssues(context.Background(), graphqlClient, "agent search", 2)
+	require.NoError(t, err)
+	projectSearch, err := SearchProjects(context.Background(), graphqlClient, "agent search", 2)
+	require.NoError(t, err)
 	releasePipelines, err := ListReleasePipelines(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	releasePipeline, err := GetReleasePipelineByID(context.Background(), graphqlClient, "release-pipeline-id")
@@ -1155,6 +1191,26 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Search document", semanticSearch.Results[3].Title)
 	require.Equal(t, "unknown-id", semanticSearch.Results[4].ID)
 	require.Empty(t, semanticSearch.Results[4].Title)
+	require.True(t, documentSearch.HasNextPage)
+	require.Equal(t, &endCursor, documentSearch.EndCursor)
+	require.Len(t, documentSearch.Documents, 6)
+	require.Equal(t, "search-document-id", documentSearch.Documents[0].ID)
+	require.Equal(t, "team", documentSearch.Documents[0].ParentType)
+	require.Equal(t, "linctl", documentSearch.Documents[0].ParentName)
+	require.Equal(t, "project", documentSearch.Documents[1].ParentType)
+	require.Equal(t, "initiative", documentSearch.Documents[2].ParentType)
+	require.Equal(t, "issue", documentSearch.Documents[3].ParentType)
+	require.Equal(t, "release", documentSearch.Documents[4].ParentType)
+	require.Equal(t, "cycle", documentSearch.Documents[5].ParentType)
+	require.True(t, issueSearch.HasNextPage)
+	require.Equal(t, &endCursor, issueSearch.EndCursor)
+	require.Equal(t, "LIT-30", issueSearch.Issues[0].Identifier)
+	require.Equal(t, "Pinned project", issueSearch.Issues[0].ProjectName)
+	require.True(t, projectSearch.HasNextPage)
+	require.Equal(t, &endCursor, projectSearch.EndCursor)
+	require.Equal(t, "search-project-id", projectSearch.Projects[0].ID)
+	require.Equal(t, "Search project", projectSearch.Projects[0].Name)
+	require.Equal(t, "Omer", projectSearch.Projects[0].Lead)
 	require.True(t, releasePipelines.HasNextPage)
 	require.Equal(t, &endCursor, releasePipelines.EndCursor)
 	require.Equal(t, "Production", releasePipelines.ReleasePipelines[0].Name)
@@ -2416,6 +2472,18 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "semantic search")
 
+		_, err = SearchDocuments(context.Background(), graphqlClient, "agent search", 2)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "search documents")
+
+		_, err = SearchIssues(context.Background(), graphqlClient, "agent search", 2)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "search issues")
+
+		_, err = SearchProjects(context.Background(), graphqlClient, "agent search", 2)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "search projects")
+
 		_, err = ListReleasePipelines(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list release pipelines")
@@ -3563,6 +3631,48 @@ func semanticSearchResultJSON(resultType string) string {
 			"document":null
 		}`
 	}
+}
+
+func searchDocumentJSON() string {
+	return searchDocumentJSONWithParent(
+		"search-document-id",
+		"Search spec",
+		`"project":null,"initiative":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"release":null,"cycle":null`,
+	)
+}
+
+func searchDocumentJSONWithParent(id string, title string, parentFields string) string {
+	return `{
+		"id":"` + id + `",
+		"title":"` + title + `",
+		"slugId":"` + id + `",
+		"url":"https://linear.app/kyanite/document/` + id + `",
+		` + parentFields + `
+	}`
+}
+
+func searchIssueJSON() string {
+	return `{
+		"id":"search-issue-id",
+		"identifier":"LIT-30",
+		"title":"Search issue",
+		"url":"https://linear.app/kyanite/issue/LIT-30",
+		"team":{"id":"team-id","key":"LIT","name":"linctl"},
+		"state":{"id":"state-id","name":"Todo","type":"unstarted"},
+		"project":{"id":"project-id","name":"Pinned project"}
+	}`
+}
+
+func searchProjectJSON() string {
+	return `{
+		"id":"search-project-id",
+		"name":"Search project",
+		"slugId":"search-project",
+		"url":"https://linear.app/kyanite/project/search-project",
+		"status":{"id":"status-id","name":"Backlog","type":"backlog"},
+		"lead":{"id":"user-id","name":"omer","displayName":"Omer"},
+		"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl"}]}
+	}`
 }
 
 func releasePipelineJSON() string {
