@@ -30,6 +30,8 @@ func addReleaseCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	)
 	addReleaseSearchCommand(ctx, command, options)
 	addReleaseHistoryCommand(ctx, command, options)
+	addReleaseDocumentsCommand(ctx, command, options)
+	addReleaseIssuesCommand(ctx, command, options)
 	addReleaseLinksCommand(ctx, command, options)
 }
 
@@ -91,6 +93,52 @@ func addReleaseHistoryCommand(ctx context.Context, root *cobra.Command, options 
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum history records to return")
+	root.AddCommand(command)
+}
+
+func addReleaseDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "documents RELEASE_ID",
+		Short: "List documents associated with one Linear release",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadReleaseDocuments,
+				documentPageWithItems,
+				writeDocument,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum documents to return")
+	root.AddCommand(command)
+}
+
+func addReleaseIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "issues RELEASE_ID",
+		Short: "List issues associated with one Linear release",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadReleaseIssues,
+				issuePageWithItems,
+				writeIssue,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
 	root.AddCommand(command)
 }
 
@@ -265,6 +313,26 @@ func releaseHistoryPageWithItems(
 ) client.ReleaseHistoryList {
 	page.History = history
 	return page
+}
+
+func loadReleaseDocuments(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.DocumentList, []client.DocumentSummary, error) {
+	documents, err := client.ListReleaseDocuments(ctx, runtime.graphqlClient, args[0], limit)
+	return documents, documents.Documents, err
+}
+
+func loadReleaseIssues(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.IssueList, []client.IssueSummary, error) {
+	issues, err := client.ListReleaseIssues(ctx, runtime.graphqlClient, args[0], limit)
+	return issues, issues.Issues, err
 }
 
 func loadReleaseLinks(

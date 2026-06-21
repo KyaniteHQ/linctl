@@ -169,6 +169,54 @@ func ListReleaseHistory(
 	}, nil
 }
 
+// ListReleaseDocuments returns documents associated with one Linear release.
+func ListReleaseDocuments(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (DocumentList, error) {
+	result, err := release_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return DocumentList{}, fmt.Errorf("list release documents %s: %w", id, err)
+	}
+
+	documents := make([]DocumentSummary, 0, len(result.Release.Documents.Nodes))
+	for _, node := range result.Release.Documents.Nodes {
+		documents = append(documents, documentSummary(node.DocumentSummaryFields))
+	}
+
+	return DocumentList{
+		Documents:   documents,
+		HasNextPage: result.Release.Documents.PageInfo.HasNextPage,
+		EndCursor:   result.Release.Documents.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListReleaseIssues returns issues associated with one Linear release.
+func ListReleaseIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueList, error) {
+	result, err := release_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list release issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.Release.Issues.Nodes))
+	for _, node := range result.Release.Issues.Nodes {
+		issues = append(issues, issueSummaryFromFields(node.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.Release.Issues.PageInfo.HasNextPage,
+		EndCursor:   result.Release.Issues.PageInfo.EndCursor,
+	}, nil
+}
+
 // ListReleaseLinks returns external links associated with one Linear release.
 func ListReleaseLinks(
 	ctx context.Context,

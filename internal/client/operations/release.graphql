@@ -30,6 +30,34 @@ query release_history($id: String!, $first: Int, $after: String, $includeArchive
   }
 }
 
+query release_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  release(id: $id) {
+    documents(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...DocumentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query release_issues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  release(id: $id) {
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query release_links($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   release(id: $id) {
     links(first: $first, after: $after, includeArchived: $includeArchived) {

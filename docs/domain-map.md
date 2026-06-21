@@ -135,8 +135,8 @@ Only `notification list`, `notification get`, `notification subscription list`, 
 Schema backing:
 
 - Types: `Release`, `ReleasePipeline`, `ReleaseStage`, `ReleaseNote`, `EntityExternalLink`, `IssueToRelease`
-- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `ReleasePipeline.releases`, `ReleasePipeline.stages`, `Query.releaseStages`, `Query.releaseStage`, `ReleaseStage.releases`, `Query.releases`, `Query.release`, `Release.history`, `Release.links`, `Query.entityExternalLink`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`, `Query.issueToReleases`, `Query.issueToRelease`
-- Deferred reads: nested release documents/issues and access-key release reads
+- Reads: `Query.releasePipelines`, `Query.releasePipeline`, `ReleasePipeline.releases`, `ReleasePipeline.stages`, `ReleasePipeline.teams`, `Query.releaseStages`, `Query.releaseStage`, `ReleaseStage.releases`, `Query.releases`, `Query.release`, `Release.history`, `Release.documents`, `Release.issues`, `Release.links`, `Query.entityExternalLink`, `Query.releaseSearch`, `Query.releaseNotes`, `Query.releaseNote`, `Query.issueToReleases`, `Query.issueToRelease`
+- Deferred reads: access-key release reads and release document-content reads
 - Writes: `Mutation.releasePipelineCreate`, `Mutation.releasePipelineUpdate`, `Mutation.releasePipelineArchive`, `Mutation.releasePipelineDelete`, `Mutation.releaseStageCreate`, `Mutation.releaseStageUpdate`, `Mutation.releaseStageArchive`, `Mutation.releaseStageUnarchive`, plus Release/ReleaseNote/IssueToRelease create/update/archive/delete/sync/complete mutations
 - Relevant fields: `Release.id`, `Release.name`, `Release.slugId`, `Release.version`, `Release.pipeline`, `Release.stage`, `Release.issueCount`, `ReleaseNote.id`, `ReleaseNote.title`, `ReleaseNote.slugId`, `ReleaseNote.pipeline`, `ReleaseNote.releaseCount`, `ReleasePipeline.id`, `ReleasePipeline.name`, `ReleasePipeline.slugId`, `ReleasePipeline.type`, `ReleasePipeline.isProduction`, `ReleasePipeline.approximateReleaseCount`, `ReleaseStage.id`, `ReleaseStage.name`, `ReleaseStage.type`, `ReleaseStage.pipeline`, `EntityExternalLink.id`, `EntityExternalLink.label`, `EntityExternalLink.url`, `EntityExternalLink.sortOrder`, `EntityExternalLink.creator`, `EntityExternalLink.initiative`, `EntityExternalLink.project`
 
@@ -148,6 +148,7 @@ Planned commands:
 | `release-pipeline get` | `Query.releasePipeline` | Read-only |
 | `release-pipeline releases` | `ReleasePipeline.releases` via `Query.releasePipeline` | Read-only |
 | `release-pipeline stages` | `ReleasePipeline.stages` via `Query.releasePipeline` | Read-only |
+| `release-pipeline teams` | `ReleasePipeline.teams` via `Query.releasePipeline` | Read-only |
 | `release-stage list` | `Query.releaseStages` | Read-only |
 | `release-stage get` | `Query.releaseStage` | Read-only |
 | `release-stage releases` | `ReleaseStage.releases` via `Query.releaseStage` | Read-only |
@@ -155,6 +156,8 @@ Planned commands:
 | `release search` | `Query.releaseSearch` | Read-only |
 | `release get` | `Query.release` | Read-only |
 | `release history` | `Release.history` via `Query.release` | Read-only |
+| `release documents` | `Release.documents` via `Query.release` | Read-only |
+| `release issues` | `Release.issues` via `Query.release` | Read-only |
 | `release links` | `Release.links` via `Query.release` | Read-only |
 | `external-link get` | `Query.entityExternalLink` | Read-only |
 | `release-note list` | `Query.releaseNotes` | Read-only |

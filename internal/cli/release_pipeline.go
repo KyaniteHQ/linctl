@@ -30,6 +30,7 @@ func addReleasePipelineCommand(ctx context.Context, root *cobra.Command, options
 	)
 	addReleasePipelineReleasesCommand(ctx, command, options)
 	addReleasePipelineStagesCommand(ctx, command, options)
+	addReleasePipelineTeamsCommand(ctx, command, options)
 }
 
 func addReleasePipelineReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -75,6 +76,29 @@ func addReleasePipelineStagesCommand(ctx context.Context, root *cobra.Command, o
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum release stages to return")
+	root.AddCommand(command)
+}
+
+func addReleasePipelineTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "teams RELEASE_PIPELINE_ID",
+		Short: "List teams associated with one Linear release pipeline",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadReleasePipelineTeams,
+				teamPageWithItems,
+				writeTeam,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum teams to return")
 	root.AddCommand(command)
 }
 
@@ -216,6 +240,16 @@ func loadReleasePipelineStages(
 ) (client.ReleaseStageList, []client.ReleaseStageSummary, error) {
 	stages, err := client.ListReleasePipelineStages(ctx, runtime.graphqlClient, args[0], limit)
 	return stages, stages.ReleaseStages, err
+}
+
+func loadReleasePipelineTeams(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.TeamList, []client.TeamSummary, error) {
+	teams, err := client.ListReleasePipelineTeams(ctx, runtime.graphqlClient, args[0], limit)
+	return teams, teams.Teams, err
 }
 
 func loadReleaseStageList(

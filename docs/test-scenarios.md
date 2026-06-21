@@ -976,6 +976,10 @@ Success is pass/fail:
    - Success: `linctl project attachments|documents|external-links|history|initiative-links|initiatives|inverse-relations|issues|labels|needs|relations|teams PROJECT_ID --limit N` lists safe child resources for one Project through the public CLI and JSON output controls without selecting draft, body, blob, secret, source, or metadata payload fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_attachments`, `Test_CommandFlows_execute_read_and_write_commands/project_documents`, `Test_CommandFlows_execute_read_and_write_commands/project_external_links`, `Test_CommandFlows_execute_read_and_write_commands/project_history`, `Test_CommandFlows_execute_read_and_write_commands/project_initiative_links`, `Test_CommandFlows_execute_read_and_write_commands/project_initiatives`, `Test_CommandFlows_execute_read_and_write_commands/project_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_issues`, `Test_CommandFlows_execute_read_and_write_commands/project_labels`, `Test_CommandFlows_execute_read_and_write_commands/project_needs`, `Test_CommandFlows_execute_read_and_write_commands/project_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_teams`.
 
+181. Release child reads
+   - Success: `linctl release documents|issues RELEASE_ID --limit N` and `linctl release-pipeline teams RELEASE_PIPELINE_ID --limit N` list safe child resources for one Release or ReleasePipeline through the public CLI and JSON output controls without selecting body, blob, secret, archive payload, or document-content fields by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/release_documents`, `Test_CommandFlows_execute_read_and_write_commands/release_issues`, `Test_CommandFlows_execute_read_and_write_commands/release_pipeline_teams`; `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.

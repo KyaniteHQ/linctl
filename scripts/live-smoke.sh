@@ -96,6 +96,7 @@ PY
   if [[ -n "$release_pipeline_id" ]]; then
     "$binary" release-pipeline releases "$release_pipeline_id" --json --limit 5 >/dev/null
     "$binary" release-pipeline stages "$release_pipeline_id" --json --limit 5 >/dev/null
+    "$binary" release-pipeline teams "$release_pipeline_id" --json --limit 5 >/dev/null
   fi
   release_stage_json="$("$binary" release-stage list --json --limit 5)"
   release_stage_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("release_stages", []); print(items[0]["id"] if items else "")' <<<"$release_stage_json")"
@@ -106,6 +107,8 @@ PY
   release_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("releases", []); print(items[0]["id"] if items else "")' <<<"$release_json")"
   if [[ -n "$release_id" ]]; then
     "$binary" release history "$release_id" --json --limit 5 >/dev/null
+    "$binary" release documents "$release_id" --json --limit 5 >/dev/null
+    "$binary" release issues "$release_id" --json --limit 5 >/dev/null
     release_links_json="$("$binary" release links "$release_id" --json --limit 5)"
     external_link_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("links", []); print(items[0]["id"] if items else "")' <<<"$release_links_json")"
     if [[ -n "$external_link_id" ]]; then

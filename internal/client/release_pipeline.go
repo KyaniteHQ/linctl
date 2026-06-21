@@ -137,6 +137,30 @@ func ListReleasePipelineStages(
 	}, nil
 }
 
+// ListReleasePipelineTeams returns teams associated with one Linear release pipeline.
+func ListReleasePipelineTeams(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (TeamList, error) {
+	result, err := releasePipeline_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return TeamList{}, fmt.Errorf("list release pipeline teams %s: %w", id, err)
+	}
+
+	teams := make([]TeamSummary, 0, len(result.ReleasePipeline.Teams.Nodes))
+	for _, node := range result.ReleasePipeline.Teams.Nodes {
+		teams = append(teams, teamSummary(node.TeamSummaryFields))
+	}
+
+	return TeamList{
+		Teams:       teams,
+		HasNextPage: result.ReleasePipeline.Teams.PageInfo.HasNextPage,
+		EndCursor:   result.ReleasePipeline.Teams.PageInfo.EndCursor,
+	}, nil
+}
+
 // ListReleaseStages returns visible Linear release stages.
 func ListReleaseStages(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseStageList, error) {
 	result, err := releaseStages(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))

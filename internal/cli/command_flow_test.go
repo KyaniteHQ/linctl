@@ -59,6 +59,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, contains: "release-pipeline-id Production production releases 4"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
 		{name: "release pipeline stages", args: []string{"release-pipeline", "stages", "release-pipeline-id", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
+		{name: "release pipeline teams", args: []string{"release-pipeline", "teams", "release-pipeline-id", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "release stage list", args: []string{"release-stage", "list", "--limit", "1"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, contains: "release-stage-id Started [started] pipeline Production"},
 		{name: "release stage releases", args: []string{"release-stage", "releases", "release-stage-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
@@ -66,6 +67,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "release search", args: []string{"release", "search", "mobile", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3", fake: commandFlowFakeClient{expectedReleaseSearchTerm: "mobile"}},
 		{name: "release get", args: []string{"release", "get", "release-id"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
 		{name: "release history", args: []string{"release", "history", "release-id", "--limit", "1"}, contains: "release-history-id release release-id entries 1"},
+		{name: "release documents", args: []string{"release", "documents", "release-id", "--limit", "1"}, contains: "document-id Spec [project]"},
+		{name: "release issues", args: []string{"release", "issues", "release-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "release links", args: []string{"release", "links", "release-id", "--limit", "1"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
 		{name: "external link get", args: []string{"external-link", "get", "release-link-id"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
 		{name: "release note list", args: []string{"release-note", "list", "--limit", "1"}, contains: "release-note-id Launch notes pipeline Production releases 2"},
@@ -1463,6 +1466,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "release pipeline get", args: []string{"release-pipeline", "get", "release-pipeline-id"}, operation: "releasePipeline", contains: "get release pipeline release-pipeline-id"},
 		{name: "release pipeline releases", args: []string{"release-pipeline", "releases", "release-pipeline-id"}, operation: "releasePipeline_releases", contains: "list release pipeline releases release-pipeline-id"},
 		{name: "release pipeline stages", args: []string{"release-pipeline", "stages", "release-pipeline-id"}, operation: "releasePipeline_stages", contains: "list release pipeline stages release-pipeline-id"},
+		{name: "release pipeline teams", args: []string{"release-pipeline", "teams", "release-pipeline-id"}, operation: "releasePipeline_teams", contains: "list release pipeline teams release-pipeline-id"},
 		{name: "release stage list", args: []string{"release-stage", "list"}, operation: "releaseStages", contains: "list release stages"},
 		{name: "release stage get", args: []string{"release-stage", "get", "release-stage-id"}, operation: "releaseStage", contains: "get release stage release-stage-id"},
 		{name: "release stage releases", args: []string{"release-stage", "releases", "release-stage-id"}, operation: "releaseStage_releases", contains: "list release stage releases release-stage-id"},
@@ -1470,6 +1474,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "release search", args: []string{"release", "search", "mobile"}, operation: "releaseSearch", contains: "search releases"},
 		{name: "release get", args: []string{"release", "get", "release-id"}, operation: "release", contains: "get release release-id"},
 		{name: "release history", args: []string{"release", "history", "release-id"}, operation: "release_history", contains: "list release history release-id"},
+		{name: "release documents", args: []string{"release", "documents", "release-id"}, operation: "release_documents", contains: "list release documents release-id"},
+		{name: "release issues", args: []string{"release", "issues", "release-id"}, operation: "release_issues", contains: "list release issues release-id"},
 		{name: "release links", args: []string{"release", "links", "release-id"}, operation: "release_links", contains: "list release links release-id"},
 		{name: "external link get", args: []string{"external-link", "get", "release-link-id"}, operation: "entityExternalLink", contains: "get external link release-link-id"},
 		{name: "release note list", args: []string{"release-note", "list"}, operation: "releaseNotes", contains: "list release notes"},
@@ -2235,6 +2241,8 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"releasePipeline":{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "releasePipeline_stages":
 		return `{"releasePipeline":{"stages":{"nodes":[` + commandReleaseStageJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "releasePipeline_teams":
+		return `{"releasePipeline":{"teams":{"nodes":[` + commandTeamJSON(true) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "releaseStages":
 		return `{"releaseStages":{"nodes":[` + commandReleaseStageJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseStage":
@@ -2249,6 +2257,17 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"release":` + commandReleaseJSON() + `}`, true
 	case "release_history":
 		return `{"release":{"history":{"nodes":[` + commandReleaseHistoryJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "release_documents":
+		return `{"release":{"documents":{"nodes":[` +
+			commandDocumentJSON(
+				"Spec",
+				`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
+			) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "release_issues":
+		return `{"release":{"issues":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "release_links":
 		return `{"release":{"links":{"nodes":[` + commandEntityExternalLinkJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "entityExternalLink":

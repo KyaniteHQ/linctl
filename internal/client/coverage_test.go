@@ -283,6 +283,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"releasePipeline":          `{"releasePipeline":` + releasePipelineJSON() + `}`,
 		"releasePipeline_releases": `{"releasePipeline":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"releasePipeline_stages":   `{"releasePipeline":{"stages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"releasePipeline_teams":    `{"releasePipeline":{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"releaseStages":            `{"releaseStages":{"nodes":[` + releaseStageJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"releaseStage":             `{"releaseStage":` + releaseStageJSON() + `}`,
 		"releaseStage_releases":    `{"releaseStage":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
@@ -290,15 +291,23 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"release":                  `{"release":` + releaseJSON() + `}`,
 		"releaseSearch":            `{"releaseSearch":[` + releaseJSON() + `]}`,
 		"release_history":          `{"release":{"history":{"nodes":[` + releaseHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"release_links":            `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"entityExternalLink":       `{"entityExternalLink":` + entityExternalLinkJSON() + `}`,
-		"releaseNotes":             `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"releaseNote":              `{"releaseNote":` + releaseNoteJSON() + `}`,
-		"team":                     `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
-		"team_members":             `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"users":                    `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"user":                     `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
-		"viewer":                   `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"release_documents":        `{"release":{"documents":{"nodes":[{"id":"release-document-id","title":"Release spec","slugId":"release-spec","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"release_issues": `{"release":{"issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-48",
+			Title:      "Release issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"release_links":      `{"release":{"links":{"nodes":[` + entityExternalLinkJSON() + `,` + entityExternalLinkWithParentsJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"entityExternalLink": `{"entityExternalLink":` + entityExternalLinkJSON() + `}`,
+		"releaseNotes":       `{"releaseNotes":{"nodes":[` + releaseNoteJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"releaseNote":        `{"releaseNote":` + releaseNoteJSON() + `}`,
+		"team":               `{"team":{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
+		"team_members":       `{"team":{"id":"team-id","key":"LIT","name":"linctl","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"users":              `{"users":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"user":               `{"user":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
+		"viewer":             `{"viewer":{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":true}}`,
 		"viewer_drafts": `{"viewer":{"drafts":{"nodes":[` + strings.Join([]string{
 			draftJSON("issue"),
 			draftJSON("project"),
@@ -598,6 +607,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	releasePipelineStages, err := ListReleasePipelineStages(context.Background(), graphqlClient, "release-pipeline-id", 2)
 	require.NoError(t, err)
+	releasePipelineTeams, err := ListReleasePipelineTeams(context.Background(), graphqlClient, "release-pipeline-id", 2)
+	require.NoError(t, err)
 	releaseStages, err := ListReleaseStages(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	releaseStage, err := GetReleaseStageByID(context.Background(), graphqlClient, "release-stage-id")
@@ -607,6 +618,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	releases, err := ListReleases(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	release, err := GetReleaseByID(context.Background(), graphqlClient, "release-id")
+	require.NoError(t, err)
+	releaseDocuments, err := ListReleaseDocuments(context.Background(), graphqlClient, "release-id", 2)
+	require.NoError(t, err)
+	releaseIssues, err := ListReleaseIssues(context.Background(), graphqlClient, "release-id", 2)
 	require.NoError(t, err)
 	releaseHistory, err := ListReleaseHistory(context.Background(), graphqlClient, "release-id", 2)
 	require.NoError(t, err)
@@ -1058,6 +1073,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, &endCursor, releasePipelineStages.EndCursor)
 	require.Equal(t, "release-stage-id", releasePipelineStages.ReleaseStages[0].ID)
 	require.Equal(t, "Production", releasePipelineStages.ReleaseStages[0].PipelineName)
+	require.True(t, releasePipelineTeams.HasNextPage)
+	require.Equal(t, &endCursor, releasePipelineTeams.EndCursor)
+	require.Equal(t, "LIT", releasePipelineTeams.Teams[0].Key)
+	require.Equal(t, "Kyanite", releasePipelineTeams.Teams[0].OrgName)
 	require.True(t, releaseStages.HasNextPage)
 	require.Equal(t, &endCursor, releaseStages.EndCursor)
 	require.Equal(t, "Started", releaseStages.ReleaseStages[0].Name)
@@ -1073,6 +1092,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Started", releases.Releases[0].StageName)
 	require.Equal(t, "v1.2.3", release.Version)
 	require.Equal(t, "Omer", release.CreatorName)
+	require.True(t, releaseDocuments.HasNextPage)
+	require.Equal(t, "Release spec", releaseDocuments.Documents[0].Title)
+	require.Equal(t, "project", releaseDocuments.Documents[0].ParentType)
+	require.True(t, releaseIssues.HasNextPage)
+	require.Equal(t, "LIT-48", releaseIssues.Issues[0].Identifier)
+	require.Equal(t, "Release issue", releaseIssues.Issues[0].Title)
 	require.Equal(t, 1, release.ReleaseNoteCount)
 	require.True(t, releaseHistory.HasNextPage)
 	require.Equal(t, &endCursor, releaseHistory.EndCursor)
@@ -2239,6 +2264,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list release pipeline stages release-pipeline-id")
 
+		_, err = ListReleasePipelineTeams(context.Background(), graphqlClient, "release-pipeline-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release pipeline teams release-pipeline-id")
+
 		_, err = ListReleaseStages(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list release stages")
@@ -2262,6 +2291,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListReleaseHistory(context.Background(), graphqlClient, "release-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list release history release-id")
+
+		_, err = ListReleaseDocuments(context.Background(), graphqlClient, "release-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release documents release-id")
+
+		_, err = ListReleaseIssues(context.Background(), graphqlClient, "release-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list release issues release-id")
 
 		_, err = ListReleaseLinks(context.Background(), graphqlClient, "release-id", 1)
 		require.Error(t, err)

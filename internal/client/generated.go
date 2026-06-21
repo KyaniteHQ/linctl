@@ -18444,6 +18444,26 @@ func (v *__releasePipeline_stagesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __releasePipeline_stagesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__releasePipeline_stagesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __releasePipeline_teamsInput is used internally by genqlient
+type __releasePipeline_teamsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __releasePipeline_teamsInput.Id, and is useful for accessing the field via an interface.
+func (v *__releasePipeline_teamsInput) GetId() string { return v.Id }
+
+// GetFirst returns __releasePipeline_teamsInput.First, and is useful for accessing the field via an interface.
+func (v *__releasePipeline_teamsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __releasePipeline_teamsInput.After, and is useful for accessing the field via an interface.
+func (v *__releasePipeline_teamsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __releasePipeline_teamsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__releasePipeline_teamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __releasePipelinesInput is used internally by genqlient
 type __releasePipelinesInput struct {
 	First           *int    `json:"first"`
@@ -18516,6 +18536,26 @@ func (v *__releaseStagesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __releaseStagesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__releaseStagesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __release_documentsInput is used internally by genqlient
+type __release_documentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __release_documentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__release_documentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __release_documentsInput.First, and is useful for accessing the field via an interface.
+func (v *__release_documentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __release_documentsInput.After, and is useful for accessing the field via an interface.
+func (v *__release_documentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __release_documentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__release_documentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __release_historyInput is used internally by genqlient
 type __release_historyInput struct {
 	Id              string  `json:"id"`
@@ -18535,6 +18575,26 @@ func (v *__release_historyInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __release_historyInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__release_historyInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __release_issuesInput is used internally by genqlient
+type __release_issuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __release_issuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__release_issuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __release_issuesInput.First, and is useful for accessing the field via an interface.
+func (v *__release_issuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __release_issuesInput.After, and is useful for accessing the field via an interface.
+func (v *__release_issuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __release_issuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__release_issuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __release_linksInput is used internally by genqlient
 type __release_linksInput struct {
@@ -43816,6 +43876,169 @@ func (v *releasePipeline_stagesResponse) GetReleasePipeline() releasePipeline_st
 	return v.ReleasePipeline
 }
 
+// releasePipeline_teamsReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
+// The GraphQL type's documentation follows.
+//
+// A release pipeline that defines a release workflow with ordered stages.
+// Pipelines can be continuous (each sync creates a completed release) or scheduled
+// (issues accumulate in a started release that is explicitly completed). Pipelines
+// are associated with teams and can filter commits by file path patterns.
+type releasePipeline_teamsReleasePipeline struct {
+	// Teams associated with this pipeline.
+	Teams releasePipeline_teamsReleasePipelineTeamsTeamConnection `json:"teams"`
+}
+
+// GetTeams returns releasePipeline_teamsReleasePipeline.Teams, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipeline) GetTeams() releasePipeline_teamsReleasePipelineTeamsTeamConnection {
+	return v.Teams
+}
+
+// releasePipeline_teamsReleasePipelineTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
+type releasePipeline_teamsReleasePipelineTeamsTeamConnection struct {
+	Nodes    []releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam `json:"nodes"`
+	PageInfo releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns releasePipeline_teamsReleasePipelineTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnection) GetNodes() []releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam {
+	return v.Nodes
+}
+
+// GetPageInfo returns releasePipeline_teamsReleasePipelineTeamsTeamConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnection) GetPageInfo() releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo {
+	return v.PageInfo
+}
+
+// releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and
+// each team has its own workflow states, cycles, labels, and settings. Teams can
+// be public (visible to all workspace members), private (visible only to team
+// members), or restricted (visible only within an enclosing private-team
+// boundary). Teams can also have sub-teams that inherit settings from their parent.
+type releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam struct {
+	TeamSummaryFields `json:"-"`
+}
+
+// GetId returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.Id, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetId() string {
+	return v.TeamSummaryFields.Id
+}
+
+// GetKey returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.Key, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetKey() string {
+	return v.TeamSummaryFields.Key
+}
+
+// GetName returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.Name, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetName() string {
+	return v.TeamSummaryFields.Name
+}
+
+// GetDescription returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.Description, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetDescription() *string {
+	return v.TeamSummaryFields.Description
+}
+
+// GetArchivedAt returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetArchivedAt() *string {
+	return v.TeamSummaryFields.ArchivedAt
+}
+
+// GetOrganization returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam.Organization, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) GetOrganization() TeamSummaryFieldsOrganization {
+	return v.TeamSummaryFields.Organization
+}
+
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalreleasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam struct {
+	Id string `json:"id"`
+
+	Key string `json:"key"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Organization TeamSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam) __premarshalJSON() (*__premarshalreleasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam, error) {
+	var retval __premarshalreleasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam
+
+	retval.Id = v.TeamSummaryFields.Id
+	retval.Key = v.TeamSummaryFields.Key
+	retval.Name = v.TeamSummaryFields.Name
+	retval.Description = v.TeamSummaryFields.Description
+	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
+}
+
+// releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// releasePipeline_teamsResponse is returned by releasePipeline_teams on success.
+type releasePipeline_teamsResponse struct {
+	// Fetch a single release pipeline by its UUID or slug identifier.
+	ReleasePipeline releasePipeline_teamsReleasePipeline `json:"releasePipeline"`
+}
+
+// GetReleasePipeline returns releasePipeline_teamsResponse.ReleasePipeline, and is useful for accessing the field via an interface.
+func (v *releasePipeline_teamsResponse) GetReleasePipeline() releasePipeline_teamsReleasePipeline {
+	return v.ReleasePipeline
+}
+
 // releasePipelinesReleasePipelinesReleasePipelineConnection includes the requested fields of the GraphQL type ReleasePipelineConnection.
 type releasePipelinesReleasePipelinesReleasePipelineConnection struct {
 	Nodes    []releasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline `json:"nodes"`
@@ -45066,6 +45289,183 @@ func (v *releaseStagesResponse) GetReleaseStages() releaseStagesReleaseStagesRel
 	return v.ReleaseStages
 }
 
+// release_documentsRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type release_documentsRelease struct {
+	// Documents associated with the release.
+	Documents release_documentsReleaseDocumentsDocumentConnection `json:"documents"`
+}
+
+// GetDocuments returns release_documentsRelease.Documents, and is useful for accessing the field via an interface.
+func (v *release_documentsRelease) GetDocuments() release_documentsReleaseDocumentsDocumentConnection {
+	return v.Documents
+}
+
+// release_documentsReleaseDocumentsDocumentConnection includes the requested fields of the GraphQL type DocumentConnection.
+type release_documentsReleaseDocumentsDocumentConnection struct {
+	Nodes    []release_documentsReleaseDocumentsDocumentConnectionNodesDocument `json:"nodes"`
+	PageInfo release_documentsReleaseDocumentsDocumentConnectionPageInfo        `json:"pageInfo"`
+}
+
+// GetNodes returns release_documentsReleaseDocumentsDocumentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnection) GetNodes() []release_documentsReleaseDocumentsDocumentConnectionNodesDocument {
+	return v.Nodes
+}
+
+// GetPageInfo returns release_documentsReleaseDocumentsDocumentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnection) GetPageInfo() release_documentsReleaseDocumentsDocumentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// release_documentsReleaseDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type release_documentsReleaseDocumentsDocumentConnectionNodesDocument struct {
+	DocumentSummaryFields `json:"-"`
+}
+
+// GetId returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.Id, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetId() string {
+	return v.DocumentSummaryFields.Id
+}
+
+// GetTitle returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.Title, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetTitle() string {
+	return v.DocumentSummaryFields.Title
+}
+
+// GetSlugId returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.SlugId, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetSlugId() string {
+	return v.DocumentSummaryFields.SlugId
+}
+
+// GetArchivedAt returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetArchivedAt() *string {
+	return v.DocumentSummaryFields.ArchivedAt
+}
+
+// GetProject returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.Project, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetProject() *DocumentSummaryFieldsProject {
+	return v.DocumentSummaryFields.Project
+}
+
+// GetTeam returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.Team, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetTeam() *DocumentSummaryFieldsTeam {
+	return v.DocumentSummaryFields.Team
+}
+
+// GetIssue returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.Issue, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetIssue() *DocumentSummaryFieldsIssue {
+	return v.DocumentSummaryFields.Issue
+}
+
+// GetCycle returns release_documentsReleaseDocumentsDocumentConnectionNodesDocument.Cycle, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) GetCycle() *DocumentSummaryFieldsCycle {
+	return v.DocumentSummaryFields.Cycle
+}
+
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*release_documentsReleaseDocumentsDocumentConnectionNodesDocument
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.release_documentsReleaseDocumentsDocumentConnectionNodesDocument = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.DocumentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalrelease_documentsReleaseDocumentsDocumentConnectionNodesDocument struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	SlugId string `json:"slugId"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Project *DocumentSummaryFieldsProject `json:"project"`
+
+	Team *DocumentSummaryFieldsTeam `json:"team"`
+
+	Issue *DocumentSummaryFieldsIssue `json:"issue"`
+
+	Cycle *DocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *release_documentsReleaseDocumentsDocumentConnectionNodesDocument) __premarshalJSON() (*__premarshalrelease_documentsReleaseDocumentsDocumentConnectionNodesDocument, error) {
+	var retval __premarshalrelease_documentsReleaseDocumentsDocumentConnectionNodesDocument
+
+	retval.Id = v.DocumentSummaryFields.Id
+	retval.Title = v.DocumentSummaryFields.Title
+	retval.SlugId = v.DocumentSummaryFields.SlugId
+	retval.ArchivedAt = v.DocumentSummaryFields.ArchivedAt
+	retval.Project = v.DocumentSummaryFields.Project
+	retval.Team = v.DocumentSummaryFields.Team
+	retval.Issue = v.DocumentSummaryFields.Issue
+	retval.Cycle = v.DocumentSummaryFields.Cycle
+	return &retval, nil
+}
+
+// release_documentsReleaseDocumentsDocumentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type release_documentsReleaseDocumentsDocumentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns release_documentsReleaseDocumentsDocumentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns release_documentsReleaseDocumentsDocumentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *release_documentsReleaseDocumentsDocumentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// release_documentsResponse is returned by release_documents on success.
+type release_documentsResponse struct {
+	// Fetch a single release by its UUID or slug identifier.
+	Release release_documentsRelease `json:"release"`
+}
+
+// GetRelease returns release_documentsResponse.Release, and is useful for accessing the field via an interface.
+func (v *release_documentsResponse) GetRelease() release_documentsRelease { return v.Release }
+
 // release_historyRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
@@ -45226,6 +45626,209 @@ type release_historyResponse struct {
 
 // GetRelease returns release_historyResponse.Release, and is useful for accessing the field via an interface.
 func (v *release_historyResponse) GetRelease() release_historyRelease { return v.Release }
+
+// release_issuesRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type release_issuesRelease struct {
+	// Issues associated with the release.
+	Issues release_issuesReleaseIssuesIssueConnection `json:"issues"`
+}
+
+// GetIssues returns release_issuesRelease.Issues, and is useful for accessing the field via an interface.
+func (v *release_issuesRelease) GetIssues() release_issuesReleaseIssuesIssueConnection {
+	return v.Issues
+}
+
+// release_issuesReleaseIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type release_issuesReleaseIssuesIssueConnection struct {
+	Nodes    []release_issuesReleaseIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo release_issuesReleaseIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns release_issuesReleaseIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnection) GetNodes() []release_issuesReleaseIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns release_issuesReleaseIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnection) GetPageInfo() release_issuesReleaseIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// release_issuesReleaseIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type release_issuesReleaseIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns release_issuesReleaseIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns release_issuesReleaseIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns release_issuesReleaseIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns release_issuesReleaseIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*release_issuesReleaseIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.release_issuesReleaseIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalrelease_issuesReleaseIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *release_issuesReleaseIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalrelease_issuesReleaseIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalrelease_issuesReleaseIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// release_issuesReleaseIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type release_issuesReleaseIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns release_issuesReleaseIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns release_issuesReleaseIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *release_issuesReleaseIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// release_issuesResponse is returned by release_issues on success.
+type release_issuesResponse struct {
+	// Fetch a single release by its UUID or slug identifier.
+	Release release_issuesRelease `json:"release"`
+}
+
+// GetRelease returns release_issuesResponse.Release, and is useful for accessing the field via an interface.
+func (v *release_issuesResponse) GetRelease() release_issuesRelease { return v.Release }
 
 // release_linksRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
@@ -61144,6 +61747,66 @@ func releasePipeline_stages(
 	return data_, err_
 }
 
+// The query executed by releasePipeline_teams.
+const releasePipeline_teams_Operation = `
+query releasePipeline_teams ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	releasePipeline(id: $id) {
+		teams(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... TeamSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment TeamSummaryFields on Team {
+	id
+	key
+	name
+	description
+	archivedAt
+	organization {
+		id
+		name
+		urlKey
+	}
+}
+`
+
+func releasePipeline_teams(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *releasePipeline_teamsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "releasePipeline_teams",
+		Query:  releasePipeline_teams_Operation,
+		Variables: &__releasePipeline_teamsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &releasePipeline_teamsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by releasePipelines.
 const releasePipelines_Operation = `
 query releasePipelines ($first: Int, $after: String, $includeArchived: Boolean) {
@@ -61481,6 +62144,79 @@ func releaseStages(
 	return data_, err_
 }
 
+// The query executed by release_documents.
+const release_documents_Operation = `
+query release_documents ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	release(id: $id) {
+		documents(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... DocumentSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment DocumentSummaryFields on Document {
+	id
+	title
+	slugId
+	archivedAt
+	project {
+		id
+		name
+	}
+	team {
+		id
+		key
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	cycle {
+		id
+		number
+		name
+	}
+}
+`
+
+func release_documents(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *release_documentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "release_documents",
+		Query:  release_documents_Operation,
+		Variables: &__release_documentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &release_documentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by release_history.
 const release_history_Operation = `
 query release_history ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -61528,6 +62264,82 @@ func release_history(
 	}
 
 	data_ = &release_historyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by release_issues.
+const release_issues_Operation = `
+query release_issues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	release(id: $id) {
+		issues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func release_issues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *release_issuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "release_issues",
+		Query:  release_issues_Operation,
+		Variables: &__release_issuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &release_issuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

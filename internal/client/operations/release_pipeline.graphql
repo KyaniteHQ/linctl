@@ -44,6 +44,20 @@ query releasePipeline_stages($id: String!, $first: Int, $after: String, $include
   }
 }
 
+query releasePipeline_teams($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  releasePipeline(id: $id) {
+    teams(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query releaseStages($first: Int, $after: String, $includeArchived: Boolean) {
   releaseStages(first: $first, after: $after, includeArchived: $includeArchived) {
     nodes {

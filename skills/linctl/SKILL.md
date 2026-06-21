@@ -80,6 +80,7 @@ linctl release-pipeline list --json --limit 20
 linctl release-pipeline get RELEASE_PIPELINE_ID --json
 linctl release-pipeline releases RELEASE_PIPELINE_ID --json --limit 20
 linctl release-pipeline stages RELEASE_PIPELINE_ID --json --limit 20
+linctl release-pipeline teams RELEASE_PIPELINE_ID --json --limit 20
 linctl release-stage list --json --limit 20
 linctl release-stage get RELEASE_STAGE_ID --json
 linctl release-stage releases RELEASE_STAGE_ID --json --limit 20
@@ -87,6 +88,8 @@ linctl release list --json --limit 20
 linctl release search TERM --json --limit 20
 linctl release get RELEASE_ID --json
 linctl release history RELEASE_ID --json --limit 20
+linctl release documents RELEASE_ID --json --limit 20
+linctl release issues RELEASE_ID --json --limit 20
 linctl release links RELEASE_ID --json --limit 20
 linctl external-link get EXTERNAL_LINK_ID --json
 linctl release-note list --json --limit 20
