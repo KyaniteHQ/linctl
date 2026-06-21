@@ -263,7 +263,7 @@ Only `issue-relation list` and `issue-relation get` are implemented in the curre
 Schema backing:
 
 - Types: `Comment`, `CommentConnection`
-- Reads: `Query.comments`, `Query.comment`, `Issue.comments`
+- Reads: `Query.comments`, `Query.comment`, `Issue.comments`, `Comment.botActor`, `Comment.children`, `Comment.createdIssues`
 - Writes: `Mutation.commentCreate`, `Mutation.commentResolve`, `Mutation.commentUnresolve`
 - Inputs: `CommentCreateInput`
 - Relevant fields: `Comment.id`, `Comment.body`, `Comment.url`, `Comment.createdAt`, `Comment.updatedAt`, `Comment.parentId`, `Comment.issueId`, `Comment.projectId`, `Comment.projectUpdateId`, `Comment.initiativeId`, `Comment.initiativeUpdateId`, `Comment.documentContentId`, `Comment.user`
@@ -274,10 +274,13 @@ Planned commands:
 | --- | --- | --- |
 | `comment list` | `Query.comments` | Read-only |
 | `comment get` | `Query.comment` | Read-only |
+| `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only |
+| `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata |
+| `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only |
 | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope |
 | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope |
 
-Only `comment list` and `comment get` are implemented in the current CLI. Issue-scoped comment creation and replies remain under the guarded `issue comment` and `issue reply` commands.
+`comment list`, `comment get`, `comment bot-actor`, `comment children`, and `comment created-issues` are implemented in the current CLI. Comment child reads omit comment body content by default. Document content and external thread reads remain out of the default surface because they expose content/thread payloads. Issue-scoped comment creation and replies remain under the guarded `issue comment` and `issue reply` commands.
 
 ## Project
 

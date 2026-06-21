@@ -117,6 +117,9 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue comments", args: []string{"issue", "comments", "LIT-1", "--limit", "1"}, contains: "comment-id Omer First comment"},
 		{name: "comment list", args: []string{"comment", "list", "--limit", "1"}, contains: "comment-id Omer First comment"},
 		{name: "comment get", args: []string{"comment", "get", "comment-id"}, contains: "comment-id Omer First comment"},
+		{name: "comment bot actor", args: []string{"comment", "bot-actor", "comment-id"}, contains: "comment-id bot bot-actor-id GitHub [github]"},
+		{name: "comment children", args: []string{"comment", "children", "comment-id", "--limit", "1"}, contains: "child-comment-id Omer 2026-06-19T12:00:00Z"},
+		{name: "comment created issues", args: []string{"comment", "created-issues", "comment-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, contains: "LIT-1 Closed issue [Done]"},
 		{name: "project list", args: []string{"project", "list", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, contains: "project-id Detail project [Backlog]"},
@@ -2633,6 +2636,16 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "comment":
 		return `{"comment":` + commandTopLevelCommentJSON() + `}`, true
+	case "comment_botActor":
+		return `{"comment":{"id":"comment-id","botActor":` + commandActorBotJSON() + `}}`, true
+	case "comment_children":
+		return `{"comment":{"id":"comment-id","children":{"nodes":[` +
+			commandCommentMetadataJSONWithID("child-comment-id", "comment-id", "", "") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "comment_createdIssues":
+		return `{"comment":{"id":"comment-id","createdIssues":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	}
 
 	return commandFlowExtraReadPayload(operation, fake)
@@ -4054,14 +4067,23 @@ func commandTopLevelCommentJSON() string {
 }
 
 func commandCommentMetadataJSON(projectID string, projectUpdateID string) string {
+	return commandCommentMetadataJSONWithID("comment-id", "", projectID, projectUpdateID)
+}
+
+func commandCommentMetadataJSONWithID(
+	id string,
+	parentID string,
+	projectID string,
+	projectUpdateID string,
+) string {
 	return `{
-		"id":"comment-id",
-		"url":"https://linear.app/comment/comment-id",
+		"id":"` + id + `",
+		"url":"https://linear.app/comment/` + id + `",
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:00:00Z",
 		"editedAt":null,
 		"resolvedAt":null,
-		"parentId":null,
+		"parentId":` + commandNullableStringJSON(parentID) + `,
 		"issueId":null,
 		"projectId":` + commandNullableStringJSON(projectID) + `,
 		"projectUpdateId":` + commandNullableStringJSON(projectUpdateID) + `,
@@ -4069,6 +4091,17 @@ func commandCommentMetadataJSON(projectID string, projectUpdateID string) string
 		"initiativeUpdateId":null,
 		"documentContentId":null,
 		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func commandActorBotJSON() string {
+	return `{
+		"id":"bot-actor-id",
+		"type":"github",
+		"subType":"issue",
+		"name":"GitHub",
+		"userDisplayName":"octocat",
+		"avatarUrl":"https://example.com/github.png"
 	}`
 }
 

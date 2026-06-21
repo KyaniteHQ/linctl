@@ -125,6 +125,14 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		CreatedAt:   "2026-06-19T12:00:00Z",
 		ProjectID:   "project-id",
 	}
+	commentBotActor := client.CommentBotActor{
+		CommentID: "comment-id",
+		Bot: &client.ActorBotSummary{
+			ID:   "bot-actor-id",
+			Type: "github",
+			Name: "GitHub",
+		},
+	}
 	workflowState := client.WorkflowStateSummary{
 		ID:   "workflow-state-id",
 		Name: "Started",
@@ -406,6 +414,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeDraft(textCommand, &textOptions, draft))
 	require.NoError(t, writeComment(textCommand, &textOptions, comment))
 	require.NoError(t, writeCommentMetadata(textCommand, &textOptions, commentMetadata))
+	require.NoError(t, writeCommentBotActor(textCommand, &textOptions, commentBotActor))
+	require.NoError(t, writeCommentBotActor(textCommand, &textOptions, client.CommentBotActor{CommentID: "plain-comment-id"}))
 	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(textCommand, &textOptions, timeSchedule))
 	require.NoError(t, writeTemplate(textCommand, &textOptions, template))
@@ -462,6 +472,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"team-membership-id LIT Omer owner true order 1.50\n"+
 			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
 			"comment-id Omer First comment\ncomment-id Omer 2026-06-19T12:00:00Z\n"+
+			"comment-id bot bot-actor-id GitHub [github]\nplain-comment-id bot -\n"+
 			"workflow-state-id Started [started]\n"+
 			"time-schedule-id Primary on-call entries 1\n"+
 			"template-id Bug report [issue] team LIT\n"+
@@ -527,6 +538,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeDraft(jsonCommand, &jsonOptions, draft))
 	require.NoError(t, writeComment(jsonCommand, &jsonOptions, comment))
 	require.NoError(t, writeCommentMetadata(jsonCommand, &jsonOptions, commentMetadata))
+	require.NoError(t, writeCommentBotActor(jsonCommand, &jsonOptions, commentBotActor))
 	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(jsonCommand, &jsonOptions, timeSchedule))
 	require.NoError(t, writeTemplate(jsonCommand, &jsonOptions, template))
@@ -582,6 +594,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"email": "omer@example.com"`)
 	require.Contains(t, jsonOut.String(), `"parent_key": "LIT-3"`)
 	require.Contains(t, jsonOut.String(), `"body": "First comment"`)
+	require.Contains(t, jsonOut.String(), `"comment_id": "comment-id"`)
 	require.Contains(t, jsonOut.String(), `"type": "started"`)
 	require.Contains(t, jsonOut.String(), `"entry_count": 1`)
 	require.Contains(t, jsonOut.String(), `"team_key": "LIT"`)
@@ -960,6 +973,14 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		PipelineName: "Production",
 		ReleaseCount: 2,
 	}
+	commentBotActor := client.CommentBotActor{
+		CommentID: "comment-id",
+		Bot: &client.ActorBotSummary{
+			ID:   "bot-actor-id",
+			Type: "github",
+			Name: "GitHub",
+		},
+	}
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
@@ -1095,6 +1116,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeUser(quietCommand, &rootOptions{quiet: true}, user))
 	require.NoError(t, writeComment(quietCommand, &rootOptions{quiet: true}, comment))
 	require.NoError(t, writeCommentMetadata(quietCommand, &rootOptions{quiet: true}, commentMetadata))
+	require.NoError(t, writeCommentBotActor(quietCommand, &rootOptions{quiet: true}, commentBotActor))
 	require.NoError(t, writeWorkflowState(quietCommand, &rootOptions{quiet: true}, workflowState))
 	require.NoError(t, writeTimeSchedule(quietCommand, &rootOptions{quiet: true}, timeSchedule))
 	require.NoError(t, writeTemplate(quietCommand, &rootOptions{quiet: true}, template))
@@ -1896,6 +1918,29 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "write line")
+	})
+}
+
+func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *testing.T) {
+	t.Run("bot actor operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "comment_botActor"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"comment", "bot-actor", "comment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get comment bot actor comment-id")
+	})
+
+	t.Run("child page projection", func(t *testing.T) {
+		page := commentChildPageWithItems(
+			client.CommentChildList{CommentID: "comment-id"},
+			[]client.CommentMetadataSummary{{ID: "child-comment-id"}},
+		)
+
+		require.Equal(t, "child-comment-id", page.Comments[0].ID)
 	})
 }
 

@@ -78,6 +78,13 @@ PY
     "$binary" issue relations "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue releases "$issue_id" --json --limit 5 >/dev/null
   fi
+  comment_json="$("$binary" comment list --json --limit 5)"
+  comment_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("comments", []); print(items[0]["id"] if items else "")' <<<"$comment_json")"
+  if [[ -n "$comment_id" ]]; then
+    "$binary" comment bot-actor "$comment_id" --json >/dev/null
+    "$binary" comment children "$comment_id" --json --limit 5 >/dev/null
+    "$binary" comment created-issues "$comment_id" --json --limit 5 >/dev/null
+  fi
   "$binary" issue-relation list --json --limit 5 >/dev/null
   "$binary" issue-to-release list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null

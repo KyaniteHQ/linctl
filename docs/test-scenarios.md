@@ -310,8 +310,11 @@ Success is pass/fail:
    - Success: `linctl comment get COMMENT_ID` reads one Linear Comment by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/comment_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+   - Success: `linctl comment bot-actor COMMENT_ID`, `linctl comment children COMMENT_ID --limit N`, and `linctl comment created-issues COMMENT_ID --limit N` expose safe child resources through the public CLI; child comment output omits comment body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/comment_bot_actor`, `Test_CommandFlows_execute_read_and_write_commands/comment_children`, `Test_CommandFlows_execute_read_and_write_commands/comment_created_issues`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-57. ProjectUpdate list
+58. ProjectUpdate list
    - Success: `linctl project-update list --limit N` lists visible ProjectUpdates through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_update_list`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;

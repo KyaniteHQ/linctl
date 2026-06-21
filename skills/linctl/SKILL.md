@@ -139,6 +139,9 @@ linctl issue-relation get ISSUE_RELATION_ID --json
 linctl issue pr LIT-123
 linctl comment list --json --limit 20
 linctl comment get COMMENT_ID --json
+linctl comment bot-actor COMMENT_ID --json
+linctl comment children COMMENT_ID --json --limit 20
+linctl comment created-issues COMMENT_ID --json --limit 20
 linctl cycle list --json --limit 20
 linctl cycle get CYCLE_ID --json
 linctl cycle issues CYCLE_ID --json --limit 20

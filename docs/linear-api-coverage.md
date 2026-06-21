@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 112 | 458 |
 | Upstream Query root fields | 158 | 100 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 229 | 229 | 229 |
-| Domain-map commands | 341 | 209 | 341 |
+| Local generated Go operations | 232 | 232 | 232 |
+| Domain-map commands | 344 | 212 | 344 |
 
 ## Upstream SDK Root Methods
 
@@ -1068,6 +1068,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentsForURL` | query | `attachmentsForURL` | implemented | `internal/client/generated.go` |
 | `auditEntryTypes` | query | `auditEntryTypes` | implemented | `internal/client/generated.go` |
 | `comment` | query | `comment` | implemented | `internal/client/generated.go` |
+| `comment_botActor` | query | `comment` | implemented | `internal/client/generated.go` |
+| `comment_children` | query | `comment` | implemented | `internal/client/generated.go` |
+| `comment_createdIssues` | query | `comment` | implemented | `internal/client/generated.go` |
 | `comments` | query | `comments` | implemented | `internal/client/generated.go` |
 | `customView` | query | `customView` | implemented | `internal/client/generated.go` |
 | `customViewHasSubscribers` | query | `customViewHasSubscribers` | implemented | `internal/client/generated.go` |
@@ -1358,6 +1361,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | IssueRelation | `issue-relation delete` | `Mutation.issueRelationDelete` | Blocked: destructive command needs explicit issue relation safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Comment | `comment list` | `Query.comments` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment get` | `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Comment | `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
+| Comment | `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
+| Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
 | Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
 | Project | `project list` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |

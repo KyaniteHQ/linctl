@@ -60,6 +60,22 @@ type CommentMetadataSummary struct {
 	DisplayName        string  `json:"display_name,omitempty"`
 }
 
+// ActorBotSummary is compact bot actor metadata without external payload details.
+type ActorBotSummary struct {
+	ID              string `json:"id,omitempty"`
+	Type            string `json:"type"`
+	SubType         string `json:"sub_type,omitempty"`
+	Name            string `json:"name,omitempty"`
+	UserDisplayName string `json:"user_display_name,omitempty"`
+	AvatarURL       string `json:"avatar_url,omitempty"`
+}
+
+// CommentBotActor is the optional bot actor attached to a comment.
+type CommentBotActor struct {
+	CommentID string           `json:"comment_id"`
+	Bot       *ActorBotSummary `json:"bot,omitempty"`
+}
+
 // IssueCommentList is a page of comments for one issue.
 type IssueCommentList struct {
 	IssueID     string                `json:"issue_id"`
@@ -74,6 +90,14 @@ type CommentList struct {
 	Comments    []CommentSummary `json:"comments"`
 	HasNextPage bool             `json:"has_next_page"`
 	EndCursor   *string          `json:"end_cursor,omitempty"`
+}
+
+// CommentChildList is a page of body-free child comment metadata.
+type CommentChildList struct {
+	CommentID   string                   `json:"comment_id"`
+	Comments    []CommentMetadataSummary `json:"comments"`
+	HasNextPage bool                     `json:"has_next_page"`
+	EndCursor   *string                  `json:"end_cursor,omitempty"`
 }
 
 // ListComments returns visible comments across parent entity types.
@@ -103,6 +127,68 @@ func GetCommentByID(ctx context.Context, graphqlClient graphql.Client, id string
 	}
 
 	return topLevelCommentSummary(commentResponse.Comment.TopLevelCommentSummaryFields), nil
+}
+
+// GetCommentBotActor returns the bot actor that created a comment, when present.
+func GetCommentBotActor(ctx context.Context, graphqlClient graphql.Client, id string) (CommentBotActor, error) {
+	result, err := comment_botActor(ctx, graphqlClient, stringPtr(id), nil)
+	if err != nil {
+		return CommentBotActor{}, fmt.Errorf("get comment bot actor %s: %w", id, err)
+	}
+
+	return CommentBotActor{
+		CommentID: result.Comment.Id,
+		Bot:       actorBotSummary(result.Comment.BotActor),
+	}, nil
+}
+
+// ListCommentChildren returns child comments without body content.
+func ListCommentChildren(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (CommentChildList, error) {
+	result, err := comment_children(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return CommentChildList{}, fmt.Errorf("list comment children %s: %w", id, err)
+	}
+
+	comments := make([]CommentMetadataSummary, 0, len(result.Comment.Children.Nodes))
+	for _, comment := range result.Comment.Children.Nodes {
+		comments = append(comments, commentMetadataSummary(comment.CommentMetadataFields))
+	}
+
+	return CommentChildList{
+		CommentID:   result.Comment.Id,
+		Comments:    comments,
+		HasNextPage: result.Comment.Children.PageInfo.HasNextPage,
+		EndCursor:   result.Comment.Children.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListCommentCreatedIssues returns issues created from a comment.
+func ListCommentCreatedIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueList, error) {
+	result, err := comment_createdIssues(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list comment created issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.Comment.CreatedIssues.Nodes))
+	for _, issue := range result.Comment.CreatedIssues.Nodes {
+		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.Comment.CreatedIssues.PageInfo.HasNextPage,
+		EndCursor:   result.Comment.CreatedIssues.PageInfo.EndCursor,
+	}, nil
 }
 
 // ListIssueComments returns comments for one issue by Linear id or identifier.
@@ -215,6 +301,21 @@ func commentMetadataSummary(comment CommentMetadataFields) CommentMetadataSummar
 		UserID:             userID,
 		UserName:           userName,
 		DisplayName:        displayName,
+	}
+}
+
+func actorBotSummary(bot *comment_botActorCommentBotActorActorBot) *ActorBotSummary {
+	if bot == nil {
+		return nil
+	}
+
+	return &ActorBotSummary{
+		ID:              stringValue(bot.Id),
+		Type:            bot.Type,
+		SubType:         stringValue(bot.SubType),
+		Name:            stringValue(bot.Name),
+		UserDisplayName: stringValue(bot.UserDisplayName),
+		AvatarURL:       stringValue(bot.AvatarUrl),
 	}
 }
 

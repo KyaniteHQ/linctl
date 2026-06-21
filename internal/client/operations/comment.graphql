@@ -16,6 +16,45 @@ query comment($id: String, $hash: String) {
   }
 }
 
+query comment_botActor($id: String, $hash: String) {
+  comment(id: $id, hash: $hash) {
+    id
+    botActor {
+      ...ActorBotSummaryFields
+    }
+  }
+}
+
+query comment_children($id: String, $hash: String, $first: Int, $after: String, $includeArchived: Boolean) {
+  comment(id: $id, hash: $hash) {
+    id
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CommentMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query comment_createdIssues($id: String, $hash: String, $first: Int, $after: String, $includeArchived: Boolean) {
+  comment(id: $id, hash: $hash) {
+    id
+    createdIssues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment TopLevelCommentSummaryFields on Comment {
   id
   body
@@ -36,6 +75,15 @@ fragment TopLevelCommentSummaryFields on Comment {
     name
     displayName
   }
+}
+
+fragment ActorBotSummaryFields on ActorBot {
+  id
+  type
+  subType
+  name
+  userDisplayName
+  avatarUrl
 }
 
 fragment CommentMetadataFields on Comment {

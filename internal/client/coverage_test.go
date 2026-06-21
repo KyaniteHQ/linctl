@@ -250,16 +250,25 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "listed",
 			Status: "Backlog",
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectRelations":    `{"projectRelations":{"nodes":[{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"project-relation-no-user","type":"relates","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone"},"relatedProject":{"id":"other-related-project-id","name":"Other related"},"relatedProjectMilestone":{"id":"related-project-milestone-id","name":"Related milestone"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"projectRelation":     `{"projectRelation":{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
-		"issueRelations":      `{"issueRelations":{"nodes":[{"id":"issue-relation-id","type":"blocks","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"issueRelation":       `{"issueRelation":{"id":"issue-relation-id","type":"blocks","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}}`,
-		"issueToReleases":     `{"issueToReleases":{"nodes":[{"id":"issue-to-release-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id"},"release":{"id":"release-id"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"issueToRelease":      `{"issueToRelease":{"id":"issue-to-release-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id"},"release":{"id":"release-id"}}}`,
-		"applicationInfo":     `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
-		"issue_comments":      `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"comments":            `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"comment":             `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"projectRelations": `{"projectRelations":{"nodes":[{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"project-relation-no-user","type":"relates","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone"},"relatedProject":{"id":"other-related-project-id","name":"Other related"},"relatedProjectMilestone":{"id":"related-project-milestone-id","name":"Related milestone"},"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectRelation":  `{"projectRelation":{"id":"project-relation-id","type":"blocks","anchorType":"project","relatedAnchorType":"project","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"project":{"id":"project-id","name":"Pinned project"},"projectMilestone":null,"relatedProject":{"id":"related-project-id","name":"Related project"},"relatedProjectMilestone":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"issueRelations":   `{"issueRelations":{"nodes":[{"id":"issue-relation-id","type":"blocks","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issueRelation":    `{"issueRelation":{"id":"issue-relation-id","type":"blocks","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}}`,
+		"issueToReleases":  `{"issueToReleases":{"nodes":[{"id":"issue-to-release-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id"},"release":{"id":"release-id"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"issueToRelease":   `{"issueToRelease":{"id":"issue-to-release-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"issue":{"id":"issue-id"},"release":{"id":"release-id"}}}`,
+		"applicationInfo":  `{"applicationInfo":{"id":"app-id","clientId":"app-client-id","name":"Demo App","description":"Demo authorization app","developer":"Kyanite","developerUrl":"https://example.com","imageUrl":"https://example.com/app.png"}}`,
+		"issue_comments":   `{"issue":{"id":"issue-id","identifier":"LIT-12","comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":"parent-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","parentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"comments":         `{"comments":{"nodes":[{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}},{"id":"bot-comment-id","body":"bot note","url":"https://linear.app/comment/bot-comment-id","createdAt":"2026-06-19T12:01:00Z","updatedAt":"2026-06-19T12:01:00Z","editedAt":null,"resolvedAt":null,"parentId":null,"issueId":null,"projectId":"project-id","projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"comment":          `{"comment":{"id":"comment-id","body":"hello","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:02:00Z","editedAt":"2026-06-19T12:02:00Z","resolvedAt":null,"parentId":"parent-id","issueId":"issue-id","projectId":null,"projectUpdateId":null,"initiativeId":null,"initiativeUpdateId":null,"documentContentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
+		"comment_botActor": `{"comment":{"id":"comment-id","botActor":{"id":"bot-actor-id","type":"github","subType":"issue","name":"GitHub","userDisplayName":"octocat","avatarUrl":"https://example.com/github.png"}}}`,
+		"comment_children": `{"comment":{"id":"comment-id","children":{"nodes":[` + commentMetadataJSONWithID("child-comment-id", "comment-id", "", "", "user-id") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"comment_createdIssues": `{"comment":{"id":"comment-id","createdIssues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-54",
+			Title:      "Created from comment",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"Documents":           `{"documents":{"nodes":[{"id":"document-id","title":"Spec","slugId":"spec","archivedAt":null,"project":{"id":"project-id","name":"fixture"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"document":            `{"document":{"id":"document-id","title":"Team note","slugId":"team-note","archivedAt":null,"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null}}`,
 		"IssueLabels":         `{"issueLabels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
@@ -636,6 +645,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	topLevelComments, err := ListComments(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	topLevelComment, err := GetCommentByID(context.Background(), graphqlClient, "comment-id")
+	require.NoError(t, err)
+	commentBotActor, err := GetCommentBotActor(context.Background(), graphqlClient, "comment-id")
+	require.NoError(t, err)
+	commentChildren, err := ListCommentChildren(context.Background(), graphqlClient, "comment-id", 1)
+	require.NoError(t, err)
+	commentCreatedIssues, err := ListCommentCreatedIssues(context.Background(), graphqlClient, "comment-id", 1)
 	require.NoError(t, err)
 	documents, err := ListDocuments(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -1100,6 +1115,16 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "comment-id", topLevelComment.ID)
 	require.Equal(t, "issue-id", topLevelComment.IssueID)
 	require.Equal(t, "Omer", topLevelComment.DisplayName)
+	require.Equal(t, "comment-id", commentBotActor.CommentID)
+	require.Equal(t, "bot-actor-id", commentBotActor.Bot.ID)
+	require.Equal(t, "github", commentBotActor.Bot.Type)
+	require.Equal(t, "GitHub", commentBotActor.Bot.Name)
+	require.True(t, commentChildren.HasNextPage)
+	require.Equal(t, "comment-id", commentChildren.CommentID)
+	require.Equal(t, "child-comment-id", commentChildren.Comments[0].ID)
+	require.Equal(t, "comment-id", commentChildren.Comments[0].ParentID)
+	require.True(t, commentCreatedIssues.HasNextPage)
+	require.Equal(t, "LIT-54", commentCreatedIssues.Issues[0].Identifier)
 	require.True(t, documents.HasNextPage)
 	require.Equal(t, "project", documents.Documents[0].ParentType)
 	require.Equal(t, "Team note", document.Title)
@@ -2099,6 +2124,18 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetCommentByID(context.Background(), graphqlClient, "comment-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get comment comment-id")
+
+		_, err = GetCommentBotActor(context.Background(), graphqlClient, "comment-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get comment bot actor comment-id")
+
+		_, err = ListCommentChildren(context.Background(), graphqlClient, "comment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list comment children comment-id")
+
+		_, err = ListCommentCreatedIssues(context.Background(), graphqlClient, "comment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list comment created issues comment-id")
 
 		_, err = ListDocuments(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
@@ -3776,19 +3813,29 @@ func issueHistoryJSON() string {
 }
 
 func commentMetadataJSON(projectID string, projectUpdateID string, userID string) string {
+	return commentMetadataJSONWithID("comment-id", "", projectID, projectUpdateID, userID)
+}
+
+func commentMetadataJSONWithID(
+	id string,
+	parentID string,
+	projectID string,
+	projectUpdateID string,
+	userID string,
+) string {
 	user := `null`
 	if userID != "" {
 		user = `{"id":"` + userID + `","name":"omer","displayName":"Omer"}`
 	}
 
 	return `{
-		"id":"comment-id",
-		"url":"https://linear.app/comment/comment-id",
+		"id":"` + id + `",
+		"url":"https://linear.app/comment/` + id + `",
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:02:00Z",
 		"editedAt":null,
 		"resolvedAt":null,
-		"parentId":null,
+		"parentId":` + nullableStringJSON(parentID) + `,
 		"issueId":null,
 		"projectId":` + nullableStringJSON(projectID) + `,
 		"projectUpdateId":` + nullableStringJSON(projectUpdateID) + `,

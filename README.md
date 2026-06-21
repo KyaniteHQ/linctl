@@ -129,6 +129,9 @@ linctl issue pr LIT-123
 linctl issue comments LIT-123 --limit 20
 linctl comment list --limit 20
 linctl comment get comment-id
+linctl comment bot-actor comment-id
+linctl comment children comment-id --limit 20
+linctl comment created-issues comment-id --limit 20
 linctl issue start LIT-123
 linctl issue reply LIT-123 comment-id --body "thread reply"
 linctl issue usage
@@ -374,6 +377,9 @@ linctl issue-relation list --limit 20
 linctl issue-relation get issue-relation-id
 linctl comment list --limit 20
 linctl comment get comment-id
+linctl comment bot-actor comment-id
+linctl comment children comment-id --limit 20
+linctl comment created-issues comment-id --limit 20
 linctl project-milestone create project-id --name "Launch milestone"
 linctl project-milestone update project-milestone-id --name "Renamed milestone"
 linctl project-update list --limit 20
