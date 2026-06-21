@@ -525,6 +525,198 @@ query issue_subscribers($id: String!, $first: Int, $after: String, $includeArchi
   }
 }
 
+query issueVcsBranchSearch($branchName: String!) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    ...IssueSummaryFields
+  }
+}
+
+query issueVcsBranchSearch_attachments($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...AttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_botActor($branchName: String!) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    id
+    botActor {
+      ...ActorBotSummaryFields
+    }
+  }
+}
+
+query issueVcsBranchSearch_children($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_documents($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    documents(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...DocumentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_formerAttachments($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...AttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_history($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    history(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        createdAt
+        updatedAt
+        archivedAt
+        actorId
+        updatedDescription
+        issue {
+          id
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_inverseRelations(
+  $branchName: String!
+  $first: Int
+  $after: String
+  $includeArchived: Boolean
+) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_labels($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    labels(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_relations($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    relations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_releases($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    releases(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ReleaseSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_stateHistory($branchName: String!, $first: Int, $after: String) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    id
+    stateHistory(first: $first, after: $after) {
+      nodes {
+        id
+        stateId
+        startedAt
+        endedAt
+        state {
+          id
+          name
+          type
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_subscribers($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    id
+    subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...UserSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query CompletedWorkflowStates($teamId: ID!, $first: Int) {
   workflowStates(filter: { team: { id: { eq: $teamId } }, type: { eq: "completed" } }, first: $first) {
     nodes {

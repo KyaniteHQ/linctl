@@ -94,6 +94,19 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1", "--limit", "1"}, contains: "LIT-23 Blocked by issue [Todo]", fake: commandFlowFakeClient{expectedBlockedBy: "LIT-1"}},
 		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams", "--limit", "1"}, contains: "LIT-20 All-team issue [Todo]"},
 		{name: "issue search", args: []string{"issue", "search", "needle", "--limit", "1"}, contains: "LIT-3 Search result [Todo]", fake: commandFlowFakeClient{expectedSearchQuery: "needle"}},
+		{name: "issue vcs branch search get", args: []string{"issue", "vcs-branch-search", "get", "omer/branch", "--json"}, contains: `"identifier": "LIT-40"`},
+		{name: "issue vcs branch attachments", args: []string{"issue", "vcs-branch-search", "attachments", "omer/branch", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "issue vcs branch bot actor", args: []string{"issue", "vcs-branch-search", "bot-actor", "omer/branch"}, contains: "issue-id bot bot-actor-id GitHub [github]"},
+		{name: "issue vcs branch children", args: []string{"issue", "vcs-branch-search", "children", "omer/branch", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "issue vcs branch documents", args: []string{"issue", "vcs-branch-search", "documents", "omer/branch", "--limit", "1"}, contains: "document-id Spec [issue]"},
+		{name: "issue vcs branch former attachments", args: []string{"issue", "vcs-branch-search", "former-attachments", "omer/branch", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "issue vcs branch history", args: []string{"issue", "vcs-branch-search", "history", "omer/branch", "--limit", "1"}, contains: "issue-history-id issue issue-id updated_description true"},
+		{name: "issue vcs branch inverse relations", args: []string{"issue", "vcs-branch-search", "inverse-relations", "omer/branch", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
+		{name: "issue vcs branch labels", args: []string{"issue", "vcs-branch-search", "labels", "omer/branch", "--limit", "1"}, contains: "label-id Bug #ff0000"},
+		{name: "issue vcs branch relations", args: []string{"issue", "vcs-branch-search", "relations", "omer/branch", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
+		{name: "issue vcs branch releases", args: []string{"issue", "vcs-branch-search", "releases", "omer/branch", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "issue vcs branch state history", args: []string{"issue", "vcs-branch-search", "state-history", "omer/branch", "--limit", "1"}, contains: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -"},
+		{name: "issue vcs branch subscribers", args: []string{"issue", "vcs-branch-search", "subscribers", "omer/branch", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1", "--limit", "2"}, contains: "blocked_by:\nLIT-24 Blocker issue [Todo]", fake: commandFlowFakeClient{expectedIssueDeps: "LIT-1"}},
 		{name: "issue attachments", args: []string{"issue", "attachments", "LIT-1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
@@ -2342,6 +2355,9 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 	if payload, ok := commandFlowAttachmentIssuePayload(operation); ok {
 		return payload, nil
 	}
+	if payload, ok := commandFlowIssueVCSBranchPayload(operation); ok {
+		return payload, nil
+	}
 	if payload, ok := commandFlowIssuePayload(operation, fake); ok {
 		return payload, nil
 	}
@@ -2915,6 +2931,70 @@ func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "attachmentIssue_subscribers":
 		return `{"attachmentIssue":{"id":"issue-id","subscribers":{"nodes":[` +
+			commandUserJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	default:
+		return "", false
+	}
+}
+
+func commandFlowIssueVCSBranchPayload(operation string) (string, bool) {
+	if !strings.HasPrefix(operation, "issueVcsBranchSearch") {
+		return "", false
+	}
+
+	switch operation {
+	case "issueVcsBranchSearch":
+		return `{"issueVcsBranchSearch":` +
+			commandIssueJSON("LIT-40", "Branch issue", "todo-state", "Todo", "unstarted") +
+			`}`, true
+	case "issueVcsBranchSearch_attachments":
+		return `{"issueVcsBranchSearch":{"attachments":{"nodes":[` +
+			commandAttachmentJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_botActor":
+		return `{"issueVcsBranchSearch":{"id":"issue-id","botActor":` + commandActorBotJSON() + `}}`, true
+	case "issueVcsBranchSearch_children":
+		return `{"issueVcsBranchSearch":{"children":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_documents":
+		return `{"issueVcsBranchSearch":{"documents":{"nodes":[` +
+			commandDocumentJSON(
+				"Spec",
+				`"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null`,
+			) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_formerAttachments":
+		return `{"issueVcsBranchSearch":{"formerAttachments":{"nodes":[` +
+			commandAttachmentJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_history":
+		return `{"issueVcsBranchSearch":{"history":{"nodes":[` +
+			commandIssueHistoryJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_inverseRelations":
+		return `{"issueVcsBranchSearch":{"inverseRelations":{"nodes":[` +
+			commandIssueRelationJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_labels":
+		return `{"issueVcsBranchSearch":{"labels":{"nodes":[` +
+			commandLabelJSON("label body") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_relations":
+		return `{"issueVcsBranchSearch":{"relations":{"nodes":[` +
+			commandIssueRelationJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_releases":
+		return `{"issueVcsBranchSearch":{"releases":{"nodes":[` +
+			commandReleaseJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_stateHistory":
+		return `{"issueVcsBranchSearch":{"id":"issue-id","stateHistory":{"nodes":[` +
+			commandIssueStateSpanJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_subscribers":
+		return `{"issueVcsBranchSearch":{"id":"issue-id","subscribers":{"nodes":[` +
 			commandUserJSON() +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:

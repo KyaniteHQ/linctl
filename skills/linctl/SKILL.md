@@ -136,6 +136,19 @@ linctl issue releases LIT-123 --json --limit 20
 linctl issue bot-actor LIT-123 --json
 linctl issue state-history LIT-123 --json --limit 20
 linctl issue subscribers LIT-123 --json --limit 20
+linctl issue vcs-branch-search get BRANCH_NAME --json
+linctl issue vcs-branch-search attachments BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search bot-actor BRANCH_NAME --json
+linctl issue vcs-branch-search children BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search documents BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search former-attachments BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search history BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search inverse-relations BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search labels BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search relations BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search releases BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search state-history BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search subscribers BRANCH_NAME --json --limit 20
 linctl issue comments LIT-123 --limit 20
 linctl issue-relation list --json --limit 20
 linctl issue-relation get ISSUE_RELATION_ID --json

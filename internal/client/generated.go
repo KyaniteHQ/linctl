@@ -18609,6 +18609,246 @@ func (v *__issueToReleasesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __issueToReleasesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueToReleasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issueVcsBranchSearchInput is used internally by genqlient
+type __issueVcsBranchSearchInput struct {
+	BranchName string `json:"branchName"`
+}
+
+// GetBranchName returns __issueVcsBranchSearchInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearchInput) GetBranchName() string { return v.BranchName }
+
+// __issueVcsBranchSearch_attachmentsInput is used internally by genqlient
+type __issueVcsBranchSearch_attachmentsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_attachmentsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_attachmentsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_attachmentsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_attachmentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_attachmentsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_attachmentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_attachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_attachmentsInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
+// __issueVcsBranchSearch_botActorInput is used internally by genqlient
+type __issueVcsBranchSearch_botActorInput struct {
+	BranchName string `json:"branchName"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_botActorInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_botActorInput) GetBranchName() string { return v.BranchName }
+
+// __issueVcsBranchSearch_childrenInput is used internally by genqlient
+type __issueVcsBranchSearch_childrenInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_childrenInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_childrenInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_childrenInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_childrenInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_childrenInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_childrenInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_childrenInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_childrenInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueVcsBranchSearch_documentsInput is used internally by genqlient
+type __issueVcsBranchSearch_documentsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_documentsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_documentsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_documentsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_documentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_documentsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_documentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_documentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_documentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueVcsBranchSearch_formerAttachmentsInput is used internally by genqlient
+type __issueVcsBranchSearch_formerAttachmentsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_formerAttachmentsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerAttachmentsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_formerAttachmentsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerAttachmentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_formerAttachmentsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerAttachmentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_formerAttachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerAttachmentsInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
+// __issueVcsBranchSearch_historyInput is used internally by genqlient
+type __issueVcsBranchSearch_historyInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_historyInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_historyInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_historyInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_historyInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_historyInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_historyInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_historyInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_historyInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueVcsBranchSearch_inverseRelationsInput is used internally by genqlient
+type __issueVcsBranchSearch_inverseRelationsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_inverseRelationsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_inverseRelationsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_inverseRelationsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_inverseRelationsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_inverseRelationsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_inverseRelationsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_inverseRelationsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_inverseRelationsInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
+// __issueVcsBranchSearch_labelsInput is used internally by genqlient
+type __issueVcsBranchSearch_labelsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_labelsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_labelsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_labelsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_labelsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_labelsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_labelsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_labelsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_labelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueVcsBranchSearch_relationsInput is used internally by genqlient
+type __issueVcsBranchSearch_relationsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_relationsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_relationsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_relationsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_relationsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_relationsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_relationsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_relationsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_relationsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueVcsBranchSearch_releasesInput is used internally by genqlient
+type __issueVcsBranchSearch_releasesInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_releasesInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_releasesInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_releasesInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_releasesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_releasesInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_releasesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_releasesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_releasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueVcsBranchSearch_stateHistoryInput is used internally by genqlient
+type __issueVcsBranchSearch_stateHistoryInput struct {
+	BranchName string  `json:"branchName"`
+	First      *int    `json:"first"`
+	After      *string `json:"after"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_stateHistoryInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_stateHistoryInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_stateHistoryInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_stateHistoryInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_stateHistoryInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_stateHistoryInput) GetAfter() *string { return v.After }
+
+// __issueVcsBranchSearch_subscribersInput is used internally by genqlient
+type __issueVcsBranchSearch_subscribersInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_subscribersInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_subscribersInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_subscribersInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_subscribersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_subscribersInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_subscribersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_subscribersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_subscribersInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
 // __issue_attachmentsInput is used internally by genqlient
 type __issue_attachmentsInput struct {
 	Id              string  `json:"id"`
@@ -33494,6 +33734,2266 @@ type issueToReleasesResponse struct {
 // GetIssueToReleases returns issueToReleasesResponse.IssueToReleases, and is useful for accessing the field via an interface.
 func (v *issueToReleasesResponse) GetIssueToReleases() issueToReleasesIssueToReleasesIssueToReleaseConnection {
 	return v.IssueToReleases
+}
+
+// issueVcsBranchSearchIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearchIssueVcsBranchSearchIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Title, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns issueVcsBranchSearchIssueVcsBranchSearchIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Priority, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns issueVcsBranchSearchIssueVcsBranchSearchIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Team, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns issueVcsBranchSearchIssueVcsBranchSearchIssue.State, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns issueVcsBranchSearchIssueVcsBranchSearchIssue.Project, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearchIssueVcsBranchSearchIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearchIssueVcsBranchSearchIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearchIssueVcsBranchSearchIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearchIssueVcsBranchSearchIssue) __premarshalJSON() (*__premarshalissueVcsBranchSearchIssueVcsBranchSearchIssue, error) {
+	var retval __premarshalissueVcsBranchSearchIssueVcsBranchSearchIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// issueVcsBranchSearchResponse is returned by issueVcsBranchSearch on success.
+type issueVcsBranchSearchResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearchIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearchResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearchResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearchIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue struct {
+	// Attachments associated with the issue.
+	Attachments issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection `json:"attachments"`
+}
+
+// GetAttachments returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue.Attachments, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue) GetAttachments() issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection {
+	return v.Attachments
+}
+
+// issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection includes the requested fields of the GraphQL type AttachmentConnection.
+type issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection struct {
+	Nodes    []issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment `json:"nodes"`
+	PageInfo issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection) GetNodes() []issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection) GetPageInfo() issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
+// The GraphQL type's documentation follows.
+//
+// An attachment linking external content to an issue. Attachments represent
+// connections to external resources such as GitHub pull requests, Slack messages,
+// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
+// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
+// serving as both the link destination and unique identifier per issue, and
+// optional metadata specific to the source integration.
+type issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment struct {
+	AttachmentSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) GetId() string {
+	return v.AttachmentSummaryFields.Id
+}
+
+// GetTitle returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment.Title, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) GetTitle() string {
+	return v.AttachmentSummaryFields.Title
+}
+
+// GetSubtitle returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment.Subtitle, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) GetSubtitle() *string {
+	return v.AttachmentSummaryFields.Subtitle
+}
+
+// GetUrl returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) GetUrl() string {
+	return v.AttachmentSummaryFields.Url
+}
+
+// GetSourceType returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment.SourceType, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) GetSourceType() *string {
+	return v.AttachmentSummaryFields.SourceType
+}
+
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AttachmentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Subtitle *string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	SourceType *string `json:"sourceType"`
+}
+
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment) __premarshalJSON() (*__premarshalissueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment, error) {
+	var retval __premarshalissueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment
+
+	retval.Id = v.AttachmentSummaryFields.Id
+	retval.Title = v.AttachmentSummaryFields.Title
+	retval.Subtitle = v.AttachmentSummaryFields.Subtitle
+	retval.Url = v.AttachmentSummaryFields.Url
+	retval.SourceType = v.AttachmentSummaryFields.SourceType
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_attachmentsResponse is returned by issueVcsBranchSearch_attachments on success.
+type issueVcsBranchSearch_attachmentsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_attachmentsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_attachmentsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The bot that created the issue, if applicable.
+	BotActor *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot `json:"botActor"`
+}
+
+// GetId returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue) GetId() string { return v.Id }
+
+// GetBotActor returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue.BotActor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue) GetBotActor() *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot {
+	return v.BotActor
+}
+
+// issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot includes the requested fields of the GraphQL type ActorBot.
+// The GraphQL type's documentation follows.
+//
+// A bot actor representing a non-human entity that performed an action, such as an
+// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
+// Bot actors are displayed in activity feeds and history to indicate when changes
+// were made by applications rather than users.
+type issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot struct {
+	ActorBotSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) GetId() *string {
+	return v.ActorBotSummaryFields.Id
+}
+
+// GetType returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot.Type, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) GetType() string {
+	return v.ActorBotSummaryFields.Type
+}
+
+// GetSubType returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot.SubType, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) GetSubType() *string {
+	return v.ActorBotSummaryFields.SubType
+}
+
+// GetName returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot.Name, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) GetName() *string {
+	return v.ActorBotSummaryFields.Name
+}
+
+// GetUserDisplayName returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot.UserDisplayName, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) GetUserDisplayName() *string {
+	return v.ActorBotSummaryFields.UserDisplayName
+}
+
+// GetAvatarUrl returns issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot.AvatarUrl, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) GetAvatarUrl() *string {
+	return v.ActorBotSummaryFields.AvatarUrl
+}
+
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActorBotSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot struct {
+	Id *string `json:"id"`
+
+	Type string `json:"type"`
+
+	SubType *string `json:"subType"`
+
+	Name *string `json:"name"`
+
+	UserDisplayName *string `json:"userDisplayName"`
+
+	AvatarUrl *string `json:"avatarUrl"`
+}
+
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot) __premarshalJSON() (*__premarshalissueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot, error) {
+	var retval __premarshalissueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot
+
+	retval.Id = v.ActorBotSummaryFields.Id
+	retval.Type = v.ActorBotSummaryFields.Type
+	retval.SubType = v.ActorBotSummaryFields.SubType
+	retval.Name = v.ActorBotSummaryFields.Name
+	retval.UserDisplayName = v.ActorBotSummaryFields.UserDisplayName
+	retval.AvatarUrl = v.ActorBotSummaryFields.AvatarUrl
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_botActorResponse is returned by issueVcsBranchSearch_botActor on success.
+type issueVcsBranchSearch_botActorResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_botActorResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_botActorResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue struct {
+	// Children of the issue.
+	Children issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection `json:"children"`
+}
+
+// GetChildren returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue.Children, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue) GetChildren() issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection {
+	return v.Children
+}
+
+// issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection struct {
+	Nodes    []issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection) GetNodes() []issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection) GetPageInfo() issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalissueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue, error) {
+	var retval __premarshalissueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_childrenResponse is returned by issueVcsBranchSearch_children on success.
+type issueVcsBranchSearch_childrenResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_childrenResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_childrenResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue struct {
+	// Documents associated with the issue.
+	Documents issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection `json:"documents"`
+}
+
+// GetDocuments returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue.Documents, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue) GetDocuments() issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection {
+	return v.Documents
+}
+
+// issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection includes the requested fields of the GraphQL type DocumentConnection.
+type issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection struct {
+	Nodes    []issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument `json:"nodes"`
+	PageInfo issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo        `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection) GetNodes() []issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection) GetPageInfo() issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument struct {
+	DocumentSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetId() string {
+	return v.DocumentSummaryFields.Id
+}
+
+// GetTitle returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.Title, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetTitle() string {
+	return v.DocumentSummaryFields.Title
+}
+
+// GetSlugId returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.SlugId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetSlugId() string {
+	return v.DocumentSummaryFields.SlugId
+}
+
+// GetArchivedAt returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetArchivedAt() *string {
+	return v.DocumentSummaryFields.ArchivedAt
+}
+
+// GetProject returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.Project, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetProject() *DocumentSummaryFieldsProject {
+	return v.DocumentSummaryFields.Project
+}
+
+// GetTeam returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.Team, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetTeam() *DocumentSummaryFieldsTeam {
+	return v.DocumentSummaryFields.Team
+}
+
+// GetIssue returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.Issue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetIssue() *DocumentSummaryFieldsIssue {
+	return v.DocumentSummaryFields.Issue
+}
+
+// GetCycle returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument.Cycle, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) GetCycle() *DocumentSummaryFieldsCycle {
+	return v.DocumentSummaryFields.Cycle
+}
+
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.DocumentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	SlugId string `json:"slugId"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Project *DocumentSummaryFieldsProject `json:"project"`
+
+	Team *DocumentSummaryFieldsTeam `json:"team"`
+
+	Issue *DocumentSummaryFieldsIssue `json:"issue"`
+
+	Cycle *DocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument) __premarshalJSON() (*__premarshalissueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument, error) {
+	var retval __premarshalissueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument
+
+	retval.Id = v.DocumentSummaryFields.Id
+	retval.Title = v.DocumentSummaryFields.Title
+	retval.SlugId = v.DocumentSummaryFields.SlugId
+	retval.ArchivedAt = v.DocumentSummaryFields.ArchivedAt
+	retval.Project = v.DocumentSummaryFields.Project
+	retval.Team = v.DocumentSummaryFields.Team
+	retval.Issue = v.DocumentSummaryFields.Issue
+	retval.Cycle = v.DocumentSummaryFields.Cycle
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_documentsResponse is returned by issueVcsBranchSearch_documents on success.
+type issueVcsBranchSearch_documentsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_documentsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_documentsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue struct {
+	// Attachments previously associated with the issue before being moved to another issue.
+	FormerAttachments issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection `json:"formerAttachments"`
+}
+
+// GetFormerAttachments returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue.FormerAttachments, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue) GetFormerAttachments() issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection {
+	return v.FormerAttachments
+}
+
+// issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection includes the requested fields of the GraphQL type AttachmentConnection.
+type issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection struct {
+	Nodes    []issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment `json:"nodes"`
+	PageInfo issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection) GetNodes() []issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection) GetPageInfo() issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
+// The GraphQL type's documentation follows.
+//
+// An attachment linking external content to an issue. Attachments represent
+// connections to external resources such as GitHub pull requests, Slack messages,
+// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
+// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
+// serving as both the link destination and unique identifier per issue, and
+// optional metadata specific to the source integration.
+type issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment struct {
+	AttachmentSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetId() string {
+	return v.AttachmentSummaryFields.Id
+}
+
+// GetTitle returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Title, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetTitle() string {
+	return v.AttachmentSummaryFields.Title
+}
+
+// GetSubtitle returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Subtitle, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetSubtitle() *string {
+	return v.AttachmentSummaryFields.Subtitle
+}
+
+// GetUrl returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetUrl() string {
+	return v.AttachmentSummaryFields.Url
+}
+
+// GetSourceType returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment.SourceType, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetSourceType() *string {
+	return v.AttachmentSummaryFields.SourceType
+}
+
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AttachmentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Subtitle *string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	SourceType *string `json:"sourceType"`
+}
+
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment) __premarshalJSON() (*__premarshalissueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment, error) {
+	var retval __premarshalissueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment
+
+	retval.Id = v.AttachmentSummaryFields.Id
+	retval.Title = v.AttachmentSummaryFields.Title
+	retval.Subtitle = v.AttachmentSummaryFields.Subtitle
+	retval.Url = v.AttachmentSummaryFields.Url
+	retval.SourceType = v.AttachmentSummaryFields.SourceType
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_formerAttachmentsResponse is returned by issueVcsBranchSearch_formerAttachments on success.
+type issueVcsBranchSearch_formerAttachmentsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_formerAttachmentsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerAttachmentsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_historyIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_historyIssueVcsBranchSearchIssue struct {
+	// History entries associated with the issue.
+	History issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection `json:"history"`
+}
+
+// GetHistory returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssue.History, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssue) GetHistory() issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection {
+	return v.History
+}
+
+// issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection includes the requested fields of the GraphQL type IssueHistoryConnection.
+type issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection struct {
+	Nodes    []issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory `json:"nodes"`
+	PageInfo issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection) GetNodes() []issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection) GetPageInfo() issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory includes the requested fields of the GraphQL type IssueHistory.
+// The GraphQL type's documentation follows.
+//
+// A record of changes to an issue. Each history entry captures one or more
+// property changes made to an issue within a short grouping window by the same
+// actor. History entries track changes to fields such as title, assignee, status,
+// priority, project, cycle, labels, due date, estimate, parent issue, and more.
+// They also record metadata about what triggered the change (e.g., a user action,
+// workflow automation, triage rule, or integration).
+type issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// Identifier of the user who made these changes. Can be used to query the user
+	// directly. Null if the change was made by an integration, automation, or system process.
+	ActorId *string `json:"actorId"`
+	// Whether the issue's description was updated.
+	UpdatedDescription *bool `json:"updatedDescription"`
+	// The issue that was changed.
+	Issue issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue `json:"issue"`
+}
+
+// GetId returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetId() string {
+	return v.Id
+}
+
+// GetCreatedAt returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetCreatedAt() string {
+	return v.CreatedAt
+}
+
+// GetUpdatedAt returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetUpdatedAt() string {
+	return v.UpdatedAt
+}
+
+// GetArchivedAt returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetArchivedAt() *string {
+	return v.ArchivedAt
+}
+
+// GetActorId returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory.ActorId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetActorId() *string {
+	return v.ActorId
+}
+
+// GetUpdatedDescription returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory.UpdatedDescription, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetUpdatedDescription() *bool {
+	return v.UpdatedDescription
+}
+
+// GetIssue returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory.Issue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetIssue() issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue {
+	return v.Issue
+}
+
+// issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue) GetId() string {
+	return v.Id
+}
+
+// issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_historyResponse is returned by issueVcsBranchSearch_history on success.
+type issueVcsBranchSearch_historyResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_historyIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_historyResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_historyResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_historyIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue struct {
+	// Inverse relations associated with this issue.
+	InverseRelations issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection `json:"inverseRelations"`
+}
+
+// GetInverseRelations returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue.InverseRelations, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue) GetInverseRelations() issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection {
+	return v.InverseRelations
+}
+
+// issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection includes the requested fields of the GraphQL type IssueRelationConnection.
+type issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection struct {
+	Nodes    []issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation `json:"nodes"`
+	PageInfo issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection) GetNodes() []issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection) GetPageInfo() issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
+// The GraphQL type's documentation follows.
+//
+// A relation between two issues. Issue relations represent directional
+// relationships such as blocking, being blocked by, relating to, or duplicating
+// another issue. Each relation connects a source issue to a related issue with a
+// specific type describing the nature of the relationship.
+type issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
+	IssueRelationSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetId() string {
+	return v.IssueRelationSummaryFields.Id
+}
+
+// GetType returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.Type, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetType() string {
+	return v.IssueRelationSummaryFields.Type
+}
+
+// GetCreatedAt returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetCreatedAt() string {
+	return v.IssueRelationSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetUpdatedAt() string {
+	return v.IssueRelationSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetArchivedAt() *string {
+	return v.IssueRelationSummaryFields.ArchivedAt
+}
+
+// GetIssue returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.Issue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetIssue() IssueRelationSummaryFieldsIssue {
+	return v.IssueRelationSummaryFields.Issue
+}
+
+// GetRelatedIssue returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.RelatedIssue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetRelatedIssue() IssueRelationSummaryFieldsRelatedIssue {
+	return v.IssueRelationSummaryFields.RelatedIssue
+}
+
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueRelationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue IssueRelationSummaryFieldsIssue `json:"issue"`
+
+	RelatedIssue IssueRelationSummaryFieldsRelatedIssue `json:"relatedIssue"`
+}
+
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) __premarshalJSON() (*__premarshalissueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation, error) {
+	var retval __premarshalissueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation
+
+	retval.Id = v.IssueRelationSummaryFields.Id
+	retval.Type = v.IssueRelationSummaryFields.Type
+	retval.CreatedAt = v.IssueRelationSummaryFields.CreatedAt
+	retval.UpdatedAt = v.IssueRelationSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.IssueRelationSummaryFields.ArchivedAt
+	retval.Issue = v.IssueRelationSummaryFields.Issue
+	retval.RelatedIssue = v.IssueRelationSummaryFields.RelatedIssue
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_inverseRelationsResponse is returned by issueVcsBranchSearch_inverseRelations on success.
+type issueVcsBranchSearch_inverseRelationsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_inverseRelationsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_inverseRelationsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue struct {
+	// Labels associated with this issue.
+	Labels issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection `json:"labels"`
+}
+
+// GetLabels returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue.Labels, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue) GetLabels() issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection {
+	return v.Labels
+}
+
+// issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection includes the requested fields of the GraphQL type IssueLabelConnection.
+type issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection struct {
+	Nodes    []issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel `json:"nodes"`
+	PageInfo issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection) GetNodes() []issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection) GetPageInfo() issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel) __premarshalJSON() (*__premarshalissueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel, error) {
+	var retval __premarshalissueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_labelsResponse is returned by issueVcsBranchSearch_labels on success.
+type issueVcsBranchSearch_labelsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_labelsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_labelsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue struct {
+	// Relations associated with this issue.
+	Relations issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection `json:"relations"`
+}
+
+// GetRelations returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue.Relations, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue) GetRelations() issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection {
+	return v.Relations
+}
+
+// issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection includes the requested fields of the GraphQL type IssueRelationConnection.
+type issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection struct {
+	Nodes    []issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation `json:"nodes"`
+	PageInfo issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection) GetNodes() []issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection) GetPageInfo() issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
+// The GraphQL type's documentation follows.
+//
+// A relation between two issues. Issue relations represent directional
+// relationships such as blocking, being blocked by, relating to, or duplicating
+// another issue. Each relation connects a source issue to a related issue with a
+// specific type describing the nature of the relationship.
+type issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
+	IssueRelationSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) GetId() string {
+	return v.IssueRelationSummaryFields.Id
+}
+
+// GetType returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation.Type, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) GetType() string {
+	return v.IssueRelationSummaryFields.Type
+}
+
+// GetCreatedAt returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) GetCreatedAt() string {
+	return v.IssueRelationSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) GetUpdatedAt() string {
+	return v.IssueRelationSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) GetArchivedAt() *string {
+	return v.IssueRelationSummaryFields.ArchivedAt
+}
+
+// GetIssue returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation.Issue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) GetIssue() IssueRelationSummaryFieldsIssue {
+	return v.IssueRelationSummaryFields.Issue
+}
+
+// GetRelatedIssue returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation.RelatedIssue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) GetRelatedIssue() IssueRelationSummaryFieldsRelatedIssue {
+	return v.IssueRelationSummaryFields.RelatedIssue
+}
+
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueRelationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue IssueRelationSummaryFieldsIssue `json:"issue"`
+
+	RelatedIssue IssueRelationSummaryFieldsRelatedIssue `json:"relatedIssue"`
+}
+
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation) __premarshalJSON() (*__premarshalissueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation, error) {
+	var retval __premarshalissueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation
+
+	retval.Id = v.IssueRelationSummaryFields.Id
+	retval.Type = v.IssueRelationSummaryFields.Type
+	retval.CreatedAt = v.IssueRelationSummaryFields.CreatedAt
+	retval.UpdatedAt = v.IssueRelationSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.IssueRelationSummaryFields.ArchivedAt
+	retval.Issue = v.IssueRelationSummaryFields.Issue
+	retval.RelatedIssue = v.IssueRelationSummaryFields.RelatedIssue
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_relationsResponse is returned by issueVcsBranchSearch_relations on success.
+type issueVcsBranchSearch_relationsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_relationsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_relationsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue struct {
+	// Releases associated with the issue.
+	Releases issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection `json:"releases"`
+}
+
+// GetReleases returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue.Releases, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue) GetReleases() issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection {
+	return v.Releases
+}
+
+// issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection includes the requested fields of the GraphQL type ReleaseConnection.
+type issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection struct {
+	Nodes    []issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease `json:"nodes"`
+	PageInfo issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection) GetNodes() []issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection) GetPageInfo() issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease struct {
+	ReleaseSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetId() string {
+	return v.ReleaseSummaryFields.Id
+}
+
+// GetName returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Name, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetName() string {
+	return v.ReleaseSummaryFields.Name
+}
+
+// GetSlugId returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.SlugId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetSlugId() string {
+	return v.ReleaseSummaryFields.SlugId
+}
+
+// GetVersion returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Version, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetVersion() *string {
+	return v.ReleaseSummaryFields.Version
+}
+
+// GetDescription returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Description, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetDescription() *string {
+	return v.ReleaseSummaryFields.Description
+}
+
+// GetCommitSha returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.CommitSha, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetCommitSha() *string {
+	return v.ReleaseSummaryFields.CommitSha
+}
+
+// GetIssueCount returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.IssueCount, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetIssueCount() int {
+	return v.ReleaseSummaryFields.IssueCount
+}
+
+// GetTrashed returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Trashed, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetTrashed() *bool {
+	return v.ReleaseSummaryFields.Trashed
+}
+
+// GetUrl returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetUrl() string {
+	return v.ReleaseSummaryFields.Url
+}
+
+// GetStartDate returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.StartDate, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetStartDate() *string {
+	return v.ReleaseSummaryFields.StartDate
+}
+
+// GetTargetDate returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.TargetDate, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetTargetDate() *string {
+	return v.ReleaseSummaryFields.TargetDate
+}
+
+// GetStartedAt returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.StartedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetStartedAt() *string {
+	return v.ReleaseSummaryFields.StartedAt
+}
+
+// GetCompletedAt returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.CompletedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetCompletedAt() *string {
+	return v.ReleaseSummaryFields.CompletedAt
+}
+
+// GetCanceledAt returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.CanceledAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetCanceledAt() *string {
+	return v.ReleaseSummaryFields.CanceledAt
+}
+
+// GetAutoArchivedAt returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.AutoArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetAutoArchivedAt() *string {
+	return v.ReleaseSummaryFields.AutoArchivedAt
+}
+
+// GetCreatedAt returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetCreatedAt() string {
+	return v.ReleaseSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetUpdatedAt() string {
+	return v.ReleaseSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetArchivedAt() *string {
+	return v.ReleaseSummaryFields.ArchivedAt
+}
+
+// GetPipeline returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Pipeline, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetPipeline() ReleaseSummaryFieldsPipelineReleasePipeline {
+	return v.ReleaseSummaryFields.Pipeline
+}
+
+// GetStage returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Stage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetStage() ReleaseSummaryFieldsStageReleaseStage {
+	return v.ReleaseSummaryFields.Stage
+}
+
+// GetReleaseNotes returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.ReleaseNotes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetReleaseNotes() []ReleaseSummaryFieldsReleaseNotesReleaseNote {
+	return v.ReleaseSummaryFields.ReleaseNotes
+}
+
+// GetCreator returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease.Creator, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) GetCreator() *ReleaseSummaryFieldsCreatorUser {
+	return v.ReleaseSummaryFields.Creator
+}
+
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ReleaseSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	SlugId string `json:"slugId"`
+
+	Version *string `json:"version"`
+
+	Description *string `json:"description"`
+
+	CommitSha *string `json:"commitSha"`
+
+	IssueCount int `json:"issueCount"`
+
+	Trashed *bool `json:"trashed"`
+
+	Url string `json:"url"`
+
+	StartDate *string `json:"startDate"`
+
+	TargetDate *string `json:"targetDate"`
+
+	StartedAt *string `json:"startedAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	CanceledAt *string `json:"canceledAt"`
+
+	AutoArchivedAt *string `json:"autoArchivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Pipeline ReleaseSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+
+	Stage ReleaseSummaryFieldsStageReleaseStage `json:"stage"`
+
+	ReleaseNotes []ReleaseSummaryFieldsReleaseNotesReleaseNote `json:"releaseNotes"`
+
+	Creator *ReleaseSummaryFieldsCreatorUser `json:"creator"`
+}
+
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease) __premarshalJSON() (*__premarshalissueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease, error) {
+	var retval __premarshalissueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease
+
+	retval.Id = v.ReleaseSummaryFields.Id
+	retval.Name = v.ReleaseSummaryFields.Name
+	retval.SlugId = v.ReleaseSummaryFields.SlugId
+	retval.Version = v.ReleaseSummaryFields.Version
+	retval.Description = v.ReleaseSummaryFields.Description
+	retval.CommitSha = v.ReleaseSummaryFields.CommitSha
+	retval.IssueCount = v.ReleaseSummaryFields.IssueCount
+	retval.Trashed = v.ReleaseSummaryFields.Trashed
+	retval.Url = v.ReleaseSummaryFields.Url
+	retval.StartDate = v.ReleaseSummaryFields.StartDate
+	retval.TargetDate = v.ReleaseSummaryFields.TargetDate
+	retval.StartedAt = v.ReleaseSummaryFields.StartedAt
+	retval.CompletedAt = v.ReleaseSummaryFields.CompletedAt
+	retval.CanceledAt = v.ReleaseSummaryFields.CanceledAt
+	retval.AutoArchivedAt = v.ReleaseSummaryFields.AutoArchivedAt
+	retval.CreatedAt = v.ReleaseSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ReleaseSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.ReleaseSummaryFields.ArchivedAt
+	retval.Pipeline = v.ReleaseSummaryFields.Pipeline
+	retval.Stage = v.ReleaseSummaryFields.Stage
+	retval.ReleaseNotes = v.ReleaseSummaryFields.ReleaseNotes
+	retval.Creator = v.ReleaseSummaryFields.Creator
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_releasesResponse is returned by issueVcsBranchSearch_releases on success.
+type issueVcsBranchSearch_releasesResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_releasesResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_releasesResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The issue's workflow states over time.
+	StateHistory issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection `json:"stateHistory"`
+}
+
+// GetId returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue) GetId() string { return v.Id }
+
+// GetStateHistory returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue.StateHistory, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue) GetStateHistory() issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection {
+	return v.StateHistory
+}
+
+// issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection includes the requested fields of the GraphQL type IssueStateSpanConnection.
+type issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection struct {
+	Nodes    []issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan `json:"nodes"`
+	PageInfo issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection) GetNodes() []issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnection) GetPageInfo() issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan includes the requested fields of the GraphQL type IssueStateSpan.
+// The GraphQL type's documentation follows.
+//
+// A continuous period of time during which an issue remained in a specific workflow state.
+type issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan struct {
+	// The unique identifier of the state span.
+	Id string `json:"id"`
+	// The workflow state identifier for this span.
+	StateId string `json:"stateId"`
+	// The timestamp when the issue entered this state.
+	StartedAt string `json:"startedAt"`
+	// The timestamp when the issue left this state. Null if the issue is currently in this state.
+	EndedAt *string `json:"endedAt"`
+	// The workflow state for this span.
+	State *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState `json:"state"`
+}
+
+// GetId returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetId() string {
+	return v.Id
+}
+
+// GetStateId returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.StateId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetStateId() string {
+	return v.StateId
+}
+
+// GetStartedAt returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.StartedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetStartedAt() string {
+	return v.StartedAt
+}
+
+// GetEndedAt returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.EndedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetEndedAt() *string {
+	return v.EndedAt
+}
+
+// GetState returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.State, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetState() *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState {
+	return v.State
+}
+
+// issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+}
+
+// GetId returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetId() string {
+	return v.Id
+}
+
+// GetName returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetName() string {
+	return v.Name
+}
+
+// GetType returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetType() string {
+	return v.Type
+}
+
+// issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_stateHistoryResponse is returned by issueVcsBranchSearch_stateHistory on success.
+type issueVcsBranchSearch_stateHistoryResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_stateHistoryResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_stateHistoryResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Users who are subscribed to the issue.
+	Subscribers issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection `json:"subscribers"`
+}
+
+// GetId returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue) GetId() string { return v.Id }
+
+// GetSubscribers returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue.Subscribers, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue) GetSubscribers() issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection {
+	return v.Subscribers
+}
+
+// issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection includes the requested fields of the GraphQL type UserConnection.
+type issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection struct {
+	Nodes    []issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser `json:"nodes"`
+	PageInfo issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection) GetNodes() []issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnection) GetPageInfo() issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) GetId() string {
+	return v.UserSummaryFields.Id
+}
+
+// GetName returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) GetName() string {
+	return v.UserSummaryFields.Name
+}
+
+// GetDisplayName returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) GetDisplayName() string {
+	return v.UserSummaryFields.DisplayName
+}
+
+// GetEmail returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) GetEmail() string {
+	return v.UserSummaryFields.Email
+}
+
+// GetActive returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) GetActive() bool {
+	return v.UserSummaryFields.Active
+}
+
+// GetGuest returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) GetGuest() bool {
+	return v.UserSummaryFields.Guest
+}
+
+// GetAdmin returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) GetAdmin() bool {
+	return v.UserSummaryFields.Admin
+}
+
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser) __premarshalJSON() (*__premarshalissueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser, error) {
+	var retval __premarshalissueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_subscribersResponse is returned by issueVcsBranchSearch_subscribers on success.
+type issueVcsBranchSearch_subscribersResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_subscribersResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_subscribersResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
 }
 
 // issue_attachmentsIssue includes the requested fields of the GraphQL type Issue.
@@ -69096,6 +71596,818 @@ func issueToReleases(
 	}
 
 	data_ = &issueToReleasesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch.
+const issueVcsBranchSearch_Operation = `
+query issueVcsBranchSearch ($branchName: String!) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		... IssueSummaryFields
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issueVcsBranchSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+) (data_ *issueVcsBranchSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch",
+		Query:  issueVcsBranchSearch_Operation,
+		Variables: &__issueVcsBranchSearchInput{
+			BranchName: branchName,
+		},
+	}
+
+	data_ = &issueVcsBranchSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_attachments.
+const issueVcsBranchSearch_attachments_Operation = `
+query issueVcsBranchSearch_attachments ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... AttachmentSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment AttachmentSummaryFields on Attachment {
+	id
+	title
+	subtitle
+	url
+	sourceType
+}
+`
+
+func issueVcsBranchSearch_attachments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_attachmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_attachments",
+		Query:  issueVcsBranchSearch_attachments_Operation,
+		Variables: &__issueVcsBranchSearch_attachmentsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_attachmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_botActor.
+const issueVcsBranchSearch_botActor_Operation = `
+query issueVcsBranchSearch_botActor ($branchName: String!) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		id
+		botActor {
+			... ActorBotSummaryFields
+		}
+	}
+}
+fragment ActorBotSummaryFields on ActorBot {
+	id
+	type
+	subType
+	name
+	userDisplayName
+	avatarUrl
+}
+`
+
+func issueVcsBranchSearch_botActor(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+) (data_ *issueVcsBranchSearch_botActorResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_botActor",
+		Query:  issueVcsBranchSearch_botActor_Operation,
+		Variables: &__issueVcsBranchSearch_botActorInput{
+			BranchName: branchName,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_botActorResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_children.
+const issueVcsBranchSearch_children_Operation = `
+query issueVcsBranchSearch_children ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		children(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issueVcsBranchSearch_children(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_childrenResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_children",
+		Query:  issueVcsBranchSearch_children_Operation,
+		Variables: &__issueVcsBranchSearch_childrenInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_childrenResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_documents.
+const issueVcsBranchSearch_documents_Operation = `
+query issueVcsBranchSearch_documents ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		documents(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... DocumentSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment DocumentSummaryFields on Document {
+	id
+	title
+	slugId
+	archivedAt
+	project {
+		id
+		name
+	}
+	team {
+		id
+		key
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	cycle {
+		id
+		number
+		name
+	}
+}
+`
+
+func issueVcsBranchSearch_documents(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_documentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_documents",
+		Query:  issueVcsBranchSearch_documents_Operation,
+		Variables: &__issueVcsBranchSearch_documentsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_documentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_formerAttachments.
+const issueVcsBranchSearch_formerAttachments_Operation = `
+query issueVcsBranchSearch_formerAttachments ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... AttachmentSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment AttachmentSummaryFields on Attachment {
+	id
+	title
+	subtitle
+	url
+	sourceType
+}
+`
+
+func issueVcsBranchSearch_formerAttachments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_formerAttachmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_formerAttachments",
+		Query:  issueVcsBranchSearch_formerAttachments_Operation,
+		Variables: &__issueVcsBranchSearch_formerAttachmentsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_formerAttachmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_history.
+const issueVcsBranchSearch_history_Operation = `
+query issueVcsBranchSearch_history ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		history(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				id
+				createdAt
+				updatedAt
+				archivedAt
+				actorId
+				updatedDescription
+				issue {
+					id
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+`
+
+func issueVcsBranchSearch_history(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_historyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_history",
+		Query:  issueVcsBranchSearch_history_Operation,
+		Variables: &__issueVcsBranchSearch_historyInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_historyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_inverseRelations.
+const issueVcsBranchSearch_inverseRelations_Operation = `
+query issueVcsBranchSearch_inverseRelations ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueRelationSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueRelationSummaryFields on IssueRelation {
+	id
+	type
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+		identifier
+		title
+	}
+	relatedIssue {
+		id
+		identifier
+		title
+	}
+}
+`
+
+func issueVcsBranchSearch_inverseRelations(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_inverseRelationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_inverseRelations",
+		Query:  issueVcsBranchSearch_inverseRelations_Operation,
+		Variables: &__issueVcsBranchSearch_inverseRelationsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_inverseRelationsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_labels.
+const issueVcsBranchSearch_labels_Operation = `
+query issueVcsBranchSearch_labels ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		labels(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueLabelSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func issueVcsBranchSearch_labels(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_labelsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_labels",
+		Query:  issueVcsBranchSearch_labels_Operation,
+		Variables: &__issueVcsBranchSearch_labelsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_labelsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_relations.
+const issueVcsBranchSearch_relations_Operation = `
+query issueVcsBranchSearch_relations ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		relations(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueRelationSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueRelationSummaryFields on IssueRelation {
+	id
+	type
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+		identifier
+		title
+	}
+	relatedIssue {
+		id
+		identifier
+		title
+	}
+}
+`
+
+func issueVcsBranchSearch_relations(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_relationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_relations",
+		Query:  issueVcsBranchSearch_relations_Operation,
+		Variables: &__issueVcsBranchSearch_relationsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_relationsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_releases.
+const issueVcsBranchSearch_releases_Operation = `
+query issueVcsBranchSearch_releases ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		releases(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ReleaseSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ReleaseSummaryFields on Release {
+	id
+	name
+	slugId
+	version
+	description
+	commitSha
+	issueCount
+	trashed
+	url
+	startDate
+	targetDate
+	startedAt
+	completedAt
+	canceledAt
+	autoArchivedAt
+	createdAt
+	updatedAt
+	archivedAt
+	pipeline {
+		id
+		name
+		slugId
+	}
+	stage {
+		id
+		name
+		type
+	}
+	releaseNotes {
+		id
+		title
+		slugId
+	}
+	creator {
+		id
+		displayName
+	}
+}
+`
+
+func issueVcsBranchSearch_releases(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_releasesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_releases",
+		Query:  issueVcsBranchSearch_releases_Operation,
+		Variables: &__issueVcsBranchSearch_releasesInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_releasesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_stateHistory.
+const issueVcsBranchSearch_stateHistory_Operation = `
+query issueVcsBranchSearch_stateHistory ($branchName: String!, $first: Int, $after: String) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		id
+		stateHistory(first: $first, after: $after) {
+			nodes {
+				id
+				stateId
+				startedAt
+				endedAt
+				state {
+					id
+					name
+					type
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+`
+
+func issueVcsBranchSearch_stateHistory(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+) (data_ *issueVcsBranchSearch_stateHistoryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_stateHistory",
+		Query:  issueVcsBranchSearch_stateHistory_Operation,
+		Variables: &__issueVcsBranchSearch_stateHistoryInput{
+			BranchName: branchName,
+			First:      first,
+			After:      after,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_stateHistoryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_subscribers.
+const issueVcsBranchSearch_subscribers_Operation = `
+query issueVcsBranchSearch_subscribers ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		id
+		subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... UserSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func issueVcsBranchSearch_subscribers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_subscribersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_subscribers",
+		Query:  issueVcsBranchSearch_subscribers_Operation,
+		Variables: &__issueVcsBranchSearch_subscribersInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_subscribersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

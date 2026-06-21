@@ -1962,6 +1962,64 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 }
 
 func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *testing.T) {
+	t.Run("issue vcs branch search runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "vcs-branch-search", "get", "omer/branch"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
+	t.Run("issue vcs branch search operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issueVcsBranchSearch"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "vcs-branch-search", "get", "omer/branch"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue by vcs branch omer/branch")
+	})
+
+	t.Run("issue vcs branch bot actor runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "vcs-branch-search", "bot-actor", "omer/branch"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
+	t.Run("issue vcs branch bot actor operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issueVcsBranchSearch_botActor"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "vcs-branch-search", "bot-actor", "omer/branch"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue vcs branch bot actor omer/branch")
+	})
+
 	t.Run("attachment issue runtime error", func(t *testing.T) {
 		original := buildCommandRuntime
 		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {

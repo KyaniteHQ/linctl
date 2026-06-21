@@ -220,6 +220,19 @@ Planned commands:
 | `issue releases` | `Issue.releases` via `Query.issue` | Read-only |
 | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata |
 | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only |
+| `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search attachments` | `Issue.attachments` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search bot-actor` | `Issue.botActor` via `Query.issueVcsBranchSearch` | Read-only, bot metadata only |
+| `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only |
+| `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata |
+| `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only |
 | `issue id` | Current checkout issue identifier from git/jj context | Read-only |
 | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
 | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
@@ -235,7 +248,7 @@ Planned commands:
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
 
-Issue customer-need child reads and shared-access/state-history reads remain deferred because the default summaries need a narrower output model before they can satisfy the no body/blob/secret/default-sensitive-payload rule.
+Issue customer-need child reads and shared-access reads remain deferred because the default summaries need a narrower output model before they can satisfy the no body/blob/secret/default-sensitive-payload rule.
 
 ## IssueRelation
 

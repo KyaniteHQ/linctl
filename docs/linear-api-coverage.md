@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 113 | 458 |
-| Upstream Query root fields | 158 | 101 | 158 |
+| Upstream SDK root methods | 458 | 114 | 458 |
+| Upstream Query root fields | 158 | 102 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 248 | 248 | 248 |
-| Domain-map commands | 360 | 228 | 360 |
+| Local generated Go operations | 261 | 261 | 261 |
+| Domain-map commands | 373 | 241 | 373 |
 
 ## Upstream SDK Root Methods
 
@@ -307,7 +307,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueToReleases` | method | implemented | local operation or command exists |
 | `issueUnshare` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueUnsubscribe` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueVcsBranchSearch` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueVcsBranchSearch` | method | implemented | local operation or command exists |
 | `issues` | method | implemented | local operation or command exists |
 | `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `logout` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -571,7 +571,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `issueToRelease` | `IssueToRelease!` | implemented | root field used by local GraphQL operation |
 | `issueToReleases` | `IssueToReleaseConnection!` | implemented | root field used by local GraphQL operation |
-| `issueVcsBranchSearch` | `Issue` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueVcsBranchSearch` | `Issue` | implemented | root field used by local GraphQL operation |
 | `issues` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
 | `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
@@ -1140,6 +1140,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
 | `issueToRelease` | query | `issueToRelease` | implemented | `internal/client/generated.go` |
 | `issueToReleases` | query | `issueToReleases` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_attachments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_botActor` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_children` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_documents` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_formerAttachments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_history` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_inverseRelations` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_labels` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_relations` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_releases` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_stateHistory` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_subscribers` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issue_attachments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_botActor` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_children` | query | `issue` | implemented | `internal/client/generated.go` |
@@ -1359,6 +1372,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue releases` | `Issue.releases` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search attachments` | `Issue.attachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search bot-actor` | `Issue.botActor` via `Query.issueVcsBranchSearch` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue id` | Current checkout issue identifier from git/jj context | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help` / public CLI tests |

@@ -200,6 +200,25 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"issue_releases":          `{"issue":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"issue_stateHistory":      `{"issue":{"id":"issue-id","stateHistory":{"nodes":[` + issueStateSpanJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"issue_subscribers":       `{"issue":{"id":"issue-id","subscribers":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch": `{"issueVcsBranchSearch":` + issueJSON(issueFixture{
+			Identifier: "LIT-40",
+			Title:      "branch issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+		"issueVcsBranchSearch_attachments":       `{"issueVcsBranchSearch":{"attachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_botActor":          `{"issueVcsBranchSearch":{"id":"issue-id","botActor":` + actorBotJSON() + `}}`,
+		"issueVcsBranchSearch_children":          `{"issueVcsBranchSearch":{"children":{"nodes":[` + issueJSON(issueFixture{Identifier: "LIT-43", Title: "branch child issue", StateID: "todo", State: "Todo", StateType: "unstarted"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_documents":         `{"issueVcsBranchSearch":{"documents":{"nodes":[{"id":"branch-issue-document-id","title":"Branch issue spec","slugId":"branch-issue-spec","archivedAt":null,"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_formerAttachments": `{"issueVcsBranchSearch":{"formerAttachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_history":           `{"issueVcsBranchSearch":{"history":{"nodes":[` + issueHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_inverseRelations":  `{"issueVcsBranchSearch":{"inverseRelations":{"nodes":[` + issueRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_labels":            `{"issueVcsBranchSearch":{"labels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_relations":         `{"issueVcsBranchSearch":{"relations":{"nodes":[` + issueRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_releases":          `{"issueVcsBranchSearch":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_stateHistory":      `{"issueVcsBranchSearch":{"id":"issue-id","stateHistory":{"nodes":[` + issueStateSpanJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issueVcsBranchSearch_subscribers":       `{"issueVcsBranchSearch":{"id":"issue-id","subscribers":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"Projects": `{"team":{"projects":{"nodes":[` + projectJSON(projectFixture{
 			ID:     "project-id",
 			Name:   "listed",
@@ -576,6 +595,42 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	issueStateHistory, err := ListIssueStateHistory(context.Background(), graphqlClient, "LIT-1", 2)
 	require.NoError(t, err)
 	issueSubscribers, err := ListIssueSubscribers(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	branchIssue, err := GetIssueByVCSBranch(context.Background(), graphqlClient, "omer/branch")
+	require.NoError(t, err)
+	branchIssueAttachments, err := ListIssueVCSBranchAttachments(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueBotActor, err := GetIssueVCSBranchBotActor(context.Background(), graphqlClient, "omer/branch")
+	require.NoError(t, err)
+	branchIssueChildren, err := ListIssueVCSBranchChildren(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueDocuments, err := ListIssueVCSBranchDocuments(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueFormerAttachments, err := ListIssueVCSBranchFormerAttachments(
+		context.Background(),
+		graphqlClient,
+		"omer/branch",
+		2,
+	)
+	require.NoError(t, err)
+	branchIssueHistory, err := ListIssueVCSBranchHistory(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueInverseRelations, err := ListIssueVCSBranchInverseRelations(
+		context.Background(),
+		graphqlClient,
+		"omer/branch",
+		2,
+	)
+	require.NoError(t, err)
+	branchIssueLabels, err := ListIssueVCSBranchLabels(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueRelations, err := ListIssueVCSBranchRelations(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueReleases, err := ListIssueVCSBranchReleases(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueStateHistory, err := ListIssueVCSBranchStateHistory(context.Background(), graphqlClient, "omer/branch", 2)
+	require.NoError(t, err)
+	branchIssueSubscribers, err := ListIssueVCSBranchSubscribers(context.Background(), graphqlClient, "omer/branch", 2)
 	require.NoError(t, err)
 	projects, err := ListProjectsByTeam(context.Background(), graphqlClient, "team-id", 2)
 	require.NoError(t, err)
@@ -1033,6 +1088,21 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "started", issueStateHistory.Spans[0].StateType)
 	require.Equal(t, "Omer", issueSubscribers.Users[0].DisplayName)
 	require.True(t, issueSubscribers.HasNextPage)
+	require.Equal(t, "LIT-40", branchIssue.Identifier)
+	require.Equal(t, "project-attachment-id", branchIssueAttachments.Attachments[0].ID)
+	require.Equal(t, "issue-id", branchIssueBotActor.IssueID)
+	require.Equal(t, "bot-actor-id", branchIssueBotActor.Bot.ID)
+	require.Equal(t, "LIT-43", branchIssueChildren.Issues[0].Identifier)
+	require.Equal(t, "Branch issue spec", branchIssueDocuments.Documents[0].Title)
+	require.Equal(t, "project-attachment-id", branchIssueFormerAttachments.Attachments[0].ID)
+	require.Equal(t, "issue-history-id", branchIssueHistory.History[0].ID)
+	require.Equal(t, "issue-relation-id", branchIssueInverseRelations.Relations[0].ID)
+	require.Equal(t, "Bug", branchIssueLabels.Labels[0].Name)
+	require.Equal(t, "issue-relation-id", branchIssueRelations.Relations[0].ID)
+	require.Equal(t, "release-id", branchIssueReleases.Releases[0].ID)
+	require.Equal(t, "issue-id", branchIssueStateHistory.IssueID)
+	require.Equal(t, "issue-state-span-id", branchIssueStateHistory.Spans[0].ID)
+	require.Equal(t, "Omer", branchIssueSubscribers.Users[0].DisplayName)
 	require.True(t, projects.HasNextPage)
 	require.Equal(t, "listed", projects.Projects[0].Name)
 	require.Equal(t, "detail", project.Name)
@@ -1620,7 +1690,66 @@ func Test_ClientReadHelpers_cover_nil_actor_bot_summaries(t *testing.T) {
 	require.Nil(t, actorBotSummary(nil))
 	require.Nil(t, commentActorBotSummary(nil))
 	require.Nil(t, issueActorBotSummary(nil))
+	require.Nil(t, issueVCSBranchActorBotSummary(nil))
 	require.Nil(t, attachmentIssueActorBotSummary(nil))
+}
+
+func Test_ClientReadScenarios_return_not_found_for_null_vcs_branch_issue(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"issueVcsBranchSearch":                   `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_attachments":       `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_botActor":          `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_children":          `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_documents":         `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_formerAttachments": `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_history":           `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_inverseRelations":  `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_labels":            `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_relations":         `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_releases":          `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_stateHistory":      `{"issueVcsBranchSearch":null}`,
+		"issueVcsBranchSearch_subscribers":       `{"issueVcsBranchSearch":null}`,
+	}
+
+	_, err := GetIssueByVCSBranch(context.Background(), graphqlClient, "missing/branch")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchAttachments(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = GetIssueVCSBranchBotActor(context.Background(), graphqlClient, "missing/branch")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchChildren(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchDocuments(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchFormerAttachments(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchHistory(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchInverseRelations(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchLabels(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchRelations(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchReleases(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchStateHistory(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
+	_, err = ListIssueVCSBranchSubscribers(context.Background(), graphqlClient, "missing/branch", 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not found")
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
@@ -2712,6 +2841,58 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetAttachmentByID(context.Background(), graphqlClient, "attachment-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get attachment attachment-id")
+
+		_, err = GetIssueByVCSBranch(context.Background(), graphqlClient, "omer/branch")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue by vcs branch omer/branch")
+
+		_, err = ListIssueVCSBranchAttachments(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch attachments omer/branch")
+
+		_, err = GetIssueVCSBranchBotActor(context.Background(), graphqlClient, "omer/branch")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue vcs branch bot actor omer/branch")
+
+		_, err = ListIssueVCSBranchChildren(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch children omer/branch")
+
+		_, err = ListIssueVCSBranchDocuments(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch documents omer/branch")
+
+		_, err = ListIssueVCSBranchFormerAttachments(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch former attachments omer/branch")
+
+		_, err = ListIssueVCSBranchHistory(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch history omer/branch")
+
+		_, err = ListIssueVCSBranchInverseRelations(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch inverse relations omer/branch")
+
+		_, err = ListIssueVCSBranchLabels(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch labels omer/branch")
+
+		_, err = ListIssueVCSBranchRelations(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch relations omer/branch")
+
+		_, err = ListIssueVCSBranchReleases(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch releases omer/branch")
+
+		_, err = ListIssueVCSBranchStateHistory(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch state history omer/branch")
+
+		_, err = ListIssueVCSBranchSubscribers(context.Background(), graphqlClient, "omer/branch", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue vcs branch subscribers omer/branch")
 
 		_, err = GetAttachmentIssue(context.Background(), graphqlClient, "attachment-id")
 		require.Error(t, err)

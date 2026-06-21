@@ -67,6 +67,7 @@ PY
   "$binary" issue usage >/dev/null
   issue_json="$("$binary" issue list --json --limit 5)"
   issue_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0]["id"] if items else "")' <<<"$issue_json")"
+  issue_branch_name="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0].get("branch_name", "") if items else "")' <<<"$issue_json")"
   if [[ -n "$issue_id" ]]; then
     issue_attachment_json="$("$binary" issue attachments "$issue_id" --json --limit 5)"
     attachment_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("attachments", []); print(items[0]["id"] if items else "")' <<<"$issue_attachment_json")"
@@ -95,6 +96,22 @@ PY
       "$binary" attachment issue releases "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue state-history "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue subscribers "$attachment_id" --json --limit 5 >/dev/null
+    fi
+  fi
+  if [[ -n "$issue_branch_name" ]]; then
+    if "$binary" issue vcs-branch-search get "$issue_branch_name" --json >/dev/null 2>/dev/null; then
+      "$binary" issue vcs-branch-search attachments "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search bot-actor "$issue_branch_name" --json >/dev/null
+      "$binary" issue vcs-branch-search children "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search documents "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search former-attachments "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search history "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search inverse-relations "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search labels "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search relations "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search releases "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search state-history "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search subscribers "$issue_branch_name" --json --limit 5 >/dev/null
     fi
   fi
   comment_json="$("$binary" comment list --json --limit 5)"

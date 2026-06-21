@@ -126,6 +126,19 @@ linctl issue releases LIT-123 --limit 20
 linctl issue bot-actor LIT-123
 linctl issue state-history LIT-123 --limit 20
 linctl issue subscribers LIT-123 --limit 20
+linctl issue vcs-branch-search get omer/example-branch
+linctl issue vcs-branch-search attachments omer/example-branch --limit 20
+linctl issue vcs-branch-search bot-actor omer/example-branch
+linctl issue vcs-branch-search children omer/example-branch --limit 20
+linctl issue vcs-branch-search documents omer/example-branch --limit 20
+linctl issue vcs-branch-search former-attachments omer/example-branch --limit 20
+linctl issue vcs-branch-search history omer/example-branch --limit 20
+linctl issue vcs-branch-search inverse-relations omer/example-branch --limit 20
+linctl issue vcs-branch-search labels omer/example-branch --limit 20
+linctl issue vcs-branch-search relations omer/example-branch --limit 20
+linctl issue vcs-branch-search releases omer/example-branch --limit 20
+linctl issue vcs-branch-search state-history omer/example-branch --limit 20
+linctl issue vcs-branch-search subscribers omer/example-branch --limit 20
 linctl issue-relation list --limit 20
 linctl issue-relation get issue-relation-id
 linctl issue pr LIT-123
