@@ -1040,6 +1040,13 @@ func classifyLoose(name string, kind string) (string, string) {
 		return status, rationale
 	}
 	switch {
+	case strings.Contains(lower, "latestreleasebyaccesskey"),
+		strings.Contains(lower, "releasepipelinebyaccesskey"):
+		return "intentionally_excluded", accessKeyReleaseRationale()
+	case strings.Contains(lower, "documentcontent"),
+		strings.Contains(lower, "archivepayload"),
+		strings.Contains(lower, "externalthread"):
+		return "blocked_needs_design", contentPayloadReadRationale()
 	case strings.Contains(lower, "delete"),
 		strings.Contains(lower, "remove"),
 		strings.Contains(lower, "revoke"),
@@ -1161,6 +1168,11 @@ func explicitRiskClassification(lowerName string) (string, string, bool) {
 func accessKeyReleaseRationale() string {
 	return "access-key release reads are unauthenticated sharing surfaces " +
 		"outside the token-scoped agent CLI"
+}
+
+func contentPayloadReadRationale() string {
+	return "content, thread, and archive payload reads can expose body/blob data; " +
+		"needs explicit opt-in projection before CLI exposure"
 }
 
 func organizationInviteRationale() string {

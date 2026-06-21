@@ -208,7 +208,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `deleteViewPreferences` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteWebhook` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `document` | method | implemented | local operation or command exists |
-| `documentContentHistory` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `documentContentHistory` | method | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documents` | method | implemented | local operation or command exists |
 | `emailIntakeAddress` | method | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
 | `emailIntakeAddressRefreshSesDomainStatus` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -527,9 +527,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `cycle` | `Cycle!` | implemented | root field used by local GraphQL operation |
 | `cycles` | `CycleConnection!` | implemented | root field used by local GraphQL operation |
 | `document` | `Document!` | implemented | root field used by local GraphQL operation |
-| `documentContentHistory` | `DocumentContentHistoryPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `documentContentHistoryEntries` | `DocumentContentHistoryPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `documentContentHistoryTimeline` | `DocumentContentHistoryTimelinePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `documentContentHistory` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
+| `documentContentHistoryEntries` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
+| `documentContentHistoryTimeline` | `DocumentContentHistoryTimelinePayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documents` | `DocumentConnection!` | implemented | root field used by local GraphQL operation |
 | `emailIntakeAddress` | `EmailIntakeAddress!` | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
 | `emoji` | `Emoji!` | implemented | root field used by local GraphQL operation |
