@@ -37,6 +37,7 @@ PY
   target_json="$("$binary" target --json)"
   org_url_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["org"]["url_key"])' <<<"$target_json")"
   team_id="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["team"]["id"])' <<<"$target_json")"
+  project_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); print(data.get("project", {}).get("id", ""))' <<<"$target_json")"
   if [[ -n "${LINCTL_APPLICATION_CLIENT_ID:-}" ]]; then
     "$binary" application info "$LINCTL_APPLICATION_CLIENT_ID" --json >/dev/null
   fi
@@ -81,6 +82,19 @@ PY
   "$binary" issue-to-release list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null
   "$binary" project list --json --limit 5 >/dev/null
+  if [[ -n "$project_id" ]]; then
+    "$binary" project comments "$project_id" --json --limit 5 >/dev/null
+    project_milestone_json="$("$binary" project-milestone list "$project_id" --json --limit 5)"
+    project_milestone_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("milestones", []); print(items[0]["id"] if items else "")' <<<"$project_milestone_json")"
+    if [[ -n "$project_milestone_id" ]]; then
+      "$binary" project-milestone issues "$project_milestone_id" --json --limit 5 >/dev/null
+    fi
+  fi
+  project_update_json="$("$binary" project-update list --json --limit 5)"
+  project_update_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("updates", []); print(items[0]["id"] if items else "")' <<<"$project_update_json")"
+  if [[ -n "$project_update_id" ]]; then
+    "$binary" project-update comments "$project_update_id" --json --limit 5 >/dev/null
+  fi
   "$binary" project-status list --json --limit 5 >/dev/null
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null

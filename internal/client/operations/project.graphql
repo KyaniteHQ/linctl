@@ -165,6 +165,22 @@ query project_issues($id: String!, $first: Int, $after: String, $includeArchived
   }
 }
 
+query project_comments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    comments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CommentMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query project_labels($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   project(id: $id) {
     id
@@ -220,6 +236,22 @@ query project_teams($id: String!, $first: Int, $after: String, $includeArchived:
     teams(first: $first, after: $after, includeArchived: $includeArchived) {
       nodes {
         ...TeamSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_projectMilestones($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    projectMilestones(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectMilestoneSummaryFields
       }
       pageInfo {
         hasNextPage

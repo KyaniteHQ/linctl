@@ -1,24 +1,24 @@
-query ProjectMilestones($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
-  project(id: $id) {
-    id
-    name
-    projectMilestones(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...ProjectMilestoneSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
-  }
-}
-
 query projectMilestone($id: String!) {
   projectMilestone(id: $id) {
     ...ProjectMilestoneSummaryFields
     project {
       ...ProjectSummaryFields
+    }
+  }
+}
+
+query projectMilestone_issues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  projectMilestone(id: $id) {
+    id
+    name
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
   }
 }

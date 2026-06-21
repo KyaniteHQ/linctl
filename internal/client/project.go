@@ -83,6 +83,14 @@ type ProjectUpdateList struct {
 	EndCursor   *string                `json:"end_cursor,omitempty"`
 }
 
+// ProjectUpdateCommentList is a page of body-free Comments associated with one ProjectUpdate.
+type ProjectUpdateCommentList struct {
+	ProjectUpdateID string                   `json:"project_update_id"`
+	Comments        []CommentMetadataSummary `json:"comments"`
+	HasNextPage     bool                     `json:"has_next_page"`
+	EndCursor       *string                  `json:"end_cursor,omitempty"`
+}
+
 // ProjectAttachmentList is a page of Attachments associated with one Project.
 type ProjectAttachmentList struct {
 	ProjectID   string              `json:"project_id"`
@@ -155,6 +163,15 @@ type ProjectIssueList struct {
 	Issues      []IssueSummary `json:"issues"`
 	HasNextPage bool           `json:"has_next_page"`
 	EndCursor   *string        `json:"end_cursor,omitempty"`
+}
+
+// ProjectCommentList is a page of body-free Comments associated with one Project.
+type ProjectCommentList struct {
+	ProjectID   string                   `json:"project_id"`
+	ProjectName string                   `json:"project_name"`
+	Comments    []CommentMetadataSummary `json:"comments"`
+	HasNextPage bool                     `json:"has_next_page"`
+	EndCursor   *string                  `json:"end_cursor,omitempty"`
 }
 
 // ProjectProjectLabelList is a page of ProjectLabels associated with one Project.
@@ -435,6 +452,32 @@ func ListProjectIssues(
 	}, nil
 }
 
+// ListProjectComments returns body-free comments associated with one Project.
+func ListProjectComments(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ProjectCommentList, error) {
+	result, err := project_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectCommentList{}, fmt.Errorf("list project comments %s: %w", id, err)
+	}
+
+	comments := make([]CommentMetadataSummary, 0, len(result.Project.Comments.Nodes))
+	for _, node := range result.Project.Comments.Nodes {
+		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
+	}
+
+	return ProjectCommentList{
+		ProjectID:   result.Project.Id,
+		ProjectName: result.Project.Name,
+		Comments:    comments,
+		HasNextPage: result.Project.Comments.PageInfo.HasNextPage,
+		EndCursor:   result.Project.Comments.PageInfo.EndCursor,
+	}, nil
+}
+
 // ListLabelsForProject returns ProjectLabels associated with one Project.
 func ListLabelsForProject(
 	ctx context.Context,
@@ -637,6 +680,31 @@ func GetProjectUpdateByID(
 	}
 
 	return projectUpdateSummary(update.ProjectUpdate.TopLevelProjectUpdateSummaryFields), nil
+}
+
+// ListProjectUpdateComments returns body-free comments associated with one ProjectUpdate.
+func ListProjectUpdateComments(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ProjectUpdateCommentList, error) {
+	result, err := projectUpdate_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectUpdateCommentList{}, fmt.Errorf("list project update comments %s: %w", id, err)
+	}
+
+	comments := make([]CommentMetadataSummary, 0, len(result.ProjectUpdate.Comments.Nodes))
+	for _, node := range result.ProjectUpdate.Comments.Nodes {
+		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
+	}
+
+	return ProjectUpdateCommentList{
+		ProjectUpdateID: result.ProjectUpdate.Id,
+		Comments:        comments,
+		HasNextPage:     result.ProjectUpdate.Comments.PageInfo.HasNextPage,
+		EndCursor:       result.ProjectUpdate.Comments.PageInfo.EndCursor,
+	}, nil
 }
 
 func projectUpdateSummary(update TopLevelProjectUpdateSummaryFields) ProjectUpdateSummary {

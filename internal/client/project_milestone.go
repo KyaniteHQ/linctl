@@ -35,6 +35,15 @@ type ProjectMilestoneDetail struct {
 	Project ProjectSummary          `json:"project"`
 }
 
+// ProjectMilestoneIssueList is a page of issues associated with one ProjectMilestone.
+type ProjectMilestoneIssueList struct {
+	ProjectMilestoneID   string         `json:"project_milestone_id"`
+	ProjectMilestoneName string         `json:"project_milestone_name"`
+	Issues               []IssueSummary `json:"issues"`
+	HasNextPage          bool           `json:"has_next_page"`
+	EndCursor            *string        `json:"end_cursor,omitempty"`
+}
+
 // ProjectMilestoneCreateRequest describes a guarded ProjectMilestone create.
 type ProjectMilestoneCreateRequest struct {
 	ProjectID   string
@@ -94,7 +103,7 @@ func ListProjectMilestones(
 	id string,
 	limit int,
 ) (ProjectMilestoneList, error) {
-	project, err := ProjectMilestones(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	project, err := project_projectMilestones(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectMilestoneList{}, fmt.Errorf("list project milestones %s: %w", id, err)
 	}
@@ -110,6 +119,32 @@ func ListProjectMilestones(
 		Milestones:  milestones,
 		HasNextPage: project.Project.ProjectMilestones.PageInfo.HasNextPage,
 		EndCursor:   project.Project.ProjectMilestones.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListProjectMilestoneIssues returns issues associated with one ProjectMilestone.
+func ListProjectMilestoneIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ProjectMilestoneIssueList, error) {
+	result, err := projectMilestone_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectMilestoneIssueList{}, fmt.Errorf("list project milestone issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.ProjectMilestone.Issues.Nodes))
+	for _, node := range result.ProjectMilestone.Issues.Nodes {
+		issues = append(issues, issueSummaryFromFields(node.IssueSummaryFields))
+	}
+
+	return ProjectMilestoneIssueList{
+		ProjectMilestoneID:   result.ProjectMilestone.Id,
+		ProjectMilestoneName: result.ProjectMilestone.Name,
+		Issues:               issues,
+		HasNextPage:          result.ProjectMilestone.Issues.PageInfo.HasNextPage,
+		EndCursor:            result.ProjectMilestone.Issues.PageInfo.EndCursor,
 	}, nil
 }
 

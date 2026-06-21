@@ -16,6 +16,21 @@ query projectUpdate($id: String!) {
   }
 }
 
+query projectUpdate_comments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  projectUpdate(id: $id) {
+    id
+    comments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CommentMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment TopLevelProjectUpdateSummaryFields on ProjectUpdate {
   id
   body

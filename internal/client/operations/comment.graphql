@@ -37,3 +37,24 @@ fragment TopLevelCommentSummaryFields on Comment {
     displayName
   }
 }
+
+fragment CommentMetadataFields on Comment {
+  id
+  url
+  createdAt
+  updatedAt
+  editedAt
+  resolvedAt
+  parentId
+  issueId
+  projectId
+  projectUpdateId
+  initiativeId
+  initiativeUpdateId
+  documentContentId
+  user {
+    id
+    name
+    displayName
+  }
+}

@@ -144,6 +144,7 @@ linctl project initiative-links project-id --limit 20
 linctl project initiatives project-id --limit 20
 linctl project inverse-relations project-id --limit 20
 linctl project issues project-id --limit 20
+linctl project comments project-id --limit 20
 linctl project labels project-id --limit 20
 linctl project members project-id --limit 20
 linctl project needs project-id --limit 20
@@ -152,8 +153,10 @@ linctl project teams project-id --limit 20
 linctl project updates project-id --limit 20
 linctl project-update list --limit 20
 linctl project-update get project-update-id
+linctl project-update comments project-update-id --limit 20
 linctl project-milestone list project-id --limit 20
 linctl project-milestone get project-milestone-id
+linctl project-milestone issues project-milestone-id --limit 20
 linctl project-milestone create project-id --name "Launch milestone"
 linctl project-milestone update project-milestone-id --target-date 2026-06-30
 linctl project-status list --limit 20

@@ -171,7 +171,12 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
-33. Cycle list
+33. Project comment child reads
+   - Success: `linctl project comments PROJECT --limit N`, `linctl project-update comments PROJECT_UPDATE --limit N`, and `linctl project-milestone issues PROJECT_MILESTONE --limit N` list child records through the public CLI; project and ProjectUpdate comment outputs omit comment body content.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_update_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_issues`, `Test_CommandFlows_project_comment_children_omit_body_from_json`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+34. Cycle list
    - Success: `linctl cycle list --limit N` lists Cycles for the resolved team through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CycleCommandFlows_list_cycles`;
      `go test ./internal/client`, `Test_ListCyclesByTeam_returns_cycle_page`.
@@ -973,8 +978,8 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 180. Project child reads
-   - Success: `linctl project attachments|documents|external-links|history|initiative-links|initiatives|inverse-relations|issues|labels|needs|relations|teams PROJECT_ID --limit N` lists safe child resources for one Project through the public CLI and JSON output controls without selecting draft, body, blob, secret, source, or metadata payload fields by default.
-   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_attachments`, `Test_CommandFlows_execute_read_and_write_commands/project_documents`, `Test_CommandFlows_execute_read_and_write_commands/project_external_links`, `Test_CommandFlows_execute_read_and_write_commands/project_history`, `Test_CommandFlows_execute_read_and_write_commands/project_initiative_links`, `Test_CommandFlows_execute_read_and_write_commands/project_initiatives`, `Test_CommandFlows_execute_read_and_write_commands/project_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_issues`, `Test_CommandFlows_execute_read_and_write_commands/project_labels`, `Test_CommandFlows_execute_read_and_write_commands/project_needs`, `Test_CommandFlows_execute_read_and_write_commands/project_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_teams`.
+   - Success: `linctl project attachments|documents|external-links|history|initiative-links|initiatives|inverse-relations|issues|comments|labels|needs|relations|teams PROJECT_ID --limit N` lists safe child resources for one Project through the public CLI and JSON output controls without selecting draft, body, blob, secret, source, or metadata payload fields by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_attachments`, `Test_CommandFlows_execute_read_and_write_commands/project_documents`, `Test_CommandFlows_execute_read_and_write_commands/project_external_links`, `Test_CommandFlows_execute_read_and_write_commands/project_history`, `Test_CommandFlows_execute_read_and_write_commands/project_initiative_links`, `Test_CommandFlows_execute_read_and_write_commands/project_initiatives`, `Test_CommandFlows_execute_read_and_write_commands/project_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_issues`, `Test_CommandFlows_execute_read_and_write_commands/project_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_labels`, `Test_CommandFlows_execute_read_and_write_commands/project_needs`, `Test_CommandFlows_execute_read_and_write_commands/project_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_teams`.
 
 181. Release child reads
    - Success: `linctl release documents|issues RELEASE_ID --limit N` and `linctl release-pipeline teams RELEASE_PIPELINE_ID --limit N` list safe child resources for one Release or ReleasePipeline through the public CLI and JSON output controls without selecting body, blob, secret, archive payload, or document-content fields by default.

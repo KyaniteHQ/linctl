@@ -16,9 +16,33 @@ func addProjectMilestoneCommand(ctx context.Context, root *cobra.Command, option
 	}
 	addProjectMilestoneListCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneGetCommand(ctx, projectMilestoneCommand, options)
+	addProjectMilestoneIssuesCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneCreateCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneUpdateCommand(ctx, projectMilestoneCommand, options)
 	root.AddCommand(projectMilestoneCommand)
+}
+
+func addProjectMilestoneIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "issues PROJECT_MILESTONE_ID",
+		Short: "List issues for one ProjectMilestone",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadProjectMilestoneIssueList,
+				projectMilestoneIssuePageWithItems,
+				writeIssue,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
+	root.AddCommand(command)
 }
 
 func addProjectMilestoneListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -116,5 +140,23 @@ func projectMilestonePageWithItems(
 	milestones []client.ProjectMilestoneSummary,
 ) client.ProjectMilestoneList {
 	page.Milestones = milestones
+	return page
+}
+
+func loadProjectMilestoneIssueList(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.ProjectMilestoneIssueList, []client.IssueSummary, error) {
+	issues, err := client.ListProjectMilestoneIssues(ctx, runtime.graphqlClient, args[0], limit)
+	return issues, issues.Issues, err
+}
+
+func projectMilestoneIssuePageWithItems(
+	page client.ProjectMilestoneIssueList,
+	issues []client.IssueSummary,
+) client.ProjectMilestoneIssueList {
+	page.Issues = issues
 	return page
 }

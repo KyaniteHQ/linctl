@@ -26,6 +26,7 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addProjectInitiativesCommand(ctx, projectCommand, options)
 	addProjectInverseRelationsCommand(ctx, projectCommand, options)
 	addProjectIssuesCommand(ctx, projectCommand, options)
+	addProjectCommentsCommand(ctx, projectCommand, options)
 	addProjectLabelsCommand(ctx, projectCommand, options)
 	addProjectMembersCommand(ctx, projectCommand, options)
 	addProjectNeedsCommand(ctx, projectCommand, options)
@@ -309,6 +310,34 @@ func addProjectIssuesCommand(ctx context.Context, root *cobra.Command, options *
 	)
 }
 
+func addProjectCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addProjectChildListCommand(
+		ctx,
+		root,
+		options,
+		"comments PROJECT_ID",
+		"List project comments without body content",
+		"comments",
+		func(runtime commandRuntime, projectID string, limit int) (client.ProjectCommentList, error) {
+			return client.ListProjectComments(ctx, runtime.graphqlClient, projectID, limit)
+		},
+		func(list client.ProjectCommentList) int {
+			return len(list.Comments)
+		},
+		func(list client.ProjectCommentList) (client.ProjectCommentList, error) {
+			items, err := sortByJSONField(list.Comments, options.sortField, options.sortOrder)
+			list.Comments = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.CommentMetadataSummary) error {
+			return writeCommentMetadata(command, options, item)
+		},
+		func(list client.ProjectCommentList) []client.CommentMetadataSummary {
+			return list.Comments
+		},
+	)
+}
+
 func addProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addProjectChildListCommand(
 		ctx,
@@ -334,6 +363,26 @@ func addProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *
 		func(list client.ProjectProjectLabelList) []client.ProjectLabelSummary {
 			return list.ProjectLabels
 		},
+	)
+}
+
+func writeCommentMetadata(command *cobra.Command, options *rootOptions, comment client.CommentMetadataSummary) error {
+	if wrote, err := writeIDOnly(command, options, comment.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, comment)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s %s %s",
+		comment.ID,
+		emptyDash(comment.DisplayName),
+		comment.CreatedAt,
 	)
 }
 

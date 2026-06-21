@@ -119,6 +119,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Body:        "First comment",
 		DisplayName: "Omer",
 	}
+	commentMetadata := client.CommentMetadataSummary{
+		ID:          "comment-id",
+		DisplayName: "Omer",
+		CreatedAt:   "2026-06-19T12:00:00Z",
+		ProjectID:   "project-id",
+	}
 	workflowState := client.WorkflowStateSummary{
 		ID:   "workflow-state-id",
 		Name: "Started",
@@ -399,6 +405,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeUser(textCommand, &textOptions, user))
 	require.NoError(t, writeDraft(textCommand, &textOptions, draft))
 	require.NoError(t, writeComment(textCommand, &textOptions, comment))
+	require.NoError(t, writeCommentMetadata(textCommand, &textOptions, commentMetadata))
 	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(textCommand, &textOptions, timeSchedule))
 	require.NoError(t, writeTemplate(textCommand, &textOptions, template))
@@ -454,7 +461,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"team-membership-id LIT Omer owner true order 1.50\n"+
 			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
-			"comment-id Omer First comment\nworkflow-state-id Started [started]\n"+
+			"comment-id Omer First comment\ncomment-id Omer 2026-06-19T12:00:00Z\n"+
+			"workflow-state-id Started [started]\n"+
 			"time-schedule-id Primary on-call entries 1\n"+
 			"template-id Bug report [issue] team LIT\n"+
 			"initiative-id Platform [Active]\ninitiative-history-id initiative initiative-id entries 1\n"+
@@ -518,6 +526,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeUser(jsonCommand, &jsonOptions, user))
 	require.NoError(t, writeDraft(jsonCommand, &jsonOptions, draft))
 	require.NoError(t, writeComment(jsonCommand, &jsonOptions, comment))
+	require.NoError(t, writeCommentMetadata(jsonCommand, &jsonOptions, commentMetadata))
 	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
 	require.NoError(t, writeTimeSchedule(jsonCommand, &jsonOptions, timeSchedule))
 	require.NoError(t, writeTemplate(jsonCommand, &jsonOptions, template))
@@ -712,6 +721,12 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		ID:          "comment-id",
 		Body:        "First comment",
 		DisplayName: "Omer",
+	}
+	commentMetadata := client.CommentMetadataSummary{
+		ID:          "comment-id",
+		DisplayName: "Omer",
+		CreatedAt:   "2026-06-19T12:00:00Z",
+		ProjectID:   "project-id",
 	}
 	workflowState := client.WorkflowStateSummary{
 		ID:   "workflow-state-id",
@@ -972,6 +987,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeTeam(command, &rootOptions{idOnly: true}, team))
 	require.NoError(t, writeUser(command, &rootOptions{idOnly: true}, user))
 	require.NoError(t, writeComment(command, &rootOptions{idOnly: true}, comment))
+	require.NoError(t, writeCommentMetadata(command, &rootOptions{idOnly: true}, commentMetadata))
 	require.NoError(t, writeWorkflowState(command, &rootOptions{idOnly: true}, workflowState))
 	require.NoError(t, writeTimeSchedule(command, &rootOptions{idOnly: true}, timeSchedule))
 	require.NoError(t, writeTemplate(command, &rootOptions{idOnly: true}, template))
@@ -1078,6 +1094,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeTeam(quietCommand, &rootOptions{quiet: true}, team))
 	require.NoError(t, writeUser(quietCommand, &rootOptions{quiet: true}, user))
 	require.NoError(t, writeComment(quietCommand, &rootOptions{quiet: true}, comment))
+	require.NoError(t, writeCommentMetadata(quietCommand, &rootOptions{quiet: true}, commentMetadata))
 	require.NoError(t, writeWorkflowState(quietCommand, &rootOptions{quiet: true}, workflowState))
 	require.NoError(t, writeTimeSchedule(quietCommand, &rootOptions{quiet: true}, timeSchedule))
 	require.NoError(t, writeTemplate(quietCommand, &rootOptions{quiet: true}, template))

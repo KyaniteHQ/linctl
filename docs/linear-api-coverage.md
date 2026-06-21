@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 217 | 217 | 217 |
-| Domain-map commands | 329 | 197 | 329 |
+| Local generated Go operations | 220 | 220 | 220 |
+| Domain-map commands | 332 | 200 | 332 |
 
 ## Upstream SDK Root Methods
 
@@ -1051,7 +1051,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `ProjectCreate` | mutation | `projectCreate` | implemented | `internal/client/generated.go` |
 | `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | implemented | `internal/client/generated.go` |
 | `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | implemented | `internal/client/generated.go` |
-| `ProjectMilestones` | query | `project` | implemented | `internal/client/generated.go` |
 | `ProjectUpdate` | mutation | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `ProjectUpdates` | query | `project` | implemented | `internal/client/generated.go` |
 | `Projects` | query | `team` | implemented | `internal/client/generated.go` |
@@ -1146,13 +1145,16 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectLabel_projects` | query | `projectLabel` | implemented | `internal/client/generated.go` |
 | `projectLabels` | query | `projectLabels` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
+| `projectMilestone_issues` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectRelation` | query | `projectRelation` | implemented | `internal/client/generated.go` |
 | `projectRelations` | query | `projectRelations` | implemented | `internal/client/generated.go` |
 | `projectStatus` | query | `projectStatus` | implemented | `internal/client/generated.go` |
 | `projectStatuses` | query | `projectStatuses` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
+| `projectUpdate_comments` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
 | `project_attachments` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_comments` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_documents` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_externalLinks` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_history` | query | `project` | implemented | `internal/client/generated.go` |
@@ -1163,6 +1165,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `project_labels` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_members` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_needs` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_projectMilestones` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_relations` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_teams` | query | `project` | implemented | `internal/client/generated.go` |
 | `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
@@ -1358,6 +1361,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Project | `project initiatives` | `Project.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project inverse-relations` | `Project.inverseRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project issues` | `Project.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project comments` | `Project.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
 | Project | `project labels` | `Project.labels` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | implemented | `linctl --help` / public CLI tests |
 | Project | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` | implemented | `linctl --help` / public CLI tests |
@@ -1369,6 +1373,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Project | `project updates` | `Project.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectUpdate | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update create` | `Mutation.projectUpdateCreate` | Blocked: create must resolve and compare the target project before posting | blocked_needs_design | write command needs explicit target and safety semantics |
 | ProjectUpdate | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
@@ -1401,6 +1406,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Sprint | `sprint report` | `Query.cycle` plus `Cycle.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone get` | `Query.projectMilestone` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectMilestone | `project-milestone issues` | `ProjectMilestone.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone delete` | `Mutation.projectMilestoneDelete` | Resource-scoped, compare resolved project | blocked_needs_design | destructive command needs explicit safety semantics |

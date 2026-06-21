@@ -1213,6 +1213,101 @@ func Test_CommandFlows_report_project_updates_sort_errors(t *testing.T) {
 	require.Contains(t, err.Error(), `sort field "missing" is not present`)
 }
 
+func Test_CommandFlows_project_comment_children_omit_body_from_json(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{name: "project comments", args: []string{"project", "comments", "project-id", "--json"}},
+		{name: "project update comments", args: []string{"project-update", "comments", "project-update-id", "--json"}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			require.Contains(t, output.String(), `"comments"`)
+			require.NotContains(t, output.String(), `"body"`)
+		})
+	}
+}
+
+func Test_CommandFlows_project_child_reads_cover_json_and_sort_branches(t *testing.T) {
+	t.Run("project milestone issues json", func(t *testing.T) {
+		output := bytes.Buffer{}
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(&output)
+		command.SetArgs([]string{"project-milestone", "issues", "project-milestone-id", "--json"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.NoError(t, err)
+		require.Contains(t, output.String(), `"project_milestone_id"`)
+		require.Contains(t, output.String(), `"issues"`)
+	})
+
+	t.Run("project comments sort errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--sort", "missing", "project", "comments", "project-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	})
+
+	t.Run("project comments text output", func(t *testing.T) {
+		output := bytes.Buffer{}
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(&output)
+		command.SetArgs([]string{"project", "comments", "project-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.NoError(t, err)
+		require.Contains(t, output.String(), "comment-id Omer 2026-06-19T12:00:00Z")
+	})
+
+	t.Run("release search json", func(t *testing.T) {
+		output := bytes.Buffer{}
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(&output)
+		command.SetArgs([]string{"release", "search", "mobile", "--json"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.NoError(t, err)
+		require.Contains(t, output.String(), `"releases"`)
+	})
+
+	t.Run("release search fail on empty", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{emptyReleaseSearch: true})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--fail-on-empty", "release", "search", "mobile"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "empty result")
+	})
+}
+
 func Test_CommandFlows_fail_on_empty_project_milestones_when_fail_on_empty_flag_is_set(t *testing.T) {
 	restore := useCommandRuntime(t, commandFlowFakeClient{emptyProjectMilestones: true})
 	defer restore()
@@ -1620,6 +1715,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project initiatives", args: []string{"project", "initiatives", "project-id"}, operation: "project_initiatives", contains: "list project initiatives project-id"},
 		{name: "project inverse relations", args: []string{"project", "inverse-relations", "project-id"}, operation: "project_inverseRelations", contains: "list project inverse relations project-id"},
 		{name: "project issues", args: []string{"project", "issues", "project-id"}, operation: "project_issues", contains: "list project issues project-id"},
+		{name: "project comments", args: []string{"project", "comments", "project-id"}, operation: "project_comments", contains: "list project comments project-id"},
 		{name: "project labels", args: []string{"project", "labels", "project-id"}, operation: "project_labels", contains: "list project labels project-id"},
 		{name: "project members", args: []string{"project", "members", "project-id"}, operation: "project_members", contains: "list project members project-id"},
 		{name: "project needs", args: []string{"project", "needs", "project-id"}, operation: "project_needs", contains: "list project customer needs project-id"},
@@ -1628,8 +1724,10 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project updates", args: []string{"project", "updates", "project-id"}, operation: "ProjectUpdates", contains: "list project updates project-id"},
 		{name: "project update list", args: []string{"project-update", "list"}, operation: "projectUpdates", contains: "list project updates"},
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, operation: "projectUpdate", contains: "get project update project-update-id"},
-		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id"}, operation: "ProjectMilestones", contains: "list project milestones project-id"},
+		{name: "project update comments", args: []string{"project-update", "comments", "project-update-id"}, operation: "projectUpdate_comments", contains: "list project update comments project-update-id"},
+		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id"}, operation: "project_projectMilestones", contains: "list project milestones project-id"},
 		{name: "project milestone get", args: []string{"project-milestone", "get", "project-milestone-id"}, operation: "projectMilestone", contains: "get project milestone project-milestone-id"},
+		{name: "project milestone issues", args: []string{"project-milestone", "issues", "project-milestone-id"}, operation: "projectMilestone_issues", contains: "list project milestone issues project-milestone-id"},
 		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, operation: "ProjectMilestoneCreate", contains: "create project milestone"},
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, operation: "ProjectMilestoneUpdate", contains: "update project milestone project-milestone-id"},
 		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, operation: "ProjectCreate", contains: "create project"},
@@ -1812,6 +1910,7 @@ type commandFlowFakeClient struct {
 	expectedSearchQuery         string
 	expectedReleaseSearchTerm   string
 	expectedSemanticSearchQuery string
+	emptyReleaseSearch          bool
 	emptyProjectList            bool
 	emptyProjectMembers         bool
 	emptyProjectUpdates         bool
@@ -2348,6 +2447,9 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 	case "releases":
 		return `{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "releaseSearch":
+		if fake.emptyReleaseSearch {
+			return `{"releaseSearch":[]}`, true
+		}
 		return `{"releaseSearch":[` + commandReleaseJSON() + `]}`, true
 	case "release":
 		return `{"release":` + commandReleaseJSON() + `}`, true
@@ -2747,6 +2849,10 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 		return `{"project":{"id":"project-id","name":"Detail project","issues":{"nodes":[` +
 			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_comments":
+		return `{"project":{"id":"project-id","name":"Detail project","comments":{"nodes":[` +
+			commandCommentMetadataJSON("project-id", "") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "project_labels":
 		return `{"project":{"id":"project-id","name":"Detail project","labels":{"nodes":[` +
 			commandProjectLabelJSON("project-label-id", "Roadmap", "#f2c94c") +
@@ -2780,13 +2886,21 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 		return `{"projectUpdates":{"nodes":[` + commandProjectUpdateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "projectUpdate":
 		return `{"projectUpdate":` + commandProjectUpdateJSON() + `}`, true
-	case "ProjectMilestones":
+	case "projectUpdate_comments":
+		return `{"projectUpdate":{"id":"project-update-id","comments":{"nodes":[` +
+			commandCommentMetadataJSON("", "project-update-id") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_projectMilestones":
 		if fake.emptyProjectMilestones {
 			return `{"project":{"id":"project-id","name":"Detail project","projectMilestones":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"project":{"id":"project-id","name":"Detail project","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "projectMilestone":
 		return `{"projectMilestone":` + commandProjectMilestoneJSON("Launch milestone", "next") + `}`, true
+	case "projectMilestone_issues":
+		return `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","issues":{"nodes":[` +
+			commandIssueJSON("LIT-2", "Milestone issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
@@ -3625,6 +3739,33 @@ func commandTopLevelCommentJSON() string {
 		"documentContentId":null,
 		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
 	}`
+}
+
+func commandCommentMetadataJSON(projectID string, projectUpdateID string) string {
+	return `{
+		"id":"comment-id",
+		"url":"https://linear.app/comment/comment-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"editedAt":null,
+		"resolvedAt":null,
+		"parentId":null,
+		"issueId":null,
+		"projectId":` + commandNullableStringJSON(projectID) + `,
+		"projectUpdateId":` + commandNullableStringJSON(projectUpdateID) + `,
+		"initiativeId":null,
+		"initiativeUpdateId":null,
+		"documentContentId":null,
+		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func commandNullableStringJSON(value string) string {
+	if value == "" {
+		return `null`
+	}
+
+	return `"` + value + `"`
 }
 
 var _ graphql.Client = commandFlowFakeClient{}

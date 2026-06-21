@@ -790,6 +790,117 @@ func (v *AttachmentSummaryFields) GetUrl() string { return v.Url }
 // GetSourceType returns AttachmentSummaryFields.SourceType, and is useful for accessing the field via an interface.
 func (v *AttachmentSummaryFields) GetSourceType() *string { return v.SourceType }
 
+// CommentMetadataFields includes the GraphQL fields of Comment requested by the fragment CommentMetadataFields.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type CommentMetadataFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Comment's URL.
+	Url string `json:"url"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time the comment was last edited by its author. Null if the comment has not been edited since creation.
+	EditedAt *string `json:"editedAt"`
+	// The time when the comment thread was resolved. Null if the thread is unresolved.
+	ResolvedAt *string `json:"resolvedAt"`
+	// The ID of the parent comment under which the current comment is nested. Null for top-level comments.
+	ParentId *string `json:"parentId"`
+	// The ID of the issue that the comment is associated with. Null if the comment belongs to a different parent entity type.
+	IssueId *string `json:"issueId"`
+	// The ID of the project that the comment is associated with. Null if the comment belongs to a different parent entity type.
+	ProjectId *string `json:"projectId"`
+	// The ID of the project update that the comment is associated with. Null if the
+	// comment belongs to a different parent entity type.
+	ProjectUpdateId *string `json:"projectUpdateId"`
+	// The ID of the initiative that the comment is associated with. Null if the
+	// comment belongs to a different parent entity type.
+	InitiativeId *string `json:"initiativeId"`
+	// The ID of the initiative update that the comment is associated with. Null if
+	// the comment belongs to a different parent entity type.
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+	// The ID of the document content that the comment is associated with. Null if
+	// the comment belongs to a different parent entity type.
+	DocumentContentId *string `json:"documentContentId"`
+	// The user who wrote the comment. Null for comments created by integrations or bots without a user association.
+	User *CommentMetadataFieldsUser `json:"user"`
+}
+
+// GetId returns CommentMetadataFields.Id, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetId() string { return v.Id }
+
+// GetUrl returns CommentMetadataFields.Url, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetUrl() string { return v.Url }
+
+// GetCreatedAt returns CommentMetadataFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns CommentMetadataFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetEditedAt returns CommentMetadataFields.EditedAt, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetEditedAt() *string { return v.EditedAt }
+
+// GetResolvedAt returns CommentMetadataFields.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetResolvedAt() *string { return v.ResolvedAt }
+
+// GetParentId returns CommentMetadataFields.ParentId, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetParentId() *string { return v.ParentId }
+
+// GetIssueId returns CommentMetadataFields.IssueId, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetIssueId() *string { return v.IssueId }
+
+// GetProjectId returns CommentMetadataFields.ProjectId, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetProjectId() *string { return v.ProjectId }
+
+// GetProjectUpdateId returns CommentMetadataFields.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetProjectUpdateId() *string { return v.ProjectUpdateId }
+
+// GetInitiativeId returns CommentMetadataFields.InitiativeId, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetInitiativeId() *string { return v.InitiativeId }
+
+// GetInitiativeUpdateId returns CommentMetadataFields.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetInitiativeUpdateId() *string { return v.InitiativeUpdateId }
+
+// GetDocumentContentId returns CommentMetadataFields.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetDocumentContentId() *string { return v.DocumentContentId }
+
+// GetUser returns CommentMetadataFields.User, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFields) GetUser() *CommentMetadataFieldsUser { return v.User }
+
+// CommentMetadataFieldsUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type CommentMetadataFieldsUser struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The user's full name.
+	Name string `json:"name"`
+	// The user's display (nick) name. Must be unique within the workspace.
+	DisplayName string `json:"displayName"`
+}
+
+// GetId returns CommentMetadataFieldsUser.Id, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFieldsUser) GetId() string { return v.Id }
+
+// GetName returns CommentMetadataFieldsUser.Name, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFieldsUser) GetName() string { return v.Name }
+
+// GetDisplayName returns CommentMetadataFieldsUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *CommentMetadataFieldsUser) GetDisplayName() string { return v.DisplayName }
+
 // CompletedWorkflowStatesResponse is returned by CompletedWorkflowStates on success.
 type CompletedWorkflowStatesResponse struct {
 	// All issue workflow states (issue statuses). Returns a paginated list of
@@ -12846,182 +12957,6 @@ func (v *ProjectMilestoneUpdateResponse) GetProjectMilestoneUpdate() ProjectMile
 	return v.ProjectMilestoneUpdate
 }
 
-// ProjectMilestonesProject includes the requested fields of the GraphQL type Project.
-// The GraphQL type's documentation follows.
-//
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
-type ProjectMilestonesProject struct {
-	// The unique identifier of the entity.
-	Id string `json:"id"`
-	// The name of the project.
-	Name string `json:"name"`
-	// Milestones associated with the project.
-	ProjectMilestones ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection `json:"projectMilestones"`
-}
-
-// GetId returns ProjectMilestonesProject.Id, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProject) GetId() string { return v.Id }
-
-// GetName returns ProjectMilestonesProject.Name, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProject) GetName() string { return v.Name }
-
-// GetProjectMilestones returns ProjectMilestonesProject.ProjectMilestones, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProject) GetProjectMilestones() ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection {
-	return v.ProjectMilestones
-}
-
-// ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection includes the requested fields of the GraphQL type ProjectMilestoneConnection.
-type ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection struct {
-	Nodes    []ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone `json:"nodes"`
-	PageInfo ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo                `json:"pageInfo"`
-}
-
-// GetNodes returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection) GetNodes() []ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone {
-	return v.Nodes
-}
-
-// GetPageInfo returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnection) GetPageInfo() ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo {
-	return v.PageInfo
-}
-
-// ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
-// The GraphQL type's documentation follows.
-//
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
-type ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone struct {
-	ProjectMilestoneSummaryFields `json:"-"`
-}
-
-// GetId returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Id, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetId() string {
-	return v.ProjectMilestoneSummaryFields.Id
-}
-
-// GetName returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Name, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetName() string {
-	return v.ProjectMilestoneSummaryFields.Name
-}
-
-// GetDescription returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Description, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetDescription() *string {
-	return v.ProjectMilestoneSummaryFields.Description
-}
-
-// GetTargetDate returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.TargetDate, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetTargetDate() *string {
-	return v.ProjectMilestoneSummaryFields.TargetDate
-}
-
-// GetStatus returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Status, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetStatus() ProjectMilestoneStatus {
-	return v.ProjectMilestoneSummaryFields.Status
-}
-
-// GetProgress returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Progress, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetProgress() float64 {
-	return v.ProjectMilestoneSummaryFields.Progress
-}
-
-// GetSortOrder returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.SortOrder, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetSortOrder() float64 {
-	return v.ProjectMilestoneSummaryFields.SortOrder
-}
-
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.ProjectMilestoneSummaryFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	Description *string `json:"description"`
-
-	TargetDate *string `json:"targetDate"`
-
-	Status ProjectMilestoneStatus `json:"status"`
-
-	Progress float64 `json:"progress"`
-
-	SortOrder float64 `json:"sortOrder"`
-}
-
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) __premarshalJSON() (*__premarshalProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone, error) {
-	var retval __premarshalProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
-
-	retval.Id = v.ProjectMilestoneSummaryFields.Id
-	retval.Name = v.ProjectMilestoneSummaryFields.Name
-	retval.Description = v.ProjectMilestoneSummaryFields.Description
-	retval.TargetDate = v.ProjectMilestoneSummaryFields.TargetDate
-	retval.Status = v.ProjectMilestoneSummaryFields.Status
-	retval.Progress = v.ProjectMilestoneSummaryFields.Progress
-	retval.SortOrder = v.ProjectMilestoneSummaryFields.SortOrder
-	return &retval, nil
-}
-
-// ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-type ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo struct {
-	// Indicates if there are more results when paginating forward.
-	HasNextPage bool `json:"hasNextPage"`
-	// Cursor representing the last result in the paginated results.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo) GetHasNextPage() bool {
-	return v.HasNextPage
-}
-
-// GetEndCursor returns ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo) GetEndCursor() *string {
-	return v.EndCursor
-}
-
-// ProjectMilestonesResponse is returned by ProjectMilestones on success.
-type ProjectMilestonesResponse struct {
-	// Returns a single project by its identifier or URL slug.
-	Project ProjectMilestonesProject `json:"project"`
-}
-
-// GetProject returns ProjectMilestonesResponse.Project, and is useful for accessing the field via an interface.
-func (v *ProjectMilestonesResponse) GetProject() ProjectMilestonesProject { return v.Project }
-
 // ProjectRelationSummaryFields includes the GraphQL fields of ProjectRelation requested by the fragment ProjectRelationSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -16916,26 +16851,6 @@ func (v *__ProjectMilestoneUpdateInput) GetId() string { return v.Id }
 // GetInput returns __ProjectMilestoneUpdateInput.Input, and is useful for accessing the field via an interface.
 func (v *__ProjectMilestoneUpdateInput) GetInput() LinearProjectMilestoneUpdateInput { return v.Input }
 
-// __ProjectMilestonesInput is used internally by genqlient
-type __ProjectMilestonesInput struct {
-	Id              string  `json:"id"`
-	First           *int    `json:"first"`
-	After           *string `json:"after"`
-	IncludeArchived *bool   `json:"includeArchived"`
-}
-
-// GetId returns __ProjectMilestonesInput.Id, and is useful for accessing the field via an interface.
-func (v *__ProjectMilestonesInput) GetId() string { return v.Id }
-
-// GetFirst returns __ProjectMilestonesInput.First, and is useful for accessing the field via an interface.
-func (v *__ProjectMilestonesInput) GetFirst() *int { return v.First }
-
-// GetAfter returns __ProjectMilestonesInput.After, and is useful for accessing the field via an interface.
-func (v *__ProjectMilestonesInput) GetAfter() *string { return v.After }
-
-// GetIncludeArchived returns __ProjectMilestonesInput.IncludeArchived, and is useful for accessing the field via an interface.
-func (v *__ProjectMilestonesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
-
 // __ProjectUpdateInput is used internally by genqlient
 type __ProjectUpdateInput struct {
 	Id    string                   `json:"id"`
@@ -18212,6 +18127,26 @@ type __projectMilestoneInput struct {
 // GetId returns __projectMilestoneInput.Id, and is useful for accessing the field via an interface.
 func (v *__projectMilestoneInput) GetId() string { return v.Id }
 
+// __projectMilestone_issuesInput is used internally by genqlient
+type __projectMilestone_issuesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __projectMilestone_issuesInput.Id, and is useful for accessing the field via an interface.
+func (v *__projectMilestone_issuesInput) GetId() string { return v.Id }
+
+// GetFirst returns __projectMilestone_issuesInput.First, and is useful for accessing the field via an interface.
+func (v *__projectMilestone_issuesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __projectMilestone_issuesInput.After, and is useful for accessing the field via an interface.
+func (v *__projectMilestone_issuesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __projectMilestone_issuesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__projectMilestone_issuesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __projectRelationInput is used internally by genqlient
 type __projectRelationInput struct {
 	Id string `json:"id"`
@@ -18268,6 +18203,26 @@ type __projectUpdateInput struct {
 // GetId returns __projectUpdateInput.Id, and is useful for accessing the field via an interface.
 func (v *__projectUpdateInput) GetId() string { return v.Id }
 
+// __projectUpdate_commentsInput is used internally by genqlient
+type __projectUpdate_commentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __projectUpdate_commentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__projectUpdate_commentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __projectUpdate_commentsInput.First, and is useful for accessing the field via an interface.
+func (v *__projectUpdate_commentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __projectUpdate_commentsInput.After, and is useful for accessing the field via an interface.
+func (v *__projectUpdate_commentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __projectUpdate_commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__projectUpdate_commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __projectUpdatesInput is used internally by genqlient
 type __projectUpdatesInput struct {
 	First           *int    `json:"first"`
@@ -18303,6 +18258,26 @@ func (v *__project_attachmentsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __project_attachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__project_attachmentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __project_commentsInput is used internally by genqlient
+type __project_commentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __project_commentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__project_commentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __project_commentsInput.First, and is useful for accessing the field via an interface.
+func (v *__project_commentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __project_commentsInput.After, and is useful for accessing the field via an interface.
+func (v *__project_commentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __project_commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__project_commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __project_documentsInput is used internally by genqlient
 type __project_documentsInput struct {
@@ -18503,6 +18478,26 @@ func (v *__project_needsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __project_needsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__project_needsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __project_projectMilestonesInput is used internally by genqlient
+type __project_projectMilestonesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __project_projectMilestonesInput.Id, and is useful for accessing the field via an interface.
+func (v *__project_projectMilestonesInput) GetId() string { return v.Id }
+
+// GetFirst returns __project_projectMilestonesInput.First, and is useful for accessing the field via an interface.
+func (v *__project_projectMilestonesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __project_projectMilestonesInput.After, and is useful for accessing the field via an interface.
+func (v *__project_projectMilestonesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __project_projectMilestonesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__project_projectMilestonesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __project_relationsInput is used internally by genqlient
 type __project_relationsInput struct {
@@ -41181,6 +41176,219 @@ func (v *projectMilestoneResponse) GetProjectMilestone() projectMilestoneProject
 	return v.ProjectMilestone
 }
 
+// projectMilestone_issuesProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
+// The GraphQL type's documentation follows.
+//
+// A milestone within a project. Milestones break a project into phases or target
+// checkpoints, each with its own target date and set of issues. Issues can be
+// assigned to a milestone to track progress toward that checkpoint.
+type projectMilestone_issuesProjectMilestone struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project milestone.
+	Name string `json:"name"`
+	// Issues associated with the project milestone.
+	Issues projectMilestone_issuesProjectMilestoneIssuesIssueConnection `json:"issues"`
+}
+
+// GetId returns projectMilestone_issuesProjectMilestone.Id, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestone) GetId() string { return v.Id }
+
+// GetName returns projectMilestone_issuesProjectMilestone.Name, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestone) GetName() string { return v.Name }
+
+// GetIssues returns projectMilestone_issuesProjectMilestone.Issues, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestone) GetIssues() projectMilestone_issuesProjectMilestoneIssuesIssueConnection {
+	return v.Issues
+}
+
+// projectMilestone_issuesProjectMilestoneIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type projectMilestone_issuesProjectMilestoneIssuesIssueConnection struct {
+	Nodes    []projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns projectMilestone_issuesProjectMilestoneIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnection) GetNodes() []projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns projectMilestone_issuesProjectMilestoneIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnection) GetPageInfo() projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalprojectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue, error) {
+	var retval __premarshalprojectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// projectMilestone_issuesResponse is returned by projectMilestone_issues on success.
+type projectMilestone_issuesResponse struct {
+	// Returns a single project milestone by its identifier.
+	ProjectMilestone projectMilestone_issuesProjectMilestone `json:"projectMilestone"`
+}
+
+// GetProjectMilestone returns projectMilestone_issuesResponse.ProjectMilestone, and is useful for accessing the field via an interface.
+func (v *projectMilestone_issuesResponse) GetProjectMilestone() projectMilestone_issuesProjectMilestone {
+	return v.ProjectMilestone
+}
+
 // projectProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
@@ -42059,6 +42267,237 @@ type projectUpdateResponse struct {
 // GetProjectUpdate returns projectUpdateResponse.ProjectUpdate, and is useful for accessing the field via an interface.
 func (v *projectUpdateResponse) GetProjectUpdate() projectUpdateProjectUpdate { return v.ProjectUpdate }
 
+// projectUpdate_commentsProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
+// The GraphQL type's documentation follows.
+//
+// A status update posted to a project. Project updates communicate progress,
+// health, and blockers to stakeholders. Each update captures the project's health
+// at the time of writing and includes a rich-text body with the update content.
+type projectUpdate_commentsProjectUpdate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Comments associated with the project update.
+	Comments projectUpdate_commentsProjectUpdateCommentsCommentConnection `json:"comments"`
+}
+
+// GetId returns projectUpdate_commentsProjectUpdate.Id, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdate) GetId() string { return v.Id }
+
+// GetComments returns projectUpdate_commentsProjectUpdate.Comments, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdate) GetComments() projectUpdate_commentsProjectUpdateCommentsCommentConnection {
+	return v.Comments
+}
+
+// projectUpdate_commentsProjectUpdateCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
+type projectUpdate_commentsProjectUpdateCommentsCommentConnection struct {
+	Nodes    []projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment `json:"nodes"`
+	PageInfo projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns projectUpdate_commentsProjectUpdateCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnection) GetNodes() []projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment {
+	return v.Nodes
+}
+
+// GetPageInfo returns projectUpdate_commentsProjectUpdateCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnection) GetPageInfo() projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment struct {
+	CommentMetadataFields `json:"-"`
+}
+
+// GetId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetId() string {
+	return v.CommentMetadataFields.Id
+}
+
+// GetUrl returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetUrl() string {
+	return v.CommentMetadataFields.Url
+}
+
+// GetCreatedAt returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetCreatedAt() string {
+	return v.CommentMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetUpdatedAt() string {
+	return v.CommentMetadataFields.UpdatedAt
+}
+
+// GetEditedAt returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetEditedAt() *string {
+	return v.CommentMetadataFields.EditedAt
+}
+
+// GetResolvedAt returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetResolvedAt() *string {
+	return v.CommentMetadataFields.ResolvedAt
+}
+
+// GetParentId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetParentId() *string {
+	return v.CommentMetadataFields.ParentId
+}
+
+// GetIssueId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.IssueId, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetIssueId() *string {
+	return v.CommentMetadataFields.IssueId
+}
+
+// GetProjectId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetProjectId() *string {
+	return v.CommentMetadataFields.ProjectId
+}
+
+// GetProjectUpdateId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetProjectUpdateId() *string {
+	return v.CommentMetadataFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetInitiativeId() *string {
+	return v.CommentMetadataFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetInitiativeUpdateId() *string {
+	return v.CommentMetadataFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetDocumentContentId() *string {
+	return v.CommentMetadataFields.DocumentContentId
+}
+
+// GetUser returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) GetUser() *CommentMetadataFieldsUser {
+	return v.CommentMetadataFields.User
+}
+
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CommentMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalprojectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment struct {
+	Id string `json:"id"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *CommentMetadataFieldsUser `json:"user"`
+}
+
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment) __premarshalJSON() (*__premarshalprojectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment, error) {
+	var retval __premarshalprojectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment
+
+	retval.Id = v.CommentMetadataFields.Id
+	retval.Url = v.CommentMetadataFields.Url
+	retval.CreatedAt = v.CommentMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CommentMetadataFields.UpdatedAt
+	retval.EditedAt = v.CommentMetadataFields.EditedAt
+	retval.ResolvedAt = v.CommentMetadataFields.ResolvedAt
+	retval.ParentId = v.CommentMetadataFields.ParentId
+	retval.IssueId = v.CommentMetadataFields.IssueId
+	retval.ProjectId = v.CommentMetadataFields.ProjectId
+	retval.ProjectUpdateId = v.CommentMetadataFields.ProjectUpdateId
+	retval.InitiativeId = v.CommentMetadataFields.InitiativeId
+	retval.InitiativeUpdateId = v.CommentMetadataFields.InitiativeUpdateId
+	retval.DocumentContentId = v.CommentMetadataFields.DocumentContentId
+	retval.User = v.CommentMetadataFields.User
+	return &retval, nil
+}
+
+// projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// projectUpdate_commentsResponse is returned by projectUpdate_comments on success.
+type projectUpdate_commentsResponse struct {
+	// Returns a single project update by its identifier.
+	ProjectUpdate projectUpdate_commentsProjectUpdate `json:"projectUpdate"`
+}
+
+// GetProjectUpdate returns projectUpdate_commentsResponse.ProjectUpdate, and is useful for accessing the field via an interface.
+func (v *projectUpdate_commentsResponse) GetProjectUpdate() projectUpdate_commentsProjectUpdate {
+	return v.ProjectUpdate
+}
+
 // projectUpdatesProjectUpdatesProjectUpdateConnection includes the requested fields of the GraphQL type ProjectUpdateConnection.
 type projectUpdatesProjectUpdatesProjectUpdateConnection struct {
 	Nodes    []projectUpdatesProjectUpdatesProjectUpdateConnectionNodesProjectUpdate `json:"nodes"`
@@ -42378,6 +42817,240 @@ type project_attachmentsResponse struct {
 
 // GetProject returns project_attachmentsResponse.Project, and is useful for accessing the field via an interface.
 func (v *project_attachmentsResponse) GetProject() project_attachmentsProject { return v.Project }
+
+// project_commentsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type project_commentsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+	// Comments associated with the project overview.
+	Comments project_commentsProjectCommentsCommentConnection `json:"comments"`
+}
+
+// GetId returns project_commentsProject.Id, and is useful for accessing the field via an interface.
+func (v *project_commentsProject) GetId() string { return v.Id }
+
+// GetName returns project_commentsProject.Name, and is useful for accessing the field via an interface.
+func (v *project_commentsProject) GetName() string { return v.Name }
+
+// GetComments returns project_commentsProject.Comments, and is useful for accessing the field via an interface.
+func (v *project_commentsProject) GetComments() project_commentsProjectCommentsCommentConnection {
+	return v.Comments
+}
+
+// project_commentsProjectCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
+type project_commentsProjectCommentsCommentConnection struct {
+	Nodes    []project_commentsProjectCommentsCommentConnectionNodesComment `json:"nodes"`
+	PageInfo project_commentsProjectCommentsCommentConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns project_commentsProjectCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnection) GetNodes() []project_commentsProjectCommentsCommentConnectionNodesComment {
+	return v.Nodes
+}
+
+// GetPageInfo returns project_commentsProjectCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnection) GetPageInfo() project_commentsProjectCommentsCommentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// project_commentsProjectCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type project_commentsProjectCommentsCommentConnectionNodesComment struct {
+	CommentMetadataFields `json:"-"`
+}
+
+// GetId returns project_commentsProjectCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetId() string {
+	return v.CommentMetadataFields.Id
+}
+
+// GetUrl returns project_commentsProjectCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetUrl() string {
+	return v.CommentMetadataFields.Url
+}
+
+// GetCreatedAt returns project_commentsProjectCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetCreatedAt() string {
+	return v.CommentMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns project_commentsProjectCommentsCommentConnectionNodesComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetUpdatedAt() string {
+	return v.CommentMetadataFields.UpdatedAt
+}
+
+// GetEditedAt returns project_commentsProjectCommentsCommentConnectionNodesComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetEditedAt() *string {
+	return v.CommentMetadataFields.EditedAt
+}
+
+// GetResolvedAt returns project_commentsProjectCommentsCommentConnectionNodesComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetResolvedAt() *string {
+	return v.CommentMetadataFields.ResolvedAt
+}
+
+// GetParentId returns project_commentsProjectCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetParentId() *string {
+	return v.CommentMetadataFields.ParentId
+}
+
+// GetIssueId returns project_commentsProjectCommentsCommentConnectionNodesComment.IssueId, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetIssueId() *string {
+	return v.CommentMetadataFields.IssueId
+}
+
+// GetProjectId returns project_commentsProjectCommentsCommentConnectionNodesComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetProjectId() *string {
+	return v.CommentMetadataFields.ProjectId
+}
+
+// GetProjectUpdateId returns project_commentsProjectCommentsCommentConnectionNodesComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetProjectUpdateId() *string {
+	return v.CommentMetadataFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns project_commentsProjectCommentsCommentConnectionNodesComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetInitiativeId() *string {
+	return v.CommentMetadataFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns project_commentsProjectCommentsCommentConnectionNodesComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetInitiativeUpdateId() *string {
+	return v.CommentMetadataFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns project_commentsProjectCommentsCommentConnectionNodesComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetDocumentContentId() *string {
+	return v.CommentMetadataFields.DocumentContentId
+}
+
+// GetUser returns project_commentsProjectCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) GetUser() *CommentMetadataFieldsUser {
+	return v.CommentMetadataFields.User
+}
+
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*project_commentsProjectCommentsCommentConnectionNodesComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.project_commentsProjectCommentsCommentConnectionNodesComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CommentMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalproject_commentsProjectCommentsCommentConnectionNodesComment struct {
+	Id string `json:"id"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *CommentMetadataFieldsUser `json:"user"`
+}
+
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *project_commentsProjectCommentsCommentConnectionNodesComment) __premarshalJSON() (*__premarshalproject_commentsProjectCommentsCommentConnectionNodesComment, error) {
+	var retval __premarshalproject_commentsProjectCommentsCommentConnectionNodesComment
+
+	retval.Id = v.CommentMetadataFields.Id
+	retval.Url = v.CommentMetadataFields.Url
+	retval.CreatedAt = v.CommentMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CommentMetadataFields.UpdatedAt
+	retval.EditedAt = v.CommentMetadataFields.EditedAt
+	retval.ResolvedAt = v.CommentMetadataFields.ResolvedAt
+	retval.ParentId = v.CommentMetadataFields.ParentId
+	retval.IssueId = v.CommentMetadataFields.IssueId
+	retval.ProjectId = v.CommentMetadataFields.ProjectId
+	retval.ProjectUpdateId = v.CommentMetadataFields.ProjectUpdateId
+	retval.InitiativeId = v.CommentMetadataFields.InitiativeId
+	retval.InitiativeUpdateId = v.CommentMetadataFields.InitiativeUpdateId
+	retval.DocumentContentId = v.CommentMetadataFields.DocumentContentId
+	retval.User = v.CommentMetadataFields.User
+	return &retval, nil
+}
+
+// project_commentsProjectCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type project_commentsProjectCommentsCommentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns project_commentsProjectCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns project_commentsProjectCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *project_commentsProjectCommentsCommentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// project_commentsResponse is returned by project_comments on success.
+type project_commentsResponse struct {
+	// Returns a single project by its identifier or URL slug.
+	Project project_commentsProject `json:"project"`
+}
+
+// GetProject returns project_commentsResponse.Project, and is useful for accessing the field via an interface.
+func (v *project_commentsResponse) GetProject() project_commentsProject { return v.Project }
 
 // project_documentsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
@@ -44241,6 +44914,184 @@ type project_needsResponse struct {
 
 // GetProject returns project_needsResponse.Project, and is useful for accessing the field via an interface.
 func (v *project_needsResponse) GetProject() project_needsProject { return v.Project }
+
+// project_projectMilestonesProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type project_projectMilestonesProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+	// Milestones associated with the project.
+	ProjectMilestones project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection `json:"projectMilestones"`
+}
+
+// GetId returns project_projectMilestonesProject.Id, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProject) GetId() string { return v.Id }
+
+// GetName returns project_projectMilestonesProject.Name, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProject) GetName() string { return v.Name }
+
+// GetProjectMilestones returns project_projectMilestonesProject.ProjectMilestones, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProject) GetProjectMilestones() project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection {
+	return v.ProjectMilestones
+}
+
+// project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection includes the requested fields of the GraphQL type ProjectMilestoneConnection.
+type project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection struct {
+	Nodes    []project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone `json:"nodes"`
+	PageInfo project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo                `json:"pageInfo"`
+}
+
+// GetNodes returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection) GetNodes() []project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone {
+	return v.Nodes
+}
+
+// GetPageInfo returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnection) GetPageInfo() project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo {
+	return v.PageInfo
+}
+
+// project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
+// The GraphQL type's documentation follows.
+//
+// A milestone within a project. Milestones break a project into phases or target
+// checkpoints, each with its own target date and set of issues. Issues can be
+// assigned to a milestone to track progress toward that checkpoint.
+type project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone struct {
+	ProjectMilestoneSummaryFields `json:"-"`
+}
+
+// GetId returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Id, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetId() string {
+	return v.ProjectMilestoneSummaryFields.Id
+}
+
+// GetName returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Name, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetName() string {
+	return v.ProjectMilestoneSummaryFields.Name
+}
+
+// GetDescription returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Description, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetDescription() *string {
+	return v.ProjectMilestoneSummaryFields.Description
+}
+
+// GetTargetDate returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.TargetDate, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetTargetDate() *string {
+	return v.ProjectMilestoneSummaryFields.TargetDate
+}
+
+// GetStatus returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Status, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetStatus() ProjectMilestoneStatus {
+	return v.ProjectMilestoneSummaryFields.Status
+}
+
+// GetProgress returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.Progress, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetProgress() float64 {
+	return v.ProjectMilestoneSummaryFields.Progress
+}
+
+// GetSortOrder returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone.SortOrder, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) GetSortOrder() float64 {
+	return v.ProjectMilestoneSummaryFields.SortOrder
+}
+
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectMilestoneSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalproject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	TargetDate *string `json:"targetDate"`
+
+	Status ProjectMilestoneStatus `json:"status"`
+
+	Progress float64 `json:"progress"`
+
+	SortOrder float64 `json:"sortOrder"`
+}
+
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone) __premarshalJSON() (*__premarshalproject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone, error) {
+	var retval __premarshalproject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone
+
+	retval.Id = v.ProjectMilestoneSummaryFields.Id
+	retval.Name = v.ProjectMilestoneSummaryFields.Name
+	retval.Description = v.ProjectMilestoneSummaryFields.Description
+	retval.TargetDate = v.ProjectMilestoneSummaryFields.TargetDate
+	retval.Status = v.ProjectMilestoneSummaryFields.Status
+	retval.Progress = v.ProjectMilestoneSummaryFields.Progress
+	retval.SortOrder = v.ProjectMilestoneSummaryFields.SortOrder
+	return &retval, nil
+}
+
+// project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// project_projectMilestonesResponse is returned by project_projectMilestones on success.
+type project_projectMilestonesResponse struct {
+	// Returns a single project by its identifier or URL slug.
+	Project project_projectMilestonesProject `json:"project"`
+}
+
+// GetProject returns project_projectMilestonesResponse.Project, and is useful for accessing the field via an interface.
+func (v *project_projectMilestonesResponse) GetProject() project_projectMilestonesProject {
+	return v.Project
+}
 
 // project_relationsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
@@ -56893,65 +57744,6 @@ func ProjectMilestoneUpdate(
 	return data_, err_
 }
 
-// The query executed by ProjectMilestones.
-const ProjectMilestones_Operation = `
-query ProjectMilestones ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
-	project(id: $id) {
-		id
-		name
-		projectMilestones(first: $first, after: $after, includeArchived: $includeArchived) {
-			nodes {
-				... ProjectMilestoneSummaryFields
-			}
-			pageInfo {
-				hasNextPage
-				endCursor
-			}
-		}
-	}
-}
-fragment ProjectMilestoneSummaryFields on ProjectMilestone {
-	id
-	name
-	description
-	targetDate
-	status
-	progress
-	sortOrder
-}
-`
-
-func ProjectMilestones(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	id string,
-	first *int,
-	after *string,
-	includeArchived *bool,
-) (data_ *ProjectMilestonesResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "ProjectMilestones",
-		Query:  ProjectMilestones_Operation,
-		Variables: &__ProjectMilestonesInput{
-			Id:              id,
-			First:           first,
-			After:           after,
-			IncludeArchived: includeArchived,
-		},
-	}
-
-	data_ = &ProjectMilestonesResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The mutation executed by ProjectUpdate.
 const ProjectUpdate_Operation = `
 mutation ProjectUpdate ($id: String!, $input: ProjectUpdateInput!) {
@@ -62470,6 +63262,84 @@ func projectMilestone(
 	return data_, err_
 }
 
+// The query executed by projectMilestone_issues.
+const projectMilestone_issues_Operation = `
+query projectMilestone_issues ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	projectMilestone(id: $id) {
+		id
+		name
+		issues(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func projectMilestone_issues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *projectMilestone_issuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectMilestone_issues",
+		Query:  projectMilestone_issues_Operation,
+		Variables: &__projectMilestone_issuesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &projectMilestone_issuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by projectRelation.
 const projectRelation_Operation = `
 query projectRelation ($id: String!) {
@@ -62759,6 +63629,75 @@ func projectUpdate(
 	return data_, err_
 }
 
+// The query executed by projectUpdate_comments.
+const projectUpdate_comments_Operation = `
+query projectUpdate_comments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	projectUpdate(id: $id) {
+		id
+		comments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CommentMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CommentMetadataFields on Comment {
+	id
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func projectUpdate_comments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *projectUpdate_commentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "projectUpdate_comments",
+		Query:  projectUpdate_comments_Operation,
+		Variables: &__projectUpdate_commentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &projectUpdate_commentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by projectUpdates.
 const projectUpdates_Operation = `
 query projectUpdates ($first: Int, $after: String, $includeArchived: Boolean) {
@@ -62866,6 +63805,76 @@ func project_attachments(
 	}
 
 	data_ = &project_attachmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by project_comments.
+const project_comments_Operation = `
+query project_comments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	project(id: $id) {
+		id
+		name
+		comments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CommentMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CommentMetadataFields on Comment {
+	id
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func project_comments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *project_commentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "project_comments",
+		Query:  project_comments_Operation,
+		Variables: &__project_commentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &project_commentsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -63550,6 +64559,65 @@ func project_needs(
 	}
 
 	data_ = &project_needsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by project_projectMilestones.
+const project_projectMilestones_Operation = `
+query project_projectMilestones ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	project(id: $id) {
+		id
+		name
+		projectMilestones(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ProjectMilestoneSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ProjectMilestoneSummaryFields on ProjectMilestone {
+	id
+	name
+	description
+	targetDate
+	status
+	progress
+	sortOrder
+}
+`
+
+func project_projectMilestones(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *project_projectMilestonesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "project_projectMilestones",
+		Query:  project_projectMilestones_Operation,
+		Variables: &__project_projectMilestonesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &project_projectMilestonesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

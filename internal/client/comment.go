@@ -40,6 +40,26 @@ type CommentSummary struct {
 	DisplayName        string  `json:"display_name,omitempty"`
 }
 
+// CommentMetadataSummary is a body-free comment read model for parent-scoped comment lists.
+type CommentMetadataSummary struct {
+	ID                 string  `json:"id"`
+	URL                string  `json:"url"`
+	CreatedAt          string  `json:"created_at"`
+	UpdatedAt          string  `json:"updated_at"`
+	EditedAt           *string `json:"edited_at,omitempty"`
+	ResolvedAt         *string `json:"resolved_at,omitempty"`
+	ParentID           string  `json:"parent_id,omitempty"`
+	IssueID            string  `json:"issue_id,omitempty"`
+	ProjectID          string  `json:"project_id,omitempty"`
+	ProjectUpdateID    string  `json:"project_update_id,omitempty"`
+	InitiativeID       string  `json:"initiative_id,omitempty"`
+	InitiativeUpdateID string  `json:"initiative_update_id,omitempty"`
+	DocumentContentID  string  `json:"document_content_id,omitempty"`
+	UserID             string  `json:"user_id,omitempty"`
+	UserName           string  `json:"user_name,omitempty"`
+	DisplayName        string  `json:"display_name,omitempty"`
+}
+
 // IssueCommentList is a page of comments for one issue.
 type IssueCommentList struct {
 	IssueID     string                `json:"issue_id"`
@@ -150,6 +170,36 @@ func topLevelCommentSummary(comment TopLevelCommentSummaryFields) CommentSummary
 	return CommentSummary{
 		ID:                 comment.Id,
 		Body:               comment.Body,
+		URL:                comment.Url,
+		CreatedAt:          comment.CreatedAt,
+		UpdatedAt:          comment.UpdatedAt,
+		EditedAt:           comment.EditedAt,
+		ResolvedAt:         comment.ResolvedAt,
+		ParentID:           stringValue(comment.ParentId),
+		IssueID:            stringValue(comment.IssueId),
+		ProjectID:          stringValue(comment.ProjectId),
+		ProjectUpdateID:    stringValue(comment.ProjectUpdateId),
+		InitiativeID:       stringValue(comment.InitiativeId),
+		InitiativeUpdateID: stringValue(comment.InitiativeUpdateId),
+		DocumentContentID:  stringValue(comment.DocumentContentId),
+		UserID:             userID,
+		UserName:           userName,
+		DisplayName:        displayName,
+	}
+}
+
+func commentMetadataSummary(comment CommentMetadataFields) CommentMetadataSummary {
+	userID := ""
+	userName := ""
+	displayName := ""
+	if comment.User != nil {
+		userID = comment.User.Id
+		userName = comment.User.Name
+		displayName = comment.User.DisplayName
+	}
+
+	return CommentMetadataSummary{
+		ID:                 comment.Id,
 		URL:                comment.Url,
 		CreatedAt:          comment.CreatedAt,
 		UpdatedAt:          comment.UpdatedAt,

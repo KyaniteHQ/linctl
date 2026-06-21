@@ -287,7 +287,7 @@ Schema backing:
 - Reads: `Query.projects`, `Query.project`, `Project.attachments`, `Project.documents`, `Project.externalLinks`, `Project.history`, `Project.initiativeToProjects`, `Project.initiatives`, `Project.inverseRelations`, `Project.issues`, `Project.labels`, `Project.members`, `Project.needs`, `Project.relations`, `Project.teams`, `Project.projectUpdates`
 - Writes: `Mutation.projectCreate`, `Mutation.projectUpdate`, `Mutation.projectArchive`
 - Inputs: `ProjectCreateInput`, `ProjectUpdateInput`
-- Relevant fields: `Project.id`, `Project.name`, `Project.description`, `Project.status`, `Project.lead`, `Project.url`, `Project.teams`, `Project.members`, `Project.documents`, `Project.projectMilestones`, `Project.issues`
+- Relevant fields: `Project.id`, `Project.name`, `Project.description`, `Project.status`, `Project.lead`, `Project.url`, `Project.teams`, `Project.members`, `Project.documents`, `Project.projectMilestones`, `Project.issues`, `Project.comments`
 
 Planned commands:
 
@@ -303,6 +303,7 @@ Planned commands:
 | `project initiatives` | `Project.initiatives` | Read-only |
 | `project inverse-relations` | `Project.inverseRelations` | Read-only |
 | `project issues` | `Project.issues` | Read-only |
+| `project comments` | `Project.comments` | Read-only, body-free metadata |
 | `project labels` | `Project.labels` | Read-only |
 | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped |
 | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` |
@@ -322,7 +323,7 @@ Use `ProjectUpdate` for Linear project status updates. Avoid calling these gener
 Schema backing:
 
 - Types: `ProjectUpdate`, `ProjectUpdateConnection`
-- Reads: `Query.projectUpdates`, `Query.projectUpdate`, `Project.projectUpdates`
+- Reads: `Query.projectUpdates`, `Query.projectUpdate`, `Project.projectUpdates`, `ProjectUpdate.comments`
 - Writes: `Mutation.projectUpdateCreate`, `Mutation.projectUpdateUpdate`, `Mutation.projectUpdateArchive`
 - Relevant fields: `ProjectUpdate.id`, `ProjectUpdate.body`, `ProjectUpdate.health`, `ProjectUpdate.createdAt`, `ProjectUpdate.updatedAt`, `ProjectUpdate.url`, `ProjectUpdate.project`, `ProjectUpdate.user`
 
@@ -332,11 +333,12 @@ Planned commands:
 | --- | --- | --- |
 | `project-update list` | `Query.projectUpdates` | Read-only |
 | `project-update get` | `Query.projectUpdate` | Read-only |
+| `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata |
 | `project-update create` | `Mutation.projectUpdateCreate` | Blocked: create must resolve and compare the target project before posting |
 | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation |
 | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics |
 
-Only `project-update list` and `project-update get` are implemented in the current top-level CLI. `project updates PROJECT_ID` remains the project-scoped history view.
+`project-update list`, `project-update get`, and `project-update comments` are implemented in the current top-level CLI. `project updates PROJECT_ID` remains the project-scoped history view.
 
 ## ProjectStatus
 
@@ -458,7 +460,7 @@ Use the schema name `ProjectMilestone` in code and docs. Avoid the loose name `m
 Schema backing:
 
 - Types: `ProjectMilestone`, `ProjectMilestoneConnection`
-- Reads: `Query.projectMilestones`, `Query.projectMilestone`, `Project.projectMilestones`
+- Reads: `Query.projectMilestones`, `Query.projectMilestone`, `Project.projectMilestones`, `ProjectMilestone.issues`
 - Writes: `Mutation.projectMilestoneCreate`, `Mutation.projectMilestoneUpdate`, `Mutation.projectMilestoneDelete`
 - Inputs: `ProjectMilestoneCreateInput`, `ProjectMilestoneUpdateInput`
 - Relevant fields: `ProjectMilestone.id`, `ProjectMilestone.name`, `ProjectMilestone.description`, `ProjectMilestone.targetDate`, `ProjectMilestone.status`, `ProjectMilestone.project`, `ProjectMilestone.sortOrder`, `ProjectMilestone.issues`
@@ -469,6 +471,7 @@ Planned commands:
 | --- | --- | --- |
 | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only |
 | `project-milestone get` | `Query.projectMilestone` | Read-only |
+| `project-milestone issues` | `ProjectMilestone.issues` | Read-only |
 | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` |
 | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project |
 | `project-milestone delete` | `Mutation.projectMilestoneDelete` | Resource-scoped, compare resolved project |
