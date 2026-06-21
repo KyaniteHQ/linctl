@@ -266,6 +266,19 @@ linctl emoji get EMOJI_ID --json
 linctl attachment list --json --limit 20
 linctl attachment url URL --json --limit 20
 linctl attachment get ATTACHMENT_ID --json
+linctl attachment issue get ATTACHMENT_ID --json
+linctl attachment issue attachments ATTACHMENT_ID --json --limit 20
+linctl attachment issue bot-actor ATTACHMENT_ID --json
+linctl attachment issue children ATTACHMENT_ID --json --limit 20
+linctl attachment issue documents ATTACHMENT_ID --json --limit 20
+linctl attachment issue former-attachments ATTACHMENT_ID --json --limit 20
+linctl attachment issue history ATTACHMENT_ID --json --limit 20
+linctl attachment issue inverse-relations ATTACHMENT_ID --json --limit 20
+linctl attachment issue labels ATTACHMENT_ID --json --limit 20
+linctl attachment issue relations ATTACHMENT_ID --json --limit 20
+linctl attachment issue releases ATTACHMENT_ID --json --limit 20
+linctl attachment issue state-history ATTACHMENT_ID --json --limit 20
+linctl attachment issue subscribers ATTACHMENT_ID --json --limit 20
 ```
 
 `next --dry-run` is a ranked read-only picker: it considers unstarted issues with no active blockers, then ranks by active unblock count, priority, and age. It never creates a branch or worktree.

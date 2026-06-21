@@ -68,7 +68,8 @@ PY
   issue_json="$("$binary" issue list --json --limit 5)"
   issue_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0]["id"] if items else "")' <<<"$issue_json")"
   if [[ -n "$issue_id" ]]; then
-    "$binary" issue attachments "$issue_id" --json --limit 5 >/dev/null
+    issue_attachment_json="$("$binary" issue attachments "$issue_id" --json --limit 5)"
+    attachment_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("attachments", []); print(items[0]["id"] if items else "")' <<<"$issue_attachment_json")"
     "$binary" issue bot-actor "$issue_id" --json >/dev/null
     "$binary" issue children "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue documents "$issue_id" --json --limit 5 >/dev/null
@@ -80,6 +81,21 @@ PY
     "$binary" issue releases "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue state-history "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue subscribers "$issue_id" --json --limit 5 >/dev/null
+    if [[ -n "$attachment_id" ]]; then
+      "$binary" attachment issue get "$attachment_id" --json >/dev/null
+      "$binary" attachment issue attachments "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue bot-actor "$attachment_id" --json >/dev/null
+      "$binary" attachment issue children "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue documents "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue former-attachments "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue history "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue inverse-relations "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue labels "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue relations "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue releases "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue state-history "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue subscribers "$attachment_id" --json --limit 5 >/dev/null
+    fi
   fi
   comment_json="$("$binary" comment list --json --limit 5)"
   comment_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("comments", []); print(items[0]["id"] if items else "")' <<<"$comment_json")"

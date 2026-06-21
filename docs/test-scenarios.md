@@ -524,6 +524,11 @@ Success is pass/fail:
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+91a. Attachment issue projections
+   - Success: `linctl attachment issue get|attachments|bot-actor|children|documents|former-attachments|history|inverse-relations|labels|relations|releases|state-history|subscribers ATTACHMENT_ID --limit N` reads safe metadata for the issue associated with one Attachment without selecting comment body, customer-need content, shared-access, blob, source, or secret fields by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_issue_*`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 92. Organization exists
    - Success: `linctl organization exists URL_KEY` reports whether a Linear organization URL key exists through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/organization_exists`;

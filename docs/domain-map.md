@@ -1037,7 +1037,7 @@ Use the schema name `Attachment` in code and docs. It is an external resource li
 Schema backing:
 
 - Types: `Attachment`, `AttachmentConnection`
-- Reads: `Query.attachments`, `Query.attachment`, `Query.attachmentsForURL`
+- Reads: `Query.attachments`, `Query.attachment`, `Query.attachmentsForURL`, `Query.attachmentIssue`, `Issue.attachments`, `Issue.botActor`, `Issue.children`, `Issue.documents`, `Issue.formerAttachments`, `Issue.history`, `Issue.inverseRelations`, `Issue.labels`, `Issue.relations`, `Issue.releases`, `Issue.stateHistory`, `Issue.subscribers` via `Query.attachmentIssue`
 - Writes: `Mutation.attachmentCreate`, `Mutation.attachmentUpdate`, `Mutation.attachmentDelete`, `Mutation.attachmentLinkURL`
 - Inputs: `AttachmentCreateInput`, `AttachmentUpdateInput`
 - Relevant fields: `Attachment.id`, `Attachment.title`, `Attachment.subtitle`, `Attachment.url`, `Attachment.sourceType`
@@ -1049,8 +1049,21 @@ Planned commands:
 | `attachment list` | `Query.attachments` | Read-only |
 | `attachment url` | `Query.attachmentsForURL` | Read-only |
 | `attachment get` | `Query.attachment` | Read-only |
+| `attachment issue get` | `Query.attachmentIssue` | Read-only |
+| `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only |
+| `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only |
+| `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only |
+| `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only |
+| `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only |
+| `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only |
+| `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only |
+| `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only |
+| `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only |
+| `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only |
+| `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata |
+| `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only |
 | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation |
 | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation |
 | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics |
 
-Only `attachment list`, `attachment url`, and `attachment get` are implemented in the current CLI. Attachment writes are deferred until the owning-issue guard model is explicit.
+Only read-only attachment commands are implemented in the current CLI. Attachment writes are deferred until the owning-issue guard model is explicit.

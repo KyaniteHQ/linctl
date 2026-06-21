@@ -1962,6 +1962,64 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 }
 
 func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *testing.T) {
+	t.Run("attachment issue runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"attachment", "issue", "get", "attachment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
+	t.Run("attachment issue operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "attachmentIssue"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"attachment", "issue", "get", "attachment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get attachment issue attachment-id")
+	})
+
+	t.Run("attachment issue bot actor runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"attachment", "issue", "bot-actor", "attachment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
+	t.Run("attachment issue bot actor operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "attachmentIssue_botActor"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"attachment", "issue", "bot-actor", "attachment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get attachment issue bot actor attachment-id")
+	})
+
 	t.Run("issue bot actor runtime error", func(t *testing.T) {
 		original := buildCommandRuntime
 		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {

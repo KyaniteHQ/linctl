@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 112 | 458 |
-| Upstream Query root fields | 158 | 100 | 158 |
+| Upstream SDK root methods | 458 | 113 | 458 |
+| Upstream Query root fields | 158 | 101 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 235 | 235 | 235 |
-| Domain-map commands | 347 | 215 | 347 |
+| Local generated Go operations | 248 | 248 | 248 |
+| Domain-map commands | 360 | 228 | 360 |
 
 ## Upstream SDK Root Methods
 
@@ -55,7 +55,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `archiveWorkflowState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archivedIntegrations` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `attachment` | method | implemented | local operation or command exists |
-| `attachmentIssue` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `attachmentIssue` | method | implemented | local operation or command exists |
 | `attachmentLinkDiscord` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkFront` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkGitHubIssue` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -502,7 +502,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `archivedIntegrations` | `[ArchivedIntegrationPayload!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `archivedTeams` | `[Team!]!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `attachment` | `Attachment!` | implemented | root field used by local GraphQL operation |
-| `attachmentIssue` | `Issue!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `attachmentIssue` | `Issue!` | implemented | root field used by local GraphQL operation |
 | `attachmentSources` | `AttachmentSourcesPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `attachments` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
 | `attachmentsForURL` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
@@ -1064,6 +1064,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSkills` | query | `agentSkills` | implemented | `internal/client/generated.go` |
 | `applicationInfo` | query | `applicationInfo` | implemented | `internal/client/generated.go` |
 | `attachment` | query | `attachment` | implemented | `internal/client/generated.go` |
+| `attachmentIssue` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_attachments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_botActor` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_children` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_documents` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_formerAttachments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_history` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_inverseRelations` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_labels` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_relations` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_releases` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_stateHistory` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_subscribers` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
 | `attachmentsForURL` | query | `attachmentsForURL` | implemented | `internal/client/generated.go` |
 | `auditEntryTypes` | query | `auditEntryTypes` | implemented | `internal/client/generated.go` |
@@ -1591,6 +1604,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment get` | `Query.attachment` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue get` | `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |

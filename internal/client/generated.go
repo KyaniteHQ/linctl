@@ -17495,6 +17495,242 @@ type __attachmentInput struct {
 // GetId returns __attachmentInput.Id, and is useful for accessing the field via an interface.
 func (v *__attachmentInput) GetId() string { return v.Id }
 
+// __attachmentIssueInput is used internally by genqlient
+type __attachmentIssueInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __attachmentIssueInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssueInput) GetId() string { return v.Id }
+
+// __attachmentIssue_attachmentsInput is used internally by genqlient
+type __attachmentIssue_attachmentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_attachmentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_attachmentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_attachmentsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_attachmentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_attachmentsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_attachmentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_attachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_attachmentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_botActorInput is used internally by genqlient
+type __attachmentIssue_botActorInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __attachmentIssue_botActorInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_botActorInput) GetId() string { return v.Id }
+
+// __attachmentIssue_childrenInput is used internally by genqlient
+type __attachmentIssue_childrenInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_childrenInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_childrenInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_childrenInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_childrenInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_childrenInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_childrenInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_childrenInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_childrenInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_documentsInput is used internally by genqlient
+type __attachmentIssue_documentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_documentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_documentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_documentsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_documentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_documentsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_documentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_documentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_documentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_formerAttachmentsInput is used internally by genqlient
+type __attachmentIssue_formerAttachmentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_formerAttachmentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerAttachmentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_formerAttachmentsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerAttachmentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_formerAttachmentsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerAttachmentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_formerAttachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerAttachmentsInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
+// __attachmentIssue_historyInput is used internally by genqlient
+type __attachmentIssue_historyInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_historyInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_historyInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_historyInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_historyInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_historyInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_historyInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_historyInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_historyInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_inverseRelationsInput is used internally by genqlient
+type __attachmentIssue_inverseRelationsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_inverseRelationsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_inverseRelationsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_inverseRelationsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_inverseRelationsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_inverseRelationsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_inverseRelationsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_inverseRelationsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_inverseRelationsInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
+// __attachmentIssue_labelsInput is used internally by genqlient
+type __attachmentIssue_labelsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_labelsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_labelsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_labelsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_labelsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_labelsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_labelsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_labelsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_labelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_relationsInput is used internally by genqlient
+type __attachmentIssue_relationsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_relationsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_relationsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_relationsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_relationsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_relationsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_relationsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_relationsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_relationsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_releasesInput is used internally by genqlient
+type __attachmentIssue_releasesInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_releasesInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_releasesInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_releasesInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_releasesInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_releasesInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_releasesInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_releasesInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_releasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_stateHistoryInput is used internally by genqlient
+type __attachmentIssue_stateHistoryInput struct {
+	Id    string  `json:"id"`
+	First *int    `json:"first"`
+	After *string `json:"after"`
+}
+
+// GetId returns __attachmentIssue_stateHistoryInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_stateHistoryInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_stateHistoryInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_stateHistoryInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_stateHistoryInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_stateHistoryInput) GetAfter() *string { return v.After }
+
+// __attachmentIssue_subscribersInput is used internally by genqlient
+type __attachmentIssue_subscribersInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_subscribersInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_subscribersInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_subscribersInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_subscribersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_subscribersInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_subscribersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_subscribersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_subscribersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __attachmentsForURLInput is used internally by genqlient
 type __attachmentsForURLInput struct {
 	Url             string  `json:"url"`
@@ -21112,6 +21348,2258 @@ func (v *attachmentAttachment) __premarshalJSON() (*__premarshalattachmentAttach
 	retval.Url = v.AttachmentSummaryFields.Url
 	retval.SourceType = v.AttachmentSummaryFields.SourceType
 	return &retval, nil
+}
+
+// attachmentIssueAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssueAttachmentIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssueAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetId() string { return v.IssueSummaryFields.Id }
+
+// GetIdentifier returns attachmentIssueAttachmentIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns attachmentIssueAttachmentIssue.Title, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetTitle() string { return v.IssueSummaryFields.Title }
+
+// GetBranchName returns attachmentIssueAttachmentIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns attachmentIssueAttachmentIssue.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetUrl() string { return v.IssueSummaryFields.Url }
+
+// GetPriority returns attachmentIssueAttachmentIssue.Priority, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetPriority() float64 { return v.IssueSummaryFields.Priority }
+
+// GetPriorityLabel returns attachmentIssueAttachmentIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns attachmentIssueAttachmentIssue.Team, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns attachmentIssueAttachmentIssue.State, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns attachmentIssueAttachmentIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns attachmentIssueAttachmentIssue.Project, and is useful for accessing the field via an interface.
+func (v *attachmentIssueAttachmentIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *attachmentIssueAttachmentIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssueAttachmentIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssueAttachmentIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssueAttachmentIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *attachmentIssueAttachmentIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssueAttachmentIssue) __premarshalJSON() (*__premarshalattachmentIssueAttachmentIssue, error) {
+	var retval __premarshalattachmentIssueAttachmentIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// attachmentIssueResponse is returned by attachmentIssue on success.
+type attachmentIssueResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssueAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssueResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssueResponse) GetAttachmentIssue() attachmentIssueAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_attachmentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_attachmentsAttachmentIssue struct {
+	// Attachments associated with the issue.
+	Attachments attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection `json:"attachments"`
+}
+
+// GetAttachments returns attachmentIssue_attachmentsAttachmentIssue.Attachments, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssue) GetAttachments() attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection {
+	return v.Attachments
+}
+
+// attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection includes the requested fields of the GraphQL type AttachmentConnection.
+type attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection struct {
+	Nodes    []attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment `json:"nodes"`
+	PageInfo attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection) GetNodes() []attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection) GetPageInfo() attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
+// The GraphQL type's documentation follows.
+//
+// An attachment linking external content to an issue. Attachments represent
+// connections to external resources such as GitHub pull requests, Slack messages,
+// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
+// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
+// serving as both the link destination and unique identifier per issue, and
+// optional metadata specific to the source integration.
+type attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment struct {
+	AttachmentSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) GetId() string {
+	return v.AttachmentSummaryFields.Id
+}
+
+// GetTitle returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment.Title, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) GetTitle() string {
+	return v.AttachmentSummaryFields.Title
+}
+
+// GetSubtitle returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment.Subtitle, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) GetSubtitle() *string {
+	return v.AttachmentSummaryFields.Subtitle
+}
+
+// GetUrl returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) GetUrl() string {
+	return v.AttachmentSummaryFields.Url
+}
+
+// GetSourceType returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment.SourceType, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) GetSourceType() *string {
+	return v.AttachmentSummaryFields.SourceType
+}
+
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AttachmentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Subtitle *string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	SourceType *string `json:"sourceType"`
+}
+
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment) __premarshalJSON() (*__premarshalattachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment, error) {
+	var retval __premarshalattachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment
+
+	retval.Id = v.AttachmentSummaryFields.Id
+	retval.Title = v.AttachmentSummaryFields.Title
+	retval.Subtitle = v.AttachmentSummaryFields.Subtitle
+	retval.Url = v.AttachmentSummaryFields.Url
+	retval.SourceType = v.AttachmentSummaryFields.SourceType
+	return &retval, nil
+}
+
+// attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_attachmentsResponse is returned by attachmentIssue_attachments on success.
+type attachmentIssue_attachmentsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_attachmentsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_attachmentsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_attachmentsResponse) GetAttachmentIssue() attachmentIssue_attachmentsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_botActorAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_botActorAttachmentIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The bot that created the issue, if applicable.
+	BotActor *attachmentIssue_botActorAttachmentIssueBotActorActorBot `json:"botActor"`
+}
+
+// GetId returns attachmentIssue_botActorAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssue) GetId() string { return v.Id }
+
+// GetBotActor returns attachmentIssue_botActorAttachmentIssue.BotActor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssue) GetBotActor() *attachmentIssue_botActorAttachmentIssueBotActorActorBot {
+	return v.BotActor
+}
+
+// attachmentIssue_botActorAttachmentIssueBotActorActorBot includes the requested fields of the GraphQL type ActorBot.
+// The GraphQL type's documentation follows.
+//
+// A bot actor representing a non-human entity that performed an action, such as an
+// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
+// Bot actors are displayed in activity feeds and history to indicate when changes
+// were made by applications rather than users.
+type attachmentIssue_botActorAttachmentIssueBotActorActorBot struct {
+	ActorBotSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_botActorAttachmentIssueBotActorActorBot.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) GetId() *string {
+	return v.ActorBotSummaryFields.Id
+}
+
+// GetType returns attachmentIssue_botActorAttachmentIssueBotActorActorBot.Type, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) GetType() string {
+	return v.ActorBotSummaryFields.Type
+}
+
+// GetSubType returns attachmentIssue_botActorAttachmentIssueBotActorActorBot.SubType, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) GetSubType() *string {
+	return v.ActorBotSummaryFields.SubType
+}
+
+// GetName returns attachmentIssue_botActorAttachmentIssueBotActorActorBot.Name, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) GetName() *string {
+	return v.ActorBotSummaryFields.Name
+}
+
+// GetUserDisplayName returns attachmentIssue_botActorAttachmentIssueBotActorActorBot.UserDisplayName, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) GetUserDisplayName() *string {
+	return v.ActorBotSummaryFields.UserDisplayName
+}
+
+// GetAvatarUrl returns attachmentIssue_botActorAttachmentIssueBotActorActorBot.AvatarUrl, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) GetAvatarUrl() *string {
+	return v.ActorBotSummaryFields.AvatarUrl
+}
+
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_botActorAttachmentIssueBotActorActorBot
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_botActorAttachmentIssueBotActorActorBot = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActorBotSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_botActorAttachmentIssueBotActorActorBot struct {
+	Id *string `json:"id"`
+
+	Type string `json:"type"`
+
+	SubType *string `json:"subType"`
+
+	Name *string `json:"name"`
+
+	UserDisplayName *string `json:"userDisplayName"`
+
+	AvatarUrl *string `json:"avatarUrl"`
+}
+
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_botActorAttachmentIssueBotActorActorBot) __premarshalJSON() (*__premarshalattachmentIssue_botActorAttachmentIssueBotActorActorBot, error) {
+	var retval __premarshalattachmentIssue_botActorAttachmentIssueBotActorActorBot
+
+	retval.Id = v.ActorBotSummaryFields.Id
+	retval.Type = v.ActorBotSummaryFields.Type
+	retval.SubType = v.ActorBotSummaryFields.SubType
+	retval.Name = v.ActorBotSummaryFields.Name
+	retval.UserDisplayName = v.ActorBotSummaryFields.UserDisplayName
+	retval.AvatarUrl = v.ActorBotSummaryFields.AvatarUrl
+	return &retval, nil
+}
+
+// attachmentIssue_botActorResponse is returned by attachmentIssue_botActor on success.
+type attachmentIssue_botActorResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_botActorAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_botActorResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_botActorResponse) GetAttachmentIssue() attachmentIssue_botActorAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_childrenAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_childrenAttachmentIssue struct {
+	// Children of the issue.
+	Children attachmentIssue_childrenAttachmentIssueChildrenIssueConnection `json:"children"`
+}
+
+// GetChildren returns attachmentIssue_childrenAttachmentIssue.Children, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssue) GetChildren() attachmentIssue_childrenAttachmentIssueChildrenIssueConnection {
+	return v.Children
+}
+
+// attachmentIssue_childrenAttachmentIssueChildrenIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type attachmentIssue_childrenAttachmentIssueChildrenIssueConnection struct {
+	Nodes    []attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue `json:"nodes"`
+	PageInfo attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo     `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnection) GetNodes() []attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnection) GetPageInfo() attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Title, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Priority, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Team, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.State, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue.Project, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue) __premarshalJSON() (*__premarshalattachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue, error) {
+	var retval __premarshalattachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_childrenResponse is returned by attachmentIssue_children on success.
+type attachmentIssue_childrenResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_childrenAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_childrenResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_childrenResponse) GetAttachmentIssue() attachmentIssue_childrenAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_documentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_documentsAttachmentIssue struct {
+	// Documents associated with the issue.
+	Documents attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection `json:"documents"`
+}
+
+// GetDocuments returns attachmentIssue_documentsAttachmentIssue.Documents, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssue) GetDocuments() attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection {
+	return v.Documents
+}
+
+// attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection includes the requested fields of the GraphQL type DocumentConnection.
+type attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection struct {
+	Nodes    []attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument `json:"nodes"`
+	PageInfo attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo        `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection) GetNodes() []attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection) GetPageInfo() attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument struct {
+	DocumentSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetId() string {
+	return v.DocumentSummaryFields.Id
+}
+
+// GetTitle returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.Title, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetTitle() string {
+	return v.DocumentSummaryFields.Title
+}
+
+// GetSlugId returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.SlugId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetSlugId() string {
+	return v.DocumentSummaryFields.SlugId
+}
+
+// GetArchivedAt returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetArchivedAt() *string {
+	return v.DocumentSummaryFields.ArchivedAt
+}
+
+// GetProject returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.Project, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetProject() *DocumentSummaryFieldsProject {
+	return v.DocumentSummaryFields.Project
+}
+
+// GetTeam returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.Team, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetTeam() *DocumentSummaryFieldsTeam {
+	return v.DocumentSummaryFields.Team
+}
+
+// GetIssue returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.Issue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetIssue() *DocumentSummaryFieldsIssue {
+	return v.DocumentSummaryFields.Issue
+}
+
+// GetCycle returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument.Cycle, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) GetCycle() *DocumentSummaryFieldsCycle {
+	return v.DocumentSummaryFields.Cycle
+}
+
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.DocumentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	SlugId string `json:"slugId"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Project *DocumentSummaryFieldsProject `json:"project"`
+
+	Team *DocumentSummaryFieldsTeam `json:"team"`
+
+	Issue *DocumentSummaryFieldsIssue `json:"issue"`
+
+	Cycle *DocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument) __premarshalJSON() (*__premarshalattachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument, error) {
+	var retval __premarshalattachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument
+
+	retval.Id = v.DocumentSummaryFields.Id
+	retval.Title = v.DocumentSummaryFields.Title
+	retval.SlugId = v.DocumentSummaryFields.SlugId
+	retval.ArchivedAt = v.DocumentSummaryFields.ArchivedAt
+	retval.Project = v.DocumentSummaryFields.Project
+	retval.Team = v.DocumentSummaryFields.Team
+	retval.Issue = v.DocumentSummaryFields.Issue
+	retval.Cycle = v.DocumentSummaryFields.Cycle
+	return &retval, nil
+}
+
+// attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_documentsResponse is returned by attachmentIssue_documents on success.
+type attachmentIssue_documentsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_documentsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_documentsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_documentsResponse) GetAttachmentIssue() attachmentIssue_documentsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_formerAttachmentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_formerAttachmentsAttachmentIssue struct {
+	// Attachments previously associated with the issue before being moved to another issue.
+	FormerAttachments attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection `json:"formerAttachments"`
+}
+
+// GetFormerAttachments returns attachmentIssue_formerAttachmentsAttachmentIssue.FormerAttachments, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssue) GetFormerAttachments() attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection {
+	return v.FormerAttachments
+}
+
+// attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection includes the requested fields of the GraphQL type AttachmentConnection.
+type attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection struct {
+	Nodes    []attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment `json:"nodes"`
+	PageInfo attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection) GetNodes() []attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection) GetPageInfo() attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
+// The GraphQL type's documentation follows.
+//
+// An attachment linking external content to an issue. Attachments represent
+// connections to external resources such as GitHub pull requests, Slack messages,
+// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
+// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
+// serving as both the link destination and unique identifier per issue, and
+// optional metadata specific to the source integration.
+type attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment struct {
+	AttachmentSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetId() string {
+	return v.AttachmentSummaryFields.Id
+}
+
+// GetTitle returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Title, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetTitle() string {
+	return v.AttachmentSummaryFields.Title
+}
+
+// GetSubtitle returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Subtitle, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetSubtitle() *string {
+	return v.AttachmentSummaryFields.Subtitle
+}
+
+// GetUrl returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetUrl() string {
+	return v.AttachmentSummaryFields.Url
+}
+
+// GetSourceType returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment.SourceType, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) GetSourceType() *string {
+	return v.AttachmentSummaryFields.SourceType
+}
+
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AttachmentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	Subtitle *string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	SourceType *string `json:"sourceType"`
+}
+
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment) __premarshalJSON() (*__premarshalattachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment, error) {
+	var retval __premarshalattachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment
+
+	retval.Id = v.AttachmentSummaryFields.Id
+	retval.Title = v.AttachmentSummaryFields.Title
+	retval.Subtitle = v.AttachmentSummaryFields.Subtitle
+	retval.Url = v.AttachmentSummaryFields.Url
+	retval.SourceType = v.AttachmentSummaryFields.SourceType
+	return &retval, nil
+}
+
+// attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_formerAttachmentsResponse is returned by attachmentIssue_formerAttachments on success.
+type attachmentIssue_formerAttachmentsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_formerAttachmentsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_formerAttachmentsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerAttachmentsResponse) GetAttachmentIssue() attachmentIssue_formerAttachmentsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_historyAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_historyAttachmentIssue struct {
+	// History entries associated with the issue.
+	History attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection `json:"history"`
+}
+
+// GetHistory returns attachmentIssue_historyAttachmentIssue.History, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssue) GetHistory() attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection {
+	return v.History
+}
+
+// attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection includes the requested fields of the GraphQL type IssueHistoryConnection.
+type attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection struct {
+	Nodes    []attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory `json:"nodes"`
+	PageInfo attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection) GetNodes() []attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection) GetPageInfo() attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory includes the requested fields of the GraphQL type IssueHistory.
+// The GraphQL type's documentation follows.
+//
+// A record of changes to an issue. Each history entry captures one or more
+// property changes made to an issue within a short grouping window by the same
+// actor. History entries track changes to fields such as title, assignee, status,
+// priority, project, cycle, labels, due date, estimate, parent issue, and more.
+// They also record metadata about what triggered the change (e.g., a user action,
+// workflow automation, triage rule, or integration).
+type attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Identifier of the user who made these changes. Can be used to query the user
+	// directly. Null if the change was made by an integration, automation, or system process.
+	ActorId *string `json:"actorId"`
+	// Whether the issue's description was updated.
+	UpdatedDescription *bool `json:"updatedDescription"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The issue that was changed.
+	Issue attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue `json:"issue"`
+}
+
+// GetId returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetId() string {
+	return v.Id
+}
+
+// GetActorId returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory.ActorId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetActorId() *string {
+	return v.ActorId
+}
+
+// GetUpdatedDescription returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory.UpdatedDescription, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetUpdatedDescription() *bool {
+	return v.UpdatedDescription
+}
+
+// GetCreatedAt returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory.CreatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetCreatedAt() string {
+	return v.CreatedAt
+}
+
+// GetUpdatedAt returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetUpdatedAt() string {
+	return v.UpdatedAt
+}
+
+// GetArchivedAt returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetArchivedAt() *string {
+	return v.ArchivedAt
+}
+
+// GetIssue returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory.Issue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetIssue() attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue {
+	return v.Issue
+}
+
+// attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue) GetId() string {
+	return v.Id
+}
+
+// attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_historyResponse is returned by attachmentIssue_history on success.
+type attachmentIssue_historyResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_historyAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_historyResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_historyResponse) GetAttachmentIssue() attachmentIssue_historyAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_inverseRelationsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_inverseRelationsAttachmentIssue struct {
+	// Inverse relations associated with this issue.
+	InverseRelations attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection `json:"inverseRelations"`
+}
+
+// GetInverseRelations returns attachmentIssue_inverseRelationsAttachmentIssue.InverseRelations, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssue) GetInverseRelations() attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection {
+	return v.InverseRelations
+}
+
+// attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection includes the requested fields of the GraphQL type IssueRelationConnection.
+type attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection struct {
+	Nodes    []attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation `json:"nodes"`
+	PageInfo attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection) GetNodes() []attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection) GetPageInfo() attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
+// The GraphQL type's documentation follows.
+//
+// A relation between two issues. Issue relations represent directional
+// relationships such as blocking, being blocked by, relating to, or duplicating
+// another issue. Each relation connects a source issue to a related issue with a
+// specific type describing the nature of the relationship.
+type attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
+	IssueRelationSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetId() string {
+	return v.IssueRelationSummaryFields.Id
+}
+
+// GetType returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.Type, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetType() string {
+	return v.IssueRelationSummaryFields.Type
+}
+
+// GetCreatedAt returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.CreatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetCreatedAt() string {
+	return v.IssueRelationSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetUpdatedAt() string {
+	return v.IssueRelationSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetArchivedAt() *string {
+	return v.IssueRelationSummaryFields.ArchivedAt
+}
+
+// GetIssue returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.Issue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetIssue() IssueRelationSummaryFieldsIssue {
+	return v.IssueRelationSummaryFields.Issue
+}
+
+// GetRelatedIssue returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation.RelatedIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) GetRelatedIssue() IssueRelationSummaryFieldsRelatedIssue {
+	return v.IssueRelationSummaryFields.RelatedIssue
+}
+
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueRelationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue IssueRelationSummaryFieldsIssue `json:"issue"`
+
+	RelatedIssue IssueRelationSummaryFieldsRelatedIssue `json:"relatedIssue"`
+}
+
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation) __premarshalJSON() (*__premarshalattachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation, error) {
+	var retval __premarshalattachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation
+
+	retval.Id = v.IssueRelationSummaryFields.Id
+	retval.Type = v.IssueRelationSummaryFields.Type
+	retval.CreatedAt = v.IssueRelationSummaryFields.CreatedAt
+	retval.UpdatedAt = v.IssueRelationSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.IssueRelationSummaryFields.ArchivedAt
+	retval.Issue = v.IssueRelationSummaryFields.Issue
+	retval.RelatedIssue = v.IssueRelationSummaryFields.RelatedIssue
+	return &retval, nil
+}
+
+// attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_inverseRelationsResponse is returned by attachmentIssue_inverseRelations on success.
+type attachmentIssue_inverseRelationsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_inverseRelationsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_inverseRelationsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_inverseRelationsResponse) GetAttachmentIssue() attachmentIssue_inverseRelationsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_labelsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_labelsAttachmentIssue struct {
+	// Labels associated with this issue.
+	Labels attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection `json:"labels"`
+}
+
+// GetLabels returns attachmentIssue_labelsAttachmentIssue.Labels, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssue) GetLabels() attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection {
+	return v.Labels
+}
+
+// attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection includes the requested fields of the GraphQL type IssueLabelConnection.
+type attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection struct {
+	Nodes    []attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel `json:"nodes"`
+	PageInfo attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo          `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection) GetNodes() []attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection) GetPageInfo() attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel) __premarshalJSON() (*__premarshalattachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel, error) {
+	var retval __premarshalattachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_labelsResponse is returned by attachmentIssue_labels on success.
+type attachmentIssue_labelsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_labelsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_labelsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_labelsResponse) GetAttachmentIssue() attachmentIssue_labelsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_relationsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_relationsAttachmentIssue struct {
+	// Relations associated with this issue.
+	Relations attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection `json:"relations"`
+}
+
+// GetRelations returns attachmentIssue_relationsAttachmentIssue.Relations, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssue) GetRelations() attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection {
+	return v.Relations
+}
+
+// attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection includes the requested fields of the GraphQL type IssueRelationConnection.
+type attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection struct {
+	Nodes    []attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation `json:"nodes"`
+	PageInfo attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo             `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection) GetNodes() []attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection) GetPageInfo() attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
+// The GraphQL type's documentation follows.
+//
+// A relation between two issues. Issue relations represent directional
+// relationships such as blocking, being blocked by, relating to, or duplicating
+// another issue. Each relation connects a source issue to a related issue with a
+// specific type describing the nature of the relationship.
+type attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
+	IssueRelationSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) GetId() string {
+	return v.IssueRelationSummaryFields.Id
+}
+
+// GetType returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation.Type, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) GetType() string {
+	return v.IssueRelationSummaryFields.Type
+}
+
+// GetCreatedAt returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation.CreatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) GetCreatedAt() string {
+	return v.IssueRelationSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) GetUpdatedAt() string {
+	return v.IssueRelationSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) GetArchivedAt() *string {
+	return v.IssueRelationSummaryFields.ArchivedAt
+}
+
+// GetIssue returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation.Issue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) GetIssue() IssueRelationSummaryFieldsIssue {
+	return v.IssueRelationSummaryFields.Issue
+}
+
+// GetRelatedIssue returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation.RelatedIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) GetRelatedIssue() IssueRelationSummaryFieldsRelatedIssue {
+	return v.IssueRelationSummaryFields.RelatedIssue
+}
+
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueRelationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue IssueRelationSummaryFieldsIssue `json:"issue"`
+
+	RelatedIssue IssueRelationSummaryFieldsRelatedIssue `json:"relatedIssue"`
+}
+
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation) __premarshalJSON() (*__premarshalattachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation, error) {
+	var retval __premarshalattachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation
+
+	retval.Id = v.IssueRelationSummaryFields.Id
+	retval.Type = v.IssueRelationSummaryFields.Type
+	retval.CreatedAt = v.IssueRelationSummaryFields.CreatedAt
+	retval.UpdatedAt = v.IssueRelationSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.IssueRelationSummaryFields.ArchivedAt
+	retval.Issue = v.IssueRelationSummaryFields.Issue
+	retval.RelatedIssue = v.IssueRelationSummaryFields.RelatedIssue
+	return &retval, nil
+}
+
+// attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_relationsResponse is returned by attachmentIssue_relations on success.
+type attachmentIssue_relationsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_relationsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_relationsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_relationsResponse) GetAttachmentIssue() attachmentIssue_relationsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_releasesAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_releasesAttachmentIssue struct {
+	// Releases associated with the issue.
+	Releases attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection `json:"releases"`
+}
+
+// GetReleases returns attachmentIssue_releasesAttachmentIssue.Releases, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssue) GetReleases() attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection {
+	return v.Releases
+}
+
+// attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection includes the requested fields of the GraphQL type ReleaseConnection.
+type attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection struct {
+	Nodes    []attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease `json:"nodes"`
+	PageInfo attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection) GetNodes() []attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection) GetPageInfo() attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
+// The GraphQL type's documentation follows.
+//
+// A release that bundles issues together for a software deployment or version.
+// Releases belong to a release pipeline and progress through stages (e.g.,
+// planned, started, completed, canceled). Issues are associated with releases via
+// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
+// as when it was started, completed, or canceled.
+type attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease struct {
+	ReleaseSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetId() string {
+	return v.ReleaseSummaryFields.Id
+}
+
+// GetName returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Name, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetName() string {
+	return v.ReleaseSummaryFields.Name
+}
+
+// GetSlugId returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.SlugId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetSlugId() string {
+	return v.ReleaseSummaryFields.SlugId
+}
+
+// GetVersion returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Version, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetVersion() *string {
+	return v.ReleaseSummaryFields.Version
+}
+
+// GetDescription returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Description, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetDescription() *string {
+	return v.ReleaseSummaryFields.Description
+}
+
+// GetCommitSha returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.CommitSha, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetCommitSha() *string {
+	return v.ReleaseSummaryFields.CommitSha
+}
+
+// GetIssueCount returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.IssueCount, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetIssueCount() int {
+	return v.ReleaseSummaryFields.IssueCount
+}
+
+// GetTrashed returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Trashed, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetTrashed() *bool {
+	return v.ReleaseSummaryFields.Trashed
+}
+
+// GetUrl returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetUrl() string {
+	return v.ReleaseSummaryFields.Url
+}
+
+// GetStartDate returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.StartDate, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetStartDate() *string {
+	return v.ReleaseSummaryFields.StartDate
+}
+
+// GetTargetDate returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.TargetDate, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetTargetDate() *string {
+	return v.ReleaseSummaryFields.TargetDate
+}
+
+// GetStartedAt returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.StartedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetStartedAt() *string {
+	return v.ReleaseSummaryFields.StartedAt
+}
+
+// GetCompletedAt returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.CompletedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetCompletedAt() *string {
+	return v.ReleaseSummaryFields.CompletedAt
+}
+
+// GetCanceledAt returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.CanceledAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetCanceledAt() *string {
+	return v.ReleaseSummaryFields.CanceledAt
+}
+
+// GetAutoArchivedAt returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.AutoArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetAutoArchivedAt() *string {
+	return v.ReleaseSummaryFields.AutoArchivedAt
+}
+
+// GetCreatedAt returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.CreatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetCreatedAt() string {
+	return v.ReleaseSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetUpdatedAt() string {
+	return v.ReleaseSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetArchivedAt() *string {
+	return v.ReleaseSummaryFields.ArchivedAt
+}
+
+// GetPipeline returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Pipeline, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetPipeline() ReleaseSummaryFieldsPipelineReleasePipeline {
+	return v.ReleaseSummaryFields.Pipeline
+}
+
+// GetStage returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Stage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetStage() ReleaseSummaryFieldsStageReleaseStage {
+	return v.ReleaseSummaryFields.Stage
+}
+
+// GetReleaseNotes returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.ReleaseNotes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetReleaseNotes() []ReleaseSummaryFieldsReleaseNotesReleaseNote {
+	return v.ReleaseSummaryFields.ReleaseNotes
+}
+
+// GetCreator returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease.Creator, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) GetCreator() *ReleaseSummaryFieldsCreatorUser {
+	return v.ReleaseSummaryFields.Creator
+}
+
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ReleaseSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	SlugId string `json:"slugId"`
+
+	Version *string `json:"version"`
+
+	Description *string `json:"description"`
+
+	CommitSha *string `json:"commitSha"`
+
+	IssueCount int `json:"issueCount"`
+
+	Trashed *bool `json:"trashed"`
+
+	Url string `json:"url"`
+
+	StartDate *string `json:"startDate"`
+
+	TargetDate *string `json:"targetDate"`
+
+	StartedAt *string `json:"startedAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	CanceledAt *string `json:"canceledAt"`
+
+	AutoArchivedAt *string `json:"autoArchivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Pipeline ReleaseSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
+
+	Stage ReleaseSummaryFieldsStageReleaseStage `json:"stage"`
+
+	ReleaseNotes []ReleaseSummaryFieldsReleaseNotesReleaseNote `json:"releaseNotes"`
+
+	Creator *ReleaseSummaryFieldsCreatorUser `json:"creator"`
+}
+
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease) __premarshalJSON() (*__premarshalattachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease, error) {
+	var retval __premarshalattachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease
+
+	retval.Id = v.ReleaseSummaryFields.Id
+	retval.Name = v.ReleaseSummaryFields.Name
+	retval.SlugId = v.ReleaseSummaryFields.SlugId
+	retval.Version = v.ReleaseSummaryFields.Version
+	retval.Description = v.ReleaseSummaryFields.Description
+	retval.CommitSha = v.ReleaseSummaryFields.CommitSha
+	retval.IssueCount = v.ReleaseSummaryFields.IssueCount
+	retval.Trashed = v.ReleaseSummaryFields.Trashed
+	retval.Url = v.ReleaseSummaryFields.Url
+	retval.StartDate = v.ReleaseSummaryFields.StartDate
+	retval.TargetDate = v.ReleaseSummaryFields.TargetDate
+	retval.StartedAt = v.ReleaseSummaryFields.StartedAt
+	retval.CompletedAt = v.ReleaseSummaryFields.CompletedAt
+	retval.CanceledAt = v.ReleaseSummaryFields.CanceledAt
+	retval.AutoArchivedAt = v.ReleaseSummaryFields.AutoArchivedAt
+	retval.CreatedAt = v.ReleaseSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ReleaseSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.ReleaseSummaryFields.ArchivedAt
+	retval.Pipeline = v.ReleaseSummaryFields.Pipeline
+	retval.Stage = v.ReleaseSummaryFields.Stage
+	retval.ReleaseNotes = v.ReleaseSummaryFields.ReleaseNotes
+	retval.Creator = v.ReleaseSummaryFields.Creator
+	return &retval, nil
+}
+
+// attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_releasesResponse is returned by attachmentIssue_releases on success.
+type attachmentIssue_releasesResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_releasesAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_releasesResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_releasesResponse) GetAttachmentIssue() attachmentIssue_releasesAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_stateHistoryAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_stateHistoryAttachmentIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The issue's workflow states over time.
+	StateHistory attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection `json:"stateHistory"`
+}
+
+// GetId returns attachmentIssue_stateHistoryAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssue) GetId() string { return v.Id }
+
+// GetStateHistory returns attachmentIssue_stateHistoryAttachmentIssue.StateHistory, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssue) GetStateHistory() attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection {
+	return v.StateHistory
+}
+
+// attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection includes the requested fields of the GraphQL type IssueStateSpanConnection.
+type attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection struct {
+	Nodes    []attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan `json:"nodes"`
+	PageInfo attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection) GetNodes() []attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnection) GetPageInfo() attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan includes the requested fields of the GraphQL type IssueStateSpan.
+// The GraphQL type's documentation follows.
+//
+// A continuous period of time during which an issue remained in a specific workflow state.
+type attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan struct {
+	// The unique identifier of the state span.
+	Id string `json:"id"`
+	// The workflow state identifier for this span.
+	StateId string `json:"stateId"`
+	// The timestamp when the issue entered this state.
+	StartedAt string `json:"startedAt"`
+	// The timestamp when the issue left this state. Null if the issue is currently in this state.
+	EndedAt *string `json:"endedAt"`
+	// The workflow state for this span.
+	State *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState `json:"state"`
+}
+
+// GetId returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetId() string {
+	return v.Id
+}
+
+// GetStateId returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.StateId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetStateId() string {
+	return v.StateId
+}
+
+// GetStartedAt returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.StartedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetStartedAt() string {
+	return v.StartedAt
+}
+
+// GetEndedAt returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.EndedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetEndedAt() *string {
+	return v.EndedAt
+}
+
+// GetState returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.State, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetState() *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState {
+	return v.State
+}
+
+// attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+}
+
+// GetId returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetId() string {
+	return v.Id
+}
+
+// GetName returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetName() string {
+	return v.Name
+}
+
+// GetType returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetType() string {
+	return v.Type
+}
+
+// attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_stateHistoryResponse is returned by attachmentIssue_stateHistory on success.
+type attachmentIssue_stateHistoryResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_stateHistoryAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_stateHistoryResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_stateHistoryResponse) GetAttachmentIssue() attachmentIssue_stateHistoryAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_subscribersAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_subscribersAttachmentIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Users who are subscribed to the issue.
+	Subscribers attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection `json:"subscribers"`
+}
+
+// GetId returns attachmentIssue_subscribersAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssue) GetId() string { return v.Id }
+
+// GetSubscribers returns attachmentIssue_subscribersAttachmentIssue.Subscribers, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssue) GetSubscribers() attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection {
+	return v.Subscribers
+}
+
+// attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection includes the requested fields of the GraphQL type UserConnection.
+type attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection struct {
+	Nodes    []attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser `json:"nodes"`
+	PageInfo attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection) GetNodes() []attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection) GetPageInfo() attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) GetId() string {
+	return v.UserSummaryFields.Id
+}
+
+// GetName returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) GetName() string {
+	return v.UserSummaryFields.Name
+}
+
+// GetDisplayName returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) GetDisplayName() string {
+	return v.UserSummaryFields.DisplayName
+}
+
+// GetEmail returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) GetEmail() string {
+	return v.UserSummaryFields.Email
+}
+
+// GetActive returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) GetActive() bool {
+	return v.UserSummaryFields.Active
+}
+
+// GetGuest returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) GetGuest() bool {
+	return v.UserSummaryFields.Guest
+}
+
+// GetAdmin returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) GetAdmin() bool {
+	return v.UserSummaryFields.Admin
+}
+
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser) __premarshalJSON() (*__premarshalattachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser, error) {
+	var retval __premarshalattachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
+// attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_subscribersResponse is returned by attachmentIssue_subscribers on success.
+type attachmentIssue_subscribersResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_subscribersAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_subscribersResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_subscribersResponse) GetAttachmentIssue() attachmentIssue_subscribersAttachmentIssue {
+	return v.AttachmentIssue
 }
 
 // attachmentResponse is returned by attachment on success.
@@ -62125,6 +64613,818 @@ func attachment(
 	}
 
 	data_ = &attachmentResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue.
+const attachmentIssue_Operation = `
+query attachmentIssue ($id: String!) {
+	attachmentIssue(id: $id) {
+		... IssueSummaryFields
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func attachmentIssue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *attachmentIssueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue",
+		Query:  attachmentIssue_Operation,
+		Variables: &__attachmentIssueInput{
+			Id: id,
+		},
+	}
+
+	data_ = &attachmentIssueResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_attachments.
+const attachmentIssue_attachments_Operation = `
+query attachmentIssue_attachments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... AttachmentSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment AttachmentSummaryFields on Attachment {
+	id
+	title
+	subtitle
+	url
+	sourceType
+}
+`
+
+func attachmentIssue_attachments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_attachmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_attachments",
+		Query:  attachmentIssue_attachments_Operation,
+		Variables: &__attachmentIssue_attachmentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_attachmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_botActor.
+const attachmentIssue_botActor_Operation = `
+query attachmentIssue_botActor ($id: String!) {
+	attachmentIssue(id: $id) {
+		id
+		botActor {
+			... ActorBotSummaryFields
+		}
+	}
+}
+fragment ActorBotSummaryFields on ActorBot {
+	id
+	type
+	subType
+	name
+	userDisplayName
+	avatarUrl
+}
+`
+
+func attachmentIssue_botActor(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *attachmentIssue_botActorResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_botActor",
+		Query:  attachmentIssue_botActor_Operation,
+		Variables: &__attachmentIssue_botActorInput{
+			Id: id,
+		},
+	}
+
+	data_ = &attachmentIssue_botActorResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_children.
+const attachmentIssue_children_Operation = `
+query attachmentIssue_children ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		children(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func attachmentIssue_children(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_childrenResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_children",
+		Query:  attachmentIssue_children_Operation,
+		Variables: &__attachmentIssue_childrenInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_childrenResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_documents.
+const attachmentIssue_documents_Operation = `
+query attachmentIssue_documents ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		documents(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... DocumentSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment DocumentSummaryFields on Document {
+	id
+	title
+	slugId
+	archivedAt
+	project {
+		id
+		name
+	}
+	team {
+		id
+		key
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	cycle {
+		id
+		number
+		name
+	}
+}
+`
+
+func attachmentIssue_documents(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_documentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_documents",
+		Query:  attachmentIssue_documents_Operation,
+		Variables: &__attachmentIssue_documentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_documentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_formerAttachments.
+const attachmentIssue_formerAttachments_Operation = `
+query attachmentIssue_formerAttachments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... AttachmentSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment AttachmentSummaryFields on Attachment {
+	id
+	title
+	subtitle
+	url
+	sourceType
+}
+`
+
+func attachmentIssue_formerAttachments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_formerAttachmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_formerAttachments",
+		Query:  attachmentIssue_formerAttachments_Operation,
+		Variables: &__attachmentIssue_formerAttachmentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_formerAttachmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_history.
+const attachmentIssue_history_Operation = `
+query attachmentIssue_history ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		history(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				id
+				actorId
+				updatedDescription
+				createdAt
+				updatedAt
+				archivedAt
+				issue {
+					id
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+`
+
+func attachmentIssue_history(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_historyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_history",
+		Query:  attachmentIssue_history_Operation,
+		Variables: &__attachmentIssue_historyInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_historyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_inverseRelations.
+const attachmentIssue_inverseRelations_Operation = `
+query attachmentIssue_inverseRelations ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueRelationSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueRelationSummaryFields on IssueRelation {
+	id
+	type
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+		identifier
+		title
+	}
+	relatedIssue {
+		id
+		identifier
+		title
+	}
+}
+`
+
+func attachmentIssue_inverseRelations(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_inverseRelationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_inverseRelations",
+		Query:  attachmentIssue_inverseRelations_Operation,
+		Variables: &__attachmentIssue_inverseRelationsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_inverseRelationsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_labels.
+const attachmentIssue_labels_Operation = `
+query attachmentIssue_labels ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		labels(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueLabelSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func attachmentIssue_labels(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_labelsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_labels",
+		Query:  attachmentIssue_labels_Operation,
+		Variables: &__attachmentIssue_labelsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_labelsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_relations.
+const attachmentIssue_relations_Operation = `
+query attachmentIssue_relations ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		relations(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... IssueRelationSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment IssueRelationSummaryFields on IssueRelation {
+	id
+	type
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+		identifier
+		title
+	}
+	relatedIssue {
+		id
+		identifier
+		title
+	}
+}
+`
+
+func attachmentIssue_relations(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_relationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_relations",
+		Query:  attachmentIssue_relations_Operation,
+		Variables: &__attachmentIssue_relationsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_relationsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_releases.
+const attachmentIssue_releases_Operation = `
+query attachmentIssue_releases ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		releases(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... ReleaseSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment ReleaseSummaryFields on Release {
+	id
+	name
+	slugId
+	version
+	description
+	commitSha
+	issueCount
+	trashed
+	url
+	startDate
+	targetDate
+	startedAt
+	completedAt
+	canceledAt
+	autoArchivedAt
+	createdAt
+	updatedAt
+	archivedAt
+	pipeline {
+		id
+		name
+		slugId
+	}
+	stage {
+		id
+		name
+		type
+	}
+	releaseNotes {
+		id
+		title
+		slugId
+	}
+	creator {
+		id
+		displayName
+	}
+}
+`
+
+func attachmentIssue_releases(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_releasesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_releases",
+		Query:  attachmentIssue_releases_Operation,
+		Variables: &__attachmentIssue_releasesInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_releasesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_stateHistory.
+const attachmentIssue_stateHistory_Operation = `
+query attachmentIssue_stateHistory ($id: String!, $first: Int, $after: String) {
+	attachmentIssue(id: $id) {
+		id
+		stateHistory(first: $first, after: $after) {
+			nodes {
+				id
+				stateId
+				startedAt
+				endedAt
+				state {
+					id
+					name
+					type
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+`
+
+func attachmentIssue_stateHistory(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+) (data_ *attachmentIssue_stateHistoryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_stateHistory",
+		Query:  attachmentIssue_stateHistory_Operation,
+		Variables: &__attachmentIssue_stateHistoryInput{
+			Id:    id,
+			First: first,
+			After: after,
+		},
+	}
+
+	data_ = &attachmentIssue_stateHistoryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_subscribers.
+const attachmentIssue_subscribers_Operation = `
+query attachmentIssue_subscribers ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		id
+		subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... UserSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func attachmentIssue_subscribers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_subscribersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_subscribers",
+		Query:  attachmentIssue_subscribers_Operation,
+		Variables: &__attachmentIssue_subscribersInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_subscribersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

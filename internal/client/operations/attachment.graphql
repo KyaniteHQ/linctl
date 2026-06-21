@@ -28,6 +28,193 @@ query attachment($id: String!) {
   }
 }
 
+query attachmentIssue($id: String!) {
+  attachmentIssue(id: $id) {
+    ...IssueSummaryFields
+  }
+}
+
+query attachmentIssue_attachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...AttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_botActor($id: String!) {
+  attachmentIssue(id: $id) {
+    id
+    botActor {
+      ...ActorBotSummaryFields
+    }
+  }
+}
+
+query attachmentIssue_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    children(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    documents(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...DocumentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_formerAttachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...AttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    history(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        id
+        actorId
+        updatedDescription
+        createdAt
+        updatedAt
+        archivedAt
+        issue {
+          id
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_inverseRelations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_labels($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    labels(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_relations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    relations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_releases($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    releases(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ReleaseSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_stateHistory($id: String!, $first: Int, $after: String) {
+  attachmentIssue(id: $id) {
+    id
+    stateHistory(first: $first, after: $after) {
+      nodes {
+        id
+        stateId
+        startedAt
+        endedAt
+        state {
+          id
+          name
+          type
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_subscribers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    id
+    subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...UserSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment AttachmentSummaryFields on Attachment {
   id
   title

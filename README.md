@@ -262,6 +262,19 @@ linctl emoji get emoji-id
 linctl attachment list --limit 20
 linctl attachment url https://example.com/spec --limit 20
 linctl attachment get attachment-id
+linctl attachment issue get attachment-id
+linctl attachment issue attachments attachment-id --limit 20
+linctl attachment issue bot-actor attachment-id
+linctl attachment issue children attachment-id --limit 20
+linctl attachment issue documents attachment-id --limit 20
+linctl attachment issue former-attachments attachment-id --limit 20
+linctl attachment issue history attachment-id --limit 20
+linctl attachment issue inverse-relations attachment-id --limit 20
+linctl attachment issue labels attachment-id --limit 20
+linctl attachment issue relations attachment-id --limit 20
+linctl attachment issue releases attachment-id --limit 20
+linctl attachment issue state-history attachment-id --limit 20
+linctl attachment issue subscribers attachment-id --limit 20
 linctl project usage
 ```
 
@@ -476,6 +489,19 @@ linctl emoji get emoji-id
 linctl attachment list --limit 20
 linctl attachment url https://example.com/spec --limit 20
 linctl attachment get attachment-id
+linctl attachment issue get attachment-id
+linctl attachment issue attachments attachment-id --limit 20
+linctl attachment issue bot-actor attachment-id
+linctl attachment issue children attachment-id --limit 20
+linctl attachment issue documents attachment-id --limit 20
+linctl attachment issue former-attachments attachment-id --limit 20
+linctl attachment issue history attachment-id --limit 20
+linctl attachment issue inverse-relations attachment-id --limit 20
+linctl attachment issue labels attachment-id --limit 20
+linctl attachment issue relations attachment-id --limit 20
+linctl attachment issue releases attachment-id --limit 20
+linctl attachment issue state-history attachment-id --limit 20
+linctl attachment issue subscribers attachment-id --limit 20
 linctl --fail-on-empty --sort title --order asc issue list
 linctl --format minimal issue get LIT-123
 ```

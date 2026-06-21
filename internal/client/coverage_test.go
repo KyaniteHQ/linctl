@@ -499,6 +499,25 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"attachments":                                `{"attachments":{"nodes":[{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"attachmentsForURL":                          `{"attachmentsForURL":{"nodes":[{"id":"attachment-url-id","title":"Linked URL","subtitle":"url source","url":"https://example.com/spec","sourceType":"url"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"attachment":                                 `{"attachment":{"id":"attachment-id","title":"Linked PR","subtitle":"feat: add thing","url":"https://github.com/kyanite/linctl/pull/1","sourceType":"github"}}`,
+		"attachmentIssue": `{"attachmentIssue":` + issueJSON(issueFixture{
+			Identifier: "LIT-41",
+			Title:      "attachment issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+		"attachmentIssue_attachments":       `{"attachmentIssue":{"attachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_botActor":          `{"attachmentIssue":{"id":"issue-id","botActor":` + actorBotJSON() + `}}`,
+		"attachmentIssue_children":          `{"attachmentIssue":{"children":{"nodes":[` + issueJSON(issueFixture{Identifier: "LIT-42", Title: "attachment child issue", StateID: "todo", State: "Todo", StateType: "unstarted"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_documents":         `{"attachmentIssue":{"documents":{"nodes":[{"id":"attachment-issue-document-id","title":"Attachment issue spec","slugId":"attachment-issue-spec","archivedAt":null,"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_formerAttachments": `{"attachmentIssue":{"formerAttachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_history":           `{"attachmentIssue":{"history":{"nodes":[` + issueHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_inverseRelations":  `{"attachmentIssue":{"inverseRelations":{"nodes":[` + issueRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_labels":            `{"attachmentIssue":{"labels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_relations":         `{"attachmentIssue":{"relations":{"nodes":[` + issueRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_releases":          `{"attachmentIssue":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_stateHistory":      `{"attachmentIssue":{"id":"issue-id","stateHistory":{"nodes":[` + issueStateSpanJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"attachmentIssue_subscribers":       `{"attachmentIssue":{"id":"issue-id","subscribers":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 	}
 
 	// When
@@ -927,6 +946,42 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	attachmentsForURL, err := ListAttachmentsForURL(context.Background(), graphqlClient, "https://example.com/spec", 2)
 	require.NoError(t, err)
 	attachment, err := GetAttachmentByID(context.Background(), graphqlClient, "attachment-id")
+	require.NoError(t, err)
+	attachmentIssue, err := GetAttachmentIssue(context.Background(), graphqlClient, "attachment-id")
+	require.NoError(t, err)
+	attachmentIssueAttachments, err := ListAttachmentIssueAttachments(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueBotActor, err := GetAttachmentIssueBotActor(context.Background(), graphqlClient, "attachment-id")
+	require.NoError(t, err)
+	attachmentIssueChildren, err := ListAttachmentIssueChildren(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueDocuments, err := ListAttachmentIssueDocuments(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueFormerAttachments, err := ListAttachmentIssueFormerAttachments(
+		context.Background(),
+		graphqlClient,
+		"attachment-id",
+		2,
+	)
+	require.NoError(t, err)
+	attachmentIssueHistory, err := ListAttachmentIssueHistory(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueInverseRelations, err := ListAttachmentIssueInverseRelations(
+		context.Background(),
+		graphqlClient,
+		"attachment-id",
+		2,
+	)
+	require.NoError(t, err)
+	attachmentIssueLabels, err := ListAttachmentIssueLabels(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueRelations, err := ListAttachmentIssueRelations(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueReleases, err := ListAttachmentIssueReleases(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueStateHistory, err := ListAttachmentIssueStateHistory(context.Background(), graphqlClient, "attachment-id", 2)
+	require.NoError(t, err)
+	attachmentIssueSubscribers, err := ListAttachmentIssueSubscribers(context.Background(), graphqlClient, "attachment-id", 2)
 	require.NoError(t, err)
 
 	// Then
@@ -1530,6 +1585,21 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "url", attachmentsForURL.Attachments[0].SourceType)
 	require.Equal(t, "attachment-id", attachment.ID)
 	require.Equal(t, "feat: add thing", attachment.Subtitle)
+	require.Equal(t, "LIT-41", attachmentIssue.Identifier)
+	require.Equal(t, "project-attachment-id", attachmentIssueAttachments.Attachments[0].ID)
+	require.Equal(t, "issue-id", attachmentIssueBotActor.IssueID)
+	require.Equal(t, "bot-actor-id", attachmentIssueBotActor.Bot.ID)
+	require.Equal(t, "LIT-42", attachmentIssueChildren.Issues[0].Identifier)
+	require.Equal(t, "Attachment issue spec", attachmentIssueDocuments.Documents[0].Title)
+	require.Equal(t, "project-attachment-id", attachmentIssueFormerAttachments.Attachments[0].ID)
+	require.Equal(t, "issue-history-id", attachmentIssueHistory.History[0].ID)
+	require.Equal(t, "issue-relation-id", attachmentIssueInverseRelations.Relations[0].ID)
+	require.Equal(t, "Bug", attachmentIssueLabels.Labels[0].Name)
+	require.Equal(t, "issue-relation-id", attachmentIssueRelations.Relations[0].ID)
+	require.Equal(t, "release-id", attachmentIssueReleases.Releases[0].ID)
+	require.Equal(t, "issue-id", attachmentIssueStateHistory.IssueID)
+	require.Equal(t, "issue-state-span-id", attachmentIssueStateHistory.Spans[0].ID)
+	require.Equal(t, "Omer", attachmentIssueSubscribers.Users[0].DisplayName)
 }
 
 func Test_CheckOrganizationExists_returns_operation_errors(t *testing.T) {
@@ -1550,6 +1620,7 @@ func Test_ClientReadHelpers_cover_nil_actor_bot_summaries(t *testing.T) {
 	require.Nil(t, actorBotSummary(nil))
 	require.Nil(t, commentActorBotSummary(nil))
 	require.Nil(t, issueActorBotSummary(nil))
+	require.Nil(t, attachmentIssueActorBotSummary(nil))
 }
 
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
@@ -2641,6 +2712,58 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetAttachmentByID(context.Background(), graphqlClient, "attachment-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get attachment attachment-id")
+
+		_, err = GetAttachmentIssue(context.Background(), graphqlClient, "attachment-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get attachment issue attachment-id")
+
+		_, err = ListAttachmentIssueAttachments(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue attachments attachment-id")
+
+		_, err = GetAttachmentIssueBotActor(context.Background(), graphqlClient, "attachment-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get attachment issue bot actor attachment-id")
+
+		_, err = ListAttachmentIssueChildren(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue children attachment-id")
+
+		_, err = ListAttachmentIssueDocuments(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue documents attachment-id")
+
+		_, err = ListAttachmentIssueFormerAttachments(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue former attachments attachment-id")
+
+		_, err = ListAttachmentIssueHistory(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue history attachment-id")
+
+		_, err = ListAttachmentIssueInverseRelations(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue inverse relations attachment-id")
+
+		_, err = ListAttachmentIssueLabels(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue labels attachment-id")
+
+		_, err = ListAttachmentIssueRelations(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue relations attachment-id")
+
+		_, err = ListAttachmentIssueReleases(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue releases attachment-id")
+
+		_, err = ListAttachmentIssueStateHistory(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue state history attachment-id")
+
+		_, err = ListAttachmentIssueSubscribers(context.Background(), graphqlClient, "attachment-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list attachment issue subscribers attachment-id")
 	})
 
 	t.Run("issue mutations fail when payload omits entity", func(t *testing.T) {

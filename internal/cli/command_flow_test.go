@@ -240,6 +240,19 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "attachment list", args: []string{"attachment", "list", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
 		{name: "attachment url", args: []string{"attachment", "url", "https://github.com/kyanite/linctl/pull/1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
 		{name: "attachment get", args: []string{"attachment", "get", "attachment-id"}, contains: "attachment-id Linked PR [github]"},
+		{name: "attachment issue get", args: []string{"attachment", "issue", "get", "attachment-id"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "attachment issue attachments", args: []string{"attachment", "issue", "attachments", "attachment-id", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "attachment issue bot actor", args: []string{"attachment", "issue", "bot-actor", "attachment-id"}, contains: "issue-id bot bot-actor-id GitHub [github]"},
+		{name: "attachment issue children", args: []string{"attachment", "issue", "children", "attachment-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "attachment issue documents", args: []string{"attachment", "issue", "documents", "attachment-id", "--limit", "1"}, contains: "document-id Spec [issue]"},
+		{name: "attachment issue former attachments", args: []string{"attachment", "issue", "former-attachments", "attachment-id", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "attachment issue history", args: []string{"attachment", "issue", "history", "attachment-id", "--limit", "1"}, contains: "issue-history-id issue issue-id updated_description true"},
+		{name: "attachment issue inverse relations", args: []string{"attachment", "issue", "inverse-relations", "attachment-id", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
+		{name: "attachment issue labels", args: []string{"attachment", "issue", "labels", "attachment-id", "--limit", "1"}, contains: "label-id Bug #ff0000"},
+		{name: "attachment issue relations", args: []string{"attachment", "issue", "relations", "attachment-id", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
+		{name: "attachment issue releases", args: []string{"attachment", "issue", "releases", "attachment-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "attachment issue state history", args: []string{"attachment", "issue", "state-history", "attachment-id", "--limit", "1"}, contains: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -"},
+		{name: "attachment issue subscribers", args: []string{"attachment", "issue", "subscribers", "attachment-id", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 	}
 
 	for _, test := range tests {
@@ -2326,6 +2339,9 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 	if payload, ok := commandFlowTeamMembershipPayload(operation); ok {
 		return payload, nil
 	}
+	if payload, ok := commandFlowAttachmentIssuePayload(operation); ok {
+		return payload, nil
+	}
 	if payload, ok := commandFlowIssuePayload(operation, fake); ok {
 		return payload, nil
 	}
@@ -2840,6 +2856,70 @@ func commandFlowIssuePayload(operation string, fake commandFlowFakeClient) (stri
 	}
 
 	return commandFlowIssueWritePayload(operation, fake)
+}
+
+func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
+	if !strings.HasPrefix(operation, "attachmentIssue") {
+		return "", false
+	}
+
+	switch operation {
+	case "attachmentIssue":
+		return `{"attachmentIssue":` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`}`, true
+	case "attachmentIssue_attachments":
+		return `{"attachmentIssue":{"attachments":{"nodes":[` +
+			commandAttachmentJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_botActor":
+		return `{"attachmentIssue":{"id":"issue-id","botActor":` + commandActorBotJSON() + `}}`, true
+	case "attachmentIssue_children":
+		return `{"attachmentIssue":{"children":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_documents":
+		return `{"attachmentIssue":{"documents":{"nodes":[` +
+			commandDocumentJSON(
+				"Spec",
+				`"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null`,
+			) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_formerAttachments":
+		return `{"attachmentIssue":{"formerAttachments":{"nodes":[` +
+			commandAttachmentJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_history":
+		return `{"attachmentIssue":{"history":{"nodes":[` +
+			commandIssueHistoryJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_inverseRelations":
+		return `{"attachmentIssue":{"inverseRelations":{"nodes":[` +
+			commandIssueRelationJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_labels":
+		return `{"attachmentIssue":{"labels":{"nodes":[` +
+			commandLabelJSON("label body") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_relations":
+		return `{"attachmentIssue":{"relations":{"nodes":[` +
+			commandIssueRelationJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_releases":
+		return `{"attachmentIssue":{"releases":{"nodes":[` +
+			commandReleaseJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_stateHistory":
+		return `{"attachmentIssue":{"id":"issue-id","stateHistory":{"nodes":[` +
+			commandIssueStateSpanJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_subscribers":
+		return `{"attachmentIssue":{"id":"issue-id","subscribers":{"nodes":[` +
+			commandUserJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	default:
+		return "", false
+	}
 }
 
 func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (string, bool) {

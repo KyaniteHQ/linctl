@@ -836,6 +836,19 @@ func commandImplemented(command string) bool {
 		"attachment list":                             true,
 		"attachment url":                              true,
 		"attachment get":                              true,
+		"attachment issue get":                        true,
+		"attachment issue attachments":                true,
+		"attachment issue bot-actor":                  true,
+		"attachment issue children":                   true,
+		"attachment issue documents":                  true,
+		"attachment issue former-attachments":         true,
+		"attachment issue history":                    true,
+		"attachment issue inverse-relations":          true,
+		"attachment issue labels":                     true,
+		"attachment issue relations":                  true,
+		"attachment issue releases":                   true,
+		"attachment issue state-history":              true,
+		"attachment issue subscribers":                true,
 	}
 	return implemented[command]
 }
