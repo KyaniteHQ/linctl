@@ -33,6 +33,7 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addProjectRelationsCommand(ctx, projectCommand, options)
 	addProjectTeamsCommand(ctx, projectCommand, options)
 	addProjectUpdatesCommand(ctx, projectCommand, options)
+	addProjectFilterSuggestionCommand(ctx, projectCommand, options)
 	addProjectCreateCommand(ctx, projectCommand, options)
 	addProjectUpdateCommand(ctx, projectCommand, options)
 	addProjectArchiveCommand(ctx, projectCommand, options)
@@ -492,6 +493,29 @@ func addProjectTeamsCommand(ctx context.Context, root *cobra.Command, options *r
 	)
 }
 
+func addProjectFilterSuggestionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	teamID := ""
+	command := &cobra.Command{
+		Use:   "filter-suggestion PROMPT",
+		Short: "Suggest a project filter from a text prompt",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			suggestion, err := client.GetProjectFilterSuggestion(ctx, runtime.graphqlClient, args[0], teamID)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectFilterSuggestion(command, options, suggestion)
+		},
+	}
+	command.Flags().StringVar(&teamID, "team-id", teamID, "optional team id for team-scoped project views")
+	root.AddCommand(command)
+}
+
 func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	limit := 50
 	command := &cobra.Command{
@@ -520,11 +544,10 @@ func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options 
 			for _, update := range updates.Updates {
 				if err := render.WriteLine(
 					command.OutOrStdout(),
-					"%s %s %s %s",
+					"%s %s %s",
 					update.ID,
 					update.Health,
 					update.DisplayName,
-					update.Body,
 				); err != nil {
 					return err
 				}
@@ -535,6 +558,26 @@ func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options 
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum project updates to return")
 	root.AddCommand(command)
+}
+
+func writeProjectFilterSuggestion(
+	command *cobra.Command,
+	options *rootOptions,
+	suggestion client.ProjectFilterSuggestion,
+) error {
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, suggestion)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"log_id=%s filter=%s",
+		emptyDash(suggestion.LogID),
+		emptyDash(string(suggestion.Filter)),
+	)
 }
 
 func addProjectRelationChildListCommand(

@@ -147,8 +147,11 @@ PY
   "$binary" issue-to-release list --json --limit 5 >/dev/null
   "$binary" project usage >/dev/null
   "$binary" project list --json --limit 5 >/dev/null
+  "$binary" project filter-suggestion "projects with status backlog" --json >/dev/null
+  "$binary" project-milestone all --json --limit 5 >/dev/null
   if [[ -n "$project_id" ]]; then
     "$binary" project comments "$project_id" --json --limit 5 >/dev/null
+    "$binary" project updates "$project_id" --json --limit 5 >/dev/null
     project_milestone_json="$("$binary" project-milestone list "$project_id" --json --limit 5)"
     project_milestone_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("milestones", []); print(items[0]["id"] if items else "")' <<<"$project_milestone_json")"
     if [[ -n "$project_milestone_id" ]]; then

@@ -62,7 +62,7 @@ type ProjectMemberList struct {
 // ProjectUpdateSummary is one project status update.
 type ProjectUpdateSummary struct {
 	ID          string `json:"id"`
-	Body        string `json:"body"`
+	Body        string `json:"body,omitempty"`
 	Health      string `json:"health"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
@@ -81,6 +81,12 @@ type ProjectUpdateList struct {
 	Updates     []ProjectUpdateSummary `json:"updates"`
 	HasNextPage bool                   `json:"has_next_page"`
 	EndCursor   *string                `json:"end_cursor,omitempty"`
+}
+
+// ProjectFilterSuggestion is an AI-generated project filter suggestion.
+type ProjectFilterSuggestion struct {
+	Filter json.RawMessage `json:"filter,omitempty"`
+	LogID  string          `json:"log_id,omitempty"`
 }
 
 // ProjectUpdateCommentList is a page of body-free Comments associated with one ProjectUpdate.
@@ -620,24 +626,14 @@ func ListProjectUpdates(
 	id string,
 	limit int,
 ) (ProjectUpdateList, error) {
-	project, err := ProjectUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	project, err := project_projectUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectUpdateList{}, fmt.Errorf("list project updates %s: %w", id, err)
 	}
 
 	updates := make([]ProjectUpdateSummary, 0, len(project.Project.ProjectUpdates.Nodes))
 	for _, update := range project.Project.ProjectUpdates.Nodes {
-		updates = append(updates, ProjectUpdateSummary{
-			ID:          update.Id,
-			Body:        update.Body,
-			Health:      string(update.Health),
-			CreatedAt:   update.CreatedAt,
-			UpdatedAt:   update.UpdatedAt,
-			URL:         update.Url,
-			UserID:      update.User.Id,
-			Name:        update.User.Name,
-			DisplayName: update.User.DisplayName,
-		})
+		updates = append(updates, projectScopedProjectUpdateSummary(update))
 	}
 
 	return ProjectUpdateList{
@@ -646,6 +642,29 @@ func ListProjectUpdates(
 		Updates:     updates,
 		HasNextPage: project.Project.ProjectUpdates.PageInfo.HasNextPage,
 		EndCursor:   project.Project.ProjectUpdates.PageInfo.EndCursor,
+	}, nil
+}
+
+// GetProjectFilterSuggestion returns a JSON project filter suggestion for a prompt.
+func GetProjectFilterSuggestion(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	prompt string,
+	teamID string,
+) (ProjectFilterSuggestion, error) {
+	suggestion, err := projectFilterSuggestion(ctx, graphqlClient, prompt, optionalString(teamID))
+	if err != nil {
+		return ProjectFilterSuggestion{}, fmt.Errorf("get project filter suggestion: %w", err)
+	}
+
+	filter := json.RawMessage(nil)
+	if suggestion.ProjectFilterSuggestion.Filter != nil {
+		filter = *suggestion.ProjectFilterSuggestion.Filter
+	}
+
+	return ProjectFilterSuggestion{
+		Filter: filter,
+		LogID:  stringValue(suggestion.ProjectFilterSuggestion.LogId),
 	}, nil
 }
 
@@ -705,6 +724,21 @@ func ListProjectUpdateComments(
 		HasNextPage:     result.ProjectUpdate.Comments.PageInfo.HasNextPage,
 		EndCursor:       result.ProjectUpdate.Comments.PageInfo.EndCursor,
 	}, nil
+}
+
+func projectScopedProjectUpdateSummary(
+	update project_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodesProjectUpdate,
+) ProjectUpdateSummary {
+	return ProjectUpdateSummary{
+		ID:          update.Id,
+		Health:      string(update.Health),
+		CreatedAt:   update.CreatedAt,
+		UpdatedAt:   update.UpdatedAt,
+		URL:         update.Url,
+		UserID:      update.User.Id,
+		Name:        update.User.Name,
+		DisplayName: update.User.DisplayName,
+	}
 }
 
 func projectUpdateSummary(update TopLevelProjectUpdateSummaryFields) ProjectUpdateSummary {

@@ -261,14 +261,13 @@ query project_projectMilestones($id: String!, $first: Int, $after: String, $incl
   }
 }
 
-query ProjectUpdates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+query project_projectUpdates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   project(id: $id) {
     id
     name
     projectUpdates(first: $first, after: $after, includeArchived: $includeArchived) {
       nodes {
         id
-        body
         health
         createdAt
         updatedAt
@@ -284,6 +283,13 @@ query ProjectUpdates($id: String!, $first: Int, $after: String, $includeArchived
         endCursor
       }
     }
+  }
+}
+
+query projectFilterSuggestion($prompt: String!, $teamId: String) {
+  projectFilterSuggestion(prompt: $prompt, teamId: $teamId) {
+    filter
+    logId
   }
 }
 

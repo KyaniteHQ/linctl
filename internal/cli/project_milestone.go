@@ -14,12 +14,36 @@ func addProjectMilestoneCommand(ctx context.Context, root *cobra.Command, option
 		Use:   "project-milestone",
 		Short: "Read and write Linear project milestones",
 	}
+	addProjectMilestoneAllCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneListCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneGetCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneIssuesCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneCreateCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneUpdateCommand(ctx, projectMilestoneCommand, options)
 	root.AddCommand(projectMilestoneCommand)
+}
+
+func addProjectMilestoneAllCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "all",
+		Short: "List visible ProjectMilestones across the workspace",
+		Args:  cobra.NoArgs,
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadAllProjectMilestones,
+				projectMilestonePageWithItems,
+				writeProjectMilestone,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum project milestones to return")
+	root.AddCommand(command)
 }
 
 func addProjectMilestoneIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -123,6 +147,16 @@ func writeProjectMilestone(
 	}
 
 	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", milestone.ID, milestone.Name, milestone.Status)
+}
+
+func loadAllProjectMilestones(
+	ctx context.Context,
+	runtime commandRuntime,
+	_ []string,
+	limit int,
+) (client.ProjectMilestoneList, []client.ProjectMilestoneSummary, error) {
+	milestones, err := client.ListAllProjectMilestones(ctx, runtime.graphqlClient, limit)
+	return milestones, milestones.Milestones, err
 }
 
 func loadProjectMilestoneList(

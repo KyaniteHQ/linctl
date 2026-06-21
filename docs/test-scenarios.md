@@ -162,12 +162,12 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 31. Project update history
-   - Success: `linctl project updates PROJECT --limit N` lists project status updates with health, author, and body through the public CLI and JSON output controls.
+   - Success: `linctl project updates PROJECT --limit N` lists project status-update metadata with health and author through the public CLI and JSON output controls, without body content.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_updates`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 32. Project milestone list
-   - Success: `linctl project-milestone list PROJECT --limit N` lists a project's milestones with status through the public CLI and JSON output controls.
+   - Success: `linctl project-milestone all --limit N` and `linctl project-milestone list PROJECT --limit N` list workspace and project-scoped ProjectMilestones with status through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 

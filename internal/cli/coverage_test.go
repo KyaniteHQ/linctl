@@ -1286,6 +1286,32 @@ func Test_CliRenderHelpers_write_issue_child_metadata_output(t *testing.T) {
 	require.Contains(t, emptyFieldsOutput.String(), "disallowed=-")
 }
 
+func Test_CliRenderHelpers_write_project_filter_suggestion_output(t *testing.T) {
+	suggestion := client.ProjectFilterSuggestion{
+		Filter: json.RawMessage(`{"status":{"type":{"eq":"started"}}}`),
+		LogID:  "filter-log-id",
+	}
+
+	textOutput := bytes.Buffer{}
+	textCommand := &cobra.Command{}
+	textCommand.SetOut(&textOutput)
+	require.NoError(t, writeProjectFilterSuggestion(textCommand, &rootOptions{}, suggestion))
+	require.Contains(t, textOutput.String(), `log_id=filter-log-id`)
+	require.Contains(t, textOutput.String(), `filter={"status":{"type":{"eq":"started"}}}`)
+
+	jsonOutput := bytes.Buffer{}
+	jsonCommand := &cobra.Command{}
+	jsonCommand.SetOut(&jsonOutput)
+	require.NoError(t, writeProjectFilterSuggestion(jsonCommand, &rootOptions{json: true}, suggestion))
+	require.Contains(t, jsonOutput.String(), `"log_id": "filter-log-id"`)
+
+	quietOutput := bytes.Buffer{}
+	quietCommand := &cobra.Command{}
+	quietCommand.SetOut(&quietOutput)
+	require.NoError(t, writeProjectFilterSuggestion(quietCommand, &rootOptions{quiet: true}, suggestion))
+	require.Empty(t, quietOutput.String())
+}
+
 func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	projected, err := projectJSONFields(
 		map[string]any{"issues": []any{map[string]any{"identifier": "LIT-1", "state": map[string]any{"name": "Todo"}}}},
@@ -2016,6 +2042,23 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 }
 
 func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *testing.T) {
+	t.Run("project filter suggestion runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"project", "filter-suggestion", "started projects"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
 	t.Run("issue vcs branch search runtime error", func(t *testing.T) {
 		original := buildCommandRuntime
 		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {

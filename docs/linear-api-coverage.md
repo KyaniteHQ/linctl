@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 115 | 458 |
-| Upstream Query root fields | 158 | 103 | 158 |
+| Upstream SDK root methods | 458 | 117 | 458 |
+| Upstream Query root fields | 158 | 105 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 304 | 304 | 304 |
-| Domain-map commands | 395 | 263 | 395 |
+| Local generated Go operations | 306 | 306 | 306 |
+| Domain-map commands | 397 | 265 | 397 |
 
 ## Upstream SDK Root Methods
 
@@ -333,13 +333,13 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `project` | method | implemented | local operation or command exists |
 | `projectAddLabel` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `projectExternalSyncDisable` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectFilterSuggestion` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectFilterSuggestion` | method | implemented | local operation or command exists |
 | `projectLabel` | method | implemented | local operation or command exists |
 | `projectLabelRestore` | method | blocked_needs_design | project label lifecycle restore needs explicit workspace/admin safety semantics |
 | `projectLabelRetire` | method | blocked_needs_design | project label lifecycle retire needs explicit workspace/admin safety semantics |
 | `projectLabels` | method | implemented | local operation or command exists |
 | `projectMilestone` | method | implemented | local operation or command exists |
-| `projectMilestones` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectMilestones` | method | implemented | local operation or command exists |
 | `projectRelation` | method | implemented | local operation or command exists |
 | `projectRelations` | method | implemented | local operation or command exists |
 | `projectRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -590,11 +590,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | implemented | root field used by local GraphQL operation |
-| `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | implemented | root field used by local GraphQL operation |
 | `projectLabel` | `ProjectLabel!` | implemented | root field used by local GraphQL operation |
 | `projectLabels` | `ProjectLabelConnection!` | implemented | root field used by local GraphQL operation |
 | `projectMilestone` | `ProjectMilestone!` | implemented | root field used by local GraphQL operation |
-| `projectMilestones` | `ProjectMilestoneConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectMilestones` | `ProjectMilestoneConnection!` | implemented | root field used by local GraphQL operation |
 | `projectRelation` | `ProjectRelation!` | implemented | root field used by local GraphQL operation |
 | `projectRelations` | `ProjectRelationConnection!` | implemented | root field used by local GraphQL operation |
 | `projectStatus` | `ProjectStatus!` | implemented | root field used by local GraphQL operation |
@@ -1052,7 +1052,6 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | implemented | `internal/client/generated.go` |
 | `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | implemented | `internal/client/generated.go` |
 | `ProjectUpdate` | mutation | `projectUpdate` | implemented | `internal/client/generated.go` |
-| `ProjectUpdates` | query | `project` | implemented | `internal/client/generated.go` |
 | `Projects` | query | `team` | implemented | `internal/client/generated.go` |
 | `StartedWorkflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 | `TargetProject` | query | `project` | implemented | `internal/client/generated.go` |
@@ -1189,12 +1188,14 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organization_templates` | query | `organization` | implemented | `internal/client/generated.go` |
 | `organization_users` | query | `organization` | implemented | `internal/client/generated.go` |
 | `project` | query | `project` | implemented | `internal/client/generated.go` |
+| `projectFilterSuggestion` | query | `projectFilterSuggestion` | implemented | `internal/client/generated.go` |
 | `projectLabel` | query | `projectLabel` | implemented | `internal/client/generated.go` |
 | `projectLabel_children` | query | `projectLabel` | implemented | `internal/client/generated.go` |
 | `projectLabel_projects` | query | `projectLabel` | implemented | `internal/client/generated.go` |
 | `projectLabels` | query | `projectLabels` | implemented | `internal/client/generated.go` |
 | `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
 | `projectMilestone_issues` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
+| `projectMilestones` | query | `projectMilestones` | implemented | `internal/client/generated.go` |
 | `projectRelation` | query | `projectRelation` | implemented | `internal/client/generated.go` |
 | `projectRelations` | query | `projectRelations` | implemented | `internal/client/generated.go` |
 | `projectStatus` | query | `projectStatus` | implemented | `internal/client/generated.go` |
@@ -1215,6 +1216,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `project_members` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_needs` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_projectMilestones` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_projectUpdates` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_relations` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_teams` | query | `project` | implemented | `internal/client/generated.go` |
 | `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
@@ -1480,7 +1482,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Project | `project needs` | `Project.needs` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project relations` | `Project.relations` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project teams` | `Project.teams` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project updates` | `Project.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project updates` | `Project.projectUpdates` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
+| Project | `project filter-suggestion` | `Query.projectFilterSuggestion` | Read-only suggestion payload | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
@@ -1516,6 +1519,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Cycle | `cycle archive` | `Mutation.cycleArchive` | Team-scoped | implemented | `linctl --help` / public CLI tests |
 | Sprint | `sprint current` | `Query.cycles` filtered to active/current cycles | Read-only | implemented | `linctl --help` / public CLI tests |
 | Sprint | `sprint report` | `Query.cycle` plus `Cycle.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectMilestone | `project-milestone all` | `Query.projectMilestones` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone get` | `Query.projectMilestone` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectMilestone | `project-milestone issues` | `ProjectMilestone.issues` | Read-only | implemented | `linctl --help` / public CLI tests |

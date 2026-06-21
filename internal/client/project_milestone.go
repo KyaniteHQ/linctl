@@ -122,6 +122,29 @@ func ListProjectMilestones(
 	}, nil
 }
 
+// ListAllProjectMilestones returns visible ProjectMilestones across the workspace.
+func ListAllProjectMilestones(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	limit int,
+) (ProjectMilestoneList, error) {
+	result, err := projectMilestones(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectMilestoneList{}, fmt.Errorf("list project milestones: %w", err)
+	}
+
+	milestones := make([]ProjectMilestoneSummary, 0, len(result.ProjectMilestones.Nodes))
+	for _, milestone := range result.ProjectMilestones.Nodes {
+		milestones = append(milestones, projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields))
+	}
+
+	return ProjectMilestoneList{
+		Milestones:  milestones,
+		HasNextPage: result.ProjectMilestones.PageInfo.HasNextPage,
+		EndCursor:   result.ProjectMilestones.PageInfo.EndCursor,
+	}, nil
+}
+
 // ListProjectMilestoneIssues returns issues associated with one ProjectMilestone.
 func ListProjectMilestoneIssues(
 	ctx context.Context,

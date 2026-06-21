@@ -338,7 +338,8 @@ Planned commands:
 | `project needs` | `Project.needs` | Read-only |
 | `project relations` | `Project.relations` | Read-only |
 | `project teams` | `Project.teams` | Read-only |
-| `project updates` | `Project.projectUpdates` | Read-only |
+| `project updates` | `Project.projectUpdates` | Read-only, body-free metadata |
+| `project filter-suggestion` | `Query.projectFilterSuggestion` | Read-only suggestion payload |
 
 Project is the first implemented PM domain; later domains should reuse its target-comparison vocabulary.
 
@@ -364,7 +365,7 @@ Planned commands:
 | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation |
 | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics |
 
-`project-update list`, `project-update get`, and `project-update comments` are implemented in the current top-level CLI. `project updates PROJECT_ID` remains the project-scoped history view.
+`project-update list`, `project-update get`, and `project-update comments` are implemented in the current top-level CLI. `project updates PROJECT_ID` remains the project-scoped history view and omits update body content by default.
 
 ## ProjectStatus
 
@@ -497,6 +498,7 @@ Planned commands:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
+| `project-milestone all` | `Query.projectMilestones` | Read-only |
 | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only |
 | `project-milestone get` | `Query.projectMilestone` | Read-only |
 | `project-milestone issues` | `ProjectMilestone.issues` | Read-only |

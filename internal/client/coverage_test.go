@@ -249,11 +249,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"project_needs":             `{"project":{"id":"project-id","name":"detail","needs":{"nodes":[` + customerNeedJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"project_relations":         `{"project":{"id":"project-id","name":"detail","relations":{"nodes":[` + projectRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"project_teams":             `{"project":{"id":"project-id","name":"detail","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"ProjectUpdates":            `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_projectUpdates":    `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectFilterSuggestion":   `{"projectFilterSuggestion":{"filter":{"status":{"type":{"eq":"started"}}},"logId":"filter-log-id"}}`,
 		"projectUpdates":            `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"projectUpdate":             `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
 		"projectUpdate_comments":    `{"projectUpdate":{"id":"project-update-id","comments":{"nodes":[` + commentMetadataJSON("", "project-update-id", "user-id") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"project_projectMilestones": `{"project":{"id":"project-id","name":"detail","projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectMilestones":         `{"projectMilestones":{"nodes":[{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"projectMilestone":          `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
 		"projectMilestone_issues": `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","issues":{"nodes":[` + issueJSON(issueFixture{
 			Identifier: "LIT-52",
@@ -671,6 +673,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	projectUpdates, err := ListProjectUpdates(context.Background(), graphqlClient, "project-id", 2)
 	require.NoError(t, err)
+	projectFilterSuggestion, err := GetProjectFilterSuggestion(context.Background(), graphqlClient, "started projects", "team-id")
+	require.NoError(t, err)
 	allProjectUpdates, err := ListAllProjectUpdates(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	projectUpdate, err := GetProjectUpdateByID(context.Background(), graphqlClient, "project-update-id")
@@ -678,6 +682,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	projectUpdateComments, err := ListProjectUpdateComments(context.Background(), graphqlClient, "project-update-id", 2)
 	require.NoError(t, err)
 	projectMilestones, err := ListProjectMilestones(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	allProjectMilestones, err := ListAllProjectMilestones(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	projectMilestone, err := GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
 	require.NoError(t, err)
@@ -1142,7 +1148,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "project-update-id", projectUpdates.Updates[0].ID)
 	require.Equal(t, "onTrack", projectUpdates.Updates[0].Health)
 	require.Equal(t, "Omer", projectUpdates.Updates[0].DisplayName)
+	require.Empty(t, projectUpdates.Updates[0].Body)
 	require.Equal(t, &endCursor, projectUpdates.EndCursor)
+	require.JSONEq(t, `{"status":{"type":{"eq":"started"}}}`, string(projectFilterSuggestion.Filter))
+	require.Equal(t, "filter-log-id", projectFilterSuggestion.LogID)
 	require.True(t, allProjectUpdates.HasNextPage)
 	require.Equal(t, &endCursor, allProjectUpdates.EndCursor)
 	require.Equal(t, "project-id", allProjectUpdates.Updates[0].ProjectID)
@@ -1159,6 +1168,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "2026-06-30", projectMilestones.Milestones[0].TargetDate)
 	require.Equal(t, "next", projectMilestones.Milestones[0].Status)
 	require.Equal(t, &endCursor, projectMilestones.EndCursor)
+	require.True(t, allProjectMilestones.HasNextPage)
+	require.Equal(t, "project-milestone-id", allProjectMilestones.Milestones[0].ID)
 	require.Equal(t, "project-milestone-id", projectMilestone.ID)
 	require.Equal(t, "Launch milestone", projectMilestone.Name)
 	require.Equal(t, "next", projectMilestone.Status)
@@ -2238,6 +2249,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project updates project-id")
 
+		_, err = GetProjectFilterSuggestion(context.Background(), graphqlClient, "started projects", "team-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get project filter suggestion")
+
 		_, err = ListAllProjectUpdates(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project updates")
@@ -2253,6 +2268,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListProjectMilestones(context.Background(), graphqlClient, "project-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project milestones project-id")
+
+		_, err = ListAllProjectMilestones(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project milestones")
 
 		_, err = GetProjectMilestoneByID(context.Background(), graphqlClient, "project-milestone-id")
 		require.Error(t, err)

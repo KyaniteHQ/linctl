@@ -23,6 +23,18 @@ query projectMilestone_issues($id: String!, $first: Int, $after: String, $includ
   }
 }
 
+query projectMilestones($first: Int, $after: String, $includeArchived: Boolean) {
+  projectMilestones(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ProjectMilestoneSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
 mutation ProjectMilestoneCreate($input: ProjectMilestoneCreateInput!) {
   projectMilestoneCreate(input: $input) {
     success
