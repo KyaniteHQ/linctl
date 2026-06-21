@@ -199,6 +199,88 @@ func ListAttachmentIssueFormerAttachments(
 	}, nil
 }
 
+// ListAttachmentIssueComments returns body-free comments for the issue associated with one attachment.
+func ListAttachmentIssueComments(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueCommentMetadataList, error) {
+	result, err := attachmentIssue_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return IssueCommentMetadataList{}, fmt.Errorf("list attachment issue comments %s: %w", id, err)
+	}
+
+	comments := make([]CommentMetadataSummary, 0, len(result.AttachmentIssue.Comments.Nodes))
+	for _, comment := range result.AttachmentIssue.Comments.Nodes {
+		comments = append(comments, commentMetadataSummary(comment.CommentMetadataFields))
+	}
+
+	return IssueCommentMetadataList{
+		IssueID:     result.AttachmentIssue.Id,
+		Identifier:  result.AttachmentIssue.Identifier,
+		Comments:    comments,
+		HasNextPage: result.AttachmentIssue.Comments.PageInfo.HasNextPage,
+		EndCursor:   result.AttachmentIssue.Comments.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListAttachmentIssueNeeds returns body-free customer needs for the issue associated with one attachment.
+func ListAttachmentIssueNeeds(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueCustomerNeedMetadataList, error) {
+	result, err := attachmentIssue_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list attachment issue customer needs %s: %w", id, err)
+	}
+
+	needs := make([]CustomerNeedMetadataSummary, 0, len(result.AttachmentIssue.Needs.Nodes))
+	for _, need := range result.AttachmentIssue.Needs.Nodes {
+		needs = append(needs, customerNeedMetadataSummary(need.CustomerNeedMetadataFields))
+	}
+
+	return IssueCustomerNeedMetadataList{
+		IssueID:     result.AttachmentIssue.Id,
+		Identifier:  result.AttachmentIssue.Identifier,
+		Needs:       needs,
+		HasNextPage: result.AttachmentIssue.Needs.PageInfo.HasNextPage,
+		EndCursor:   result.AttachmentIssue.Needs.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListAttachmentIssueFormerNeeds returns body-free former customer needs for the issue associated with one attachment.
+func ListAttachmentIssueFormerNeeds(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueCustomerNeedMetadataList, error) {
+	result, err := attachmentIssue_formerNeeds(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
+			"list attachment issue former customer needs %s: %w",
+			id,
+			err,
+		)
+	}
+
+	needs := make([]CustomerNeedMetadataSummary, 0, len(result.AttachmentIssue.FormerNeeds.Nodes))
+	for _, need := range result.AttachmentIssue.FormerNeeds.Nodes {
+		needs = append(needs, customerNeedMetadataSummary(need.CustomerNeedMetadataFields))
+	}
+
+	return IssueCustomerNeedMetadataList{
+		IssueID:     result.AttachmentIssue.Id,
+		Identifier:  result.AttachmentIssue.Identifier,
+		Needs:       needs,
+		HasNextPage: result.AttachmentIssue.FormerNeeds.PageInfo.HasNextPage,
+		EndCursor:   result.AttachmentIssue.FormerNeeds.PageInfo.EndCursor,
+	}, nil
+}
+
 // ListAttachmentIssueHistory returns history metadata for the issue associated with one attachment.
 func ListAttachmentIssueHistory(
 	ctx context.Context,
@@ -317,6 +399,24 @@ func ListAttachmentIssueReleases(
 		HasNextPage: result.AttachmentIssue.Releases.PageInfo.HasNextPage,
 		EndCursor:   result.AttachmentIssue.Releases.PageInfo.EndCursor,
 	}, nil
+}
+
+// GetAttachmentIssueSharedAccess returns compact shared-access metadata for the issue associated with one attachment.
+func GetAttachmentIssueSharedAccess(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (IssueSharedAccessSummary, error) {
+	result, err := attachmentIssue_sharedAccess(ctx, graphqlClient, id)
+	if err != nil {
+		return IssueSharedAccessSummary{}, fmt.Errorf("get attachment issue shared access %s: %w", id, err)
+	}
+
+	return issueSharedAccessSummary(
+		result.AttachmentIssue.Id,
+		result.AttachmentIssue.Identifier,
+		result.AttachmentIssue.SharedAccess.IssueSharedAccessFields,
+	), nil
 }
 
 // ListAttachmentIssueStateHistory returns workflow-state spans for the issue associated with one attachment.

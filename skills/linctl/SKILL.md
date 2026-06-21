@@ -142,11 +142,15 @@ linctl issue vcs-branch-search bot-actor BRANCH_NAME --json
 linctl issue vcs-branch-search children BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search documents BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search former-attachments BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search comments BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search former-needs BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search history BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search inverse-relations BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search labels BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search needs BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search relations BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search releases BRANCH_NAME --json --limit 20
+linctl issue vcs-branch-search shared-access BRANCH_NAME --json
 linctl issue vcs-branch-search state-history BRANCH_NAME --json --limit 20
 linctl issue vcs-branch-search subscribers BRANCH_NAME --json --limit 20
 linctl issue comments LIT-123 --limit 20
@@ -294,13 +298,17 @@ linctl attachment issue get ATTACHMENT_ID --json
 linctl attachment issue attachments ATTACHMENT_ID --json --limit 20
 linctl attachment issue bot-actor ATTACHMENT_ID --json
 linctl attachment issue children ATTACHMENT_ID --json --limit 20
+linctl attachment issue comments ATTACHMENT_ID --json --limit 20
 linctl attachment issue documents ATTACHMENT_ID --json --limit 20
 linctl attachment issue former-attachments ATTACHMENT_ID --json --limit 20
+linctl attachment issue former-needs ATTACHMENT_ID --json --limit 20
 linctl attachment issue history ATTACHMENT_ID --json --limit 20
 linctl attachment issue inverse-relations ATTACHMENT_ID --json --limit 20
 linctl attachment issue labels ATTACHMENT_ID --json --limit 20
+linctl attachment issue needs ATTACHMENT_ID --json --limit 20
 linctl attachment issue relations ATTACHMENT_ID --json --limit 20
 linctl attachment issue releases ATTACHMENT_ID --json --limit 20
+linctl attachment issue shared-access ATTACHMENT_ID --json
 linctl attachment issue state-history ATTACHMENT_ID --json --limit 20
 linctl attachment issue subscribers ATTACHMENT_ID --json --limit 20
 ```

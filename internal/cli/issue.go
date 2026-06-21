@@ -4,6 +4,7 @@ package cli
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -26,11 +27,14 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addIssueChildrenCommand(ctx, issueCommand, options)
 	addIssueDocumentsCommand(ctx, issueCommand, options)
 	addIssueFormerAttachmentsCommand(ctx, issueCommand, options)
+	addIssueFormerNeedsCommand(ctx, issueCommand, options)
 	addIssueHistoryCommand(ctx, issueCommand, options)
 	addIssueInverseRelationsCommand(ctx, issueCommand, options)
 	addIssueLabelsCommand(ctx, issueCommand, options)
+	addIssueNeedsCommand(ctx, issueCommand, options)
 	addIssueRelationsCommand(ctx, issueCommand, options)
 	addIssueReleasesCommand(ctx, issueCommand, options)
+	addIssueSharedAccessCommand(ctx, issueCommand, options)
 	addIssueStateHistoryCommand(ctx, issueCommand, options)
 	addIssueSubscribersCommand(ctx, issueCommand, options)
 	addIssuePRCommand(ctx, issueCommand, options)
@@ -374,13 +378,45 @@ func addIssueVCSBranchSearchCommand(ctx context.Context, root *cobra.Command, op
 	addIssueVCSBranchChildrenCommand(ctx, branchCommand, options)
 	addIssueVCSBranchDocumentsCommand(ctx, branchCommand, options)
 	addIssueVCSBranchFormerAttachmentsCommand(ctx, branchCommand, options)
+	addIssueVCSBranchCommentsCommand(ctx, branchCommand, options)
+	addIssueVCSBranchFormerNeedsCommand(ctx, branchCommand, options)
 	addIssueVCSBranchHistoryCommand(ctx, branchCommand, options)
 	addIssueVCSBranchInverseRelationsCommand(ctx, branchCommand, options)
 	addIssueVCSBranchLabelsCommand(ctx, branchCommand, options)
+	addIssueVCSBranchNeedsCommand(ctx, branchCommand, options)
 	addIssueVCSBranchRelationsCommand(ctx, branchCommand, options)
 	addIssueVCSBranchReleasesCommand(ctx, branchCommand, options)
+	addIssueVCSBranchSharedAccessCommand(ctx, branchCommand, options)
 	addIssueVCSBranchStateHistoryCommand(ctx, branchCommand, options)
 	addIssueVCSBranchSubscribersCommand(ctx, branchCommand, options)
+}
+
+func addIssueVCSBranchCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCommentMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"comments BRANCH_NAME",
+		"List body-free comments for the issue matched by a VCS branch",
+		"comments",
+		func(runtime commandRuntime, branchName string, limit int) (client.IssueCommentMetadataList, error) {
+			return client.ListIssueVCSBranchComments(ctx, runtime.graphqlClient, branchName, limit)
+		},
+	)
+}
+
+func addIssueVCSBranchFormerNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCustomerNeedMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"former-needs BRANCH_NAME",
+		"List body-free former customer needs for the issue matched by a VCS branch",
+		"former customer needs",
+		func(runtime commandRuntime, branchName string, limit int) (client.IssueCustomerNeedMetadataList, error) {
+			return client.ListIssueVCSBranchFormerNeeds(ctx, runtime.graphqlClient, branchName, limit)
+		},
+	)
 }
 
 func addIssueVCSBranchAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -590,6 +626,20 @@ func addIssueVCSBranchLabelsCommand(ctx context.Context, root *cobra.Command, op
 	)
 }
 
+func addIssueVCSBranchNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCustomerNeedMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"needs BRANCH_NAME",
+		"List body-free customer needs for the issue matched by a VCS branch",
+		"customer needs",
+		func(runtime commandRuntime, branchName string, limit int) (client.IssueCustomerNeedMetadataList, error) {
+			return client.ListIssueVCSBranchNeeds(ctx, runtime.graphqlClient, branchName, limit)
+		},
+	)
+}
+
 func addIssueVCSBranchRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addIssueRelationChildListCommand(
 		ctx,
@@ -635,6 +685,26 @@ func addIssueVCSBranchReleasesCommand(ctx context.Context, root *cobra.Command, 
 			return list.Releases
 		},
 	)
+}
+
+func addIssueVCSBranchSharedAccessCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "shared-access BRANCH_NAME",
+		Short: "Show shared-access metadata for the issue matched by a VCS branch",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			access, err := client.GetIssueVCSBranchSharedAccess(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeIssueSharedAccess(command, options, access)
+		},
+	})
 }
 
 func addIssueVCSBranchStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -845,6 +915,20 @@ func addIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, 
 	)
 }
 
+func addIssueFormerNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCustomerNeedMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"former-needs ISSUE_ID",
+		"List body-free former issue customer needs",
+		"former customer needs",
+		func(runtime commandRuntime, issueID string, limit int) (client.IssueCustomerNeedMetadataList, error) {
+			return client.ListIssueFormerNeeds(ctx, runtime.graphqlClient, issueID, limit)
+		},
+	)
+}
+
 func addIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addIssueChildListCommand(
 		ctx,
@@ -915,6 +999,20 @@ func addIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *ro
 	)
 }
 
+func addIssueNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCustomerNeedMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"needs ISSUE_ID",
+		"List body-free issue customer needs",
+		"customer needs",
+		func(runtime commandRuntime, issueID string, limit int) (client.IssueCustomerNeedMetadataList, error) {
+			return client.ListIssueNeeds(ctx, runtime.graphqlClient, issueID, limit)
+		},
+	)
+}
+
 func addIssueRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addIssueRelationChildListCommand(
 		ctx,
@@ -955,6 +1053,26 @@ func addIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *
 			return list.Releases
 		},
 	)
+}
+
+func addIssueSharedAccessCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "shared-access ISSUE_ID",
+		Short: "Show issue shared-access metadata",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			access, err := client.GetIssueSharedAccess(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeIssueSharedAccess(command, options, access)
+		},
+	})
 }
 
 func addIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -1045,6 +1163,74 @@ func addIssueRelationChildListCommand(
 		},
 		func(list client.IssueRelationList) []client.IssueRelationSummary {
 			return list.Relations
+		},
+	)
+}
+
+func addIssueCommentMetadataListCommand(
+	ctx context.Context,
+	root *cobra.Command,
+	options *rootOptions,
+	use string,
+	short string,
+	limitHelp string,
+	fetch func(commandRuntime, string, int) (client.IssueCommentMetadataList, error),
+) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		use,
+		short,
+		limitHelp,
+		fetch,
+		func(list client.IssueCommentMetadataList) int {
+			return len(list.Comments)
+		},
+		func(list client.IssueCommentMetadataList) (client.IssueCommentMetadataList, error) {
+			items, err := sortByJSONField(list.Comments, options.sortField, options.sortOrder)
+			list.Comments = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.CommentMetadataSummary) error {
+			return writeCommentMetadata(command, options, item)
+		},
+		func(list client.IssueCommentMetadataList) []client.CommentMetadataSummary {
+			return list.Comments
+		},
+	)
+}
+
+func addIssueCustomerNeedMetadataListCommand(
+	ctx context.Context,
+	root *cobra.Command,
+	options *rootOptions,
+	use string,
+	short string,
+	limitHelp string,
+	fetch func(commandRuntime, string, int) (client.IssueCustomerNeedMetadataList, error),
+) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		use,
+		short,
+		limitHelp,
+		fetch,
+		func(list client.IssueCustomerNeedMetadataList) int {
+			return len(list.Needs)
+		},
+		func(list client.IssueCustomerNeedMetadataList) (client.IssueCustomerNeedMetadataList, error) {
+			items, err := sortByJSONField(list.Needs, options.sortField, options.sortOrder)
+			list.Needs = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.CustomerNeedMetadataSummary) error {
+			return writeCustomerNeedMetadata(command, options, item)
+		},
+		func(list client.IssueCustomerNeedMetadataList) []client.CustomerNeedMetadataSummary {
+			return list.Needs
 		},
 	)
 }
@@ -1160,6 +1346,63 @@ func writeIssueHistory(command *cobra.Command, options *rootOptions, history cli
 		history.IssueID,
 		history.UpdatedDescription,
 	)
+}
+
+func writeCustomerNeedMetadata(
+	command *cobra.Command,
+	options *rootOptions,
+	need client.CustomerNeedMetadataSummary,
+) error {
+	if wrote, err := writeIDOnly(command, options, need.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, need)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s %s %s priority %.0f",
+		need.ID,
+		emptyDash(need.CustomerName),
+		emptyDash(need.Issue),
+		need.Priority,
+	)
+}
+
+func writeIssueSharedAccess(
+	command *cobra.Command,
+	options *rootOptions,
+	access client.IssueSharedAccessSummary,
+) error {
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, access)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s %s shared=%t shared_with=%d viewer_shared_only=%t disallowed=%s",
+		access.IssueID,
+		access.Identifier,
+		access.IsShared,
+		access.SharedWithCount,
+		access.ViewerHasOnlySharedAccess,
+		issueSharedAccessFieldsText(access.DisallowedIssueFields),
+	)
+}
+
+func issueSharedAccessFieldsText(fields []string) string {
+	if len(fields) == 0 {
+		return "-"
+	}
+
+	return strings.Join(fields, ",")
 }
 
 func writeIssues(command *cobra.Command, options *rootOptions, issues []client.IssueSummary) error {

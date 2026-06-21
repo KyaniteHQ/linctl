@@ -409,6 +409,22 @@ query issue_formerAttachments($id: String!, $first: Int, $after: String, $includ
   }
 }
 
+query issue_formerNeeds($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    id
+    identifier
+    formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CustomerNeedMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query issue_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
     history(first: $first, after: $after, includeArchived: $includeArchived) {
@@ -459,6 +475,22 @@ query issue_labels($id: String!, $first: Int, $after: String, $includeArchived: 
   }
 }
 
+query issue_needs($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    id
+    identifier
+    needs(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CustomerNeedMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query issue_relations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
     relations(first: $first, after: $after, includeArchived: $includeArchived) {
@@ -483,6 +515,16 @@ query issue_releases($id: String!, $first: Int, $after: String, $includeArchived
         hasNextPage
         endCursor
       }
+    }
+  }
+}
+
+query issue_sharedAccess($id: String!) {
+  issue(id: $id) {
+    id
+    identifier
+    sharedAccess {
+      ...IssueSharedAccessFields
     }
   }
 }
@@ -596,6 +638,43 @@ query issueVcsBranchSearch_formerAttachments($branchName: String!, $first: Int, 
   }
 }
 
+query issueVcsBranchSearch_comments($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    id
+    identifier
+    comments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CommentMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issueVcsBranchSearch_formerNeeds(
+  $branchName: String!
+  $first: Int
+  $after: String
+  $includeArchived: Boolean
+) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    id
+    identifier
+    formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CustomerNeedMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query issueVcsBranchSearch_history($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
     history(first: $first, after: $after, includeArchived: $includeArchived) {
@@ -651,6 +730,22 @@ query issueVcsBranchSearch_labels($branchName: String!, $first: Int, $after: Str
   }
 }
 
+query issueVcsBranchSearch_needs($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    id
+    identifier
+    needs(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CustomerNeedMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query issueVcsBranchSearch_relations($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
     relations(first: $first, after: $after, includeArchived: $includeArchived) {
@@ -675,6 +770,16 @@ query issueVcsBranchSearch_releases($branchName: String!, $first: Int, $after: S
         hasNextPage
         endCursor
       }
+    }
+  }
+}
+
+query issueVcsBranchSearch_sharedAccess($branchName: String!) {
+  issueVcsBranchSearch(branchName: $branchName) {
+    id
+    identifier
+    sharedAccess {
+      ...IssueSharedAccessFields
     }
   }
 }

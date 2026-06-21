@@ -1444,6 +1444,138 @@ func (v *CustomViewSummaryFields) GetColor() *string { return v.Color }
 // GetSlugId returns CustomViewSummaryFields.SlugId, and is useful for accessing the field via an interface.
 func (v *CustomViewSummaryFields) GetSlugId() string { return v.SlugId }
 
+// CustomerNeedMetadataFields includes the GraphQL fields of CustomerNeed requested by the fragment CustomerNeedMetadataFields.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type CustomerNeedMetadataFields struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// Whether the customer need is important or not. 0 = Not important, 1 = Important.
+	Priority float64 `json:"priority"`
+	// The URL of the source attachment linked to this need, if any. Returns the URL
+	// from either the issue attachment or project attachment. Null if the need has
+	// no attached source.
+	Url *string `json:"url"`
+	// The customer organization this need belongs to. Null if the need has not yet been associated with a customer.
+	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
+	// The issue this need is linked to. Either issueId or projectId must be set.
+	// When set, the need's projectId is denormalized from the issue's project.
+	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
+	// The project this need is linked to. For issue-based needs, this is
+	// denormalized from the issue's project. For project-only needs, this is set directly.
+	Project *CustomerNeedMetadataFieldsProject `json:"project"`
+}
+
+// GetId returns CustomerNeedMetadataFields.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetId() string { return v.Id }
+
+// GetCreatedAt returns CustomerNeedMetadataFields.CreatedAt, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetCreatedAt() string { return v.CreatedAt }
+
+// GetUpdatedAt returns CustomerNeedMetadataFields.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetUpdatedAt() string { return v.UpdatedAt }
+
+// GetArchivedAt returns CustomerNeedMetadataFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetArchivedAt() *string { return v.ArchivedAt }
+
+// GetPriority returns CustomerNeedMetadataFields.Priority, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetPriority() float64 { return v.Priority }
+
+// GetUrl returns CustomerNeedMetadataFields.Url, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetUrl() *string { return v.Url }
+
+// GetCustomer returns CustomerNeedMetadataFields.Customer, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetCustomer() *CustomerNeedMetadataFieldsCustomer {
+	return v.Customer
+}
+
+// GetIssue returns CustomerNeedMetadataFields.Issue, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetIssue() *CustomerNeedMetadataFieldsIssue { return v.Issue }
+
+// GetProject returns CustomerNeedMetadataFields.Project, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFields) GetProject() *CustomerNeedMetadataFieldsProject {
+	return v.Project
+}
+
+// CustomerNeedMetadataFieldsCustomer includes the requested fields of the GraphQL type Customer.
+// The GraphQL type's documentation follows.
+//
+// A customer organization tracked in Linear's customer management system.
+// Customers represent external companies or organizations whose product requests
+// and feedback are captured as customer needs, which can be linked to issues and
+// projects. Customers can be associated with domains, external system IDs, Slack
+// channels, and managed by integrations such as Intercom or Salesforce.
+type CustomerNeedMetadataFieldsCustomer struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The display name of the customer organization.
+	Name string `json:"name"`
+}
+
+// GetId returns CustomerNeedMetadataFieldsCustomer.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFieldsCustomer) GetId() string { return v.Id }
+
+// GetName returns CustomerNeedMetadataFieldsCustomer.Name, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFieldsCustomer) GetName() string { return v.Name }
+
+// CustomerNeedMetadataFieldsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type CustomerNeedMetadataFieldsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// The issue's title. This is the primary human-readable summary of the work item.
+	Title string `json:"title"`
+}
+
+// GetId returns CustomerNeedMetadataFieldsIssue.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFieldsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns CustomerNeedMetadataFieldsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFieldsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetTitle returns CustomerNeedMetadataFieldsIssue.Title, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFieldsIssue) GetTitle() string { return v.Title }
+
+// CustomerNeedMetadataFieldsProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type CustomerNeedMetadataFieldsProject struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the project.
+	Name string `json:"name"`
+}
+
+// GetId returns CustomerNeedMetadataFieldsProject.Id, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFieldsProject) GetId() string { return v.Id }
+
+// GetName returns CustomerNeedMetadataFieldsProject.Name, and is useful for accessing the field via an interface.
+func (v *CustomerNeedMetadataFieldsProject) GetName() string { return v.Name }
+
 // CustomerNeedSummaryFields includes the GraphQL fields of CustomerNeed requested by the fragment CustomerNeedSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -5996,6 +6128,55 @@ func (v *IssueRelationSummaryFieldsRelatedIssue) GetIdentifier() string { return
 
 // GetTitle returns IssueRelationSummaryFieldsRelatedIssue.Title, and is useful for accessing the field via an interface.
 func (v *IssueRelationSummaryFieldsRelatedIssue) GetTitle() string { return v.Title }
+
+// Issue update fields that are disallowed for users with only shared access.
+type IssueSharedAccessDisallowedField string
+
+const (
+	IssueSharedAccessDisallowedFieldProjectid          IssueSharedAccessDisallowedField = "projectId"
+	IssueSharedAccessDisallowedFieldTeamid             IssueSharedAccessDisallowedField = "teamId"
+	IssueSharedAccessDisallowedFieldCycleid            IssueSharedAccessDisallowedField = "cycleId"
+	IssueSharedAccessDisallowedFieldProjectmilestoneid IssueSharedAccessDisallowedField = "projectMilestoneId"
+)
+
+var AllIssueSharedAccessDisallowedField = []IssueSharedAccessDisallowedField{
+	IssueSharedAccessDisallowedFieldProjectid,
+	IssueSharedAccessDisallowedFieldTeamid,
+	IssueSharedAccessDisallowedFieldCycleid,
+	IssueSharedAccessDisallowedFieldProjectmilestoneid,
+}
+
+// IssueSharedAccessFields includes the GraphQL fields of IssueSharedAccess requested by the fragment IssueSharedAccessFields.
+// The GraphQL type's documentation follows.
+//
+// Metadata about an issue's shared access state, including which users the issue
+// is shared with and any field restrictions for shared-only viewers.
+type IssueSharedAccessFields struct {
+	// Whether this issue has been shared with users outside the team.
+	IsShared bool `json:"isShared"`
+	// Whether the viewer can access this issue only through issue sharing.
+	ViewerHasOnlySharedAccess bool `json:"viewerHasOnlySharedAccess"`
+	// The number of users this issue is shared with.
+	SharedWithCount int `json:"sharedWithCount"`
+	// Issue update fields the viewer cannot modify due to shared-only access.
+	DisallowedIssueFields []IssueSharedAccessDisallowedField `json:"disallowedIssueFields"`
+}
+
+// GetIsShared returns IssueSharedAccessFields.IsShared, and is useful for accessing the field via an interface.
+func (v *IssueSharedAccessFields) GetIsShared() bool { return v.IsShared }
+
+// GetViewerHasOnlySharedAccess returns IssueSharedAccessFields.ViewerHasOnlySharedAccess, and is useful for accessing the field via an interface.
+func (v *IssueSharedAccessFields) GetViewerHasOnlySharedAccess() bool {
+	return v.ViewerHasOnlySharedAccess
+}
+
+// GetSharedWithCount returns IssueSharedAccessFields.SharedWithCount, and is useful for accessing the field via an interface.
+func (v *IssueSharedAccessFields) GetSharedWithCount() int { return v.SharedWithCount }
+
+// GetDisallowedIssueFields returns IssueSharedAccessFields.DisallowedIssueFields, and is useful for accessing the field via an interface.
+func (v *IssueSharedAccessFields) GetDisallowedIssueFields() []IssueSharedAccessDisallowedField {
+	return v.DisallowedIssueFields
+}
 
 // IssueSummaryFields includes the GraphQL fields of Issue requested by the fragment IssueSummaryFields.
 // The GraphQL type's documentation follows.
@@ -20503,6 +20684,26 @@ func (v *__attachmentIssue_childrenInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __attachmentIssue_childrenInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__attachmentIssue_childrenInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __attachmentIssue_commentsInput is used internally by genqlient
+type __attachmentIssue_commentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_commentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_commentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_commentsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_commentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_commentsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_commentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __attachmentIssue_documentsInput is used internally by genqlient
 type __attachmentIssue_documentsInput struct {
 	Id              string  `json:"id"`
@@ -20544,6 +20745,26 @@ func (v *__attachmentIssue_formerAttachmentsInput) GetAfter() *string { return v
 func (v *__attachmentIssue_formerAttachmentsInput) GetIncludeArchived() *bool {
 	return v.IncludeArchived
 }
+
+// __attachmentIssue_formerNeedsInput is used internally by genqlient
+type __attachmentIssue_formerNeedsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_formerNeedsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerNeedsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_formerNeedsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerNeedsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_formerNeedsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerNeedsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_formerNeedsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_formerNeedsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __attachmentIssue_historyInput is used internally by genqlient
 type __attachmentIssue_historyInput struct {
@@ -20607,6 +20828,26 @@ func (v *__attachmentIssue_labelsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __attachmentIssue_labelsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__attachmentIssue_labelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __attachmentIssue_needsInput is used internally by genqlient
+type __attachmentIssue_needsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __attachmentIssue_needsInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_needsInput) GetId() string { return v.Id }
+
+// GetFirst returns __attachmentIssue_needsInput.First, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_needsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __attachmentIssue_needsInput.After, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_needsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __attachmentIssue_needsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_needsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __attachmentIssue_relationsInput is used internally by genqlient
 type __attachmentIssue_relationsInput struct {
 	Id              string  `json:"id"`
@@ -20646,6 +20887,14 @@ func (v *__attachmentIssue_releasesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __attachmentIssue_releasesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__attachmentIssue_releasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __attachmentIssue_sharedAccessInput is used internally by genqlient
+type __attachmentIssue_sharedAccessInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __attachmentIssue_sharedAccessInput.Id, and is useful for accessing the field via an interface.
+func (v *__attachmentIssue_sharedAccessInput) GetId() string { return v.Id }
 
 // __attachmentIssue_stateHistoryInput is used internally by genqlient
 type __attachmentIssue_stateHistoryInput struct {
@@ -21619,6 +21868,26 @@ func (v *__issueVcsBranchSearch_childrenInput) GetAfter() *string { return v.Aft
 // GetIncludeArchived returns __issueVcsBranchSearch_childrenInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueVcsBranchSearch_childrenInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issueVcsBranchSearch_commentsInput is used internally by genqlient
+type __issueVcsBranchSearch_commentsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_commentsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_commentsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_commentsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_commentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_commentsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_commentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __issueVcsBranchSearch_documentsInput is used internally by genqlient
 type __issueVcsBranchSearch_documentsInput struct {
 	BranchName      string  `json:"branchName"`
@@ -21658,6 +21927,28 @@ func (v *__issueVcsBranchSearch_formerAttachmentsInput) GetAfter() *string { ret
 
 // GetIncludeArchived returns __issueVcsBranchSearch_formerAttachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueVcsBranchSearch_formerAttachmentsInput) GetIncludeArchived() *bool {
+	return v.IncludeArchived
+}
+
+// __issueVcsBranchSearch_formerNeedsInput is used internally by genqlient
+type __issueVcsBranchSearch_formerNeedsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_formerNeedsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerNeedsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_formerNeedsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerNeedsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_formerNeedsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerNeedsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_formerNeedsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_formerNeedsInput) GetIncludeArchived() *bool {
 	return v.IncludeArchived
 }
 
@@ -21723,6 +22014,26 @@ func (v *__issueVcsBranchSearch_labelsInput) GetAfter() *string { return v.After
 // GetIncludeArchived returns __issueVcsBranchSearch_labelsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueVcsBranchSearch_labelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issueVcsBranchSearch_needsInput is used internally by genqlient
+type __issueVcsBranchSearch_needsInput struct {
+	BranchName      string  `json:"branchName"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_needsInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_needsInput) GetBranchName() string { return v.BranchName }
+
+// GetFirst returns __issueVcsBranchSearch_needsInput.First, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_needsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issueVcsBranchSearch_needsInput.After, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_needsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issueVcsBranchSearch_needsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_needsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __issueVcsBranchSearch_relationsInput is used internally by genqlient
 type __issueVcsBranchSearch_relationsInput struct {
 	BranchName      string  `json:"branchName"`
@@ -21762,6 +22073,14 @@ func (v *__issueVcsBranchSearch_releasesInput) GetAfter() *string { return v.Aft
 
 // GetIncludeArchived returns __issueVcsBranchSearch_releasesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issueVcsBranchSearch_releasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issueVcsBranchSearch_sharedAccessInput is used internally by genqlient
+type __issueVcsBranchSearch_sharedAccessInput struct {
+	BranchName string `json:"branchName"`
+}
+
+// GetBranchName returns __issueVcsBranchSearch_sharedAccessInput.BranchName, and is useful for accessing the field via an interface.
+func (v *__issueVcsBranchSearch_sharedAccessInput) GetBranchName() string { return v.BranchName }
 
 // __issueVcsBranchSearch_stateHistoryInput is used internally by genqlient
 type __issueVcsBranchSearch_stateHistoryInput struct {
@@ -21909,6 +22228,26 @@ func (v *__issue_formerAttachmentsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __issue_formerAttachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issue_formerAttachmentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issue_formerNeedsInput is used internally by genqlient
+type __issue_formerNeedsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __issue_formerNeedsInput.Id, and is useful for accessing the field via an interface.
+func (v *__issue_formerNeedsInput) GetId() string { return v.Id }
+
+// GetFirst returns __issue_formerNeedsInput.First, and is useful for accessing the field via an interface.
+func (v *__issue_formerNeedsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issue_formerNeedsInput.After, and is useful for accessing the field via an interface.
+func (v *__issue_formerNeedsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issue_formerNeedsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issue_formerNeedsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __issue_historyInput is used internally by genqlient
 type __issue_historyInput struct {
 	Id              string  `json:"id"`
@@ -21969,6 +22308,26 @@ func (v *__issue_labelsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __issue_labelsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issue_labelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issue_needsInput is used internally by genqlient
+type __issue_needsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __issue_needsInput.Id, and is useful for accessing the field via an interface.
+func (v *__issue_needsInput) GetId() string { return v.Id }
+
+// GetFirst returns __issue_needsInput.First, and is useful for accessing the field via an interface.
+func (v *__issue_needsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issue_needsInput.After, and is useful for accessing the field via an interface.
+func (v *__issue_needsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issue_needsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issue_needsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __issue_relationsInput is used internally by genqlient
 type __issue_relationsInput struct {
 	Id              string  `json:"id"`
@@ -22008,6 +22367,14 @@ func (v *__issue_releasesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __issue_releasesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issue_releasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issue_sharedAccessInput is used internally by genqlient
+type __issue_sharedAccessInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __issue_sharedAccessInput.Id, and is useful for accessing the field via an interface.
+func (v *__issue_sharedAccessInput) GetId() string { return v.Id }
 
 // __issue_stateHistoryInput is used internally by genqlient
 type __issue_stateHistoryInput struct {
@@ -25226,6 +25593,245 @@ func (v *attachmentIssue_childrenResponse) GetAttachmentIssue() attachmentIssue_
 	return v.AttachmentIssue
 }
 
+// attachmentIssue_commentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_commentsAttachmentIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Comments associated with the issue.
+	Comments attachmentIssue_commentsAttachmentIssueCommentsCommentConnection `json:"comments"`
+}
+
+// GetId returns attachmentIssue_commentsAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns attachmentIssue_commentsAttachmentIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssue) GetIdentifier() string { return v.Identifier }
+
+// GetComments returns attachmentIssue_commentsAttachmentIssue.Comments, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssue) GetComments() attachmentIssue_commentsAttachmentIssueCommentsCommentConnection {
+	return v.Comments
+}
+
+// attachmentIssue_commentsAttachmentIssueCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
+type attachmentIssue_commentsAttachmentIssueCommentsCommentConnection struct {
+	Nodes    []attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment `json:"nodes"`
+	PageInfo attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnection) GetNodes() []attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnection) GetPageInfo() attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment struct {
+	CommentMetadataFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetId() string {
+	return v.CommentMetadataFields.Id
+}
+
+// GetUrl returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetUrl() string {
+	return v.CommentMetadataFields.Url
+}
+
+// GetCreatedAt returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetCreatedAt() string {
+	return v.CommentMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetUpdatedAt() string {
+	return v.CommentMetadataFields.UpdatedAt
+}
+
+// GetEditedAt returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetEditedAt() *string {
+	return v.CommentMetadataFields.EditedAt
+}
+
+// GetResolvedAt returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetResolvedAt() *string {
+	return v.CommentMetadataFields.ResolvedAt
+}
+
+// GetParentId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetParentId() *string {
+	return v.CommentMetadataFields.ParentId
+}
+
+// GetIssueId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.IssueId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetIssueId() *string {
+	return v.CommentMetadataFields.IssueId
+}
+
+// GetProjectId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetProjectId() *string {
+	return v.CommentMetadataFields.ProjectId
+}
+
+// GetProjectUpdateId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetProjectUpdateId() *string {
+	return v.CommentMetadataFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetInitiativeId() *string {
+	return v.CommentMetadataFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetInitiativeUpdateId() *string {
+	return v.CommentMetadataFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetDocumentContentId() *string {
+	return v.CommentMetadataFields.DocumentContentId
+}
+
+// GetUser returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) GetUser() *CommentMetadataFieldsUser {
+	return v.CommentMetadataFields.User
+}
+
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CommentMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment struct {
+	Id string `json:"id"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *CommentMetadataFieldsUser `json:"user"`
+}
+
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment) __premarshalJSON() (*__premarshalattachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment, error) {
+	var retval __premarshalattachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment
+
+	retval.Id = v.CommentMetadataFields.Id
+	retval.Url = v.CommentMetadataFields.Url
+	retval.CreatedAt = v.CommentMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CommentMetadataFields.UpdatedAt
+	retval.EditedAt = v.CommentMetadataFields.EditedAt
+	retval.ResolvedAt = v.CommentMetadataFields.ResolvedAt
+	retval.ParentId = v.CommentMetadataFields.ParentId
+	retval.IssueId = v.CommentMetadataFields.IssueId
+	retval.ProjectId = v.CommentMetadataFields.ProjectId
+	retval.ProjectUpdateId = v.CommentMetadataFields.ProjectUpdateId
+	retval.InitiativeId = v.CommentMetadataFields.InitiativeId
+	retval.InitiativeUpdateId = v.CommentMetadataFields.InitiativeUpdateId
+	retval.DocumentContentId = v.CommentMetadataFields.DocumentContentId
+	retval.User = v.CommentMetadataFields.User
+	return &retval, nil
+}
+
+// attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_commentsResponse is returned by attachmentIssue_comments on success.
+type attachmentIssue_commentsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_commentsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_commentsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_commentsResponse) GetAttachmentIssue() attachmentIssue_commentsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
 // attachmentIssue_documentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -25561,6 +26167,205 @@ type attachmentIssue_formerAttachmentsResponse struct {
 
 // GetAttachmentIssue returns attachmentIssue_formerAttachmentsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
 func (v *attachmentIssue_formerAttachmentsResponse) GetAttachmentIssue() attachmentIssue_formerAttachmentsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_formerNeedsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_formerNeedsAttachmentIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Customer needs previously associated with the issue before being moved to another issue.
+	FormerNeeds attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection `json:"formerNeeds"`
+}
+
+// GetId returns attachmentIssue_formerNeedsAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns attachmentIssue_formerNeedsAttachmentIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssue) GetIdentifier() string { return v.Identifier }
+
+// GetFormerNeeds returns attachmentIssue_formerNeedsAttachmentIssue.FormerNeeds, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssue) GetFormerNeeds() attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection {
+	return v.FormerNeeds
+}
+
+// attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
+type attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection struct {
+	Nodes    []attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed `json:"nodes"`
+	PageInfo attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection) GetNodes() []attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnection) GetPageInfo() attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	CustomerNeedMetadataFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetId() string {
+	return v.CustomerNeedMetadataFields.Id
+}
+
+// GetCreatedAt returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedMetadataFields.UpdatedAt
+}
+
+// GetArchivedAt returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedMetadataFields.ArchivedAt
+}
+
+// GetPriority returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetPriority() float64 {
+	return v.CustomerNeedMetadataFields.Priority
+}
+
+// GetUrl returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUrl() *string {
+	return v.CustomerNeedMetadataFields.Url
+}
+
+// GetCustomer returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCustomer() *CustomerNeedMetadataFieldsCustomer {
+	return v.CustomerNeedMetadataFields.Customer
+}
+
+// GetIssue returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetIssue() *CustomerNeedMetadataFieldsIssue {
+	return v.CustomerNeedMetadataFields.Issue
+}
+
+// GetProject returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetProject() *CustomerNeedMetadataFieldsProject {
+	return v.CustomerNeedMetadataFields.Project
+}
+
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedMetadataFieldsProject `json:"project"`
+}
+
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) __premarshalJSON() (*__premarshalattachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed, error) {
+	var retval __premarshalattachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+
+	retval.Id = v.CustomerNeedMetadataFields.Id
+	retval.CreatedAt = v.CustomerNeedMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedMetadataFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedMetadataFields.ArchivedAt
+	retval.Priority = v.CustomerNeedMetadataFields.Priority
+	retval.Url = v.CustomerNeedMetadataFields.Url
+	retval.Customer = v.CustomerNeedMetadataFields.Customer
+	retval.Issue = v.CustomerNeedMetadataFields.Issue
+	retval.Project = v.CustomerNeedMetadataFields.Project
+	return &retval, nil
+}
+
+// attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_formerNeedsResponse is returned by attachmentIssue_formerNeeds on success.
+type attachmentIssue_formerNeedsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_formerNeedsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_formerNeedsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_formerNeedsResponse) GetAttachmentIssue() attachmentIssue_formerNeedsAttachmentIssue {
 	return v.AttachmentIssue
 }
 
@@ -26047,6 +26852,205 @@ func (v *attachmentIssue_labelsResponse) GetAttachmentIssue() attachmentIssue_la
 	return v.AttachmentIssue
 }
 
+// attachmentIssue_needsAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_needsAttachmentIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Customer needs associated with the issue.
+	Needs attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection `json:"needs"`
+}
+
+// GetId returns attachmentIssue_needsAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns attachmentIssue_needsAttachmentIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssue) GetIdentifier() string { return v.Identifier }
+
+// GetNeeds returns attachmentIssue_needsAttachmentIssue.Needs, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssue) GetNeeds() attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection {
+	return v.Needs
+}
+
+// attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
+type attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection struct {
+	Nodes    []attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed `json:"nodes"`
+	PageInfo attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection) GetNodes() []attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed {
+	return v.Nodes
+}
+
+// GetPageInfo returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection) GetPageInfo() attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo {
+	return v.PageInfo
+}
+
+// attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	CustomerNeedMetadataFields `json:"-"`
+}
+
+// GetId returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetId() string {
+	return v.CustomerNeedMetadataFields.Id
+}
+
+// GetCreatedAt returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedMetadataFields.UpdatedAt
+}
+
+// GetArchivedAt returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedMetadataFields.ArchivedAt
+}
+
+// GetPriority returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetPriority() float64 {
+	return v.CustomerNeedMetadataFields.Priority
+}
+
+// GetUrl returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetUrl() *string {
+	return v.CustomerNeedMetadataFields.Url
+}
+
+// GetCustomer returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetCustomer() *CustomerNeedMetadataFieldsCustomer {
+	return v.CustomerNeedMetadataFields.Customer
+}
+
+// GetIssue returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetIssue() *CustomerNeedMetadataFieldsIssue {
+	return v.CustomerNeedMetadataFields.Issue
+}
+
+// GetProject returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetProject() *CustomerNeedMetadataFieldsProject {
+	return v.CustomerNeedMetadataFields.Project
+}
+
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedMetadataFieldsProject `json:"project"`
+}
+
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed) __premarshalJSON() (*__premarshalattachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed, error) {
+	var retval __premarshalattachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed
+
+	retval.Id = v.CustomerNeedMetadataFields.Id
+	retval.CreatedAt = v.CustomerNeedMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedMetadataFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedMetadataFields.ArchivedAt
+	retval.Priority = v.CustomerNeedMetadataFields.Priority
+	retval.Url = v.CustomerNeedMetadataFields.Url
+	retval.Customer = v.CustomerNeedMetadataFields.Customer
+	retval.Issue = v.CustomerNeedMetadataFields.Issue
+	retval.Project = v.CustomerNeedMetadataFields.Project
+	return &retval, nil
+}
+
+// attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// attachmentIssue_needsResponse is returned by attachmentIssue_needs on success.
+type attachmentIssue_needsResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_needsAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_needsResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_needsResponse) GetAttachmentIssue() attachmentIssue_needsAttachmentIssue {
+	return v.AttachmentIssue
+}
+
 // attachmentIssue_relationsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -26509,6 +27513,128 @@ type attachmentIssue_releasesResponse struct {
 
 // GetAttachmentIssue returns attachmentIssue_releasesResponse.AttachmentIssue, and is useful for accessing the field via an interface.
 func (v *attachmentIssue_releasesResponse) GetAttachmentIssue() attachmentIssue_releasesAttachmentIssue {
+	return v.AttachmentIssue
+}
+
+// attachmentIssue_sharedAccessAttachmentIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type attachmentIssue_sharedAccessAttachmentIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Shared access metadata for this issue.
+	SharedAccess attachmentIssue_sharedAccessAttachmentIssueSharedAccess `json:"sharedAccess"`
+}
+
+// GetId returns attachmentIssue_sharedAccessAttachmentIssue.Id, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessAttachmentIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns attachmentIssue_sharedAccessAttachmentIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessAttachmentIssue) GetIdentifier() string { return v.Identifier }
+
+// GetSharedAccess returns attachmentIssue_sharedAccessAttachmentIssue.SharedAccess, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessAttachmentIssue) GetSharedAccess() attachmentIssue_sharedAccessAttachmentIssueSharedAccess {
+	return v.SharedAccess
+}
+
+// attachmentIssue_sharedAccessAttachmentIssueSharedAccess includes the requested fields of the GraphQL type IssueSharedAccess.
+// The GraphQL type's documentation follows.
+//
+// Metadata about an issue's shared access state, including which users the issue
+// is shared with and any field restrictions for shared-only viewers.
+type attachmentIssue_sharedAccessAttachmentIssueSharedAccess struct {
+	IssueSharedAccessFields `json:"-"`
+}
+
+// GetIsShared returns attachmentIssue_sharedAccessAttachmentIssueSharedAccess.IsShared, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessAttachmentIssueSharedAccess) GetIsShared() bool {
+	return v.IssueSharedAccessFields.IsShared
+}
+
+// GetViewerHasOnlySharedAccess returns attachmentIssue_sharedAccessAttachmentIssueSharedAccess.ViewerHasOnlySharedAccess, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessAttachmentIssueSharedAccess) GetViewerHasOnlySharedAccess() bool {
+	return v.IssueSharedAccessFields.ViewerHasOnlySharedAccess
+}
+
+// GetSharedWithCount returns attachmentIssue_sharedAccessAttachmentIssueSharedAccess.SharedWithCount, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessAttachmentIssueSharedAccess) GetSharedWithCount() int {
+	return v.IssueSharedAccessFields.SharedWithCount
+}
+
+// GetDisallowedIssueFields returns attachmentIssue_sharedAccessAttachmentIssueSharedAccess.DisallowedIssueFields, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessAttachmentIssueSharedAccess) GetDisallowedIssueFields() []IssueSharedAccessDisallowedField {
+	return v.IssueSharedAccessFields.DisallowedIssueFields
+}
+
+func (v *attachmentIssue_sharedAccessAttachmentIssueSharedAccess) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*attachmentIssue_sharedAccessAttachmentIssueSharedAccess
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.attachmentIssue_sharedAccessAttachmentIssueSharedAccess = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSharedAccessFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalattachmentIssue_sharedAccessAttachmentIssueSharedAccess struct {
+	IsShared bool `json:"isShared"`
+
+	ViewerHasOnlySharedAccess bool `json:"viewerHasOnlySharedAccess"`
+
+	SharedWithCount int `json:"sharedWithCount"`
+
+	DisallowedIssueFields []IssueSharedAccessDisallowedField `json:"disallowedIssueFields"`
+}
+
+func (v *attachmentIssue_sharedAccessAttachmentIssueSharedAccess) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *attachmentIssue_sharedAccessAttachmentIssueSharedAccess) __premarshalJSON() (*__premarshalattachmentIssue_sharedAccessAttachmentIssueSharedAccess, error) {
+	var retval __premarshalattachmentIssue_sharedAccessAttachmentIssueSharedAccess
+
+	retval.IsShared = v.IssueSharedAccessFields.IsShared
+	retval.ViewerHasOnlySharedAccess = v.IssueSharedAccessFields.ViewerHasOnlySharedAccess
+	retval.SharedWithCount = v.IssueSharedAccessFields.SharedWithCount
+	retval.DisallowedIssueFields = v.IssueSharedAccessFields.DisallowedIssueFields
+	return &retval, nil
+}
+
+// attachmentIssue_sharedAccessResponse is returned by attachmentIssue_sharedAccess on success.
+type attachmentIssue_sharedAccessResponse struct {
+	// Query an issue by its associated attachment, and its id.
+	AttachmentIssue attachmentIssue_sharedAccessAttachmentIssue `json:"attachmentIssue"`
+}
+
+// GetAttachmentIssue returns attachmentIssue_sharedAccessResponse.AttachmentIssue, and is useful for accessing the field via an interface.
+func (v *attachmentIssue_sharedAccessResponse) GetAttachmentIssue() attachmentIssue_sharedAccessAttachmentIssue {
 	return v.AttachmentIssue
 }
 
@@ -37380,6 +38506,247 @@ func (v *issueVcsBranchSearch_childrenResponse) GetIssueVcsBranchSearch() *issue
 	return v.IssueVcsBranchSearch
 }
 
+// issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Comments associated with the issue.
+	Comments issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection `json:"comments"`
+}
+
+// GetId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue) GetIdentifier() string {
+	return v.Identifier
+}
+
+// GetComments returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue.Comments, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue) GetComments() issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection {
+	return v.Comments
+}
+
+// issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
+type issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection struct {
+	Nodes    []issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment `json:"nodes"`
+	PageInfo issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection) GetNodes() []issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection) GetPageInfo() issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment struct {
+	CommentMetadataFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetId() string {
+	return v.CommentMetadataFields.Id
+}
+
+// GetUrl returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetUrl() string {
+	return v.CommentMetadataFields.Url
+}
+
+// GetCreatedAt returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetCreatedAt() string {
+	return v.CommentMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetUpdatedAt() string {
+	return v.CommentMetadataFields.UpdatedAt
+}
+
+// GetEditedAt returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetEditedAt() *string {
+	return v.CommentMetadataFields.EditedAt
+}
+
+// GetResolvedAt returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetResolvedAt() *string {
+	return v.CommentMetadataFields.ResolvedAt
+}
+
+// GetParentId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetParentId() *string {
+	return v.CommentMetadataFields.ParentId
+}
+
+// GetIssueId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.IssueId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetIssueId() *string {
+	return v.CommentMetadataFields.IssueId
+}
+
+// GetProjectId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetProjectId() *string {
+	return v.CommentMetadataFields.ProjectId
+}
+
+// GetProjectUpdateId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetProjectUpdateId() *string {
+	return v.CommentMetadataFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetInitiativeId() *string {
+	return v.CommentMetadataFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetInitiativeUpdateId() *string {
+	return v.CommentMetadataFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetDocumentContentId() *string {
+	return v.CommentMetadataFields.DocumentContentId
+}
+
+// GetUser returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) GetUser() *CommentMetadataFieldsUser {
+	return v.CommentMetadataFields.User
+}
+
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CommentMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment struct {
+	Id string `json:"id"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *CommentMetadataFieldsUser `json:"user"`
+}
+
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment) __premarshalJSON() (*__premarshalissueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment, error) {
+	var retval __premarshalissueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment
+
+	retval.Id = v.CommentMetadataFields.Id
+	retval.Url = v.CommentMetadataFields.Url
+	retval.CreatedAt = v.CommentMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CommentMetadataFields.UpdatedAt
+	retval.EditedAt = v.CommentMetadataFields.EditedAt
+	retval.ResolvedAt = v.CommentMetadataFields.ResolvedAt
+	retval.ParentId = v.CommentMetadataFields.ParentId
+	retval.IssueId = v.CommentMetadataFields.IssueId
+	retval.ProjectId = v.CommentMetadataFields.ProjectId
+	retval.ProjectUpdateId = v.CommentMetadataFields.ProjectUpdateId
+	retval.InitiativeId = v.CommentMetadataFields.InitiativeId
+	retval.InitiativeUpdateId = v.CommentMetadataFields.InitiativeUpdateId
+	retval.DocumentContentId = v.CommentMetadataFields.DocumentContentId
+	retval.User = v.CommentMetadataFields.User
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_commentsResponse is returned by issueVcsBranchSearch_comments on success.
+type issueVcsBranchSearch_commentsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_commentsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_commentsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
 // issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -37715,6 +39082,207 @@ type issueVcsBranchSearch_formerAttachmentsResponse struct {
 
 // GetIssueVcsBranchSearch returns issueVcsBranchSearch_formerAttachmentsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
 func (v *issueVcsBranchSearch_formerAttachmentsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Customer needs previously associated with the issue before being moved to another issue.
+	FormerNeeds issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection `json:"formerNeeds"`
+}
+
+// GetId returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue) GetIdentifier() string {
+	return v.Identifier
+}
+
+// GetFormerNeeds returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue.FormerNeeds, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue) GetFormerNeeds() issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection {
+	return v.FormerNeeds
+}
+
+// issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
+type issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection struct {
+	Nodes    []issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed `json:"nodes"`
+	PageInfo issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection) GetNodes() []issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnection) GetPageInfo() issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	CustomerNeedMetadataFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetId() string {
+	return v.CustomerNeedMetadataFields.Id
+}
+
+// GetCreatedAt returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedMetadataFields.UpdatedAt
+}
+
+// GetArchivedAt returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedMetadataFields.ArchivedAt
+}
+
+// GetPriority returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetPriority() float64 {
+	return v.CustomerNeedMetadataFields.Priority
+}
+
+// GetUrl returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUrl() *string {
+	return v.CustomerNeedMetadataFields.Url
+}
+
+// GetCustomer returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCustomer() *CustomerNeedMetadataFieldsCustomer {
+	return v.CustomerNeedMetadataFields.Customer
+}
+
+// GetIssue returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetIssue() *CustomerNeedMetadataFieldsIssue {
+	return v.CustomerNeedMetadataFields.Issue
+}
+
+// GetProject returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetProject() *CustomerNeedMetadataFieldsProject {
+	return v.CustomerNeedMetadataFields.Project
+}
+
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedMetadataFieldsProject `json:"project"`
+}
+
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) __premarshalJSON() (*__premarshalissueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed, error) {
+	var retval __premarshalissueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+
+	retval.Id = v.CustomerNeedMetadataFields.Id
+	retval.CreatedAt = v.CustomerNeedMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedMetadataFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedMetadataFields.ArchivedAt
+	retval.Priority = v.CustomerNeedMetadataFields.Priority
+	retval.Url = v.CustomerNeedMetadataFields.Url
+	retval.Customer = v.CustomerNeedMetadataFields.Customer
+	retval.Issue = v.CustomerNeedMetadataFields.Issue
+	retval.Project = v.CustomerNeedMetadataFields.Project
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_formerNeedsResponse is returned by issueVcsBranchSearch_formerNeeds on success.
+type issueVcsBranchSearch_formerNeedsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_formerNeedsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_formerNeedsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue {
 	return v.IssueVcsBranchSearch
 }
 
@@ -38201,6 +39769,207 @@ func (v *issueVcsBranchSearch_labelsResponse) GetIssueVcsBranchSearch() *issueVc
 	return v.IssueVcsBranchSearch
 }
 
+// issueVcsBranchSearch_needsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_needsIssueVcsBranchSearchIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Customer needs associated with the issue.
+	Needs issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection `json:"needs"`
+}
+
+// GetId returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssue) GetIdentifier() string {
+	return v.Identifier
+}
+
+// GetNeeds returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssue.Needs, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssue) GetNeeds() issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection {
+	return v.Needs
+}
+
+// issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
+type issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection struct {
+	Nodes    []issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed `json:"nodes"`
+	PageInfo issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection) GetNodes() []issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed {
+	return v.Nodes
+}
+
+// GetPageInfo returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnection) GetPageInfo() issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	CustomerNeedMetadataFields `json:"-"`
+}
+
+// GetId returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetId() string {
+	return v.CustomerNeedMetadataFields.Id
+}
+
+// GetCreatedAt returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedMetadataFields.UpdatedAt
+}
+
+// GetArchivedAt returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedMetadataFields.ArchivedAt
+}
+
+// GetPriority returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetPriority() float64 {
+	return v.CustomerNeedMetadataFields.Priority
+}
+
+// GetUrl returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetUrl() *string {
+	return v.CustomerNeedMetadataFields.Url
+}
+
+// GetCustomer returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetCustomer() *CustomerNeedMetadataFieldsCustomer {
+	return v.CustomerNeedMetadataFields.Customer
+}
+
+// GetIssue returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetIssue() *CustomerNeedMetadataFieldsIssue {
+	return v.CustomerNeedMetadataFields.Issue
+}
+
+// GetProject returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetProject() *CustomerNeedMetadataFieldsProject {
+	return v.CustomerNeedMetadataFields.Project
+}
+
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedMetadataFieldsProject `json:"project"`
+}
+
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed) __premarshalJSON() (*__premarshalissueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed, error) {
+	var retval __premarshalissueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed
+
+	retval.Id = v.CustomerNeedMetadataFields.Id
+	retval.CreatedAt = v.CustomerNeedMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedMetadataFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedMetadataFields.ArchivedAt
+	retval.Priority = v.CustomerNeedMetadataFields.Priority
+	retval.Url = v.CustomerNeedMetadataFields.Url
+	retval.Customer = v.CustomerNeedMetadataFields.Customer
+	retval.Issue = v.CustomerNeedMetadataFields.Issue
+	retval.Project = v.CustomerNeedMetadataFields.Project
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issueVcsBranchSearch_needsResponse is returned by issueVcsBranchSearch_needs on success.
+type issueVcsBranchSearch_needsResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_needsIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_needsResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_needsResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_needsIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
 // issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -38663,6 +40432,130 @@ type issueVcsBranchSearch_releasesResponse struct {
 
 // GetIssueVcsBranchSearch returns issueVcsBranchSearch_releasesResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
 func (v *issueVcsBranchSearch_releasesResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue {
+	return v.IssueVcsBranchSearch
+}
+
+// issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Shared access metadata for this issue.
+	SharedAccess issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess `json:"sharedAccess"`
+}
+
+// GetId returns issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue.Id, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue) GetIdentifier() string {
+	return v.Identifier
+}
+
+// GetSharedAccess returns issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue.SharedAccess, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue) GetSharedAccess() issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess {
+	return v.SharedAccess
+}
+
+// issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess includes the requested fields of the GraphQL type IssueSharedAccess.
+// The GraphQL type's documentation follows.
+//
+// Metadata about an issue's shared access state, including which users the issue
+// is shared with and any field restrictions for shared-only viewers.
+type issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess struct {
+	IssueSharedAccessFields `json:"-"`
+}
+
+// GetIsShared returns issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess.IsShared, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess) GetIsShared() bool {
+	return v.IssueSharedAccessFields.IsShared
+}
+
+// GetViewerHasOnlySharedAccess returns issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess.ViewerHasOnlySharedAccess, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess) GetViewerHasOnlySharedAccess() bool {
+	return v.IssueSharedAccessFields.ViewerHasOnlySharedAccess
+}
+
+// GetSharedWithCount returns issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess.SharedWithCount, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess) GetSharedWithCount() int {
+	return v.IssueSharedAccessFields.SharedWithCount
+}
+
+// GetDisallowedIssueFields returns issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess.DisallowedIssueFields, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess) GetDisallowedIssueFields() []IssueSharedAccessDisallowedField {
+	return v.IssueSharedAccessFields.DisallowedIssueFields
+}
+
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSharedAccessFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess struct {
+	IsShared bool `json:"isShared"`
+
+	ViewerHasOnlySharedAccess bool `json:"viewerHasOnlySharedAccess"`
+
+	SharedWithCount int `json:"sharedWithCount"`
+
+	DisallowedIssueFields []IssueSharedAccessDisallowedField `json:"disallowedIssueFields"`
+}
+
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess) __premarshalJSON() (*__premarshalissueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess, error) {
+	var retval __premarshalissueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess
+
+	retval.IsShared = v.IssueSharedAccessFields.IsShared
+	retval.ViewerHasOnlySharedAccess = v.IssueSharedAccessFields.ViewerHasOnlySharedAccess
+	retval.SharedWithCount = v.IssueSharedAccessFields.SharedWithCount
+	retval.DisallowedIssueFields = v.IssueSharedAccessFields.DisallowedIssueFields
+	return &retval, nil
+}
+
+// issueVcsBranchSearch_sharedAccessResponse is returned by issueVcsBranchSearch_sharedAccess on success.
+type issueVcsBranchSearch_sharedAccessResponse struct {
+	// Find issue based on the VCS branch name.
+	IssueVcsBranchSearch *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue `json:"issueVcsBranchSearch"`
+}
+
+// GetIssueVcsBranchSearch returns issueVcsBranchSearch_sharedAccessResponse.IssueVcsBranchSearch, and is useful for accessing the field via an interface.
+func (v *issueVcsBranchSearch_sharedAccessResponse) GetIssueVcsBranchSearch() *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue {
 	return v.IssueVcsBranchSearch
 }
 
@@ -39955,6 +41848,203 @@ type issue_formerAttachmentsResponse struct {
 // GetIssue returns issue_formerAttachmentsResponse.Issue, and is useful for accessing the field via an interface.
 func (v *issue_formerAttachmentsResponse) GetIssue() issue_formerAttachmentsIssue { return v.Issue }
 
+// issue_formerNeedsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issue_formerNeedsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Customer needs previously associated with the issue before being moved to another issue.
+	FormerNeeds issue_formerNeedsIssueFormerNeedsCustomerNeedConnection `json:"formerNeeds"`
+}
+
+// GetId returns issue_formerNeedsIssue.Id, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issue_formerNeedsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetFormerNeeds returns issue_formerNeedsIssue.FormerNeeds, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssue) GetFormerNeeds() issue_formerNeedsIssueFormerNeedsCustomerNeedConnection {
+	return v.FormerNeeds
+}
+
+// issue_formerNeedsIssueFormerNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
+type issue_formerNeedsIssueFormerNeedsCustomerNeedConnection struct {
+	Nodes    []issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed `json:"nodes"`
+	PageInfo issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnection) GetNodes() []issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed {
+	return v.Nodes
+}
+
+// GetPageInfo returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnection) GetPageInfo() issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	CustomerNeedMetadataFields `json:"-"`
+}
+
+// GetId returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetId() string {
+	return v.CustomerNeedMetadataFields.Id
+}
+
+// GetCreatedAt returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedMetadataFields.UpdatedAt
+}
+
+// GetArchivedAt returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedMetadataFields.ArchivedAt
+}
+
+// GetPriority returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetPriority() float64 {
+	return v.CustomerNeedMetadataFields.Priority
+}
+
+// GetUrl returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetUrl() *string {
+	return v.CustomerNeedMetadataFields.Url
+}
+
+// GetCustomer returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetCustomer() *CustomerNeedMetadataFieldsCustomer {
+	return v.CustomerNeedMetadataFields.Customer
+}
+
+// GetIssue returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetIssue() *CustomerNeedMetadataFieldsIssue {
+	return v.CustomerNeedMetadataFields.Issue
+}
+
+// GetProject returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) GetProject() *CustomerNeedMetadataFieldsProject {
+	return v.CustomerNeedMetadataFields.Project
+}
+
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedMetadataFieldsProject `json:"project"`
+}
+
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed) __premarshalJSON() (*__premarshalissue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed, error) {
+	var retval __premarshalissue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed
+
+	retval.Id = v.CustomerNeedMetadataFields.Id
+	retval.CreatedAt = v.CustomerNeedMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedMetadataFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedMetadataFields.ArchivedAt
+	retval.Priority = v.CustomerNeedMetadataFields.Priority
+	retval.Url = v.CustomerNeedMetadataFields.Url
+	retval.Customer = v.CustomerNeedMetadataFields.Customer
+	retval.Issue = v.CustomerNeedMetadataFields.Issue
+	retval.Project = v.CustomerNeedMetadataFields.Project
+	return &retval, nil
+}
+
+// issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issue_formerNeedsResponse is returned by issue_formerNeeds on success.
+type issue_formerNeedsResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issue_formerNeedsIssue `json:"issue"`
+}
+
+// GetIssue returns issue_formerNeedsResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issue_formerNeedsResponse) GetIssue() issue_formerNeedsIssue { return v.Issue }
+
 // issue_historyIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -40430,6 +42520,201 @@ type issue_labelsResponse struct {
 // GetIssue returns issue_labelsResponse.Issue, and is useful for accessing the field via an interface.
 func (v *issue_labelsResponse) GetIssue() issue_labelsIssue { return v.Issue }
 
+// issue_needsIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issue_needsIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Customer needs associated with the issue.
+	Needs issue_needsIssueNeedsCustomerNeedConnection `json:"needs"`
+}
+
+// GetId returns issue_needsIssue.Id, and is useful for accessing the field via an interface.
+func (v *issue_needsIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issue_needsIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issue_needsIssue) GetIdentifier() string { return v.Identifier }
+
+// GetNeeds returns issue_needsIssue.Needs, and is useful for accessing the field via an interface.
+func (v *issue_needsIssue) GetNeeds() issue_needsIssueNeedsCustomerNeedConnection { return v.Needs }
+
+// issue_needsIssueNeedsCustomerNeedConnection includes the requested fields of the GraphQL type CustomerNeedConnection.
+type issue_needsIssueNeedsCustomerNeedConnection struct {
+	Nodes    []issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed `json:"nodes"`
+	PageInfo issue_needsIssueNeedsCustomerNeedConnectionPageInfo            `json:"pageInfo"`
+}
+
+// GetNodes returns issue_needsIssueNeedsCustomerNeedConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnection) GetNodes() []issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed {
+	return v.Nodes
+}
+
+// GetPageInfo returns issue_needsIssueNeedsCustomerNeedConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnection) GetPageInfo() issue_needsIssueNeedsCustomerNeedConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
+// The GraphQL type's documentation follows.
+//
+// A customer need represents a specific product request or piece of feedback from
+// a customer. Customer needs serve as the bridge between customer feedback and
+// engineering work by linking a customer to an issue or project, optionally with a
+// comment or attachment providing additional context. Needs can be created
+// manually, from integrations, or from intake sources like email.
+type issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	CustomerNeedMetadataFields `json:"-"`
+}
+
+// GetId returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Id, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetId() string {
+	return v.CustomerNeedMetadataFields.Id
+}
+
+// GetCreatedAt returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetCreatedAt() string {
+	return v.CustomerNeedMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetUpdatedAt() string {
+	return v.CustomerNeedMetadataFields.UpdatedAt
+}
+
+// GetArchivedAt returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetArchivedAt() *string {
+	return v.CustomerNeedMetadataFields.ArchivedAt
+}
+
+// GetPriority returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Priority, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetPriority() float64 {
+	return v.CustomerNeedMetadataFields.Priority
+}
+
+// GetUrl returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Url, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetUrl() *string {
+	return v.CustomerNeedMetadataFields.Url
+}
+
+// GetCustomer returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Customer, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetCustomer() *CustomerNeedMetadataFieldsCustomer {
+	return v.CustomerNeedMetadataFields.Customer
+}
+
+// GetIssue returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Issue, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetIssue() *CustomerNeedMetadataFieldsIssue {
+	return v.CustomerNeedMetadataFields.Issue
+}
+
+// GetProject returns issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed.Project, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) GetProject() *CustomerNeedMetadataFieldsProject {
+	return v.CustomerNeedMetadataFields.Project
+}
+
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CustomerNeedMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
+	Id string `json:"id"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Priority float64 `json:"priority"`
+
+	Url *string `json:"url"`
+
+	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
+
+	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
+
+	Project *CustomerNeedMetadataFieldsProject `json:"project"`
+}
+
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed) __premarshalJSON() (*__premarshalissue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed, error) {
+	var retval __premarshalissue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed
+
+	retval.Id = v.CustomerNeedMetadataFields.Id
+	retval.CreatedAt = v.CustomerNeedMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CustomerNeedMetadataFields.UpdatedAt
+	retval.ArchivedAt = v.CustomerNeedMetadataFields.ArchivedAt
+	retval.Priority = v.CustomerNeedMetadataFields.Priority
+	retval.Url = v.CustomerNeedMetadataFields.Url
+	retval.Customer = v.CustomerNeedMetadataFields.Customer
+	retval.Issue = v.CustomerNeedMetadataFields.Issue
+	retval.Project = v.CustomerNeedMetadataFields.Project
+	return &retval, nil
+}
+
+// issue_needsIssueNeedsCustomerNeedConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issue_needsIssueNeedsCustomerNeedConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issue_needsIssueNeedsCustomerNeedConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issue_needsIssueNeedsCustomerNeedConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issue_needsIssueNeedsCustomerNeedConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issue_needsResponse is returned by issue_needs on success.
+type issue_needsResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issue_needsIssue `json:"issue"`
+}
+
+// GetIssue returns issue_needsResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issue_needsResponse) GetIssue() issue_needsIssue { return v.Issue }
+
 // issue_relationsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -40890,6 +43175,126 @@ type issue_releasesResponse struct {
 
 // GetIssue returns issue_releasesResponse.Issue, and is useful for accessing the field via an interface.
 func (v *issue_releasesResponse) GetIssue() issue_releasesIssue { return v.Issue }
+
+// issue_sharedAccessIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issue_sharedAccessIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Issue's human readable identifier (e.g. ENG-123).
+	Identifier string `json:"identifier"`
+	// Shared access metadata for this issue.
+	SharedAccess issue_sharedAccessIssueSharedAccess `json:"sharedAccess"`
+}
+
+// GetId returns issue_sharedAccessIssue.Id, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessIssue) GetId() string { return v.Id }
+
+// GetIdentifier returns issue_sharedAccessIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessIssue) GetIdentifier() string { return v.Identifier }
+
+// GetSharedAccess returns issue_sharedAccessIssue.SharedAccess, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessIssue) GetSharedAccess() issue_sharedAccessIssueSharedAccess {
+	return v.SharedAccess
+}
+
+// issue_sharedAccessIssueSharedAccess includes the requested fields of the GraphQL type IssueSharedAccess.
+// The GraphQL type's documentation follows.
+//
+// Metadata about an issue's shared access state, including which users the issue
+// is shared with and any field restrictions for shared-only viewers.
+type issue_sharedAccessIssueSharedAccess struct {
+	IssueSharedAccessFields `json:"-"`
+}
+
+// GetIsShared returns issue_sharedAccessIssueSharedAccess.IsShared, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessIssueSharedAccess) GetIsShared() bool {
+	return v.IssueSharedAccessFields.IsShared
+}
+
+// GetViewerHasOnlySharedAccess returns issue_sharedAccessIssueSharedAccess.ViewerHasOnlySharedAccess, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessIssueSharedAccess) GetViewerHasOnlySharedAccess() bool {
+	return v.IssueSharedAccessFields.ViewerHasOnlySharedAccess
+}
+
+// GetSharedWithCount returns issue_sharedAccessIssueSharedAccess.SharedWithCount, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessIssueSharedAccess) GetSharedWithCount() int {
+	return v.IssueSharedAccessFields.SharedWithCount
+}
+
+// GetDisallowedIssueFields returns issue_sharedAccessIssueSharedAccess.DisallowedIssueFields, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessIssueSharedAccess) GetDisallowedIssueFields() []IssueSharedAccessDisallowedField {
+	return v.IssueSharedAccessFields.DisallowedIssueFields
+}
+
+func (v *issue_sharedAccessIssueSharedAccess) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issue_sharedAccessIssueSharedAccess
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issue_sharedAccessIssueSharedAccess = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSharedAccessFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissue_sharedAccessIssueSharedAccess struct {
+	IsShared bool `json:"isShared"`
+
+	ViewerHasOnlySharedAccess bool `json:"viewerHasOnlySharedAccess"`
+
+	SharedWithCount int `json:"sharedWithCount"`
+
+	DisallowedIssueFields []IssueSharedAccessDisallowedField `json:"disallowedIssueFields"`
+}
+
+func (v *issue_sharedAccessIssueSharedAccess) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issue_sharedAccessIssueSharedAccess) __premarshalJSON() (*__premarshalissue_sharedAccessIssueSharedAccess, error) {
+	var retval __premarshalissue_sharedAccessIssueSharedAccess
+
+	retval.IsShared = v.IssueSharedAccessFields.IsShared
+	retval.ViewerHasOnlySharedAccess = v.IssueSharedAccessFields.ViewerHasOnlySharedAccess
+	retval.SharedWithCount = v.IssueSharedAccessFields.SharedWithCount
+	retval.DisallowedIssueFields = v.IssueSharedAccessFields.DisallowedIssueFields
+	return &retval, nil
+}
+
+// issue_sharedAccessResponse is returned by issue_sharedAccess on success.
+type issue_sharedAccessResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issue_sharedAccessIssue `json:"issue"`
+}
+
+// GetIssue returns issue_sharedAccessResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issue_sharedAccessResponse) GetIssue() issue_sharedAccessIssue { return v.Issue }
 
 // issue_stateHistoryIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
@@ -74588,6 +76993,76 @@ func attachmentIssue_children(
 	return data_, err_
 }
 
+// The query executed by attachmentIssue_comments.
+const attachmentIssue_comments_Operation = `
+query attachmentIssue_comments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		id
+		identifier
+		comments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CommentMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CommentMetadataFields on Comment {
+	id
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func attachmentIssue_comments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_commentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_comments",
+		Query:  attachmentIssue_comments_Operation,
+		Variables: &__attachmentIssue_commentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_commentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by attachmentIssue_documents.
 const attachmentIssue_documents_Operation = `
 query attachmentIssue_documents ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -74705,6 +77180,77 @@ func attachmentIssue_formerAttachments(
 	}
 
 	data_ = &attachmentIssue_formerAttachmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_formerNeeds.
+const attachmentIssue_formerNeeds_Operation = `
+query attachmentIssue_formerNeeds ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		id
+		identifier
+		formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CustomerNeedMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CustomerNeedMetadataFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func attachmentIssue_formerNeeds(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_formerNeedsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_formerNeeds",
+		Query:  attachmentIssue_formerNeeds_Operation,
+		Variables: &__attachmentIssue_formerNeedsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_formerNeedsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -74897,6 +77443,77 @@ func attachmentIssue_labels(
 	return data_, err_
 }
 
+// The query executed by attachmentIssue_needs.
+const attachmentIssue_needs_Operation = `
+query attachmentIssue_needs ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	attachmentIssue(id: $id) {
+		id
+		identifier
+		needs(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CustomerNeedMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CustomerNeedMetadataFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func attachmentIssue_needs(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *attachmentIssue_needsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_needs",
+		Query:  attachmentIssue_needs_Operation,
+		Variables: &__attachmentIssue_needsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &attachmentIssue_needsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by attachmentIssue_relations.
 const attachmentIssue_relations_Operation = `
 query attachmentIssue_relations ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -75038,6 +77655,50 @@ func attachmentIssue_releases(
 	}
 
 	data_ = &attachmentIssue_releasesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by attachmentIssue_sharedAccess.
+const attachmentIssue_sharedAccess_Operation = `
+query attachmentIssue_sharedAccess ($id: String!) {
+	attachmentIssue(id: $id) {
+		id
+		identifier
+		sharedAccess {
+			... IssueSharedAccessFields
+		}
+	}
+}
+fragment IssueSharedAccessFields on IssueSharedAccess {
+	isShared
+	viewerHasOnlySharedAccess
+	sharedWithCount
+	disallowedIssueFields
+}
+`
+
+func attachmentIssue_sharedAccess(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *attachmentIssue_sharedAccessResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "attachmentIssue_sharedAccess",
+		Query:  attachmentIssue_sharedAccess_Operation,
+		Variables: &__attachmentIssue_sharedAccessInput{
+			Id: id,
+		},
+	}
+
+	data_ = &attachmentIssue_sharedAccessResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -79071,6 +81732,76 @@ func issueVcsBranchSearch_children(
 	return data_, err_
 }
 
+// The query executed by issueVcsBranchSearch_comments.
+const issueVcsBranchSearch_comments_Operation = `
+query issueVcsBranchSearch_comments ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		id
+		identifier
+		comments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CommentMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CommentMetadataFields on Comment {
+	id
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func issueVcsBranchSearch_comments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_commentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_comments",
+		Query:  issueVcsBranchSearch_comments_Operation,
+		Variables: &__issueVcsBranchSearch_commentsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_commentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by issueVcsBranchSearch_documents.
 const issueVcsBranchSearch_documents_Operation = `
 query issueVcsBranchSearch_documents ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -79188,6 +81919,77 @@ func issueVcsBranchSearch_formerAttachments(
 	}
 
 	data_ = &issueVcsBranchSearch_formerAttachmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_formerNeeds.
+const issueVcsBranchSearch_formerNeeds_Operation = `
+query issueVcsBranchSearch_formerNeeds ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		id
+		identifier
+		formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CustomerNeedMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CustomerNeedMetadataFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issueVcsBranchSearch_formerNeeds(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_formerNeedsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_formerNeeds",
+		Query:  issueVcsBranchSearch_formerNeeds_Operation,
+		Variables: &__issueVcsBranchSearch_formerNeedsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_formerNeedsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -79380,6 +82182,77 @@ func issueVcsBranchSearch_labels(
 	return data_, err_
 }
 
+// The query executed by issueVcsBranchSearch_needs.
+const issueVcsBranchSearch_needs_Operation = `
+query issueVcsBranchSearch_needs ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		id
+		identifier
+		needs(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CustomerNeedMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CustomerNeedMetadataFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issueVcsBranchSearch_needs(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issueVcsBranchSearch_needsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_needs",
+		Query:  issueVcsBranchSearch_needs_Operation,
+		Variables: &__issueVcsBranchSearch_needsInput{
+			BranchName:      branchName,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_needsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by issueVcsBranchSearch_relations.
 const issueVcsBranchSearch_relations_Operation = `
 query issueVcsBranchSearch_relations ($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -79521,6 +82394,50 @@ func issueVcsBranchSearch_releases(
 	}
 
 	data_ = &issueVcsBranchSearch_releasesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issueVcsBranchSearch_sharedAccess.
+const issueVcsBranchSearch_sharedAccess_Operation = `
+query issueVcsBranchSearch_sharedAccess ($branchName: String!) {
+	issueVcsBranchSearch(branchName: $branchName) {
+		id
+		identifier
+		sharedAccess {
+			... IssueSharedAccessFields
+		}
+	}
+}
+fragment IssueSharedAccessFields on IssueSharedAccess {
+	isShared
+	viewerHasOnlySharedAccess
+	sharedWithCount
+	disallowedIssueFields
+}
+`
+
+func issueVcsBranchSearch_sharedAccess(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	branchName string,
+) (data_ *issueVcsBranchSearch_sharedAccessResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issueVcsBranchSearch_sharedAccess",
+		Query:  issueVcsBranchSearch_sharedAccess_Operation,
+		Variables: &__issueVcsBranchSearch_sharedAccessInput{
+			BranchName: branchName,
+		},
+	}
+
+	data_ = &issueVcsBranchSearch_sharedAccessResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -80008,6 +82925,77 @@ func issue_formerAttachments(
 	return data_, err_
 }
 
+// The query executed by issue_formerNeeds.
+const issue_formerNeeds_Operation = `
+query issue_formerNeeds ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issue(id: $id) {
+		id
+		identifier
+		formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CustomerNeedMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CustomerNeedMetadataFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issue_formerNeeds(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issue_formerNeedsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue_formerNeeds",
+		Query:  issue_formerNeeds_Operation,
+		Variables: &__issue_formerNeedsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issue_formerNeedsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by issue_history.
 const issue_history_Operation = `
 query issue_history ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -80189,6 +83177,77 @@ func issue_labels(
 	return data_, err_
 }
 
+// The query executed by issue_needs.
+const issue_needs_Operation = `
+query issue_needs ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issue(id: $id) {
+		id
+		identifier
+		needs(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CustomerNeedMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CustomerNeedMetadataFields on CustomerNeed {
+	id
+	createdAt
+	updatedAt
+	archivedAt
+	priority
+	url
+	customer {
+		id
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func issue_needs(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issue_needsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue_needs",
+		Query:  issue_needs_Operation,
+		Variables: &__issue_needsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issue_needsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by issue_relations.
 const issue_relations_Operation = `
 query issue_relations ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -80330,6 +83389,50 @@ func issue_releases(
 	}
 
 	data_ = &issue_releasesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issue_sharedAccess.
+const issue_sharedAccess_Operation = `
+query issue_sharedAccess ($id: String!) {
+	issue(id: $id) {
+		id
+		identifier
+		sharedAccess {
+			... IssueSharedAccessFields
+		}
+	}
+}
+fragment IssueSharedAccessFields on IssueSharedAccess {
+	isShared
+	viewerHasOnlySharedAccess
+	sharedWithCount
+	disallowedIssueFields
+}
+`
+
+func issue_sharedAccess(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *issue_sharedAccessResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue_sharedAccess",
+		Query:  issue_sharedAccess_Operation,
+		Variables: &__issue_sharedAccessInput{
+			Id: id,
+		},
+	}
+
+	data_ = &issue_sharedAccessResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

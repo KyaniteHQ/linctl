@@ -71,6 +71,22 @@ query attachmentIssue_children($id: String!, $first: Int, $after: String, $inclu
   }
 }
 
+query attachmentIssue_comments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    id
+    identifier
+    comments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CommentMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query attachmentIssue_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
     documents(first: $first, after: $after, includeArchived: $includeArchived) {
@@ -90,6 +106,22 @@ query attachmentIssue_formerAttachments($id: String!, $first: Int, $after: Strin
     formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
       nodes {
         ...AttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query attachmentIssue_formerNeeds($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    id
+    identifier
+    formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CustomerNeedMetadataFields
       }
       pageInfo {
         hasNextPage
@@ -149,6 +181,22 @@ query attachmentIssue_labels($id: String!, $first: Int, $after: String, $include
   }
 }
 
+query attachmentIssue_needs($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  attachmentIssue(id: $id) {
+    id
+    identifier
+    needs(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CustomerNeedMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query attachmentIssue_relations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
     relations(first: $first, after: $after, includeArchived: $includeArchived) {
@@ -173,6 +221,16 @@ query attachmentIssue_releases($id: String!, $first: Int, $after: String, $inclu
         hasNextPage
         endCursor
       }
+    }
+  }
+}
+
+query attachmentIssue_sharedAccess($id: String!) {
+  attachmentIssue(id: $id) {
+    id
+    identifier
+    sharedAccess {
+      ...IssueSharedAccessFields
     }
   }
 }

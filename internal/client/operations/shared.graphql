@@ -27,6 +27,35 @@ fragment IssueSummaryFields on Issue {
   }
 }
 
+fragment CustomerNeedMetadataFields on CustomerNeed {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  priority
+  url
+  customer {
+    id
+    name
+  }
+  issue {
+    id
+    identifier
+    title
+  }
+  project {
+    id
+    name
+  }
+}
+
+fragment IssueSharedAccessFields on IssueSharedAccess {
+  isShared
+  viewerHasOnlySharedAccess
+  sharedWithCount
+  disallowedIssueFields
+}
+
 fragment ProjectSummaryFields on Project {
   id
   name

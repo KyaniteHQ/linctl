@@ -1232,6 +1232,60 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.Contains(t, err.Error(), "field \"missing\" is not present")
 }
 
+func Test_CliRenderHelpers_write_issue_child_metadata_output(t *testing.T) {
+	customerNeed := client.CustomerNeedMetadataSummary{
+		ID:           "customer-need-id",
+		CustomerName: "Acme",
+		Issue:        "LIT-1",
+		Priority:     2,
+	}
+	sharedAccess := client.IssueSharedAccessSummary{
+		IssueID:                   "issue-id",
+		Identifier:                "LIT-1",
+		IsShared:                  true,
+		ViewerHasOnlySharedAccess: false,
+		SharedWithCount:           2,
+		DisallowedIssueFields:     []string{"description", "priority"},
+	}
+
+	textOutput := bytes.Buffer{}
+	textCommand := &cobra.Command{}
+	textCommand.SetOut(&textOutput)
+	require.NoError(t, writeCustomerNeedMetadata(textCommand, &rootOptions{}, customerNeed))
+	require.NoError(t, writeIssueSharedAccess(textCommand, &rootOptions{}, sharedAccess))
+	require.Contains(t, textOutput.String(), "customer-need-id Acme LIT-1 priority 2")
+	require.Contains(t, textOutput.String(), "issue-id LIT-1 shared=true")
+	require.Contains(t, textOutput.String(), "disallowed=description,priority")
+
+	jsonOutput := bytes.Buffer{}
+	jsonCommand := &cobra.Command{}
+	jsonCommand.SetOut(&jsonOutput)
+	require.NoError(t, writeCustomerNeedMetadata(jsonCommand, &rootOptions{json: true}, customerNeed))
+	require.NoError(t, writeIssueSharedAccess(jsonCommand, &rootOptions{json: true}, sharedAccess))
+	require.Contains(t, jsonOutput.String(), `"customer_name": "Acme"`)
+	require.Contains(t, jsonOutput.String(), `"shared_with_count": 2`)
+
+	quietOutput := bytes.Buffer{}
+	quietCommand := &cobra.Command{}
+	quietCommand.SetOut(&quietOutput)
+	require.NoError(t, writeCustomerNeedMetadata(quietCommand, &rootOptions{quiet: true}, customerNeed))
+	require.NoError(t, writeIssueSharedAccess(quietCommand, &rootOptions{quiet: true}, sharedAccess))
+	require.Empty(t, quietOutput.String())
+
+	idOnlyOutput := bytes.Buffer{}
+	idOnlyCommand := &cobra.Command{}
+	idOnlyCommand.SetOut(&idOnlyOutput)
+	require.NoError(t, writeCustomerNeedMetadata(idOnlyCommand, &rootOptions{idOnly: true}, customerNeed))
+	require.Equal(t, "customer-need-id\n", idOnlyOutput.String())
+
+	emptyFieldsOutput := bytes.Buffer{}
+	emptyFieldsCommand := &cobra.Command{}
+	emptyFieldsCommand.SetOut(&emptyFieldsOutput)
+	sharedAccess.DisallowedIssueFields = nil
+	require.NoError(t, writeIssueSharedAccess(emptyFieldsCommand, &rootOptions{}, sharedAccess))
+	require.Contains(t, emptyFieldsOutput.String(), "disallowed=-")
+}
+
 func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	projected, err := projectJSONFields(
 		map[string]any{"issues": []any{map[string]any{"identifier": "LIT-1", "state": map[string]any{"name": "Todo"}}}},
@@ -2020,6 +2074,35 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		require.Contains(t, err.Error(), "get issue vcs branch bot actor omer/branch")
 	})
 
+	t.Run("issue vcs branch shared access operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issueVcsBranchSearch_sharedAccess"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "vcs-branch-search", "shared-access", "omer/branch"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue vcs branch shared access omer/branch")
+	})
+
+	t.Run("issue vcs branch shared access runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "vcs-branch-search", "shared-access", "omer/branch"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
 	t.Run("attachment issue runtime error", func(t *testing.T) {
 		original := buildCommandRuntime
 		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
@@ -2078,6 +2161,35 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 		require.Contains(t, err.Error(), "get attachment issue bot actor attachment-id")
 	})
 
+	t.Run("attachment issue shared access operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "attachmentIssue_sharedAccess"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"attachment", "issue", "shared-access", "attachment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get attachment issue shared access attachment-id")
+	})
+
+	t.Run("attachment issue shared access runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"attachment", "issue", "shared-access", "attachment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
 	t.Run("issue bot actor runtime error", func(t *testing.T) {
 		original := buildCommandRuntime
 		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
@@ -2105,6 +2217,35 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get issue bot actor LIT-1")
+	})
+
+	t.Run("issue shared access operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue_sharedAccess"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "shared-access", "LIT-1"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue shared access LIT-1")
+	})
+
+	t.Run("issue shared access runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "shared-access", "LIT-1"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
 	})
 
 	t.Run("comment bot actor runtime error", func(t *testing.T) {

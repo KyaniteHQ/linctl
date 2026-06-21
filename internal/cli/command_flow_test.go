@@ -100,11 +100,15 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue vcs branch children", args: []string{"issue", "vcs-branch-search", "children", "omer/branch", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue vcs branch documents", args: []string{"issue", "vcs-branch-search", "documents", "omer/branch", "--limit", "1"}, contains: "document-id Spec [issue]"},
 		{name: "issue vcs branch former attachments", args: []string{"issue", "vcs-branch-search", "former-attachments", "omer/branch", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "issue vcs branch comments", args: []string{"issue", "vcs-branch-search", "comments", "omer/branch", "--limit", "1"}, contains: "comment-id Omer 2026-06-19T12:00:00Z"},
+		{name: "issue vcs branch former needs", args: []string{"issue", "vcs-branch-search", "former-needs", "omer/branch", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
 		{name: "issue vcs branch history", args: []string{"issue", "vcs-branch-search", "history", "omer/branch", "--limit", "1"}, contains: "issue-history-id issue issue-id updated_description true"},
 		{name: "issue vcs branch inverse relations", args: []string{"issue", "vcs-branch-search", "inverse-relations", "omer/branch", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue vcs branch labels", args: []string{"issue", "vcs-branch-search", "labels", "omer/branch", "--limit", "1"}, contains: "label-id Bug #ff0000"},
+		{name: "issue vcs branch needs", args: []string{"issue", "vcs-branch-search", "needs", "omer/branch", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
 		{name: "issue vcs branch relations", args: []string{"issue", "vcs-branch-search", "relations", "omer/branch", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue vcs branch releases", args: []string{"issue", "vcs-branch-search", "releases", "omer/branch", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "issue vcs branch shared access", args: []string{"issue", "vcs-branch-search", "shared-access", "omer/branch"}, contains: "issue-id LIT-1 shared=true shared_with=2 viewer_shared_only=false disallowed=description,priority"},
 		{name: "issue vcs branch state history", args: []string{"issue", "vcs-branch-search", "state-history", "omer/branch", "--limit", "1"}, contains: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -"},
 		{name: "issue vcs branch subscribers", args: []string{"issue", "vcs-branch-search", "subscribers", "omer/branch", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, contains: "LIT-1 Detail issue [Todo]"},
@@ -114,11 +118,14 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue children", args: []string{"issue", "children", "LIT-1", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue documents", args: []string{"issue", "documents", "LIT-1", "--limit", "1"}, contains: "document-id Spec [issue]"},
 		{name: "issue former attachments", args: []string{"issue", "former-attachments", "LIT-1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "issue former needs", args: []string{"issue", "former-needs", "LIT-1", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
 		{name: "issue history", args: []string{"issue", "history", "LIT-1", "--limit", "1"}, contains: "issue-history-id issue issue-id updated_description true"},
 		{name: "issue inverse relations", args: []string{"issue", "inverse-relations", "LIT-1", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue labels", args: []string{"issue", "labels", "LIT-1", "--limit", "1"}, contains: "label-id Bug #ff0000"},
+		{name: "issue needs", args: []string{"issue", "needs", "LIT-1", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
 		{name: "issue relations", args: []string{"issue", "relations", "LIT-1", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue releases", args: []string{"issue", "releases", "LIT-1", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "issue shared access", args: []string{"issue", "shared-access", "LIT-1"}, contains: "issue-id LIT-1 shared=true shared_with=2 viewer_shared_only=false disallowed=description,priority"},
 		{name: "issue state history", args: []string{"issue", "state-history", "LIT-1", "--limit", "1"}, contains: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -"},
 		{name: "issue subscribers", args: []string{"issue", "subscribers", "LIT-1", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "issue relation list", args: []string{"issue-relation", "list", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
@@ -289,13 +296,17 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "attachment issue attachments", args: []string{"attachment", "issue", "attachments", "attachment-id", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
 		{name: "attachment issue bot actor", args: []string{"attachment", "issue", "bot-actor", "attachment-id"}, contains: "issue-id bot bot-actor-id GitHub [github]"},
 		{name: "attachment issue children", args: []string{"attachment", "issue", "children", "attachment-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "attachment issue comments", args: []string{"attachment", "issue", "comments", "attachment-id", "--limit", "1"}, contains: "comment-id Omer 2026-06-19T12:00:00Z"},
 		{name: "attachment issue documents", args: []string{"attachment", "issue", "documents", "attachment-id", "--limit", "1"}, contains: "document-id Spec [issue]"},
 		{name: "attachment issue former attachments", args: []string{"attachment", "issue", "former-attachments", "attachment-id", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "attachment issue former needs", args: []string{"attachment", "issue", "former-needs", "attachment-id", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
 		{name: "attachment issue history", args: []string{"attachment", "issue", "history", "attachment-id", "--limit", "1"}, contains: "issue-history-id issue issue-id updated_description true"},
 		{name: "attachment issue inverse relations", args: []string{"attachment", "issue", "inverse-relations", "attachment-id", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "attachment issue labels", args: []string{"attachment", "issue", "labels", "attachment-id", "--limit", "1"}, contains: "label-id Bug #ff0000"},
+		{name: "attachment issue needs", args: []string{"attachment", "issue", "needs", "attachment-id", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
 		{name: "attachment issue relations", args: []string{"attachment", "issue", "relations", "attachment-id", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "attachment issue releases", args: []string{"attachment", "issue", "releases", "attachment-id", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "attachment issue shared access", args: []string{"attachment", "issue", "shared-access", "attachment-id"}, contains: "issue-id LIT-1 shared=true shared_with=2 viewer_shared_only=false disallowed=description,priority"},
 		{name: "attachment issue state history", args: []string{"attachment", "issue", "state-history", "attachment-id", "--limit", "1"}, contains: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -"},
 		{name: "attachment issue subscribers", args: []string{"attachment", "issue", "subscribers", "attachment-id", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 	}
@@ -2991,6 +3002,7 @@ func commandFlowIssuePayload(operation string, fake commandFlowFakeClient) (stri
 	return commandFlowIssueWritePayload(operation, fake)
 }
 
+//nolint:gocyclo // The command-flow fake is intentionally centralized by operation name.
 func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 	if !strings.HasPrefix(operation, "attachmentIssue") {
 		return "", false
@@ -3011,6 +3023,10 @@ func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 		return `{"attachmentIssue":{"children":{"nodes":[` +
 			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_comments":
+		return `{"attachmentIssue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[` +
+			commandCommentMetadataJSON("issue-id", "") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "attachmentIssue_documents":
 		return `{"attachmentIssue":{"documents":{"nodes":[` +
 			commandDocumentJSON(
@@ -3021,6 +3037,10 @@ func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 	case "attachmentIssue_formerAttachments":
 		return `{"attachmentIssue":{"formerAttachments":{"nodes":[` +
 			commandAttachmentJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_formerNeeds":
+		return `{"attachmentIssue":{"id":"issue-id","identifier":"LIT-1","formerNeeds":{"nodes":[` +
+			commandCustomerNeedJSON() +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "attachmentIssue_history":
 		return `{"attachmentIssue":{"history":{"nodes":[` +
@@ -3034,6 +3054,10 @@ func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 		return `{"attachmentIssue":{"labels":{"nodes":[` +
 			commandLabelJSON("label body") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_needs":
+		return `{"attachmentIssue":{"id":"issue-id","identifier":"LIT-1","needs":{"nodes":[` +
+			commandCustomerNeedJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "attachmentIssue_relations":
 		return `{"attachmentIssue":{"relations":{"nodes":[` +
 			commandIssueRelationJSON() +
@@ -3042,6 +3066,8 @@ func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 		return `{"attachmentIssue":{"releases":{"nodes":[` +
 			commandReleaseJSON() +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "attachmentIssue_sharedAccess":
+		return commandIssueSharedAccessPayload("attachmentIssue"), true
 	case "attachmentIssue_stateHistory":
 		return `{"attachmentIssue":{"id":"issue-id","stateHistory":{"nodes":[` +
 			commandIssueStateSpanJSON() +
@@ -3055,6 +3081,7 @@ func commandFlowAttachmentIssuePayload(operation string) (string, bool) {
 	}
 }
 
+//nolint:gocyclo // The command-flow fake is intentionally centralized by operation name.
 func commandFlowIssueVCSBranchPayload(operation string) (string, bool) {
 	if !strings.HasPrefix(operation, "issueVcsBranchSearch") {
 		return "", false
@@ -3086,6 +3113,14 @@ func commandFlowIssueVCSBranchPayload(operation string) (string, bool) {
 		return `{"issueVcsBranchSearch":{"formerAttachments":{"nodes":[` +
 			commandAttachmentJSON() +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_comments":
+		return `{"issueVcsBranchSearch":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[` +
+			commandCommentMetadataJSON("issue-id", "") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_formerNeeds":
+		return `{"issueVcsBranchSearch":{"id":"issue-id","identifier":"LIT-1","formerNeeds":{"nodes":[` +
+			commandCustomerNeedJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issueVcsBranchSearch_history":
 		return `{"issueVcsBranchSearch":{"history":{"nodes":[` +
 			commandIssueHistoryJSON() +
@@ -3098,6 +3133,10 @@ func commandFlowIssueVCSBranchPayload(operation string) (string, bool) {
 		return `{"issueVcsBranchSearch":{"labels":{"nodes":[` +
 			commandLabelJSON("label body") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_needs":
+		return `{"issueVcsBranchSearch":{"id":"issue-id","identifier":"LIT-1","needs":{"nodes":[` +
+			commandCustomerNeedJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issueVcsBranchSearch_relations":
 		return `{"issueVcsBranchSearch":{"relations":{"nodes":[` +
 			commandIssueRelationJSON() +
@@ -3106,6 +3145,8 @@ func commandFlowIssueVCSBranchPayload(operation string) (string, bool) {
 		return `{"issueVcsBranchSearch":{"releases":{"nodes":[` +
 			commandReleaseJSON() +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issueVcsBranchSearch_sharedAccess":
+		return commandIssueSharedAccessPayload("issueVcsBranchSearch"), true
 	case "issueVcsBranchSearch_stateHistory":
 		return `{"issueVcsBranchSearch":{"id":"issue-id","stateHistory":{"nodes":[` +
 			commandIssueStateSpanJSON() +
@@ -3163,6 +3204,7 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 	}
 }
 
+//nolint:gocyclo // The command-flow fake is intentionally centralized by operation name.
 func commandFlowIssueChildPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "issue_attachments":
@@ -3185,16 +3227,26 @@ func commandFlowIssueChildPayload(operation string, fake commandFlowFakeClient) 
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_formerAttachments":
 		return `{"issue":{"formerAttachments":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_formerNeeds":
+		return `{"issue":{"id":"issue-id","identifier":"LIT-1","formerNeeds":{"nodes":[` +
+			commandCustomerNeedJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_history":
 		return `{"issue":{"history":{"nodes":[` + commandIssueHistoryJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_inverseRelations":
 		return `{"issue":{"inverseRelations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_labels":
 		return `{"issue":{"labels":{"nodes":[` + commandLabelJSON("label body") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_needs":
+		return `{"issue":{"id":"issue-id","identifier":"LIT-1","needs":{"nodes":[` +
+			commandCustomerNeedJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_relations":
 		return `{"issue":{"relations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_releases":
 		return `{"issue":{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_sharedAccess":
+		return commandIssueSharedAccessPayload("issue"), true
 	case "issue_stateHistory":
 		return `{"issue":{"id":"issue-id","stateHistory":{"nodes":[` +
 			commandIssueStateSpanJSON() +
@@ -3206,6 +3258,11 @@ func commandFlowIssueChildPayload(operation string, fake commandFlowFakeClient) 
 	default:
 		return "", false
 	}
+}
+
+func commandIssueSharedAccessPayload(root string) string {
+	return `{"` + root + `":{"id":"issue-id","identifier":"LIT-1","sharedAccess":` +
+		commandIssueSharedAccessJSON() + `}}`
 }
 
 func commandFlowIssueDependenciesPayload() string {
@@ -4058,6 +4115,15 @@ func commandCustomerNeedJSON() string {
 		"customer":{"id":"customer-id","name":"Acme"},
 		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},
 		"project":{"id":"project-id","name":"Customer project"}
+	}`
+}
+
+func commandIssueSharedAccessJSON() string {
+	return `{
+		"isShared":true,
+		"viewerHasOnlySharedAccess":false,
+		"sharedWithCount":2,
+		"disallowedIssueFields":["description","priority"]
 	}`
 }
 

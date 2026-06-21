@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 115 | 458 |
 | Upstream Query root fields | 158 | 103 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 293 | 293 | 293 |
-| Domain-map commands | 384 | 252 | 384 |
+| Local generated Go operations | 304 | 304 | 304 |
+| Domain-map commands | 395 | 263 | 395 |
 
 ## Upstream SDK Root Methods
 
@@ -1068,13 +1068,17 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentIssue_attachments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_botActor` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_children` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_comments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_documents` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_formerAttachments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_formerNeeds` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_history` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_inverseRelations` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_labels` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_needs` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_relations` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_releases` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
+| `attachmentIssue_sharedAccess` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_stateHistory` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachmentIssue_subscribers` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
 | `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
@@ -1144,13 +1148,17 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueVcsBranchSearch_attachments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_botActor` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_children` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_comments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_documents` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_formerAttachments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_formerNeeds` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_history` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_inverseRelations` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_labels` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_needs` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_relations` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_releases` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
+| `issueVcsBranchSearch_sharedAccess` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_stateHistory` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issueVcsBranchSearch_subscribers` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
 | `issue_attachments` | query | `issue` | implemented | `internal/client/generated.go` |
@@ -1159,11 +1167,14 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issue_comments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_documents` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_formerAttachments` | query | `issue` | implemented | `internal/client/generated.go` |
+| `issue_formerNeeds` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_history` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_inverseRelations` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_labels` | query | `issue` | implemented | `internal/client/generated.go` |
+| `issue_needs` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_relations` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_releases` | query | `issue` | implemented | `internal/client/generated.go` |
+| `issue_sharedAccess` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_stateHistory` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_subscribers` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issues` | query | `issues` | implemented | `internal/client/generated.go` |
@@ -1397,11 +1408,14 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue children` | `Issue.children` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue documents` | `Issue.documents` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue former-needs` | `Issue.formerNeeds` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue history` | `Issue.history` via `Query.issue`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue inverse-relations` | `Issue.inverseRelations` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue labels` | `Issue.labels` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue needs` | `Issue.needs` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue relations` | `Issue.relations` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue releases` | `Issue.releases` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue shared-access` | `Issue.sharedAccess` via `Query.issue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1410,11 +1424,15 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search comments` | `Issue.comments` via `Query.issueVcsBranchSearch`; returns comment metadata without body | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search former-needs` | `Issue.formerNeeds` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search needs` | `Issue.needs` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue vcs-branch-search shared-access` | `Issue.sharedAccess` via `Query.issueVcsBranchSearch`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue id` | Current checkout issue identifier from git/jj context | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1677,13 +1695,17 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Attachment | `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue comments` | `Issue.comments` via `Query.attachmentIssue`; returns comment metadata without body | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue former-needs` | `Issue.formerNeeds` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue needs` | `Issue.needs` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Attachment | `attachment issue shared-access` | `Issue.sharedAccess` via `Query.attachmentIssue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |

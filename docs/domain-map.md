@@ -213,11 +213,14 @@ Planned commands:
 | `issue children` | `Issue.children` via `Query.issue` | Read-only |
 | `issue documents` | `Issue.documents` via `Query.issue` | Read-only |
 | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only |
+| `issue former-needs` | `Issue.formerNeeds` via `Query.issue`; returns customer-need metadata without body/content | Read-only |
 | `issue history` | `Issue.history` via `Query.issue`; returns compact metadata only, not raw change payloads or content fields | Read-only |
 | `issue inverse-relations` | `Issue.inverseRelations` via `Query.issue` | Read-only |
 | `issue labels` | `Issue.labels` via `Query.issue` | Read-only |
+| `issue needs` | `Issue.needs` via `Query.issue`; returns customer-need metadata without body/content | Read-only |
 | `issue relations` | `Issue.relations` via `Query.issue` | Read-only |
 | `issue releases` | `Issue.releases` via `Query.issue` | Read-only |
+| `issue shared-access` | `Issue.sharedAccess` via `Query.issue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only |
 | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata |
 | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only |
 | `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only |
@@ -226,11 +229,15 @@ Planned commands:
 | `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only |
 | `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only |
 | `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search comments` | `Issue.comments` via `Query.issueVcsBranchSearch`; returns comment metadata without body | Read-only |
+| `issue vcs-branch-search former-needs` | `Issue.formerNeeds` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only |
 | `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only |
 | `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only |
 | `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search needs` | `Issue.needs` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only |
 | `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only |
 | `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only |
+| `issue vcs-branch-search shared-access` | `Issue.sharedAccess` via `Query.issueVcsBranchSearch`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only |
 | `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata |
 | `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only |
 | `issue id` | Current checkout issue identifier from git/jj context | Read-only |
@@ -248,7 +255,7 @@ Planned commands:
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
 
-Issue customer-need child reads and shared-access reads remain deferred because the default summaries need a narrower output model before they can satisfy the no body/blob/secret/default-sensitive-payload rule.
+Issue customer-need child reads use a metadata-only projection and intentionally omit `body` and `content`. Shared-access reads omit shared user details and expose only booleans, counts, and disallowed field names.
 
 ## IssueRelation
 
@@ -1077,13 +1084,17 @@ Planned commands:
 | `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only |
 | `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only |
 | `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only |
+| `attachment issue comments` | `Issue.comments` via `Query.attachmentIssue`; returns comment metadata without body | Read-only |
 | `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only |
 | `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only |
+| `attachment issue former-needs` | `Issue.formerNeeds` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only |
 | `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only |
 | `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only |
 | `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only |
+| `attachment issue needs` | `Issue.needs` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only |
 | `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only |
 | `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only |
+| `attachment issue shared-access` | `Issue.sharedAccess` via `Query.attachmentIssue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only |
 | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata |
 | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only |
 | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation |

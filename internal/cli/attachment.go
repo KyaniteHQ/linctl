@@ -82,15 +82,33 @@ func addAttachmentIssueCommand(ctx context.Context, root *cobra.Command, options
 	addAttachmentIssueAttachmentsCommand(ctx, issueCommand, options)
 	addAttachmentIssueBotActorCommand(ctx, issueCommand, options)
 	addAttachmentIssueChildrenCommand(ctx, issueCommand, options)
+	addAttachmentIssueCommentsCommand(ctx, issueCommand, options)
 	addAttachmentIssueDocumentsCommand(ctx, issueCommand, options)
 	addAttachmentIssueFormerAttachmentsCommand(ctx, issueCommand, options)
+	addAttachmentIssueFormerNeedsCommand(ctx, issueCommand, options)
 	addAttachmentIssueHistoryCommand(ctx, issueCommand, options)
 	addAttachmentIssueInverseRelationsCommand(ctx, issueCommand, options)
 	addAttachmentIssueLabelsCommand(ctx, issueCommand, options)
+	addAttachmentIssueNeedsCommand(ctx, issueCommand, options)
 	addAttachmentIssueRelationsCommand(ctx, issueCommand, options)
 	addAttachmentIssueReleasesCommand(ctx, issueCommand, options)
+	addAttachmentIssueSharedAccessCommand(ctx, issueCommand, options)
 	addAttachmentIssueStateHistoryCommand(ctx, issueCommand, options)
 	addAttachmentIssueSubscribersCommand(ctx, issueCommand, options)
+}
+
+func addAttachmentIssueCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCommentMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"comments ATTACHMENT_ID",
+		"List body-free comments for the issue associated with an attachment",
+		"comments",
+		func(runtime commandRuntime, attachmentID string, limit int) (client.IssueCommentMetadataList, error) {
+			return client.ListAttachmentIssueComments(ctx, runtime.graphqlClient, attachmentID, limit)
+		},
+	)
 }
 
 func addAttachmentIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -225,6 +243,20 @@ func addAttachmentIssueFormerAttachmentsCommand(ctx context.Context, root *cobra
 	)
 }
 
+func addAttachmentIssueFormerNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCustomerNeedMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"former-needs ATTACHMENT_ID",
+		"List body-free former customer needs for the issue associated with an attachment",
+		"former customer needs",
+		func(runtime commandRuntime, attachmentID string, limit int) (client.IssueCustomerNeedMetadataList, error) {
+			return client.ListAttachmentIssueFormerNeeds(ctx, runtime.graphqlClient, attachmentID, limit)
+		},
+	)
+}
+
 func addAttachmentIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addIssueChildListCommand(
 		ctx,
@@ -300,6 +332,20 @@ func addAttachmentIssueLabelsCommand(ctx context.Context, root *cobra.Command, o
 	)
 }
 
+func addAttachmentIssueNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueCustomerNeedMetadataListCommand(
+		ctx,
+		root,
+		options,
+		"needs ATTACHMENT_ID",
+		"List body-free customer needs for the issue associated with an attachment",
+		"customer needs",
+		func(runtime commandRuntime, attachmentID string, limit int) (client.IssueCustomerNeedMetadataList, error) {
+			return client.ListAttachmentIssueNeeds(ctx, runtime.graphqlClient, attachmentID, limit)
+		},
+	)
+}
+
 func addAttachmentIssueRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addIssueRelationChildListCommand(
 		ctx,
@@ -345,6 +391,26 @@ func addAttachmentIssueReleasesCommand(ctx context.Context, root *cobra.Command,
 			return list.Releases
 		},
 	)
+}
+
+func addAttachmentIssueSharedAccessCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "shared-access ATTACHMENT_ID",
+		Short: "Show shared-access metadata for the issue associated with an attachment",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			access, err := client.GetAttachmentIssueSharedAccess(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeIssueSharedAccess(command, options, access)
+		},
+	})
 }
 
 func addAttachmentIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

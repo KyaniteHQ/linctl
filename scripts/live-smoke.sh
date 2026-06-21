@@ -86,11 +86,14 @@ PY
     "$binary" issue children "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue documents "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue former-attachments "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue former-needs "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue history "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue inverse-relations "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue labels "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue needs "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue relations "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue releases "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue shared-access "$issue_id" --json >/dev/null
     "$binary" issue state-history "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue subscribers "$issue_id" --json --limit 5 >/dev/null
     if [[ -n "$attachment_id" ]]; then
@@ -98,13 +101,17 @@ PY
       "$binary" attachment issue attachments "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue bot-actor "$attachment_id" --json >/dev/null
       "$binary" attachment issue children "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue comments "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue documents "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue former-attachments "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue former-needs "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue history "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue inverse-relations "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue labels "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue needs "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue relations "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue releases "$attachment_id" --json --limit 5 >/dev/null
+      "$binary" attachment issue shared-access "$attachment_id" --json >/dev/null
       "$binary" attachment issue state-history "$attachment_id" --json --limit 5 >/dev/null
       "$binary" attachment issue subscribers "$attachment_id" --json --limit 5 >/dev/null
     fi
@@ -114,13 +121,17 @@ PY
       "$binary" issue vcs-branch-search attachments "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search bot-actor "$issue_branch_name" --json >/dev/null
       "$binary" issue vcs-branch-search children "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search comments "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search documents "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search former-attachments "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search former-needs "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search history "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search inverse-relations "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search labels "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search needs "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search relations "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search releases "$issue_branch_name" --json --limit 5 >/dev/null
+      "$binary" issue vcs-branch-search shared-access "$issue_branch_name" --json >/dev/null
       "$binary" issue vcs-branch-search state-history "$issue_branch_name" --json --limit 5 >/dev/null
       "$binary" issue vcs-branch-search subscribers "$issue_branch_name" --json --limit 5 >/dev/null
     fi

@@ -525,7 +525,7 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 91a. Attachment issue projections
-   - Success: `linctl attachment issue get|attachments|bot-actor|children|documents|former-attachments|history|inverse-relations|labels|relations|releases|state-history|subscribers ATTACHMENT_ID --limit N` reads safe metadata for the issue associated with one Attachment without selecting comment body, customer-need content, shared-access, blob, source, or secret fields by default.
+   - Success: `linctl attachment issue get|attachments|bot-actor|children|comments|documents|former-attachments|former-needs|history|inverse-relations|labels|needs|relations|releases|shared-access|state-history|subscribers ATTACHMENT_ID --limit N` reads safe metadata for the issue associated with one Attachment without selecting comment body, customer-need content, shared user details, blob, source, or secret fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/attachment_issue_*`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
@@ -1027,11 +1027,11 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/release_documents`, `Test_CommandFlows_execute_read_and_write_commands/release_issues`, `Test_CommandFlows_execute_read_and_write_commands/release_pipeline_teams`; `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 182. Issue child reads
-   - Success: `linctl issue attachments|bot-actor|children|documents|former-attachments|history|inverse-relations|labels|relations|releases|state-history|subscribers ISSUE_ID --limit N` lists safe child resources for one Issue through the public CLI and JSON output controls without selecting body, blob, secret, shared-access, raw change, or customer-need content fields by default.
+   - Success: `linctl issue attachments|bot-actor|children|documents|former-attachments|former-needs|history|inverse-relations|labels|needs|relations|releases|shared-access|state-history|subscribers ISSUE_ID --limit N` lists safe child resources for one Issue through the public CLI and JSON output controls without selecting body, blob, secret, shared user details, raw change, or customer-need content fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_bot_actor`, `Test_CommandFlows_execute_read_and_write_commands/issue_children`, `Test_CommandFlows_execute_read_and_write_commands/issue_documents`, `Test_CommandFlows_execute_read_and_write_commands/issue_former_attachments`, `Test_CommandFlows_execute_read_and_write_commands/issue_history`, `Test_CommandFlows_execute_read_and_write_commands/issue_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_labels`, `Test_CommandFlows_execute_read_and_write_commands/issue_relations`, `Test_CommandFlows_execute_read_and_write_commands/issue_releases`, `Test_CommandFlows_execute_read_and_write_commands/issue_state_history`, `Test_CommandFlows_execute_read_and_write_commands/issue_subscribers`; `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 182a. Issue VCS branch search projections
-   - Success: `linctl issue vcs-branch-search get|attachments|bot-actor|children|documents|former-attachments|history|inverse-relations|labels|relations|releases|state-history|subscribers BRANCH_NAME --limit N` reads safe metadata for the Issue matched by a VCS branch without selecting comment body, customer-need content, shared-access, blob, source, or secret fields by default.
+   - Success: `linctl issue vcs-branch-search get|attachments|bot-actor|children|comments|documents|former-attachments|former-needs|history|inverse-relations|labels|needs|relations|releases|shared-access|state-history|subscribers BRANCH_NAME --limit N` reads safe metadata for the Issue matched by a VCS branch without selecting comment body, customer-need content, shared user details, blob, source, or secret fields by default.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_vcs_branch_*`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 

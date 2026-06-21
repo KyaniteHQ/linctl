@@ -118,11 +118,14 @@ linctl issue attachments LIT-123 --limit 20
 linctl issue children LIT-123 --limit 20
 linctl issue documents LIT-123 --limit 20
 linctl issue former-attachments LIT-123 --limit 20
+linctl issue former-needs LIT-123 --limit 20
 linctl issue history LIT-123 --limit 20
 linctl issue inverse-relations LIT-123 --limit 20
 linctl issue labels LIT-123 --limit 20
+linctl issue needs LIT-123 --limit 20
 linctl issue relations LIT-123 --limit 20
 linctl issue releases LIT-123 --limit 20
+linctl issue shared-access LIT-123
 linctl issue bot-actor LIT-123
 linctl issue state-history LIT-123 --limit 20
 linctl issue subscribers LIT-123 --limit 20
@@ -132,11 +135,15 @@ linctl issue vcs-branch-search bot-actor omer/example-branch
 linctl issue vcs-branch-search children omer/example-branch --limit 20
 linctl issue vcs-branch-search documents omer/example-branch --limit 20
 linctl issue vcs-branch-search former-attachments omer/example-branch --limit 20
+linctl issue vcs-branch-search comments omer/example-branch --limit 20
+linctl issue vcs-branch-search former-needs omer/example-branch --limit 20
 linctl issue vcs-branch-search history omer/example-branch --limit 20
 linctl issue vcs-branch-search inverse-relations omer/example-branch --limit 20
 linctl issue vcs-branch-search labels omer/example-branch --limit 20
+linctl issue vcs-branch-search needs omer/example-branch --limit 20
 linctl issue vcs-branch-search relations omer/example-branch --limit 20
 linctl issue vcs-branch-search releases omer/example-branch --limit 20
+linctl issue vcs-branch-search shared-access omer/example-branch
 linctl issue vcs-branch-search state-history omer/example-branch --limit 20
 linctl issue vcs-branch-search subscribers omer/example-branch --limit 20
 linctl issue-relation list --limit 20
@@ -290,13 +297,17 @@ linctl attachment issue get attachment-id
 linctl attachment issue attachments attachment-id --limit 20
 linctl attachment issue bot-actor attachment-id
 linctl attachment issue children attachment-id --limit 20
+linctl attachment issue comments attachment-id --limit 20
 linctl attachment issue documents attachment-id --limit 20
 linctl attachment issue former-attachments attachment-id --limit 20
+linctl attachment issue former-needs attachment-id --limit 20
 linctl attachment issue history attachment-id --limit 20
 linctl attachment issue inverse-relations attachment-id --limit 20
 linctl attachment issue labels attachment-id --limit 20
+linctl attachment issue needs attachment-id --limit 20
 linctl attachment issue relations attachment-id --limit 20
 linctl attachment issue releases attachment-id --limit 20
+linctl attachment issue shared-access attachment-id
 linctl attachment issue state-history attachment-id --limit 20
 linctl attachment issue subscribers attachment-id --limit 20
 linctl project usage
@@ -528,13 +539,17 @@ linctl attachment issue get attachment-id
 linctl attachment issue attachments attachment-id --limit 20
 linctl attachment issue bot-actor attachment-id
 linctl attachment issue children attachment-id --limit 20
+linctl attachment issue comments attachment-id --limit 20
 linctl attachment issue documents attachment-id --limit 20
 linctl attachment issue former-attachments attachment-id --limit 20
+linctl attachment issue former-needs attachment-id --limit 20
 linctl attachment issue history attachment-id --limit 20
 linctl attachment issue inverse-relations attachment-id --limit 20
 linctl attachment issue labels attachment-id --limit 20
+linctl attachment issue needs attachment-id --limit 20
 linctl attachment issue relations attachment-id --limit 20
 linctl attachment issue releases attachment-id --limit 20
+linctl attachment issue shared-access attachment-id
 linctl attachment issue state-history attachment-id --limit 20
 linctl attachment issue subscribers attachment-id --limit 20
 linctl --fail-on-empty --sort title --order asc issue list
