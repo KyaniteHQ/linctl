@@ -71,6 +71,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		Type:  "backlog",
 		Color: "#bec2c8",
 	}
+	projectStatusProjectCount := client.ProjectStatusProjectCount{
+		ProjectStatusID:   "project-status-id",
+		Count:             12,
+		PrivateCount:      2,
+		ArchivedTeamCount: 1,
+	}
 	projectLabel := client.ProjectLabelSummary{
 		ID:         "project-label-id",
 		Name:       "Roadmap",
@@ -116,6 +122,12 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		TeamKey:     "LIT",
 		Owner:       true,
 		SortOrder:   1.5,
+	}
+	gitAutomationState := client.GitAutomationStateSummary{
+		ID:                  "git-automation-state-id",
+		Event:               "review",
+		StateName:           "Started",
+		TargetBranchPattern: "main",
 	}
 	user := client.UserSummary{
 		ID:          "user-id",
@@ -419,6 +431,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectUpdate(textCommand, &textOptions, projectUpdate))
 	require.NoError(t, writeProjectMilestone(textCommand, &textOptions, milestone))
 	require.NoError(t, writeProjectStatus(textCommand, &textOptions, projectStatus))
+	require.NoError(t, writeProjectStatusProjectCount(textCommand, &textOptions, projectStatusProjectCount))
 	require.NoError(t, writeProjectLabel(textCommand, &textOptions, projectLabel))
 	require.NoError(t, writeProjectRelation(textCommand, &textOptions, projectRelation))
 	require.NoError(t, writeIssueRelation(textCommand, &textOptions, issueRelation))
@@ -427,6 +440,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeLabel(textCommand, &textOptions, label))
 	require.NoError(t, writeTeam(textCommand, &textOptions, team))
 	require.NoError(t, writeTeamMembership(textCommand, &textOptions, teamMembership))
+	require.NoError(t, writeGitAutomationState(textCommand, &textOptions, gitAutomationState))
 	require.NoError(t, writeUser(textCommand, &textOptions, user))
 	require.NoError(t, writeDraft(textCommand, &textOptions, draft))
 	require.NoError(t, writeComment(textCommand, &textOptions, comment))
@@ -483,12 +497,14 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"project-id Coverage [Backlog]\nproject-update-id onTrack Omer First update\n"+
 			"project-milestone-id Launch milestone [next]\n"+
 			"project-status-id Backlog [backlog] #bec2c8\n"+
+			"project-status-id count 12 private 2 archived_team 1\n"+
 			"project-label-id Roadmap #f2c94c\n"+
 			"project-relation-id blocks Pinned project -> Related project\n"+
 			"issue-relation-id blocks LIT-1 -> LIT-2\n"+
 			"issue-to-release-id issue issue-id -> release release-id\n"+
 			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
 			"team-membership-id LIT Omer owner true order 1.50\n"+
+			"git-automation-state-id review state Started target main\n"+
 			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
 			"comment-id Omer First comment\ncomment-id Omer 2026-06-19T12:00:00Z\n"+
 			"comment-id bot bot-actor-id GitHub [github]\nplain-comment-id bot -\n"+
@@ -548,6 +564,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeProjectUpdate(jsonCommand, &jsonOptions, projectUpdate))
 	require.NoError(t, writeProjectMilestone(jsonCommand, &jsonOptions, milestone))
 	require.NoError(t, writeProjectStatus(jsonCommand, &jsonOptions, projectStatus))
+	require.NoError(t, writeProjectStatusProjectCount(jsonCommand, &jsonOptions, projectStatusProjectCount))
 	require.NoError(t, writeProjectLabel(jsonCommand, &jsonOptions, projectLabel))
 	require.NoError(t, writeProjectRelation(jsonCommand, &jsonOptions, projectRelation))
 	require.NoError(t, writeIssueRelation(jsonCommand, &jsonOptions, issueRelation))
@@ -555,6 +572,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeDocument(jsonCommand, &jsonOptions, document))
 	require.NoError(t, writeLabel(jsonCommand, &jsonOptions, label))
 	require.NoError(t, writeTeam(jsonCommand, &jsonOptions, team))
+	require.NoError(t, writeGitAutomationState(jsonCommand, &jsonOptions, gitAutomationState))
 	require.NoError(t, writeUser(jsonCommand, &jsonOptions, user))
 	require.NoError(t, writeDraft(jsonCommand, &jsonOptions, draft))
 	require.NoError(t, writeComment(jsonCommand, &jsonOptions, comment))
@@ -614,6 +632,7 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.Contains(t, jsonOut.String(), `"title": "Spec"`)
 	require.Contains(t, jsonOut.String(), `"color": "#ff0000"`)
 	require.Contains(t, jsonOut.String(), `"key": "LIT"`)
+	require.Contains(t, jsonOut.String(), `"target_branch_pattern": "main"`)
 	require.Contains(t, jsonOut.String(), `"email": "omer@example.com"`)
 	require.Contains(t, jsonOut.String(), `"parent_key": "LIT-3"`)
 	require.Contains(t, jsonOut.String(), `"body": "First comment"`)
@@ -1160,6 +1179,11 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	require.NoError(t, writeProjectUpdate(quietCommand, &rootOptions{quiet: true}, projectUpdate))
 	require.NoError(t, writeProjectMilestone(quietCommand, &rootOptions{quiet: true}, milestone))
 	require.NoError(t, writeProjectStatus(quietCommand, &rootOptions{quiet: true}, projectStatus))
+	require.NoError(t, writeProjectStatusProjectCount(
+		quietCommand,
+		&rootOptions{quiet: true},
+		client.ProjectStatusProjectCount{ProjectStatusID: "project-status-id", Count: 12},
+	))
 	require.NoError(t, writeProjectLabel(quietCommand, &rootOptions{quiet: true}, projectLabel))
 	require.NoError(t, writeProjectRelation(quietCommand, &rootOptions{quiet: true}, projectRelation))
 	require.NoError(t, writeIssueRelation(quietCommand, &rootOptions{quiet: true}, issueRelation))
@@ -1360,6 +1384,11 @@ func Test_CliRenderHelpers_write_issue_utility_output(t *testing.T) {
 	require.Error(t, writeIssuePriorityValues(errorCommand, &rootOptions{}, priorityValues))
 	require.Error(t, writeIssueFilterSuggestion(errorCommand, &rootOptions{}, filterSuggestion))
 	require.Error(t, writeIssueTitleSuggestion(errorCommand, &rootOptions{}, titleSuggestion))
+	require.Error(t, writeProjectStatusProjectCount(
+		errorCommand,
+		&rootOptions{},
+		client.ProjectStatusProjectCount{ProjectStatusID: "project-status-id", Count: 12},
+	))
 }
 
 func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
@@ -1718,6 +1747,7 @@ func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
 		{name: "issue search", args: []string{"--fail-on-empty", "issue", "search", "needle"}, fake: commandFlowFakeClient{emptyIssueSearch: true}},
 		{name: "issue figma file key search", args: []string{"--fail-on-empty", "issue", "figma-file-key-search", "figma-key"}, fake: commandFlowFakeClient{emptyIssueFigmaSearch: true}},
 		{name: "project list", args: []string{"--fail-on-empty", "project", "list"}, fake: commandFlowFakeClient{emptyProjectList: true}},
+		{name: "project all", args: []string{"--fail-on-empty", "project", "all"}, fake: commandFlowFakeClient{emptyProjectList: true}},
 		{name: "project members", args: []string{"--fail-on-empty", "project", "members", "project-id"}, fake: commandFlowFakeClient{emptyProjectMembers: true}},
 	}
 	for _, test := range emptyCommands {

@@ -171,6 +171,7 @@ linctl cycle update cycle-id --name "Updated planning"
 linctl cycle archive cycle-id
 linctl sprint current
 linctl sprint report cycle-id --limit 20
+linctl project all --limit 20
 linctl project attachments project-id --limit 20
 linctl project documents project-id --limit 20
 linctl project external-links project-id --limit 20
@@ -198,6 +199,7 @@ linctl project-milestone create project-id --name "Launch milestone"
 linctl project-milestone update project-milestone-id --target-date 2026-06-30
 linctl project-status list --limit 20
 linctl project-status get project-status-id
+linctl project-status project-count project-status-id
 linctl project-label list --limit 20
 linctl project-label get project-label-id
 linctl project-label children project-label-id --limit 20
@@ -456,6 +458,7 @@ linctl project-update list --limit 20
 linctl project-update get project-update-id
 linctl project-status list --limit 20
 linctl project-status get project-status-id
+linctl project-status project-count project-status-id
 linctl project-label list --limit 20
 linctl project-label get project-label-id
 linctl project-label children project-label-id --limit 20

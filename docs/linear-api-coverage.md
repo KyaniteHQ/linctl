@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 121 | 458 |
-| Upstream Query root fields | 158 | 109 | 158 |
+| Upstream SDK root methods | 458 | 122 | 458 |
+| Upstream Query root fields | 158 | 111 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 316 | 316 | 316 |
-| Domain-map commands | 407 | 275 | 407 |
+| Local generated Go operations | 318 | 318 | 318 |
+| Domain-map commands | 409 | 277 | 409 |
 
 ## Upstream SDK Root Methods
 
@@ -347,7 +347,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectStatuses` | method | implemented | local operation or command exists |
 | `projectUpdate` | method | implemented | local operation or command exists |
 | `projectUpdates` | method | implemented | local operation or command exists |
-| `projects` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `projects` | method | implemented | local operation or command exists |
 | `pushSubscriptionTest` | method | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
 | `rateLimitStatus` | getter | implemented | local operation or command exists |
 | `recentReleasesByAccessKey` | method | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
@@ -598,11 +598,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectRelation` | `ProjectRelation!` | implemented | root field used by local GraphQL operation |
 | `projectRelations` | `ProjectRelationConnection!` | implemented | root field used by local GraphQL operation |
 | `projectStatus` | `ProjectStatus!` | implemented | root field used by local GraphQL operation |
-| `projectStatusProjectCount` | `ProjectStatusCountPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectStatusProjectCount` | `ProjectStatusCountPayload!` | implemented | root field used by local GraphQL operation |
 | `projectStatuses` | `ProjectStatusConnection!` | implemented | root field used by local GraphQL operation |
 | `projectUpdate` | `ProjectUpdate!` | implemented | root field used by local GraphQL operation |
 | `projectUpdates` | `ProjectUpdateConnection!` | implemented | root field used by local GraphQL operation |
-| `projects` | `ProjectConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projects` | `ProjectConnection!` | implemented | root field used by local GraphQL operation |
 | `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
 | `rateLimitStatus` | `RateLimitPayload!` | implemented | root field used by local GraphQL operation |
 | `recentReleasesByAccessKey` | `[Release!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
@@ -1206,6 +1206,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectRelation` | query | `projectRelation` | implemented | `internal/client/generated.go` |
 | `projectRelations` | query | `projectRelations` | implemented | `internal/client/generated.go` |
 | `projectStatus` | query | `projectStatus` | implemented | `internal/client/generated.go` |
+| `projectStatusProjectCount` | query | `projectStatusProjectCount` | implemented | `internal/client/generated.go` |
 | `projectStatuses` | query | `projectStatuses` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdate_comments` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
@@ -1226,6 +1227,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `project_projectUpdates` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_relations` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_teams` | query | `project` | implemented | `internal/client/generated.go` |
+| `projects` | query | `projects` | implemented | `internal/client/generated.go` |
 | `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
 | `release` | query | `release` | implemented | `internal/client/generated.go` |
 | `releaseNote` | query | `releaseNote` | implemented | `internal/client/generated.go` |
@@ -1477,7 +1479,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
 | Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
-| Project | `project list` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | implemented | `linctl --help` / public CLI tests |
+| Project | `project all` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project get` | `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project attachments` | `Project.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project documents` | `Project.documents` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1506,6 +1509,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectStatus | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload | implemented | `linctl --help` / public CLI tests |
 | ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |

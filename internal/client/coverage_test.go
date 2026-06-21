@@ -234,6 +234,11 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "listed",
 			Status: "Backlog",
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projects": `{"projects":{"nodes":[` + projectJSON(projectFixture{
+			ID:     "workspace-project-id",
+			Name:   "workspace listed",
+			Status: "Backlog",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"project": `{"project":` + projectJSON(projectFixture{
 			ID:     "project-id",
 			Name:   "detail",
@@ -274,11 +279,12 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
-		"projectStatuses":       `{"projectStatuses":{"nodes":[{"id":"project-status-id","name":"Backlog","description":"Ready for planning","type":"backlog","color":"#bec2c8","position":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"projectStatus":         `{"projectStatus":{"id":"project-status-id","name":"Backlog","description":"Ready for planning","type":"backlog","color":"#bec2c8","position":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z"}}`,
-		"projectLabels":         `{"projectLabels":{"nodes":[` + projectLabelJSON("project-label-id", "Roadmap") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"projectLabel":          `{"projectLabel":{"id":"project-label-id","name":"Roadmap","description":"Project label","color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":{"id":"parent-project-label-id","name":"Parent","color":"#828282"}}}`,
-		"projectLabel_children": `{"projectLabel":{"id":"project-label-id","name":"Roadmap","children":{"nodes":[{"id":"child-project-label-id","name":"Mobile","description":"Child project label","color":"#56ccf2","isGroup":false,"lastAppliedAt":null,"retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":{"id":"project-label-id","name":"Roadmap","color":"#f2c94c"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"projectStatuses":           `{"projectStatuses":{"nodes":[{"id":"project-status-id","name":"Backlog","description":"Ready for planning","type":"backlog","color":"#bec2c8","position":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectStatus":             `{"projectStatus":{"id":"project-status-id","name":"Backlog","description":"Ready for planning","type":"backlog","color":"#bec2c8","position":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z"}}`,
+		"projectStatusProjectCount": `{"projectStatusProjectCount":{"count":12,"privateCount":2,"archivedTeamCount":1}}`,
+		"projectLabels":             `{"projectLabels":{"nodes":[` + projectLabelJSON("project-label-id", "Roadmap") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectLabel":              `{"projectLabel":{"id":"project-label-id","name":"Roadmap","description":"Project label","color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":{"id":"parent-project-label-id","name":"Parent","color":"#828282"}}}`,
+		"projectLabel_children":     `{"projectLabel":{"id":"project-label-id","name":"Roadmap","children":{"nodes":[{"id":"child-project-label-id","name":"Mobile","description":"Child project label","color":"#56ccf2","isGroup":false,"lastAppliedAt":null,"retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":{"id":"project-label-id","name":"Roadmap","color":"#f2c94c"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"projectLabel_projects": `{"projectLabel":{"id":"project-label-id","name":"Roadmap","projects":{"nodes":[` + projectJSON(projectFixture{
 			ID:     "project-id",
 			Name:   "listed",
@@ -732,9 +738,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	projectMilestoneIssues, err := ListProjectMilestoneIssues(context.Background(), graphqlClient, "project-milestone-id", 2)
 	require.NoError(t, err)
+	workspaceProjects, err := ListProjects(context.Background(), graphqlClient, 2)
+	require.NoError(t, err)
 	projectStatuses, err := ListProjectStatuses(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
 	projectStatus, err := GetProjectStatusByID(context.Background(), graphqlClient, "project-status-id")
+	require.NoError(t, err)
+	projectStatusProjectCount, err := GetProjectStatusProjectCount(context.Background(), graphqlClient, "project-status-id")
 	require.NoError(t, err)
 	projectLabels, err := ListProjectLabels(context.Background(), graphqlClient, 2)
 	require.NoError(t, err)
@@ -1249,6 +1259,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, projectMilestoneIssues.HasNextPage)
 	require.Equal(t, "project-milestone-id", projectMilestoneIssues.ProjectMilestoneID)
 	require.Equal(t, "LIT-52", projectMilestoneIssues.Issues[0].Identifier)
+	require.Equal(t, "workspace-project-id", workspaceProjects.Projects[0].ID)
+	require.Equal(t, &endCursor, workspaceProjects.EndCursor)
 	require.True(t, projectStatuses.HasNextPage)
 	require.Equal(t, &endCursor, projectStatuses.EndCursor)
 	require.Equal(t, "project-status-id", projectStatuses.ProjectStatuses[0].ID)
@@ -1257,6 +1269,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "#bec2c8", projectStatuses.ProjectStatuses[0].Color)
 	require.Equal(t, "project-status-id", projectStatus.ID)
 	require.Equal(t, "Ready for planning", projectStatus.Description)
+	require.Equal(t, "project-status-id", projectStatusProjectCount.ProjectStatusID)
+	require.InEpsilon(t, float64(12), projectStatusProjectCount.Count, 0.001)
+	require.InEpsilon(t, float64(2), projectStatusProjectCount.PrivateCount, 0.001)
+	require.InEpsilon(t, float64(1), projectStatusProjectCount.ArchivedTeamCount, 0.001)
 	require.True(t, projectLabels.HasNextPage)
 	require.Equal(t, &endCursor, projectLabels.EndCursor)
 	require.Equal(t, "project-label-id", projectLabels.ProjectLabels[0].ID)
@@ -2393,6 +2409,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project milestone issues project-milestone-id")
 
+		_, err = ListProjects(context.Background(), graphqlClient, 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list projects")
+
 		_, err = ListProjectStatuses(context.Background(), graphqlClient, 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project statuses")
@@ -2400,6 +2420,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = GetProjectStatusByID(context.Background(), graphqlClient, "project-status-id")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get project status project-status-id")
+
+		_, err = GetProjectStatusProjectCount(context.Background(), graphqlClient, "project-status-id")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get project status project count project-status-id")
 
 		_, err = ListProjectLabels(context.Background(), graphqlClient, 1)
 		require.Error(t, err)

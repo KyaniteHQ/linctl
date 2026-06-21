@@ -178,6 +178,11 @@ Success is pass/fail:
 33. Project comment child reads
    - Success: `linctl project comments PROJECT --limit N`, `linctl project-update comments PROJECT_UPDATE --limit N`, and `linctl project-milestone issues PROJECT_MILESTONE --limit N` list child records through the public CLI; project and ProjectUpdate comment outputs omit comment body content.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_update_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_issues`, `Test_CommandFlows_project_comment_children_omit_body_from_json`;
+
+34. Project all
+   - Success: `linctl project all --limit N` lists visible workspace Projects through root `Query.projects`.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_all`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 34. Cycle list
@@ -910,6 +915,11 @@ Success is pass/fail:
 155. ProjectStatus get
    - Success: `linctl project-status get PROJECT_STATUS_ID` reads one ProjectStatus by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_get`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+155. ProjectStatus project count
+   - Success: `linctl project-status project-count PROJECT_STATUS_ID` reads project counts for one ProjectStatus without exposing project records.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_status_project_count`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 156. ProjectLabel list

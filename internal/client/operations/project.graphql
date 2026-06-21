@@ -12,6 +12,18 @@ query Projects($teamId: String!, $first: Int, $after: String, $includeArchived: 
   }
 }
 
+query projects($first: Int, $after: String, $includeArchived: Boolean) {
+  projects(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ProjectSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
 query project($id: String!) {
   project(id: $id) {
     ...ProjectSummaryFields

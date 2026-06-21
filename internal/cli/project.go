@@ -17,6 +17,7 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		Short: "Read and write Linear projects",
 	}
 	addProjectListCommand(ctx, projectCommand, options)
+	addProjectAllCommand(ctx, projectCommand, options)
 	addProjectGetCommand(ctx, projectCommand, options)
 	addProjectAttachmentsCommand(ctx, projectCommand, options)
 	addProjectDocumentsCommand(ctx, projectCommand, options)
@@ -57,6 +58,44 @@ func addProjectListCommand(ctx context.Context, root *cobra.Command, options *ro
 				return err
 			}
 			projects, err := client.ListProjectsByTeam(ctx, runtime.graphqlClient, target.Team.ID, limit)
+			if err != nil {
+				return err
+			}
+			if err := ensureNonEmpty(options, len(projects.Projects)); err != nil {
+				return err
+			}
+			projects.Projects, err = sortByJSONField(projects.Projects, options.sortField, options.sortOrder)
+			if err != nil {
+				return err
+			}
+			if options.json {
+				return writeJSONValue(command, options, projects)
+			}
+			for _, project := range projects.Projects {
+				if err := writeProject(command, options, project); err != nil {
+					return err
+				}
+			}
+
+			return nil
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
+	root.AddCommand(command)
+}
+
+func addProjectAllCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "all",
+		Short: "List visible Linear projects across the workspace",
+		Args:  cobra.NoArgs,
+		RunE: func(command *cobra.Command, _ []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			projects, err := client.ListProjects(ctx, runtime.graphqlClient, limit)
 			if err != nil {
 				return err
 			}

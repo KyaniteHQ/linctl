@@ -149,6 +149,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "comment created issues", args: []string{"comment", "created-issues", "comment-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, contains: "LIT-1 Closed issue [Done]"},
 		{name: "project list", args: []string{"project", "list", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
+		{name: "project all", args: []string{"project", "all", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, contains: "project-id Detail project [Backlog]"},
 		{name: "project attachments", args: []string{"project", "attachments", "project-id", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
 		{name: "project documents", args: []string{"project", "documents", "project-id", "--limit", "1"}, contains: "document-id Spec [project]"},
@@ -173,6 +174,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, contains: "project-milestone-id Updated milestone [done]"},
 		{name: "project status list", args: []string{"project-status", "list", "--limit", "1"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
 		{name: "project status get", args: []string{"project-status", "get", "project-status-id"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
+		{name: "project status project count", args: []string{"project-status", "project-count", "project-status-id"}, contains: "project-status-id count 12 private 2 archived_team 1"},
 		{name: "project label list", args: []string{"project-label", "list", "--limit", "1"}, contains: "project-label-id Roadmap #f2c94c"},
 		{name: "project label get", args: []string{"project-label", "get", "project-label-id"}, contains: "project-label-id Roadmap #f2c94c"},
 		{name: "project label children", args: []string{"project-label", "children", "project-label-id", "--limit", "1"}, contains: "child-project-label-id Mobile #56ccf2"},
@@ -722,6 +724,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"issue", "comments", "LIT-1"},
 			{"issue", "close", "LIT-1"},
 			{"project", "list"},
+			{"project", "all"},
 			{"project", "get", "project-id"},
 			{"project", "members", "project-id"},
 			{"project", "updates", "project-id"},
@@ -729,6 +732,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"project-milestone", "get", "project-milestone-id"},
 			{"project-milestone", "create", "project-id", "--name", "Created milestone"},
 			{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"},
+			{"project-status", "project-count", "project-status-id"},
 			{"project", "create", "--name", "Created project"},
 			{"project", "update", "project-id", "--name", "Updated project"},
 			{"project", "archive", "project-id"},
@@ -818,6 +822,63 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("project all returns writer errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetOut(commandFailingWriter{})
+		command.SetArgs([]string{"project", "all"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "write line")
+	})
+
+	t.Run("project all reports sort errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--sort", "missing", "project", "all"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	})
+
+	t.Run("issue figma file key search reports sort errors", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{expectedIssueFigmaFileKey: "figma-key"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"--sort", "missing", "issue", "figma-file-key-search", "figma-key"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	})
+
+	t.Run("issue filter suggestion rejects conflicting scope flags", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{
+			"issue",
+			"filter-suggestion",
+			"started issues",
+			"--team-id",
+			"team-id",
+			"--project-id",
+			"project-id",
+		})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "use only one of --team-id or --project-id")
 	})
 
 	t.Run("project members returns writer errors", func(t *testing.T) {
@@ -1100,6 +1161,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "comment", "get", "comment-id"},
 		{"--json", "--fields", "id,display_name", "initiative-update", "comments", "initiative-update-id", "--limit", "1"},
 		{"--json", "project", "list", "--limit", "1"},
+		{"--json", "project", "all", "--limit", "1"},
 		{"--json", "project", "members", "project-id", "--limit", "1"},
 		{"--json", "--fields", "id,health,display_name", "project", "updates", "project-id", "--limit", "1"},
 		{"--json", "project", "filter-suggestion", "started projects"},
@@ -2067,6 +2129,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, operation: "IssueClose", contains: "close issue LIT-1"},
 		{name: "project list target resolve", args: []string{"project", "list"}, operation: "Teams", contains: "resolve teams"},
 		{name: "project list", args: []string{"project", "list"}, operation: "Projects", contains: "list projects"},
+		{name: "project all", args: []string{"project", "all"}, operation: "projects", contains: "list projects"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, operation: "project", contains: "get project project-id"},
 		{name: "project attachments", args: []string{"project", "attachments", "project-id"}, operation: "project_attachments", contains: "list project attachments project-id"},
 		{name: "project documents", args: []string{"project", "documents", "project-id"}, operation: "project_documents", contains: "list project documents project-id"},
@@ -2088,6 +2151,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, operation: "projectUpdate", contains: "get project update project-update-id"},
 		{name: "project update comments", args: []string{"project-update", "comments", "project-update-id"}, operation: "projectUpdate_comments", contains: "list project update comments project-update-id"},
 		{name: "project milestone all", args: []string{"project-milestone", "all"}, operation: "projectMilestones", contains: "list project milestones"},
+		{name: "project status project count", args: []string{"project-status", "project-count", "project-status-id"}, operation: "projectStatusProjectCount", contains: "get project status project count project-status-id"},
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id"}, operation: "project_projectMilestones", contains: "list project milestones project-id"},
 		{name: "project milestone get", args: []string{"project-milestone", "get", "project-milestone-id"}, operation: "projectMilestone", contains: "get project milestone project-milestone-id"},
 		{name: "project milestone issues", args: []string{"project-milestone", "issues", "project-milestone-id"}, operation: "projectMilestone_issues", contains: "list project milestone issues project-milestone-id"},
@@ -3607,6 +3671,13 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 			return `{"team":{"projects":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"team":{"projects":{"nodes":[` + commandProjectJSON("Listed project", "Backlog", "backlog") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "projects":
+		if fake.emptyProjectList {
+			return `{"projects":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+		}
+		return `{"projects":{"nodes":[` +
+			commandProjectJSON("Listed project", "Backlog", "backlog") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "project":
 		return `{"project":` + commandProjectJSON("Detail project", "Backlog", "backlog") + `}`, true
 	case "project_attachments":
@@ -3716,6 +3787,8 @@ func commandFlowProjectStatusPayload(operation string) (string, bool) {
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "projectStatus":
 		return `{"projectStatus":` + commandProjectStatusJSON() + `}`, true
+	case "projectStatusProjectCount":
+		return `{"projectStatusProjectCount":{"count":12,"privateCount":2,"archivedTeamCount":1}}`, true
 	default:
 		return "", false
 	}

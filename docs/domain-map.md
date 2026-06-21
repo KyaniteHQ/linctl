@@ -323,7 +323,8 @@ Planned commands:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `project list` | `Query.projects` | Read-only |
+| `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped |
+| `project all` | `Query.projects` | Read-only |
 | `project get` | `Query.project` | Read-only |
 | `project attachments` | `Project.attachments` | Read-only |
 | `project documents` | `Project.documents` | Read-only |
@@ -388,12 +389,13 @@ Planned commands:
 | --- | --- | --- |
 | `project-status list` | `Query.projectStatuses` | Read-only |
 | `project-status get` | `Query.projectStatus` | Read-only |
+| `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload |
 | `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model |
 | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation |
 | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics |
 | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model |
 
-Only `project-status list` and `project-status get` are implemented in the current CLI. ProjectStatus writes are deferred as workspace/admin configuration surface.
+Only `project-status list`, `project-status get`, and `project-status project-count` are implemented in the current CLI. ProjectStatus writes are deferred as workspace/admin configuration surface.
 
 ## ProjectLabel
 

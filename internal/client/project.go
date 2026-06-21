@@ -240,6 +240,25 @@ func ListProjectsByTeam(
 	}, nil
 }
 
+// ListProjects returns visible Linear projects across the workspace.
+func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectList, error) {
+	result, err := projects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return ProjectList{}, fmt.Errorf("list projects: %w", err)
+	}
+
+	summaries := make([]ProjectSummary, 0, len(result.Projects.Nodes))
+	for _, project := range result.Projects.Nodes {
+		summaries = append(summaries, workspaceProjectSummary(project))
+	}
+
+	return ProjectList{
+		Projects:    summaries,
+		HasNextPage: result.Projects.PageInfo.HasNextPage,
+		EndCursor:   result.Projects.PageInfo.EndCursor,
+	}, nil
+}
+
 // GetProjectByID returns a project by Linear id or slug.
 func GetProjectByID(ctx context.Context, graphqlClient graphql.Client, id string) (ProjectSummary, error) {
 	projectResult, err := project(ctx, graphqlClient, id)
@@ -783,6 +802,10 @@ func projectAttachmentSummary(fields ProjectAttachmentSummaryFields) AttachmentS
 		URL:        fields.Url,
 		SourceType: stringValue(fields.SourceType),
 	}
+}
+
+func workspaceProjectSummary(project projectsProjectsProjectConnectionNodesProject) ProjectSummary {
+	return projectSummaryFromFields(project.ProjectSummaryFields)
 }
 
 func projectSummaryFromFields(project ProjectSummaryFields) ProjectSummary {

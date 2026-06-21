@@ -190,6 +190,7 @@ linctl project relations PROJECT_ID --json --limit 20
 linctl project teams PROJECT_ID --json --limit 20
 linctl project updates PROJECT_ID --json --limit 20
 linctl project filter-suggestion "started projects" --json
+linctl project all --json --limit 20
 linctl project-update list --json --limit 20
 linctl project-update get PROJECT_UPDATE_ID --json
 linctl project-update comments PROJECT_UPDATE_ID --json --limit 20
@@ -199,6 +200,7 @@ linctl project-milestone get PROJECT_MILESTONE_ID --json
 linctl project-milestone issues PROJECT_MILESTONE_ID --json --limit 20
 linctl project-status list --json --limit 20
 linctl project-status get PROJECT_STATUS_ID --json
+linctl project-status project-count PROJECT_STATUS_ID --json
 linctl project-label list --json --limit 20
 linctl project-label get PROJECT_LABEL_ID --json
 linctl project-label children PROJECT_LABEL_ID --json --limit 20
