@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 112 | 458 |
 | Upstream Query root fields | 158 | 100 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 232 | 232 | 232 |
-| Domain-map commands | 344 | 212 | 344 |
+| Local generated Go operations | 235 | 235 | 235 |
+| Domain-map commands | 347 | 215 | 347 |
 
 ## Upstream SDK Root Methods
 
@@ -1128,6 +1128,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueToRelease` | query | `issueToRelease` | implemented | `internal/client/generated.go` |
 | `issueToReleases` | query | `issueToReleases` | implemented | `internal/client/generated.go` |
 | `issue_attachments` | query | `issue` | implemented | `internal/client/generated.go` |
+| `issue_botActor` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_children` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_comments` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_documents` | query | `issue` | implemented | `internal/client/generated.go` |
@@ -1137,6 +1138,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issue_labels` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_relations` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issue_releases` | query | `issue` | implemented | `internal/client/generated.go` |
+| `issue_stateHistory` | query | `issue` | implemented | `internal/client/generated.go` |
+| `issue_subscribers` | query | `issue` | implemented | `internal/client/generated.go` |
 | `issues` | query | `issues` | implemented | `internal/client/generated.go` |
 | `notification` | query | `notification` | implemented | `internal/client/generated.go` |
 | `notificationSubscription` | query | `notificationSubscription` | implemented | `internal/client/generated.go` |
@@ -1332,6 +1335,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue bot-actor` | `Issue.botActor` via `Query.issue` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue children` | `Issue.children` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue documents` | `Issue.documents` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1340,6 +1344,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue labels` | `Issue.labels` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue relations` | `Issue.relations` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue releases` | `Issue.releases` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue id` | Current checkout issue identifier from git/jj context | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help` / public CLI tests |

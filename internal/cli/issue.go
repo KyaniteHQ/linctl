@@ -21,6 +21,7 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addIssueGetCommand(ctx, issueCommand, options)
 	addIssueDepsCommand(ctx, issueCommand, options)
 	addIssueAttachmentsCommand(ctx, issueCommand, options)
+	addIssueBotActorCommand(ctx, issueCommand, options)
 	addIssueChildrenCommand(ctx, issueCommand, options)
 	addIssueDocumentsCommand(ctx, issueCommand, options)
 	addIssueFormerAttachmentsCommand(ctx, issueCommand, options)
@@ -29,6 +30,8 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addIssueLabelsCommand(ctx, issueCommand, options)
 	addIssueRelationsCommand(ctx, issueCommand, options)
 	addIssueReleasesCommand(ctx, issueCommand, options)
+	addIssueStateHistoryCommand(ctx, issueCommand, options)
+	addIssueSubscribersCommand(ctx, issueCommand, options)
 	addIssuePRCommand(ctx, issueCommand, options)
 	addIssueCreateCommand(ctx, issueCommand, options)
 	addIssueUpdateCommand(ctx, issueCommand, options)
@@ -389,6 +392,26 @@ func addIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, option
 	)
 }
 
+func addIssueBotActorCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "bot-actor ISSUE_ID",
+		Short: "Show issue bot actor metadata",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			actor, err := client.GetIssueBotActor(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeIssueBotActor(command, options, actor)
+		},
+	})
+}
+
 func addIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addIssueChildListCommand(
 		ctx,
@@ -585,6 +608,62 @@ func addIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *
 	)
 }
 
+func addIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"state-history ISSUE_ID",
+		"List issue workflow state history",
+		"state spans",
+		func(runtime commandRuntime, issueID string, limit int) (client.IssueStateHistoryList, error) {
+			return client.ListIssueStateHistory(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.IssueStateHistoryList) int {
+			return len(list.Spans)
+		},
+		func(list client.IssueStateHistoryList) (client.IssueStateHistoryList, error) {
+			items, err := sortByJSONField(list.Spans, options.sortField, options.sortOrder)
+			list.Spans = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.IssueStateSpanSummary) error {
+			return writeIssueStateSpan(command, options, item)
+		},
+		func(list client.IssueStateHistoryList) []client.IssueStateSpanSummary {
+			return list.Spans
+		},
+	)
+}
+
+func addIssueSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addIssueChildListCommand(
+		ctx,
+		root,
+		options,
+		"subscribers ISSUE_ID",
+		"List issue subscribers",
+		"subscribers",
+		func(runtime commandRuntime, issueID string, limit int) (client.UserList, error) {
+			return client.ListIssueSubscribers(ctx, runtime.graphqlClient, issueID, limit)
+		},
+		func(list client.UserList) int {
+			return len(list.Users)
+		},
+		func(list client.UserList) (client.UserList, error) {
+			items, err := sortByJSONField(list.Users, options.sortField, options.sortOrder)
+			list.Users = items
+			return list, err
+		},
+		func(command *cobra.Command, item client.UserSummary) error {
+			return writeUser(command, options, item)
+		},
+		func(list client.UserList) []client.UserSummary {
+			return list.Users
+		},
+	)
+}
+
 func addIssueRelationChildListCommand(
 	ctx context.Context,
 	root *cobra.Command,
@@ -669,6 +748,49 @@ func addIssueChildListCommand[List any, Item any](
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum "+limitHelp+" to return")
 	root.AddCommand(command)
+}
+
+func writeIssueBotActor(command *cobra.Command, options *rootOptions, actor client.IssueBotActor) error {
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, actor)
+	}
+	if actor.Bot == nil {
+		return render.WriteLine(command.OutOrStdout(), "%s bot -", actor.IssueID)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s bot %s %s [%s]",
+		actor.IssueID,
+		emptyDash(actor.Bot.ID),
+		emptyDash(actor.Bot.Name),
+		actor.Bot.Type,
+	)
+}
+
+func writeIssueStateSpan(command *cobra.Command, options *rootOptions, span client.IssueStateSpanSummary) error {
+	if wrote, err := writeIDOnly(command, options, span.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, span)
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"%s %s %s %s -> %s",
+		span.ID,
+		emptyDash(span.StateName),
+		emptyDash(span.StateType),
+		span.StartedAt,
+		emptyDash(span.EndedAt),
+	)
 }
 
 func writeIssueHistory(command *cobra.Command, options *rootOptions, history client.IssueHistorySummary) error {

@@ -138,7 +138,7 @@ func GetCommentBotActor(ctx context.Context, graphqlClient graphql.Client, id st
 
 	return CommentBotActor{
 		CommentID: result.Comment.Id,
-		Bot:       actorBotSummary(result.Comment.BotActor),
+		Bot:       commentActorBotSummary(result.Comment.BotActor),
 	}, nil
 }
 
@@ -304,19 +304,27 @@ func commentMetadataSummary(comment CommentMetadataFields) CommentMetadataSummar
 	}
 }
 
-func actorBotSummary(bot *comment_botActorCommentBotActorActorBot) *ActorBotSummary {
-	if bot == nil {
+func actorBotSummary(fields *ActorBotSummaryFields) *ActorBotSummary {
+	if fields == nil {
 		return nil
 	}
 
 	return &ActorBotSummary{
-		ID:              stringValue(bot.Id),
-		Type:            bot.Type,
-		SubType:         stringValue(bot.SubType),
-		Name:            stringValue(bot.Name),
-		UserDisplayName: stringValue(bot.UserDisplayName),
-		AvatarURL:       stringValue(bot.AvatarUrl),
+		ID:              stringValue(fields.Id),
+		Type:            fields.Type,
+		SubType:         stringValue(fields.SubType),
+		Name:            stringValue(fields.Name),
+		UserDisplayName: stringValue(fields.UserDisplayName),
+		AvatarURL:       stringValue(fields.AvatarUrl),
 	}
+}
+
+func commentActorBotSummary(bot *comment_botActorCommentBotActorActorBot) *ActorBotSummary {
+	if bot == nil {
+		return nil
+	}
+
+	return actorBotSummary(&bot.ActorBotSummaryFields)
 }
 
 func stringValue(value *string) string {

@@ -123,6 +123,9 @@ linctl issue inverse-relations LIT-123 --limit 20
 linctl issue labels LIT-123 --limit 20
 linctl issue relations LIT-123 --limit 20
 linctl issue releases LIT-123 --limit 20
+linctl issue bot-actor LIT-123
+linctl issue state-history LIT-123 --limit 20
+linctl issue subscribers LIT-123 --limit 20
 linctl issue-relation list --limit 20
 linctl issue-relation get issue-relation-id
 linctl issue pr LIT-123
@@ -291,6 +294,9 @@ linctl issue inverse-relations LIT-123 --limit 20
 linctl issue labels LIT-123 --limit 20
 linctl issue relations LIT-123 --limit 20
 linctl issue releases LIT-123 --limit 20
+linctl issue bot-actor LIT-123
+linctl issue state-history LIT-123 --limit 20
+linctl issue subscribers LIT-123 --limit 20
 linctl issue pr LIT-123
 linctl next --dry-run
 linctl application info app-client-id

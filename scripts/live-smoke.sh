@@ -69,6 +69,7 @@ PY
   issue_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0]["id"] if items else "")' <<<"$issue_json")"
   if [[ -n "$issue_id" ]]; then
     "$binary" issue attachments "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue bot-actor "$issue_id" --json >/dev/null
     "$binary" issue children "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue documents "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue former-attachments "$issue_id" --json --limit 5 >/dev/null
@@ -77,6 +78,8 @@ PY
     "$binary" issue labels "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue relations "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue releases "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue state-history "$issue_id" --json --limit 5 >/dev/null
+    "$binary" issue subscribers "$issue_id" --json --limit 5 >/dev/null
   fi
   comment_json="$("$binary" comment list --json --limit 5)"
   comment_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("comments", []); print(items[0]["id"] if items else "")' <<<"$comment_json")"

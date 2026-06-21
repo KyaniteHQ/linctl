@@ -358,6 +358,15 @@ query issue_attachments($id: String!, $first: Int, $after: String, $includeArchi
   }
 }
 
+query issue_botActor($id: String!) {
+  issue(id: $id) {
+    id
+    botActor {
+      ...ActorBotSummaryFields
+    }
+  }
+}
+
 query issue_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
     children(first: $first, after: $after, includeArchived: $includeArchived) {
@@ -469,6 +478,44 @@ query issue_releases($id: String!, $first: Int, $after: String, $includeArchived
     releases(first: $first, after: $after, includeArchived: $includeArchived) {
       nodes {
         ...ReleaseSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_stateHistory($id: String!, $first: Int, $after: String) {
+  issue(id: $id) {
+    id
+    stateHistory(first: $first, after: $after) {
+      nodes {
+        id
+        stateId
+        startedAt
+        endedAt
+        state {
+          id
+          name
+          type
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query issue_subscribers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  issue(id: $id) {
+    id
+    subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...UserSummaryFields
       }
       pageInfo {
         hasNextPage

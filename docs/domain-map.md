@@ -195,7 +195,7 @@ Release, ReleasePipeline, ReleaseStage, ReleaseNote, EntityExternalLink, and Iss
 Schema backing:
 
 - Types: `Issue`, `IssueConnection`
-- Reads: `Query.issues`, `Query.issue`
+- Reads: `Query.issues`, `Query.issue`, `Issue.botActor`, `Issue.stateHistory`, `Issue.subscribers`
 - Writes: `Mutation.issueCreate`, `Mutation.issueUpdate`, `Mutation.issueArchive`, `Mutation.commentCreate`
 - Inputs: `IssueCreateInput`, `IssueUpdateInput`
 - Relevant fields: `Issue.id`, `Issue.identifier`, `Issue.number`, `Issue.title`, `Issue.team`, `Issue.cycle`, `Issue.project`, `Issue.projectMilestone`, `Issue.assignee`, `Issue.state`, `Issue.documents`, `Issue.comments`, `Issue.url`, `Issue.branchName`
@@ -209,6 +209,7 @@ Planned commands:
 | `issue get` | `Query.issue` | Read-only |
 | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only |
 | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only |
+| `issue bot-actor` | `Issue.botActor` via `Query.issue` | Read-only, bot metadata only |
 | `issue children` | `Issue.children` via `Query.issue` | Read-only |
 | `issue documents` | `Issue.documents` via `Query.issue` | Read-only |
 | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only |
@@ -217,6 +218,8 @@ Planned commands:
 | `issue labels` | `Issue.labels` via `Query.issue` | Read-only |
 | `issue relations` | `Issue.relations` via `Query.issue` | Read-only |
 | `issue releases` | `Issue.releases` via `Query.issue` | Read-only |
+| `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata |
+| `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only |
 | `issue id` | Current checkout issue identifier from git/jj context | Read-only |
 | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
 | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only |

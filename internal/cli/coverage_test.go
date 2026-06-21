@@ -22,6 +22,20 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		State:      "Todo",
 		URL:        "https://linear.app/issue/LIT-1",
 	}
+	issueBotActor := client.IssueBotActor{
+		IssueID: "issue-id",
+		Bot: &client.ActorBotSummary{
+			ID:   "bot-actor-id",
+			Type: "github",
+			Name: "GitHub",
+		},
+	}
+	issueStateSpan := client.IssueStateSpanSummary{
+		ID:        "issue-state-span-id",
+		StateName: "Started",
+		StateType: "started",
+		StartedAt: "2026-06-19T12:00:00Z",
+	}
 	project := client.ProjectSummary{
 		ID:   "project-id",
 		Name: "Coverage",
@@ -397,6 +411,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	textOptions := rootOptions{}
 
 	require.NoError(t, writeIssue(textCommand, &textOptions, issue))
+	require.NoError(t, writeIssueBotActor(textCommand, &textOptions, issueBotActor))
+	require.NoError(t, writeIssueBotActor(textCommand, &textOptions, client.IssueBotActor{IssueID: "plain-issue-id"}))
+	require.NoError(t, writeIssueStateSpan(textCommand, &textOptions, issueStateSpan))
 	require.NoError(t, writeCycle(textCommand, &textOptions, cycle))
 	require.NoError(t, writeProject(textCommand, &textOptions, project))
 	require.NoError(t, writeProjectUpdate(textCommand, &textOptions, projectUpdate))
@@ -460,7 +477,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeReleaseNote(textCommand, &textOptions, releaseNote))
 	require.Equal(
 		t,
-		"LIT-1 Ship coverage [Todo]\ncycle-id Planning cycle [active]\n"+
+		"LIT-1 Ship coverage [Todo]\nissue-id bot bot-actor-id GitHub [github]\n"+
+			"plain-issue-id bot -\nissue-state-span-id Started started 2026-06-19T12:00:00Z -> -\n"+
+			"cycle-id Planning cycle [active]\n"+
 			"project-id Coverage [Backlog]\nproject-update-id onTrack Omer First update\n"+
 			"project-milestone-id Launch milestone [next]\n"+
 			"project-status-id Backlog [backlog] #bec2c8\n"+
@@ -522,6 +541,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	jsonOptions := rootOptions{json: true}
 
 	require.NoError(t, writeIssue(jsonCommand, &jsonOptions, issue))
+	require.NoError(t, writeIssueBotActor(jsonCommand, &jsonOptions, issueBotActor))
+	require.NoError(t, writeIssueStateSpan(jsonCommand, &jsonOptions, issueStateSpan))
 	require.NoError(t, writeCycle(jsonCommand, &jsonOptions, cycle))
 	require.NoError(t, writeProject(jsonCommand, &jsonOptions, project))
 	require.NoError(t, writeProjectUpdate(jsonCommand, &jsonOptions, projectUpdate))
@@ -581,6 +602,8 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 	require.NoError(t, writeEntityExternalLink(jsonCommand, &jsonOptions, releaseLink))
 	require.NoError(t, writeReleaseNote(jsonCommand, &jsonOptions, releaseNote))
 	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
+	require.Contains(t, jsonOut.String(), `"issue_id": "issue-id"`)
+	require.Contains(t, jsonOut.String(), `"state_name": "Started"`)
 	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
 	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
 	require.Contains(t, jsonOut.String(), `"body": "First update"`)
@@ -973,6 +996,20 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 		PipelineName: "Production",
 		ReleaseCount: 2,
 	}
+	issueStateSpan := client.IssueStateSpanSummary{
+		ID:        "issue-state-span-id",
+		StateName: "Started",
+		StateType: "started",
+		StartedAt: "2026-06-19T12:00:00Z",
+	}
+	issueBotActor := client.IssueBotActor{
+		IssueID: "issue-id",
+		Bot: &client.ActorBotSummary{
+			ID:   "bot-actor-id",
+			Type: "github",
+			Name: "GitHub",
+		},
+	}
 	commentBotActor := client.CommentBotActor{
 		CommentID: "comment-id",
 		Bot: &client.ActorBotSummary{
@@ -984,6 +1021,7 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 
 	require.NoError(t, writeIssue(command, &rootOptions{format: "full"}, issue))
 	require.NoError(t, writeIssue(command, &rootOptions{idOnly: true}, issue))
+	require.NoError(t, writeIssueStateSpan(command, &rootOptions{idOnly: true}, issueStateSpan))
 	require.NoError(t, writeCycle(command, &rootOptions{format: "minimal"}, cycle))
 	require.NoError(t, writeCycle(command, &rootOptions{format: "full"}, cycle))
 	require.NoError(t, writeCycle(command, &rootOptions{idOnly: true}, cycle))
@@ -1100,6 +1138,8 @@ func Test_CliOutputHelpers_cover_machine_output_edges(t *testing.T) {
 	quietCommand := &cobra.Command{}
 	quietCommand.SetOut(&quietOutput)
 	require.NoError(t, writeJSONValue(quietCommand, &rootOptions{quiet: true}, issue))
+	require.NoError(t, writeIssueBotActor(quietCommand, &rootOptions{quiet: true}, issueBotActor))
+	require.NoError(t, writeIssueStateSpan(quietCommand, &rootOptions{quiet: true}, issueStateSpan))
 	require.NoError(t, writeCycle(quietCommand, &rootOptions{quiet: true}, cycle))
 	require.NoError(t, writeProject(quietCommand, &rootOptions{quiet: true}, project))
 	require.NoError(t, writeProjectUpdate(quietCommand, &rootOptions{quiet: true}, projectUpdate))
@@ -1922,6 +1962,52 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 }
 
 func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *testing.T) {
+	t.Run("issue bot actor runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "bot-actor", "LIT-1"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
+	t.Run("issue bot actor operation error", func(t *testing.T) {
+		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue_botActor"})
+		defer restore()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"issue", "bot-actor", "LIT-1"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue bot actor LIT-1")
+	})
+
+	t.Run("comment bot actor runtime error", func(t *testing.T) {
+		original := buildCommandRuntime
+		buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+			return commandRuntime{}, errors.New("runtime failed")
+		}
+		defer func() {
+			buildCommandRuntime = original
+		}()
+		command := NewRootCommand(context.Background(), BuildInfo{})
+		command.SetArgs([]string{"comment", "bot-actor", "comment-id"})
+
+		err := command.ExecuteContext(context.Background())
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "runtime failed")
+	})
+
 	t.Run("bot actor operation error", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "comment_botActor"})
 		defer restore()

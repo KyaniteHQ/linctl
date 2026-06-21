@@ -133,6 +133,9 @@ linctl issue inverse-relations LIT-123 --json --limit 20
 linctl issue labels LIT-123 --json --limit 20
 linctl issue relations LIT-123 --json --limit 20
 linctl issue releases LIT-123 --json --limit 20
+linctl issue bot-actor LIT-123 --json
+linctl issue state-history LIT-123 --json --limit 20
+linctl issue subscribers LIT-123 --json --limit 20
 linctl issue comments LIT-123 --limit 20
 linctl issue-relation list --json --limit 20
 linctl issue-relation get ISSUE_RELATION_ID --json

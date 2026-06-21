@@ -18393,6 +18393,14 @@ func (v *__issue_attachmentsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __issue_attachmentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issue_attachmentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __issue_botActorInput is used internally by genqlient
+type __issue_botActorInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __issue_botActorInput.Id, and is useful for accessing the field via an interface.
+func (v *__issue_botActorInput) GetId() string { return v.Id }
+
 // __issue_childrenInput is used internally by genqlient
 type __issue_childrenInput struct {
 	Id              string  `json:"id"`
@@ -18572,6 +18580,42 @@ func (v *__issue_releasesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __issue_releasesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__issue_releasesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __issue_stateHistoryInput is used internally by genqlient
+type __issue_stateHistoryInput struct {
+	Id    string  `json:"id"`
+	First *int    `json:"first"`
+	After *string `json:"after"`
+}
+
+// GetId returns __issue_stateHistoryInput.Id, and is useful for accessing the field via an interface.
+func (v *__issue_stateHistoryInput) GetId() string { return v.Id }
+
+// GetFirst returns __issue_stateHistoryInput.First, and is useful for accessing the field via an interface.
+func (v *__issue_stateHistoryInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issue_stateHistoryInput.After, and is useful for accessing the field via an interface.
+func (v *__issue_stateHistoryInput) GetAfter() *string { return v.After }
+
+// __issue_subscribersInput is used internally by genqlient
+type __issue_subscribersInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __issue_subscribersInput.Id, and is useful for accessing the field via an interface.
+func (v *__issue_subscribersInput) GetId() string { return v.Id }
+
+// GetFirst returns __issue_subscribersInput.First, and is useful for accessing the field via an interface.
+func (v *__issue_subscribersInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __issue_subscribersInput.After, and is useful for accessing the field via an interface.
+func (v *__issue_subscribersInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __issue_subscribersInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__issue_subscribersInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __issuesInput is used internally by genqlient
 type __issuesInput struct {
@@ -31120,6 +31164,131 @@ type issue_attachmentsResponse struct {
 // GetIssue returns issue_attachmentsResponse.Issue, and is useful for accessing the field via an interface.
 func (v *issue_attachmentsResponse) GetIssue() issue_attachmentsIssue { return v.Issue }
 
+// issue_botActorIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issue_botActorIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The bot that created the issue, if applicable.
+	BotActor *issue_botActorIssueBotActorActorBot `json:"botActor"`
+}
+
+// GetId returns issue_botActorIssue.Id, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssue) GetId() string { return v.Id }
+
+// GetBotActor returns issue_botActorIssue.BotActor, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssue) GetBotActor() *issue_botActorIssueBotActorActorBot { return v.BotActor }
+
+// issue_botActorIssueBotActorActorBot includes the requested fields of the GraphQL type ActorBot.
+// The GraphQL type's documentation follows.
+//
+// A bot actor representing a non-human entity that performed an action, such as an
+// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
+// Bot actors are displayed in activity feeds and history to indicate when changes
+// were made by applications rather than users.
+type issue_botActorIssueBotActorActorBot struct {
+	ActorBotSummaryFields `json:"-"`
+}
+
+// GetId returns issue_botActorIssueBotActorActorBot.Id, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssueBotActorActorBot) GetId() *string { return v.ActorBotSummaryFields.Id }
+
+// GetType returns issue_botActorIssueBotActorActorBot.Type, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssueBotActorActorBot) GetType() string { return v.ActorBotSummaryFields.Type }
+
+// GetSubType returns issue_botActorIssueBotActorActorBot.SubType, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssueBotActorActorBot) GetSubType() *string {
+	return v.ActorBotSummaryFields.SubType
+}
+
+// GetName returns issue_botActorIssueBotActorActorBot.Name, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssueBotActorActorBot) GetName() *string { return v.ActorBotSummaryFields.Name }
+
+// GetUserDisplayName returns issue_botActorIssueBotActorActorBot.UserDisplayName, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssueBotActorActorBot) GetUserDisplayName() *string {
+	return v.ActorBotSummaryFields.UserDisplayName
+}
+
+// GetAvatarUrl returns issue_botActorIssueBotActorActorBot.AvatarUrl, and is useful for accessing the field via an interface.
+func (v *issue_botActorIssueBotActorActorBot) GetAvatarUrl() *string {
+	return v.ActorBotSummaryFields.AvatarUrl
+}
+
+func (v *issue_botActorIssueBotActorActorBot) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issue_botActorIssueBotActorActorBot
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issue_botActorIssueBotActorActorBot = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActorBotSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissue_botActorIssueBotActorActorBot struct {
+	Id *string `json:"id"`
+
+	Type string `json:"type"`
+
+	SubType *string `json:"subType"`
+
+	Name *string `json:"name"`
+
+	UserDisplayName *string `json:"userDisplayName"`
+
+	AvatarUrl *string `json:"avatarUrl"`
+}
+
+func (v *issue_botActorIssueBotActorActorBot) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issue_botActorIssueBotActorActorBot) __premarshalJSON() (*__premarshalissue_botActorIssueBotActorActorBot, error) {
+	var retval __premarshalissue_botActorIssueBotActorActorBot
+
+	retval.Id = v.ActorBotSummaryFields.Id
+	retval.Type = v.ActorBotSummaryFields.Type
+	retval.SubType = v.ActorBotSummaryFields.SubType
+	retval.Name = v.ActorBotSummaryFields.Name
+	retval.UserDisplayName = v.ActorBotSummaryFields.UserDisplayName
+	retval.AvatarUrl = v.ActorBotSummaryFields.AvatarUrl
+	return &retval, nil
+}
+
+// issue_botActorResponse is returned by issue_botActor on success.
+type issue_botActorResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issue_botActorIssue `json:"issue"`
+}
+
+// GetIssue returns issue_botActorResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issue_botActorResponse) GetIssue() issue_botActorIssue { return v.Issue }
+
 // issue_childrenIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
@@ -32741,6 +32910,324 @@ type issue_releasesResponse struct {
 
 // GetIssue returns issue_releasesResponse.Issue, and is useful for accessing the field via an interface.
 func (v *issue_releasesResponse) GetIssue() issue_releasesIssue { return v.Issue }
+
+// issue_stateHistoryIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issue_stateHistoryIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The issue's workflow states over time.
+	StateHistory issue_stateHistoryIssueStateHistoryIssueStateSpanConnection `json:"stateHistory"`
+}
+
+// GetId returns issue_stateHistoryIssue.Id, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssue) GetId() string { return v.Id }
+
+// GetStateHistory returns issue_stateHistoryIssue.StateHistory, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssue) GetStateHistory() issue_stateHistoryIssueStateHistoryIssueStateSpanConnection {
+	return v.StateHistory
+}
+
+// issue_stateHistoryIssueStateHistoryIssueStateSpanConnection includes the requested fields of the GraphQL type IssueStateSpanConnection.
+type issue_stateHistoryIssueStateHistoryIssueStateSpanConnection struct {
+	Nodes    []issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan `json:"nodes"`
+	PageInfo issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo              `json:"pageInfo"`
+}
+
+// GetNodes returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnection) GetNodes() []issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan {
+	return v.Nodes
+}
+
+// GetPageInfo returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnection) GetPageInfo() issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan includes the requested fields of the GraphQL type IssueStateSpan.
+// The GraphQL type's documentation follows.
+//
+// A continuous period of time during which an issue remained in a specific workflow state.
+type issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan struct {
+	// The unique identifier of the state span.
+	Id string `json:"id"`
+	// The workflow state identifier for this span.
+	StateId string `json:"stateId"`
+	// The timestamp when the issue entered this state.
+	StartedAt string `json:"startedAt"`
+	// The timestamp when the issue left this state. Null if the issue is currently in this state.
+	EndedAt *string `json:"endedAt"`
+	// The workflow state for this span.
+	State *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState `json:"state"`
+}
+
+// GetId returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.Id, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetId() string {
+	return v.Id
+}
+
+// GetStateId returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.StateId, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetStateId() string {
+	return v.StateId
+}
+
+// GetStartedAt returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.StartedAt, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetStartedAt() string {
+	return v.StartedAt
+}
+
+// GetEndedAt returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.EndedAt, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetEndedAt() *string {
+	return v.EndedAt
+}
+
+// GetState returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan.State, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan) GetState() *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState {
+	return v.State
+}
+
+// issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+}
+
+// GetId returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetId() string {
+	return v.Id
+}
+
+// GetName returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetName() string {
+	return v.Name
+}
+
+// GetType returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState) GetType() string {
+	return v.Type
+}
+
+// issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issue_stateHistoryResponse is returned by issue_stateHistory on success.
+type issue_stateHistoryResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issue_stateHistoryIssue `json:"issue"`
+}
+
+// GetIssue returns issue_stateHistoryResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issue_stateHistoryResponse) GetIssue() issue_stateHistoryIssue { return v.Issue }
+
+// issue_subscribersIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type issue_subscribersIssue struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Users who are subscribed to the issue.
+	Subscribers issue_subscribersIssueSubscribersUserConnection `json:"subscribers"`
+}
+
+// GetId returns issue_subscribersIssue.Id, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssue) GetId() string { return v.Id }
+
+// GetSubscribers returns issue_subscribersIssue.Subscribers, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssue) GetSubscribers() issue_subscribersIssueSubscribersUserConnection {
+	return v.Subscribers
+}
+
+// issue_subscribersIssueSubscribersUserConnection includes the requested fields of the GraphQL type UserConnection.
+type issue_subscribersIssueSubscribersUserConnection struct {
+	Nodes    []issue_subscribersIssueSubscribersUserConnectionNodesUser `json:"nodes"`
+	PageInfo issue_subscribersIssueSubscribersUserConnectionPageInfo    `json:"pageInfo"`
+}
+
+// GetNodes returns issue_subscribersIssueSubscribersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnection) GetNodes() []issue_subscribersIssueSubscribersUserConnectionNodesUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns issue_subscribersIssueSubscribersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnection) GetPageInfo() issue_subscribersIssueSubscribersUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// issue_subscribersIssueSubscribersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A user that belongs to a workspace. Users can have different roles (admin,
+// member, guest, or app) that determine their level of access. Users can be
+// members of multiple teams, and can be active or deactivated. Guest users have
+// limited access scoped to specific teams they are invited to.
+type issue_subscribersIssueSubscribersUserConnectionNodesUser struct {
+	UserSummaryFields `json:"-"`
+}
+
+// GetId returns issue_subscribersIssueSubscribersUserConnectionNodesUser.Id, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) GetId() string {
+	return v.UserSummaryFields.Id
+}
+
+// GetName returns issue_subscribersIssueSubscribersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) GetName() string {
+	return v.UserSummaryFields.Name
+}
+
+// GetDisplayName returns issue_subscribersIssueSubscribersUserConnectionNodesUser.DisplayName, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) GetDisplayName() string {
+	return v.UserSummaryFields.DisplayName
+}
+
+// GetEmail returns issue_subscribersIssueSubscribersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) GetEmail() string {
+	return v.UserSummaryFields.Email
+}
+
+// GetActive returns issue_subscribersIssueSubscribersUserConnectionNodesUser.Active, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) GetActive() bool {
+	return v.UserSummaryFields.Active
+}
+
+// GetGuest returns issue_subscribersIssueSubscribersUserConnectionNodesUser.Guest, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) GetGuest() bool {
+	return v.UserSummaryFields.Guest
+}
+
+// GetAdmin returns issue_subscribersIssueSubscribersUserConnectionNodesUser.Admin, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) GetAdmin() bool {
+	return v.UserSummaryFields.Admin
+}
+
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*issue_subscribersIssueSubscribersUserConnectionNodesUser
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.issue_subscribersIssueSubscribersUserConnectionNodesUser = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalissue_subscribersIssueSubscribersUserConnectionNodesUser struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	DisplayName string `json:"displayName"`
+
+	Email string `json:"email"`
+
+	Active bool `json:"active"`
+
+	Guest bool `json:"guest"`
+
+	Admin bool `json:"admin"`
+}
+
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *issue_subscribersIssueSubscribersUserConnectionNodesUser) __premarshalJSON() (*__premarshalissue_subscribersIssueSubscribersUserConnectionNodesUser, error) {
+	var retval __premarshalissue_subscribersIssueSubscribersUserConnectionNodesUser
+
+	retval.Id = v.UserSummaryFields.Id
+	retval.Name = v.UserSummaryFields.Name
+	retval.DisplayName = v.UserSummaryFields.DisplayName
+	retval.Email = v.UserSummaryFields.Email
+	retval.Active = v.UserSummaryFields.Active
+	retval.Guest = v.UserSummaryFields.Guest
+	retval.Admin = v.UserSummaryFields.Admin
+	return &retval, nil
+}
+
+// issue_subscribersIssueSubscribersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type issue_subscribersIssueSubscribersUserConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns issue_subscribersIssueSubscribersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns issue_subscribersIssueSubscribersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *issue_subscribersIssueSubscribersUserConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// issue_subscribersResponse is returned by issue_subscribers on success.
+type issue_subscribersResponse struct {
+	// One specific issue, looked up by its unique identifier.
+	Issue issue_subscribersIssue `json:"issue"`
+}
+
+// GetIssue returns issue_subscribersResponse.Issue, and is useful for accessing the field via an interface.
+func (v *issue_subscribersResponse) GetIssue() issue_subscribersIssue { return v.Issue }
 
 // issuesIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
 type issuesIssuesIssueConnection struct {
@@ -65375,6 +65862,51 @@ func issue_attachments(
 	return data_, err_
 }
 
+// The query executed by issue_botActor.
+const issue_botActor_Operation = `
+query issue_botActor ($id: String!) {
+	issue(id: $id) {
+		id
+		botActor {
+			... ActorBotSummaryFields
+		}
+	}
+}
+fragment ActorBotSummaryFields on ActorBot {
+	id
+	type
+	subType
+	name
+	userDisplayName
+	avatarUrl
+}
+`
+
+func issue_botActor(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *issue_botActorResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue_botActor",
+		Query:  issue_botActor_Operation,
+		Variables: &__issue_botActorInput{
+			Id: id,
+		},
+	}
+
+	data_ = &issue_botActorResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by issue_children.
 const issue_children_Operation = `
 query issue_children ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -65960,6 +66492,119 @@ func issue_releases(
 	}
 
 	data_ = &issue_releasesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issue_stateHistory.
+const issue_stateHistory_Operation = `
+query issue_stateHistory ($id: String!, $first: Int, $after: String) {
+	issue(id: $id) {
+		id
+		stateHistory(first: $first, after: $after) {
+			nodes {
+				id
+				stateId
+				startedAt
+				endedAt
+				state {
+					id
+					name
+					type
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+`
+
+func issue_stateHistory(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+) (data_ *issue_stateHistoryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue_stateHistory",
+		Query:  issue_stateHistory_Operation,
+		Variables: &__issue_stateHistoryInput{
+			Id:    id,
+			First: first,
+			After: after,
+		},
+	}
+
+	data_ = &issue_stateHistoryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by issue_subscribers.
+const issue_subscribers_Operation = `
+query issue_subscribers ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	issue(id: $id) {
+		id
+		subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... UserSummaryFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment UserSummaryFields on User {
+	id
+	name
+	displayName
+	email
+	active
+	guest
+	admin
+}
+`
+
+func issue_subscribers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *issue_subscribersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "issue_subscribers",
+		Query:  issue_subscribers_Operation,
+		Variables: &__issue_subscribersInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &issue_subscribersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

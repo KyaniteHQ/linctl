@@ -64,6 +64,30 @@ type IssueHistoryList struct {
 	EndCursor   *string               `json:"end_cursor,omitempty"`
 }
 
+// IssueBotActor is the optional bot actor attached to an issue.
+type IssueBotActor struct {
+	IssueID string           `json:"issue_id"`
+	Bot     *ActorBotSummary `json:"bot,omitempty"`
+}
+
+// IssueStateSpanSummary is compact workflow-state span metadata for one issue.
+type IssueStateSpanSummary struct {
+	ID        string `json:"id"`
+	StateID   string `json:"state_id"`
+	StateName string `json:"state_name,omitempty"`
+	StateType string `json:"state_type,omitempty"`
+	StartedAt string `json:"started_at"`
+	EndedAt   string `json:"ended_at,omitempty"`
+}
+
+// IssueStateHistoryList is a page of workflow-state spans for one issue.
+type IssueStateHistoryList struct {
+	IssueID     string                  `json:"issue_id"`
+	Spans       []IssueStateSpanSummary `json:"spans"`
+	HasNextPage bool                    `json:"has_next_page"`
+	EndCursor   *string                 `json:"end_cursor,omitempty"`
+}
+
 // IssueDependencyGraph is the compact dependency graph for one issue.
 type IssueDependencyGraph struct {
 	ID          string         `json:"id"`
@@ -511,6 +535,19 @@ func ListIssueAttachments(
 	}, nil
 }
 
+// GetIssueBotActor returns the bot actor that created an issue, when present.
+func GetIssueBotActor(ctx context.Context, graphqlClient graphql.Client, id string) (IssueBotActor, error) {
+	result, err := issue_botActor(ctx, graphqlClient, id)
+	if err != nil {
+		return IssueBotActor{}, fmt.Errorf("get issue bot actor %s: %w", id, err)
+	}
+
+	return IssueBotActor{
+		IssueID: result.Issue.Id,
+		Bot:     issueActorBotSummary(result.Issue.BotActor),
+	}, nil
+}
+
 // ListIssueChildren returns child issues for one issue.
 func ListIssueChildren(
 	ctx context.Context,
@@ -703,6 +740,55 @@ func ListIssueReleases(
 	}, nil
 }
 
+// ListIssueStateHistory returns workflow-state spans for one issue.
+func ListIssueStateHistory(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueStateHistoryList, error) {
+	result, err := issue_stateHistory(ctx, graphqlClient, id, intPtr(limit), nil)
+	if err != nil {
+		return IssueStateHistoryList{}, fmt.Errorf("list issue state history %s: %w", id, err)
+	}
+
+	spans := make([]IssueStateSpanSummary, 0, len(result.Issue.StateHistory.Nodes))
+	for _, node := range result.Issue.StateHistory.Nodes {
+		spans = append(spans, issueStateSpanSummary(node))
+	}
+
+	return IssueStateHistoryList{
+		IssueID:     result.Issue.Id,
+		Spans:       spans,
+		HasNextPage: result.Issue.StateHistory.PageInfo.HasNextPage,
+		EndCursor:   result.Issue.StateHistory.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListIssueSubscribers returns users subscribed to one issue.
+func ListIssueSubscribers(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (UserList, error) {
+	result, err := issue_subscribers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return UserList{}, fmt.Errorf("list issue subscribers %s: %w", id, err)
+	}
+
+	users := make([]UserSummary, 0, len(result.Issue.Subscribers.Nodes))
+	for _, node := range result.Issue.Subscribers.Nodes {
+		users = append(users, userSummary(node.UserSummaryFields))
+	}
+
+	return UserList{
+		Users:       users,
+		HasNextPage: result.Issue.Subscribers.PageInfo.HasNextPage,
+		EndCursor:   result.Issue.Subscribers.PageInfo.EndCursor,
+	}, nil
+}
+
 // GetIssueDetail returns an issue by Linear id or identifier with mutable text fields.
 func GetIssueDetail(ctx context.Context, graphqlClient graphql.Client, id string) (IssueDetail, error) {
 	issueResult, err := issue(ctx, graphqlClient, id)
@@ -891,6 +977,34 @@ func issueHistorySummary(history issue_historyIssueHistoryIssueHistoryConnection
 		CreatedAt:          history.CreatedAt,
 		UpdatedAt:          history.UpdatedAt,
 		ArchivedAt:         stringValue(history.ArchivedAt),
+	}
+}
+
+func issueActorBotSummary(bot *issue_botActorIssueBotActorActorBot) *ActorBotSummary {
+	if bot == nil {
+		return nil
+	}
+
+	return actorBotSummary(&bot.ActorBotSummaryFields)
+}
+
+func issueStateSpanSummary(
+	span issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan,
+) IssueStateSpanSummary {
+	stateName := ""
+	stateType := ""
+	if span.State != nil {
+		stateName = span.State.Name
+		stateType = span.State.Type
+	}
+
+	return IssueStateSpanSummary{
+		ID:        span.Id,
+		StateID:   span.StateId,
+		StateName: stateName,
+		StateType: stateType,
+		StartedAt: span.StartedAt,
+		EndedAt:   stringValue(span.EndedAt),
 	}
 }
 

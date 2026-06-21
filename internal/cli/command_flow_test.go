@@ -97,6 +97,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue get", args: []string{"issue", "get", "LIT-1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue deps", args: []string{"issue", "deps", "LIT-1", "--limit", "2"}, contains: "blocked_by:\nLIT-24 Blocker issue [Todo]", fake: commandFlowFakeClient{expectedIssueDeps: "LIT-1"}},
 		{name: "issue attachments", args: []string{"issue", "attachments", "LIT-1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "issue bot actor", args: []string{"issue", "bot-actor", "LIT-1"}, contains: "issue-id bot bot-actor-id GitHub [github]"},
 		{name: "issue children", args: []string{"issue", "children", "LIT-1", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue documents", args: []string{"issue", "documents", "LIT-1", "--limit", "1"}, contains: "document-id Spec [issue]"},
 		{name: "issue former attachments", args: []string{"issue", "former-attachments", "LIT-1", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
@@ -105,6 +106,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue labels", args: []string{"issue", "labels", "LIT-1", "--limit", "1"}, contains: "label-id Bug #ff0000"},
 		{name: "issue relations", args: []string{"issue", "relations", "LIT-1", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue releases", args: []string{"issue", "releases", "LIT-1", "--limit", "1"}, contains: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3"},
+		{name: "issue state history", args: []string{"issue", "state-history", "LIT-1", "--limit", "1"}, contains: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -"},
+		{name: "issue subscribers", args: []string{"issue", "subscribers", "LIT-1", "--limit", "1"}, contains: "user-id Omer <omer@example.com>"},
 		{name: "issue relation list", args: []string{"issue-relation", "list", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, contains: `gh pr create --title "LIT-1 Detail issue" --body "https://linear.app/kyanite/issue/LIT-1"`},
@@ -2887,6 +2890,8 @@ func commandFlowIssueChildPayload(operation string, fake commandFlowFakeClient) 
 	switch operation {
 	case "issue_attachments":
 		return `{"issue":{"attachments":{"nodes":[` + commandAttachmentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_botActor":
+		return `{"issue":{"id":"issue-id","botActor":` + commandActorBotJSON() + `}}`, true
 	case "issue_children":
 		if fake.emptyIssueChildren {
 			return `{"issue":{"children":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
@@ -2913,6 +2918,14 @@ func commandFlowIssueChildPayload(operation string, fake commandFlowFakeClient) 
 		return `{"issue":{"relations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "issue_releases":
 		return `{"issue":{"releases":{"nodes":[` + commandReleaseJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_stateHistory":
+		return `{"issue":{"id":"issue-id","stateHistory":{"nodes":[` +
+			commandIssueStateSpanJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "issue_subscribers":
+		return `{"issue":{"id":"issue-id","subscribers":{"nodes":[` +
+			commandUserJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
@@ -3301,6 +3314,16 @@ func commandIssueHistoryJSON() string {
 		"actorId":"user-id",
 		"updatedDescription":true,
 		"issue":{"id":"issue-id"}
+	}`
+}
+
+func commandIssueStateSpanJSON() string {
+	return `{
+		"id":"issue-state-span-id",
+		"stateId":"started-state",
+		"startedAt":"2026-06-19T12:00:00Z",
+		"endedAt":null,
+		"state":{"id":"started-state","name":"Started","type":"started"}
 	}`
 }
 

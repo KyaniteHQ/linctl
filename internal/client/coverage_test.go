@@ -189,6 +189,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			StateType:  "completed",
 		}) + `}`,
 		"issue_attachments":       `{"issue":{"attachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_botActor":          `{"issue":{"id":"issue-id","botActor":` + actorBotJSON() + `}}`,
 		"issue_children":          `{"issue":{"children":{"nodes":[` + issueJSON(issueFixture{Identifier: "LIT-31", Title: "child issue", StateID: "todo", State: "Todo", StateType: "unstarted"}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"issue_documents":         `{"issue":{"documents":{"nodes":[{"id":"issue-document-id","title":"Issue spec","slugId":"issue-spec","archivedAt":null,"project":null,"team":null,"issue":{"id":"issue-id","identifier":"LIT-1","title":"Detail issue"},"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"issue_formerAttachments": `{"issue":{"formerAttachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
@@ -197,6 +198,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"issue_labels":            `{"issue":{"labels":{"nodes":[{"id":"label-id","name":"Bug","description":"label body","color":"#ff0000","isGroup":false,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"issue_relations":         `{"issue":{"relations":{"nodes":[` + issueRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"issue_releases":          `{"issue":{"releases":{"nodes":[` + releaseJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_stateHistory":      `{"issue":{"id":"issue-id","stateHistory":{"nodes":[` + issueStateSpanJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"issue_subscribers":       `{"issue":{"id":"issue-id","subscribers":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com","active":true,"guest":false,"admin":false}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"Projects": `{"team":{"projects":{"nodes":[` + projectJSON(projectFixture{
 			ID:     "project-id",
 			Name:   "listed",
@@ -533,6 +536,8 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.NoError(t, err)
 	issueAttachments, err := ListIssueAttachments(context.Background(), graphqlClient, "LIT-1", 2)
 	require.NoError(t, err)
+	issueBotActor, err := GetIssueBotActor(context.Background(), graphqlClient, "LIT-1")
+	require.NoError(t, err)
 	issueChildren, err := ListIssueChildren(context.Background(), graphqlClient, "LIT-1", 2)
 	require.NoError(t, err)
 	issueDocuments, err := ListIssueDocuments(context.Background(), graphqlClient, "LIT-1", 2)
@@ -548,6 +553,10 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	issueScopedRelations, err := ListIssueRelationsForIssue(context.Background(), graphqlClient, "LIT-1", 2)
 	require.NoError(t, err)
 	issueReleases, err := ListIssueReleases(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueStateHistory, err := ListIssueStateHistory(context.Background(), graphqlClient, "LIT-1", 2)
+	require.NoError(t, err)
+	issueSubscribers, err := ListIssueSubscribers(context.Background(), graphqlClient, "LIT-1", 2)
 	require.NoError(t, err)
 	projects, err := ListProjectsByTeam(context.Background(), graphqlClient, "team-id", 2)
 	require.NoError(t, err)
@@ -947,6 +956,9 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.True(t, issueAttachments.HasNextPage)
 	require.Equal(t, &endCursor, issueAttachments.EndCursor)
 	require.Equal(t, "project-attachment-id", issueAttachments.Attachments[0].ID)
+	require.Equal(t, "issue-id", issueBotActor.IssueID)
+	require.Equal(t, "bot-actor-id", issueBotActor.Bot.ID)
+	require.Equal(t, "github", issueBotActor.Bot.Type)
 	require.Equal(t, "LIT-31", issueChildren.Issues[0].Identifier)
 	require.Equal(t, "Issue spec", issueDocuments.Documents[0].Title)
 	require.Equal(t, "issue", issueDocuments.Documents[0].ParentType)
@@ -959,6 +971,13 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "Bug", issueLabels.Labels[0].Name)
 	require.Equal(t, "issue-relation-id", issueScopedRelations.Relations[0].ID)
 	require.Equal(t, "release-id", issueReleases.Releases[0].ID)
+	require.True(t, issueStateHistory.HasNextPage)
+	require.Equal(t, "issue-id", issueStateHistory.IssueID)
+	require.Equal(t, "issue-state-span-id", issueStateHistory.Spans[0].ID)
+	require.Equal(t, "Started", issueStateHistory.Spans[0].StateName)
+	require.Equal(t, "started", issueStateHistory.Spans[0].StateType)
+	require.Equal(t, "Omer", issueSubscribers.Users[0].DisplayName)
+	require.True(t, issueSubscribers.HasNextPage)
 	require.True(t, projects.HasNextPage)
 	require.Equal(t, "listed", projects.Projects[0].Name)
 	require.Equal(t, "detail", project.Name)
@@ -1527,6 +1546,12 @@ func Test_GetRateLimitStatus_returns_operation_errors(t *testing.T) {
 	require.Contains(t, err.Error(), "missing fake response for rateLimitStatus")
 }
 
+func Test_ClientReadHelpers_cover_nil_actor_bot_summaries(t *testing.T) {
+	require.Nil(t, actorBotSummary(nil))
+	require.Nil(t, commentActorBotSummary(nil))
+	require.Nil(t, issueActorBotSummary(nil))
+}
+
 func Test_ClientReadScenarios_rank_next_issues(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
 		"NextIssuesByTeam": `{"issues":{"nodes":[` +
@@ -1901,6 +1926,10 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list issue attachments LIT-1")
 
+		_, err = GetIssueBotActor(context.Background(), graphqlClient, "LIT-1")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "get issue bot actor LIT-1")
+
 		_, err = ListIssueChildren(context.Background(), graphqlClient, "LIT-1", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list issue children LIT-1")
@@ -1932,6 +1961,14 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListIssueReleases(context.Background(), graphqlClient, "LIT-1", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list issue releases LIT-1")
+
+		_, err = ListIssueStateHistory(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue state history LIT-1")
+
+		_, err = ListIssueSubscribers(context.Background(), graphqlClient, "LIT-1", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list issue subscribers LIT-1")
 
 		_, err = ListProjectsByTeam(context.Background(), graphqlClient, "team-id", 1)
 		require.Error(t, err)
@@ -3809,6 +3846,27 @@ func issueHistoryJSON() string {
 		"actorId":"user-id",
 		"updatedDescription":true,
 		"issue":{"id":"issue-id"}
+	}`
+}
+
+func issueStateSpanJSON() string {
+	return `{
+		"id":"issue-state-span-id",
+		"stateId":"started-state",
+		"startedAt":"2026-06-19T12:00:00Z",
+		"endedAt":null,
+		"state":{"id":"started-state","name":"Started","type":"started"}
+	}`
+}
+
+func actorBotJSON() string {
+	return `{
+		"id":"bot-actor-id",
+		"type":"github",
+		"subType":"issue",
+		"name":"GitHub",
+		"userDisplayName":"octocat",
+		"avatarUrl":"https://example.com/github.png"
 	}`
 }
 
