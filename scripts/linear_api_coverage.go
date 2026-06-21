@@ -234,6 +234,10 @@ func writeDomainCommandTable(output *bytes.Buffer, commands []domainCommand, com
 			status = "blocked_needs_design"
 			evidence = "write command needs explicit target and safety semantics"
 		}
+		if strings.HasPrefix(command.Scope, "Blocked:") {
+			status = "blocked_needs_design"
+			evidence = "blocked in `docs/domain-map.md` pending explicit safety semantics"
+		}
 		if strings.Contains(command.Command, "delete") {
 			status = "blocked_needs_design"
 			evidence = "destructive command needs explicit safety semantics"
@@ -382,10 +386,20 @@ func accountOperations(sdkOperations []sdkMethod, localOperationNames map[string
 }
 
 func classifyOperation(operation sdkMethod, localOperationNames map[string]bool) (string, string) {
-	if localOperationNames[operation.Name] || localOperationNames[strings.ToLower(operation.Name)] {
+	if localOperationImplemented(operation.Name, localOperationNames) {
 		return "implemented", "backed by a local GraphQL operation in internal/client/operations"
 	}
 	return classifyLoose(operation.Name, operation.Kind)
+}
+
+func localOperationImplemented(name string, localOperationNames map[string]bool) bool {
+	if localOperationNames[name] || localOperationNames[strings.ToLower(name)] {
+		return true
+	}
+	if name == "user_drafts" && localOperationNames["viewer_drafts"] {
+		return true
+	}
+	return false
 }
 
 func statusCountSet(operations []accountedOperation) map[string]int {
@@ -623,6 +637,7 @@ func commandImplemented(command string) bool {
 	implemented := map[string]bool{
 		"whoami":                                       true,
 		"target":                                       true,
+		"doctor":                                       true,
 		"application info":                             true,
 		"agent-activity list":                          true,
 		"agent-activity get":                           true,
@@ -1031,7 +1046,7 @@ func classifyName(
 	commandNames map[string]bool,
 	implementedRoots map[string]bool,
 ) (string, string) {
-	if sdkImplemented(name, implementedRoots) || commandNames[strings.ReplaceAll(kebabCase(name), "-", " ")] {
+	if sdkImplemented(name, implementedRoots) || commandNames[commandLookupName(name)] {
 		return "implemented", "local operation or command exists"
 	}
 	return classifyLoose(name, kind)
@@ -1090,88 +1105,270 @@ func classifyLoose(name string, kind string) (string, string) {
 	}
 }
 
+type riskClassification struct {
+	status    string
+	rationale string
+}
+
+var explicitRiskClassifications = map[string]riskClassification{
+	"auditentries": {
+		status: "blocked_needs_design",
+		rationale: "audit logs can expose actor, IP, country, and request metadata; " +
+			"needs explicit admin/security output model",
+	},
+	"emailintakeaddress": {
+		status:    "intentionally_excluded",
+		rationale: "email intake administration sits outside the ordinary agent CLI read surface",
+	},
+	"emailintakeaddress_sesdomainidentity": {
+		status:    "intentionally_excluded",
+		rationale: "email domain identity administration sits outside the ordinary agent CLI read surface",
+	},
+	"attachmentlinkgithubissue": {
+		status: "blocked_needs_design",
+		rationale: "attachment-to-GitHub linking mutates third-party integration state; " +
+			"needs explicit integration guard semantics",
+	},
+	"attachmentlinkjiraissue": {
+		status: "blocked_needs_design",
+		rationale: "attachment-to-Jira linking mutates third-party integration state; " +
+			"needs explicit integration guard semantics",
+	},
+	"availableusers": {
+		status: "intentionally_excluded",
+		rationale: "available-user picker enumeration is a specialized product resolver; " +
+			"`user list` is the supported user read surface",
+	},
+	"cycleshiftall": {
+		status: "blocked_needs_design",
+		rationale: "bulk Cycle date shifting is a state-changing workspace operation that " +
+			"needs target-pinned guard semantics",
+	},
+	"cyclestartupcomingcycletoday": {
+		status: "blocked_needs_design",
+		rationale: "starting an upcoming Cycle changes team planning state and needs " +
+			"target-pinned guard semantics",
+	},
+	"issueaddlabel": {
+		status:    "blocked_needs_design",
+		rationale: "issue label mutation needs issue target pinning and target-mismatch tests",
+	},
+	"issueexternalsyncdisable": {
+		status: "blocked_needs_design",
+		rationale: "issue external-sync disable changes integration state and needs explicit " +
+			"integration guard semantics",
+	},
+	"issueimportcheckcsv": {
+		status: "blocked_needs_design",
+		rationale: "CSV import validation can expose imported row payloads and needs an " +
+			"explicit redaction/output model",
+	},
+	"issueimportchecksync": {
+		status: "blocked_needs_design",
+		rationale: "sync import validation can expose external tracker payloads and needs an " +
+			"explicit redaction/output model",
+	},
+	"issueimportcreateasana": {
+		status: "blocked_needs_design",
+		rationale: "Asana issue import creation starts external import workflow state and " +
+			"needs explicit integration guard semantics",
+	},
+	"issueimportcreatecsvjira": {
+		status: "blocked_needs_design",
+		rationale: "CSV/Jira issue import creation starts external import workflow state and " +
+			"needs explicit integration guard semantics",
+	},
+	"issueimportcreateclubhouse": {
+		status: "blocked_needs_design",
+		rationale: "Clubhouse issue import creation starts external import workflow state and " +
+			"needs explicit integration guard semantics",
+	},
+	"issueimportcreategithub": {
+		status: "blocked_needs_design",
+		rationale: "GitHub issue import creation starts external import workflow state and " +
+			"needs explicit integration guard semantics",
+	},
+	"issueimportcreatejira": {
+		status: "blocked_needs_design",
+		rationale: "Jira issue import creation starts external import workflow state and " +
+			"needs explicit integration guard semantics",
+	},
+	"issueimportjqlcheck": {
+		status: "blocked_needs_design",
+		rationale: "JQL import validation can expose external tracker payloads and needs an " +
+			"explicit redaction/output model",
+	},
+	"issueimportprocess": {
+		status: "blocked_needs_design",
+		rationale: "issue import processing advances external import workflow state and needs " +
+			"explicit integration guard semantics",
+	},
+	"issuelabelrestore": {
+		status:    "blocked_needs_design",
+		rationale: "issue label lifecycle restore needs explicit workspace/admin safety semantics",
+	},
+	"issuelabelretire": {
+		status:    "blocked_needs_design",
+		rationale: "issue label lifecycle retire needs explicit workspace/admin safety semantics",
+	},
+	"issuereminder": {
+		status: "blocked_needs_design",
+		rationale: "issue reminder mutation changes notification state and needs target-pinned " +
+			"guard semantics",
+	},
+	"issuerepositorysuggestions": {
+		status: "intentionally_excluded",
+		rationale: "repository suggestion reads expose VCS integration metadata outside the " +
+			"default Linear work CLI surface",
+	},
+	"issuedescriptionupdatefromfront": {
+		status: "blocked_needs_design",
+		rationale: "Front-origin description updates mutate issue content through integration state; " +
+			"needs explicit integration guard semantics",
+	},
+	"issueimportcreatelinearv2": {
+		status: "blocked_needs_design",
+		rationale: "Linear v2 issue import creation starts import workflow state and needs explicit " +
+			"import guard semantics",
+	},
+	"issueshare": {
+		status:    "blocked_needs_design",
+		rationale: "issue sharing changes access state and needs target-pinned guard semantics",
+	},
+	"issuesubscribe": {
+		status: "blocked_needs_design",
+		rationale: "issue subscription changes notification state and needs target-pinned " +
+			"guard semantics",
+	},
+	"issueunshare": {
+		status:    "blocked_needs_design",
+		rationale: "issue unsharing changes access state and needs target-pinned guard semantics",
+	},
+	"issueunsubscribe": {
+		status: "blocked_needs_design",
+		rationale: "issue unsubscribe changes notification state and needs target-pinned " +
+			"guard semantics",
+	},
+	"latestreleasebyaccesskey": {
+		status:    "intentionally_excluded",
+		rationale: accessKeyReleaseRationale(),
+	},
+	"latestreleasebyaccesskey_history": {
+		status:    "intentionally_excluded",
+		rationale: accessKeyReleaseRationale(),
+	},
+	"latestreleasebyaccesskey_links": {
+		status:    "intentionally_excluded",
+		rationale: accessKeyReleaseRationale(),
+	},
+	"initiativelabeladd": {
+		status:    "blocked_needs_design",
+		rationale: "initiative label mutation needs initiative target pinning and target-mismatch tests",
+	},
+	"initiativeaddlabel": {
+		status:    "blocked_needs_design",
+		rationale: "initiative label mutation needs initiative target pinning and target-mismatch tests",
+	},
+	"microsoftteamschannels": {
+		status: "intentionally_excluded",
+		rationale: "Microsoft Teams channel enumeration exposes chat integration metadata outside the " +
+			"default Linear work CLI surface",
+	},
+	"organizationinvite": {
+		status:    "intentionally_excluded",
+		rationale: organizationInviteRationale(),
+	},
+	"organizationinvites": {
+		status:    "intentionally_excluded",
+		rationale: organizationInviteRationale(),
+	},
+	"organization_subscription": {
+		status:    "intentionally_excluded",
+		rationale: "organization subscription and billing state is outside the ordinary agent CLI surface",
+	},
+	"pushsubscriptiontest": {
+		status: "intentionally_excluded",
+		rationale: "push subscription diagnostics are notification-device integration plumbing " +
+			"outside the CLI surface",
+	},
+	"projectlabelrestore": {
+		status:    "blocked_needs_design",
+		rationale: "project label lifecycle restore needs explicit workspace/admin safety semantics",
+	},
+	"projectlabelretire": {
+		status:    "blocked_needs_design",
+		rationale: "project label lifecycle retire needs explicit workspace/admin safety semantics",
+	},
+	"projectaddlabel": {
+		status:    "blocked_needs_design",
+		rationale: "project label mutation needs project target pinning and target-mismatch tests",
+	},
+	"projectexternalsyncdisable": {
+		status: "blocked_needs_design",
+		rationale: "project external-sync disable changes integration state and needs explicit " +
+			"integration guard semantics",
+	},
+	"projectcreateslackchannel": {
+		status: "blocked_needs_design",
+		rationale: "project Slack channel creation mutates chat integration state and needs explicit " +
+			"integration guard semantics",
+	},
+	"projectreassignstatus": {
+		status: "blocked_needs_design",
+		rationale: "project status reassignment mutates project workflow state and needs target-pinned " +
+			"guard semantics",
+	},
+	"recentreleasesbyaccesskey": {
+		status:    "intentionally_excluded",
+		rationale: accessKeyReleaseRationale(),
+	},
+	"releasepipelinebyaccesskey": {
+		status:    "intentionally_excluded",
+		rationale: accessKeyReleaseRationale(),
+	},
+	"releasepipelinebyaccesskey_releases": {
+		status:    "intentionally_excluded",
+		rationale: accessKeyReleaseRationale(),
+	},
+	"releasepipelinebyaccesskey_stages": {
+		status:    "intentionally_excluded",
+		rationale: accessKeyReleaseRationale(),
+	},
+	"ssourlfromemail": {
+		status:    "intentionally_excluded",
+		rationale: "SSO discovery from email belongs to auth flow tooling, not the Linear work CLI",
+	},
+	"userchangerole": {
+		status:    "intentionally_excluded",
+		rationale: "user role changes are workspace administration outside the ordinary agent CLI surface",
+	},
+	"userdiscordconnect": {
+		status:    "intentionally_excluded",
+		rationale: "Discord account connection belongs to user auth/integration setup, not work CLI reads",
+	},
+	"userexternaluserdisconnect": {
+		status: "intentionally_excluded",
+		rationale: "external-user disconnection is identity integration administration outside the " +
+			"ordinary agent CLI surface",
+	},
+	"usersettingsflagsreset": {
+		status: "intentionally_excluded",
+		rationale: "user settings flag reset is internal preference administration outside the " +
+			"ordinary agent CLI surface",
+	},
+	"userunlinkfromidentityprovider": {
+		status:    "intentionally_excluded",
+		rationale: "identity-provider unlinking is auth administration outside the ordinary agent CLI surface",
+	},
+	"verifygithubenterpriseserverinstallation": {
+		status: "intentionally_excluded",
+		rationale: "GitHub Enterprise installation verification is integration administration " +
+			"outside the CLI surface",
+	},
+}
+
 func explicitRiskClassification(lowerName string) (string, string, bool) {
-	classifications := map[string]struct {
-		status    string
-		rationale string
-	}{
-		"auditentries": {
-			status: "blocked_needs_design",
-			rationale: "audit logs can expose actor, IP, country, and request metadata; " +
-				"needs explicit admin/security output model",
-		},
-		"emailintakeaddress": {
-			status:    "intentionally_excluded",
-			rationale: "email intake administration sits outside the ordinary agent CLI read surface",
-		},
-		"emailintakeaddress_sesdomainidentity": {
-			status:    "intentionally_excluded",
-			rationale: "email domain identity administration sits outside the ordinary agent CLI read surface",
-		},
-		"latestreleasebyaccesskey": {
-			status:    "intentionally_excluded",
-			rationale: accessKeyReleaseRationale(),
-		},
-		"latestreleasebyaccesskey_history": {
-			status:    "intentionally_excluded",
-			rationale: accessKeyReleaseRationale(),
-		},
-		"latestreleasebyaccesskey_links": {
-			status:    "intentionally_excluded",
-			rationale: accessKeyReleaseRationale(),
-		},
-		"organizationinvite": {
-			status:    "intentionally_excluded",
-			rationale: organizationInviteRationale(),
-		},
-		"organizationinvites": {
-			status:    "intentionally_excluded",
-			rationale: organizationInviteRationale(),
-		},
-		"organization_subscription": {
-			status:    "intentionally_excluded",
-			rationale: "organization subscription and billing state is outside the ordinary agent CLI surface",
-		},
-		"pushsubscriptiontest": {
-			status: "intentionally_excluded",
-			rationale: "push subscription diagnostics are notification-device integration plumbing " +
-				"outside the CLI surface",
-		},
-		"projectlabelrestore": {
-			status:    "blocked_needs_design",
-			rationale: "project label lifecycle restore needs explicit workspace/admin safety semantics",
-		},
-		"projectlabelretire": {
-			status:    "blocked_needs_design",
-			rationale: "project label lifecycle retire needs explicit workspace/admin safety semantics",
-		},
-		"recentreleasesbyaccesskey": {
-			status:    "intentionally_excluded",
-			rationale: accessKeyReleaseRationale(),
-		},
-		"releasepipelinebyaccesskey": {
-			status:    "intentionally_excluded",
-			rationale: accessKeyReleaseRationale(),
-		},
-		"releasepipelinebyaccesskey_releases": {
-			status:    "intentionally_excluded",
-			rationale: accessKeyReleaseRationale(),
-		},
-		"releasepipelinebyaccesskey_stages": {
-			status:    "intentionally_excluded",
-			rationale: accessKeyReleaseRationale(),
-		},
-		"ssourlfromemail": {
-			status:    "intentionally_excluded",
-			rationale: "SSO discovery from email belongs to auth flow tooling, not the Linear work CLI",
-		},
-		"verifygithubenterpriseserverinstallation": {
-			status: "intentionally_excluded",
-			rationale: "GitHub Enterprise installation verification is integration administration " +
-				"outside the CLI surface",
-		},
-	}
-	classification, ok := classifications[lowerName]
+	classification, ok := explicitRiskClassifications[lowerName]
 	return classification.status, classification.rationale, ok
 }
 
@@ -1269,6 +1466,10 @@ func countImplementedDomain(commands []domainCommand) int {
 func kebabCase(value string) string {
 	pattern := regexp.MustCompile(`([a-z0-9])([A-Z])`)
 	return strings.ToLower(pattern.ReplaceAllString(value, `${1}-${2}`))
+}
+
+func commandLookupName(value string) string {
+	return strings.NewReplacer("-", " ", "_", " ").Replace(kebabCase(value))
 }
 
 func lowerFirst(value string) string {

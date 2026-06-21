@@ -20,7 +20,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream Query root fields | 158 | 111 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
 | Local generated Go operations | 318 | 318 | 318 |
-| Domain-map commands | 409 | 277 | 409 |
+| Domain-map commands | 409 | 278 | 409 |
 
 ## Upstream SDK Root Methods
 
@@ -58,11 +58,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentIssue` | method | implemented | local operation or command exists |
 | `attachmentLinkDiscord` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkFront` | method | safe_candidate | read operation may fit future CLI coverage |
-| `attachmentLinkGitHubIssue` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `attachmentLinkGitHubIssue` | method | blocked_needs_design | attachment-to-GitHub linking mutates third-party integration state; needs explicit integration guard semantics |
 | `attachmentLinkGitHubPR` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkGitLabMR` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkIntercom` | method | safe_candidate | read operation may fit future CLI coverage |
-| `attachmentLinkJiraIssue` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `attachmentLinkJiraIssue` | method | blocked_needs_design | attachment-to-Jira linking mutates third-party integration state; needs explicit integration guard semantics |
 | `attachmentLinkSalesforce` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkSlack` | method | safe_candidate | read operation may fit future CLI coverage |
 | `attachmentLinkURL` | method | safe_candidate | read operation may fit future CLI coverage |
@@ -73,7 +73,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `auditEntries` | method | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
 | `auditEntryTypes` | getter | implemented | local operation or command exists |
 | `authenticationSessions` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `availableUsers` | getter | accepted_gap | repo-planned or likely useful CLI domain |
+| `availableUsers` | getter | intentionally_excluded | available-user picker enumeration is a specialized product resolver; `user list` is the supported user read surface |
 | `comment` | method | implemented | local operation or command exists |
 | `commentResolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
 | `commentUnresolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
@@ -152,8 +152,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customerUpsert` | method | safe_candidate | read operation may fit future CLI coverage |
 | `customers` | method | implemented | local operation or command exists |
 | `cycle` | method | implemented | local operation or command exists |
-| `cycleShiftAll` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `cycleStartUpcomingCycleToday` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `cycleShiftAll` | method | blocked_needs_design | bulk Cycle date shifting is a state-changing workspace operation that needs target-pinned guard semantics |
+| `cycleStartUpcomingCycleToday` | method | blocked_needs_design | starting an upcoming Cycle changes team planning state and needs target-pinned guard semantics |
 | `cycles` | method | implemented | local operation or command exists |
 | `deleteAgentSkill` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteAttachment` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -275,38 +275,38 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `integrations` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `issue` | method | implemented | local operation or command exists |
-| `issueAddLabel` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueExternalSyncDisable` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueAddLabel` | method | blocked_needs_design | issue label mutation needs issue target pinning and target-mismatch tests |
+| `issueExternalSyncDisable` | method | blocked_needs_design | issue external-sync disable changes integration state and needs explicit integration guard semantics |
 | `issueFigmaFileKeySearch` | method | implemented | local operation or command exists |
 | `issueFilterSuggestion` | method | implemented | local operation or command exists |
-| `issueImportCheckCSV` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCheckSync` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateAsana` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateCSVJira` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateClubhouse` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateGithub` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateJira` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportJqlCheck` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportProcess` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueImportCheckCSV` | method | blocked_needs_design | CSV import validation can expose imported row payloads and needs an explicit redaction/output model |
+| `issueImportCheckSync` | method | blocked_needs_design | sync import validation can expose external tracker payloads and needs an explicit redaction/output model |
+| `issueImportCreateAsana` | method | blocked_needs_design | Asana issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateCSVJira` | method | blocked_needs_design | CSV/Jira issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateClubhouse` | method | blocked_needs_design | Clubhouse issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateGithub` | method | blocked_needs_design | GitHub issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateJira` | method | blocked_needs_design | Jira issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportJqlCheck` | method | blocked_needs_design | JQL import validation can expose external tracker payloads and needs an explicit redaction/output model |
+| `issueImportProcess` | method | blocked_needs_design | issue import processing advances external import workflow state and needs explicit integration guard semantics |
 | `issueLabel` | method | implemented | local operation or command exists |
-| `issueLabelRestore` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueLabelRetire` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueLabelRestore` | method | blocked_needs_design | issue label lifecycle restore needs explicit workspace/admin safety semantics |
+| `issueLabelRetire` | method | blocked_needs_design | issue label lifecycle retire needs explicit workspace/admin safety semantics |
 | `issueLabels` | method | implemented | local operation or command exists |
 | `issuePriorityValues` | getter | implemented | local operation or command exists |
 | `issueRelation` | method | implemented | local operation or command exists |
 | `issueRelations` | method | implemented | local operation or command exists |
-| `issueReminder` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueReminder` | method | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueRepositorySuggestions` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueRepositorySuggestions` | method | intentionally_excluded | repository suggestion reads expose VCS integration metadata outside the default Linear work CLI surface |
 | `issueSearch` | method | implemented | local operation or command exists |
-| `issueShare` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueSubscribe` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueShare` | method | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
+| `issueSubscribe` | method | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
 | `issueTitleSuggestionFromCustomerRequest` | method | implemented | local operation or command exists |
 | `issueToRelease` | method | implemented | local operation or command exists |
 | `issueToReleaseDeleteByIssueAndRelease` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueToReleases` | method | implemented | local operation or command exists |
-| `issueUnshare` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueUnsubscribe` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueUnshare` | method | blocked_needs_design | issue unsharing changes access state and needs target-pinned guard semantics |
+| `issueUnsubscribe` | method | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
 | `issueVcsBranchSearch` | method | implemented | local operation or command exists |
 | `issues` | method | implemented | local operation or command exists |
 | `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
@@ -331,8 +331,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organizationStartTrial` | getter | safe_candidate | read operation may fit future CLI coverage |
 | `organizationStartTrialForPlan` | method | safe_candidate | read operation may fit future CLI coverage |
 | `project` | method | implemented | local operation or command exists |
-| `projectAddLabel` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `projectExternalSyncDisable` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectAddLabel` | method | blocked_needs_design | project label mutation needs project target pinning and target-mismatch tests |
+| `projectExternalSyncDisable` | method | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
 | `projectFilterSuggestion` | method | implemented | local operation or command exists |
 | `projectLabel` | method | implemented | local operation or command exists |
 | `projectLabelRestore` | method | blocked_needs_design | project label lifecycle restore needs explicit workspace/admin safety semantics |
@@ -468,15 +468,15 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `updateWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `updateWorkflowState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `user` | method | implemented | local operation or command exists |
-| `userChangeRole` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `userDiscordConnect` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `userExternalUserDisconnect` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `userChangeRole` | method | intentionally_excluded | user role changes are workspace administration outside the ordinary agent CLI surface |
+| `userDiscordConnect` | method | intentionally_excluded | Discord account connection belongs to user auth/integration setup, not work CLI reads |
+| `userExternalUserDisconnect` | method | intentionally_excluded | external-user disconnection is identity integration administration outside the ordinary agent CLI surface |
 | `userRevokeAllSessions` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userRevokeSession` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `userSettings` | getter | implemented | local operation or command exists |
-| `userSettingsFlagsReset` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `userUnlinkFromIdentityProvider` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `userSettingsFlagsReset` | method | intentionally_excluded | user settings flag reset is internal preference administration outside the ordinary agent CLI surface |
+| `userUnlinkFromIdentityProvider` | method | intentionally_excluded | identity-provider unlinking is auth administration outside the ordinary agent CLI surface |
 | `users` | method | implemented | local operation or command exists |
 | `verifyGitHubEnterpriseServerInstallation` | method | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
 | `viewer` | getter | implemented | local operation or command exists |
@@ -509,7 +509,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `auditEntries` | `AuditEntryConnection!` | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
 | `auditEntryTypes` | `[AuditEntryType!]!` | implemented | root field used by local GraphQL operation |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `availableUsers` | `AuthResolverResponse!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `availableUsers` | `AuthResolverResponse!` | intentionally_excluded | available-user picker enumeration is a specialized product resolver; `user list` is the supported user read surface |
 | `comment` | `Comment!` | implemented | root field used by local GraphQL operation |
 | `comments` | `CommentConnection!` | implemented | root field used by local GraphQL operation |
 | `customView` | `CustomView!` | implemented | root field used by local GraphQL operation |
@@ -558,15 +558,15 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issue` | `Issue!` | implemented | root field used by local GraphQL operation |
 | `issueFigmaFileKeySearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `issueFilterSuggestion` | `IssueFilterSuggestionPayload!` | implemented | root field used by local GraphQL operation |
-| `issueImportCheckCSV` | `IssueImportCheckPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCheckSync` | `IssueImportSyncCheckPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportJqlCheck` | `IssueImportJqlCheckPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueImportCheckCSV` | `IssueImportCheckPayload!` | blocked_needs_design | CSV import validation can expose imported row payloads and needs an explicit redaction/output model |
+| `issueImportCheckSync` | `IssueImportSyncCheckPayload!` | blocked_needs_design | sync import validation can expose external tracker payloads and needs an explicit redaction/output model |
+| `issueImportJqlCheck` | `IssueImportJqlCheckPayload!` | blocked_needs_design | JQL import validation can expose external tracker payloads and needs an explicit redaction/output model |
 | `issueLabel` | `IssueLabel!` | implemented | root field used by local GraphQL operation |
 | `issueLabels` | `IssueLabelConnection!` | implemented | root field used by local GraphQL operation |
 | `issuePriorityValues` | `[IssuePriorityValue!]!` | implemented | root field used by local GraphQL operation |
 | `issueRelation` | `IssueRelation!` | implemented | root field used by local GraphQL operation |
 | `issueRelations` | `IssueRelationConnection!` | implemented | root field used by local GraphQL operation |
-| `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | intentionally_excluded | repository suggestion reads expose VCS integration metadata outside the default Linear work CLI surface |
 | `issueSearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | implemented | root field used by local GraphQL operation |
 | `issueToRelease` | `IssueToRelease!` | implemented | root field used by local GraphQL operation |
@@ -574,7 +574,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueVcsBranchSearch` | `Issue` | implemented | root field used by local GraphQL operation |
 | `issues` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
 | `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
-| `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | intentionally_excluded | Microsoft Teams channel enumeration exposes chat integration metadata outside the default Linear work CLI surface |
 | `notification` | `Notification!` | implemented | root field used by local GraphQL operation |
 | `notificationSubscription` | `NotificationSubscription!` | implemented | root field used by local GraphQL operation |
 | `notificationSubscriptions` | `NotificationSubscriptionConnection!` | implemented | root field used by local GraphQL operation |
@@ -669,11 +669,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `attachmentLinkDiscord` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkFront` | `FrontAttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkGitHubIssue` | `AttachmentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `attachmentLinkGitHubIssue` | `AttachmentPayload!` | blocked_needs_design | attachment-to-GitHub linking mutates third-party integration state; needs explicit integration guard semantics |
 | `attachmentLinkGitHubPR` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkGitLabMR` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkIntercom` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `attachmentLinkJiraIssue` | `AttachmentPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `attachmentLinkJiraIssue` | `AttachmentPayload!` | blocked_needs_design | attachment-to-Jira linking mutates third-party integration state; needs explicit integration guard semantics |
 | `attachmentLinkSalesforce` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkSlack` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkURL` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -714,8 +714,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customerUpsert` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `cycleArchive` | `CycleArchivePayload!` | implemented | root field used by local GraphQL operation |
 | `cycleCreate` | `CyclePayload!` | implemented | root field used by local GraphQL operation |
-| `cycleShiftAll` | `CyclePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `cycleStartUpcomingCycleToday` | `CyclePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `cycleShiftAll` | `CyclePayload!` | blocked_needs_design | bulk Cycle date shifting is a state-changing workspace operation that needs target-pinned guard semantics |
+| `cycleStartUpcomingCycleToday` | `CyclePayload!` | blocked_needs_design | starting an upcoming Cycle changes team planning state and needs target-pinned guard semantics |
 | `cycleUpdate` | `CyclePayload!` | implemented | root field used by local GraphQL operation |
 | `documentCreate` | `DocumentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `documentDelete` | `DocumentArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -748,7 +748,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `googleUserAccountAuth` | `AuthResolverResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `imageUploadFromUrl` | `ImageUploadFromUrlPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `importFileUpload` | `UploadPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `initiativeAddLabel` | `InitiativePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeAddLabel` | `InitiativePayload!` | blocked_needs_design | initiative label mutation needs initiative target pinning and target-mismatch tests |
 | `initiativeArchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeCreate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -826,41 +826,41 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `integrationZendesk` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettingsCreate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettingsUpdate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `issueAddLabel` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueAddLabel` | `IssuePayload!` | blocked_needs_design | issue label mutation needs issue target pinning and target-mismatch tests |
 | `issueArchive` | `IssueArchivePayload!` | implemented | root field used by local GraphQL operation |
 | `issueBatchCreate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueBatchUpdate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueCreate` | `IssuePayload!` | implemented | root field used by local GraphQL operation |
 | `issueDelete` | `IssueArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueDescriptionUpdateFromFront` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueExternalSyncDisable` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateAsana` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateCSVJira` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateClubhouse` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateGithub` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateJira` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueImportCreateLinearV2` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueDescriptionUpdateFromFront` | `IssuePayload!` | blocked_needs_design | Front-origin description updates mutate issue content through integration state; needs explicit integration guard semantics |
+| `issueExternalSyncDisable` | `IssuePayload!` | blocked_needs_design | issue external-sync disable changes integration state and needs explicit integration guard semantics |
+| `issueImportCreateAsana` | `IssueImportPayload!` | blocked_needs_design | Asana issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateCSVJira` | `IssueImportPayload!` | blocked_needs_design | CSV/Jira issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateClubhouse` | `IssueImportPayload!` | blocked_needs_design | Clubhouse issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateGithub` | `IssueImportPayload!` | blocked_needs_design | GitHub issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateJira` | `IssueImportPayload!` | blocked_needs_design | Jira issue import creation starts external import workflow state and needs explicit integration guard semantics |
+| `issueImportCreateLinearV2` | `IssueImportPayload!` | blocked_needs_design | Linear v2 issue import creation starts import workflow state and needs explicit import guard semantics |
 | `issueImportDelete` | `IssueImportDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueImportProcess` | `IssueImportPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueImportProcess` | `IssueImportPayload!` | blocked_needs_design | issue import processing advances external import workflow state and needs explicit integration guard semantics |
 | `issueImportUpdate` | `IssueImportPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueLabelCreate` | `IssueLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueLabelRestore` | `IssueLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueLabelRetire` | `IssueLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueLabelRestore` | `IssueLabelPayload!` | blocked_needs_design | issue label lifecycle restore needs explicit workspace/admin safety semantics |
+| `issueLabelRetire` | `IssueLabelPayload!` | blocked_needs_design | issue label lifecycle retire needs explicit workspace/admin safety semantics |
 | `issueLabelUpdate` | `IssueLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueRelationCreate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueRelationUpdate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `issueReminder` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueReminder` | `IssuePayload!` | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | `IssuePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueShare` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueSubscribe` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueShare` | `IssuePayload!` | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
+| `issueSubscribe` | `IssuePayload!` | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
 | `issueToReleaseCreate` | `IssueToReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueToReleaseDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueToReleaseDeleteByIssueAndRelease` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueUnarchive` | `IssueArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `issueUnshare` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `issueUnsubscribe` | `IssuePayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `issueUnshare` | `IssuePayload!` | blocked_needs_design | issue unsharing changes access state and needs target-pinned guard semantics |
+| `issueUnsubscribe` | `IssuePayload!` | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
 | `issueUpdate` | `IssuePayload!` | implemented | root field used by local GraphQL operation |
 | `jiraIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `joinOrganizationFromOnboarding` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | mutation needs product and safety design |
@@ -902,12 +902,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | mutation needs product and safety design |
-| `projectAddLabel` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectAddLabel` | `ProjectPayload!` | blocked_needs_design | project label mutation needs project target pinning and target-mismatch tests |
 | `projectArchive` | `ProjectArchivePayload!` | implemented | root field used by local GraphQL operation |
 | `projectCreate` | `ProjectPayload!` | implemented | root field used by local GraphQL operation |
-| `projectCreateSlackChannel` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectCreateSlackChannel` | `ProjectPayload!` | blocked_needs_design | project Slack channel creation mutates chat integration state and needs explicit integration guard semantics |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectExternalSyncDisable` | `ProjectPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectExternalSyncDisable` | `ProjectPayload!` | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
 | `projectLabelCreate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectLabelRestore` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle restore needs explicit workspace/admin safety semantics |
@@ -917,7 +917,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectMilestoneDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectMilestoneMove` | `ProjectMilestoneMovePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestoneUpdate` | `ProjectMilestonePayload!` | implemented | root field used by local GraphQL operation |
-| `projectReassignStatus` | `SuccessPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `projectReassignStatus` | `SuccessPayload!` | blocked_needs_design | project status reassignment mutates project workflow state and needs target-pinned guard semantics |
 | `projectRelationCreate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectRelationUpdate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -994,16 +994,16 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `triageResponsibilityDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `triageResponsibilityUpdate` | `TriageResponsibilityPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateIntegrationSlackScopes` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `userChangeRole` | `UserAdminPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `userDiscordConnect` | `UserPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `userExternalUserDisconnect` | `UserPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `userChangeRole` | `UserAdminPayload!` | intentionally_excluded | user role changes are workspace administration outside the ordinary agent CLI surface |
+| `userDiscordConnect` | `UserPayload!` | intentionally_excluded | Discord account connection belongs to user auth/integration setup, not work CLI reads |
+| `userExternalUserDisconnect` | `UserPayload!` | intentionally_excluded | external-user disconnection is identity integration administration outside the ordinary agent CLI surface |
 | `userFlagUpdate` | `UserSettingsFlagPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `userRevokeAllSessions` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userRevokeSession` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `userSettingsFlagsReset` | `UserSettingsFlagsResetPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `userSettingsFlagsReset` | `UserSettingsFlagsResetPayload!` | intentionally_excluded | user settings flag reset is internal preference administration outside the ordinary agent CLI surface |
 | `userSettingsUpdate` | `UserSettingsPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `userSuspend` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `userUnlinkFromIdentityProvider` | `UserAdminPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `userUnlinkFromIdentityProvider` | `UserAdminPayload!` | intentionally_excluded | identity-provider unlinking is auth administration outside the ordinary agent CLI surface |
 | `userUnsuspend` | `UserAdminPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userUpdate` | `UserPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `viewPreferencesCreate` | `ViewPreferencesPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1332,7 +1332,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | --- | --- | --- | --- | --- | --- |
 | Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help` / public CLI tests |
 | Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help` / public CLI tests |
-| Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | accepted_gap | planned in `docs/domain-map.md` |
+| Core target | `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | implemented | `linctl --help` / public CLI tests |
 | Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | implemented | `linctl --help` / public CLI tests |
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. | implemented | `linctl --help` / public CLI tests |
 | Core target | `organization labels` | `Organization.labels` via `Query.organization` | Read-only workspace-level issue labels. | implemented | `linctl --help` / public CLI tests |
@@ -1343,32 +1343,32 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |
 | AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | implemented | `linctl --help` / public CLI tests |
 | AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | implemented | `linctl --help` / public CLI tests |
-| AgentActivity | `agent-activity create` | `Mutation.agentActivityCreate` | Blocked: create writes into an agent session and needs explicit session/comment guard semantics | accepted_gap | planned in `docs/domain-map.md` |
-| AgentActivity | `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation | accepted_gap | planned in `docs/domain-map.md` |
-| AgentActivity | `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics | accepted_gap | planned in `docs/domain-map.md` |
+| AgentActivity | `agent-activity create` | `Mutation.agentActivityCreate` | Blocked: create writes into an agent session and needs explicit session/comment guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| AgentActivity | `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| AgentActivity | `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | implemented | `linctl --help` / public CLI tests |
 | AgentSkill | `agent-skill get` | `Query.agentSkill` | Read-only | implemented | `linctl --help` / public CLI tests |
-| AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | accepted_gap | planned in `docs/domain-map.md` |
-| AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | accepted_gap | planned in `docs/domain-map.md` |
-| AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | accepted_gap | planned in `docs/domain-map.md` |
+| AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ExternalUser | `external-user get` | `Query.externalUser` | Read-only | implemented | `linctl --help` / public CLI tests |
 | AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | implemented | `linctl --help` / public CLI tests |
-| AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | accepted_gap | planned in `docs/domain-map.md` |
+| AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Notification | `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification archive all` | `Mutation.notificationArchiveAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification update` | `Mutation.notificationUpdate` | Blocked: direct inbox-state mutation needs an explicit viewer-state safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification mark read all` | `Mutation.notificationMarkReadAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification mark unread all` | `Mutation.notificationMarkUnreadAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification snooze all` | `Mutation.notificationSnoozeAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification unsnooze all` | `Mutation.notificationUnsnoozeAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification category channel subscription update` | `Mutation.notificationCategoryChannelSubscriptionUpdate` | Blocked: viewer notification preference mutation needs an explicit consent model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification subscription create` | `Mutation.notificationSubscriptionCreate` | Blocked: subscription writes can target several entity types and need explicit target-resolution semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Notification | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Notification | `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification archive all` | `Mutation.notificationArchiveAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification update` | `Mutation.notificationUpdate` | Blocked: direct inbox-state mutation needs an explicit viewer-state safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification mark read all` | `Mutation.notificationMarkReadAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification mark unread all` | `Mutation.notificationMarkUnreadAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification snooze all` | `Mutation.notificationSnoozeAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification unsnooze all` | `Mutation.notificationUnsnoozeAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification category channel subscription update` | `Mutation.notificationCategoryChannelSubscriptionUpdate` | Blocked: viewer notification preference mutation needs an explicit consent model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification subscription create` | `Mutation.notificationSubscriptionCreate` | Blocked: subscription writes can target several entity types and need explicit target-resolution semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Notification | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Release | `release-pipeline list` | `Query.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `release-pipeline get` | `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1390,28 +1390,28 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `release-note get` | `Query.releaseNote` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `issue-to-release list` | `Query.issueToReleases` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Release | `issue-to-release get` | `Query.issueToRelease` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-pipeline unarchive` | `Mutation.releasePipelineUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-pipeline unarchive` | `Mutation.releasePipelineUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `release-pipeline delete` | `Mutation.releasePipelineDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Release | `release-stage create` | `Mutation.releaseStageCreate` | Blocked: release workflow configuration needs explicit pipeline/team guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-stage update` | `Mutation.releaseStageUpdate` | Blocked: update must resolve the stage's pipeline and teams before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-stage archive` | `Mutation.releaseStageArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-stage unarchive` | `Mutation.releaseStageUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release create` | `Mutation.releaseCreate` | Blocked: create must resolve pipeline/team guard semantics before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release update` | `Mutation.releaseUpdate` | Blocked: update must resolve the release pipeline/stage and associated teams before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release archive` | `Mutation.releaseArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release unarchive` | `Mutation.releaseUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release-stage create` | `Mutation.releaseStageCreate` | Blocked: release workflow configuration needs explicit pipeline/team guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-stage update` | `Mutation.releaseStageUpdate` | Blocked: update must resolve the stage's pipeline and teams before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-stage archive` | `Mutation.releaseStageArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-stage unarchive` | `Mutation.releaseStageUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release create` | `Mutation.releaseCreate` | Blocked: create must resolve pipeline/team guard semantics before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release update` | `Mutation.releaseUpdate` | Blocked: update must resolve the release pipeline/stage and associated teams before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release archive` | `Mutation.releaseArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release unarchive` | `Mutation.releaseUnarchive` | Blocked: restore command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `release delete` | `Mutation.releaseDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Release | `release complete` | `Mutation.releaseComplete`, `Mutation.releaseCompleteByAccessKey` | Blocked: lifecycle transition and access-key behavior need explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release sync` | `Mutation.releaseSync`, `Mutation.releaseSyncByAccessKey` | Blocked: sync mutates release associations and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-note create` | `Mutation.releaseNoteCreate` | Blocked: create must resolve release pipeline and release range semantics before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-note update` | `Mutation.releaseNoteUpdate` | Blocked: update must resolve covered releases and pipeline before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `release-note archive` | `Mutation.releaseNoteArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `release complete` | `Mutation.releaseComplete`, `Mutation.releaseCompleteByAccessKey` | Blocked: lifecycle transition and access-key behavior need explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release sync` | `Mutation.releaseSync`, `Mutation.releaseSyncByAccessKey` | Blocked: sync mutates release associations and needs explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-note create` | `Mutation.releaseNoteCreate` | Blocked: create must resolve release pipeline and release range semantics before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-note update` | `Mutation.releaseNoteUpdate` | Blocked: update must resolve covered releases and pipeline before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `release-note archive` | `Mutation.releaseNoteArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `release-note delete` | `Mutation.releaseNoteDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Release | `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Release | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Release | `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Release | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1469,16 +1469,16 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
 | IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
 | IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
-| IssueRelation | `issue-relation create` | `Mutation.issueRelationCreate` | Blocked: create must resolve and compare both issue endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| IssueRelation | `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| IssueRelation | `issue-relation create` | `Mutation.issueRelationCreate` | Blocked: create must resolve and compare both issue endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| IssueRelation | `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | IssueRelation | `issue-relation delete` | `Mutation.issueRelationDelete` | Blocked: destructive command needs explicit issue relation safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Comment | `comment list` | `Query.comments` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment get` | `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
 | Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
-| Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
+| Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | implemented | `linctl --help` / public CLI tests |
 | Project | `project all` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project get` | `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1504,29 +1504,29 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
-| ProjectUpdate | `project-update create` | `Mutation.projectUpdateCreate` | Blocked: create must resolve and compare the target project before posting | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectUpdate | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectUpdate | `project-update create` | `Mutation.projectUpdateCreate` | Blocked: create must resolve and compare the target project before posting | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectUpdate | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectStatus | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload | implemented | `linctl --help` / public CLI tests |
-| ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectStatus | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectStatus | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label list` | `Query.projectLabels` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectLabel | `project-label get` | `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectLabel | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectLabel | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectLabel | `project-label create` | `Mutation.projectLabelCreate` | Blocked: workspace label configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectLabel | `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectLabel | `project-label create` | `Mutation.projectLabelCreate` | Blocked: workspace label configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectLabel | `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning workspace before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| ProjectLabel | `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectLabel | `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectLabel | `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectLabel | `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectRelation | `project-relation list` | `Query.projectRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectRelation | `project-relation get` | `Query.projectRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectRelation | `project-relation create` | `Mutation.projectRelationCreate` | Blocked: create must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| ProjectRelation | `project-relation update` | `Mutation.projectRelationUpdate` | Blocked: update must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| ProjectRelation | `project-relation create` | `Mutation.projectRelationCreate` | Blocked: create must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectRelation | `project-relation update` | `Mutation.projectRelationUpdate` | Blocked: update must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectRelation | `project-relation delete` | `Mutation.projectRelationDelete` | Blocked: destructive command needs explicit project dependency safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Cycle | `cycle list` | `Query.cycles` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Cycle | `cycle get` | `Query.cycle` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1547,20 +1547,20 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Document | `document list` | `Query.documents` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Document | `document get` | `Query.document` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Document | `document comments` | `Document.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
-| Document | `document create` | `Mutation.documentCreate` with optional `projectId`, `teamId`, `issueId`, `cycleId` | Blocked: parent can be project, team, issue, or cycle; write guard needs explicit parent-resolution semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Document | `document update` | `Mutation.documentUpdate` | Blocked: update must resolve and compare the existing parent before changing content | blocked_needs_design | write command needs explicit target and safety semantics |
+| Document | `document create` | `Mutation.documentCreate` with optional `projectId`, `teamId`, `issueId`, `cycleId` | Blocked: parent can be project, team, issue, or cycle; write guard needs explicit parent-resolution semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Document | `document update` | `Mutation.documentUpdate` | Blocked: update must resolve and compare the existing parent before changing content | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Document | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Label | `label list` | `Query.issueLabels` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Label | `label get` | `Query.issueLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Label | `label children` | `IssueLabel.children` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Label | `label issues` | `IssueLabel.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Label | `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes | blocked_needs_design | write command needs explicit target and safety semantics |
-| Label | `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Label | `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Label | `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Team | `team list` | `Query.teams` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team get` | `Query.team` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | write command needs explicit target and safety semantics |
+| Team | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Team | `team cycles` | `Team.cycles` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team issues` | `Team.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1574,8 +1574,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Team | `team templates` | `Team.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team-membership list` | `Query.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Team | `team-membership get` | `Query.teamMembership` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Team | `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Team | `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Team | `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team-membership delete` | `Mutation.teamMembershipDelete` | Blocked: destructive membership command needs explicit admin safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | User | `user list` | `Query.users` | Read-only | implemented | `linctl --help` / public CLI tests |
 | User | `user get` | `Query.user` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1605,20 +1605,20 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
 | WorkflowState | `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
-| WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TimeSchedule | `time-schedule list` | `Query.timeSchedules` | Read-only | implemented | `linctl --help` / public CLI tests |
 | TimeSchedule | `time-schedule get` | `Query.timeSchedule` | Read-only | implemented | `linctl --help` / public CLI tests |
-| TimeSchedule | `time-schedule create` | `Mutation.timeScheduleCreate` | Blocked: schedule create needs explicit owner/admin safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| TimeSchedule | `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| TimeSchedule | `time-schedule create` | `Mutation.timeScheduleCreate` | Blocked: schedule create needs explicit owner/admin safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| TimeSchedule | `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TimeSchedule | `time-schedule delete` | `Mutation.timeScheduleDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | write command needs explicit target and safety semantics |
+| TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TriageResponsibility | `triage-responsibility list` | `Query.triageResponsibilities` | Read-only | implemented | `linctl --help` / public CLI tests |
 | TriageResponsibility | `triage-responsibility get` | `Query.triageResponsibility` | Read-only | implemented | `linctl --help` / public CLI tests |
 | TriageResponsibility | `triage-responsibility manual-selection` | `TriageResponsibility.manualSelection` via `Query.triageResponsibility` | Read-only | implemented | `linctl --help` / public CLI tests |
-| TriageResponsibility | `triage-responsibility create` | `Mutation.triageResponsibilityCreate` | Blocked: team triage configuration needs an explicit admin safety model | accepted_gap | planned in `docs/domain-map.md` |
-| TriageResponsibility | `triage-responsibility update` | `Mutation.triageResponsibilityUpdate` | Blocked: update must resolve and compare the owning team before mutation | accepted_gap | planned in `docs/domain-map.md` |
+| TriageResponsibility | `triage-responsibility create` | `Mutation.triageResponsibilityCreate` | Blocked: team triage configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| TriageResponsibility | `triage-responsibility update` | `Mutation.triageResponsibilityUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TriageResponsibility | `triage-responsibility delete` | `Mutation.triageResponsibilityDelete` | Blocked: destructive team triage configuration command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | SLA Configuration | `sla-configuration list` | `Query.slaConfigurations` | Read-only | implemented | `linctl --help` / public CLI tests |
 | SemanticSearch | `semantic-search` | `Query.semanticSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1627,8 +1627,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Search | `search projects` | `Query.searchProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Template | `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Template | `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's workspace, team, or pipeline scope before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Template | `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Template | `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's workspace, team, or pipeline scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Template | `template delete` | `Mutation.templateDelete` | Blocked: destructive command needs explicit template-scope safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1638,37 +1638,37 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Initiative | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Initiative | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeRelation | `initiative-relation list` | `Query.initiativeRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeRelation | `initiative-relation get` | `Query.initiativeRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
-| InitiativeRelation | `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| InitiativeRelation | `initiative-relation update` | `Mutation.initiativeRelationUpdate` | Blocked: update must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeRelation | `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| InitiativeRelation | `initiative-relation update` | `Mutation.initiativeRelationUpdate` | Blocked: update must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeRelation | `initiative-relation delete` | `Mutation.initiativeRelationDelete` | Blocked: destructive command needs explicit hierarchy safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | InitiativeToProject | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeToProject | `initiative-to-project get` | `Query.initiativeToProject` | Read-only | implemented | `linctl --help` / public CLI tests |
-| InitiativeToProject | `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| InitiativeToProject | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeToProject | `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| InitiativeToProject | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeToProject | `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | RoadmapToProject | `roadmap-to-project list` | `Query.roadmapToProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | RoadmapToProject | `roadmap-to-project get` | `Query.roadmapToProject` | Read-only | implemented | `linctl --help` / public CLI tests |
-| RoadmapToProject | `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| RoadmapToProject | `roadmap-to-project update` | `Mutation.roadmapToProjectUpdate` | Blocked: deprecated update must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| RoadmapToProject | `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| RoadmapToProject | `roadmap-to-project update` | `Mutation.roadmapToProjectUpdate` | Blocked: deprecated update must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | RoadmapToProject | `roadmap-to-project delete` | `Mutation.roadmapToProjectDelete` | Blocked: destructive deprecated association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
-| InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | write command needs explicit target and safety semantics |
-| InitiativeUpdate | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| InitiativeUpdate | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| InitiativeUpdate | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| InitiativeUpdate | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| InitiativeUpdate | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| InitiativeUpdate | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap list` | `Query.roadmaps` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Roadmap | `roadmap get` | `Query.roadmap` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Roadmap | `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Roadmap | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Roadmap | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Roadmap | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Roadmap | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Roadmap | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Roadmap | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap delete` | `Mutation.roadmapDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | CustomView | `custom-view list` | `Query.customViews` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1681,8 +1681,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | CustomView | `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | CustomView | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Customer | `customer list` | `Query.customers` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer get` | `Query.customer` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1693,28 +1693,28 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Customer | `customer-status get` | `Query.customerStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer-tier list` | `Query.customerTiers` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Customer | `customer-tier get` | `Query.customerTier` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Customer | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Customer | `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
-| Customer | `customer-need create` | `Mutation.customerNeedCreate` | Blocked: need creation must prove the linked issue, project, or customer target before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Customer | `customer-need update` | `Mutation.customerNeedUpdate` | Blocked: update must resolve the need and compare the linked issue or project target before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Customer | `customer-need archive` | `Mutation.customerNeedArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Customer | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Customer | `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Customer | `customer-need create` | `Mutation.customerNeedCreate` | Blocked: need creation must prove the linked issue, project, or customer target before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Customer | `customer-need update` | `Mutation.customerNeedUpdate` | Blocked: update must resolve the need and compare the linked issue or project target before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Customer | `customer-need archive` | `Mutation.customerNeedArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-need delete` | `Mutation.customerNeedDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Customer | `customer-status create` | `Mutation.customerStatusCreate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Customer | `customer-status update` | `Mutation.customerStatusUpdate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-status create` | `Mutation.customerStatusCreate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Customer | `customer-status update` | `Mutation.customerStatusUpdate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-status delete` | `Mutation.customerStatusDelete` | Blocked: destructive admin command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Customer | `customer-tier create` | `Mutation.customerTierCreate` | Blocked: workspace tier configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Customer | `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: workspace tier configuration needs an explicit admin safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Customer | `customer-tier create` | `Mutation.customerTierCreate` | Blocked: workspace tier configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Customer | `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: workspace tier configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-tier delete` | `Mutation.customerTierDelete` | Blocked: destructive admin command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Favorite | `favorite list` | `Query.favorites` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Favorite | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Favorite | `favorite get` | `Query.favorite` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Favorite | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
-| Favorite | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Favorite | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Favorite | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Favorite | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Emoji | `emoji list` | `Query.emojis` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Emoji | `emoji get` | `Query.emoji` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
+| Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | implemented | `linctl --help` / public CLI tests |
@@ -1736,7 +1736,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Attachment | `attachment issue shared-access` | `Issue.sharedAccess` via `Query.attachmentIssue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
 | Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
-| Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
+| Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 
