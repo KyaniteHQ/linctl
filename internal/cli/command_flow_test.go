@@ -105,7 +105,19 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, contains: "LIT-1 Closed issue [Done]"},
 		{name: "project list", args: []string{"project", "list", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, contains: "project-id Detail project [Backlog]"},
+		{name: "project attachments", args: []string{"project", "attachments", "project-id", "--limit", "1"}, contains: "attachment-id Linked PR [github]"},
+		{name: "project documents", args: []string{"project", "documents", "project-id", "--limit", "1"}, contains: "document-id Spec [project]"},
+		{name: "project external links", args: []string{"project", "external-links", "project-id", "--limit", "1"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
+		{name: "project history", args: []string{"project", "history", "project-id", "--limit", "1"}, contains: "project-history-id project project-id entries 1"},
+		{name: "project initiative links", args: []string{"project", "initiative-links", "project-id", "--limit", "1"}, contains: "initiative-to-project-id Platform -> Pinned project order 1"},
+		{name: "project initiatives", args: []string{"project", "initiatives", "project-id", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
+		{name: "project inverse relations", args: []string{"project", "inverse-relations", "project-id", "--limit", "1"}, contains: "project-relation-id blocks Pinned project -> Related project"},
+		{name: "project issues", args: []string{"project", "issues", "project-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "project labels", args: []string{"project", "labels", "project-id", "--limit", "1"}, contains: "project-label-id Roadmap #f2c94c"},
 		{name: "project members", args: []string{"project", "members", "project-id", "--limit", "1"}, contains: "user-id Omer"},
+		{name: "project needs", args: []string{"project", "needs", "project-id", "--limit", "1"}, contains: "customer-need-id Acme LIT-1 priority 1"},
+		{name: "project relations", args: []string{"project", "relations", "project-id", "--limit", "1"}, contains: "project-relation-id blocks Pinned project -> Related project"},
+		{name: "project teams", args: []string{"project", "teams", "project-id", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "project updates", args: []string{"project", "updates", "project-id", "--limit", "1"}, contains: "project-update-id onTrack Omer First update"},
 		{name: "project update list", args: []string{"project-update", "list", "--limit", "1"}, contains: "project-update-id onTrack Omer First update"},
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, contains: "project-update-id onTrack Omer First update"},
@@ -1499,7 +1511,19 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project list target resolve", args: []string{"project", "list"}, operation: "Teams", contains: "resolve teams"},
 		{name: "project list", args: []string{"project", "list"}, operation: "Projects", contains: "list projects"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, operation: "project", contains: "get project project-id"},
+		{name: "project attachments", args: []string{"project", "attachments", "project-id"}, operation: "project_attachments", contains: "list project attachments project-id"},
+		{name: "project documents", args: []string{"project", "documents", "project-id"}, operation: "project_documents", contains: "list project documents project-id"},
+		{name: "project external links", args: []string{"project", "external-links", "project-id"}, operation: "project_externalLinks", contains: "list project external links project-id"},
+		{name: "project history", args: []string{"project", "history", "project-id"}, operation: "project_history", contains: "list project history project-id"},
+		{name: "project initiative links", args: []string{"project", "initiative-links", "project-id"}, operation: "project_initiativeToProjects", contains: "list project initiative associations project-id"},
+		{name: "project initiatives", args: []string{"project", "initiatives", "project-id"}, operation: "project_initiatives", contains: "list project initiatives project-id"},
+		{name: "project inverse relations", args: []string{"project", "inverse-relations", "project-id"}, operation: "project_inverseRelations", contains: "list project inverse relations project-id"},
+		{name: "project issues", args: []string{"project", "issues", "project-id"}, operation: "project_issues", contains: "list project issues project-id"},
+		{name: "project labels", args: []string{"project", "labels", "project-id"}, operation: "project_labels", contains: "list project labels project-id"},
 		{name: "project members", args: []string{"project", "members", "project-id"}, operation: "project_members", contains: "list project members project-id"},
+		{name: "project needs", args: []string{"project", "needs", "project-id"}, operation: "project_needs", contains: "list project customer needs project-id"},
+		{name: "project relations", args: []string{"project", "relations", "project-id"}, operation: "project_relations", contains: "list project relations project-id"},
+		{name: "project teams", args: []string{"project", "teams", "project-id"}, operation: "project_teams", contains: "list project teams project-id"},
 		{name: "project updates", args: []string{"project", "updates", "project-id"}, operation: "ProjectUpdates", contains: "list project updates project-id"},
 		{name: "project update list", args: []string{"project-update", "list"}, operation: "projectUpdates", contains: "list project updates"},
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, operation: "projectUpdate", contains: "get project update project-update-id"},
@@ -2525,6 +2549,7 @@ func commandFlowProjectPayload(operation string, fake commandFlowFakeClient) (st
 	return commandFlowProjectWritePayload(operation)
 }
 
+//nolint:gocyclo // The fake payload switch mirrors the project command operation surface.
 func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "Projects":
@@ -2534,11 +2559,62 @@ func commandFlowProjectReadPayload(operation string, fake commandFlowFakeClient)
 		return `{"team":{"projects":{"nodes":[` + commandProjectJSON("Listed project", "Backlog", "backlog") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "project":
 		return `{"project":` + commandProjectJSON("Detail project", "Backlog", "backlog") + `}`, true
+	case "project_attachments":
+		return `{"project":{"id":"project-id","name":"Detail project","attachments":{"nodes":[` +
+			commandAttachmentJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_documents":
+		return `{"project":{"id":"project-id","name":"Detail project","documents":{"nodes":[` +
+			commandDocumentJSON(
+				"Spec",
+				`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
+			) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_externalLinks":
+		return `{"project":{"id":"project-id","name":"Detail project","externalLinks":{"nodes":[` +
+			commandEntityExternalLinkJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_history":
+		return `{"project":{"id":"project-id","name":"Detail project","history":{"nodes":[` +
+			commandProjectHistoryJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_initiativeToProjects":
+		return `{"project":{"id":"project-id","name":"Detail project","initiativeToProjects":{"nodes":[` +
+			commandInitiativeToProjectJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_initiatives":
+		return `{"project":{"id":"project-id","name":"Detail project","initiatives":{"nodes":[` +
+			commandInitiativeJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_inverseRelations":
+		return `{"project":{"id":"project-id","name":"Detail project","inverseRelations":{"nodes":[` +
+			commandProjectRelationJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_issues":
+		return `{"project":{"id":"project-id","name":"Detail project","issues":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_labels":
+		return `{"project":{"id":"project-id","name":"Detail project","labels":{"nodes":[` +
+			commandProjectLabelJSON("project-label-id", "Roadmap", "#f2c94c") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "project_members":
 		if fake.emptyProjectMembers {
 			return `{"project":{"id":"project-id","name":"Detail project","members":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
 		return `{"project":{"id":"project-id","name":"Detail project","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_needs":
+		return `{"project":{"id":"project-id","name":"Detail project","needs":{"nodes":[` +
+			commandCustomerNeedJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_relations":
+		return `{"project":{"id":"project-id","name":"Detail project","relations":{"nodes":[` +
+			commandProjectRelationJSON() +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "project_teams":
+		return `{"project":{"id":"project-id","name":"Detail project","teams":{"nodes":[` +
+			commandTeamJSON(true) +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "ProjectUpdates":
 		if fake.emptyProjectUpdates {
 			return `{"project":{"id":"project-id","name":"Detail project","projectUpdates":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
@@ -2778,6 +2854,17 @@ func commandProjectRelationJSON() string {
 		"relatedProject":{"id":"related-project-id","name":"Related project"},
 		"relatedProjectMilestone":null,
 		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func commandProjectHistoryJSON() string {
+	return `{
+		"id":"project-history-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"entries":[{"type":"status","from":"Backlog","to":"Started"}],
+		"project":{"id":"project-id"}
 	}`
 }
 

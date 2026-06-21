@@ -270,7 +270,7 @@ Only `comment list` and `comment get` are implemented in the current CLI. Issue-
 Schema backing:
 
 - Types: `Project`, `ProjectConnection`
-- Reads: `Query.projects`, `Query.project`
+- Reads: `Query.projects`, `Query.project`, `Project.attachments`, `Project.documents`, `Project.externalLinks`, `Project.history`, `Project.initiativeToProjects`, `Project.initiatives`, `Project.inverseRelations`, `Project.issues`, `Project.labels`, `Project.members`, `Project.needs`, `Project.relations`, `Project.teams`, `Project.projectUpdates`
 - Writes: `Mutation.projectCreate`, `Mutation.projectUpdate`, `Mutation.projectArchive`
 - Inputs: `ProjectCreateInput`, `ProjectUpdateInput`
 - Relevant fields: `Project.id`, `Project.name`, `Project.description`, `Project.status`, `Project.lead`, `Project.url`, `Project.teams`, `Project.members`, `Project.documents`, `Project.projectMilestones`, `Project.issues`
@@ -281,10 +281,22 @@ Planned commands:
 | --- | --- | --- |
 | `project list` | `Query.projects` | Read-only |
 | `project get` | `Query.project` | Read-only |
+| `project attachments` | `Project.attachments` | Read-only |
+| `project documents` | `Project.documents` | Read-only |
+| `project external-links` | `Project.externalLinks` | Read-only |
+| `project history` | `Project.history` | Read-only |
+| `project initiative-links` | `Project.initiativeToProjects` | Read-only |
+| `project initiatives` | `Project.initiatives` | Read-only |
+| `project inverse-relations` | `Project.inverseRelations` | Read-only |
+| `project issues` | `Project.issues` | Read-only |
+| `project labels` | `Project.labels` | Read-only |
 | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped |
 | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` |
 | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` |
 | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes |
+| `project needs` | `Project.needs` | Read-only |
+| `project relations` | `Project.relations` | Read-only |
+| `project teams` | `Project.teams` | Read-only |
 | `project updates` | `Project.projectUpdates` | Read-only |
 
 Project is the first implemented PM domain; later domains should reuse its target-comparison vocabulary.

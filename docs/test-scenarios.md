@@ -972,9 +972,13 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/team_templates`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+180. Project child reads
+   - Success: `linctl project attachments|documents|external-links|history|initiative-links|initiatives|inverse-relations|issues|labels|needs|relations|teams PROJECT_ID --limit N` lists safe child resources for one Project through the public CLI and JSON output controls without selecting draft, body, blob, secret, source, or metadata payload fields by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_attachments`, `Test_CommandFlows_execute_read_and_write_commands/project_documents`, `Test_CommandFlows_execute_read_and_write_commands/project_external_links`, `Test_CommandFlows_execute_read_and_write_commands/project_history`, `Test_CommandFlows_execute_read_and_write_commands/project_initiative_links`, `Test_CommandFlows_execute_read_and_write_commands/project_initiatives`, `Test_CommandFlows_execute_read_and_write_commands/project_inverse_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_issues`, `Test_CommandFlows_execute_read_and_write_commands/project_labels`, `Test_CommandFlows_execute_read_and_write_commands/project_needs`, `Test_CommandFlows_execute_read_and_write_commands/project_relations`, `Test_CommandFlows_execute_read_and_write_commands/project_teams`.
+
 ## Current Outcome
 
-All one hundred seventy-one local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
+All local scenarios pass under the method above. The complete local suite also passes with `go test ./...`.
 
 Coverage is enforced with `task coverage`, which runs uncached tests and excludes generated GraphQL code, the thin process entrypoint, and repo maintenance scripts from the product behavior metric. The enforced product statement coverage target is 100.0%.
 

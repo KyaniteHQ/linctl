@@ -1516,6 +1516,216 @@ func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
 	}
 }
 
+func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
+	type item struct {
+		ID string `json:"id"`
+	}
+	type list struct {
+		Items []item `json:"items"`
+	}
+
+	tests := []struct {
+		name        string
+		options     rootOptions
+		fetch       func(commandRuntime, string, int) (list, error)
+		sortList    func(list) (list, error)
+		writeItem   func(*cobra.Command, item) error
+		requirement func(*testing.T, string, error)
+	}{
+		{
+			name: "runtime error",
+			fetch: func(commandRuntime, string, int) (list, error) {
+				return list{}, nil
+			},
+			sortList: func(value list) (list, error) {
+				return value, nil
+			},
+			writeItem: func(*cobra.Command, item) error {
+				return nil
+			},
+			requirement: func(t *testing.T, _ string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "runtime failed")
+			},
+		},
+		{
+			name: "fetch error",
+			fetch: func(commandRuntime, string, int) (list, error) {
+				return list{}, errors.New("fetch failed")
+			},
+			sortList: func(value list) (list, error) {
+				return value, nil
+			},
+			writeItem: func(*cobra.Command, item) error {
+				return nil
+			},
+			requirement: func(t *testing.T, _ string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "fetch failed")
+			},
+		},
+		{
+			name:    "empty error",
+			options: rootOptions{failOnEmpty: true},
+			fetch: func(commandRuntime, string, int) (list, error) {
+				return list{}, nil
+			},
+			sortList: func(value list) (list, error) {
+				return value, nil
+			},
+			writeItem: func(*cobra.Command, item) error {
+				return nil
+			},
+			requirement: func(t *testing.T, _ string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "empty result")
+			},
+		},
+		{
+			name: "sort error",
+			fetch: func(commandRuntime, string, int) (list, error) {
+				return list{Items: []item{{ID: "item-id"}}}, nil
+			},
+			sortList: func(list) (list, error) {
+				return list{}, errors.New("sort failed")
+			},
+			writeItem: func(*cobra.Command, item) error {
+				return nil
+			},
+			requirement: func(t *testing.T, _ string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "sort failed")
+			},
+		},
+		{
+			name:    "json output",
+			options: rootOptions{json: true},
+			fetch: func(commandRuntime, string, int) (list, error) {
+				return list{Items: []item{{ID: "item-id"}}}, nil
+			},
+			sortList: func(value list) (list, error) {
+				return value, nil
+			},
+			writeItem: func(*cobra.Command, item) error {
+				return nil
+			},
+			requirement: func(t *testing.T, output string, err error) {
+				require.NoError(t, err)
+				require.JSONEq(t, `{"items":[{"id":"item-id"}]}`, output)
+			},
+		},
+		{
+			name: "write error",
+			fetch: func(commandRuntime, string, int) (list, error) {
+				return list{Items: []item{{ID: "item-id"}}}, nil
+			},
+			sortList: func(value list) (list, error) {
+				return value, nil
+			},
+			writeItem: func(*cobra.Command, item) error {
+				return errors.New("write failed")
+			},
+			requirement: func(t *testing.T, _ string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "write failed")
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			root := &cobra.Command{Use: "root"}
+			options := test.options
+			if options.sortOrder == "" {
+				options.sortOrder = "asc"
+			}
+			originalBuildCommandRuntime := buildCommandRuntime
+			if test.name == "runtime error" {
+				buildCommandRuntime = func(context.Context, *rootOptions) (commandRuntime, error) {
+					return commandRuntime{}, errors.New("runtime failed")
+				}
+			} else {
+				buildCommandRuntime = func(context.Context, *rootOptions) (commandRuntime, error) {
+					return commandRuntime{}, nil
+				}
+			}
+			t.Cleanup(func() {
+				buildCommandRuntime = originalBuildCommandRuntime
+			})
+			addProjectChildListCommand(
+				context.Background(),
+				root,
+				&options,
+				"children PROJECT_ID",
+				"List children",
+				"children",
+				test.fetch,
+				func(value list) int {
+					return len(value.Items)
+				},
+				test.sortList,
+				test.writeItem,
+				func(value list) []item {
+					return value.Items
+				},
+			)
+			root.SetOut(&output)
+			root.SetArgs([]string{"children", "project-id"})
+
+			err := root.ExecuteContext(context.Background())
+
+			test.requirement(t, output.String(), err)
+		})
+	}
+}
+
+func Test_ProjectHistoryWriter_covers_output_modes(t *testing.T) {
+	history := client.ProjectHistorySummary{
+		ID:         "project-history-id",
+		ProjectID:  "project-id",
+		EntryCount: 1,
+	}
+	tests := []struct {
+		name     string
+		options  rootOptions
+		expected string
+	}{
+		{
+			name:     "id only",
+			options:  rootOptions{idOnly: true},
+			expected: "project-history-id\n",
+		},
+		{
+			name:     "quiet",
+			options:  rootOptions{quiet: true},
+			expected: "",
+		},
+		{
+			name:     "json",
+			options:  rootOptions{json: true},
+			expected: `{"id":"project-history-id","project_id":"project-id","entry_count":1,"entries":null,"created_at":"","updated_at":""}` + "\n",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			command := &cobra.Command{}
+			command.SetOut(&output)
+
+			err := writeProjectHistory(command, &test.options, history)
+
+			require.NoError(t, err)
+			if test.options.json {
+				require.JSONEq(t, test.expected, output.String())
+				return
+			}
+			require.Equal(t, test.expected, output.String())
+		})
+	}
+}
+
 func Test_CommandFlows_cover_issue_list_filter_validation(t *testing.T) {
 	tests := [][]string{
 		{"issue", "list", "--state", "started", "--project", "project-id"},

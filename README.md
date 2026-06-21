@@ -124,6 +124,19 @@ linctl cycle update cycle-id --name "Updated planning"
 linctl cycle archive cycle-id
 linctl sprint current
 linctl sprint report cycle-id --limit 20
+linctl project attachments project-id --limit 20
+linctl project documents project-id --limit 20
+linctl project external-links project-id --limit 20
+linctl project history project-id --limit 20
+linctl project initiative-links project-id --limit 20
+linctl project initiatives project-id --limit 20
+linctl project inverse-relations project-id --limit 20
+linctl project issues project-id --limit 20
+linctl project labels project-id --limit 20
+linctl project members project-id --limit 20
+linctl project needs project-id --limit 20
+linctl project relations project-id --limit 20
+linctl project teams project-id --limit 20
 linctl project updates project-id --limit 20
 linctl project-update list --limit 20
 linctl project-update get project-update-id
@@ -292,6 +305,19 @@ linctl cycle update cycle-id --name "Updated planning"
 linctl cycle archive cycle-id
 linctl sprint current
 linctl sprint report cycle-id --limit 20
+linctl project attachments project-id --limit 20
+linctl project documents project-id --limit 20
+linctl project external-links project-id --limit 20
+linctl project history project-id --limit 20
+linctl project initiative-links project-id --limit 20
+linctl project initiatives project-id --limit 20
+linctl project inverse-relations project-id --limit 20
+linctl project issues project-id --limit 20
+linctl project labels project-id --limit 20
+linctl project members project-id --limit 20
+linctl project needs project-id --limit 20
+linctl project relations project-id --limit 20
+linctl project teams project-id --limit 20
 linctl issue start LIT-123
 linctl done
 linctl --id-only issue create --title "small task"

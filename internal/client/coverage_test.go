@@ -168,7 +168,25 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 			Name:   "detail",
 			Status: "Started",
 		}) + `}`,
-		"project_members":       `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_members":              `{"project":{"id":"project-id","name":"detail","members":{"nodes":[{"id":"user-id","name":"omer","displayName":"Omer","email":"omer@example.com"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_attachments":          `{"project":{"id":"project-id","name":"detail","attachments":{"nodes":[` + projectAttachmentJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_documents":            `{"project":{"id":"project-id","name":"detail","documents":{"nodes":[{"id":"project-document-id","title":"Project spec","slugId":"project-spec","archivedAt":null,"project":{"id":"project-id","name":"detail"},"team":null,"issue":null,"cycle":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_externalLinks":        `{"project":{"id":"project-id","name":"detail","externalLinks":{"nodes":[` + entityExternalLinkJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_history":              `{"project":{"id":"project-id","name":"detail","history":{"nodes":[` + projectHistoryJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_initiativeToProjects": `{"project":{"id":"project-id","name":"detail","initiativeToProjects":{"nodes":[{"id":"initiative-to-project-id","sortOrder":"1","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,"initiative":{"id":"initiative-id","name":"Platform"},"project":{"id":"project-id","name":"Pinned project","slugId":"pinned-project","url":"https://linear.app/project/project-id"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_initiatives":          `{"project":{"id":"project-id","name":"detail","initiatives":{"nodes":[{"id":"initiative-id","name":"Platform","description":"Platform initiative","status":"Active","priority":2,"targetDate":"2026-12-31","slugId":"platform-init","url":"https://linear.app/kyanite/initiative/platform-init"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_inverseRelations":     `{"project":{"id":"project-id","name":"detail","inverseRelations":{"nodes":[` + projectRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_issues": `{"project":{"id":"project-id","name":"detail","issues":{"nodes":[` + issueJSON(issueFixture{
+			Identifier: "LIT-47",
+			Title:      "Project issue",
+			StateID:    "todo",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_labels":        `{"project":{"id":"project-id","name":"detail","labels":{"nodes":[` + projectLabelJSON("project-label-id", "Roadmap") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_needs":         `{"project":{"id":"project-id","name":"detail","needs":{"nodes":[` + customerNeedJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_relations":     `{"project":{"id":"project-id","name":"detail","relations":{"nodes":[` + projectRelationJSON() + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
+		"project_teams":         `{"project":{"id":"project-id","name":"detail","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","description":"team body","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"ProjectUpdates":        `{"project":{"id":"project-id","name":"detail","projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"projectUpdates":        `{"projectUpdates":{"nodes":[{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"projectUpdate":         `{"projectUpdate":{"id":"project-update-id","body":"First update","health":"onTrack","createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","project":{"id":"project-id","name":"detail"},"user":{"id":"user-id","name":"omer","displayName":"Omer"}}}`,
@@ -176,7 +194,7 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 		"projectMilestone":      `{"projectMilestone":{"id":"project-milestone-id","name":"Launch milestone","description":"milestone body","targetDate":"2026-06-30","status":"next","progress":0.5,"sortOrder":1}}`,
 		"projectStatuses":       `{"projectStatuses":{"nodes":[{"id":"project-status-id","name":"Backlog","description":"Ready for planning","type":"backlog","color":"#bec2c8","position":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z"}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"projectStatus":         `{"projectStatus":{"id":"project-status-id","name":"Backlog","description":"Ready for planning","type":"backlog","color":"#bec2c8","position":1,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z"}}`,
-		"projectLabels":         `{"projectLabels":{"nodes":[{"id":"project-label-id","name":"Roadmap","description":"Project label","color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"projectLabels":         `{"projectLabels":{"nodes":[` + projectLabelJSON("project-label-id", "Roadmap") + `],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
 		"projectLabel":          `{"projectLabel":{"id":"project-label-id","name":"Roadmap","description":"Project label","color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":{"id":"parent-project-label-id","name":"Parent","color":"#828282"}}}`,
 		"projectLabel_children": `{"projectLabel":{"id":"project-label-id","name":"Roadmap","children":{"nodes":[{"id":"child-project-label-id","name":"Mobile","description":"Child project label","color":"#56ccf2","isGroup":false,"lastAppliedAt":null,"retiredAt":null,"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","parent":{"id":"project-label-id","name":"Roadmap","color":"#f2c94c"}}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}}`,
 		"projectLabel_projects": `{"projectLabel":{"id":"project-label-id","name":"Roadmap","projects":{"nodes":[` + projectJSON(projectFixture{
@@ -438,6 +456,35 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	project, err := GetProjectByID(context.Background(), graphqlClient, "project-id")
 	require.NoError(t, err)
 	members, err := ListProjectMembers(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectAttachments, err := ListProjectAttachments(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectDocuments, err := ListProjectDocuments(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectExternalLinks, err := ListProjectExternalLinks(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectHistory, err := ListProjectHistory(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectInitiativeAssociations, err := ListProjectInitiativeToProjects(
+		context.Background(),
+		graphqlClient,
+		"project-id",
+		2,
+	)
+	require.NoError(t, err)
+	projectInitiatives, err := ListProjectInitiatives(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectInverseRelations, err := ListProjectInverseRelations(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	scopedProjectIssues, err := ListProjectIssues(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	labelsForProject, err := ListLabelsForProject(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectNeeds, err := ListProjectNeeds(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectScopedRelations, err := ListProjectRelationsForProject(context.Background(), graphqlClient, "project-id", 2)
+	require.NoError(t, err)
+	projectTeams, err := ListProjectTeams(context.Background(), graphqlClient, "project-id", 2)
 	require.NoError(t, err)
 	projectUpdates, err := ListProjectUpdates(context.Background(), graphqlClient, "project-id", 2)
 	require.NoError(t, err)
@@ -772,6 +819,31 @@ func Test_ClientReadScenarios_return_compact_lists_details_and_members(t *testin
 	require.Equal(t, "detail", project.Name)
 	require.Equal(t, "Omer", members.Members[0].DisplayName)
 	require.Equal(t, &endCursor, members.EndCursor)
+	require.Equal(t, "project-attachment-id", projectAttachments.Attachments[0].ID)
+	require.Equal(t, "github", projectAttachments.Attachments[0].SourceType)
+	require.Equal(t, "Project spec", projectDocuments.Documents[0].Title)
+	require.Equal(t, "project", projectDocuments.Documents[0].ParentType)
+	require.Equal(t, "release-link-id", projectExternalLinks.Links[0].ID)
+	require.Equal(t, "Runbook", projectExternalLinks.Links[0].Label)
+	require.Equal(t, "project-history-id", projectHistory.History[0].ID)
+	require.Equal(t, 1, projectHistory.History[0].EntryCount)
+	require.JSONEq(
+		t,
+		`[{"from":"Backlog","to":"Started","type":"status"}]`,
+		string(projectHistory.History[0].Entries),
+	)
+	require.Equal(t, "initiative-to-project-id", projectInitiativeAssociations.Associations[0].ID)
+	require.Equal(t, "Platform", projectInitiativeAssociations.Associations[0].InitiativeName)
+	require.Equal(t, "initiative-id", projectInitiatives.Initiatives[0].ID)
+	require.Equal(t, "Active", projectInitiatives.Initiatives[0].Status)
+	require.Equal(t, "project-relation-id", projectInverseRelations.Relations[0].ID)
+	require.Equal(t, "Related project", projectInverseRelations.Relations[0].RelatedProjectName)
+	require.Equal(t, "LIT-47", scopedProjectIssues.Issues[0].Identifier)
+	require.Equal(t, "project-label-id", labelsForProject.ProjectLabels[0].ID)
+	require.Equal(t, "customer-need-id", projectNeeds.Needs[0].ID)
+	require.Equal(t, "Acme", projectNeeds.Needs[0].CustomerName)
+	require.Equal(t, "project-relation-id", projectScopedRelations.Relations[0].ID)
+	require.Equal(t, "linctl", projectTeams.Teams[0].Name)
 	require.True(t, projectUpdates.HasNextPage)
 	require.Equal(t, "project-update-id", projectUpdates.Updates[0].ID)
 	require.Equal(t, "onTrack", projectUpdates.Updates[0].Health)
@@ -1626,6 +1698,54 @@ func Test_ClientFailureScenarios_wrap_read_and_mutation_errors(t *testing.T) {
 		_, err = ListProjectMembers(context.Background(), graphqlClient, "project-id", 1)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "list project members project-id")
+
+		_, err = ListProjectAttachments(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project attachments project-id")
+
+		_, err = ListProjectDocuments(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project documents project-id")
+
+		_, err = ListProjectExternalLinks(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project external links project-id")
+
+		_, err = ListProjectHistory(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project history project-id")
+
+		_, err = ListProjectInitiativeToProjects(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project initiative associations project-id")
+
+		_, err = ListProjectInitiatives(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project initiatives project-id")
+
+		_, err = ListProjectInverseRelations(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project inverse relations project-id")
+
+		_, err = ListProjectIssues(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project issues project-id")
+
+		_, err = ListLabelsForProject(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project labels project-id")
+
+		_, err = ListProjectNeeds(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project customer needs project-id")
+
+		_, err = ListProjectRelationsForProject(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project relations project-id")
+
+		_, err = ListProjectTeams(context.Background(), graphqlClient, "project-id", 1)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "list project teams project-id")
 
 		_, err = ListProjectUpdates(context.Background(), graphqlClient, "project-id", 1)
 		require.Error(t, err)
@@ -3314,6 +3434,76 @@ func releaseHistoryJSON() string {
 		"archivedAt":null,
 		"entries":[{"type":"stage","from":"planned","to":"started"}],
 		"release":{"id":"release-id"}
+	}`
+}
+
+func projectHistoryJSON() string {
+	return `{
+		"id":"project-history-id",
+		"createdAt":"2026-06-03T12:00:00Z",
+		"updatedAt":"2026-06-03T12:01:00Z",
+		"archivedAt":null,
+		"entries":[{"type":"status","from":"Backlog","to":"Started"}],
+		"project":{"id":"project-id"}
+	}`
+}
+
+func projectAttachmentJSON() string {
+	return `{
+		"id":"project-attachment-id",
+		"title":"Project link",
+		"subtitle":"overview",
+		"url":"https://example.com/project-link",
+		"sourceType":"github"
+	}`
+}
+
+func projectLabelJSON(id string, name string) string {
+	return `{
+		"id":"` + id + `",
+		"name":"` + name + `",
+		"description":"Project label",
+		"color":"#f2c94c",
+		"isGroup":false,
+		"lastAppliedAt":"2026-06-19T12:00:00Z",
+		"retiredAt":null,
+		"archivedAt":null,
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"parent":null
+	}`
+}
+
+func projectRelationJSON() string {
+	return `{
+		"id":"project-relation-id",
+		"type":"blocks",
+		"anchorType":"project",
+		"relatedAnchorType":"project",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:00:00Z",
+		"archivedAt":null,
+		"project":{"id":"project-id","name":"Pinned project"},
+		"projectMilestone":null,
+		"relatedProject":{"id":"related-project-id","name":"Related project"},
+		"relatedProjectMilestone":null,
+		"user":{"id":"user-id","name":"omer","displayName":"Omer"}
+	}`
+}
+
+func customerNeedJSON() string {
+	return `{
+		"id":"customer-need-id",
+		"createdAt":"2026-06-19T12:00:00Z",
+		"updatedAt":"2026-06-19T12:01:00Z",
+		"archivedAt":null,
+		"priority":1,
+		"body":"Need body",
+		"content":"Need content",
+		"url":"https://example.com/need",
+		"customer":{"id":"customer-id","name":"Acme"},
+		"issue":{"id":"issue-id","identifier":"LIT-1","title":"Need issue"},
+		"project":{"id":"project-id","name":"Customer project"}
 	}`
 }
 

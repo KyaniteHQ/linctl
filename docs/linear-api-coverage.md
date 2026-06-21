@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 193 | 193 | 193 |
-| Domain-map commands | 305 | 173 | 305 |
+| Local generated Go operations | 205 | 205 | 205 |
+| Domain-map commands | 317 | 185 | 317 |
 
 ## Upstream SDK Root Methods
 
@@ -1143,7 +1143,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectStatuses` | query | `projectStatuses` | implemented | `internal/client/generated.go` |
 | `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
 | `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
+| `project_attachments` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_documents` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_externalLinks` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_history` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_initiativeToProjects` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_initiatives` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_inverseRelations` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_issues` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_labels` | query | `project` | implemented | `internal/client/generated.go` |
 | `project_members` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_needs` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_relations` | query | `project` | implemented | `internal/client/generated.go` |
+| `project_teams` | query | `project` | implemented | `internal/client/generated.go` |
 | `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
 | `release` | query | `release` | implemented | `internal/client/generated.go` |
 | `releaseNote` | query | `releaseNote` | implemented | `internal/client/generated.go` |
@@ -1314,10 +1326,22 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | write command needs explicit target and safety semantics |
 | Project | `project list` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project get` | `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project attachments` | `Project.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project documents` | `Project.documents` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project external-links` | `Project.externalLinks` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project history` | `Project.history` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project initiative-links` | `Project.initiativeToProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project initiatives` | `Project.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project inverse-relations` | `Project.inverseRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project issues` | `Project.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project labels` | `Project.labels` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | implemented | `linctl --help` / public CLI tests |
 | Project | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` | implemented | `linctl --help` / public CLI tests |
 | Project | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` | implemented | `linctl --help` / public CLI tests |
 | Project | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes | implemented | `linctl --help` / public CLI tests |
+| Project | `project needs` | `Project.needs` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project relations` | `Project.relations` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Project | `project teams` | `Project.teams` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Project | `project updates` | `Project.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |

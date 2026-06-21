@@ -37,6 +37,198 @@ query project_members($id: String!, $first: Int, $after: String, $includeArchive
   }
 }
 
+query project_attachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectAttachmentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    documents(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...DocumentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_externalLinks($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    externalLinks(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...EntityExternalLinkSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    history(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectHistorySummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_initiativeToProjects($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    initiativeToProjects(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...InitiativeToProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_initiatives($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    initiatives(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...InitiativeSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_inverseRelations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_issues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_labels($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    labels(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectLabelSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_needs($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    needs(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CustomerNeedSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_relations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    relations(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectRelationSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query project_teams($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  project(id: $id) {
+    id
+    name
+    teams(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...TeamSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query ProjectUpdates($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   project(id: $id) {
     id
@@ -61,6 +253,25 @@ query ProjectUpdates($id: String!, $first: Int, $after: String, $includeArchived
       }
     }
   }
+}
+
+fragment ProjectHistorySummaryFields on ProjectHistory {
+  id
+  createdAt
+  updatedAt
+  archivedAt
+  entries
+  project {
+    id
+  }
+}
+
+fragment ProjectAttachmentSummaryFields on ProjectAttachment {
+  id
+  title
+  subtitle
+  url
+  sourceType
 }
 
 mutation ProjectCreate($input: ProjectCreateInput!) {
