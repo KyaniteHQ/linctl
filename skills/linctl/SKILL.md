@@ -201,8 +201,12 @@ linctl custom-view list --json --limit 20
 linctl custom-view subscribers CUSTOM_VIEW_ID --json
 linctl custom-view get CUSTOM_VIEW_ID --json
 linctl custom-view initiatives CUSTOM_VIEW_ID --json --limit 20
+linctl custom-view issues CUSTOM_VIEW_ID --json --limit 20
 linctl custom-view organization-preferences CUSTOM_VIEW_ID --json
 linctl custom-view organization-preferences values CUSTOM_VIEW_ID --json
+linctl custom-view projects CUSTOM_VIEW_ID --json --limit 20
+linctl custom-view user-preferences CUSTOM_VIEW_ID --json
+linctl custom-view user-preferences values CUSTOM_VIEW_ID --json
 linctl custom-view preference-values CUSTOM_VIEW_ID --json
 linctl customer list --json --limit 20
 linctl customer get CUSTOMER_ID --json

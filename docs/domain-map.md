@@ -866,8 +866,12 @@ Planned commands:
 | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only |
 | `custom-view get` | `Query.customView` | Read-only |
 | `custom-view initiatives` | `Query.customView_initiatives` | Read-only |
+| `custom-view issues` | `Query.customView_issues` | Read-only |
 | `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only |
 | `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only |
+| `custom-view projects` | `Query.customView_projects` | Read-only |
+| `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only |
+| `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only |
 | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only |
 | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model |
 | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation |

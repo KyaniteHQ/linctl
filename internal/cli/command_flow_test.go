@@ -180,8 +180,12 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, contains: "custom-view-id has_subscribers true"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, contains: "custom-view-id My issues [Issue]"},
 		{name: "custom view initiatives", args: []string{"custom-view", "initiatives", "custom-view-id", "--limit", "1"}, contains: "initiative-id Platform [Active]"},
+		{name: "custom view issues", args: []string{"custom-view", "issues", "custom-view-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "custom view organization preferences", args: []string{"custom-view", "organization-preferences", "custom-view-id"}, contains: "custom-view-id organization preferences organization customView layout list"},
 		{name: "custom view organization preference values", args: []string{"custom-view", "organization-preferences", "values", "custom-view-id"}, contains: "custom-view-id preference values layout list ordering priority"},
+		{name: "custom view projects", args: []string{"custom-view", "projects", "custom-view-id", "--limit", "1"}, contains: "project-id Pinned project [Backlog]"},
+		{name: "custom view user preferences", args: []string{"custom-view", "user-preferences", "custom-view-id"}, contains: "custom-view-id user preferences user customView layout board"},
+		{name: "custom view user preference values", args: []string{"custom-view", "user-preferences", "values", "custom-view-id"}, contains: "custom-view-id preference values layout board ordering updatedAt"},
 		{name: "custom view preference values", args: []string{"custom-view", "preference-values", "custom-view-id"}, contains: "custom-view-id preference values layout board ordering updatedAt"},
 		{name: "customer list", args: []string{"customer", "list", "--limit", "1"}, contains: "customer-id Acme [Active] needs 3"},
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, contains: "customer-id Acme [Active] needs 3"},
@@ -625,8 +629,12 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"user", "my-teams"},
 			{"custom-view", "subscribers", "custom-view-id"},
 			{"custom-view", "initiatives", "custom-view-id"},
+			{"custom-view", "issues", "custom-view-id"},
 			{"custom-view", "organization-preferences", "custom-view-id"},
 			{"custom-view", "organization-preferences", "values", "custom-view-id"},
+			{"custom-view", "projects", "custom-view-id"},
+			{"custom-view", "user-preferences", "custom-view-id"},
+			{"custom-view", "user-preferences", "values", "custom-view-id"},
 			{"custom-view", "preference-values", "custom-view-id"},
 			{"sla-configuration", "list", "team-id"},
 		}
@@ -942,8 +950,12 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "custom-view", "subscribers", "custom-view-id"},
 		{"--json", "custom-view", "get", "custom-view-id"},
 		{"--json", "--fields", "id,name,status", "custom-view", "initiatives", "custom-view-id", "--limit", "1"},
+		{"--json", "--fields", "identifier,title,state", "custom-view", "issues", "custom-view-id", "--limit", "1"},
 		{"--json", "custom-view", "organization-preferences", "custom-view-id"},
 		{"--json", "custom-view", "organization-preferences", "values", "custom-view-id"},
+		{"--json", "--fields", "id,name,status", "custom-view", "projects", "custom-view-id", "--limit", "1"},
+		{"--json", "custom-view", "user-preferences", "custom-view-id"},
+		{"--json", "custom-view", "user-preferences", "values", "custom-view-id"},
 		{"--json", "custom-view", "preference-values", "custom-view-id"},
 		{"--json", "customer", "list", "--limit", "1"},
 		{"--json", "customer", "get", "customer-id"},
@@ -1553,8 +1565,12 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "custom view subscribers", args: []string{"custom-view", "subscribers", "custom-view-id"}, operation: "customViewHasSubscribers", contains: "get custom view subscribers custom-view-id"},
 		{name: "custom view get", args: []string{"custom-view", "get", "custom-view-id"}, operation: "customView", contains: "get custom view custom-view-id"},
 		{name: "custom view initiatives", args: []string{"custom-view", "initiatives", "custom-view-id"}, operation: "customView_initiatives", contains: "list custom view initiatives custom-view-id"},
+		{name: "custom view issues", args: []string{"custom-view", "issues", "custom-view-id"}, operation: "customView_issues", contains: "list custom view issues custom-view-id"},
 		{name: "custom view organization preferences", args: []string{"custom-view", "organization-preferences", "custom-view-id"}, operation: "customView_organizationViewPreferences", contains: "get custom view organization preferences custom-view-id"},
 		{name: "custom view organization preference values", args: []string{"custom-view", "organization-preferences", "values", "custom-view-id"}, operation: "customView_organizationViewPreferences_preferences", contains: "get custom view organization preference values custom-view-id"},
+		{name: "custom view projects", args: []string{"custom-view", "projects", "custom-view-id"}, operation: "customView_projects", contains: "list custom view projects custom-view-id"},
+		{name: "custom view user preferences", args: []string{"custom-view", "user-preferences", "custom-view-id"}, operation: "customView_userViewPreferences", contains: "get custom view user preferences custom-view-id"},
+		{name: "custom view user preference values", args: []string{"custom-view", "user-preferences", "values", "custom-view-id"}, operation: "customView_userViewPreferences_preferences", contains: "get custom view user preference values custom-view-id"},
 		{name: "custom view preference values", args: []string{"custom-view", "preference-values", "custom-view-id"}, operation: "customView_viewPreferencesValues", contains: "get custom view preference values custom-view-id"},
 		{name: "customer list", args: []string{"customer", "list"}, operation: "customers", contains: "list customers"},
 		{name: "customer get", args: []string{"customer", "get", "customer-id"}, operation: "customer", contains: "get customer customer-id"},
@@ -2241,10 +2257,18 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"customView":` + commandCustomViewJSON() + `}`, true
 	case "customView_initiatives":
 		return `{"customView":{"initiatives":{"nodes":[` + commandInitiativeJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "customView_issues":
+		return `{"customView":{"issues":{"nodes":[` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "customView_organizationViewPreferences":
 		return `{"customView":{"organizationViewPreferences":` + commandCustomViewPreferencesJSON("priority", "list") + `}}`, true
 	case "customView_organizationViewPreferences_preferences":
 		return `{"customView":{"organizationViewPreferences":{"preferences":` + commandCustomViewPreferenceValuesJSON("priority", "list") + `}}}`, true
+	case "customView_projects":
+		return `{"customView":{"projects":{"nodes":[` + commandProjectJSON("Pinned project", "Backlog", "backlog") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "customView_userViewPreferences":
+		return `{"customView":{"userViewPreferences":` + commandCustomViewScopedPreferencesJSON("user", "updatedAt", "board") + `}}`, true
+	case "customView_userViewPreferences_preferences":
+		return `{"customView":{"userViewPreferences":{"preferences":` + commandCustomViewPreferenceValuesJSON("updatedAt", "board") + `}}}`, true
 	case "customView_viewPreferencesValues":
 		return `{"customView":{"viewPreferencesValues":` + commandCustomViewPreferenceValuesJSON("updatedAt", "board") + `}}`, true
 	case "customers":
@@ -2960,12 +2984,16 @@ func commandCustomViewJSON() string {
 }
 
 func commandCustomViewPreferencesJSON(ordering string, layout string) string {
+	return commandCustomViewScopedPreferencesJSON("organization", ordering, layout)
+}
+
+func commandCustomViewScopedPreferencesJSON(scope string, ordering string, layout string) string {
 	return `{
 		"id":"view-preferences-id",
 		"createdAt":"2026-06-01T12:00:00Z",
 		"updatedAt":"2026-06-01T12:01:00Z",
 		"archivedAt":null,
-		"type":"organization",
+		"type":"` + scope + `",
 		"viewType":"customView",
 		"preferences":` + commandCustomViewPreferenceValuesJSON(ordering, layout) + `
 	}`

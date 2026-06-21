@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 109 | 458 |
 | Upstream Query root fields | 158 | 97 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 189 | 189 | 189 |
-| Domain-map commands | 301 | 169 | 301 |
+| Local generated Go operations | 193 | 193 | 193 |
+| Domain-map commands | 305 | 173 | 305 |
 
 ## Upstream SDK Root Methods
 
@@ -1073,8 +1073,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customView` | query | `customView` | implemented | `internal/client/generated.go` |
 | `customViewHasSubscribers` | query | `customViewHasSubscribers` | implemented | `internal/client/generated.go` |
 | `customView_initiatives` | query | `customView` | implemented | `internal/client/generated.go` |
+| `customView_issues` | query | `customView` | implemented | `internal/client/generated.go` |
 | `customView_organizationViewPreferences` | query | `customView` | implemented | `internal/client/generated.go` |
 | `customView_organizationViewPreferences_preferences` | query | `customView` | implemented | `internal/client/generated.go` |
+| `customView_projects` | query | `customView` | implemented | `internal/client/generated.go` |
+| `customView_userViewPreferences` | query | `customView` | implemented | `internal/client/generated.go` |
+| `customView_userViewPreferences_preferences` | query | `customView` | implemented | `internal/client/generated.go` |
 | `customView_viewPreferencesValues` | query | `customView` | implemented | `internal/client/generated.go` |
 | `customViews` | query | `customViews` | implemented | `internal/client/generated.go` |
 | `customer` | query | `customer` | implemented | `internal/client/generated.go` |
@@ -1459,8 +1463,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view get` | `Query.customView` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view initiatives` | `Query.customView_initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
+| CustomView | `custom-view issues` | `Query.customView_issues` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only | implemented | `linctl --help` / public CLI tests |
+| CustomView | `custom-view projects` | `Query.customView_projects` | Read-only | implemented | `linctl --help` / public CLI tests |
+| CustomView | `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
+| CustomView | `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only | implemented | `linctl --help` / public CLI tests |
 | CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | write command needs explicit target and safety semantics |
 | CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | write command needs explicit target and safety semantics |

@@ -66,6 +66,7 @@ type CustomViewPreferencesValues struct {
 	ProjectShowEmptyGroups      string   `json:"project_show_empty_groups,omitempty"`
 	ProjectShowEmptySubGroups   string   `json:"project_show_empty_sub_groups,omitempty"`
 	HasOrganizationPreferences  bool     `json:"has_organization_preferences,omitempty"`
+	HasUserPreferences          bool     `json:"has_user_preferences,omitempty"`
 	HasEffectivePreferenceValue bool     `json:"has_effective_preference_value,omitempty"`
 }
 
@@ -143,6 +144,30 @@ func ListCustomViewInitiatives(
 	}, nil
 }
 
+// ListCustomViewIssues returns issues matching one custom view's issue filter.
+func ListCustomViewIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (IssueList, error) {
+	result, err := customView_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return IssueList{}, fmt.Errorf("list custom view issues %s: %w", id, err)
+	}
+
+	issues := make([]IssueSummary, 0, len(result.CustomView.Issues.Nodes))
+	for _, node := range result.CustomView.Issues.Nodes {
+		issues = append(issues, issueSummaryFromFields(node.IssueSummaryFields))
+	}
+
+	return IssueList{
+		Issues:      issues,
+		HasNextPage: result.CustomView.Issues.PageInfo.HasNextPage,
+		EndCursor:   result.CustomView.Issues.PageInfo.EndCursor,
+	}, nil
+}
+
 // GetCustomViewOrganizationPreferences returns organization defaults for one custom view.
 func GetCustomViewOrganizationPreferences(
 	ctx context.Context,
@@ -193,6 +218,79 @@ func GetCustomViewOrganizationPreferenceValues(
 		result.CustomView.OrganizationViewPreferences.Preferences.CustomViewPreferencesValueFields,
 	)
 	values.HasOrganizationPreferences = true
+	return values, nil
+}
+
+// ListCustomViewProjects returns projects matching one custom view's project filter.
+func ListCustomViewProjects(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ProjectList, error) {
+	result, err := customView_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	if err != nil {
+		return ProjectList{}, fmt.Errorf("list custom view projects %s: %w", id, err)
+	}
+
+	projects := make([]ProjectSummary, 0, len(result.CustomView.Projects.Nodes))
+	for _, node := range result.CustomView.Projects.Nodes {
+		projects = append(projects, projectSummaryFromFields(node.ProjectSummaryFields))
+	}
+
+	return ProjectList{
+		Projects:    projects,
+		HasNextPage: result.CustomView.Projects.PageInfo.HasNextPage,
+		EndCursor:   result.CustomView.Projects.PageInfo.EndCursor,
+	}, nil
+}
+
+// GetCustomViewUserPreferences returns current-user preferences for one custom view.
+func GetCustomViewUserPreferences(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (CustomViewPreferences, error) {
+	result, err := customView_userViewPreferences(ctx, graphqlClient, id)
+	if err != nil {
+		return CustomViewPreferences{}, fmt.Errorf("get custom view user preferences %s: %w", id, err)
+	}
+	if result.CustomView.UserViewPreferences == nil {
+		return CustomViewPreferences{CustomViewID: id}, nil
+	}
+
+	fields := result.CustomView.UserViewPreferences.CustomViewPreferencesFields
+	return CustomViewPreferences{
+		CustomViewID: id,
+		ID:           fields.Id,
+		Type:         fields.Type,
+		ViewType:     fields.ViewType,
+		CreatedAt:    fields.CreatedAt,
+		UpdatedAt:    fields.UpdatedAt,
+		ArchivedAt:   stringValue(fields.ArchivedAt),
+		Values:       customViewPreferencesValues(id, fields.Preferences.CustomViewPreferencesValueFields),
+	}, nil
+}
+
+// GetCustomViewUserPreferenceValues returns current-user display settings for one custom view.
+func GetCustomViewUserPreferenceValues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+) (CustomViewPreferencesValues, error) {
+	result, err := customView_userViewPreferences_preferences(ctx, graphqlClient, id)
+	if err != nil {
+		return CustomViewPreferencesValues{}, fmt.Errorf("get custom view user preference values %s: %w", id, err)
+	}
+	if result.CustomView.UserViewPreferences == nil {
+		return CustomViewPreferencesValues{CustomViewID: id}, nil
+	}
+
+	values := customViewPreferencesValues(
+		id,
+		result.CustomView.UserViewPreferences.Preferences.CustomViewPreferencesValueFields,
+	)
+	values.HasUserPreferences = true
 	return values, nil
 }
 

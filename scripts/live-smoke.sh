@@ -143,8 +143,12 @@ PY
     "$binary" custom-view get "$custom_view_id" --json >/dev/null
     "$binary" custom-view subscribers "$custom_view_id" --json >/dev/null
     "$binary" custom-view initiatives "$custom_view_id" --json --limit 5 >/dev/null
+    "$binary" custom-view issues "$custom_view_id" --json --limit 5 >/dev/null
     "$binary" custom-view organization-preferences "$custom_view_id" --json >/dev/null
     "$binary" custom-view organization-preferences values "$custom_view_id" --json >/dev/null
+    "$binary" custom-view projects "$custom_view_id" --json --limit 5 >/dev/null
+    "$binary" custom-view user-preferences "$custom_view_id" --json >/dev/null
+    "$binary" custom-view user-preferences values "$custom_view_id" --json >/dev/null
     "$binary" custom-view preference-values "$custom_view_id" --json >/dev/null
   fi
   "$binary" customer list --json --limit 5 >/dev/null

@@ -30,7 +30,10 @@ func addCustomViewCommand(ctx context.Context, root *cobra.Command, options *roo
 	)
 	addCustomViewSubscribersCommand(ctx, customViewCommand, options)
 	addCustomViewInitiativesCommand(ctx, customViewCommand, options)
+	addCustomViewIssuesCommand(ctx, customViewCommand, options)
 	addCustomViewOrganizationPreferencesCommand(ctx, customViewCommand, options)
+	addCustomViewProjectsCommand(ctx, customViewCommand, options)
+	addCustomViewUserPreferencesCommand(ctx, customViewCommand, options)
 	addCustomViewPreferenceValuesCommand(ctx, customViewCommand, options)
 }
 
@@ -78,6 +81,29 @@ func addCustomViewInitiativesCommand(ctx context.Context, root *cobra.Command, o
 	root.AddCommand(command)
 }
 
+func addCustomViewIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "issues CUSTOM_VIEW_ID",
+		Short: "List issues matching a custom view",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadCustomViewIssues,
+				issuePageWithItems,
+				writeIssue,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
+	root.AddCommand(command)
+}
+
 func addCustomViewOrganizationPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	command := &cobra.Command{
 		Use:   "organization-preferences CUSTOM_VIEW_ID",
@@ -107,6 +133,70 @@ func addCustomViewOrganizationPreferencesCommand(ctx context.Context, root *cobr
 				return err
 			}
 			values, err := client.GetCustomViewOrganizationPreferenceValues(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeCustomViewPreferenceValues(command, options, values)
+		},
+	}
+
+	command.AddCommand(valuesCommand)
+	root.AddCommand(command)
+}
+
+func addCustomViewProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "projects CUSTOM_VIEW_ID",
+		Short: "List projects matching a custom view",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadCustomViewProjects,
+				projectPageWithItems,
+				writeProject,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
+	root.AddCommand(command)
+}
+
+func addCustomViewUserPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	command := &cobra.Command{
+		Use:   "user-preferences CUSTOM_VIEW_ID",
+		Short: "Read current-user view preferences for a custom view",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			preferences, err := client.GetCustomViewUserPreferences(ctx, runtime.graphqlClient, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeCustomViewScopedPreferences(command, options, "user", preferences)
+		},
+	}
+
+	valuesCommand := &cobra.Command{
+		Use:   "values CUSTOM_VIEW_ID",
+		Short: "Read current-user view preference values for a custom view",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			values, err := client.GetCustomViewUserPreferenceValues(ctx, runtime.graphqlClient, args[0])
 			if err != nil {
 				return err
 			}
@@ -186,6 +276,15 @@ func writeCustomViewPreferences(
 	options *rootOptions,
 	preferences client.CustomViewPreferences,
 ) error {
+	return writeCustomViewScopedPreferences(command, options, "organization", preferences)
+}
+
+func writeCustomViewScopedPreferences(
+	command *cobra.Command,
+	options *rootOptions,
+	scope string,
+	preferences client.CustomViewPreferences,
+) error {
 	if wrote, err := writeIDOnly(command, options, preferences.CustomViewID); wrote || err != nil {
 		return err
 	}
@@ -196,13 +295,14 @@ func writeCustomViewPreferences(
 		return writeJSONValue(command, options, preferences)
 	}
 	if preferences.ID == "" {
-		return render.WriteLine(command.OutOrStdout(), "%s organization preferences -", preferences.CustomViewID)
+		return render.WriteLine(command.OutOrStdout(), "%s %s preferences -", preferences.CustomViewID, scope)
 	}
 
 	return render.WriteLine(
 		command.OutOrStdout(),
-		"%s organization preferences %s %s layout %s",
+		"%s %s preferences %s %s layout %s",
 		preferences.CustomViewID,
+		scope,
 		preferences.Type,
 		preferences.ViewType,
 		emptyDash(preferences.Values.Layout),
@@ -259,6 +359,26 @@ func loadCustomViewInitiatives(
 ) (client.InitiativeList, []client.InitiativeSummary, error) {
 	initiatives, err := client.ListCustomViewInitiatives(ctx, runtime.graphqlClient, args[0], limit)
 	return initiatives, initiatives.Initiatives, err
+}
+
+func loadCustomViewIssues(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.IssueList, []client.IssueSummary, error) {
+	issues, err := client.ListCustomViewIssues(ctx, runtime.graphqlClient, args[0], limit)
+	return issues, issues.Issues, err
+}
+
+func loadCustomViewProjects(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.ProjectList, []client.ProjectSummary, error) {
+	projects, err := client.ListCustomViewProjects(ctx, runtime.graphqlClient, args[0], limit)
+	return projects, projects.Projects, err
 }
 
 func customViewPageWithItems(

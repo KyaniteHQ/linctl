@@ -36,6 +36,20 @@ query customView_initiatives($id: String!, $first: Int, $after: String, $include
   }
 }
 
+query customView_issues($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  customView(id: $id) {
+    issues(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...IssueSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 query customView_organizationViewPreferences($id: String!) {
   customView(id: $id) {
     organizationViewPreferences {
@@ -47,6 +61,38 @@ query customView_organizationViewPreferences($id: String!) {
 query customView_organizationViewPreferences_preferences($id: String!) {
   customView(id: $id) {
     organizationViewPreferences {
+      preferences {
+        ...CustomViewPreferencesValueFields
+      }
+    }
+  }
+}
+
+query customView_projects($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  customView(id: $id) {
+    projects(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...ProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query customView_userViewPreferences($id: String!) {
+  customView(id: $id) {
+    userViewPreferences {
+      ...CustomViewPreferencesFields
+    }
+  }
+}
+
+query customView_userViewPreferences_preferences($id: String!) {
+  customView(id: $id) {
+    userViewPreferences {
       preferences {
         ...CustomViewPreferencesValueFields
       }
