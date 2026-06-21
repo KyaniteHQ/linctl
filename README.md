@@ -590,10 +590,13 @@ After following the clean-machine setup above:
 ```bash
 go generate ./...
 git diff --exit-code -- internal/client/generated.go
-go build ./...
-go vet ./...
-go test -race -shuffle=on -count=1 ./...
-go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m ./...
+go build $(bash scripts/go-packages.sh)
+go vet $(bash scripts/go-packages.sh)
+go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
+go tool govulncheck $(bash scripts/go-packages.sh)
+go run github.com/go-task/task/v3/cmd/task@latest ci
+go run github.com/go-task/task/v3/cmd/task@latest coverage
 ```
 
 The temporary integration fixture is configured in `test/integration-config.json`. Inject
@@ -606,7 +609,7 @@ LINCTL_TEST_TOKEN=<token> go test -count=1 -tags=integration ./internal/client
 Or run the complete live smoke harness:
 
 ```bash
-task live-smoke
+go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 ```
 
 The smoke harness builds a temporary CLI binary, runs read-only CLI checks, then runs the integration-tagged

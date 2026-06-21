@@ -12,13 +12,18 @@ tasks:
   fmt:
     desc: Format Go files
     cmds:
-      - gofumpt -w .
-      - goimports -w -local "$(go list -m)" .
+      - go tool gofumpt -w cmd internal scripts
+      - go tool goimports -w -local "$(go list -m)" cmd internal scripts
 
   lint:
     desc: Run linters
     cmds:
       - go run {{.GOLANGCI_LINT}} run --timeout 5m $(bash scripts/go-packages.sh)
+
+  vuln:
+    desc: Run vulnerability checks
+    cmds:
+      - go tool govulncheck $(bash scripts/go-packages.sh)
 
   generate-check:
     desc: Regenerate GraphQL client and verify it is committed
@@ -59,3 +64,4 @@ tasks:
       - task: test
       - go build $(bash scripts/go-packages.sh)
       - task: lint
+      - task: vuln

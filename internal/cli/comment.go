@@ -25,7 +25,8 @@ func addCommentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 			PageWithItems: commentPageWithItems,
 			LoadGet:       loadComment,
 			WriteItem:     writeComment,
-		})
+		},
+	)
 	addCommentBotActorCommand(ctx, commentCommand, options)
 	addCommentChildrenCommand(ctx, commentCommand, options)
 	addCommentCreatedIssuesCommand(ctx, commentCommand, options)

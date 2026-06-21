@@ -230,7 +230,7 @@ func CreateCycle(
 	if err != nil {
 		return CycleSummary{}, fmt.Errorf("create cycle: %w", err)
 	}
-	if !created.CycleCreate.Success {
+	if !created.CycleCreate.Success || created.CycleCreate.Cycle == nil {
 		return CycleSummary{}, fmt.Errorf("%w: cycleCreate failed", ErrMutationFailed)
 	}
 
@@ -265,7 +265,7 @@ func UpdateCycle(
 	if err != nil {
 		return CycleSummary{}, fmt.Errorf("update cycle %s: %w", request.ID, err)
 	}
-	if !updated.CycleUpdate.Success {
+	if !updated.CycleUpdate.Success || updated.CycleUpdate.Cycle == nil {
 		return CycleSummary{}, fmt.Errorf("%w: cycleUpdate failed", ErrMutationFailed)
 	}
 
@@ -294,7 +294,7 @@ func ArchiveCycle(
 	if err != nil {
 		return CycleSummary{}, fmt.Errorf("archive cycle %s: %w", id, err)
 	}
-	if !archived.CycleArchive.Success {
+	if !archived.CycleArchive.Success || archived.CycleArchive.Entity == nil {
 		return CycleSummary{}, fmt.Errorf("%w: cycleArchive failed", ErrMutationFailed)
 	}
 

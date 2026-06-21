@@ -31,13 +31,17 @@ Maximize `linctl` coverage of the current upstream Linear SDK/API while preservi
 - User reads: `user list`, `user get`, `user me`; user writes documented outside the v1 PM command surface.
 - Final `docs/linear-api-coverage.md` regenerated from upstream Linear commit `df20561`.
 - Tech-debt and thermo-nuclear review artifacts written under `/tmp`.
+- Final objective audit completed for the upstream coverage push; the authoritative current coverage
+  ledger is `docs/linear-api-coverage.md`.
 
 ## Current slice
 
-Final objective audit is in progress after all planned repo domains were implemented or intentionally blocked with evidence.
+Maintenance mode: keep generated coverage, command docs, test scenarios, and `skills/linctl` aligned whenever
+the Linear schema or CLI command surface changes.
 
 ## Next verification
 
-- Confirm no `unknown` / unclassified ledger rows.
-- Confirm no `accepted_gap | planned in docs/domain-map.md` rows.
-- Mark the goal complete only after the objective audit passes.
+- Run `go run github.com/go-task/task/v3/cmd/task@latest ci`.
+- Run `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
+- Refresh the coverage ledger when `internal/client/schema.graphql`, generated operations, or public command
+  registrations change.

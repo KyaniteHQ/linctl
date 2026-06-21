@@ -9,3 +9,8 @@ coverage.html
 .linctl.toml
 *.pem
 *.key
+
+# Third-party Go skill set (samber/cc-skills-golang), installed locally
+skills/cc-skills-golang/
+.agents/
+.claude/skills/cc-skills-golang

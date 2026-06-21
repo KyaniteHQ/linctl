@@ -28,6 +28,21 @@ func Test_CreateCycle_returns_created_cycle_when_target_matches(t *testing.T) {
 	require.Equal(t, "LIT", cycle.TeamKey)
 }
 
+func Test_CreateCycle_returns_mutation_failed_when_payload_omits_cycle(t *testing.T) {
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"CycleCreate": `{"cycleCreate":{"success":true,"cycle":null}}`,
+	})
+
+	_, err := CreateCycle(context.Background(), graphqlClient, matchingTarget(), CycleCreateRequest{
+		Name:     "Planning cycle",
+		StartsAt: "2026-07-01T00:00:00Z",
+		EndsAt:   "2026-07-15T00:00:00Z",
+	})
+
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
 func Test_UpdateCycle_returns_updated_cycle_when_target_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
 		"cycle":       `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
@@ -44,6 +59,21 @@ func Test_UpdateCycle_returns_updated_cycle_when_target_matches(t *testing.T) {
 	require.Equal(t, "Updated cycle", cycle.Name)
 }
 
+func Test_UpdateCycle_returns_mutation_failed_when_payload_omits_cycle(t *testing.T) {
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"cycle":       `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+		"CycleUpdate": `{"cycleUpdate":{"success":true,"cycle":null}}`,
+	})
+
+	_, err := UpdateCycle(context.Background(), graphqlClient, matchingTarget(), CycleUpdateRequest{
+		ID:   "cycle-id",
+		Name: "Updated cycle",
+	})
+
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
 func Test_ArchiveCycle_returns_archived_cycle_when_target_matches(t *testing.T) {
 	graphqlClient := projectWriteFakeClient(map[string]string{
 		"cycle":        `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
@@ -55,6 +85,18 @@ func Test_ArchiveCycle_returns_archived_cycle_when_target_matches(t *testing.T) 
 	require.NoError(t, err)
 	require.Equal(t, "cycle-id", cycle.ID)
 	require.Equal(t, "Planning cycle", cycle.Name)
+}
+
+func Test_ArchiveCycle_returns_mutation_failed_when_payload_omits_entity(t *testing.T) {
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"cycle":        `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
+		"CycleArchive": `{"cycleArchive":{"success":true,"entity":null}}`,
+	})
+
+	_, err := ArchiveCycle(context.Background(), graphqlClient, matchingTarget(), "cycle-id")
+
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
 func Test_UpdateCycle_refuses_when_team_differs(t *testing.T) {

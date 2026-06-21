@@ -45,9 +45,9 @@ go run ./cmd/linctl usage
 go run ./cmd/linctl --version
 go generate ./...
 git diff --exit-code -- internal/client/generated.go
-go build ./...
-go vet ./...
-go test -race -shuffle=on -count=1 ./...
+go build $(bash scripts/go-packages.sh)
+go vet $(bash scripts/go-packages.sh)
+go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
 ```
 
 Gap:
@@ -78,17 +78,50 @@ go run ./cmd/linctl usage
 go run ./cmd/linctl --version
 go generate ./...
 git diff --exit-code -- internal/client/generated.go
-go build ./...
-go vet ./...
-go test -race -shuffle=on -count=1 ./...
-go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run --timeout 5m ./...
+go build $(bash scripts/go-packages.sh)
+go vet $(bash scripts/go-packages.sh)
+go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
+go tool govulncheck $(bash scripts/go-packages.sh)
 ```
 
 Gap:
 
 - The clean run passed, but the lint command used `@latest`, which quietly made the documented gate depend
   on whatever golangci-lint version is current at execution time.
+- Raw `./...` product checks also become false negatives when local skill/example assets are present under
+  ignored directories, because Go still walks those directories even when git ignores them.
 
 Fix:
 
 - Pinned the README lint command and CI lint action to golangci-lint `v2.12.2`.
+- Switched documented build, vet, test, lint, and vulnerability checks to the product package list from
+  `scripts/go-packages.sh`.
+
+## Attempt 4
+
+Environment: disposable local clone of the current candidate tree.
+
+Command:
+
+```bash
+git clone --no-local /home/oruc/Desktop/workspace/linctl /tmp/linctl-fresh/repo
+cd /tmp/linctl-fresh/repo
+go run ./cmd/linctl usage
+go run ./cmd/linctl --version
+go generate ./...
+git diff --exit-code -- internal/client/generated.go
+go build $(bash scripts/go-packages.sh)
+go vet $(bash scripts/go-packages.sh)
+go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
+go tool govulncheck $(bash scripts/go-packages.sh)
+```
+
+Gap:
+
+- None. One uninterrupted fresh replay reached the documented ready state.
+
+Fix:
+
+- No additional setup or documentation fix was required.

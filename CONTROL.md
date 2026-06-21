@@ -16,27 +16,21 @@
 
 ## Current phase
 
-Phase 5: final verification and objective audit.
+Maintenance mode. Use `docs/linear-api-coverage.md` as the authoritative current coverage ledger.
 
 ## Latest coverage counts
 
-- Upstream Linear SDK root methods: 458 total, 30 implemented/root-backed, 458 classified.
-- Upstream GraphQL Query root fields: 158 total, 18 implemented/root-backed, 158 classified.
+- Upstream Linear SDK root methods: 458 total, 122 implemented/root-backed, 458 classified.
+- Upstream GraphQL Query root fields: 158 total, 111 implemented/root-backed, 158 classified.
 - Upstream GraphQL Mutation root fields: 364 total, 12 implemented/root-backed, 364 classified.
-- Local generated Go operations: 54 total, 54 implemented, 54 classified.
-- Repo domain-map commands: 58 total, 48 implemented, 58 classified.
+- Local generated Go operations: 318 total, 318 implemented, 318 classified.
+- Repo domain-map commands: 409 total, 278 implemented, 409 classified.
 
-## Final verification evidence
+## Verification gate
 
-- `go generate ./...` idempotence check for `internal/client/generated.go`: passed.
-- `go run github.com/go-task/task/v3/cmd/task@latest test`: passed.
-- `go run github.com/go-task/task/v3/cmd/task@latest lint`: passed with 0 issues.
-- `go run github.com/go-task/task/v3/cmd/task@latest coverage`: passed with total hand-written statement coverage 100.0%.
-- `go vet ./...`: passed.
-- `go build ./...`: passed.
-- `go run github.com/go-task/task/v3/cmd/task@latest live-smoke`: passed.
-- Tech debt audit artifact: `/tmp/linctl-tech-debt-audit-2026-06-20.md`.
-- Thermo-nuclear review artifact: `/tmp/linctl-thermo-review-2026-06-20.md`.
+- `go run github.com/go-task/task/v3/cmd/task@latest ci`
+- `go run github.com/go-task/task/v3/cmd/task@latest coverage`
+- Optional live smoke: `go run github.com/go-task/task/v3/cmd/task@latest live-smoke`
 
 ## Accepted exclusion categories
 

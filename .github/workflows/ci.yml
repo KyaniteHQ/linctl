@@ -21,13 +21,12 @@ jobs:
           go generate ./...
           git diff --exit-code -- internal/client/generated.go
       - name: Build
-        run: go build ./...
+        run: go build $(bash scripts/go-packages.sh)
       - name: Vet
-        run: go vet ./...
+        run: go vet $(bash scripts/go-packages.sh)
       - name: Test
-        run: go test -race -shuffle=on -count=1 ./...
+        run: go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v9
-        with:
-          version: v2.12.2
-          args: --timeout 5m ./...
+        run: go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
+      - name: Vulnerability scan
+        run: go tool govulncheck $(bash scripts/go-packages.sh)

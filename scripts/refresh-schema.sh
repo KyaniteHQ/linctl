@@ -14,8 +14,35 @@ mkdir -p "$(dirname "$schema_path")"
 tmp_schema="$(mktemp)"
 trap 'rm -f "$tmp_schema"' EXIT
 
-npx --yes get-graphql-schema@2.1.2 \
-  --header "Authorization=$token" \
-  https://api.linear.app/graphql >"$tmp_schema"
+npx --yes --package graphql@16 node >"$tmp_schema" <<'NODE'
+const { buildClientSchema, getIntrospectionQuery, printSchema } = require("graphql");
+
+async function main() {
+  const token = process.env.LINCTL_TEST_TOKEN || process.env.LINCTL_TOKEN || process.env.LINEAR_API_KEY;
+  const response = await fetch("https://api.linear.app/graphql", {
+    method: "POST",
+    headers: {
+      Authorization: token,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query: getIntrospectionQuery() }),
+  });
+  const responseBody = await response.text();
+  if (!response.ok) {
+    throw new Error(`Linear schema request failed (${response.status}): ${responseBody}`);
+  }
+  const payload = JSON.parse(responseBody);
+  if (payload.errors && payload.errors.length > 0) {
+    throw new Error(`Linear schema introspection failed: ${JSON.stringify(payload.errors)}`);
+  }
+  process.stdout.write(printSchema(buildClientSchema(payload.data)));
+  process.stdout.write("\n");
+}
+
+main().catch((error) => {
+  console.error(error.message);
+  process.exit(1);
+});
+NODE
 
 mv "$tmp_schema" "$schema_path"
