@@ -19,8 +19,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Upstream SDK root methods | 458 | 117 | 458 |
 | Upstream Query root fields | 158 | 105 | 158 |
 | Upstream Mutation root fields | 364 | 12 | 364 |
-| Local generated Go operations | 306 | 306 | 306 |
-| Domain-map commands | 397 | 265 | 397 |
+| Local generated Go operations | 308 | 308 | 308 |
+| Domain-map commands | 399 | 267 | 399 |
 
 ## Upstream SDK Root Methods
 
@@ -1112,6 +1112,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `cycle_uncompletedIssuesUponClose` | query | `cycle` | implemented | `internal/client/generated.go` |
 | `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
 | `document` | query | `document` | implemented | `internal/client/generated.go` |
+| `document_comments` | query | `document` | implemented | `internal/client/generated.go` |
 | `emoji` | query | `emoji` | implemented | `internal/client/generated.go` |
 | `emojis` | query | `emojis` | implemented | `internal/client/generated.go` |
 | `entityExternalLink` | query | `entityExternalLink` | implemented | `internal/client/generated.go` |
@@ -1126,6 +1127,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiativeToProject` | query | `initiativeToProject` | implemented | `internal/client/generated.go` |
 | `initiativeToProjects` | query | `initiativeToProjects` | implemented | `internal/client/generated.go` |
 | `initiativeUpdate` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
+| `initiativeUpdate_comments` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
 | `initiativeUpdates` | query | `initiativeUpdates` | implemented | `internal/client/generated.go` |
 | `initiative_documents` | query | `initiative` | implemented | `internal/client/generated.go` |
 | `initiative_history` | query | `initiative` | implemented | `internal/client/generated.go` |
@@ -1528,6 +1530,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | ProjectMilestone | `project-milestone delete` | `Mutation.projectMilestoneDelete` | Resource-scoped, compare resolved project | blocked_needs_design | destructive command needs explicit safety semantics |
 | Document | `document list` | `Query.documents` | Read-only | implemented | `linctl --help` / public CLI tests |
 | Document | `document get` | `Query.document` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Document | `document comments` | `Document.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
 | Document | `document create` | `Mutation.documentCreate` with optional `projectId`, `teamId`, `issueId`, `cycleId` | Blocked: parent can be project, team, issue, or cycle; write guard needs explicit parent-resolution semantics | blocked_needs_design | write command needs explicit target and safety semantics |
 | Document | `document update` | `Mutation.documentUpdate` | Blocked: update must resolve and compare the existing parent before changing content | blocked_needs_design | write command needs explicit target and safety semantics |
 | Document | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
@@ -1637,6 +1640,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | RoadmapToProject | `roadmap-to-project delete` | `Mutation.roadmapToProjectDelete` | Blocked: destructive deprecated association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeUpdate | `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
 | InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | write command needs explicit target and safety semantics |
 | InitiativeUpdate | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation | blocked_needs_design | write command needs explicit target and safety semantics |
 | InitiativeUpdate | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | write command needs explicit target and safety semantics |

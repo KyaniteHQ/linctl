@@ -166,6 +166,11 @@ PY
   "$binary" project-status list --json --limit 5 >/dev/null
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null
+  document_json="$("$binary" document list --json --limit 5)"
+  document_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("documents", []); print(items[0]["id"] if items else "")' <<<"$document_json")"
+  if [[ -n "$document_id" ]]; then
+    "$binary" document comments "$document_id" --json --limit 5 >/dev/null
+  fi
   label_json="$("$binary" label list --json --limit 5)"
   label_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("labels", []); print(items[0]["id"] if items else "")' <<<"$label_json")"
   if [[ -n "$label_id" ]]; then
@@ -248,7 +253,11 @@ PY
   fi
   "$binary" initiative-relation list --json --limit 5 >/dev/null
   "$binary" initiative-to-project list --json --limit 5 >/dev/null
-  "$binary" initiative-update list --json --limit 5 >/dev/null
+  initiative_update_json="$("$binary" initiative-update list --json --limit 5)"
+  initiative_update_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("updates", []); print(items[0]["id"] if items else "")' <<<"$initiative_update_json")"
+  if [[ -n "$initiative_update_id" ]]; then
+    "$binary" initiative-update comments "$initiative_update_id" --json --limit 5 >/dev/null
+  fi
   "$binary" roadmap list --json --limit 5 >/dev/null
   "$binary" roadmap-to-project list --json --limit 5 >/dev/null
   custom_view_json="$("$binary" custom-view list --json --limit 5)"

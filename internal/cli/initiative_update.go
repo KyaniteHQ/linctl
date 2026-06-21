@@ -11,7 +11,7 @@ import (
 )
 
 func addInitiativeUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand[
+	initiativeUpdateCommand := addReadListGetCommand[
 		client.InitiativeUpdateList,
 		client.InitiativeUpdateSummary,
 	](ctx, root, options, readListGetSpec[client.InitiativeUpdateList, client.InitiativeUpdateSummary]{
@@ -26,6 +26,30 @@ func addInitiativeUpdateCommand(ctx context.Context, root *cobra.Command, option
 		LoadGet:       loadInitiativeUpdate,
 		WriteItem:     writeInitiativeUpdate,
 	})
+	addInitiativeUpdateCommentsCommand(ctx, initiativeUpdateCommand, options)
+}
+
+func addInitiativeUpdateCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "comments INITIATIVE_UPDATE_ID",
+		Short: "List initiative update comments without body content",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadInitiativeUpdateCommentList,
+				initiativeUpdateCommentPageWithItems,
+				writeCommentMetadata,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum comments to return")
+	root.AddCommand(command)
 }
 
 func writeInitiativeUpdate(
@@ -76,5 +100,23 @@ func initiativeUpdatePageWithItems(
 	updates []client.InitiativeUpdateSummary,
 ) client.InitiativeUpdateList {
 	page.Updates = updates
+	return page
+}
+
+func loadInitiativeUpdateCommentList(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.InitiativeUpdateCommentList, []client.CommentMetadataSummary, error) {
+	comments, err := client.ListInitiativeUpdateComments(ctx, runtime.graphqlClient, args[0], limit)
+	return comments, comments.Comments, err
+}
+
+func initiativeUpdateCommentPageWithItems(
+	page client.InitiativeUpdateCommentList,
+	comments []client.CommentMetadataSummary,
+) client.InitiativeUpdateCommentList {
+	page.Comments = comments
 	return page
 }

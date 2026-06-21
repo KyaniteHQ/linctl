@@ -180,6 +180,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, contains: "project-id Archived project [Canceled]"},
 		{name: "document list", args: []string{"document", "list", "--limit", "1"}, contains: "document-id Spec [project]"},
 		{name: "document get", args: []string{"document", "get", "document-id"}, contains: "document-id Team note [team]"},
+		{name: "document comments", args: []string{"document", "comments", "document-id", "--limit", "1"}, contains: "comment-id Omer 2026-06-19T12:00:00Z"},
 		{name: "label list", args: []string{"label", "list", "--limit", "1"}, contains: "label-id Bug #ff0000"},
 		{name: "label get", args: []string{"label", "get", "label-id"}, contains: "label-id Bug #ff0000"},
 		{name: "label children", args: []string{"label", "children", "label-id", "--limit", "1"}, contains: "child-label-id Mobile #56ccf2"},
@@ -263,6 +264,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "initiative to project get", args: []string{"initiative-to-project", "get", "initiative-to-project-id"}, contains: "initiative-to-project-id Platform -> Pinned project order 1"},
 		{name: "initiative update list", args: []string{"initiative-update", "list", "--limit", "1"}, contains: "initiative-update-id onTrack Omer First initiative update"},
 		{name: "initiative update get", args: []string{"initiative-update", "get", "initiative-update-id"}, contains: "initiative-update-id onTrack Omer First initiative update"},
+		{name: "initiative update comments", args: []string{"initiative-update", "comments", "initiative-update-id", "--limit", "1"}, contains: "comment-id Omer 2026-06-19T12:00:00Z"},
 		{name: "roadmap list", args: []string{"roadmap", "list", "--limit", "1"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
 		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, contains: "roadmap-id Platform roadmap platform-roadmap"},
 		{name: "roadmap to project list", args: []string{"roadmap-to-project", "list", "--limit", "1"}, contains: "roadmap-to-project-id Platform roadmap -> Pinned project order 1"},
@@ -1071,6 +1073,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue-relation", "get", "issue-relation-id"},
 		{"--json", "--fields", "id,issue_id,release_id", "issue-to-release", "list", "--limit", "1"},
 		{"--json", "issue-to-release", "get", "issue-to-release-id"},
+		{"--json", "--fields", "id,display_name", "document", "comments", "document-id", "--limit", "1"},
 		{"--json", "issue", "pr", "LIT-1"},
 		{"--json", "issue", "start", "LIT-1"},
 		{"--json", "issue", "comment", "LIT-1", "--body", "Looks good"},
@@ -1078,6 +1081,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,display_name", "issue", "comments", "LIT-1", "--limit", "1"},
 		{"--json", "--fields", "id,display_name", "comment", "list", "--limit", "1"},
 		{"--json", "comment", "get", "comment-id"},
+		{"--json", "--fields", "id,display_name", "initiative-update", "comments", "initiative-update-id", "--limit", "1"},
 		{"--json", "project", "list", "--limit", "1"},
 		{"--json", "project", "members", "project-id", "--limit", "1"},
 		{"--json", "--fields", "id,health,display_name", "project", "updates", "project-id", "--limit", "1"},
@@ -2029,6 +2033,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, operation: "ProjectArchive", contains: "archive project project-id"},
 		{name: "document list", args: []string{"document", "list"}, operation: "Documents", contains: "list documents"},
 		{name: "document get", args: []string{"document", "get", "document-id"}, operation: "document", contains: "get document document-id"},
+		{name: "document comments", args: []string{"document", "comments", "document-id"}, operation: "document_comments", contains: "list document comments document-id"},
 		{name: "label list", args: []string{"label", "list"}, operation: "IssueLabels", contains: "list labels"},
 		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "issueLabel", contains: "get label label-id"},
 		{name: "label children", args: []string{"label", "children", "label-id"}, operation: "issueLabel_children", contains: "list label children label-id"},
@@ -2078,6 +2083,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "initiative to project get", args: []string{"initiative-to-project", "get", "initiative-to-project-id"}, operation: "initiativeToProject", contains: "get initiative to project initiative-to-project-id"},
 		{name: "initiative update list", args: []string{"initiative-update", "list"}, operation: "initiativeUpdates", contains: "list initiative updates"},
 		{name: "initiative update get", args: []string{"initiative-update", "get", "initiative-update-id"}, operation: "initiativeUpdate", contains: "get initiative update initiative-update-id"},
+		{name: "initiative update comments", args: []string{"initiative-update", "comments", "initiative-update-id"}, operation: "initiativeUpdate_comments", contains: "list initiative update comments initiative-update-id"},
 		{name: "roadmap list", args: []string{"roadmap", "list"}, operation: "roadmaps", contains: "list roadmaps"},
 		{name: "roadmap get", args: []string{"roadmap", "get", "roadmap-id"}, operation: "roadmap", contains: "get roadmap roadmap-id"},
 		{name: "roadmap to project list", args: []string{"roadmap-to-project", "list"}, operation: "roadmapToProjects", contains: "list roadmap to projects"},
@@ -2615,6 +2621,10 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 			"Team note",
 			`"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
 		) + `}`, true
+	case "document_comments":
+		return `{"document":{"id":"document-id","comments":{"nodes":[` +
+			commandCommentMetadataJSON("", "") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "IssueLabels":
 		return `{"issueLabels":{"nodes":[` + commandLabelJSON("label body") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "issueLabel":
@@ -2801,6 +2811,10 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 		return `{"initiativeUpdates":{"nodes":[` + commandInitiativeUpdateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeUpdate":
 		return `{"initiativeUpdate":` + commandInitiativeUpdateJSON() + `}`, true
+	case "initiativeUpdate_comments":
+		return `{"initiativeUpdate":{"id":"initiative-update-id","comments":{"nodes":[` +
+			commandCommentMetadataJSON("", "") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "comments":
 		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "comment":

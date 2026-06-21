@@ -202,6 +202,7 @@ linctl project-relation list --limit 20
 linctl project-relation get project-relation-id
 linctl document list --limit 20
 linctl document get document-id
+linctl document comments document-id --limit 20
 linctl label list --limit 20
 linctl label get label-id
 linctl label children label-id --limit 20
@@ -264,6 +265,7 @@ linctl initiative-to-project list --limit 20
 linctl initiative-to-project get initiative-to-project-id
 linctl initiative-update list --limit 20
 linctl initiative-update get initiative-update-id
+linctl initiative-update comments initiative-update-id --limit 20
 linctl roadmap list --limit 20
 linctl roadmap get roadmap-id
 linctl roadmap-to-project list --limit 20

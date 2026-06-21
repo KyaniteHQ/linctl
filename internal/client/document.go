@@ -25,6 +25,14 @@ type DocumentList struct {
 	EndCursor   *string           `json:"end_cursor,omitempty"`
 }
 
+// DocumentCommentList is a page of body-free Comments associated with one Document.
+type DocumentCommentList struct {
+	DocumentID  string                   `json:"document_id"`
+	Comments    []CommentMetadataSummary `json:"comments"`
+	HasNextPage bool                     `json:"has_next_page"`
+	EndCursor   *string                  `json:"end_cursor,omitempty"`
+}
+
 // ListDocuments returns visible Documents.
 func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int) (DocumentList, error) {
 	documents, err := Documents(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -52,6 +60,31 @@ func GetDocumentByID(ctx context.Context, graphqlClient graphql.Client, id strin
 	}
 
 	return documentSummary(document.Document.DocumentSummaryFields), nil
+}
+
+// ListDocumentComments returns body-free comments associated with one Document.
+func ListDocumentComments(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (DocumentCommentList, error) {
+	result, err := document_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return DocumentCommentList{}, fmt.Errorf("list document comments %s: %w", id, err)
+	}
+
+	comments := make([]CommentMetadataSummary, 0, len(result.Document.Comments.Nodes))
+	for _, node := range result.Document.Comments.Nodes {
+		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
+	}
+
+	return DocumentCommentList{
+		DocumentID:  result.Document.Id,
+		Comments:    comments,
+		HasNextPage: result.Document.Comments.PageInfo.HasNextPage,
+		EndCursor:   result.Document.Comments.PageInfo.EndCursor,
+	}, nil
 }
 
 func documentSummary(document DocumentSummaryFields) DocumentSummary {

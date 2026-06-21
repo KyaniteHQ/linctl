@@ -16,6 +16,21 @@ query initiativeUpdate($id: String!) {
   }
 }
 
+query initiativeUpdate_comments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  initiativeUpdate(id: $id) {
+    id
+    comments(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...CommentMetadataFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment InitiativeUpdateSummaryFields on InitiativeUpdate {
   id
   body

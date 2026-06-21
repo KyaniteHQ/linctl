@@ -511,7 +511,7 @@ Planned commands:
 Schema backing:
 
 - Types: `Document`, `DocumentConnection`
-- Reads: `Query.documents`, `Query.document`, `Project.documents`, `Team.documents`, `Issue.documents`, `Cycle.documents`
+- Reads: `Query.documents`, `Query.document`, `Document.comments`, `Project.documents`, `Team.documents`, `Issue.documents`, `Cycle.documents`
 - Writes: `Mutation.documentCreate`, `Mutation.documentUpdate`, `Mutation.documentDelete`
 - Inputs: `DocumentCreateInput`, `DocumentUpdateInput`
 - Relevant fields: `Document.id`, `Document.title`, `Document.slugId`, `Document.archivedAt`, `Document.project`, `Document.team`, `Document.issue`, `Document.cycle`
@@ -522,11 +522,12 @@ Planned commands:
 | --- | --- | --- |
 | `document list` | `Query.documents` | Read-only |
 | `document get` | `Query.document` | Read-only |
+| `document comments` | `Document.comments` | Read-only, body-free metadata |
 | `document create` | `Mutation.documentCreate` with optional `projectId`, `teamId`, `issueId`, `cycleId` | Blocked: parent can be project, team, issue, or cycle; write guard needs explicit parent-resolution semantics |
 | `document update` | `Mutation.documentUpdate` | Blocked: update must resolve and compare the existing parent before changing content |
 | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics |
 
-Only `document list` and `document get` are implemented in the current CLI. Document writes are deferred until the parent-resolution guard is designed.
+`document list`, `document get`, and `document comments` are implemented in the current CLI. Document comment reads omit comment body content by default. Document writes are deferred until the parent-resolution guard is designed.
 
 ## Label
 
@@ -897,7 +898,7 @@ Use `InitiativeUpdate` for Linear initiative status updates. Avoid calling these
 Schema backing:
 
 - Types: `InitiativeUpdate`, `InitiativeUpdateConnection`
-- Reads: `Query.initiativeUpdates`, `Query.initiativeUpdate`
+- Reads: `Query.initiativeUpdates`, `Query.initiativeUpdate`, `InitiativeUpdate.comments`
 - Writes: `Mutation.initiativeUpdateCreate`, `Mutation.initiativeUpdateUpdate`, `Mutation.initiativeUpdateArchive`, `Mutation.initiativeUpdateUnarchive`
 - Inputs: `InitiativeUpdateCreateInput`, `InitiativeUpdateUpdateInput`
 - Relevant fields: `InitiativeUpdate.id`, `InitiativeUpdate.body`, `InitiativeUpdate.health`, `InitiativeUpdate.createdAt`, `InitiativeUpdate.updatedAt`, `InitiativeUpdate.url`, `InitiativeUpdate.slugId`, `InitiativeUpdate.commentCount`, `InitiativeUpdate.initiative`, `InitiativeUpdate.user`
@@ -908,12 +909,13 @@ Command status:
 | --- | --- | --- |
 | `initiative-update list` | `Query.initiativeUpdates` | Read-only |
 | `initiative-update get` | `Query.initiativeUpdate` | Read-only |
+| `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata |
 | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting |
 | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation |
 | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics |
 | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics |
 
-Only `initiative-update list` and `initiative-update get` are implemented in the current CLI. InitiativeUpdate writes and reminders are deferred until their guard model is explicit.
+`initiative-update list`, `initiative-update get`, and `initiative-update comments` are implemented in the current CLI. InitiativeUpdate comment reads omit comment body content by default. InitiativeUpdate writes and reminders are deferred until their guard model is explicit.
 
 ## Roadmap
 

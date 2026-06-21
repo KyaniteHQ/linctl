@@ -21183,6 +21183,26 @@ type __documentInput struct {
 // GetId returns __documentInput.Id, and is useful for accessing the field via an interface.
 func (v *__documentInput) GetId() string { return v.Id }
 
+// __document_commentsInput is used internally by genqlient
+type __document_commentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __document_commentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__document_commentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __document_commentsInput.First, and is useful for accessing the field via an interface.
+func (v *__document_commentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __document_commentsInput.After, and is useful for accessing the field via an interface.
+func (v *__document_commentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __document_commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__document_commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
 // __emojiInput is used internally by genqlient
 type __emojiInput struct {
 	Id string `json:"id"`
@@ -21346,6 +21366,26 @@ type __initiativeUpdateInput struct {
 
 // GetId returns __initiativeUpdateInput.Id, and is useful for accessing the field via an interface.
 func (v *__initiativeUpdateInput) GetId() string { return v.Id }
+
+// __initiativeUpdate_commentsInput is used internally by genqlient
+type __initiativeUpdate_commentsInput struct {
+	Id              string  `json:"id"`
+	First           *int    `json:"first"`
+	After           *string `json:"after"`
+	IncludeArchived *bool   `json:"includeArchived"`
+}
+
+// GetId returns __initiativeUpdate_commentsInput.Id, and is useful for accessing the field via an interface.
+func (v *__initiativeUpdate_commentsInput) GetId() string { return v.Id }
+
+// GetFirst returns __initiativeUpdate_commentsInput.First, and is useful for accessing the field via an interface.
+func (v *__initiativeUpdate_commentsInput) GetFirst() *int { return v.First }
+
+// GetAfter returns __initiativeUpdate_commentsInput.After, and is useful for accessing the field via an interface.
+func (v *__initiativeUpdate_commentsInput) GetAfter() *string { return v.After }
+
+// GetIncludeArchived returns __initiativeUpdate_commentsInput.IncludeArchived, and is useful for accessing the field via an interface.
+func (v *__initiativeUpdate_commentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
 // __initiativeUpdatesInput is used internally by genqlient
 type __initiativeUpdatesInput struct {
@@ -33146,6 +33186,236 @@ type documentResponse struct {
 // GetDocument returns documentResponse.Document, and is useful for accessing the field via an interface.
 func (v *documentResponse) GetDocument() documentDocument { return v.Document }
 
+// document_commentsDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type document_commentsDocument struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Comments associated with the document.
+	Comments document_commentsDocumentCommentsCommentConnection `json:"comments"`
+}
+
+// GetId returns document_commentsDocument.Id, and is useful for accessing the field via an interface.
+func (v *document_commentsDocument) GetId() string { return v.Id }
+
+// GetComments returns document_commentsDocument.Comments, and is useful for accessing the field via an interface.
+func (v *document_commentsDocument) GetComments() document_commentsDocumentCommentsCommentConnection {
+	return v.Comments
+}
+
+// document_commentsDocumentCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
+type document_commentsDocumentCommentsCommentConnection struct {
+	Nodes    []document_commentsDocumentCommentsCommentConnectionNodesComment `json:"nodes"`
+	PageInfo document_commentsDocumentCommentsCommentConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns document_commentsDocumentCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnection) GetNodes() []document_commentsDocumentCommentsCommentConnectionNodesComment {
+	return v.Nodes
+}
+
+// GetPageInfo returns document_commentsDocumentCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnection) GetPageInfo() document_commentsDocumentCommentsCommentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// document_commentsDocumentCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type document_commentsDocumentCommentsCommentConnectionNodesComment struct {
+	CommentMetadataFields `json:"-"`
+}
+
+// GetId returns document_commentsDocumentCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetId() string {
+	return v.CommentMetadataFields.Id
+}
+
+// GetUrl returns document_commentsDocumentCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetUrl() string {
+	return v.CommentMetadataFields.Url
+}
+
+// GetCreatedAt returns document_commentsDocumentCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetCreatedAt() string {
+	return v.CommentMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns document_commentsDocumentCommentsCommentConnectionNodesComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetUpdatedAt() string {
+	return v.CommentMetadataFields.UpdatedAt
+}
+
+// GetEditedAt returns document_commentsDocumentCommentsCommentConnectionNodesComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetEditedAt() *string {
+	return v.CommentMetadataFields.EditedAt
+}
+
+// GetResolvedAt returns document_commentsDocumentCommentsCommentConnectionNodesComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetResolvedAt() *string {
+	return v.CommentMetadataFields.ResolvedAt
+}
+
+// GetParentId returns document_commentsDocumentCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetParentId() *string {
+	return v.CommentMetadataFields.ParentId
+}
+
+// GetIssueId returns document_commentsDocumentCommentsCommentConnectionNodesComment.IssueId, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetIssueId() *string {
+	return v.CommentMetadataFields.IssueId
+}
+
+// GetProjectId returns document_commentsDocumentCommentsCommentConnectionNodesComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetProjectId() *string {
+	return v.CommentMetadataFields.ProjectId
+}
+
+// GetProjectUpdateId returns document_commentsDocumentCommentsCommentConnectionNodesComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetProjectUpdateId() *string {
+	return v.CommentMetadataFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns document_commentsDocumentCommentsCommentConnectionNodesComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetInitiativeId() *string {
+	return v.CommentMetadataFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns document_commentsDocumentCommentsCommentConnectionNodesComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetInitiativeUpdateId() *string {
+	return v.CommentMetadataFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns document_commentsDocumentCommentsCommentConnectionNodesComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetDocumentContentId() *string {
+	return v.CommentMetadataFields.DocumentContentId
+}
+
+// GetUser returns document_commentsDocumentCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) GetUser() *CommentMetadataFieldsUser {
+	return v.CommentMetadataFields.User
+}
+
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*document_commentsDocumentCommentsCommentConnectionNodesComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.document_commentsDocumentCommentsCommentConnectionNodesComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CommentMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshaldocument_commentsDocumentCommentsCommentConnectionNodesComment struct {
+	Id string `json:"id"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *CommentMetadataFieldsUser `json:"user"`
+}
+
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *document_commentsDocumentCommentsCommentConnectionNodesComment) __premarshalJSON() (*__premarshaldocument_commentsDocumentCommentsCommentConnectionNodesComment, error) {
+	var retval __premarshaldocument_commentsDocumentCommentsCommentConnectionNodesComment
+
+	retval.Id = v.CommentMetadataFields.Id
+	retval.Url = v.CommentMetadataFields.Url
+	retval.CreatedAt = v.CommentMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CommentMetadataFields.UpdatedAt
+	retval.EditedAt = v.CommentMetadataFields.EditedAt
+	retval.ResolvedAt = v.CommentMetadataFields.ResolvedAt
+	retval.ParentId = v.CommentMetadataFields.ParentId
+	retval.IssueId = v.CommentMetadataFields.IssueId
+	retval.ProjectId = v.CommentMetadataFields.ProjectId
+	retval.ProjectUpdateId = v.CommentMetadataFields.ProjectUpdateId
+	retval.InitiativeId = v.CommentMetadataFields.InitiativeId
+	retval.InitiativeUpdateId = v.CommentMetadataFields.InitiativeUpdateId
+	retval.DocumentContentId = v.CommentMetadataFields.DocumentContentId
+	retval.User = v.CommentMetadataFields.User
+	return &retval, nil
+}
+
+// document_commentsDocumentCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type document_commentsDocumentCommentsCommentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns document_commentsDocumentCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns document_commentsDocumentCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *document_commentsDocumentCommentsCommentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// document_commentsResponse is returned by document_comments on success.
+type document_commentsResponse struct {
+	// A specific document by ID or slug.
+	Document document_commentsDocument `json:"document"`
+}
+
+// GetDocument returns document_commentsResponse.Document, and is useful for accessing the field via an interface.
+func (v *document_commentsResponse) GetDocument() document_commentsDocument { return v.Document }
+
 // emojiEmoji includes the requested fields of the GraphQL type Emoji.
 // The GraphQL type's documentation follows.
 //
@@ -34938,6 +35208,238 @@ type initiativeUpdateResponse struct {
 
 // GetInitiativeUpdate returns initiativeUpdateResponse.InitiativeUpdate, and is useful for accessing the field via an interface.
 func (v *initiativeUpdateResponse) GetInitiativeUpdate() initiativeUpdateInitiativeUpdate {
+	return v.InitiativeUpdate
+}
+
+// initiativeUpdate_commentsInitiativeUpdate includes the requested fields of the GraphQL type InitiativeUpdate.
+// The GraphQL type's documentation follows.
+//
+// A status update posted to an initiative. Initiative updates communicate
+// progress, health, and blockers to stakeholders. Each update captures the
+// initiative's health at the time of writing and includes a rich-text body with
+// the update content.
+type initiativeUpdate_commentsInitiativeUpdate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Comments associated with the initiative update.
+	Comments initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection `json:"comments"`
+}
+
+// GetId returns initiativeUpdate_commentsInitiativeUpdate.Id, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdate) GetId() string { return v.Id }
+
+// GetComments returns initiativeUpdate_commentsInitiativeUpdate.Comments, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdate) GetComments() initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection {
+	return v.Comments
+}
+
+// initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection includes the requested fields of the GraphQL type CommentConnection.
+type initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection struct {
+	Nodes    []initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment `json:"nodes"`
+	PageInfo initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo       `json:"pageInfo"`
+}
+
+// GetNodes returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection) GetNodes() []initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment {
+	return v.Nodes
+}
+
+// GetPageInfo returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection) GetPageInfo() initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo {
+	return v.PageInfo
+}
+
+// initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment struct {
+	CommentMetadataFields `json:"-"`
+}
+
+// GetId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.Id, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetId() string {
+	return v.CommentMetadataFields.Id
+}
+
+// GetUrl returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.Url, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetUrl() string {
+	return v.CommentMetadataFields.Url
+}
+
+// GetCreatedAt returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetCreatedAt() string {
+	return v.CommentMetadataFields.CreatedAt
+}
+
+// GetUpdatedAt returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetUpdatedAt() string {
+	return v.CommentMetadataFields.UpdatedAt
+}
+
+// GetEditedAt returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetEditedAt() *string {
+	return v.CommentMetadataFields.EditedAt
+}
+
+// GetResolvedAt returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetResolvedAt() *string {
+	return v.CommentMetadataFields.ResolvedAt
+}
+
+// GetParentId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.ParentId, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetParentId() *string {
+	return v.CommentMetadataFields.ParentId
+}
+
+// GetIssueId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.IssueId, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetIssueId() *string {
+	return v.CommentMetadataFields.IssueId
+}
+
+// GetProjectId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetProjectId() *string {
+	return v.CommentMetadataFields.ProjectId
+}
+
+// GetProjectUpdateId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetProjectUpdateId() *string {
+	return v.CommentMetadataFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetInitiativeId() *string {
+	return v.CommentMetadataFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetInitiativeUpdateId() *string {
+	return v.CommentMetadataFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetDocumentContentId() *string {
+	return v.CommentMetadataFields.DocumentContentId
+}
+
+// GetUser returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment.User, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) GetUser() *CommentMetadataFieldsUser {
+	return v.CommentMetadataFields.User
+}
+
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CommentMetadataFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalinitiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment struct {
+	Id string `json:"id"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *CommentMetadataFieldsUser `json:"user"`
+}
+
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment) __premarshalJSON() (*__premarshalinitiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment, error) {
+	var retval __premarshalinitiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment
+
+	retval.Id = v.CommentMetadataFields.Id
+	retval.Url = v.CommentMetadataFields.Url
+	retval.CreatedAt = v.CommentMetadataFields.CreatedAt
+	retval.UpdatedAt = v.CommentMetadataFields.UpdatedAt
+	retval.EditedAt = v.CommentMetadataFields.EditedAt
+	retval.ResolvedAt = v.CommentMetadataFields.ResolvedAt
+	retval.ParentId = v.CommentMetadataFields.ParentId
+	retval.IssueId = v.CommentMetadataFields.IssueId
+	retval.ProjectId = v.CommentMetadataFields.ProjectId
+	retval.ProjectUpdateId = v.CommentMetadataFields.ProjectUpdateId
+	retval.InitiativeId = v.CommentMetadataFields.InitiativeId
+	retval.InitiativeUpdateId = v.CommentMetadataFields.InitiativeUpdateId
+	retval.DocumentContentId = v.CommentMetadataFields.DocumentContentId
+	retval.User = v.CommentMetadataFields.User
+	return &retval, nil
+}
+
+// initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+	// Cursor representing the last result in the paginated results.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// initiativeUpdate_commentsResponse is returned by initiativeUpdate_comments on success.
+type initiativeUpdate_commentsResponse struct {
+	// Returns a single initiative update by its identifier.
+	InitiativeUpdate initiativeUpdate_commentsInitiativeUpdate `json:"initiativeUpdate"`
+}
+
+// GetInitiativeUpdate returns initiativeUpdate_commentsResponse.InitiativeUpdate, and is useful for accessing the field via an interface.
+func (v *initiativeUpdate_commentsResponse) GetInitiativeUpdate() initiativeUpdate_commentsInitiativeUpdate {
 	return v.InitiativeUpdate
 }
 
@@ -79865,6 +80367,75 @@ func document(
 	return data_, err_
 }
 
+// The query executed by document_comments.
+const document_comments_Operation = `
+query document_comments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	document(id: $id) {
+		id
+		comments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CommentMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CommentMetadataFields on Comment {
+	id
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func document_comments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *document_commentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "document_comments",
+		Query:  document_comments_Operation,
+		Variables: &__document_commentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &document_commentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by emoji.
 const emoji_Operation = `
 query emoji ($id: String!) {
@@ -80568,6 +81139,75 @@ func initiativeUpdate(
 	}
 
 	data_ = &initiativeUpdateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by initiativeUpdate_comments.
+const initiativeUpdate_comments_Operation = `
+query initiativeUpdate_comments ($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+	initiativeUpdate(id: $id) {
+		id
+		comments(first: $first, after: $after, includeArchived: $includeArchived) {
+			nodes {
+				... CommentMetadataFields
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment CommentMetadataFields on Comment {
+	id
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func initiativeUpdate_comments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	first *int,
+	after *string,
+	includeArchived *bool,
+) (data_ *initiativeUpdate_commentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "initiativeUpdate_comments",
+		Query:  initiativeUpdate_comments_Operation,
+		Variables: &__initiativeUpdate_commentsInput{
+			Id:              id,
+			First:           first,
+			After:           after,
+			IncludeArchived: includeArchived,
+		},
+	}
+
+	data_ = &initiativeUpdate_commentsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -31,6 +31,14 @@ type InitiativeUpdateList struct {
 	EndCursor   *string                   `json:"end_cursor,omitempty"`
 }
 
+// InitiativeUpdateCommentList is a page of body-free Comments associated with one InitiativeUpdate.
+type InitiativeUpdateCommentList struct {
+	InitiativeUpdateID string                   `json:"initiative_update_id"`
+	Comments           []CommentMetadataSummary `json:"comments"`
+	HasNextPage        bool                     `json:"has_next_page"`
+	EndCursor          *string                  `json:"end_cursor,omitempty"`
+}
+
 // ListInitiativeUpdates returns visible initiative status updates.
 func ListInitiativeUpdates(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeUpdateList, error) {
 	result, err := initiativeUpdates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -62,6 +70,31 @@ func GetInitiativeUpdateByID(
 	}
 
 	return initiativeUpdateSummary(result.InitiativeUpdate.InitiativeUpdateSummaryFields), nil
+}
+
+// ListInitiativeUpdateComments returns body-free comments associated with one InitiativeUpdate.
+func ListInitiativeUpdateComments(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (InitiativeUpdateCommentList, error) {
+	result, err := initiativeUpdate_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return InitiativeUpdateCommentList{}, fmt.Errorf("list initiative update comments %s: %w", id, err)
+	}
+
+	comments := make([]CommentMetadataSummary, 0, len(result.InitiativeUpdate.Comments.Nodes))
+	for _, node := range result.InitiativeUpdate.Comments.Nodes {
+		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
+	}
+
+	return InitiativeUpdateCommentList{
+		InitiativeUpdateID: result.InitiativeUpdate.Id,
+		Comments:           comments,
+		HasNextPage:        result.InitiativeUpdate.Comments.PageInfo.HasNextPage,
+		EndCursor:          result.InitiativeUpdate.Comments.PageInfo.EndCursor,
+	}, nil
 }
 
 func initiativeUpdateSummary(update InitiativeUpdateSummaryFields) InitiativeUpdateSummary {

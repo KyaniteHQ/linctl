@@ -244,6 +244,11 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/document_get`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+44a. Document comments
+   - Success: `linctl document comments DOCUMENT_ID --limit N` lists body-free Document comment metadata through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/document_comments`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 45. Label list
    - Success: `linctl label list --limit N` lists visible Linear IssueLabels through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/label_list`;
@@ -334,6 +339,11 @@ Success is pass/fail:
 60. InitiativeUpdate get
    - Success: `linctl initiative-update get INITIATIVE_UPDATE_ID` reads one InitiativeUpdate by id.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/initiative_update_get`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+60a. InitiativeUpdate comments
+   - Success: `linctl initiative-update comments INITIATIVE_UPDATE_ID --limit N` lists body-free InitiativeUpdate comment metadata through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/initiative_update_comments`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 61. InitiativeRelation list

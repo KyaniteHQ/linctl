@@ -203,6 +203,7 @@ linctl project-relation list --json --limit 20
 linctl project-relation get PROJECT_RELATION_ID --json
 linctl document list --json --limit 20
 linctl document get DOCUMENT_ID --json
+linctl document comments DOCUMENT_ID --json --limit 20
 linctl label list --json --limit 20
 linctl label get LABEL_ID --json
 linctl label children LABEL_ID --json --limit 20
@@ -265,6 +266,7 @@ linctl initiative-to-project list --json --limit 20
 linctl initiative-to-project get INITIATIVE_TO_PROJECT_ID --json
 linctl initiative-update list --json --limit 20
 linctl initiative-update get INITIATIVE_UPDATE_ID --json
+linctl initiative-update comments INITIATIVE_UPDATE_ID --json --limit 20
 linctl roadmap list --json --limit 20
 linctl roadmap get ROADMAP_ID --json
 linctl roadmap-to-project list --json --limit 20

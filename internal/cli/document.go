@@ -16,7 +16,31 @@ func addDocumentCommand(ctx context.Context, root *cobra.Command, options *rootO
 	}
 	addDocumentListCommand(ctx, documentCommand, options)
 	addDocumentGetCommand(ctx, documentCommand, options)
+	addDocumentCommentsCommand(ctx, documentCommand, options)
 	root.AddCommand(documentCommand)
+}
+
+func addDocumentCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "comments DOCUMENT_ID",
+		Short: "List document comments without body content",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadDocumentCommentList,
+				documentCommentPageWithItems,
+				writeCommentMetadata,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum comments to return")
+	root.AddCommand(command)
 }
 
 func addDocumentListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -94,5 +118,23 @@ func loadDocumentList(
 
 func documentPageWithItems(page client.DocumentList, documents []client.DocumentSummary) client.DocumentList {
 	page.Documents = documents
+	return page
+}
+
+func loadDocumentCommentList(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.DocumentCommentList, []client.CommentMetadataSummary, error) {
+	comments, err := client.ListDocumentComments(ctx, runtime.graphqlClient, args[0], limit)
+	return comments, comments.Comments, err
+}
+
+func documentCommentPageWithItems(
+	page client.DocumentCommentList,
+	comments []client.CommentMetadataSummary,
+) client.DocumentCommentList {
+	page.Comments = comments
 	return page
 }
