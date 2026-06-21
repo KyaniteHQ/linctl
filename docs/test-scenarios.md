@@ -399,6 +399,18 @@ Success is pass/fail:
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+76a. Initiative documents
+   - Success: `linctl initiative documents INITIATIVE_ID --limit N` lists documents associated with one Initiative through the public CLI and JSON output controls without selecting document body content by default.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/initiative_documents`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
+76b. Initiative projects
+   - Success: `linctl initiative projects INITIATIVE_ID --limit N` lists projects directly associated with one Initiative through the public CLI and JSON output controls.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/initiative_projects`;
+     `Test_CommandFlows_print_json_for_read_and_comment_commands`;
+     `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
+
 77. CustomView list
    - Success: `linctl custom-view list --limit N` lists visible CustomViews through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/custom_view_list`;

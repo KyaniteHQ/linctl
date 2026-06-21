@@ -174,6 +174,54 @@ func ListInitiativeUpdatesForInitiative(
 	}, nil
 }
 
+// ListInitiativeDocuments returns Documents associated with one initiative.
+func ListInitiativeDocuments(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (DocumentList, error) {
+	result, err := initiative_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	if err != nil {
+		return DocumentList{}, fmt.Errorf("list initiative documents %s: %w", id, err)
+	}
+
+	documents := make([]DocumentSummary, 0, len(result.Initiative.Documents.Nodes))
+	for _, node := range result.Initiative.Documents.Nodes {
+		documents = append(documents, documentSummary(node.DocumentSummaryFields))
+	}
+
+	return DocumentList{
+		Documents:   documents,
+		HasNextPage: result.Initiative.Documents.PageInfo.HasNextPage,
+		EndCursor:   result.Initiative.Documents.PageInfo.EndCursor,
+	}, nil
+}
+
+// ListInitiativeProjects returns Projects directly associated with one initiative.
+func ListInitiativeProjects(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	id string,
+	limit int,
+) (ProjectList, error) {
+	result, err := initiative_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true), boolPtr(false))
+	if err != nil {
+		return ProjectList{}, fmt.Errorf("list initiative projects %s: %w", id, err)
+	}
+
+	projects := make([]ProjectSummary, 0, len(result.Initiative.Projects.Nodes))
+	for _, node := range result.Initiative.Projects.Nodes {
+		projects = append(projects, projectSummaryFromFields(node.ProjectSummaryFields))
+	}
+
+	return ProjectList{
+		Projects:    projects,
+		HasNextPage: result.Initiative.Projects.PageInfo.HasNextPage,
+		EndCursor:   result.Initiative.Projects.PageInfo.EndCursor,
+	}, nil
+}
+
 func initiativeSummary(fields InitiativeSummaryFields) InitiativeSummary {
 	return InitiativeSummary{
 		ID:          fields.Id,

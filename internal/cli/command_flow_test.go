@@ -192,6 +192,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "initiative links", args: []string{"initiative", "links", "initiative-id", "--limit", "1"}, contains: "release-link-id Runbook https://example.com/runbook order 1.5"},
 		{name: "initiative sub-initiatives", args: []string{"initiative", "sub-initiatives", "initiative-id", "--limit", "1"}, contains: "child-initiative-id Child platform [Planned]"},
 		{name: "initiative updates", args: []string{"initiative", "updates", "initiative-id", "--limit", "1"}, contains: "initiative-update-id onTrack Omer First initiative update"},
+		{name: "initiative documents", args: []string{"initiative", "documents", "initiative-id", "--limit", "1"}, contains: "document-id Spec [project]"},
+		{name: "initiative projects", args: []string{"initiative", "projects", "initiative-id", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "initiative relation list", args: []string{"initiative-relation", "list", "--limit", "1"}, contains: "initiative-relation-id Platform -> Child initiative order 1.50"},
 		{name: "initiative relation get", args: []string{"initiative-relation", "get", "initiative-relation-id"}, contains: "initiative-relation-id Platform -> Child initiative order 1.50"},
 		{name: "initiative to project list", args: []string{"initiative-to-project", "list", "--limit", "1"}, contains: "initiative-to-project-id Platform -> Pinned project order 1"},
@@ -1813,6 +1815,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "initiative links", args: []string{"initiative", "links", "initiative-id"}, operation: "initiative_links", contains: "list initiative links initiative-id"},
 		{name: "initiative sub-initiatives", args: []string{"initiative", "sub-initiatives", "initiative-id"}, operation: "initiative_subInitiatives", contains: "list initiative sub-initiatives initiative-id"},
 		{name: "initiative updates", args: []string{"initiative", "updates", "initiative-id"}, operation: "initiative_initiativeUpdates", contains: "list initiative updates initiative-id"},
+		{name: "initiative documents", args: []string{"initiative", "documents", "initiative-id"}, operation: "initiative_documents", contains: "list initiative documents initiative-id"},
+		{name: "initiative projects", args: []string{"initiative", "projects", "initiative-id"}, operation: "initiative_projects", contains: "list initiative projects initiative-id"},
 		{name: "initiative relation list", args: []string{"initiative-relation", "list"}, operation: "initiativeRelations", contains: "list initiative relations"},
 		{name: "initiative relation get", args: []string{"initiative-relation", "get", "initiative-relation-id"}, operation: "initiativeRelation", contains: "get initiative relation initiative-relation-id"},
 		{name: "initiative to project list", args: []string{"initiative-to-project", "list"}, operation: "initiativeToProjects", contains: "list initiative to projects"},
@@ -2416,6 +2420,15 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 		return `{"initiative":{"subInitiatives":{"nodes":[` + commandSubInitiativeJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "initiative_initiativeUpdates":
 		return `{"initiative":{"initiativeUpdates":{"nodes":[` + commandInitiativeUpdateJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "initiative_documents":
+		return `{"initiative":{"documents":{"nodes":[` + commandDocumentJSON(
+			"Spec",
+			`"project":{"id":"project-id","name":"Pinned project"},"team":null,"issue":null,"cycle":null`,
+		) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "initiative_projects":
+		return `{"initiative":{"projects":{"nodes":[` +
+			commandProjectJSON("Listed project", "Backlog", "backlog") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	case "initiativeRelations":
 		return `{"initiativeRelations":{"nodes":[` + commandInitiativeRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeRelation":

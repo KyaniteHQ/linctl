@@ -32,6 +32,8 @@ func addInitiativeCommand(ctx context.Context, root *cobra.Command, options *roo
 	addInitiativeLinksCommand(ctx, command, options)
 	addSubInitiativesCommand(ctx, command, options)
 	addInitiativeScopedUpdatesCommand(ctx, command, options)
+	addInitiativeDocumentsCommand(ctx, command, options)
+	addInitiativeProjectsCommand(ctx, command, options)
 }
 
 func addInitiativeHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -123,6 +125,52 @@ func addInitiativeScopedUpdatesCommand(ctx context.Context, root *cobra.Command,
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum initiative updates to return")
+	root.AddCommand(command)
+}
+
+func addInitiativeDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "documents INITIATIVE_ID",
+		Short: "List documents associated with one Linear initiative",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadInitiativeDocuments,
+				documentPageWithItems,
+				writeDocument,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum documents to return")
+	root.AddCommand(command)
+}
+
+func addInitiativeProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   "projects INITIATIVE_ID",
+		Short: "List projects directly associated with one Linear initiative",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadInitiativeProjects,
+				projectPageWithItems,
+				writeProject,
+			)
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
 	root.AddCommand(command)
 }
 
@@ -240,4 +288,24 @@ func loadInitiativeScopedUpdates(
 ) (client.InitiativeUpdateList, []client.InitiativeUpdateSummary, error) {
 	updates, err := client.ListInitiativeUpdatesForInitiative(ctx, runtime.graphqlClient, args[0], limit)
 	return updates, updates.Updates, err
+}
+
+func loadInitiativeDocuments(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.DocumentList, []client.DocumentSummary, error) {
+	documents, err := client.ListInitiativeDocuments(ctx, runtime.graphqlClient, args[0], limit)
+	return documents, documents.Documents, err
+}
+
+func loadInitiativeProjects(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.ProjectList, []client.ProjectSummary, error) {
+	projects, err := client.ListInitiativeProjects(ctx, runtime.graphqlClient, args[0], limit)
+	return projects, projects.Projects, err
 }

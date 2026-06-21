@@ -218,6 +218,8 @@ linctl initiative history INITIATIVE_ID --json --limit 20
 linctl initiative links INITIATIVE_ID --json --limit 20
 linctl initiative sub-initiatives INITIATIVE_ID --json --limit 20
 linctl initiative updates INITIATIVE_ID --json --limit 20
+linctl initiative documents INITIATIVE_ID --json --limit 20
+linctl initiative projects INITIATIVE_ID --json --limit 20
 linctl initiative-relation list --json --limit 20
 linctl initiative-relation get INITIATIVE_RELATION_ID --json
 linctl initiative-to-project list --json --limit 20

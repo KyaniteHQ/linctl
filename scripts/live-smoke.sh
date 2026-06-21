@@ -172,6 +172,8 @@ PY
     "$binary" initiative links "$initiative_id" --json --limit 5 >/dev/null
     "$binary" initiative sub-initiatives "$initiative_id" --json --limit 5 >/dev/null
     "$binary" initiative updates "$initiative_id" --json --limit 5 >/dev/null
+    "$binary" initiative documents "$initiative_id" --json --limit 5 >/dev/null
+    "$binary" initiative projects "$initiative_id" --json --limit 5 >/dev/null
   fi
   "$binary" initiative-relation list --json --limit 5 >/dev/null
   "$binary" initiative-to-project list --json --limit 5 >/dev/null

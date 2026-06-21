@@ -788,6 +788,8 @@ func commandImplemented(command string) bool {
 		"initiative links":                       true,
 		"initiative sub-initiatives":             true,
 		"initiative updates":                     true,
+		"initiative documents":                   true,
+		"initiative projects":                    true,
 		"initiative-relation list":               true,
 		"initiative-relation get":                true,
 		"initiative-to-project list":             true,

@@ -72,6 +72,45 @@ query initiative_initiativeUpdates($id: String!, $first: Int, $after: String, $i
   }
 }
 
+query initiative_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
+  initiative(id: $id) {
+    documents(first: $first, after: $after, includeArchived: $includeArchived) {
+      nodes {
+        ...DocumentSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query initiative_projects(
+  $id: String!
+  $first: Int
+  $after: String
+  $includeArchived: Boolean
+  $includeSubInitiatives: Boolean
+) {
+  initiative(id: $id) {
+    projects(
+      first: $first
+      after: $after
+      includeArchived: $includeArchived
+      includeSubInitiatives: $includeSubInitiatives
+    ) {
+      nodes {
+        ...ProjectSummaryFields
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
 fragment InitiativeSummaryFields on Initiative {
   id
   name

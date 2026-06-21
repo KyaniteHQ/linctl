@@ -214,6 +214,8 @@ linctl initiative history initiative-id --limit 20
 linctl initiative links initiative-id --limit 20
 linctl initiative sub-initiatives initiative-id --limit 20
 linctl initiative updates initiative-id --limit 20
+linctl initiative documents initiative-id --limit 20
+linctl initiative projects initiative-id --limit 20
 linctl initiative-relation list --limit 20
 linctl initiative-relation get initiative-relation-id
 linctl initiative-to-project list --limit 20
@@ -417,6 +419,8 @@ linctl initiative history initiative-id --limit 20
 linctl initiative links initiative-id --limit 20
 linctl initiative sub-initiatives initiative-id --limit 20
 linctl initiative updates initiative-id --limit 20
+linctl initiative documents initiative-id --limit 20
+linctl initiative projects initiative-id --limit 20
 linctl initiative-relation list --limit 20
 linctl initiative-relation get initiative-relation-id
 linctl initiative-to-project list --limit 20
