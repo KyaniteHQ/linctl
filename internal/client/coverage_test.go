@@ -3723,9 +3723,19 @@ func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
 	require.Equal(t, "primary", firstNonEmpty("primary", "fallback"))
 	require.Equal(t, 3*time.Second, defaultDuration(3*time.Second, time.Second))
 	require.Equal(t, time.Second, defaultDuration(0, time.Second))
-	require.Equal(t, 200*time.Millisecond, retryDelay("", 1))
-	require.Equal(t, 100*time.Millisecond, retryDelay("not-a-number", 0))
-	require.Equal(t, 2*time.Second, retryDelay("2", 0))
+	require.Equal(t, 200*time.Millisecond, retryDelay(http.Header{}, 1))
+	require.Equal(t, 100*time.Millisecond, retryDelay(http.Header{"Retry-After": []string{"not-a-number"}}, 0))
+	require.Equal(t, 2*time.Second, retryDelay(http.Header{"Retry-After": []string{"2"}}, 0))
+	require.Equal(t, maxRetryDelay, retryDelay(http.Header{"Retry-After": []string{"120"}}, 0))
+
+	require.True(t, isRateLimited(http.StatusTooManyRequests, nil))
+	require.True(t, isRateLimited(http.StatusBadRequest, []byte(`{"errors":[{"extensions":{"code":"RATELIMITED"}}]}`)))
+	require.False(t, isRateLimited(http.StatusBadRequest, []byte(`{"errors":[{"extensions":{"code":"BAD_USER_INPUT"}}]}`)))
+	require.False(t, isRateLimited(http.StatusBadRequest, []byte("not json")))
+	require.False(t, isRateLimited(http.StatusOK, nil))
+	rateLimitedBody := []byte(`{"errors":[{"extensions":{"code":"RATELIMITED"}}]}`)
+	require.False(t, isRateLimited(http.StatusInternalServerError, rateLimitedBody))
+	require.ErrorIs(t, rateLimitError(http.StatusTooManyRequests, []byte("slow down")), ErrRateLimited)
 
 	response := graphql.Response{}
 	err := decodeGraphQLResponse([]byte("not json"), http.StatusOK, &response)
@@ -3735,12 +3745,6 @@ func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
 	err = decodeGraphQLResponse([]byte("server down"), http.StatusBadGateway, &response)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "graphql http status 502")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	_, err = waitForRateLimitRetry(ctx, http.StatusTooManyRequests, http.Header{}, 0, 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "wait for retry")
 }
 
 func Test_CustomViewPreferenceReads_return_empty_values_when_organization_defaults_are_absent(t *testing.T) {

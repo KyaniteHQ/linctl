@@ -2683,6 +2683,7 @@ func Test_CommandRuntime_reports_config_load_errors(t *testing.T) {
 
 func Test_DefaultGlobalConfigPath_returns_empty_when_home_is_unset(t *testing.T) {
 	t.Setenv("HOME", "")
+	t.Setenv("USERPROFILE", "") // Windows resolves the home dir from USERPROFILE, not HOME.
 
 	require.Empty(t, defaultGlobalConfigPath())
 }

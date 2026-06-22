@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -15,11 +16,13 @@ import (
 type commandRuntime struct {
 	config        config.Resolved
 	graphqlClient graphql.Client
+	logger        *slog.Logger
 }
 
 var buildCommandRuntime = newCommandRuntime
 
 func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
+	logger := newDiagnosticLogger(options.debug, os.Getenv("LINCTL_DEBUG_JSON") == "1", os.Stderr)
 	override := targetOverride(options)
 	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
 		GlobalPath:      defaultGlobalConfigPath(),
@@ -34,17 +37,32 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 		return commandRuntime{}, errors.New("missing Linear token: set LINCTL_TOKEN or LINEAR_API_KEY")
 	}
 
+	logger.Debug(
+		"runtime ready",
+		"profile", resolvedConfig.Profile,
+		"org", resolvedConfig.Target.OrgID,
+		"team_key", resolvedConfig.Target.TeamKey,
+		"team_id", resolvedConfig.Target.TeamID,
+		"project", resolvedConfig.Target.ProjectID,
+		"timeout", options.timeout.String(),
+	)
+
 	return commandRuntime{
 		config: resolvedConfig,
+		logger: logger,
 		graphqlClient: client.NewTransport(client.TransportConfig{
-			Token:   client.PersonalAPIToken(resolvedConfig.Token),
-			Timeout: options.timeout,
+			Token:            client.PersonalAPIToken(resolvedConfig.Token),
+			Timeout:          options.timeout,
+			DiagnosticWriter: newTransportDiagnosticWriter(logger, options.debug),
 		}),
 	}, nil
 }
 
 func (runtime commandRuntime) resolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
-	return client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
+	target, err := client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
+	logTargetResolution(runtime.log(), target, err)
+
+	return target, err
 }
 
 func defaultGlobalConfigPath() string {

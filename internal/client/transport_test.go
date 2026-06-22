@@ -94,12 +94,98 @@ func Test_Transport_retries_429_with_retry_after_when_present(t *testing.T) {
 	require.NotContains(t, logs.String(), "user-id")
 }
 
-func Test_Transport_returns_error_when_context_timeout_expires(t *testing.T) {
-	// Given
-	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, request *http.Request) {
-		<-request.Context().Done()
+func Test_Transport_retries_ratelimited_400_then_succeeds(t *testing.T) {
+	// Given Linear signals a rate limit with HTTP 400 + RATELIMITED, not 429.
+	logs := bytes.Buffer{}
+	requests := 0
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		requests++
+		writer.Header().Set("Content-Type", "application/json")
+		if requests == 1 {
+			writer.WriteHeader(http.StatusBadRequest)
+			_, err := writer.Write([]byte(`{"errors":[{"message":"rate limit exceeded","extensions":{"code":"RATELIMITED"}}]}`))
+			if err != nil {
+				t.Errorf("write response: %v", err)
+			}
+			return
+		}
+		_, err := writer.Write([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))
+		if err != nil {
+			t.Errorf("write response: %v", err)
+		}
 	}))
 	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		DiagnosticWriter: &logs,
+		Endpoint:         server.URL,
+		Token:            PersonalAPIToken("test-token"),
+		Timeout:          2 * time.Second,
+		MaxRetries:       1,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
+
+	// When
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, 2, requests)
+	data, ok := response.Data.(*testGraphQLData)
+	require.True(t, ok)
+	require.Equal(t, "user-id", data.Viewer.ID)
+	require.Contains(t, logs.String(), "graphql_retry attempt=1 status=400")
+	require.Contains(t, logs.String(), "graphql_request_ok attempt=2 status=200")
+}
+
+func Test_Transport_returns_rate_limited_error_after_exhausting_retries(t *testing.T) {
+	// Given a server that always returns the RATELIMITED 400.
+	logs := bytes.Buffer{}
+	requests := 0
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		requests++
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusBadRequest)
+		_, err := writer.Write([]byte(`{"errors":[{"message":"rate limit exceeded","extensions":{"code":"RATELIMITED"}}]}`))
+		if err != nil {
+			t.Errorf("write response: %v", err)
+		}
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		DiagnosticWriter: &logs,
+		Endpoint:         server.URL,
+		Token:            PersonalAPIToken("test-token"),
+		Timeout:          2 * time.Second,
+		MaxRetries:       1,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
+
+	// When
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrRateLimited)
+	require.Equal(t, 2, requests)
+	require.Contains(t, logs.String(), "graphql_rate_limited attempt=2 status=400")
+	require.NotContains(t, logs.String(), "test-token")
+}
+
+func Test_Transport_returns_error_when_context_timeout_expires(t *testing.T) {
+	// Given
+	release := make(chan struct{})
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, request *http.Request) {
+		// Hold the response open so the nanosecond client timeout is what fails
+		// the request. Also release on cleanup: Windows does not reliably cancel
+		// the server-side request context when the client disconnects, which
+		// would otherwise hang server.Close until the test deadline.
+		select {
+		case <-request.Context().Done():
+		case <-release:
+		}
+	}))
+	defer server.Close()
+	defer close(release)
 	transport := NewTransport(TransportConfig{
 		Endpoint: server.URL,
 		Token:    PersonalAPIToken("test-token"),

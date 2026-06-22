@@ -32,6 +32,7 @@ type rootOptions struct {
 	orgID       string
 	team        string
 	project     string
+	debug       bool
 }
 
 // NewRootCommand builds the linctl root command.
@@ -64,6 +65,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	flags.StringVar(&options.team, "team", "", "pinned Linear team key or id")
 	flags.StringVar(&options.project, "project", "", "pinned Linear project id")
 	flags.DurationVar(&options.timeout, "timeout", options.timeout, "request timeout")
+	flags.BoolVar(&options.debug, "debug", false, "emit debug diagnostics to stderr")
 
 	addCommands(ctx, command, &options)
 	command.SetContext(ctx)
