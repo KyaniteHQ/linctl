@@ -21,6 +21,8 @@ var usageTopics = map[string]usagePayload{
 			"then use reads freely and writes fail-closed against that target. " +
 			"Core commands: target, doctor, whoami, current, next, done, issue, comment, cycle, sprint, project, " +
 			"project-milestone, organization, rate-limit, document, label, team, user, workflow-state. " +
+			"Use initiative, initiative-to-project, and initiative-update for new strategic planning reads; " +
+			"roadmap and roadmap-to-project are legacy read compatibility for deprecated Linear Roadmap data. " +
 			"Use --json for structured output, --profile for named configs, --org/--team/--project for explicit " +
 			"target overrides, and --timeout for request bounds. " +
 			"For scripts, combine --json with --compact or --fields, use --id-only for chaining, --quiet for " +

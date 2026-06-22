@@ -56,6 +56,14 @@ _Avoid_: Sprint
 A report-facing alias over Cycle. Sprint is not a Linear schema entity and should not own mutations.
 _Avoid_: Cycle mutation
 
+**Initiative**:
+Linear's current strategic planning entity for grouping projects toward a goal. Use Initiative for new planning workflows.
+_Avoid_: Roadmap for new planning
+
+**Roadmap**:
+Linear's deprecated project grouping surface. Keep Roadmap reads for legacy compatibility only; do not add Roadmap writes without an explicit guard model.
+_Avoid_: Current planning entity, Initiative replacement
+
 **Namespaced Throwaway Resource**:
 A temporary Linear entity created for verification with a recognizable namespace. It must be cleaned up through the supported cleanup path.
 _Avoid_: Test fixture, dummy data

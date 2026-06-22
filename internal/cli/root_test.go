@@ -84,6 +84,8 @@ func Test_Usage_prints_overview_when_called(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, stdout.String(), "linctl is a schema-aligned Linear CLI")
 	require.Contains(t, stdout.String(), "linctl issue usage")
+	require.Contains(t, stdout.String(), "initiative-to-project")
+	require.Contains(t, stdout.String(), "roadmap and roadmap-to-project are legacy read compatibility")
 }
 
 func Test_Usage_prints_domain_usage_when_called_from_domain(t *testing.T) {
@@ -116,4 +118,56 @@ func Test_Usage_prints_json_when_json_flag_is_set(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, stdout.String(), `"topic": "issue"`)
 	require.Contains(t, stdout.String(), "safe Linear issue loop")
+}
+
+func Test_RoadmapHelp_marks_legacy_and_points_to_initiatives(t *testing.T) {
+	tests := []struct {
+		name     string
+		args     []string
+		expected []string
+	}{
+		{
+			name: "roadmap",
+			args: []string{"roadmap", "--help"},
+			expected: []string{
+				"deprecated planning surface",
+				"linctl initiative",
+				"List visible legacy Linear roadmaps",
+			},
+		},
+		{
+			name: "roadmap projects",
+			args: []string{"roadmap", "projects", "--help"},
+			expected: []string{
+				"deprecated planning surface",
+				"linctl initiative projects",
+				"List projects associated with one legacy roadmap",
+			},
+		},
+		{
+			name: "roadmap to project",
+			args: []string{"roadmap-to-project", "--help"},
+			expected: []string{
+				"deprecated planning association surface",
+				"linctl initiative-to-project",
+				"List visible legacy Roadmap-to-Project associations",
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			stdout := bytes.Buffer{}
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&stdout)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			for _, expected := range test.expected {
+				require.Contains(t, stdout.String(), expected)
+			}
+		})
+	}
 }

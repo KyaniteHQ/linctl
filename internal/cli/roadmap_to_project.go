@@ -11,21 +11,23 @@ import (
 )
 
 func addRoadmapToProjectCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand[
+	command := addReadListGetCommand[
 		client.RoadmapToProjectList,
 		client.RoadmapToProjectSummary,
 	](ctx, root, options, readListGetSpec[client.RoadmapToProjectList, client.RoadmapToProjectSummary]{
 		Use:           "roadmap-to-project",
-		Short:         "Read Linear Roadmap-to-Project associations",
-		ListShort:     "List visible Roadmap-to-Project associations",
-		LimitHelp:     "maximum Roadmap-to-Project associations to return",
+		Short:         "Read legacy Linear Roadmap-to-Project associations",
+		ListShort:     "List visible legacy Roadmap-to-Project associations",
+		LimitHelp:     "maximum legacy Roadmap-to-Project associations to return",
 		GetUse:        "get ROADMAP_TO_PROJECT_ID",
-		GetShort:      "Get one Roadmap-to-Project association by id",
+		GetShort:      "Get one legacy Roadmap-to-Project association by id",
 		LoadList:      loadRoadmapToProjectList,
 		PageWithItems: roadmapToProjectPageWithItems,
 		LoadGet:       loadRoadmapToProject,
 		WriteItem:     writeRoadmapToProject,
 	})
+	command.Long = "RoadmapToProject is Linear's deprecated planning association surface. " +
+		"These reads remain for compatibility; use `linctl initiative-to-project` for new workflows."
 }
 
 func writeRoadmapToProject(
@@ -45,7 +47,7 @@ func writeRoadmapToProject(
 
 	return render.WriteLine(
 		command.OutOrStdout(),
-		"%s %s -> %s order %s",
+		"%s %s -> %s order %s [legacy]",
 		association.ID,
 		association.RoadmapName,
 		association.ProjectName,

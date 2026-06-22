@@ -17,17 +17,19 @@ func addRoadmapCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		options,
 		readListGetSpec[client.RoadmapList, client.RoadmapSummary]{
 			Use:           "roadmap",
-			Short:         "Read Linear roadmaps",
-			ListShort:     "List visible Linear roadmaps",
-			LimitHelp:     "maximum roadmaps to return",
+			Short:         "Read legacy Linear roadmaps; prefer initiative for new planning",
+			ListShort:     "List visible legacy Linear roadmaps",
+			LimitHelp:     "maximum legacy roadmaps to return",
 			GetUse:        "get ROADMAP_ID",
-			GetShort:      "Get one roadmap by id",
+			GetShort:      "Get one legacy roadmap by id",
 			LoadList:      loadRoadmapList,
 			PageWithItems: roadmapPageWithItems,
 			LoadGet:       loadRoadmap,
 			WriteItem:     writeRoadmap,
 		},
 	)
+	roadmapCommand.Long = "Roadmap is Linear's deprecated planning surface. " +
+		"These reads remain for compatibility; use `linctl initiative` for new planning workflows."
 	addRoadmapProjectsCommand(ctx, roadmapCommand, options)
 }
 
@@ -35,8 +37,11 @@ func addRoadmapProjectsCommand(ctx context.Context, root *cobra.Command, options
 	limit := 50
 	command := &cobra.Command{
 		Use:   "projects ROADMAP_ID",
-		Short: "List projects associated with one roadmap",
-		Args:  cobra.ExactArgs(1),
+		Short: "List projects associated with one legacy roadmap",
+		Long: "List projects associated with one legacy roadmap. " +
+			"Roadmap is Linear's deprecated planning surface. " +
+			"Use `linctl initiative projects` for new planning workflows.",
+		Args: cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			return runReadListCommand(
 				ctx,
@@ -69,7 +74,7 @@ func writeRoadmap(
 		return writeJSONValue(command, options, roadmap)
 	}
 
-	return render.WriteLine(command.OutOrStdout(), "%s %s %s", roadmap.ID, roadmap.Name, roadmap.SlugID)
+	return render.WriteLine(command.OutOrStdout(), "%s %s %s [legacy]", roadmap.ID, roadmap.Name, roadmap.SlugID)
 }
 
 func loadRoadmapList(

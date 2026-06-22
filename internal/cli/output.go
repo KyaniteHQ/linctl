@@ -168,6 +168,21 @@ func jsonRoundTrip(value any) (map[string]any, error) {
 	return raw, nil
 }
 
+// projectCollection projects --fields over the items of a list-page envelope.
+//
+// The key set is an explicit allowlist of the collection field names that list
+// pages emit (each list page carries exactly one such array plus scalar
+// pagination/context fields). It is deliberately NOT generic top-level []any
+// detection: some detail responses embed an incidental array that is not a
+// collection (for example a TimeScheduleSummary's "entries", or a
+// ProjectSummary's "teams"), so treating "the single top-level array" as the
+// collection would wrongly project per-element instead of over the object.
+// Equally, list pages are not all paginated (AuditEntryTypeList,
+// SemanticSearchList, SLAConfigurationList, TemplateList carry no
+// has_next_page), so a pagination marker cannot stand in for the allowlist
+// either. Multi-array responses (IssueDependencyGraph) and detail objects fall
+// through to whole-object projection. When adding a new list command, add its
+// collection key here.
 func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bool, error) {
 	for _, key := range []string{
 		"issues",
@@ -212,6 +227,11 @@ func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bo
 		"favorites",
 		"emojis",
 		"attachments",
+		"custom_views",
+		"project_labels",
+		"project_statuses",
+		"spans",
+		"git_automation_states",
 	} {
 		items, ok := raw[key].([]any)
 		if !ok {

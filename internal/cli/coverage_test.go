@@ -514,9 +514,9 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 			"initiative-id Platform [Active]\ninitiative-history-id initiative initiative-id entries 1\n"+
 			"initiative-relation-id Platform -> Child initiative order 1.50\n"+
 			"initiative-to-project-id Platform -> Pinned project order 1\n"+
-			"roadmap-to-project-id Platform roadmap -> Pinned project order 1\n"+
+			"roadmap-to-project-id Platform roadmap -> Pinned project order 1 [legacy]\n"+
 			"initiative-update-id onTrack Omer First initiative update\n"+
-			"roadmap-id Platform roadmap platform-roadmap\n"+
+			"roadmap-id Platform roadmap platform-roadmap [legacy]\n"+
 			"custom-view-id My issues [Issue]\n"+
 			"custom-view-id has_subscribers true\n"+
 			"custom-view-id organization preferences organization customView layout list\n"+

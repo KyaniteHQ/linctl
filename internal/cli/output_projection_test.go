@@ -19,6 +19,11 @@ func Test_projectJSONFields_projects_list_envelopes(t *testing.T) {
 		{name: "favorites", key: "favorites"},
 		{name: "emojis", key: "emojis"},
 		{name: "attachments", key: "attachments"},
+		{name: "custom_views", key: "custom_views"},
+		{name: "project_labels", key: "project_labels"},
+		{name: "project_statuses", key: "project_statuses"},
+		{name: "spans", key: "spans"},
+		{name: "git_automation_states", key: "git_automation_states"},
 	}
 
 	for _, testCase := range cases {
@@ -44,4 +49,41 @@ func Test_projectJSONFields_projects_list_envelopes(t *testing.T) {
 			require.NotContains(t, item, "extra")
 		})
 	}
+}
+
+// Test_projectJSONFields_leaves_detail_arrays_whole guards the curation rule in
+// projectCollection: the projected-collection key set is an allowlist, not
+// generic top-level []any detection. A detail object carries scalar fields plus
+// an incidental array that is NOT a collection (a time schedule's "entries"),
+// and a dependency graph carries several arrays at once. Both must project as a
+// single object — projecting per-element would return the wrong entity. If a
+// future change replaces the allowlist with "the single top-level array", these
+// cases fail.
+func Test_projectJSONFields_leaves_detail_arrays_whole(t *testing.T) {
+	t.Run("detail with incidental array", func(t *testing.T) {
+		detail := map[string]any{
+			"id":      "schedule-1",
+			"name":    "On call",
+			"entries": []any{map[string]any{"id": "entry-1"}},
+		}
+
+		projected, err := projectJSONFields(detail, "id,name")
+
+		require.NoError(t, err)
+		require.Equal(t, map[string]any{"id": "schedule-1", "name": "On call"}, projected)
+	})
+
+	t.Run("multiple top-level arrays", func(t *testing.T) {
+		graph := map[string]any{
+			"id":         "issue-1",
+			"children":   []any{map[string]any{"id": "child-1"}},
+			"blocks":     []any{},
+			"blocked_by": []any{},
+		}
+
+		projected, err := projectJSONFields(graph, "id")
+
+		require.NoError(t, err)
+		require.Equal(t, map[string]any{"id": "issue-1"}, projected)
+	})
 }

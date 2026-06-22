@@ -55,6 +55,10 @@ Inject credentials with `LINCTL_TOKEN` or `LINEAR_API_KEY`; do not commit tokens
 
 ## Usage
 
+Planning guidance: use `initiative*`, `initiative-to-project*`, and `initiative-update*` for new
+strategic planning reads. `roadmap*` and `roadmap-to-project*` are legacy read compatibility for
+Linear's deprecated Roadmap surface and remain read-only.
+
 ```bash
 linctl usage
 linctl target --json
@@ -579,9 +583,20 @@ linctl --fail-on-empty --sort title --order asc issue list
 linctl --format minimal issue get LIT-123
 ```
 
+Diagnostics are written to standard error, so standard output stays clean for piping. Pass `--debug`
+to emit structured diagnostics (transport requests and retries, target resolution, runtime build)
+while a command runs; set `LINCTL_DEBUG_JSON=1` to format those diagnostics as JSON instead of text.
+
 Issue, project, Cycle, and ProjectMilestone writes require a pinned target. Team-scoped creates compare
 org/team; resource-scoped updates and archives resolve the resource first and compare the pinned project
-when configured. Application, AgentActivity, AgentSkill, ExternalUser, AuditEntry, Organization, rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link, issue-to-release, semantic-search, typed search, comment, IssueRelation, ProjectUpdate, ProjectRelation, document, label, team, TeamMembership, user, workflow-state, time-schedule, TriageResponsibility, SLA configuration, template, initiative, initiative-relation, initiative-to-project, initiative-update, roadmap, roadmap-to-project, custom-view, customer, customer-need, customer-status, customer-tier, favorite, emoji, and attachment commands are read-only in the current CLI.
+when configured. Application, AgentActivity, AgentSkill, ExternalUser, AuditEntry, Organization,
+rate-limit, notification, release-pipeline, release-stage, release, release-note, external-link,
+issue-to-release, semantic-search, typed search, comment, IssueRelation, ProjectUpdate,
+ProjectRelation, document, label, team, TeamMembership, user, workflow-state, time-schedule,
+TriageResponsibility, SLA configuration, template, initiative, initiative-relation,
+initiative-to-project, initiative-update, roadmap (legacy read compatibility), roadmap-to-project
+(legacy read compatibility), custom-view, customer, customer-need, customer-status, customer-tier,
+favorite, emoji, and attachment commands are read-only in the current CLI.
 
 ## Development
 

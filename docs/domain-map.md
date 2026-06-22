@@ -9,13 +9,13 @@ Command names below are either implemented CLI surface or intentionally deferred
 | --- | --- | --- |
 | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. |
 | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. |
-| `doctor` | `Query.viewer`, `Query.teams`, optional `Query.project` | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. |
+| `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. |
 | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. |
-| `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for workspace lookup. |
-| `organization labels` | `Organization.labels` via `Query.organization` | Read-only workspace-level issue labels. |
-| `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only workspace-level project labels. |
+| `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. |
+| `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. |
+| `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only organization-level project labels. |
 | `organization teams` | `Organization.teams` via `Query.organization` | Read-only teams visible to the authenticated user. |
-| `organization templates` | `Organization.templates` via `Query.organization` | Read-only workspace-level templates. |
+| `organization templates` | `Organization.templates` via `Query.organization` | Read-only organization-level templates. |
 | `organization users` | `Organization.users` via `Query.organization` | Read-only active users visible to the authenticated user. |
 | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. |
 
@@ -390,12 +390,12 @@ Planned commands:
 | `project-status list` | `Query.projectStatuses` | Read-only |
 | `project-status get` | `Query.projectStatus` | Read-only |
 | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload |
-| `project-status create` | `Mutation.projectStatusCreate` | Blocked: workspace project status configuration needs an explicit admin safety model |
-| `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning workspace before mutation |
+| `project-status create` | `Mutation.projectStatusCreate` | Blocked: organization project status configuration needs an explicit admin safety model |
+| `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
 | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics |
 | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model |
 
-Only `project-status list`, `project-status get`, and `project-status project-count` are implemented in the current CLI. ProjectStatus writes are deferred as workspace/admin configuration surface.
+Only `project-status list`, `project-status get`, and `project-status project-count` are implemented in the current CLI. ProjectStatus writes are deferred as organization/admin configuration surface.
 
 ## ProjectLabel
 
@@ -416,13 +416,13 @@ Planned commands:
 | `project-label get` | `Query.projectLabel` | Read-only |
 | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only |
 | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only |
-| `project-label create` | `Mutation.projectLabelCreate` | Blocked: workspace label configuration needs an explicit admin safety model |
-| `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning workspace before mutation |
+| `project-label create` | `Mutation.projectLabelCreate` | Blocked: organization label configuration needs an explicit admin safety model |
+| `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
 | `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics |
 | `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics |
 | `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model |
 
-Only `project-label list`, `project-label get`, `project-label children`, and `project-label projects` are implemented in the current CLI. ProjectLabel writes are deferred as workspace/admin configuration surface.
+Only `project-label list`, `project-label get`, `project-label children`, and `project-label projects` are implemented in the current CLI. ProjectLabel writes are deferred as organization/admin configuration surface.
 
 ## ProjectRelation
 
@@ -791,15 +791,15 @@ Command status:
 | --- | --- | --- |
 | `template list` | `Query.templates` | Read-only |
 | `template get` | `Query.template` | Read-only |
-| `template create` | `Mutation.templateCreate` | Blocked: create can be workspace-, team-, or pipeline-scoped and needs explicit guard semantics |
-| `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's workspace, team, or pipeline scope before mutation |
+| `template create` | `Mutation.templateCreate` | Blocked: create can be organization-, team-, or pipeline-scoped and needs explicit guard semantics |
+| `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's organization, team, or pipeline scope before mutation |
 | `template delete` | `Mutation.templateDelete` | Blocked: destructive command needs explicit template-scope safety semantics |
 
-Only `template list` and `template get` are implemented in the current CLI. Template writes are deferred until their workspace, team, and pipeline guard model is explicit.
+Only `template list` and `template get` are implemented in the current CLI. Template writes are deferred until their organization, team, and pipeline guard model is explicit.
 
 ## Initiative
 
-Use the schema name `Initiative` in code and docs. It is Linear's strategic grouping of projects toward a goal.
+Use the schema name `Initiative` in code and docs. It is Linear's current strategic grouping of projects toward a goal. Use Initiative, InitiativeToProject, and InitiativeUpdate for new planning workflows.
 
 Schema backing:
 
@@ -877,7 +877,7 @@ Only `initiative-to-project list` and `initiative-to-project get` are implemente
 
 ## RoadmapToProject
 
-Use `RoadmapToProject` for deprecated Linear associations between Roadmaps and Projects. Prefer `InitiativeToProject` for new workflows when Linear offers both surfaces.
+`RoadmapToProject` is the deprecated Linear association between Roadmaps and Projects. Keep the read commands for compatibility; prefer `InitiativeToProject` for new workflows when Linear offers both surfaces.
 
 Schema backing:
 
@@ -891,13 +891,13 @@ Command status:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `roadmap-to-project list` | `Query.roadmapToProjects` | Read-only |
-| `roadmap-to-project get` | `Query.roadmapToProject` | Read-only |
+| `roadmap-to-project list` | `Query.roadmapToProjects` | Legacy read-only |
+| `roadmap-to-project get` | `Query.roadmapToProject` | Legacy read-only |
 | `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation |
 | `roadmap-to-project update` | `Mutation.roadmapToProjectUpdate` | Blocked: deprecated update must resolve and compare both Roadmap and Project endpoints before mutation |
 | `roadmap-to-project delete` | `Mutation.roadmapToProjectDelete` | Blocked: destructive deprecated association command needs explicit safety semantics |
 
-Only `roadmap-to-project list` and `roadmap-to-project get` are implemented in the current CLI. RoadmapToProject writes are deferred until their endpoint guard model is explicit.
+Only `roadmap-to-project list` and `roadmap-to-project get` are implemented as legacy reads in the current CLI. RoadmapToProject writes are deferred until their endpoint guard model is explicit.
 
 ## InitiativeUpdate
 
@@ -927,7 +927,7 @@ Command status:
 
 ## Roadmap
 
-Use the schema name `Roadmap` in code and docs. It is Linear's deprecated roadmap grouping for projects; prefer `Initiative` for new planning workflows.
+Use the schema name `Roadmap` in code and docs for legacy compatibility only. Roadmap is Linear's deprecated grouping for projects; use `Initiative` for new planning workflows.
 
 Schema backing:
 
@@ -941,15 +941,15 @@ Command status:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `roadmap list` | `Query.roadmaps` | Read-only |
-| `roadmap get` | `Query.roadmap` | Read-only |
-| `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Read-only |
+| `roadmap list` | `Query.roadmaps` | Legacy read-only |
+| `roadmap get` | `Query.roadmap` | Legacy read-only |
+| `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Legacy read-only |
 | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model |
 | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
 | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics |
 | `roadmap delete` | `Mutation.roadmapDelete` | Blocked: destructive command needs explicit safety semantics |
 
-`roadmap list`, `roadmap get`, and `roadmap projects` are implemented in the current CLI. Roadmap writes and roadmap-project association writes are deferred; prefer Initiative commands for current Linear planning workflows.
+`roadmap list`, `roadmap get`, and `roadmap projects` are implemented as legacy reads in the current CLI. Roadmap writes and roadmap-project association writes are deferred; prefer Initiative commands for current Linear planning workflows.
 
 ## CustomView
 
@@ -1018,11 +1018,11 @@ Command status:
 | `customer-need update` | `Mutation.customerNeedUpdate` | Blocked: update must resolve the need and compare the linked issue or project target before mutation |
 | `customer-need archive` | `Mutation.customerNeedArchive` | Blocked: destructive command needs explicit safety semantics |
 | `customer-need delete` | `Mutation.customerNeedDelete` | Blocked: destructive command needs explicit safety semantics |
-| `customer-status create` | `Mutation.customerStatusCreate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model |
-| `customer-status update` | `Mutation.customerStatusUpdate` | Blocked: workspace lifecycle configuration needs an explicit admin safety model |
+| `customer-status create` | `Mutation.customerStatusCreate` | Blocked: organization lifecycle configuration needs an explicit admin safety model |
+| `customer-status update` | `Mutation.customerStatusUpdate` | Blocked: organization lifecycle configuration needs an explicit admin safety model |
 | `customer-status delete` | `Mutation.customerStatusDelete` | Blocked: destructive admin command needs explicit safety semantics |
-| `customer-tier create` | `Mutation.customerTierCreate` | Blocked: workspace tier configuration needs an explicit admin safety model |
-| `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: workspace tier configuration needs an explicit admin safety model |
+| `customer-tier create` | `Mutation.customerTierCreate` | Blocked: organization tier configuration needs an explicit admin safety model |
+| `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: organization tier configuration needs an explicit admin safety model |
 | `customer-tier delete` | `Mutation.customerTierDelete` | Blocked: destructive admin command needs explicit safety semantics |
 
 Only Customer read commands are implemented in the current CLI. Customer, CustomerNeed, CustomerStatus, and CustomerTier writes are deferred until they have explicit target or admin safety models.
@@ -1054,7 +1054,7 @@ Only `favorite list`, `favorite children`, and `favorite get` are implemented in
 
 ## Emoji
 
-Use the schema name `Emoji` in code and docs. It is a workspace custom emoji.
+Use the schema name `Emoji` in code and docs. It is an organization custom emoji.
 
 Schema backing:
 
