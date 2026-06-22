@@ -125,27 +125,58 @@ linctl project get <created-id> --json
 linctl --project <created-id> project archive <created-id> --json
 ```
 
-## Live Smoke
+## Smoke & Verify
 
-Use this when asked for live smoke or real Linear verification.
+Three tiers, cheapest first. Pick the one the task needs.
 
-Inside the linctl checkout:
+1. **No credentials** — prove the binary runs in a headless checkout:
 
-```bash
-go run github.com/go-task/task/v3/cmd/task@latest live-smoke
-```
+   ```bash
+   bash skills/linctl/scripts/linctl-offline-smoke.sh
+   ```
 
-The harness accepts `LINCTL_TEST_TOKEN` first, then `LINCTL_TOKEN`, then
-`LINEAR_API_KEY`. Do not print any value.
+   Runs only token-free commands (`--version`, `--help`, `usage`, completion);
+   no token, no network. Use this to confirm linctl is wired up before any target work.
 
-Outside the checkout, run the read-only smoke:
+2. **Read-only, token** — confirm the token and pinned target resolve:
 
-```bash
-bash skills/linctl/scripts/linctl-smoke.sh
-```
+   ```bash
+   bash skills/linctl/scripts/linctl-smoke.sh
+   ```
 
-Completion criterion: live smoke passed with redacted command/status evidence,
+   Runs `target`, `whoami`, `issue list`, `project list` with `--json`; never writes.
+
+3. **Full live smoke** — disposable writes against a test org, inside the checkout:
+
+   ```bash
+   go run github.com/go-task/task/v3/cmd/task@latest live-smoke
+   ```
+
+   Accepts `LINCTL_TEST_TOKEN` first, then `LINCTL_TOKEN`, then `LINEAR_API_KEY`.
+   Do not print any value.
+
+Completion criterion: the chosen smoke passed with redacted command/status evidence,
 or is explicitly blocked on missing credentials or target.
+
+## Gotchas
+
+- `target`, `doctor`, and `whoami` need a token; they fail closed without one. To prove
+  a checkout runs with no credentials, use the offline smoke (`--version`, `usage`).
+- `target --json` reports `expected` and `resolved` with Go-capitalized keys (`OrgID`,
+  `TeamKey`, `TeamID`, `ProjectID`), not the snake_case used elsewhere. Compare them
+  field by field to explain a mismatch.
+- Target Mismatch is a hard stop. There is no bypass flag; `--org`, `--team`, and
+  `--project` set the pinned target, they do not relax the guard. Do not retry with a
+  different token.
+- `--body -` reads a comment body from stdin; `--body-file` reads it from a file. Use
+  these instead of inlining multi-line markdown.
+- Keep `$prefix` unquoted when it may be `go run ./cmd/linctl`, so it word-splits into
+  separate arguments.
+- `sla-configuration list` takes a positional team id/key argument, unlike most `list`
+  commands.
+- `roadmap` and `roadmap-to-project` are legacy read-only compatibility; use
+  `initiative*` for new planning.
+- `issue list --limit` defaults to 50; set it explicitly for deterministic output.
 
 ## Report Shape
 
