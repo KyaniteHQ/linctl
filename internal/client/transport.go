@@ -23,6 +23,10 @@ var ErrGraphQL = errors.New("graphql error")
 // ErrMutationFailed marks a mutation payload without success and entity id.
 var ErrMutationFailed = errors.New("mutation failed")
 
+// ErrRateLimited marks a Linear rate-limit response (HTTP 429 or an HTTP 400
+// carrying a RATELIMITED GraphQL error code) that survived all retries.
+var ErrRateLimited = errors.New("rate limited")
+
 // AuthToken formats the Linear Authorization header.
 type AuthToken struct {
 	authorization string
@@ -92,12 +96,15 @@ func (transport *Transport) MakeRequest(
 			return err
 		}
 		transport.log("graphql_response attempt=%d status=%d", attempt+1, statusCode)
-		retry, err := waitForRateLimitRetry(ctx, statusCode, header, attempt, transport.maxRetries)
-		if err != nil {
-			transport.log("graphql_retry_failed attempt=%d error=%q", attempt+1, err.Error())
-			return err
-		}
-		if retry {
+		if isRateLimited(statusCode, body) {
+			if attempt >= transport.maxRetries {
+				transport.log("graphql_rate_limited attempt=%d status=%d", attempt+1, statusCode)
+				return rateLimitError(statusCode, body)
+			}
+			if err := waitForRetry(ctx, retryDelay(header, attempt)); err != nil {
+				transport.log("graphql_retry_failed attempt=%d error=%q", attempt+1, err.Error())
+				return err
+			}
 			transport.log("graphql_retry attempt=%d status=%d", attempt+1, statusCode)
 			continue
 		}
@@ -121,21 +128,46 @@ func (transport *Transport) log(format string, args ...any) {
 	}
 }
 
-func waitForRateLimitRetry(
-	ctx context.Context,
-	statusCode int,
-	header http.Header,
-	attempt int,
-	maxRetries int,
-) (bool, error) {
-	if statusCode != http.StatusTooManyRequests || attempt >= maxRetries {
-		return false, nil
+// isRateLimited reports whether a response is a Linear rate-limit signal.
+// Linear answers HTTP 429 for some limits and HTTP 400 with a RATELIMITED
+// GraphQL error code for the documented per-key quota, so both are checked.
+func isRateLimited(statusCode int, body []byte) bool {
+	if statusCode == http.StatusTooManyRequests {
+		return true
 	}
-	if err := waitForRetry(ctx, retryDelay(header.Get("Retry-After"), attempt)); err != nil {
-		return false, err
+	if statusCode >= http.StatusBadRequest {
+		return bodyHasErrorCode(body, "RATELIMITED")
 	}
 
-	return true, nil
+	return false
+}
+
+// bodyHasErrorCode reports whether a GraphQL response body carries an error
+// with the given extensions.code value.
+func bodyHasErrorCode(body []byte, code string) bool {
+	var payload struct {
+		Errors []struct {
+			Extensions struct {
+				Code string `json:"code"`
+			} `json:"extensions"`
+		} `json:"errors"`
+	}
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return false
+	}
+	for _, graphqlError := range payload.Errors {
+		if graphqlError.Extensions.Code == code {
+			return true
+		}
+	}
+
+	return false
+}
+
+// rateLimitError wraps ErrRateLimited with the terminal status and body so
+// callers can detect quota exhaustion with errors.Is.
+func rateLimitError(statusCode int, body []byte) error {
+	return fmt.Errorf("%w: graphql http status %d: %s", ErrRateLimited, statusCode, strings.TrimSpace(string(body)))
 }
 
 func decodeGraphQLResponse(body []byte, statusCode int, response *graphql.Response) error {
@@ -174,7 +206,7 @@ func (transport *Transport) send(ctx context.Context, payload []byte) ([]byte, i
 	if err != nil {
 		return nil, 0, nil, fmt.Errorf("request failed: %w", err)
 	}
-	body, readErr := io.ReadAll(httpResponse.Body)
+	body, readErr := io.ReadAll(io.LimitReader(httpResponse.Body, maxResponseBytes))
 	closeErr := httpResponse.Body.Close()
 	if readErr != nil {
 		return nil, 0, nil, fmt.Errorf("read response body: %w", readErr)
@@ -186,15 +218,31 @@ func (transport *Transport) send(ctx context.Context, payload []byte) ([]byte, i
 	return body, httpResponse.StatusCode, httpResponse.Header, nil
 }
 
-func retryDelay(retryAfter string, attempt int) time.Duration {
-	if retryAfter != "" {
+// maxRetryDelay caps how long a single retry waits, so a hostile or
+// misconfigured Retry-After header cannot block the process indefinitely.
+const maxRetryDelay = 30 * time.Second
+
+// maxResponseBytes bounds how much of a response body is buffered, as
+// defense-in-depth against a misconfigured or hostile endpoint.
+const maxResponseBytes = 16 << 20
+
+func retryDelay(header http.Header, attempt int) time.Duration {
+	if retryAfter := header.Get("Retry-After"); retryAfter != "" {
 		seconds, err := strconv.Atoi(retryAfter)
 		if err == nil {
-			return time.Duration(seconds) * time.Second
+			return capRetryDelay(time.Duration(seconds) * time.Second)
 		}
 	}
 
 	return time.Duration(attempt+1) * 100 * time.Millisecond
+}
+
+func capRetryDelay(delay time.Duration) time.Duration {
+	if delay > maxRetryDelay {
+		return maxRetryDelay
+	}
+
+	return delay
 }
 
 func waitForRetry(ctx context.Context, delay time.Duration) error {
