@@ -65,7 +65,7 @@ jobs:
       - name: Vet
         run: go vet $(bash scripts/go-packages.sh)
       - name: Test
-        run: go test ${{ matrix.race }} -shuffle=on -count=1 $(bash scripts/go-packages.sh)
+        run: go test ${{ matrix.race }} -shuffle=on -count=1 -timeout 180s $(bash scripts/go-packages.sh)
       - name: Build
         run: go build $(bash scripts/go-packages.sh)
       - name: Smoke run

@@ -173,10 +173,19 @@ func Test_Transport_returns_rate_limited_error_after_exhausting_retries(t *testi
 
 func Test_Transport_returns_error_when_context_timeout_expires(t *testing.T) {
 	// Given
+	release := make(chan struct{})
 	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, request *http.Request) {
-		<-request.Context().Done()
+		// Hold the response open so the nanosecond client timeout is what fails
+		// the request. Also release on cleanup: Windows does not reliably cancel
+		// the server-side request context when the client disconnects, which
+		// would otherwise hang server.Close until the test deadline.
+		select {
+		case <-request.Context().Done():
+		case <-release:
+		}
 	}))
 	defer server.Close()
+	defer close(release)
 	transport := NewTransport(TransportConfig{
 		Endpoint: server.URL,
 		Token:    PersonalAPIToken("test-token"),
