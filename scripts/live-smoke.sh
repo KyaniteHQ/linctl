@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
 set -euo pipefail
 
 token="${LINCTL_TEST_TOKEN:-${LINCTL_TOKEN:-${LINEAR_API_KEY:-}}}"
 if [[ -z "$token" ]]; then
   printf 'missing disposable Linear token: set LINCTL_TEST_TOKEN, LINCTL_TOKEN, or LINEAR_API_KEY\n' >&2
   exit 2
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  printf 'python3 is required to run the live smoke harness\n' >&2
+  exit 1
 fi
 
 export LINCTL_TEST_TOKEN="$token"
@@ -15,20 +21,41 @@ smoke_dir="$(mktemp -d -t linctl-live-smoke.XXXXXX)"
 trap 'rm -f "$binary"; rm -rf "$smoke_dir"' EXIT
 
 go build -trimpath -o "$binary" ./cmd/linctl
-python3 - test/integration-config.json "$smoke_dir/.linctl.toml" <<'PY'
+# Resolve the pinned target from env vars first (the CI path, fed by repo
+# secrets), falling back to a local untracked config file for developer runs.
+python3 - "${LINCTL_TEST_CONFIG:-test/integration-config.json}" "$smoke_dir/.linctl.toml" <<'PY'
 import json
+import os
 import sys
 
 input_path = sys.argv[1]
 output_path = sys.argv[2]
-with open(input_path, "r", encoding="utf-8") as input_file:
-    config = json.load(input_file)
+
+env_keys = {
+    "org_id": "LINCTL_TEST_ORG_ID",
+    "team_key": "LINCTL_TEST_TEAM_KEY",
+    "team_id": "LINCTL_TEST_TEAM_ID",
+    "project_id": "LINCTL_TEST_PROJECT_ID",
+}
+config = {key: os.environ.get(env, "") for key, env in env_keys.items()}
+
+if not (config["org_id"] and config["team_key"] and config["team_id"]):
+    if not os.path.exists(input_path):
+        sys.stderr.write(
+            "missing integration config: set LINCTL_TEST_ORG_ID, "
+            "LINCTL_TEST_TEAM_KEY, LINCTL_TEST_TEAM_ID (and optional "
+            f"LINCTL_TEST_PROJECT_ID), or provide {input_path}\n"
+        )
+        sys.exit(2)
+    with open(input_path, "r", encoding="utf-8") as input_file:
+        config = json.load(input_file)
+
 with open(output_path, "w", encoding="utf-8") as output:
     output.write("[target]\n")
     output.write(f'org_id = "{config["org_id"]}"\n')
     output.write(f'team_key = "{config["team_key"]}"\n')
     output.write(f'team_id = "{config["team_id"]}"\n')
-    output.write(f'project_id = "{config["project_id"]}"\n')
+    output.write(f'project_id = "{config.get("project_id", "")}"\n')
 PY
 
 (

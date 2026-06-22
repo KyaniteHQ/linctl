@@ -32,7 +32,9 @@ jobs:
           cache: true
           cache-dependency-path: go.sum
       - name: Verify dependencies
-        run: go mod download
+        run: |
+          go mod download
+          go mod verify
       - name: Verify generated client
         run: |
           go generate ./...
@@ -41,17 +43,24 @@ jobs:
         run: go vet $(bash scripts/go-packages.sh)
       - name: Test
         run: go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
+      - name: Coverage
+        run: bash scripts/coverage.sh
       - name: Build
         run: go build $(bash scripts/go-packages.sh)
       - name: golangci-lint
-        run: go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
+        uses: golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9.2.1
+        with:
+          version: v2.12.2
+          args: ./cmd/... ./internal/...
+      - name: Shellcheck
+        run: shellcheck scripts/*.sh
       - name: Vulnerability scan
         run: go tool govulncheck $(bash scripts/go-packages.sh)
       - name: Verify GoReleaser config
         uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
         with:
           distribution: goreleaser
-          version: "~> v2"
+          version: v2.16.0
           args: check
 
   publish:
@@ -60,7 +69,9 @@ jobs:
     timeout-minutes: 20
     needs: preflight
     permissions:
-      contents: write
+      contents: write # create the GitHub release and upload archives
+      id-token: write # keyless cosign signing + build-provenance OIDC token
+      attestations: write # actions/attest-build-provenance
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -71,11 +82,50 @@ jobs:
           go-version-file: go.mod
           cache: true
           cache-dependency-path: go.sum
-      - uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
+      - name: Verify dependencies
+        run: |
+          go mod download
+          go mod verify
+      - name: Install syft (SBOM generator)
+        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Release
+        uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
         with:
           distribution: goreleaser
-          version: "~> v2"
+          version: v2.16.0
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Homebrew tap push. A classic PAT needs the `repo` scope; a
+          # fine-grained PAT needs `contents: write` on KyaniteHQ/homebrew-linctl.
           GH_PAT: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.zip
+
+  verify:
+    name: verify release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: publish
+    permissions:
+      contents: read
+    steps:
+      - name: Download and verify published archive
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p verify
+          cd verify
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern "linctl_*_linux_amd64.tar.gz" \
+            --pattern "checksums.txt"
+          sha256sum --ignore-missing -c checksums.txt
+          tar -xzf linctl_*_linux_amd64.tar.gz
+          ./linctl --version

@@ -1,4 +1,8 @@
-// Package main generates the Linear API coverage ledger.
+//go:build ignore
+
+// Package main generates the Linear API coverage ledger. It is a standalone
+// maintenance tool, excluded from the module build/vet/lint/test graph via the
+// ignore build tag (and from scripts/go-packages.sh).
 package main
 
 import (

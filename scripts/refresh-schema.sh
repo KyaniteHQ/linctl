@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -10,11 +11,16 @@ if [[ -z "$token" ]]; then
   exit 1
 fi
 
+if ! command -v npx >/dev/null 2>&1; then
+  printf 'npx (Node.js) is required to introspect the Linear schema\n' >&2
+  exit 1
+fi
+
 mkdir -p "$(dirname "$schema_path")"
 tmp_schema="$(mktemp)"
 trap 'rm -f "$tmp_schema"' EXIT
 
-npx --yes --package graphql@16 node >"$tmp_schema" <<'NODE'
+npx --yes --package graphql@16.14.2 node >"$tmp_schema" <<'NODE'
 const { buildClientSchema, getIntrospectionQuery, printSchema } = require("graphql");
 
 async function main() {

@@ -152,6 +152,13 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 func readLiveIntegrationConfig(t *testing.T) liveIntegrationConfig {
 	t.Helper()
 
+	// Prefer env vars (the CI path, fed by repo secrets) so the suite is not
+	// tied to a committed workspace file. Fall back to the local untracked
+	// config for developer runs.
+	if config, ok := liveIntegrationConfigFromEnv(); ok {
+		return config
+	}
+
 	data, err := os.ReadFile("../../test/integration-config.json")
 	require.NoError(t, err)
 
@@ -159,6 +166,20 @@ func readLiveIntegrationConfig(t *testing.T) liveIntegrationConfig {
 	require.NoError(t, json.Unmarshal(data, &config))
 
 	return config
+}
+
+func liveIntegrationConfigFromEnv() (liveIntegrationConfig, bool) {
+	config := liveIntegrationConfig{
+		OrgID:     os.Getenv("LINCTL_TEST_ORG_ID"),
+		TeamKey:   os.Getenv("LINCTL_TEST_TEAM_KEY"),
+		TeamID:    os.Getenv("LINCTL_TEST_TEAM_ID"),
+		ProjectID: os.Getenv("LINCTL_TEST_PROJECT_ID"),
+	}
+	if config.OrgID == "" || config.TeamKey == "" || config.TeamID == "" {
+		return liveIntegrationConfig{}, false
+	}
+
+	return config, true
 }
 
 func newLiveIntegrationTransport(t *testing.T, timeout time.Duration) *Transport {

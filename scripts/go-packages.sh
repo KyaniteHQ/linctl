@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
 set -euo pipefail
 
 module_root="$(pwd -P)"
@@ -6,11 +7,15 @@ module_root="$(pwd -P)"
 # Collect the unique directories that hold Go files. This avoids the bash 4
 # builtin 'mapfile' and the GNU-only 'xargs -r', so the helper also runs on the
 # macOS system bash (3.2) and BSD userland, not just Linux.
+#
+# scripts/ is intentionally excluded: its only Go file is a standalone
+# maintenance tool tagged '//go:build ignore', so 'go list ./scripts' would
+# fail with "build constraints exclude all Go files".
 package_dirs=()
 while IFS= read -r dir; do
   package_dirs+=("$dir")
 done < <(
-  find ./cmd ./internal ./scripts -type f -name '*.go' -exec dirname {} \; |
+  find ./cmd ./internal -type f -name '*.go' -exec dirname {} \; |
     sort -u
 )
 

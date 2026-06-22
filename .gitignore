@@ -1,5 +1,7 @@
 bin/
 dist/
+linctl-bin
+linctl-bin.exe
 coverage.out
 coverage.html
 *.test
@@ -9,6 +11,10 @@ coverage.html
 .linctl.toml
 *.pem
 *.key
+
+# Live integration/e2e target: real workspace IDs stay local. Copy the committed
+# test/integration-config.json.example as a template, or use env vars in CI.
+test/integration-config.json
 
 # Third-party Go skill set (samber/cc-skills-golang), installed locally
 skills/cc-skills-golang/

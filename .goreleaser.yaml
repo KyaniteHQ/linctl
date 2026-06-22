@@ -47,6 +47,21 @@ archives:
 checksum:
   name_template: checksums.txt
 
+sboms:
+  - id: default
+    artifacts: archive
+
+signs:
+  - cmd: cosign
+    signature: "${artifact}.sigstore.json"
+    args:
+      - sign-blob
+      - "--bundle=${signature}"
+      - "${artifact}"
+      - "--yes"
+    artifacts: checksum
+    output: true
+
 snapshot:
   version_template: "{{ incpatch .Version }}-next"
 
@@ -61,9 +76,14 @@ release:
   github:
     owner: KyaniteHQ
     name: linctl
+  # The v* tag trigger also matches prerelease tags (e.g. v1.0.0-rc1). Publishing
+  # them as a GitHub prerelease means the API will not mark them as "Latest".
+  prerelease: auto
 
 homebrew_casks:
   - name: linctl
+    # Skip the tap push for prerelease tags so an RC never lands in the stable cask.
+    skip_upload: auto
     ids:
       - linctl
     repository:
