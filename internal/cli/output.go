@@ -4,14 +4,60 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"slices"
 	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
 
+	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
+
+// errorEnvelope is the machine-readable failure shape emitted to stderr so
+// agents can branch on a stable error_code instead of parsing prose.
+type errorEnvelope struct {
+	ErrorCode string `json:"error_code"`
+	Message   string `json:"message"`
+}
+
+// errorCode maps a command error to a stable machine error_code, preferring the
+// client sentinels (matched through wrapping) over the not-found heuristic.
+func errorCode(err error) string {
+	switch {
+	case errors.Is(err, client.ErrTargetMismatch):
+		return "TARGET_MISMATCH"
+	case errors.Is(err, client.ErrRateLimited):
+		return "RATE_LIMITED"
+	case errors.Is(err, client.ErrMutationFailed):
+		return "MUTATION_FAILED"
+	case errors.Is(err, client.ErrWriteInvalid):
+		return "INVALID_WRITE"
+	case errors.Is(err, client.ErrGraphQL):
+		return "GRAPHQL_ERROR"
+	case isNotFoundError(err):
+		return "NOT_FOUND"
+	default:
+		return "INTERNAL"
+	}
+}
+
+// isNotFoundError detects the client's not-found errors, which have no dedicated
+// sentinel and all end with "not found".
+func isNotFoundError(err error) bool {
+	return strings.HasSuffix(err.Error(), "not found")
+}
+
+// writeErrorEnvelope emits the structured error envelope (one JSON line) to the
+// given writer. json.Encoder cannot fail to marshal these two strings, so the
+// only error it returns is a write failure.
+func writeErrorEnvelope(writer io.Writer, err error) error {
+	return json.NewEncoder(writer).Encode(errorEnvelope{
+		ErrorCode: errorCode(err),
+		Message:   err.Error(),
+	})
+}
 
 func writeJSONValue(command *cobra.Command, options *rootOptions, value any) error {
 	if options.quiet {
@@ -37,6 +83,28 @@ func writeIDOnly(command *cobra.Command, options *rootOptions, id string) (bool,
 	}
 
 	return true, render.WriteLine(command.OutOrStdout(), "%s", id)
+}
+
+// deletionResult is the structured confirmation returned by guarded delete commands.
+type deletionResult struct {
+	ID     string `json:"id"`
+	Status string `json:"status"`
+}
+
+// writeDeletion renders the confirmation for a guarded delete across all output
+// modes: id-only, quiet, JSON envelope, then a plain "<id> deleted" line.
+func writeDeletion(command *cobra.Command, options *rootOptions, id string) error {
+	if wrote, err := writeIDOnly(command, options, id); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, deletionResult{ID: id, Status: "deleted"})
+	}
+
+	return render.WriteLine(command.OutOrStdout(), "%s deleted", id)
 }
 
 func ensureNonEmpty(options *rootOptions, count int) error {

@@ -16,6 +16,22 @@ query comment($id: String, $hash: String) {
   }
 }
 
+mutation CommentUpdate($id: String!, $input: CommentUpdateInput!) {
+  commentUpdate(id: $id, input: $input) {
+    success
+    comment {
+      ...TopLevelCommentSummaryFields
+    }
+  }
+}
+
+mutation CommentDelete($id: String!) {
+  commentDelete(id: $id) {
+    success
+    entityId
+  }
+}
+
 query comment_botActor($id: String, $hash: String) {
   comment(id: $id, hash: $hash) {
     id

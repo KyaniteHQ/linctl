@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/Khan/genqlient/graphql"
@@ -14,6 +15,8 @@ import (
 type IssueCreateRequest struct {
 	Title       string
 	Description string
+	StateType   string
+	Priority    string
 }
 
 // IssueUpdateRequest describes a guarded issue update.
@@ -22,6 +25,8 @@ type IssueUpdateRequest struct {
 	Title       string
 	Description string
 	Append      string
+	StateType   string
+	Priority    string
 }
 
 // IssueCommentRequest describes a guarded issue comment.
@@ -45,6 +50,8 @@ type LinearIssueCreateInput struct {
 	Description *string `json:"description,omitempty"`
 	TeamID      string  `json:"teamId"`
 	ProjectID   *string `json:"projectId,omitempty"`
+	StateID     *string `json:"stateId,omitempty"`
+	Priority    *int    `json:"priority,omitempty"`
 }
 
 // LinearIssueUpdateInput is the sparse Linear issueUpdate payload linctl supports.
@@ -53,6 +60,7 @@ type LinearIssueUpdateInput struct {
 	Description *string `json:"description,omitempty"`
 	AssigneeID  *string `json:"assigneeId,omitempty"`
 	StateID     *string `json:"stateId,omitempty"`
+	Priority    *int    `json:"priority,omitempty"`
 }
 
 // LinearCommentCreateInput is the sparse Linear commentCreate payload linctl supports.
@@ -85,6 +93,18 @@ func CreateIssue(
 	if guard.target.Project != nil {
 		input.ProjectID = stringPtr(guard.target.Project.ID)
 	}
+	if request.StateType != "" {
+		stateID, stateErr := firstStateIDOfType(ctx, graphqlClient, guard.target.Team.ID, request.StateType)
+		if stateErr != nil {
+			return IssueSummary{}, stateErr
+		}
+		input.StateID = stringPtr(stateID)
+	}
+	priority, err := parsePriority(request.Priority)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	input.Priority = priority
 	created, err := IssueCreate(ctx, graphqlClient, input)
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("create issue: %w", err)
@@ -103,14 +123,8 @@ func UpdateIssue(
 	expected config.Target,
 	request IssueUpdateRequest,
 ) (IssueSummary, error) {
-	if request.ID == "" {
-		return IssueSummary{}, fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
-	}
-	if request.Title == "" && request.Description == "" && request.Append == "" {
-		return IssueSummary{}, fmt.Errorf("%w: title or description is required", ErrWriteInvalid)
-	}
-	if request.Description != "" && request.Append != "" {
-		return IssueSummary{}, fmt.Errorf("%w: description and append are mutually exclusive", ErrWriteInvalid)
+	if err := validateIssueUpdateRequest(request); err != nil {
+		return IssueSummary{}, err
 	}
 	guard, err := newWriteGuard(ctx, graphqlClient, expected)
 	if err != nil {
@@ -125,10 +139,11 @@ func UpdateIssue(
 		description = appendIssueDescription(issue.Description, request.Append)
 	}
 
-	updated, err := IssueUpdate(ctx, graphqlClient, request.ID, LinearIssueUpdateInput{
-		Title:       optionalString(request.Title),
-		Description: optionalString(description),
-	})
+	updateInput, err := buildIssueUpdateInput(ctx, graphqlClient, request, issue.Summary.TeamID, description)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	updated, err := IssueUpdate(ctx, graphqlClient, request.ID, updateInput)
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("update issue %s: %w", request.ID, err)
 	}
@@ -137,6 +152,48 @@ func UpdateIssue(
 	}
 
 	return issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields), nil
+}
+
+func validateIssueUpdateRequest(request IssueUpdateRequest) error {
+	if request.ID == "" {
+		return fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
+	}
+	if request.Title == "" && request.Description == "" && request.Append == "" &&
+		request.StateType == "" && request.Priority == "" {
+		return fmt.Errorf("%w: title, description, state, or priority is required", ErrWriteInvalid)
+	}
+	if request.Description != "" && request.Append != "" {
+		return fmt.Errorf("%w: description and append are mutually exclusive", ErrWriteInvalid)
+	}
+
+	return nil
+}
+
+func buildIssueUpdateInput(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	request IssueUpdateRequest,
+	teamID string,
+	description string,
+) (LinearIssueUpdateInput, error) {
+	input := LinearIssueUpdateInput{
+		Title:       optionalString(request.Title),
+		Description: optionalString(description),
+	}
+	if request.StateType != "" {
+		stateID, err := firstStateIDOfType(ctx, graphqlClient, teamID, request.StateType)
+		if err != nil {
+			return LinearIssueUpdateInput{}, err
+		}
+		input.StateID = stringPtr(stateID)
+	}
+	priority, err := parsePriority(request.Priority)
+	if err != nil {
+		return LinearIssueUpdateInput{}, err
+	}
+	input.Priority = priority
+
+	return input, nil
 }
 
 func appendIssueDescription(description string, note string) string {
@@ -291,4 +348,40 @@ func firstStartedStateID(ctx context.Context, graphqlClient graphql.Client, team
 	}
 
 	return state.Id, nil
+}
+
+func firstStateIDOfType(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	teamID string,
+	stateType string,
+) (string, error) {
+	states, err := WorkflowStatesByType(ctx, graphqlClient, teamID, stateType, intPtr(50))
+	if err != nil {
+		return "", fmt.Errorf("list %s workflow states: %w", stateType, err)
+	}
+	if len(states.WorkflowStates.Nodes) == 0 {
+		return "", fmt.Errorf("%w: %s workflow state missing for team_id=%s", ErrWriteInvalid, stateType, teamID)
+	}
+
+	state := states.WorkflowStates.Nodes[0]
+	for _, candidate := range states.WorkflowStates.Nodes[1:] {
+		if candidate.Position < state.Position {
+			state = candidate
+		}
+	}
+
+	return state.Id, nil
+}
+
+func parsePriority(raw string) (*int, error) {
+	if raw == "" {
+		return nil, nil //nolint:nilnil // nil *int is the intentional "no priority" signal
+	}
+	value, err := strconv.Atoi(raw)
+	if err != nil {
+		return nil, fmt.Errorf("%w: priority must be a number (0-4), got %q", ErrWriteInvalid, raw)
+	}
+
+	return &value, nil
 }

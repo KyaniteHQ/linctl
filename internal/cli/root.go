@@ -4,6 +4,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -68,6 +69,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	flags.BoolVar(&options.debug, "debug", false, "emit debug diagnostics to stderr")
 
 	addCommands(ctx, command, &options)
+	registerGlobalCompletions(ctx, command, &options)
 	command.SetContext(ctx)
 
 	return command
@@ -95,6 +97,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addIssueCommand(ctx, command, options)
 	addIssueRelationCommand(ctx, command, options)
 	addNextCommand(ctx, command, options)
+	addFilesCommand(ctx, command, options)
 	addCurrentCommand(ctx, command, options)
 	addDoneCommand(ctx, command, options)
 	addCommentCommand(ctx, command, options)
@@ -136,12 +139,36 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 
 // Execute runs linctl with process stdio.
 func Execute(ctx context.Context, build BuildInfo) error {
-	command := NewRootCommand(ctx, build)
-	command.SetIn(os.Stdin)
-	command.SetOut(os.Stdout)
-	command.SetErr(os.Stderr)
+	return execute(ctx, build, os.Stdin, os.Stdout, os.Stderr, nil)
+}
 
-	return command.ExecuteContext(ctx)
+// execute runs linctl with injectable streams and args so the failure path
+// (the structured error envelope) is testable. On any error it emits a single
+// JSON error envelope to stderr for machine consumers and still returns the
+// error so main can print the human-readable line and set the exit code.
+func execute(
+	ctx context.Context,
+	build BuildInfo,
+	stdin io.Reader,
+	stdout io.Writer,
+	stderr io.Writer,
+	args []string,
+) error {
+	command := NewRootCommand(ctx, build)
+	command.SetIn(stdin)
+	command.SetOut(stdout)
+	command.SetErr(stderr)
+	if args != nil {
+		command.SetArgs(args)
+	}
+
+	err := command.ExecuteContext(ctx)
+	if err != nil {
+		//nolint:errcheck // best-effort structured error on stderr; the error is still returned
+		_ = writeErrorEnvelope(command.ErrOrStderr(), err)
+	}
+
+	return err
 }
 
 func (build BuildInfo) versionText() string {

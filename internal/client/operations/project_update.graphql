@@ -31,6 +31,15 @@ query projectUpdate_comments($id: String!, $first: Int, $after: String, $include
   }
 }
 
+mutation ProjectUpdateCreate($input: ProjectUpdateCreateInput!) {
+  projectUpdateCreate(input: $input) {
+    success
+    projectUpdate {
+      ...TopLevelProjectUpdateSummaryFields
+    }
+  }
+}
+
 fragment TopLevelProjectUpdateSummaryFields on ProjectUpdate {
   id
   body

@@ -12,39 +12,90 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
+// issueCreateFlags collects the non-request inputs of the issue create command.
+type issueCreateFlags struct {
+	descriptionFile string
+	templateID      string
+	sections        []string
+	state           string
+	status          string
+	priority        string
+	dryRun          bool
+}
+
 func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueCreateRequest{}
-	descriptionFile := ""
+	flags := issueCreateFlags{}
 	command := &cobra.Command{
 		Use:   "create",
 		Short: "Create an issue in the pinned target",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			if err := resolveFileFlag(&request.Description, descriptionFile, "description"); err != nil {
-				return err
-			}
-			issue, err := client.CreateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
+			return runIssueCreate(ctx, command, options, request, flags)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "issue title")
 	command.Flags().StringVar(&request.Description, "description", "", "issue description")
-	command.Flags().StringVar(&descriptionFile, "description-file", "", "read issue description from file")
+	command.Flags().StringVar(&flags.descriptionFile, "description-file", "", "read issue description from file")
+	command.Flags().StringVar(
+		&flags.templateID, "template", "",
+		"apply a Linear template by id for title/description defaults",
+	)
+	command.Flags().StringArrayVar(&flags.sections, "section", nil, "fill a markdown section: NAME=VALUE (repeatable)")
+	command.Flags().BoolVar(&flags.dryRun, "dry-run", false, "render the assembled issue without creating it")
+	command.Flags().StringVar(&flags.state, "state", "", "set workflow state type (e.g. started, completed)")
+	command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
+	command.Flags().StringVar(&flags.priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
+	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
+}
+
+func runIssueCreate(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	request client.IssueCreateRequest,
+	flags issueCreateFlags,
+) error {
+	runtime, err := buildCommandRuntime(ctx, options)
+	if err != nil {
+		return err
+	}
+	if err := resolveFileFlag(&request.Description, flags.descriptionFile, "description"); err != nil {
+		return err
+	}
+	if err := applyIssueTemplate(ctx, runtime, &request, flags.templateID); err != nil {
+		return err
+	}
+	if err := applyIssueSections(&request, flags.sections); err != nil {
+		return err
+	}
+	stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
+		command, flags.state, flags.status, flags.priority,
+	)
+	if normErr != nil {
+		return normErr
+	}
+	request.StateType = stateType
+	request.Priority = normalizedPriority
+	if flags.dryRun {
+		return writeIssueDraft(command, options, request)
+	}
+	issue, err := client.CreateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
+	if err != nil {
+		return err
+	}
+
+	return writeIssue(command, options, issue)
 }
 
 func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueUpdateRequest{}
 	descriptionFile := ""
 	appendFile := ""
+	state := ""
+	status := ""
+	priority := ""
 	command := &cobra.Command{
 		Use:   "update ISSUE_ID",
 		Short: "Update an issue after pinned-target comparison",
@@ -61,6 +112,12 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 			if err := resolveFileFlag(&request.Append, appendFile, "append"); err != nil {
 				return err
 			}
+			stateType, normalizedPriority, normErr := applyIssueWriteNormalization(command, state, status, priority)
+			if normErr != nil {
+				return normErr
+			}
+			request.StateType = stateType
+			request.Priority = normalizedPriority
 			issue, err := client.UpdateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
 			if err != nil {
 				return err
@@ -74,7 +131,32 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().StringVar(&descriptionFile, "description-file", "", "read new issue description from file")
 	command.Flags().StringVar(&request.Append, "append", "", "text to append to the issue description")
 	command.Flags().StringVar(&appendFile, "append-file", "", "read text to append from file")
+	command.Flags().StringVar(&state, "state", "", "set workflow state type (e.g. started, completed)")
+	command.Flags().StringVar(&status, "status", "", "alias for --state")
+	command.Flags().StringVar(&priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
+	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
+}
+
+// applyIssueWriteNormalization merges the --state/--status alias pair and
+// normalizes both the state type and the priority string. It emits a note to
+// stderr when an alias was expanded to its canonical form.
+func applyIssueWriteNormalization(
+	command *cobra.Command,
+	state string,
+	status string,
+	priority string,
+) (stateType string, normalizedPriority string, err error) {
+	stateType, err = normalizeAndNote(command, "state", mergedStateFlag(state, status), normalizedStateType)
+	if err != nil {
+		return "", "", err
+	}
+	normalizedPriority, err = normalizeAndNote(command, "priority", priority, normalizedPriorityValue)
+	if err != nil {
+		return "", "", err
+	}
+
+	return stateType, normalizedPriority, nil
 }
 
 func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

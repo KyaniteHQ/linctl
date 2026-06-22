@@ -207,6 +207,228 @@ type issueFixture struct {
 	StateType  string
 }
 
+func Test_CreateIssue_resolves_state_type_and_priority_when_provided(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
+			{"id":"todo-state","name":"Todo","type":"unstarted","position":2},
+			{"id":"backlog-state","name":"Backlog","type":"unstarted","position":1}
+		]}}`,
+		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-3",
+			Title:      "typed",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "backlog-state",
+			State:      "Backlog",
+			StateType:  "unstarted",
+		}) + `}}`,
+	})
+
+	// When
+	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+		Title:     "typed",
+		StateType: "unstarted",
+		Priority:  "2",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "LIT-3", issue.Identifier)
+}
+
+func Test_CreateIssue_returns_error_when_state_type_has_no_workflow_states(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[]}}`,
+	})
+
+	// When
+	_, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+		Title:     "typed",
+		StateType: "unstarted",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_UpdateIssue_returns_error_when_state_type_has_no_workflow_states(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "existing",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "todo-state",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[]}}`,
+	})
+
+	// When
+	_, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID:        "LIT-1",
+		StateType: "completed",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_UpdateIssue_resolves_state_type_and_priority_when_provided(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "existing",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "todo-state",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
+			{"id":"done-state","name":"Done","type":"completed","position":1}
+		]}}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "existing",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "done-state",
+			State:      "Done",
+			StateType:  "completed",
+		}) + `}}`,
+	})
+
+	// When
+	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID:        "LIT-1",
+		StateType: "completed",
+		Priority:  "1",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "completed", issue.StateType)
+}
+
+func Test_UpdateIssue_returns_error_when_all_fields_empty(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+
+	// When
+	_, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID: "LIT-1",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_CreateIssue_returns_error_for_invalid_priority_string(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+
+	// When
+	_, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+		Title:    "typed",
+		Priority: "not-a-number",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_UpdateIssue_returns_error_for_invalid_priority_string(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "existing",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "todo-state",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+	})
+
+	// When
+	_, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID:       "LIT-1",
+		Priority: "not-a-number",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_firstStateIDOfType_returns_error_on_graphql_failure(t *testing.T) {
+	// Given - empty fake client with no WorkflowStatesByType response triggers error
+	graphqlClient := fakeGraphQLClient(map[string]string{})
+
+	// When
+	_, err := firstStateIDOfType(context.Background(), graphqlClient, "team-id", "started")
+
+	// Then
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "list started workflow states")
+}
+
+func Test_parsePriority_returns_nil_for_empty_string(t *testing.T) {
+	result, err := parsePriority("")
+
+	require.NoError(t, err)
+	require.Nil(t, result)
+}
+
+func Test_parsePriority_returns_error_for_non_numeric_string(t *testing.T) {
+	_, err := parsePriority("high")
+
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_firstStateIDOfType_returns_state_with_lowest_position(t *testing.T) {
+	// Given
+	graphqlClient := fakeGraphQLClient(map[string]string{
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
+			{"id":"second-state","name":"Second","type":"started","position":2},
+			{"id":"first-state","name":"First","type":"started","position":1}
+		]}}`,
+	})
+
+	// When
+	stateID, err := firstStateIDOfType(context.Background(), graphqlClient, "team-id", "started")
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "first-state", stateID)
+}
+
+func Test_firstStateIDOfType_returns_error_when_no_states(t *testing.T) {
+	// Given
+	graphqlClient := fakeGraphQLClient(map[string]string{
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[]}}`,
+	})
+
+	// When
+	_, err := firstStateIDOfType(context.Background(), graphqlClient, "team-id", "started")
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
 func issueJSON(issue issueFixture) string {
 	project := `null`
 	if issue.ProjectID != "" {

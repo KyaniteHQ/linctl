@@ -97,3 +97,24 @@ Two things to know when parsing `target --json`:
 ## Usage
 
 `usage` · `issue usage` · `project usage` → `{ "topic": string, "text": string }`
+
+## Error envelope
+
+On any failure linctl writes one JSON line to **stderr** (in addition to the human-readable
+error), so an agent can branch on a stable code instead of parsing prose:
+
+```json
+{ "error_code": "TARGET_MISMATCH", "message": "target mismatch: expected team_id=... resolved ..." }
+```
+
+`error_code` is one of:
+
+- `TARGET_MISMATCH` — resolved target does not match the pinned target (hard stop; do not retry blindly).
+- `RATE_LIMITED` — Linear returned a rate-limit response; back off and retry.
+- `MUTATION_FAILED` — the mutation ran but Linear reported no success/entity.
+- `INVALID_WRITE` — the write request was rejected before any API call (missing/!valid input).
+- `GRAPHQL_ERROR` — the GraphQL request itself failed.
+- `NOT_FOUND` — the referenced entity was not found.
+- `INTERNAL` — any other error (config, unknown command, decode, etc.).
+
+Read the JSON line from stderr; the human-readable line follows it on stderr too.

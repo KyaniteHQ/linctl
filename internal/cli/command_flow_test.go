@@ -135,19 +135,31 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue relation list", args: []string{"issue-relation", "list", "--limit", "1"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, contains: "issue-relation-id blocks LIT-1 -> LIT-2"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, contains: `gh pr create --title "LIT-1 Detail issue" --body "https://linear.app/kyanite/issue/LIT-1"`},
-		{name: "issue create", args: []string{"issue", "create", "--title", "Created issue"}, contains: "LIT-2 Created issue [Todo]"},
-		{name: "issue update", args: []string{"issue", "update", "LIT-1", "--title", "Updated issue"}, contains: "LIT-1 Updated issue [Todo]"},
+		{name: "issue create", args: []string{"issue", "create", "--title", "Created issue"}, contains: "LIT-2 Created issue [Todo]", fake: commandFlowFakeClient{expectedCreateTitle: "Created issue"}},
+		{name: "issue create with state alias", args: []string{"issue", "create", "--title", "Created issue", "--state", "todo"}, contains: "LIT-2 Created issue [Todo]", fake: commandFlowFakeClient{expectedCreateTitle: "Created issue"}},
+		{name: "issue create with priority alias", args: []string{"issue", "create", "--title", "Created issue", "--priority", "high"}, contains: "LIT-2 Created issue [Todo]", fake: commandFlowFakeClient{expectedCreateTitle: "Created issue"}},
+		{name: "issue create with status alias", args: []string{"issue", "create", "--title", "Created issue", "--status", "done"}, contains: "LIT-2 Created issue [Todo]", fake: commandFlowFakeClient{expectedCreateTitle: "Created issue"}},
+		{name: "issue create from template", args: []string{"issue", "create", "--template", "template-id"}, contains: "LIT-2 Created issue [Todo]"},
+		{name: "issue update", args: []string{"issue", "update", "LIT-1", "--title", "Updated issue"}, contains: "LIT-1 Updated issue [Todo]", fake: commandFlowFakeClient{expectedUpdateTitle: "Updated issue"}},
+		{name: "issue update with state alias", args: []string{"issue", "update", "LIT-1", "--state", "done"}, contains: "LIT-1 Updated issue [Todo]"},
+		{name: "issue update with priority alias", args: []string{"issue", "update", "LIT-1", "--priority", "2"}, contains: "LIT-1 Updated issue [Todo]"},
+		{name: "issue update with status alias", args: []string{"issue", "update", "LIT-1", "--status", "started"}, contains: "LIT-1 Updated issue [Todo]"},
 		{name: "issue update append", args: []string{"issue", "update", "LIT-1", "--append", "Progress note"}, contains: "LIT-1 Updated issue [Todo]", fake: commandFlowFakeClient{expectedUpdateDescription: "Existing description\n\nProgress note"}},
+		{name: "issue list status alias", args: []string{"issue", "list", "--status", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
 		{name: "issue start", args: []string{"issue", "start", "LIT-1"}, contains: "LIT-1 Started issue [Started]", fake: commandFlowFakeClient{expectedStartAssigneeID: "user-id", expectedStartStateID: "started-state"}},
 		{name: "issue comment", args: []string{"issue", "comment", "LIT-1", "--body", "Looks good"}, contains: "comment comment-id on LIT-1"},
 		{name: "issue reply", args: []string{"issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"}, contains: "comment comment-id on LIT-1", fake: commandFlowFakeClient{expectedCommentBody: "Reply body", expectedCommentParentID: "comment-id"}},
 		{name: "issue comments", args: []string{"issue", "comments", "LIT-1", "--limit", "1"}, contains: "comment-id Omer First comment"},
 		{name: "comment list", args: []string{"comment", "list", "--limit", "1"}, contains: "comment-id Omer First comment"},
 		{name: "comment get", args: []string{"comment", "get", "comment-id"}, contains: "comment-id Omer First comment"},
+		{name: "comment update", args: []string{"comment", "update", "comment-id", "--body", "New body"}, contains: "comment-id Omer First comment"},
+		{name: "comment delete", args: []string{"comment", "delete", "comment-id"}, contains: "comment-id deleted"},
 		{name: "comment bot actor", args: []string{"comment", "bot-actor", "comment-id"}, contains: "comment-id bot bot-actor-id GitHub [github]"},
 		{name: "comment children", args: []string{"comment", "children", "comment-id", "--limit", "1"}, contains: "child-comment-id Omer 2026-06-19T12:00:00Z"},
 		{name: "comment created issues", args: []string{"comment", "created-issues", "comment-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, contains: "LIT-1 Closed issue [Done]"},
+		{name: "issue relate", args: []string{"issue", "relate", "LIT-1", "LIT-2", "--type", "related"}, contains: "issue-relation-id related LIT-1 -> LIT-2"},
+		{name: "issue unrelate", args: []string{"issue", "unrelate", "issue-relation-id"}, contains: "issue-relation-id deleted"},
 		{name: "project list", args: []string{"project", "list", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project all", args: []string{"project", "all", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project get", args: []string{"project", "get", "project-id"}, contains: "project-id Detail project [Backlog]"},
@@ -168,10 +180,11 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project filter suggestion", args: []string{"project", "filter-suggestion", "started projects"}, contains: `log_id=filter-log-id filter={"status":{"type":{"eq":"started"}}}`},
 		{name: "project update list", args: []string{"project-update", "list", "--limit", "1"}, contains: "project-update-id onTrack Omer First update"},
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, contains: "project-update-id onTrack Omer First update"},
+		{name: "project update create", args: []string{"project-update", "create", "project-id", "--health", "on-track", "--body", "Posted update"}, contains: "project-update-id onTrack Omer First update"},
 		{name: "project milestone all", args: []string{"project-milestone", "all", "--limit", "1"}, contains: "project-milestone-id Launch milestone [next]"},
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id", "--limit", "1"}, contains: "project-milestone-id Launch milestone [next]"},
-		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, contains: "project-milestone-id Created milestone [next]"},
-		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, contains: "project-milestone-id Updated milestone [done]"},
+		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, contains: "project-milestone-id Created milestone [next]", fake: commandFlowFakeClient{expectedMilestoneCreateName: "Created milestone"}},
+		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, contains: "project-milestone-id Updated milestone [done]", fake: commandFlowFakeClient{expectedMilestoneUpdateName: "Updated milestone"}},
 		{name: "project status list", args: []string{"project-status", "list", "--limit", "1"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
 		{name: "project status get", args: []string{"project-status", "get", "project-status-id"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
 		{name: "project status project count", args: []string{"project-status", "project-count", "project-status-id"}, contains: "project-status-id count 12 private 2 archived_team 1"},
@@ -181,12 +194,14 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project label projects", args: []string{"project-label", "projects", "project-label-id", "--limit", "1"}, contains: "project-id Listed project [Backlog]"},
 		{name: "project relation list", args: []string{"project-relation", "list", "--limit", "1"}, contains: "project-relation-id blocks Pinned project -> Related project"},
 		{name: "project relation get", args: []string{"project-relation", "get", "project-relation-id"}, contains: "project-relation-id blocks Pinned project -> Related project"},
-		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, contains: "project-id Created project [Backlog]"},
-		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, contains: "project-id Updated project [Started]"},
+		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, contains: "project-id Created project [Backlog]", fake: commandFlowFakeClient{expectedProjectCreateName: "Created project"}},
+		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, contains: "project-id Updated project [Started]", fake: commandFlowFakeClient{expectedProjectUpdateName: "Updated project"}},
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, contains: "project-id Archived project [Canceled]"},
 		{name: "document list", args: []string{"document", "list", "--limit", "1"}, contains: "document-id Spec [project]"},
 		{name: "document get", args: []string{"document", "get", "document-id"}, contains: "document-id Team note [team]"},
 		{name: "document comments", args: []string{"document", "comments", "document-id", "--limit", "1"}, contains: "comment-id Omer 2026-06-19T12:00:00Z"},
+		{name: "document create", args: []string{"document", "create", "--title", "Created doc"}, contains: "document-id Created doc [team]"},
+		{name: "document update", args: []string{"document", "update", "document-id", "--title", "Updated doc"}, contains: "document-id Updated doc [team]"},
 		{name: "label list", args: []string{"label", "list", "--limit", "1"}, contains: "label-id Bug #ff0000"},
 		{name: "label get", args: []string{"label", "get", "label-id"}, contains: "label-id Bug #ff0000"},
 		{name: "label children", args: []string{"label", "children", "label-id", "--limit", "1"}, contains: "child-label-id Mobile #56ccf2"},
@@ -445,6 +460,46 @@ func Test_CommandFlows_report_issue_text_file_errors(t *testing.T) {
 			args:     []string{"issue", "comment", "LIT-1", "--body-file", missingFile},
 			contains: "read body from file",
 		},
+		{
+			name:     "create unknown state alias",
+			args:     []string{"issue", "create", "--title", "T", "--state", "sprinting"},
+			contains: "unknown state type",
+		},
+		{
+			name:     "create unknown priority alias",
+			args:     []string{"issue", "create", "--title", "T", "--priority", "blocker"},
+			contains: "unknown priority",
+		},
+		{
+			name:     "update unknown state alias",
+			args:     []string{"issue", "update", "LIT-1", "--state", "sprinting"},
+			contains: "unknown state type",
+		},
+		{
+			name:     "update unknown priority alias",
+			args:     []string{"issue", "update", "LIT-1", "--priority", "blocker"},
+			contains: "unknown priority",
+		},
+		{
+			name:     "list unknown status alias",
+			args:     []string{"issue", "list", "--status", "sprinting"},
+			contains: "unknown state type",
+		},
+		{
+			name:     "project update body conflict",
+			args:     []string{"project-update", "create", "project-id", "--body", "inline", "--body-file", textFile},
+			contains: "body and body-file are mutually exclusive",
+		},
+		{
+			name:     "comment update body conflict",
+			args:     []string{"comment", "update", "comment-id", "--body", "inline", "--body-file", textFile},
+			contains: "body and body-file are mutually exclusive",
+		},
+		{
+			name:     "project update unknown health alias",
+			args:     []string{"project-update", "create", "project-id", "--health", "sideways"},
+			contains: "unknown health",
+		},
 	}
 
 	for _, test := range tests {
@@ -458,6 +513,49 @@ func Test_CommandFlows_report_issue_text_file_errors(t *testing.T) {
 
 			require.Error(t, err)
 			require.Contains(t, err.Error(), test.contains)
+		})
+	}
+}
+
+func Test_CommandFlows_report_normalization_note_write_errors(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{
+			name: "create state note write failure",
+			args: []string{"issue", "create", "--title", "T", "--state", "todo"},
+		},
+		{
+			name: "create priority note write failure",
+			args: []string{"issue", "create", "--title", "T", "--priority", "high"},
+		},
+		{
+			name: "update state note write failure",
+			args: []string{"issue", "update", "LIT-1", "--state", "todo"},
+		},
+		{
+			name: "update priority note write failure",
+			args: []string{"issue", "update", "LIT-1", "--priority", "high"},
+		},
+		{
+			name: "list status note write failure",
+			args: []string{"issue", "list", "--status", "todo"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetErr(commandFailingWriter{})
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.Error(t, err)
+			require.Contains(t, err.Error(), "write failed")
 		})
 	}
 }
@@ -526,16 +624,6 @@ func Test_CommandFlows_close_current_issue_from_done(t *testing.T) {
 }
 
 func Test_CommandFlows_report_next_errors(t *testing.T) {
-	t.Run("requires dry run", func(t *testing.T) {
-		command := NewRootCommand(context.Background(), BuildInfo{})
-		command.SetArgs([]string{"next"})
-
-		err := command.ExecuteContext(context.Background())
-
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "next requires --dry-run")
-	})
-
 	t.Run("empty candidate list", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{emptyNextIssues: true})
 		defer restore()
@@ -573,6 +661,97 @@ func Test_CommandFlows_rank_next_issue_candidates(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Contains(t, output.String(), "LIT-30 Unblocks checkout [Todo]")
+}
+
+func swapCheckoutBranch(fn func(context.Context, string) error) func() {
+	original := checkoutBranch
+	checkoutBranch = fn
+
+	return func() { checkoutBranch = original }
+}
+
+func Test_CommandFlows_next_starts_picked_issue(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"next"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "LIT-1")
+}
+
+func Test_CommandFlows_next_checkout_creates_branch_then_starts(t *testing.T) {
+	called := false
+	restoreCheckout := swapCheckoutBranch(func(_ context.Context, _ string) error {
+		called = true
+
+		return nil
+	})
+	defer restoreCheckout()
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"next", "--checkout"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.True(t, called)
+	require.Contains(t, output.String(), "LIT-1")
+}
+
+func Test_CommandFlows_next_checkout_failure_aborts(t *testing.T) {
+	restoreCheckout := swapCheckoutBranch(func(_ context.Context, _ string) error {
+		return errors.New("checkout boom")
+	})
+	defer restoreCheckout()
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"next", "--checkout"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "checkout boom")
+}
+
+func Test_CommandFlows_next_surfaces_start_failure(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "IssueUpdate"})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"next"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+}
+
+func Test_runGitCheckoutBranch_creates_and_fails(t *testing.T) {
+	t.Run("creates a branch in a repo", func(t *testing.T) {
+		dir := t.TempDir()
+		runGitCommand(t, dir, "init")
+		t.Chdir(dir)
+
+		err := runGitCheckoutBranch(context.Background(), "linctl-it-next")
+
+		require.NoError(t, err)
+	})
+
+	t.Run("fails outside a repo", func(t *testing.T) {
+		t.Chdir(t.TempDir())
+
+		err := runGitCheckoutBranch(context.Background(), "linctl-it-next")
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "git checkout -b")
+	})
 }
 
 func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
@@ -653,6 +832,13 @@ func runCurrentCommandInGitBranch(t *testing.T, args []string) (string, error) {
 	})
 }
 
+// runCurrentCommandInGitBranchWithRuntime swaps the package-level
+// buildCommandRuntime and changes the process working directory via t.Chdir.
+// Both are process-wide side effects, so tests using this helper (and the
+// others in this file that swap buildCommandRuntime) must NOT call t.Parallel()
+// — concurrent execution would race on the shared builder and cwd. The
+// structural fix is to thread the runtime builder through as an argument; until
+// then this sequential constraint is load-bearing.
 func runCurrentCommandInGitBranchWithRuntime(
 	t *testing.T,
 	args []string,
@@ -707,6 +893,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"release-note", "list"},
 			{"release-note", "get", "release-note-id"},
 			{"next", "--dry-run"},
+			{"files", "upload", "asset.txt"},
 			{"issue", "list"},
 			{"issue", "search", "needle"},
 			{"issue", "figma-file-key-search", "figma-key"},
@@ -717,12 +904,22 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"issue", "deps", "LIT-1"},
 			{"issue", "pr", "LIT-1"},
 			{"issue", "create", "--title", "Created issue"},
+			{"issue", "create", "--title", "Created issue", "--state", "todo"},
+			{"issue", "create", "--title", "Created issue", "--priority", "high"},
 			{"issue", "update", "LIT-1", "--title", "Updated issue"},
+			{"issue", "update", "LIT-1", "--state", "done"},
+			{"issue", "update", "LIT-1", "--priority", "2"},
 			{"issue", "start", "LIT-1"},
 			{"issue", "comment", "LIT-1", "--body", "Looks good"},
 			{"issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"},
 			{"issue", "comments", "LIT-1"},
 			{"issue", "close", "LIT-1"},
+			{"issue", "relate", "LIT-1", "LIT-2", "--type", "related"},
+			{"issue", "unrelate", "issue-relation-id"},
+			{"issue", "open", "LIT-1"},
+			{"issue", "export", "LIT-1", "."},
+			{"issue", "import", "rows.json"},
+			{"issue", "bulk-export", "out.json"},
 			{"project", "list"},
 			{"project", "all"},
 			{"project", "get", "project-id"},
@@ -732,12 +929,18 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"project-milestone", "get", "project-milestone-id"},
 			{"project-milestone", "create", "project-id", "--name", "Created milestone"},
 			{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"},
+			{"project-update", "create", "project-id", "--health", "on-track", "--body", "Posted update"},
 			{"project-status", "project-count", "project-status-id"},
 			{"project", "create", "--name", "Created project"},
 			{"project", "update", "project-id", "--name", "Updated project"},
 			{"project", "archive", "project-id"},
+			{"project", "open", "project-id"},
 			{"document", "list"},
 			{"document", "get", "document-id"},
+			{"document", "create", "--title", "Created doc"},
+			{"document", "update", "document-id", "--title", "Updated doc"},
+			{"comment", "update", "comment-id", "--body", "New body"},
+			{"comment", "delete", "comment-id"},
 			{"label", "list"},
 			{"label", "get", "label-id"},
 			{"team", "list"},
@@ -1152,6 +1355,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "start", "LIT-1"},
 		{"--json", "issue", "comment", "LIT-1", "--body", "Looks good"},
 		{"--json", "issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"},
+		{"--json", "issue", "relate", "LIT-1", "LIT-2", "--type", "related"},
+		{"--json", "issue", "unrelate", "issue-relation-id"},
 		{"--json", "--fields", "id,display_name", "issue", "comments", "LIT-1", "--limit", "1"},
 		{"--json", "--fields", "identifier,title", "issue", "figma-file-key-search", "figma-key", "--limit", "1"},
 		{"--json", "issue", "priority-values"},
@@ -1159,6 +1364,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "title-suggestion", "Customer asks for faster exports"},
 		{"--json", "--fields", "id,display_name", "comment", "list", "--limit", "1"},
 		{"--json", "comment", "get", "comment-id"},
+		{"--json", "comment", "update", "comment-id", "--body", "New body"},
+		{"--json", "comment", "delete", "comment-id"},
 		{"--json", "--fields", "id,display_name", "initiative-update", "comments", "initiative-update-id", "--limit", "1"},
 		{"--json", "project", "list", "--limit", "1"},
 		{"--json", "project", "all", "--limit", "1"},
@@ -1167,6 +1374,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "project", "filter-suggestion", "started projects"},
 		{"--json", "--fields", "id,health,project_id", "project-update", "list", "--limit", "1"},
 		{"--json", "project-update", "get", "project-update-id"},
+		{"--json", "project-update", "create", "project-id", "--health", "on-track", "--body", "Posted update"},
 		{"--json", "--fields", "id,name,status", "project-milestone", "all", "--limit", "1"},
 		{"--json", "--fields", "id,name,status", "project-milestone", "list", "project-id", "--limit", "1"},
 		{"--json", "project-status", "list", "--limit", "1"},
@@ -1177,6 +1385,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "--fields", "id,type,project_id,related_project_id", "project-relation", "list", "--limit", "1"},
 		{"--json", "project-relation", "get", "project-relation-id"},
 		{"--json", "--fields", "id,title,parent_type", "document", "list", "--limit", "1"},
+		{"--json", "document", "create", "--title", "Created doc"},
+		{"--json", "document", "update", "document-id", "--title", "Updated doc"},
 		{"--json", "--fields", "id,name,color", "label", "list", "--limit", "1"},
 		{"--json", "--fields", "id,key,name", "team", "list", "--limit", "1"},
 		{"--json", "--fields", "id,name,status", "team", "cycles", "team-id", "--limit", "1"},
@@ -1312,6 +1522,7 @@ func Test_CommandFlows_print_only_id_when_id_only_flag_is_set(t *testing.T) {
 	}{
 		{name: "issue get", args: []string{"--id-only", "issue", "get", "LIT-1"}, output: "issue-id\n"},
 		{name: "issue history", args: []string{"--id-only", "issue", "history", "LIT-1"}, output: "issue-history-id\n"},
+		{name: "issue unrelate", args: []string{"--id-only", "issue", "unrelate", "issue-relation-id"}, output: "issue-relation-id\n"},
 		{name: "team git automation states", args: []string{"--id-only", "team", "git-automation-states", "team-id"}, output: "git-automation-state-id\n"},
 	}
 
@@ -1337,6 +1548,7 @@ func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing
 		{"--quiet", "doctor"},
 		{"--quiet", "issue", "get", "LIT-1"},
 		{"--quiet", "issue", "history", "LIT-1"},
+		{"--quiet", "issue", "unrelate", "issue-relation-id"},
 		{"--quiet", "team", "git-automation-states", "team-id"},
 		{"--quiet", "customer-need", "project-attachment", "customer-need-id"},
 	}
@@ -2119,6 +2331,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue relation get", args: []string{"issue-relation", "get", "issue-relation-id"}, operation: "issueRelation", contains: "get issue relation issue-relation-id"},
 		{name: "issue pr", args: []string{"issue", "pr", "LIT-1"}, operation: "issue", contains: "get issue LIT-1"},
 		{name: "issue create", args: []string{"issue", "create", "--title", "Created issue"}, operation: "IssueCreate", contains: "create issue"},
+		{name: "issue create from template", args: []string{"issue", "create", "--template", "template-id"}, operation: "templateContent", contains: "get template content"},
 		{name: "issue update", args: []string{"issue", "update", "LIT-1", "--title", "Updated issue"}, operation: "IssueUpdate", contains: "update issue LIT-1"},
 		{name: "issue start state", args: []string{"issue", "start", "LIT-1"}, operation: "StartedWorkflowStates", contains: "list started workflow states"},
 		{name: "issue start update", args: []string{"issue", "start", "LIT-1"}, operation: "IssueUpdate", contains: "start issue LIT-1"},
@@ -2126,7 +2339,11 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue reply", args: []string{"issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"}, operation: "IssueCommentCreate", contains: "comment on issue LIT-1"},
 		{name: "comment list", args: []string{"comment", "list"}, operation: "comments", contains: "list comments"},
 		{name: "comment get", args: []string{"comment", "get", "comment-id"}, operation: "comment", contains: "get comment comment-id"},
+		{name: "comment update", args: []string{"comment", "update", "comment-id", "--body", "New body"}, operation: "CommentUpdate", contains: "update comment comment-id"},
+		{name: "comment delete", args: []string{"comment", "delete", "comment-id"}, operation: "CommentDelete", contains: "delete comment comment-id"},
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, operation: "IssueClose", contains: "close issue LIT-1"},
+		{name: "issue relate", args: []string{"issue", "relate", "LIT-1", "LIT-2", "--type", "related"}, operation: "IssueRelationCreate", contains: "create issue relation"},
+		{name: "issue unrelate", args: []string{"issue", "unrelate", "issue-relation-id"}, operation: "IssueRelationDelete", contains: "delete issue relation issue-relation-id"},
 		{name: "project list target resolve", args: []string{"project", "list"}, operation: "Teams", contains: "resolve teams"},
 		{name: "project list", args: []string{"project", "list"}, operation: "Projects", contains: "list projects"},
 		{name: "project all", args: []string{"project", "all"}, operation: "projects", contains: "list projects"},
@@ -2150,6 +2367,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project update list", args: []string{"project-update", "list"}, operation: "projectUpdates", contains: "list project updates"},
 		{name: "project update get", args: []string{"project-update", "get", "project-update-id"}, operation: "projectUpdate", contains: "get project update project-update-id"},
 		{name: "project update comments", args: []string{"project-update", "comments", "project-update-id"}, operation: "projectUpdate_comments", contains: "list project update comments project-update-id"},
+		{name: "project update create", args: []string{"project-update", "create", "project-id", "--health", "on-track", "--body", "Posted update"}, operation: "ProjectUpdateCreate", contains: "create project update"},
 		{name: "project milestone all", args: []string{"project-milestone", "all"}, operation: "projectMilestones", contains: "list project milestones"},
 		{name: "project status project count", args: []string{"project-status", "project-count", "project-status-id"}, operation: "projectStatusProjectCount", contains: "get project status project count project-status-id"},
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id"}, operation: "project_projectMilestones", contains: "list project milestones project-id"},
@@ -2163,6 +2381,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "document list", args: []string{"document", "list"}, operation: "Documents", contains: "list documents"},
 		{name: "document get", args: []string{"document", "get", "document-id"}, operation: "document", contains: "get document document-id"},
 		{name: "document comments", args: []string{"document", "comments", "document-id"}, operation: "document_comments", contains: "list document comments document-id"},
+		{name: "document create", args: []string{"document", "create", "--title", "Created doc"}, operation: "DocumentCreate", contains: "create document"},
+		{name: "document update", args: []string{"document", "update", "document-id", "--title", "Updated doc"}, operation: "DocumentUpdate", contains: "update document document-id"},
 		{name: "label list", args: []string{"label", "list"}, operation: "IssueLabels", contains: "list labels"},
 		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "issueLabel", contains: "get label label-id"},
 		{name: "label children", args: []string{"label", "children", "label-id"}, operation: "issueLabel_children", contains: "list label children label-id"},
@@ -2322,6 +2542,7 @@ type commandFlowFakeClient struct {
 	emptyIssueList                bool
 	emptyIssueChildren            bool
 	emptyIssueComments            bool
+	truncatedExport               bool
 	emptyIssueProject             bool
 	emptyIssueMine                bool
 	emptyIssueLabel               bool
@@ -2368,6 +2589,12 @@ type commandFlowFakeClient struct {
 	expectedCommentParentID       string
 	expectedCreateDescription     string
 	expectedUpdateDescription     string
+	expectedCreateTitle           string
+	expectedUpdateTitle           string
+	expectedProjectCreateName     string
+	expectedProjectUpdateName     string
+	expectedMilestoneCreateName   string
+	expectedMilestoneUpdateName   string
 	expectedStartAssigneeID       string
 	expectedStartStateID          string
 	expectedOrganizationURLKey    string
@@ -2440,7 +2667,36 @@ func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Re
 	if client.expectedApplicationClientID != "" && request.OpName == "applicationInfo" {
 		return requireRequestVariable(request, []string{"clientId"}, client.expectedApplicationClientID, "application client id")
 	}
+	if err := client.requireExpectedWriteVariables(request); err != nil {
+		return err
+	}
 	return client.requireExpectedIssueStartVariables(request)
+}
+
+// requireExpectedWriteVariables asserts that guarded-write commands forward the
+// user-supplied title/name flag into the GraphQL input, so a silently dropped
+// flag value fails the test instead of passing on the output substring alone.
+func (client commandFlowFakeClient) requireExpectedWriteVariables(request *graphql.Request) error {
+	if client.expectedCreateTitle != "" && request.OpName == "IssueCreate" {
+		return requireRequestVariable(request, []string{"input", "title"}, client.expectedCreateTitle, "create title")
+	}
+	if client.expectedUpdateTitle != "" && request.OpName == "IssueUpdate" {
+		return requireRequestVariable(request, []string{"input", "title"}, client.expectedUpdateTitle, "update title")
+	}
+	if client.expectedProjectCreateName != "" && request.OpName == "ProjectCreate" {
+		return requireRequestVariable(request, []string{"input", "name"}, client.expectedProjectCreateName, "project create name")
+	}
+	if client.expectedProjectUpdateName != "" && request.OpName == "ProjectUpdate" {
+		return requireRequestVariable(request, []string{"input", "name"}, client.expectedProjectUpdateName, "project update name")
+	}
+	if client.expectedMilestoneCreateName != "" && request.OpName == "ProjectMilestoneCreate" {
+		return requireRequestVariable(request, []string{"input", "name"}, client.expectedMilestoneCreateName, "milestone create name")
+	}
+	if client.expectedMilestoneUpdateName != "" && request.OpName == "ProjectMilestoneUpdate" {
+		return requireRequestVariable(request, []string{"input", "name"}, client.expectedMilestoneUpdateName, "milestone update name")
+	}
+
+	return nil
 }
 
 func (client commandFlowFakeClient) requireExpectedSearchVariables(request *graphql.Request) error {
@@ -2585,6 +2841,12 @@ func commandFlowPayload(operation string, fake commandFlowFakeClient) (string, e
 		return payload, nil
 	}
 	if payload, ok := commandFlowIssuePayload(operation, fake); ok {
+		return payload, nil
+	}
+	if payload, ok := commandFlowCommentPayload(operation); ok {
+		return payload, nil
+	}
+	if payload, ok := commandFlowFilePayload(operation); ok {
 		return payload, nil
 	}
 	if payload, ok := commandFlowProjectPayload(operation, fake); ok {
@@ -2793,8 +3055,21 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 	case "document":
 		return `{"document":` + commandDocumentJSON(
 			"Team note",
-			`"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
+			`"project":{"id":"project-id","name":"Pinned project"},`+
+				`"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
 		) + `}`, true
+	case "DocumentCreate":
+		return `{"documentCreate":{"success":true,"document":` + commandDocumentJSON(
+			"Created doc",
+			`"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
+		) + `}}`, true
+	case "DocumentUpdate":
+		return `{"documentUpdate":{"success":true,"document":` + commandDocumentJSON(
+			"Updated doc",
+			`"project":null,"team":{"id":"team-id","key":"LIT","name":"linctl"},"issue":null,"cycle":null`,
+		) + `}}`, true
+	case "ProjectUpdateCreate":
+		return `{"projectUpdateCreate":{"success":true,"projectUpdate":` + commandProjectUpdateJSON() + `}}`, true
 	case "document_comments":
 		return `{"document":{"id":"document-id","comments":{"nodes":[` +
 			commandCommentMetadataJSON("", "") +
@@ -2949,7 +3224,42 @@ func commandFlowStateAndCommentPayload(operation string, fake commandFlowFakeCli
 	return commandFlowInitiativePayload(operation, fake)
 }
 
-//nolint:gocyclo // The table-driven command-flow fake is intentionally centralized by operation name.
+func commandFlowFilePayload(operation string) (string, bool) {
+	if operation != "fileUpload" {
+		return "", false
+	}
+
+	return `{"fileUpload":{"success":true,"uploadFile":{` +
+		`"filename":"upload.txt","contentType":"text/plain","size":11,` +
+		`"uploadUrl":"https://uploads.example/put","assetUrl":"https://assets.example/file.txt",` +
+		`"headers":[{"key":"x-test","value":"1"}]}}}`, true
+}
+
+func commandFlowCommentPayload(operation string) (string, bool) {
+	switch operation {
+	case "comments":
+		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "comment":
+		return `{"comment":` + commandTopLevelCommentJSON() + `}`, true
+	case "comment_botActor":
+		return `{"comment":{"id":"comment-id","botActor":` + commandActorBotJSON() + `}}`, true
+	case "comment_children":
+		return `{"comment":{"id":"comment-id","children":{"nodes":[` +
+			commandCommentMetadataJSONWithID("child-comment-id", "comment-id", "", "") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "comment_createdIssues":
+		return `{"comment":{"id":"comment-id","createdIssues":{"nodes":[` +
+			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+	case "CommentUpdate":
+		return `{"commentUpdate":{"success":true,"comment":` + commandTopLevelCommentJSON() + `}}`, true
+	case "CommentDelete":
+		return `{"commentDelete":{"success":true,"entityId":"comment-id"}}`, true
+	default:
+		return "", false
+	}
+}
+
 func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "initiatives":
@@ -2977,6 +3287,13 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 		return `{"initiativeRelations":{"nodes":[` + commandInitiativeRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeRelation":
 		return `{"initiativeRelation":` + commandInitiativeRelationJSON() + `}`, true
+	}
+
+	return commandFlowInitiativeUpdatePayload(operation, fake)
+}
+
+func commandFlowInitiativeUpdatePayload(operation string, fake commandFlowFakeClient) (string, bool) {
+	switch operation {
 	case "initiativeToProjects":
 		return `{"initiativeToProjects":{"nodes":[` + commandInitiativeToProjectJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "initiativeToProject":
@@ -2992,20 +3309,6 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 	case "initiativeUpdate_comments":
 		return `{"initiativeUpdate":{"id":"initiative-update-id","comments":{"nodes":[` +
 			commandCommentMetadataJSON("", "") +
-			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
-	case "comments":
-		return `{"comments":{"nodes":[` + commandTopLevelCommentJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "comment":
-		return `{"comment":` + commandTopLevelCommentJSON() + `}`, true
-	case "comment_botActor":
-		return `{"comment":{"id":"comment-id","botActor":` + commandActorBotJSON() + `}}`, true
-	case "comment_children":
-		return `{"comment":{"id":"comment-id","children":{"nodes":[` +
-			commandCommentMetadataJSONWithID("child-comment-id", "comment-id", "", "") +
-			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
-	case "comment_createdIssues":
-		return `{"comment":{"id":"comment-id","createdIssues":{"nodes":[` +
-			commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 	}
 
@@ -3114,6 +3417,9 @@ func commandFlowExtraReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"templates":[` + commandTemplateJSON() + `]}`, true
 	case "template":
 		return `{"template":` + commandTemplateJSON() + `}`, true
+	case "templateContent":
+		return `{"template":{"id":"template-id","name":"Bug report","templateData":` +
+			`{"title":"Template title","description":"## Steps\n\nReproduce here"}}}`, true
 	case "roadmaps":
 		return `{"roadmaps":{"nodes":[` + commandRoadmapJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "roadmap":
@@ -3367,6 +3673,25 @@ func commandFlowIssueVCSBranchPayload(operation string) (string, bool) {
 	}
 }
 
+func commandFlowIssueRelationPayload(operation string) (string, bool) {
+	switch operation {
+	case "issueRelations":
+		return `{"issueRelations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "issueRelation":
+		return `{"issueRelation":` + commandIssueRelationJSON() + `}`, true
+	case "IssueRelationCreate":
+		return `{"issueRelationCreate":{"success":true,"issueRelation":{` +
+			`"id":"issue-relation-id","type":"related",` +
+			`"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z","archivedAt":null,` +
+			`"issue":{"id":"issue-id","identifier":"LIT-1","title":"Source issue"},` +
+			`"relatedIssue":{"id":"related-issue-id","identifier":"LIT-2","title":"Related issue"}}}}`, true
+	case "IssueRelationDelete":
+		return `{"issueRelationDelete":{"success":true,"entityId":"issue-relation-id"}}`, true
+	default:
+		return "", false
+	}
+}
+
 func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	if payload, ok := commandFlowIssueListPayload(operation, fake); ok {
 		return payload, true
@@ -3375,6 +3700,9 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 		return payload, true
 	}
 	if payload, ok := commandFlowIssueUtilityPayload(operation, fake); ok {
+		return payload, true
+	}
+	if payload, ok := commandFlowIssueRelationPayload(operation); ok {
 		return payload, true
 	}
 
@@ -3400,15 +3728,15 @@ func commandFlowIssueReadPayload(operation string, fake commandFlowFakeClient) (
 		return `{"issue":` + commandIssueJSON("LIT-1", "Detail issue", "todo-state", "Todo", "unstarted") + `}`, true
 	case "IssueDependencies":
 		return commandFlowIssueDependenciesPayload(), true
-	case "issueRelations":
-		return `{"issueRelations":{"nodes":[` + commandIssueRelationJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "issueRelation":
-		return `{"issueRelation":` + commandIssueRelationJSON() + `}`, true
 	case "issue_comments":
 		if fake.emptyIssueComments {
 			return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
 		}
-		return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[{"id":"comment-id","body":"First comment","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}`, true
+		hasNextPage := "false"
+		if fake.truncatedExport {
+			hasNextPage = "true"
+		}
+		return `{"issue":{"id":"issue-id","identifier":"LIT-1","comments":{"nodes":[{"id":"comment-id","body":"First comment","url":"https://linear.app/comment/comment-id","createdAt":"2026-06-19T12:00:00Z","parentId":null,"user":{"id":"user-id","name":"omer","displayName":"Omer"}}],"pageInfo":{"hasNextPage":` + hasNextPage + `,"endCursor":null}}}}`, true
 	default:
 		return "", false
 	}
@@ -3639,6 +3967,8 @@ func commandFlowIssueWritePayload(operation string, fake commandFlowFakeClient) 
 		return `{"workflowStates":{"nodes":[{"id":"done-state","name":"Done","type":"completed","position":1}]}}`, true
 	case "StartedWorkflowStates":
 		return `{"workflowStates":{"nodes":[{"id":"started-state","name":"Started","type":"started","position":1}]}}`, true
+	case "WorkflowStatesByType":
+		return `{"workflowStates":{"nodes":[{"id":"type-state-id","name":"TypeState","type":"unstarted","position":1}]}}`, true
 	case "IssueClose":
 		return `{"issueUpdate":{"success":true,"issue":` + commandIssueJSON("LIT-1", "Closed issue", "done-state", "Done", "completed") + `}}`, true
 	default:

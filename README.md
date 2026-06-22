@@ -22,10 +22,10 @@ linctl issue create --title "Spike: exports" # write only inside the pinned targ
 ### Install
 
 ```bash
-# Homebrew (macOS / Linux)
+# Homebrew cask (macOS)
 brew install --cask KyaniteHQ/linctl/linctl
 
-# Go toolchain
+# Go toolchain (macOS / Linux / Windows)
 go install github.com/KyaniteHQ/linctl/cmd/linctl@latest
 ```
 

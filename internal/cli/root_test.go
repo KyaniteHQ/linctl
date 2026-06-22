@@ -3,6 +3,8 @@ package cli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -68,6 +70,38 @@ func Test_Execute_runs_root_command_without_args(t *testing.T) {
 
 	// Then
 	require.NoError(t, err)
+}
+
+func Test_execute_runs_with_injected_streams(t *testing.T) {
+	// Given
+	stdout := bytes.Buffer{}
+	stderr := bytes.Buffer{}
+
+	// When
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr, []string{"usage"})
+
+	// Then
+	require.NoError(t, err)
+	require.Contains(t, stdout.String(), "linctl is a schema-aligned Linear CLI")
+	require.Empty(t, stderr.String())
+}
+
+func Test_execute_emits_error_envelope_on_failure(t *testing.T) {
+	// Given
+	stdout := bytes.Buffer{}
+	stderr := bytes.Buffer{}
+
+	// When
+	err := execute(
+		context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr, []string{"not-a-real-command"},
+	)
+
+	// Then
+	require.Error(t, err)
+	var envelope errorEnvelope
+	require.NoError(t, json.Unmarshal(stderr.Bytes(), &envelope))
+	require.Equal(t, "INTERNAL", envelope.ErrorCode)
+	require.NotEmpty(t, envelope.Message)
 }
 
 func Test_Usage_prints_overview_when_called(t *testing.T) {

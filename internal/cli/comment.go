@@ -30,6 +30,60 @@ func addCommentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addCommentBotActorCommand(ctx, commentCommand, options)
 	addCommentChildrenCommand(ctx, commentCommand, options)
 	addCommentCreatedIssuesCommand(ctx, commentCommand, options)
+	addCommentUpdateCommand(ctx, commentCommand, options)
+	addCommentDeleteCommand(ctx, commentCommand, options)
+}
+
+func addCommentUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.CommentUpdateRequest{}
+	bodyFile := ""
+	command := &cobra.Command{
+		Use:   "update COMMENT_ID",
+		Short: "Edit a comment after pinned-target comparison",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			request.ID = args[0]
+			if err := resolveBodyFlag(command, &request.Body); err != nil {
+				return err
+			}
+			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+				return err
+			}
+			comment, err := client.UpdateComment(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeComment(command, options, comment)
+		},
+	}
+	command.Flags().StringVar(&request.Body, "body", "", "new comment body as markdown; use - to read stdin")
+	command.Flags().StringVar(&bodyFile, "body-file", "", "read new comment body from file")
+	root.AddCommand(command)
+}
+
+func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "delete COMMENT_ID",
+		Short: "Delete a comment after pinned-target comparison",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			id, err := client.DeleteComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeDeletion(command, options, id)
+		},
+	})
 }
 
 func writeComment(command *cobra.Command, options *rootOptions, comment client.CommentSummary) error {

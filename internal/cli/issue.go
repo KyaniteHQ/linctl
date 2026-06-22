@@ -49,6 +49,12 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addIssueReplyCommand(ctx, issueCommand, options)
 	addIssueCommentsCommand(ctx, issueCommand, options)
 	addIssueCloseCommand(ctx, issueCommand, options)
+	addIssueRelateCommand(ctx, issueCommand, options)
+	addIssueUnrelateCommand(ctx, issueCommand, options)
+	addIssueOpenCommand(ctx, issueCommand, options)
+	addIssueExportCommand(ctx, issueCommand, options)
+	addIssueImportCommand(ctx, issueCommand, options)
+	addIssueBulkExportCommand(ctx, issueCommand, options)
 	addIssueCurrentCommands(ctx, issueCommand, options)
 	addDomainUsageCommand(issueCommand, options, "issue")
 	root.AddCommand(issueCommand)
@@ -57,6 +63,7 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 func addIssueListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	limit := 50
 	stateType := ""
+	status := ""
 	projectID := ""
 	assigneeID := ""
 	labelID := ""
@@ -74,29 +81,14 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 		Short: "List issues for the resolved team",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			if err := validateIssueListFilters(
-				stateType,
-				projectID,
-				assigneeID,
-				labelID,
-				cycleID,
-				createdAfter,
-				createdSince,
-				createdBefore,
-				hasBlockers,
-				blocks,
-				blockedBy,
-				allTeams,
-				mine,
-			); err != nil {
-				return err
-			}
-			runtime, err := buildCommandRuntime(ctx, options)
+			normalizedState, err := normalizeAndNote(
+				command, "state", mergedStateFlag(stateType, status), normalizedStateType,
+			)
 			if err != nil {
 				return err
 			}
-			issues, err := issueList(ctx, runtime, limit, issueListFlagValues{
-				stateType:     stateType,
+			flags := issueListFlagValues{
+				stateType:     normalizedState,
 				projectID:     projectID,
 				assigneeID:    assigneeID,
 				labelID:       labelID,
@@ -109,7 +101,15 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 				blockedBy:     blockedBy,
 				allTeams:      allTeams,
 				mine:          mine,
-			})
+			}
+			if err := validateIssueListFilters(flags); err != nil {
+				return err
+			}
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			issues, err := issueList(ctx, runtime, limit, flags)
 			if err != nil {
 				return err
 			}
@@ -144,6 +144,8 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 		&allTeams,
 		&mine,
 	)
+	command.Flags().StringVar(&status, "status", "", "alias for --state")
+	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
 }
 
@@ -201,36 +203,22 @@ type issueListFlagValues struct {
 	mine          bool
 }
 
-func validateIssueListFilters(
-	stateType string,
-	projectID string,
-	assigneeID string,
-	labelID string,
-	cycleID string,
-	createdAfter string,
-	createdSince string,
-	createdBefore string,
-	hasBlockers bool,
-	blocks bool,
-	blockedBy string,
-	allTeams bool,
-	mine bool,
-) error {
+func validateIssueListFilters(flags issueListFlagValues) error {
 	filterCount := 0
 	for _, active := range []bool{
-		stateType != "",
-		projectID != "",
-		assigneeID != "",
-		labelID != "",
-		cycleID != "",
-		createdAfter != "",
-		createdSince != "",
-		createdBefore != "",
-		hasBlockers,
-		blocks,
-		blockedBy != "",
-		allTeams,
-		mine,
+		flags.stateType != "",
+		flags.projectID != "",
+		flags.assigneeID != "",
+		flags.labelID != "",
+		flags.cycleID != "",
+		flags.createdAfter != "",
+		flags.createdSince != "",
+		flags.createdBefore != "",
+		flags.hasBlockers,
+		flags.blocks,
+		flags.blockedBy != "",
+		flags.allTeams,
+		flags.mine,
 	} {
 		if active {
 			filterCount++

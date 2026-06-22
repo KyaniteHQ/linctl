@@ -832,6 +832,34 @@ func (v *AttachmentSummaryFields) GetUrl() string { return v.Url }
 // GetSourceType returns AttachmentSummaryFields.SourceType, and is useful for accessing the field via an interface.
 func (v *AttachmentSummaryFields) GetSourceType() *string { return v.SourceType }
 
+// CommentDeleteCommentDeleteDeletePayload includes the requested fields of the GraphQL type DeletePayload.
+// The GraphQL type's documentation follows.
+//
+// A generic payload return from entity deletion mutations.
+type CommentDeleteCommentDeleteDeletePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The identifier of the deleted entity.
+	EntityId string `json:"entityId"`
+}
+
+// GetSuccess returns CommentDeleteCommentDeleteDeletePayload.Success, and is useful for accessing the field via an interface.
+func (v *CommentDeleteCommentDeleteDeletePayload) GetSuccess() bool { return v.Success }
+
+// GetEntityId returns CommentDeleteCommentDeleteDeletePayload.EntityId, and is useful for accessing the field via an interface.
+func (v *CommentDeleteCommentDeleteDeletePayload) GetEntityId() string { return v.EntityId }
+
+// CommentDeleteResponse is returned by CommentDelete on success.
+type CommentDeleteResponse struct {
+	// Deletes a comment.
+	CommentDelete CommentDeleteCommentDeleteDeletePayload `json:"commentDelete"`
+}
+
+// GetCommentDelete returns CommentDeleteResponse.CommentDelete, and is useful for accessing the field via an interface.
+func (v *CommentDeleteResponse) GetCommentDelete() CommentDeleteCommentDeleteDeletePayload {
+	return v.CommentDelete
+}
+
 // CommentMetadataFields includes the GraphQL fields of Comment requested by the fragment CommentMetadataFields.
 // The GraphQL type's documentation follows.
 //
@@ -942,6 +970,209 @@ func (v *CommentMetadataFieldsUser) GetName() string { return v.Name }
 
 // GetDisplayName returns CommentMetadataFieldsUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *CommentMetadataFieldsUser) GetDisplayName() string { return v.DisplayName }
+
+// CommentUpdateCommentUpdateCommentPayload includes the requested fields of the GraphQL type CommentPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a comment mutation.
+type CommentUpdateCommentUpdateCommentPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The comment that was created or updated.
+	Comment CommentUpdateCommentUpdateCommentPayloadComment `json:"comment"`
+}
+
+// GetSuccess returns CommentUpdateCommentUpdateCommentPayload.Success, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayload) GetSuccess() bool { return v.Success }
+
+// GetComment returns CommentUpdateCommentUpdateCommentPayload.Comment, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayload) GetComment() CommentUpdateCommentUpdateCommentPayloadComment {
+	return v.Comment
+}
+
+// CommentUpdateCommentUpdateCommentPayloadComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type CommentUpdateCommentUpdateCommentPayloadComment struct {
+	TopLevelCommentSummaryFields `json:"-"`
+}
+
+// GetId returns CommentUpdateCommentUpdateCommentPayloadComment.Id, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetId() string {
+	return v.TopLevelCommentSummaryFields.Id
+}
+
+// GetBody returns CommentUpdateCommentUpdateCommentPayloadComment.Body, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetBody() string {
+	return v.TopLevelCommentSummaryFields.Body
+}
+
+// GetUrl returns CommentUpdateCommentUpdateCommentPayloadComment.Url, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetUrl() string {
+	return v.TopLevelCommentSummaryFields.Url
+}
+
+// GetCreatedAt returns CommentUpdateCommentUpdateCommentPayloadComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetCreatedAt() string {
+	return v.TopLevelCommentSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns CommentUpdateCommentUpdateCommentPayloadComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetUpdatedAt() string {
+	return v.TopLevelCommentSummaryFields.UpdatedAt
+}
+
+// GetEditedAt returns CommentUpdateCommentUpdateCommentPayloadComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetEditedAt() *string {
+	return v.TopLevelCommentSummaryFields.EditedAt
+}
+
+// GetResolvedAt returns CommentUpdateCommentUpdateCommentPayloadComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetResolvedAt() *string {
+	return v.TopLevelCommentSummaryFields.ResolvedAt
+}
+
+// GetParentId returns CommentUpdateCommentUpdateCommentPayloadComment.ParentId, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetParentId() *string {
+	return v.TopLevelCommentSummaryFields.ParentId
+}
+
+// GetIssueId returns CommentUpdateCommentUpdateCommentPayloadComment.IssueId, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetIssueId() *string {
+	return v.TopLevelCommentSummaryFields.IssueId
+}
+
+// GetProjectId returns CommentUpdateCommentUpdateCommentPayloadComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetProjectId() *string {
+	return v.TopLevelCommentSummaryFields.ProjectId
+}
+
+// GetProjectUpdateId returns CommentUpdateCommentUpdateCommentPayloadComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetProjectUpdateId() *string {
+	return v.TopLevelCommentSummaryFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns CommentUpdateCommentUpdateCommentPayloadComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetInitiativeId() *string {
+	return v.TopLevelCommentSummaryFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns CommentUpdateCommentUpdateCommentPayloadComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetInitiativeUpdateId() *string {
+	return v.TopLevelCommentSummaryFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns CommentUpdateCommentUpdateCommentPayloadComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetDocumentContentId() *string {
+	return v.TopLevelCommentSummaryFields.DocumentContentId
+}
+
+// GetUser returns CommentUpdateCommentUpdateCommentPayloadComment.User, and is useful for accessing the field via an interface.
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) GetUser() *TopLevelCommentSummaryFieldsUser {
+	return v.TopLevelCommentSummaryFields.User
+}
+
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*CommentUpdateCommentUpdateCommentPayloadComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.CommentUpdateCommentUpdateCommentPayloadComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TopLevelCommentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalCommentUpdateCommentUpdateCommentPayloadComment struct {
+	Id string `json:"id"`
+
+	Body string `json:"body"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *TopLevelCommentSummaryFieldsUser `json:"user"`
+}
+
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *CommentUpdateCommentUpdateCommentPayloadComment) __premarshalJSON() (*__premarshalCommentUpdateCommentUpdateCommentPayloadComment, error) {
+	var retval __premarshalCommentUpdateCommentUpdateCommentPayloadComment
+
+	retval.Id = v.TopLevelCommentSummaryFields.Id
+	retval.Body = v.TopLevelCommentSummaryFields.Body
+	retval.Url = v.TopLevelCommentSummaryFields.Url
+	retval.CreatedAt = v.TopLevelCommentSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TopLevelCommentSummaryFields.UpdatedAt
+	retval.EditedAt = v.TopLevelCommentSummaryFields.EditedAt
+	retval.ResolvedAt = v.TopLevelCommentSummaryFields.ResolvedAt
+	retval.ParentId = v.TopLevelCommentSummaryFields.ParentId
+	retval.IssueId = v.TopLevelCommentSummaryFields.IssueId
+	retval.ProjectId = v.TopLevelCommentSummaryFields.ProjectId
+	retval.ProjectUpdateId = v.TopLevelCommentSummaryFields.ProjectUpdateId
+	retval.InitiativeId = v.TopLevelCommentSummaryFields.InitiativeId
+	retval.InitiativeUpdateId = v.TopLevelCommentSummaryFields.InitiativeUpdateId
+	retval.DocumentContentId = v.TopLevelCommentSummaryFields.DocumentContentId
+	retval.User = v.TopLevelCommentSummaryFields.User
+	return &retval, nil
+}
+
+// CommentUpdateResponse is returned by CommentUpdate on success.
+type CommentUpdateResponse struct {
+	// Updates a comment.
+	CommentUpdate CommentUpdateCommentUpdateCommentPayload `json:"commentUpdate"`
+}
+
+// GetCommentUpdate returns CommentUpdateResponse.CommentUpdate, and is useful for accessing the field via an interface.
+func (v *CommentUpdateResponse) GetCommentUpdate() CommentUpdateCommentUpdateCommentPayload {
+	return v.CommentUpdate
+}
 
 // CompletedWorkflowStatesResponse is returned by CompletedWorkflowStates on success.
 type CompletedWorkflowStatesResponse struct {
@@ -2809,6 +3040,152 @@ func (v *CycleUpdateResponse) GetCycleUpdate() CycleUpdateCycleUpdateCyclePayloa
 	return v.CycleUpdate
 }
 
+// DocumentCreateDocumentCreateDocumentPayload includes the requested fields of the GraphQL type DocumentPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a document mutation.
+type DocumentCreateDocumentCreateDocumentPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The document that was created or updated.
+	Document DocumentCreateDocumentCreateDocumentPayloadDocument `json:"document"`
+}
+
+// GetSuccess returns DocumentCreateDocumentCreateDocumentPayload.Success, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayload) GetSuccess() bool { return v.Success }
+
+// GetDocument returns DocumentCreateDocumentCreateDocumentPayload.Document, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayload) GetDocument() DocumentCreateDocumentCreateDocumentPayloadDocument {
+	return v.Document
+}
+
+// DocumentCreateDocumentCreateDocumentPayloadDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type DocumentCreateDocumentCreateDocumentPayloadDocument struct {
+	DocumentSummaryFields `json:"-"`
+}
+
+// GetId returns DocumentCreateDocumentCreateDocumentPayloadDocument.Id, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetId() string {
+	return v.DocumentSummaryFields.Id
+}
+
+// GetTitle returns DocumentCreateDocumentCreateDocumentPayloadDocument.Title, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetTitle() string {
+	return v.DocumentSummaryFields.Title
+}
+
+// GetSlugId returns DocumentCreateDocumentCreateDocumentPayloadDocument.SlugId, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetSlugId() string {
+	return v.DocumentSummaryFields.SlugId
+}
+
+// GetArchivedAt returns DocumentCreateDocumentCreateDocumentPayloadDocument.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetArchivedAt() *string {
+	return v.DocumentSummaryFields.ArchivedAt
+}
+
+// GetProject returns DocumentCreateDocumentCreateDocumentPayloadDocument.Project, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetProject() *DocumentSummaryFieldsProject {
+	return v.DocumentSummaryFields.Project
+}
+
+// GetTeam returns DocumentCreateDocumentCreateDocumentPayloadDocument.Team, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetTeam() *DocumentSummaryFieldsTeam {
+	return v.DocumentSummaryFields.Team
+}
+
+// GetIssue returns DocumentCreateDocumentCreateDocumentPayloadDocument.Issue, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetIssue() *DocumentSummaryFieldsIssue {
+	return v.DocumentSummaryFields.Issue
+}
+
+// GetCycle returns DocumentCreateDocumentCreateDocumentPayloadDocument.Cycle, and is useful for accessing the field via an interface.
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) GetCycle() *DocumentSummaryFieldsCycle {
+	return v.DocumentSummaryFields.Cycle
+}
+
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*DocumentCreateDocumentCreateDocumentPayloadDocument
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.DocumentCreateDocumentCreateDocumentPayloadDocument = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.DocumentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalDocumentCreateDocumentCreateDocumentPayloadDocument struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	SlugId string `json:"slugId"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Project *DocumentSummaryFieldsProject `json:"project"`
+
+	Team *DocumentSummaryFieldsTeam `json:"team"`
+
+	Issue *DocumentSummaryFieldsIssue `json:"issue"`
+
+	Cycle *DocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *DocumentCreateDocumentCreateDocumentPayloadDocument) __premarshalJSON() (*__premarshalDocumentCreateDocumentCreateDocumentPayloadDocument, error) {
+	var retval __premarshalDocumentCreateDocumentCreateDocumentPayloadDocument
+
+	retval.Id = v.DocumentSummaryFields.Id
+	retval.Title = v.DocumentSummaryFields.Title
+	retval.SlugId = v.DocumentSummaryFields.SlugId
+	retval.ArchivedAt = v.DocumentSummaryFields.ArchivedAt
+	retval.Project = v.DocumentSummaryFields.Project
+	retval.Team = v.DocumentSummaryFields.Team
+	retval.Issue = v.DocumentSummaryFields.Issue
+	retval.Cycle = v.DocumentSummaryFields.Cycle
+	return &retval, nil
+}
+
+// DocumentCreateResponse is returned by DocumentCreate on success.
+type DocumentCreateResponse struct {
+	// Creates a new document.
+	DocumentCreate DocumentCreateDocumentCreateDocumentPayload `json:"documentCreate"`
+}
+
+// GetDocumentCreate returns DocumentCreateResponse.DocumentCreate, and is useful for accessing the field via an interface.
+func (v *DocumentCreateResponse) GetDocumentCreate() DocumentCreateDocumentCreateDocumentPayload {
+	return v.DocumentCreate
+}
+
 // DocumentSummaryFields includes the GraphQL fields of Document requested by the fragment DocumentSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -2957,6 +3334,152 @@ func (v *DocumentSummaryFieldsTeam) GetKey() string { return v.Key }
 
 // GetName returns DocumentSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
 func (v *DocumentSummaryFieldsTeam) GetName() string { return v.Name }
+
+// DocumentUpdateDocumentUpdateDocumentPayload includes the requested fields of the GraphQL type DocumentPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a document mutation.
+type DocumentUpdateDocumentUpdateDocumentPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The document that was created or updated.
+	Document DocumentUpdateDocumentUpdateDocumentPayloadDocument `json:"document"`
+}
+
+// GetSuccess returns DocumentUpdateDocumentUpdateDocumentPayload.Success, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayload) GetSuccess() bool { return v.Success }
+
+// GetDocument returns DocumentUpdateDocumentUpdateDocumentPayload.Document, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayload) GetDocument() DocumentUpdateDocumentUpdateDocumentPayloadDocument {
+	return v.Document
+}
+
+// DocumentUpdateDocumentUpdateDocumentPayloadDocument includes the requested fields of the GraphQL type Document.
+// The GraphQL type's documentation follows.
+//
+// A rich-text document that lives within a project, initiative, team, issue,
+// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
+// and store their content in a separate DocumentContent entity. Each document is
+// associated with exactly one parent entity.
+type DocumentUpdateDocumentUpdateDocumentPayloadDocument struct {
+	DocumentSummaryFields `json:"-"`
+}
+
+// GetId returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.Id, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetId() string {
+	return v.DocumentSummaryFields.Id
+}
+
+// GetTitle returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.Title, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetTitle() string {
+	return v.DocumentSummaryFields.Title
+}
+
+// GetSlugId returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.SlugId, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetSlugId() string {
+	return v.DocumentSummaryFields.SlugId
+}
+
+// GetArchivedAt returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetArchivedAt() *string {
+	return v.DocumentSummaryFields.ArchivedAt
+}
+
+// GetProject returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.Project, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetProject() *DocumentSummaryFieldsProject {
+	return v.DocumentSummaryFields.Project
+}
+
+// GetTeam returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.Team, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetTeam() *DocumentSummaryFieldsTeam {
+	return v.DocumentSummaryFields.Team
+}
+
+// GetIssue returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.Issue, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetIssue() *DocumentSummaryFieldsIssue {
+	return v.DocumentSummaryFields.Issue
+}
+
+// GetCycle returns DocumentUpdateDocumentUpdateDocumentPayloadDocument.Cycle, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) GetCycle() *DocumentSummaryFieldsCycle {
+	return v.DocumentSummaryFields.Cycle
+}
+
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*DocumentUpdateDocumentUpdateDocumentPayloadDocument
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.DocumentUpdateDocumentUpdateDocumentPayloadDocument = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.DocumentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalDocumentUpdateDocumentUpdateDocumentPayloadDocument struct {
+	Id string `json:"id"`
+
+	Title string `json:"title"`
+
+	SlugId string `json:"slugId"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Project *DocumentSummaryFieldsProject `json:"project"`
+
+	Team *DocumentSummaryFieldsTeam `json:"team"`
+
+	Issue *DocumentSummaryFieldsIssue `json:"issue"`
+
+	Cycle *DocumentSummaryFieldsCycle `json:"cycle"`
+}
+
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *DocumentUpdateDocumentUpdateDocumentPayloadDocument) __premarshalJSON() (*__premarshalDocumentUpdateDocumentUpdateDocumentPayloadDocument, error) {
+	var retval __premarshalDocumentUpdateDocumentUpdateDocumentPayloadDocument
+
+	retval.Id = v.DocumentSummaryFields.Id
+	retval.Title = v.DocumentSummaryFields.Title
+	retval.SlugId = v.DocumentSummaryFields.SlugId
+	retval.ArchivedAt = v.DocumentSummaryFields.ArchivedAt
+	retval.Project = v.DocumentSummaryFields.Project
+	retval.Team = v.DocumentSummaryFields.Team
+	retval.Issue = v.DocumentSummaryFields.Issue
+	retval.Cycle = v.DocumentSummaryFields.Cycle
+	return &retval, nil
+}
+
+// DocumentUpdateResponse is returned by DocumentUpdate on success.
+type DocumentUpdateResponse struct {
+	// Updates a document.
+	DocumentUpdate DocumentUpdateDocumentUpdateDocumentPayload `json:"documentUpdate"`
+}
+
+// GetDocumentUpdate returns DocumentUpdateResponse.DocumentUpdate, and is useful for accessing the field via an interface.
+func (v *DocumentUpdateResponse) GetDocumentUpdate() DocumentUpdateDocumentUpdateDocumentPayload {
+	return v.DocumentUpdate
+}
 
 // DocumentsDocumentsDocumentConnection includes the requested fields of the GraphQL type DocumentConnection.
 type DocumentsDocumentsDocumentConnection struct {
@@ -6162,6 +6685,174 @@ type IssueLabelsResponse struct {
 // GetIssueLabels returns IssueLabelsResponse.IssueLabels, and is useful for accessing the field via an interface.
 func (v *IssueLabelsResponse) GetIssueLabels() IssueLabelsIssueLabelsIssueLabelConnection {
 	return v.IssueLabels
+}
+
+// IssueRelationCreateIssueRelationCreateIssueRelationPayload includes the requested fields of the GraphQL type IssueRelationPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an issue relation mutation, containing the created or updated issue relation and a success indicator.
+type IssueRelationCreateIssueRelationCreateIssueRelationPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The issue relation that was created or updated.
+	IssueRelation IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation `json:"issueRelation"`
+}
+
+// GetSuccess returns IssueRelationCreateIssueRelationCreateIssueRelationPayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetIssueRelation returns IssueRelationCreateIssueRelationCreateIssueRelationPayload.IssueRelation, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayload) GetIssueRelation() IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation {
+	return v.IssueRelation
+}
+
+// IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation includes the requested fields of the GraphQL type IssueRelation.
+// The GraphQL type's documentation follows.
+//
+// A relation between two issues. Issue relations represent directional
+// relationships such as blocking, being blocked by, relating to, or duplicating
+// another issue. Each relation connects a source issue to a related issue with a
+// specific type describing the nature of the relationship.
+type IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation struct {
+	IssueRelationSummaryFields `json:"-"`
+}
+
+// GetId returns IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation.Id, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) GetId() string {
+	return v.IssueRelationSummaryFields.Id
+}
+
+// GetType returns IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation.Type, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) GetType() string {
+	return v.IssueRelationSummaryFields.Type
+}
+
+// GetCreatedAt returns IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation.CreatedAt, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) GetCreatedAt() string {
+	return v.IssueRelationSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) GetUpdatedAt() string {
+	return v.IssueRelationSummaryFields.UpdatedAt
+}
+
+// GetArchivedAt returns IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) GetArchivedAt() *string {
+	return v.IssueRelationSummaryFields.ArchivedAt
+}
+
+// GetIssue returns IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation.Issue, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) GetIssue() IssueRelationSummaryFieldsIssue {
+	return v.IssueRelationSummaryFields.Issue
+}
+
+// GetRelatedIssue returns IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation.RelatedIssue, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) GetRelatedIssue() IssueRelationSummaryFieldsRelatedIssue {
+	return v.IssueRelationSummaryFields.RelatedIssue
+}
+
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueRelationSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalIssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation struct {
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Issue IssueRelationSummaryFieldsIssue `json:"issue"`
+
+	RelatedIssue IssueRelationSummaryFieldsRelatedIssue `json:"relatedIssue"`
+}
+
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation) __premarshalJSON() (*__premarshalIssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation, error) {
+	var retval __premarshalIssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation
+
+	retval.Id = v.IssueRelationSummaryFields.Id
+	retval.Type = v.IssueRelationSummaryFields.Type
+	retval.CreatedAt = v.IssueRelationSummaryFields.CreatedAt
+	retval.UpdatedAt = v.IssueRelationSummaryFields.UpdatedAt
+	retval.ArchivedAt = v.IssueRelationSummaryFields.ArchivedAt
+	retval.Issue = v.IssueRelationSummaryFields.Issue
+	retval.RelatedIssue = v.IssueRelationSummaryFields.RelatedIssue
+	return &retval, nil
+}
+
+// IssueRelationCreateResponse is returned by IssueRelationCreate on success.
+type IssueRelationCreateResponse struct {
+	// Creates a new issue relation.
+	IssueRelationCreate IssueRelationCreateIssueRelationCreateIssueRelationPayload `json:"issueRelationCreate"`
+}
+
+// GetIssueRelationCreate returns IssueRelationCreateResponse.IssueRelationCreate, and is useful for accessing the field via an interface.
+func (v *IssueRelationCreateResponse) GetIssueRelationCreate() IssueRelationCreateIssueRelationCreateIssueRelationPayload {
+	return v.IssueRelationCreate
+}
+
+// IssueRelationDeleteIssueRelationDeleteDeletePayload includes the requested fields of the GraphQL type DeletePayload.
+// The GraphQL type's documentation follows.
+//
+// A generic payload return from entity deletion mutations.
+type IssueRelationDeleteIssueRelationDeleteDeletePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The identifier of the deleted entity.
+	EntityId string `json:"entityId"`
+}
+
+// GetSuccess returns IssueRelationDeleteIssueRelationDeleteDeletePayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueRelationDeleteIssueRelationDeleteDeletePayload) GetSuccess() bool { return v.Success }
+
+// GetEntityId returns IssueRelationDeleteIssueRelationDeleteDeletePayload.EntityId, and is useful for accessing the field via an interface.
+func (v *IssueRelationDeleteIssueRelationDeleteDeletePayload) GetEntityId() string { return v.EntityId }
+
+// IssueRelationDeleteResponse is returned by IssueRelationDelete on success.
+type IssueRelationDeleteResponse struct {
+	// Deletes an issue relation.
+	IssueRelationDelete IssueRelationDeleteIssueRelationDeleteDeletePayload `json:"issueRelationDelete"`
+}
+
+// GetIssueRelationDelete returns IssueRelationDeleteResponse.IssueRelationDelete, and is useful for accessing the field via an interface.
+func (v *IssueRelationDeleteResponse) GetIssueRelationDelete() IssueRelationDeleteIssueRelationDeleteDeletePayload {
+	return v.IssueRelationDelete
 }
 
 // IssueRelationSummaryFields includes the GraphQL fields of IssueRelation requested by the fragment IssueRelationSummaryFields.
@@ -15964,6 +16655,153 @@ func (v *ProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetKey() string { ret
 // GetName returns ProjectSummaryFieldsTeamsTeamConnectionNodesTeam.Name, and is useful for accessing the field via an interface.
 func (v *ProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetName() string { return v.Name }
 
+// ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload includes the requested fields of the GraphQL type ProjectUpdatePayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a project update mutation.
+type ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The project update that was created or updated.
+	ProjectUpdate ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate `json:"projectUpdate"`
+}
+
+// GetSuccess returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetProjectUpdate returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload.ProjectUpdate, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload) GetProjectUpdate() ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate {
+	return v.ProjectUpdate
+}
+
+// ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
+// The GraphQL type's documentation follows.
+//
+// A status update posted to a project. Project updates communicate progress,
+// health, and blockers to stakeholders. Each update captures the project's health
+// at the time of writing and includes a rich-text body with the update content.
+type ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate struct {
+	TopLevelProjectUpdateSummaryFields `json:"-"`
+}
+
+// GetId returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.Id, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetId() string {
+	return v.TopLevelProjectUpdateSummaryFields.Id
+}
+
+// GetBody returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.Body, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetBody() string {
+	return v.TopLevelProjectUpdateSummaryFields.Body
+}
+
+// GetHealth returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.Health, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetHealth() ProjectUpdateHealthType {
+	return v.TopLevelProjectUpdateSummaryFields.Health
+}
+
+// GetCreatedAt returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetCreatedAt() string {
+	return v.TopLevelProjectUpdateSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetUpdatedAt() string {
+	return v.TopLevelProjectUpdateSummaryFields.UpdatedAt
+}
+
+// GetUrl returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.Url, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetUrl() string {
+	return v.TopLevelProjectUpdateSummaryFields.Url
+}
+
+// GetProject returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.Project, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetProject() TopLevelProjectUpdateSummaryFieldsProject {
+	return v.TopLevelProjectUpdateSummaryFields.Project
+}
+
+// GetUser returns ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate.User, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) GetUser() TopLevelProjectUpdateSummaryFieldsUser {
+	return v.TopLevelProjectUpdateSummaryFields.User
+}
+
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TopLevelProjectUpdateSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate struct {
+	Id string `json:"id"`
+
+	Body string `json:"body"`
+
+	Health ProjectUpdateHealthType `json:"health"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Url string `json:"url"`
+
+	Project TopLevelProjectUpdateSummaryFieldsProject `json:"project"`
+
+	User TopLevelProjectUpdateSummaryFieldsUser `json:"user"`
+}
+
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate) __premarshalJSON() (*__premarshalProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate, error) {
+	var retval __premarshalProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate
+
+	retval.Id = v.TopLevelProjectUpdateSummaryFields.Id
+	retval.Body = v.TopLevelProjectUpdateSummaryFields.Body
+	retval.Health = v.TopLevelProjectUpdateSummaryFields.Health
+	retval.CreatedAt = v.TopLevelProjectUpdateSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TopLevelProjectUpdateSummaryFields.UpdatedAt
+	retval.Url = v.TopLevelProjectUpdateSummaryFields.Url
+	retval.Project = v.TopLevelProjectUpdateSummaryFields.Project
+	retval.User = v.TopLevelProjectUpdateSummaryFields.User
+	return &retval, nil
+}
+
+// ProjectUpdateCreateResponse is returned by ProjectUpdateCreate on success.
+type ProjectUpdateCreateResponse struct {
+	// Creates a new project update.
+	ProjectUpdateCreate ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload `json:"projectUpdateCreate"`
+}
+
+// GetProjectUpdateCreate returns ProjectUpdateCreateResponse.ProjectUpdateCreate, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateCreateResponse) GetProjectUpdateCreate() ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload {
+	return v.ProjectUpdateCreate
+}
+
 // The health type when the project update is created.
 type ProjectUpdateHealthType string
 
@@ -19984,6 +20822,90 @@ func (v *WorkflowStateSummaryFieldsTeam) GetKey() string { return v.Key }
 // GetName returns WorkflowStateSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
 func (v *WorkflowStateSummaryFieldsTeam) GetName() string { return v.Name }
 
+// WorkflowStatesByTypeResponse is returned by WorkflowStatesByType on success.
+type WorkflowStatesByTypeResponse struct {
+	// All issue workflow states (issue statuses). Returns a paginated list of
+	// workflow states visible to the authenticated user, across all teams they have access to.
+	WorkflowStates WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection `json:"workflowStates"`
+}
+
+// GetWorkflowStates returns WorkflowStatesByTypeResponse.WorkflowStates, and is useful for accessing the field via an interface.
+func (v *WorkflowStatesByTypeResponse) GetWorkflowStates() WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection {
+	return v.WorkflowStates
+}
+
+// WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection includes the requested fields of the GraphQL type WorkflowStateConnection.
+type WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection struct {
+	Nodes []WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState `json:"nodes"`
+}
+
+// GetNodes returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection) GetNodes() []WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState {
+	return v.Nodes
+}
+
+// WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
+// The GraphQL type's documentation follows.
+//
+// A state in a team's workflow, representing an issue status such as Triage,
+// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
+// set of workflow states that define the progression of issues through the team's
+// process. Workflow states have a type that categorizes them (triage, backlog,
+// unstarted, started, completed, canceled), a position that determines their
+// display order, and a color for visual identification. States can be inherited
+// from parent teams to sub-teams.
+type WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The state's human-readable name (e.g., 'In Progress', 'Done', 'Backlog').
+	Name string `json:"name"`
+	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
+	Type string `json:"type"`
+	// The position of the state in the team's workflow. States are displayed in
+	// ascending order of position within their type group.
+	Position float64 `json:"position"`
+}
+
+// GetId returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Id, and is useful for accessing the field via an interface.
+func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetId() string {
+	return v.Id
+}
+
+// GetName returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Name, and is useful for accessing the field via an interface.
+func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetName() string {
+	return v.Name
+}
+
+// GetType returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Type, and is useful for accessing the field via an interface.
+func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetType() string {
+	return v.Type
+}
+
+// GetPosition returns WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState.Position, and is useful for accessing the field via an interface.
+func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState) GetPosition() float64 {
+	return v.Position
+}
+
+// __CommentDeleteInput is used internally by genqlient
+type __CommentDeleteInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __CommentDeleteInput.Id, and is useful for accessing the field via an interface.
+func (v *__CommentDeleteInput) GetId() string { return v.Id }
+
+// __CommentUpdateInput is used internally by genqlient
+type __CommentUpdateInput struct {
+	Id    string                   `json:"id"`
+	Input LinearCommentUpdateInput `json:"input"`
+}
+
+// GetId returns __CommentUpdateInput.Id, and is useful for accessing the field via an interface.
+func (v *__CommentUpdateInput) GetId() string { return v.Id }
+
+// GetInput returns __CommentUpdateInput.Input, and is useful for accessing the field via an interface.
+func (v *__CommentUpdateInput) GetInput() LinearCommentUpdateInput { return v.Input }
+
 // __CompletedWorkflowStatesInput is used internally by genqlient
 type __CompletedWorkflowStatesInput struct {
 	TeamId string `json:"teamId"`
@@ -20043,6 +20965,26 @@ func (v *__CycleUpdateInput) GetId() string { return v.Id }
 
 // GetInput returns __CycleUpdateInput.Input, and is useful for accessing the field via an interface.
 func (v *__CycleUpdateInput) GetInput() LinearCycleUpdateInput { return v.Input }
+
+// __DocumentCreateInput is used internally by genqlient
+type __DocumentCreateInput struct {
+	Input LinearDocumentCreateInput `json:"input"`
+}
+
+// GetInput returns __DocumentCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__DocumentCreateInput) GetInput() LinearDocumentCreateInput { return v.Input }
+
+// __DocumentUpdateInput is used internally by genqlient
+type __DocumentUpdateInput struct {
+	Id    string                    `json:"id"`
+	Input LinearDocumentUpdateInput `json:"input"`
+}
+
+// GetId returns __DocumentUpdateInput.Id, and is useful for accessing the field via an interface.
+func (v *__DocumentUpdateInput) GetId() string { return v.Id }
+
+// GetInput returns __DocumentUpdateInput.Input, and is useful for accessing the field via an interface.
+func (v *__DocumentUpdateInput) GetInput() LinearDocumentUpdateInput { return v.Input }
 
 // __DocumentsInput is used internally by genqlient
 type __DocumentsInput struct {
@@ -20155,6 +21097,22 @@ func (v *__IssueLabelsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __IssueLabelsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__IssueLabelsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __IssueRelationCreateInput is used internally by genqlient
+type __IssueRelationCreateInput struct {
+	Input LinearIssueRelationCreateInput `json:"input"`
+}
+
+// GetInput returns __IssueRelationCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__IssueRelationCreateInput) GetInput() LinearIssueRelationCreateInput { return v.Input }
+
+// __IssueRelationDeleteInput is used internally by genqlient
+type __IssueRelationDeleteInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __IssueRelationDeleteInput.Id, and is useful for accessing the field via an interface.
+func (v *__IssueRelationDeleteInput) GetId() string { return v.Id }
 
 // __IssueUpdateInput is used internally by genqlient
 type __IssueUpdateInput struct {
@@ -20456,6 +21414,14 @@ func (v *__ProjectMilestoneUpdateInput) GetId() string { return v.Id }
 // GetInput returns __ProjectMilestoneUpdateInput.Input, and is useful for accessing the field via an interface.
 func (v *__ProjectMilestoneUpdateInput) GetInput() LinearProjectMilestoneUpdateInput { return v.Input }
 
+// __ProjectUpdateCreateInput is used internally by genqlient
+type __ProjectUpdateCreateInput struct {
+	Input LinearProjectUpdateCreateInput `json:"input"`
+}
+
+// GetInput returns __ProjectUpdateCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__ProjectUpdateCreateInput) GetInput() LinearProjectUpdateCreateInput { return v.Input }
+
 // __ProjectUpdateInput is used internally by genqlient
 type __ProjectUpdateInput struct {
 	Id    string                   `json:"id"`
@@ -20523,6 +21489,22 @@ func (v *__TeamsInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __TeamsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__TeamsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __WorkflowStatesByTypeInput is used internally by genqlient
+type __WorkflowStatesByTypeInput struct {
+	TeamId    string `json:"teamId"`
+	StateType string `json:"stateType"`
+	First     *int   `json:"first"`
+}
+
+// GetTeamId returns __WorkflowStatesByTypeInput.TeamId, and is useful for accessing the field via an interface.
+func (v *__WorkflowStatesByTypeInput) GetTeamId() string { return v.TeamId }
+
+// GetStateType returns __WorkflowStatesByTypeInput.StateType, and is useful for accessing the field via an interface.
+func (v *__WorkflowStatesByTypeInput) GetStateType() string { return v.StateType }
+
+// GetFirst returns __WorkflowStatesByTypeInput.First, and is useful for accessing the field via an interface.
+func (v *__WorkflowStatesByTypeInput) GetFirst() *int { return v.First }
 
 // __agentActivitiesInput is used internally by genqlient
 type __agentActivitiesInput struct {
@@ -21449,6 +22431,22 @@ func (v *__favoritesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __favoritesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__favoritesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __fileUploadInput is used internally by genqlient
+type __fileUploadInput struct {
+	ContentType string `json:"contentType"`
+	Filename    string `json:"filename"`
+	Size        int    `json:"size"`
+}
+
+// GetContentType returns __fileUploadInput.ContentType, and is useful for accessing the field via an interface.
+func (v *__fileUploadInput) GetContentType() string { return v.ContentType }
+
+// GetFilename returns __fileUploadInput.Filename, and is useful for accessing the field via an interface.
+func (v *__fileUploadInput) GetFilename() string { return v.Filename }
+
+// GetSize returns __fileUploadInput.Size, and is useful for accessing the field via an interface.
+func (v *__fileUploadInput) GetSize() int { return v.Size }
 
 // __initiativeInput is used internally by genqlient
 type __initiativeInput struct {
@@ -23819,6 +24817,14 @@ func (v *__team_templatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __team_templatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__team_templatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// __templateContentInput is used internally by genqlient
+type __templateContentInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __templateContentInput.Id, and is useful for accessing the field via an interface.
+func (v *__templateContentInput) GetId() string { return v.Id }
 
 // __templateInput is used internally by genqlient
 type __templateInput struct {
@@ -34808,6 +35814,89 @@ type favoritesResponse struct {
 
 // GetFavorites returns favoritesResponse.Favorites, and is useful for accessing the field via an interface.
 func (v *favoritesResponse) GetFavorites() favoritesFavoritesFavoriteConnection { return v.Favorites }
+
+// fileUploadFileUploadUploadPayload includes the requested fields of the GraphQL type UploadPayload.
+type fileUploadFileUploadUploadPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The upload file details including signed URL, asset URL, and required headers. Null if the upload could not be prepared.
+	UploadFile *fileUploadFileUploadUploadPayloadUploadFile `json:"uploadFile"`
+}
+
+// GetSuccess returns fileUploadFileUploadUploadPayload.Success, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayload) GetSuccess() bool { return v.Success }
+
+// GetUploadFile returns fileUploadFileUploadUploadPayload.UploadFile, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayload) GetUploadFile() *fileUploadFileUploadUploadPayloadUploadFile {
+	return v.UploadFile
+}
+
+// fileUploadFileUploadUploadPayloadUploadFile includes the requested fields of the GraphQL type UploadFile.
+// The GraphQL type's documentation follows.
+//
+// Represents a file upload destination with a pre-signed upload URL, asset URL,
+// and required request headers for uploading to cloud storage.
+type fileUploadFileUploadUploadPayloadUploadFile struct {
+	// The filename.
+	Filename string `json:"filename"`
+	// The content type.
+	ContentType string `json:"contentType"`
+	// The size of the uploaded file.
+	Size int `json:"size"`
+	// The pre-signed URL to which the file should be uploaded via a PUT request.
+	UploadUrl string `json:"uploadUrl"`
+	// The permanent asset URL where the file will be accessible after upload.
+	AssetUrl string `json:"assetUrl"`
+	// HTTP headers that must be included in the PUT request to the upload URL.
+	Headers []fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader `json:"headers"`
+}
+
+// GetFilename returns fileUploadFileUploadUploadPayloadUploadFile.Filename, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFile) GetFilename() string { return v.Filename }
+
+// GetContentType returns fileUploadFileUploadUploadPayloadUploadFile.ContentType, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFile) GetContentType() string { return v.ContentType }
+
+// GetSize returns fileUploadFileUploadUploadPayloadUploadFile.Size, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFile) GetSize() int { return v.Size }
+
+// GetUploadUrl returns fileUploadFileUploadUploadPayloadUploadFile.UploadUrl, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFile) GetUploadUrl() string { return v.UploadUrl }
+
+// GetAssetUrl returns fileUploadFileUploadUploadPayloadUploadFile.AssetUrl, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFile) GetAssetUrl() string { return v.AssetUrl }
+
+// GetHeaders returns fileUploadFileUploadUploadPayloadUploadFile.Headers, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFile) GetHeaders() []fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader {
+	return v.Headers
+}
+
+// fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader includes the requested fields of the GraphQL type UploadFileHeader.
+type fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader struct {
+	// Upload file header key.
+	Key string `json:"key"`
+	// Upload file header value.
+	Value string `json:"value"`
+}
+
+// GetKey returns fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader.Key, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader) GetKey() string {
+	return v.Key
+}
+
+// GetValue returns fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader.Value, and is useful for accessing the field via an interface.
+func (v *fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader) GetValue() string {
+	return v.Value
+}
+
+// fileUploadResponse is returned by fileUpload on success.
+type fileUploadResponse struct {
+	// XHR request payload to upload an images, video and other attachments directly to Linear's cloud storage.
+	FileUpload fileUploadFileUploadUploadPayload `json:"fileUpload"`
+}
+
+// GetFileUpload returns fileUploadResponse.FileUpload, and is useful for accessing the field via an interface.
+func (v *fileUploadResponse) GetFileUpload() fileUploadFileUploadUploadPayload { return v.FileUpload }
 
 // initiativeInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
@@ -67975,6 +69064,42 @@ func (v *team_templatesTeamTemplatesTemplateConnectionPageInfo) GetEndCursor() *
 	return v.EndCursor
 }
 
+// templateContentResponse is returned by templateContent on success.
+type templateContentResponse struct {
+	// A specific template.
+	Template templateContentTemplate `json:"template"`
+}
+
+// GetTemplate returns templateContentResponse.Template, and is useful for accessing the field via an interface.
+func (v *templateContentResponse) GetTemplate() templateContentTemplate { return v.Template }
+
+// templateContentTemplate includes the requested fields of the GraphQL type Template.
+// The GraphQL type's documentation follows.
+//
+// A reusable template for creating issues, projects, or documents. Templates store
+// pre-filled field values and content as JSON data. They can be scoped to a
+// specific team or shared across the entire workspace. Team-scoped templates may
+// be inherited from parent teams.
+type templateContentTemplate struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// The name of the template.
+	Name string `json:"name"`
+	// The template data as a JSON-encoded string containing the pre-filled
+	// attributes for the entity type (e.g., issue fields, project configuration, or
+	// document content).
+	TemplateData json.RawMessage `json:"templateData"`
+}
+
+// GetId returns templateContentTemplate.Id, and is useful for accessing the field via an interface.
+func (v *templateContentTemplate) GetId() string { return v.Id }
+
+// GetName returns templateContentTemplate.Name, and is useful for accessing the field via an interface.
+func (v *templateContentTemplate) GetName() string { return v.Name }
+
+// GetTemplateData returns templateContentTemplate.TemplateData, and is useful for accessing the field via an interface.
+func (v *templateContentTemplate) GetTemplateData() json.RawMessage { return v.TemplateData }
+
 // templateResponse is returned by template on success.
 type templateResponse struct {
 	// A specific template.
@@ -76093,6 +77218,101 @@ func (v *workflowStatesWorkflowStatesWorkflowStateConnectionPageInfo) GetEndCurs
 	return v.EndCursor
 }
 
+// The mutation executed by CommentDelete.
+const CommentDelete_Operation = `
+mutation CommentDelete ($id: String!) {
+	commentDelete(id: $id) {
+		success
+		entityId
+	}
+}
+`
+
+func CommentDelete(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *CommentDeleteResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CommentDelete",
+		Query:  CommentDelete_Operation,
+		Variables: &__CommentDeleteInput{
+			Id: id,
+		},
+	}
+
+	data_ = &CommentDeleteResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CommentUpdate.
+const CommentUpdate_Operation = `
+mutation CommentUpdate ($id: String!, $input: CommentUpdateInput!) {
+	commentUpdate(id: $id, input: $input) {
+		success
+		comment {
+			... TopLevelCommentSummaryFields
+		}
+	}
+}
+fragment TopLevelCommentSummaryFields on Comment {
+	id
+	body
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func CommentUpdate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	input LinearCommentUpdateInput,
+) (data_ *CommentUpdateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CommentUpdate",
+		Query:  CommentUpdate_Operation,
+		Variables: &__CommentUpdateInput{
+			Id:    id,
+			Input: input,
+		},
+	}
+
+	data_ = &CommentUpdateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by CompletedWorkflowStates.
 const CompletedWorkflowStates_Operation = `
 query CompletedWorkflowStates ($teamId: ID!, $first: Int) {
@@ -76373,6 +77593,132 @@ func CycleUpdate(
 	}
 
 	data_ = &CycleUpdateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DocumentCreate.
+const DocumentCreate_Operation = `
+mutation DocumentCreate ($input: DocumentCreateInput!) {
+	documentCreate(input: $input) {
+		success
+		document {
+			... DocumentSummaryFields
+		}
+	}
+}
+fragment DocumentSummaryFields on Document {
+	id
+	title
+	slugId
+	archivedAt
+	project {
+		id
+		name
+	}
+	team {
+		id
+		key
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	cycle {
+		id
+		number
+		name
+	}
+}
+`
+
+func DocumentCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input LinearDocumentCreateInput,
+) (data_ *DocumentCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DocumentCreate",
+		Query:  DocumentCreate_Operation,
+		Variables: &__DocumentCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &DocumentCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DocumentUpdate.
+const DocumentUpdate_Operation = `
+mutation DocumentUpdate ($id: String!, $input: DocumentUpdateInput!) {
+	documentUpdate(id: $id, input: $input) {
+		success
+		document {
+			... DocumentSummaryFields
+		}
+	}
+}
+fragment DocumentSummaryFields on Document {
+	id
+	title
+	slugId
+	archivedAt
+	project {
+		id
+		name
+	}
+	team {
+		id
+		key
+		name
+	}
+	issue {
+		id
+		identifier
+		title
+	}
+	cycle {
+		id
+		number
+		name
+	}
+}
+`
+
+func DocumentUpdate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	input LinearDocumentUpdateInput,
+) (data_ *DocumentUpdateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DocumentUpdate",
+		Query:  DocumentUpdate_Operation,
+		Variables: &__DocumentUpdateInput{
+			Id:    id,
+			Input: input,
+		},
+	}
+
+	data_ = &DocumentUpdateResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -76956,6 +78302,95 @@ func IssueLabels(
 	}
 
 	data_ = &IssueLabelsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by IssueRelationCreate.
+const IssueRelationCreate_Operation = `
+mutation IssueRelationCreate ($input: IssueRelationCreateInput!) {
+	issueRelationCreate(input: $input) {
+		success
+		issueRelation {
+			... IssueRelationSummaryFields
+		}
+	}
+}
+fragment IssueRelationSummaryFields on IssueRelation {
+	id
+	type
+	createdAt
+	updatedAt
+	archivedAt
+	issue {
+		id
+		identifier
+		title
+	}
+	relatedIssue {
+		id
+		identifier
+		title
+	}
+}
+`
+
+func IssueRelationCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input LinearIssueRelationCreateInput,
+) (data_ *IssueRelationCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueRelationCreate",
+		Query:  IssueRelationCreate_Operation,
+		Variables: &__IssueRelationCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &IssueRelationCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by IssueRelationDelete.
+const IssueRelationDelete_Operation = `
+mutation IssueRelationDelete ($id: String!) {
+	issueRelationDelete(id: $id) {
+		success
+		entityId
+	}
+}
+`
+
+func IssueRelationDelete(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *IssueRelationDeleteResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueRelationDelete",
+		Query:  IssueRelationDelete_Operation,
+		Variables: &__IssueRelationDeleteInput{
+			Id: id,
+		},
+	}
+
+	data_ = &IssueRelationDeleteResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -78246,6 +79681,60 @@ func ProjectUpdate(
 	return data_, err_
 }
 
+// The mutation executed by ProjectUpdateCreate.
+const ProjectUpdateCreate_Operation = `
+mutation ProjectUpdateCreate ($input: ProjectUpdateCreateInput!) {
+	projectUpdateCreate(input: $input) {
+		success
+		projectUpdate {
+			... TopLevelProjectUpdateSummaryFields
+		}
+	}
+}
+fragment TopLevelProjectUpdateSummaryFields on ProjectUpdate {
+	id
+	body
+	health
+	createdAt
+	updatedAt
+	url
+	project {
+		id
+		name
+	}
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func ProjectUpdateCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input LinearProjectUpdateCreateInput,
+) (data_ *ProjectUpdateCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectUpdateCreate",
+		Query:  ProjectUpdateCreate_Operation,
+		Variables: &__ProjectUpdateCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &ProjectUpdateCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by Projects.
 const Projects_Operation = `
 query Projects ($teamId: String!, $first: Int, $after: String, $includeArchived: Boolean) {
@@ -78485,6 +79974,49 @@ func Viewer(
 	}
 
 	data_ = &ViewerResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by WorkflowStatesByType.
+const WorkflowStatesByType_Operation = `
+query WorkflowStatesByType ($teamId: ID!, $stateType: String!, $first: Int) {
+	workflowStates(filter: {team:{id:{eq:$teamId}},type:{eq:$stateType}}, first: $first) {
+		nodes {
+			id
+			name
+			type
+			position
+		}
+	}
+}
+`
+
+func WorkflowStatesByType(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamId string,
+	stateType string,
+	first *int,
+) (data_ *WorkflowStatesByTypeResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "WorkflowStatesByType",
+		Query:  WorkflowStatesByType_Operation,
+		Variables: &__WorkflowStatesByTypeInput{
+			TeamId:    teamId,
+			StateType: stateType,
+			First:     first,
+		},
+	}
+
+	data_ = &WorkflowStatesByTypeResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -82334,6 +83866,55 @@ func favorites(
 	}
 
 	data_ = &favoritesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by fileUpload.
+const fileUpload_Operation = `
+mutation fileUpload ($contentType: String!, $filename: String!, $size: Int!) {
+	fileUpload(contentType: $contentType, filename: $filename, size: $size) {
+		success
+		uploadFile {
+			filename
+			contentType
+			size
+			uploadUrl
+			assetUrl
+			headers {
+				key
+				value
+			}
+		}
+	}
+}
+`
+
+func fileUpload(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	contentType string,
+	filename string,
+	size int,
+) (data_ *fileUploadResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "fileUpload",
+		Query:  fileUpload_Operation,
+		Variables: &__fileUploadInput{
+			ContentType: contentType,
+			Filename:    filename,
+			Size:        size,
+		},
+	}
+
+	data_ = &fileUploadResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -91669,6 +93250,42 @@ func template(
 	}
 
 	data_ = &templateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by templateContent.
+const templateContent_Operation = `
+query templateContent ($id: String!) {
+	template(id: $id) {
+		id
+		name
+		templateData
+	}
+}
+`
+
+func templateContent(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *templateContentResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "templateContent",
+		Query:  templateContent_Operation,
+		Variables: &__templateContentInput{
+			Id: id,
+		},
+	}
+
+	data_ = &templateContentResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

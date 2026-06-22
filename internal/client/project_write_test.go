@@ -52,6 +52,29 @@ func Test_UpdateProject_refuses_when_pinned_project_differs(t *testing.T) {
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
+func Test_UpdateProject_refuses_when_project_lacks_pinned_team(t *testing.T) {
+	// Given: the resolved project id matches the pinned project, but the project
+	// belongs to a different team. This isolates requireProject's projectHasTeam
+	// branch (write_guard.go) from the project-id mismatch branch above it.
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeam(projectFixture{
+			ID:     "project-id",
+			Name:   "fixture",
+			Status: "Backlog",
+		}, "other-team", "OTHER") + `}`,
+	})
+
+	// When
+	_, err := UpdateProject(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateRequest{
+		ID:   "project-id",
+		Name: "updated",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
 type projectWriteFakeClient map[string]string
 
 func (client projectWriteFakeClient) MakeRequest(
@@ -113,6 +136,10 @@ type projectFixture struct {
 }
 
 func projectJSON(project projectFixture) string {
+	return projectJSONWithTeam(project, "team-id", "LIT")
+}
+
+func projectJSONWithTeam(project projectFixture, teamID string, teamKey string) string {
 	return `{
 		"id":"` + project.ID + `",
 		"name":"` + project.Name + `",
@@ -122,6 +149,6 @@ func projectJSON(project projectFixture) string {
 		"priority":0,
 		"status":{"id":"status-id","name":"` + project.Status + `","type":"backlog"},
 		"lead":null,
-		"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl-it"}]}
+		"teams":{"nodes":[{"id":"` + teamID + `","key":"` + teamKey + `","name":"linctl-it"}]}
 	}`
 }

@@ -31,6 +31,24 @@ query document_comments($id: String!, $first: Int, $after: String, $includeArchi
   }
 }
 
+mutation DocumentCreate($input: DocumentCreateInput!) {
+  documentCreate(input: $input) {
+    success
+    document {
+      ...DocumentSummaryFields
+    }
+  }
+}
+
+mutation DocumentUpdate($id: String!, $input: DocumentUpdateInput!) {
+  documentUpdate(id: $id, input: $input) {
+    success
+    document {
+      ...DocumentSummaryFields
+    }
+  }
+}
+
 fragment DocumentSummaryFields on Document {
   id
   title

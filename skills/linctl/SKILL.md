@@ -46,6 +46,7 @@ Use the repository docs as the command inventory:
 - `docs/domain-map.md` → GraphQL backing and read/write safety classification.
 - `docs/test-scenarios.md` → named scenario coverage and evidence.
 - `references/json-output.md` → stable JSON shapes for agent parsing.
+- `references/commands.md` → generated full command inventory (every command, its usage and flags); refreshed by `task gen-skill` and drift-checked in CI.
 
 Useful global flags:
 

@@ -38,6 +38,7 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addProjectCreateCommand(ctx, projectCommand, options)
 	addProjectUpdateCommand(ctx, projectCommand, options)
 	addProjectArchiveCommand(ctx, projectCommand, options)
+	addProjectOpenCommand(ctx, projectCommand, options)
 	addDomainUsageCommand(projectCommand, options, "project")
 	root.AddCommand(projectCommand)
 }
@@ -116,9 +117,10 @@ func loadProjectsAll(
 
 func addProjectGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	root.AddCommand(&cobra.Command{
-		Use:   "get PROJECT_ID",
-		Short: "Get one project by id or slug",
-		Args:  cobra.ExactArgs(1),
+		Use:               "get PROJECT_ID",
+		Short:             "Get one project by id or slug",
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: firstArgCompletion(ctx, options, projectIDCandidates),
 		RunE: func(command *cobra.Command, args []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {

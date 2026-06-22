@@ -45,9 +45,10 @@ func addTeamListCommand(ctx context.Context, root *cobra.Command, options *rootO
 
 func addTeamGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	root.AddCommand(&cobra.Command{
-		Use:   "get TEAM_ID",
-		Short: "Get one Team by id",
-		Args:  cobra.ExactArgs(1),
+		Use:               "get TEAM_ID",
+		Short:             "Get one Team by id",
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: firstArgCompletion(ctx, options, teamKeyCandidates),
 		RunE: func(command *cobra.Command, args []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {

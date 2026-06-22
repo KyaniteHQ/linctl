@@ -877,6 +877,17 @@ query StartedWorkflowStates($teamId: ID!, $first: Int) {
   }
 }
 
+query WorkflowStatesByType($teamId: ID!, $stateType: String!, $first: Int) {
+  workflowStates(filter: { team: { id: { eq: $teamId } }, type: { eq: $stateType } }, first: $first) {
+    nodes {
+      id
+      name
+      type
+      position
+    }
+  }
+}
+
 mutation IssueCreate($input: IssueCreateInput!) {
   issueCreate(input: $input) {
     success

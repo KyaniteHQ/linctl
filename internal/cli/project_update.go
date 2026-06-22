@@ -29,6 +29,45 @@ func addProjectUpdateReadCommand(ctx context.Context, root *cobra.Command, optio
 		},
 	)
 	addProjectUpdateCommentsCommand(ctx, projectUpdateCommand, options)
+	addProjectUpdateCreateCommand(ctx, projectUpdateCommand, options)
+}
+
+func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.ProjectUpdateCreateRequest{}
+	health := ""
+	bodyFile := ""
+	command := &cobra.Command{
+		Use:   "create PROJECT_ID",
+		Short: "Post a status update to a project after pinned-target comparison",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			request.ProjectID = args[0]
+			if err := resolveBodyFlag(command, &request.Body); err != nil {
+				return err
+			}
+			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+				return err
+			}
+			request.Health, err = normalizeAndNote(command, "health", health, normalizedHealthValue)
+			if err != nil {
+				return err
+			}
+			update, err := client.CreateProjectUpdate(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectUpdate(command, options, update)
+		},
+	}
+	command.Flags().StringVar(&request.Body, "body", "", "update body as markdown; use - to read stdin")
+	command.Flags().StringVar(&bodyFile, "body-file", "", "read update body from file")
+	command.Flags().StringVar(&health, "health", "", "project health: on-track, at-risk, or off-track")
+	root.AddCommand(command)
 }
 
 func writeProjectUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {

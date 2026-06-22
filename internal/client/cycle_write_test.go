@@ -122,6 +122,39 @@ func Test_UpdateCycle_refuses_when_team_differs(t *testing.T) {
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
+// requireCycle compares team id OR team key (write_guard.go uses ||), so a
+// both-fields mismatch short-circuits on the first operand and never exercises
+// the second. These two split-field cases isolate each operand of the guard.
+func Test_UpdateCycle_refuses_when_only_team_id_differs(t *testing.T) {
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"cycle": `{"cycle":` + cycleJSON("Wrong team-id cycle", "other-team", "LIT") + `}`,
+	})
+
+	_, err := UpdateCycle(
+		context.Background(),
+		graphqlClient,
+		config.Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"},
+		CycleUpdateRequest{ID: "cycle-id", Name: "Updated cycle"},
+	)
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_UpdateCycle_refuses_when_only_team_key_differs(t *testing.T) {
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"cycle": `{"cycle":` + cycleJSON("Wrong team-key cycle", "team-id", "OTHER") + `}`,
+	})
+
+	_, err := UpdateCycle(
+		context.Background(),
+		graphqlClient,
+		config.Target{OrgID: "org-id", TeamKey: "LIT", TeamID: "team-id"},
+		CycleUpdateRequest{ID: "cycle-id", Name: "Updated cycle"},
+	)
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
 func cycleJSON(name string, teamID string, teamKey string) string {
 	return `{
 		"id":"cycle-id",

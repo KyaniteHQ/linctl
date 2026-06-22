@@ -6,6 +6,8 @@ optional: pointer
 bindings:
   CommentCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearCommentCreateInput
+  CommentUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearCommentUpdateInput
   CycleCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearCycleCreateInput
   CycleUpdateInput:
@@ -14,8 +16,14 @@ bindings:
     type: string
   DateTimeOrDuration:
     type: string
+  DocumentCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearDocumentCreateInput
+  DocumentUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearDocumentUpdateInput
   IssueCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueCreateInput
+  IssueRelationCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueRelationCreateInput
   IssueUpdateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueUpdateInput
   JSON:
@@ -28,6 +36,8 @@ bindings:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectMilestoneCreateInput
   ProjectMilestoneUpdateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectMilestoneUpdateInput
+  ProjectUpdateCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectUpdateCreateInput
   ProjectUpdateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectUpdateInput
   TimelessDate:

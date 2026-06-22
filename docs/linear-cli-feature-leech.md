@@ -1,423 +1,314 @@
-# Linear CLI Feature Leech Notes
-
-This file is a repo-grounded feature extraction from comparable GitHub Linear CLI
-projects. The first pass cloned focused candidates into `/tmp/linctl-linear-cli-research`
-on 2026-06-19. The redo pass cloned 115 broader candidates into
-`/tmp/linctl-linear-cli-research-20260620` on 2026-06-20 and wrote the full list
-to `/tmp/linctl-linear-cli-research-20260620/RESEARCH.md`.
-
-`linctl`'s existing differentiator is target-pinned writes: writes resolve the
-active Linear org, team, and optional project before mutating data. Borrow
-features below only when they preserve that fail-closed model.
-
-## Cloned Repositories
-
-| Repo | Local clone | Stack | Good features to leech |
-| --- | --- | --- | --- |
-| `schpet/linear-cli` | `/tmp/linctl-linear-cli-research/schpet__linear-cli` | Deno/TypeScript | Git and jj aware `issue start`, current issue views, PR creation, generated agent skill docs, documents, milestones, comments, browser/app open commands, project-local config. |
-| `linearis-oss/linearis` | `/tmp/linctl-linear-cli-research/linearis-oss__linearis` | Node/TypeScript | Two-tier `usage` discovery, all-JSON output, smart ID resolution, issue discussion/reply model, file upload/download guidance, explicit "CLI instead of MCP" agent prompt. |
-| `joa23/linear-cli` | `/tmp/linctl-linear-cli-research/joa23__linear-cli` | Go | Token-efficient ASCII formats, OAuth user vs agent/app modes, dependency graph search, task export for Claude Code, issue attachment/export, cycle analytics, skill installer, `.linear.yaml` defaults. |
-| `Finesssee/linear-cli` | `/tmp/linctl-linear-cli-research/Finesssee__linear-cli` | Rust | Very broad command surface, output flags (`--fields`, `--id-only`, `--fail-on-empty`, `--dry-run`), import/export, dynamic completions, watch mode, webhooks, project updates, saved views, status/metrics/triage. |
-| `flipbit03/lineark` | `/tmp/linctl-linear-cli-research/flipbit03__lineark` | Rust | Compact `usage` for agents, human-readable names instead of UUIDs, generated SDK/codegen split, file embeds, profiles, usage-first agent setup snippet. |
-| `frr149/lql` | `/tmp/linctl-linear-cli-research/frr149__lql` | Rust | Adversarial CLI design, tolerant aliases for common agent mistakes, TOON compact output, credential helper support, cwd context map, retired-team hints, schema-first tests from real fixtures. |
-| `Securiteru/linear-cli` | `/tmp/linctl-linear-cli-research/Securiteru__linear-cli` | Go | Small static-binary feel, psst secret-injection workflow, JSON lines batch create, quiet output, broad but simple command list. |
-| `juanbermudez/linear-agent-cli` | `/tmp/linctl-linear-cli-research/juanbermudez__linear-agent-cli` | Deno/TypeScript | Agent-first fork of schpet-style CLI, VCS integration, cross-entity operations, JSON/error-code discipline, smart resource resolution, caching. |
-| `choam2426/Linear-CLI` | `/tmp/linctl-linear-cli-research/choam2426__Linear-CLI` | Python | Single-file no-dependency agent CLI, compact JSON, simple command table, `save-*` create-or-update pattern, upload/download for Linear file URLs, JSON errors on stderr. |
-| `Valian/linear-cli-skill` | `/tmp/linctl-linear-cli-research/Valian__linear-cli-skill` | JavaScript | Minimal Claude skill plus CLI, `resource action` command shape, `@me`, sub-issues, project assignment, JSON flag everywhere. |
-| `dabblewriter/linear-cli` | `/tmp/linctl-linear-cli-research/dabblewriter__linear-cli` | Node.js | Zero-dependency Node CLI, `--unblocked`, `next` worktree flow, `done` cleanup flow, issue branch creation, per-project `.linear` config, append-to-description update mode. |
-| `nikpietanze/linear-cli` | `/tmp/linctl-linear-cli-research/nikpietanze__linear-cli` | Go | AI-oriented one-command issue creation from Linear templates, automatic template sync/cache, no-delete production safety, CI issue creation examples. |
-| `evangodon/linear-cli` | `/tmp/linctl-linear-cli-research/evangodon__linear-cli` | Node/oclif | Older but useful generated command docs, cache show/refresh, workspace switch, output formats (`csv`, `json`, `yaml`), column selection, list sorting/filtering. |
-| `rubyists/linear-cli` | `/tmp/linctl-linear-cli-research/rubyists__linear-cli` | Ruby | OCI container install path, wrapper alias script, strong aliases (`lcls`, `lcomment`, `lclose`), multi-issue update/comment/close, semantic PR title workflow. |
-| `AdiKsOnDev/linear-cli` | `/tmp/linctl-linear-cli-research/AdiKsOnDev__linear-cli` | Python | OAuth plus API-key auth, keyring storage, YAML output, project health updates, project update history, advanced search, shell completion. |
-| `danielrearden/linear-cli` | `/tmp/linctl-linear-cli-research/danielrearden__linear-cli` | Node | Simple interactive create/status flows, keychain storage, branch checkout by issue, cached org-specific metadata with clear command. |
-
-## 2026-06-20 Redo Finds
-
-The broader GitHub pass found useful repos that the first list missed:
-
-| Repo | Local clone | Stack | Good features to leech |
-| --- | --- | --- | --- |
-| `dorkitude/linctl` | `/tmp/linctl-linear-cli-research-20260620/dorkitude__linctl` | Go | Closest Go/Cobra comparator: relation commands, attachments, delegate/agent support, raw GraphQL, dynamic MCP namespace, and `doctor`-style smoke/readiness commands. |
-| `tdwells90/lncli` | `/tmp/linctl-linear-cli-research-20260620/tdwells90__lncli` | Rust | TOON/token-efficient output, mandatory field filtering, and structured agent error envelopes. |
-| `0x80/pick-linear-ticket` | `/tmp/linctl-linear-cli-research-20260620/0x80__pick-linear-ticket` | TypeScript | Ranked next-work picker: active Cycle/Todo eligibility, active blocker exclusion, unblock-count priority, priority tie-break, age tie-break, branchName JSON. |
-| `alleneubank/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/alleneubank__linear-cli` | Zig | Config hygiene: 0600 config, redacted auth show, auth test, endpoint override, retries, cursor/page controls, and temp-config live QA. |
-| `aliou/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/aliou__linear-cli` | TypeScript | Multi-profile auth, local profile selection, delegate/agent assignment, stdin/file inputs, arbitrary GraphQL, and shell completions. |
-| `TrevorS/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/TrevorS__linear-cli` | Rust | Markdown/frontmatter issue creation, dry-run create, browser open, YAML output, and shell completions. |
-| `wiseiodev/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/wiseiodev__linear-cli` | TypeScript | Bundled skills, TUI, `prep`, `pr-ready`, and `bulk-update --dry-run --json`. |
-| `anoncam/linear-cli` | `/tmp/linctl-linear-cli-research-20260620/anoncam__linear-cli` | JavaScript | Kanban/reporting and AI-assisted label cleanup workflow. |
-| `rinadelph/clinear` | `/tmp/linctl-linear-cli-research-20260620/rinadelph__clinear` | Python | Pydantic/Typer validation shape for a type-safe CLI. |
-| `ChuckMayo/linear-multi-workspace-cli` | `/tmp/linctl-linear-cli-research-20260620/ChuckMayo__linear-multi-workspace-cli` | TypeScript | Agent-runtime-agnostic multi-workspace surface; useful as contrast to `linctl`'s pinned target model. |
-
-Implemented from the redo pass:
-
-- `next --dry-run` now ranks candidate issues by active unblock count, priority, then created date after filtering to unstarted and unblocked issues.
-- `doctor` reports config load, token presence, and target confirmation without printing tokens.
-- `issue create --description-file`, `issue update --description-file`, `issue update --append-file`, `issue comment --body-file`, and `issue reply --body-file` support file-backed agent handoffs.
-
-## Highest-Value Features For `linctl`
-
-### 1. Agent-sized command discovery
-
-`linctl usage` already exists. Make it more like `linearis usage`,
-`linearis <domain> usage`, and `lineark usage`:
-
-- Keep top-level `usage` under roughly 200 tokens.
-- Keep domain usage under roughly 500 tokens.
-- Include examples that are copy-pasteable and safe.
-- Generate `skills/linctl/SKILL.md` from command help so CLI docs and agent docs
-  cannot drift.
-- Add a CI check that generated skill docs are current.
-
-Useful evidence:
-- `linearis-oss__linearis/README.md`
-- `flipbit03__lineark/README.md`
-- `schpet__linear-cli/skills/linear-cli/scripts/generate-docs.ts`
-
-### 2. Machine output controls
-
-Keep `--json`, then add script-friendly output flags from `Finesssee` and
-`joa23`:
-
-- `--fields identifier,title,state.name` for JSON field projection.
-- `--compact` for no pretty-printing.
-- `--id-only` for create/update chaining.
-- `--quiet` for scripts.
-- `--fail-on-empty` for monitors and automations.
-- `--sort field --order asc|desc` for deterministic list output.
-- `--format minimal|compact|full` for human/agent text output.
-
-Do not add lossy output as the only surface. JSON must remain stable.
-
-Implemented slice:
-- `--compact` keeps JSON stable but removes pretty-print whitespace.
-- `--fields` projects JSON keys, including list item projection for `issues`, `projects`, and `members`.
-- `--id-only`, `--quiet`, `--fail-on-empty`, `--sort field --order asc|desc`, and
-  `--format minimal|compact|full` are global CLI flags.
-- Evidence: `go test ./internal/cli`, especially the `Test_CommandFlows_*` output-control tests.
-
-Useful evidence:
-- `Finesssee__linear-cli/README.md`
-- `joa23__linear-cli/README.md`
-- `evangodon__linear-cli/README.md`
-
-### 3. Tolerant but explicit agent ergonomics
-
-Borrow `lql`'s tolerance contract:
-
-- Accept common non-destructive aliases, then report the normalization.
-- Examples: `--status` -> `--state`, priority names -> Linear priority ints,
-  human state names -> schema state types.
-- Reject destructive or ambiguous input instead of guessing.
-- Suggest the right command for wrong flags, especially `--comment` on update.
-
-This fits `linctl` if normalized values are still resolved against the pinned
-target before writes.
-
-Useful evidence:
-- `frr149__lql/README.md`
-
-### 4. Branch and work-start flows
-
-`linctl current` already derives an issue from git/jj context. Expand around it:
-
-- `issue id`, `issue title`, `issue url` aliases for current branch.
-- `issue start ISSUE` to assign/start and optionally create/check out a branch.
-- `issue branch ISSUE` to print the canonical branch slug without checkout.
-- `issue pr ISSUE` or `current pr` to generate a `gh pr create` title/body.
-- `done` to close the current branch issue after target comparison.
-- Optional later: extend `next` beyond dry-run to create/check out a branch or worktree.
-
-Implemented slice:
-- `issue id` prints the Current Issue identifier from git/jj context.
-- `issue title [ISSUE]` and `issue url [ISSUE]` print one scalar from either an explicit issue or the Current Issue.
-- `issue branch ISSUE` prints Linear's `branchName` without checkout.
-- `issue start ISSUE` assigns the issue to the authenticated viewer and moves it to the team's first started workflow state after target comparison; branch checkout is intentionally still future work.
-- `done` closes the Current Issue from the checkout after the same target comparison as `issue close`.
-- `issue pr [ISSUE]` reads either an explicit issue or the Current Issue and prints a local `gh pr create` title/body plan without calling GitHub.
-- `next --dry-run` resolves the target, reads unstarted issues with no blocking relations, and prints the first candidate without creating a branch or worktree.
-- `next --dry-run` now ranks those candidates by active unblock count, then Linear priority, then age before printing the selected issue.
-- Evidence: `go test ./internal/cli`, especially the `Test_CommandFlows_print_current_issue_*`
-  tests, `Test_CommandFlows_print_issue_branch_from_issue_branch`, and
-  `Test_CommandFlows_execute_read_and_write_commands/issue_start`, plus
-  `Test_CommandFlows_close_current_issue_from_done`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_pr`, and
-  `Test_CommandFlows_print_issue_pr_from_current_branch`, plus
-  `Test_CommandFlows_execute_read_and_write_commands/next_dry_run`, and
-  `Test_CommandFlows_rank_next_issue_candidates`.
-
-Useful evidence:
-- `schpet__linear-cli/README.md`
-- `dabblewriter__linear-cli/README.md`
-- `rubyists__linear-cli/Readme.adoc`
-- `Finesssee__linear-cli/README.md`
-
-### 5. Search and list filters
-
-Current `issue list` now includes the highest-value read-only filters from the comparable CLIs.
-
-Keep writes target-pinned; broad reads can stay less restrictive.
-
-Implemented slice:
-- `issue list --state TYPE` filters by Linear workflow state type, such as `started` or `completed`.
-- `issue list --project PROJECT_ID` filters by Linear project id inside the resolved team.
-- `issue list --mine` filters by authenticated viewer id inside the resolved team.
-- `issue list --assignee USER_ID` filters by Linear assignee user id inside the resolved team.
-- `issue list --label LABEL_ID` filters by Linear issue label id inside the resolved team.
-- `issue list --cycle CYCLE_ID` filters by Linear Cycle id inside the resolved team.
-- `issue list --created-after DATE` filters by `Issue.createdAt.gte` inside the resolved team.
-- `issue list --created-since DATE` is an alias for the `Issue.createdAt.gte` filter inside the resolved team.
-- `issue list --created-before DATE` filters by `Issue.createdAt.lte` inside the resolved team.
-- `issue list --has-blockers` filters by `Issue.hasBlockedByRelations.eq` inside the resolved team.
-- `issue list --blocks` filters by `Issue.hasBlockingRelations.eq` inside the resolved team.
-- `issue list --blocked-by ISSUE` traverses that issue's `blocks` relations and returns blocked issues inside the resolved team.
-- `issue list --all-teams` lists issues across every visible Linear team as a read-only broad inspection command.
-- `issue search QUERY` searches issue content within the resolved team.
-- Broader dependency graph commands remain future work.
-- Evidence: `go test ./internal/cli`, especially `Test_CommandFlows_execute_read_and_write_commands/issue_list_state_filter`
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_project_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_mine_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_assignee_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_label_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_cycle_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_created-after_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_created-since_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_created-before_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_has_blockers_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_blocks_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_blocked_by_filter`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_list_all_teams`, and
-  `Test_CommandFlows_execute_read_and_write_commands/issue_search`.
-
-Useful evidence:
-- `joa23__linear-cli/README.md`
-- `schpet__linear-cli/README.md`
-- `Finesssee__linear-cli/README.md`
-- `evangodon__linear-cli/README.md`
-
-### 6. Dependency graph commands
-
-This is high leverage for agents because it turns Linear into an execution
-state machine:
-
-- `issue deps ISSUE` prints blockers, blocked issues, parent, and children.
-- A broader `deps --team TEAM --project PROJECT` graph view remains future work.
-- Detect circular dependencies and exit non-zero.
-- `issue relate ISSUE blocks OTHER` and `issue unrelate ...`.
-- Use dependency filters in `issue search`.
-
-Implemented slice:
-- `issue deps ISSUE --limit N` reads one issue's parent, children, outgoing `blocks` relations, and incoming `blocks` relations.
-- Text output groups related issues under `parent`, `children`, `blocks`, and `blocked_by`; JSON output returns the same graph as `IssueDependencyGraph`.
-- Team/project graph views, circular dependency detection, relation writes, and dependency filters in `issue search` remain future work.
-- Evidence: `go test ./internal/cli`, especially `Test_CommandFlows_execute_read_and_write_commands/issue_deps`.
-
-Useful evidence:
-- `joa23__linear-cli/README.md`
-- `Finesssee__linear-cli/README.md`
-- `frr149__lql/README.md`
-
-### 7. Comments, discussions, and append flows
-
-`linctl issue comment` exists. Improve it:
-
-- List comments/discussions.
-- Reply to a root discussion thread.
-- Edit/delete only if target comparison proves the issue/project scope.
-- `--body -` to read from stdin.
-- `issue update --append FILE_OR_TEXT` for progress notes without replacing the
-  description.
-- Use issue discussion commands for guarded issue writes; use the top-level comment domain for read-only cross-parent inspection.
-
-Implemented slice:
-- `issue comment ISSUE --body -` reads the full command stdin as the comment body before running the guarded write.
-- `issue comments ISSUE --limit N` lists issue discussion comments.
-- `comment list --limit N` lists visible comments across parent entity types.
-- `comment get COMMENT_ID` reads one comment by id.
-- `issue reply ISSUE COMMENT --body TEXT` creates a threaded reply with `CommentCreateInput.parentId` after the same issue target comparison.
-- `issue update ISSUE --append TEXT` reads the existing description, appends text with a blank-line separator, and writes the combined description through the guarded issue update path.
-- `issue create --description-file FILE`, `issue update --description-file FILE`, `issue update --append-file FILE`, `issue comment --body-file FILE`, and `issue reply --body-file FILE` read file content before the existing guarded write path.
-- Edit/delete comment flows remain future work.
-- Evidence: `go test ./internal/cli`, especially `Test_CommandFlows_read_issue_comment_body_from_stdin`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_comments`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_reply`,
-  `Test_CommandFlows_execute_read_and_write_commands/issue_update_append`, and
-  `Test_CommandFlows_read_issue_text_from_files`.
-
-Useful evidence:
-- `linearis-oss__linearis/README.md`
-- `dabblewriter__linear-cli/README.md`
-- `rubyists__linear-cli/Readme.adoc`
-- `joa23__linear-cli/README.md`
-
-### 8. Projects, milestones, and project updates
-
-`linctl project` already has list/get/members/create/update/archive. Next
-project-domain features:
-
-- `project update-status PROJECT --body ... --health onTrack|atRisk|offTrack`
-- `project-milestone get|create|update|delete`
-- `project issues PROJECT`
-- `project labels add|remove|set`
-- `project open PROJECT` and `project url PROJECT`
-
-Every write should compare the resolved project against `[target].project_id`
-when configured.
-
-Implemented slice:
-- `project updates PROJECT --limit N` lists project status updates with health, author, body, timestamps, and URL.
-- `project-milestone list PROJECT --limit N` lists a project's milestones with status, target date, progress, and sort order.
-- Project update creation/edit/archive and project milestone get/create/update/delete remain future work.
-- Evidence: `go test ./internal/cli`, especially
-  `Test_CommandFlows_execute_read_and_write_commands/project_updates` and
-  `Test_CommandFlows_execute_read_and_write_commands/project_milestone_list`, and
-  `go test ./internal/client`, especially
-  `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
-
-Useful evidence:
-- `AdiKsOnDev__linear-cli/README.md`
-- `Finesssee__linear-cli/README.md`
-- `schpet__linear-cli/README.md`
-- `choam2426__Linear-CLI/plugins/claude/skills/linear-cli/SKILL.md`
-
-### 9. Documents, files, and attachments
-
-These are valuable because agents often need to move plans, screenshots, and
-artifacts into Linear:
-
-- `document list|get|create|update`
-- `document create --content-file FILE`
-- `document create` from stdin.
-- `files upload PATH` returning an asset URL.
-- `files download URL --output PATH`
-- `issue export ISSUE DIR` to write description, comments, and assets locally.
-
-Target comparison should follow the attached issue/project/team.
-
-Useful evidence:
-- `schpet__linear-cli/README.md`
-- `linearis-oss__linearis/README.md`
-- `choam2426__Linear-CLI/plugins/claude/skills/linear-cli/SKILL.md`
-- `joa23__linear-cli/README.md`
-
-### 10. Template-driven issue creation
-
-Useful if Omer wants agents to create high-quality Linear tasks:
-
-- `template list --team TEAM`
-- `template get TEMPLATE`
-- `issue create --template TEMPLATE --section Name=Value`
-- Cache templates for offline/low-latency use.
-- Add `--dry-run` to preview rendered description.
-
-This should be additive. Do not make basic `issue create --title` depend on
-templates.
-
-Useful evidence:
-- `nikpietanze__linear-cli/README.md`
-- `Finesssee__linear-cli/README.md`
-
-### 11. Auth, config, and diagnostics
-
-Do not copy other CLIs' unsafe token flows directly. Use the ideas while
-preserving `linctl`'s secret rules:
-
-- `doctor` checks config, token presence, Linear reachability, and target match.
-- `target --json` should stay the first proof command.
-- Support credential helper commands later, but never print tokens.
-- Consider named profiles only as explicit overrides, never implicit workspace
-  guessing.
-- Add `cache status|clear` if schema/name resolution caching arrives.
-- Keep `.linctl.toml` scoped to org/team/project, not loose workspace defaults.
-
-Implemented slice:
-- `doctor` resolves the active runtime and target, reports config `ok`, token `set`, and target `confirmed`, and never prints token values.
-- Evidence: `go test ./internal/cli`, especially `Test_CommandFlows_execute_read_and_write_commands/doctor`.
-
-Useful evidence:
-- `Finesssee__linear-cli/README.md`
-- `frr149__lql/README.md`
-- `schpet__linear-cli/docs/authentication.md`
-- `danielrearden__linear-cli/README.md`
-
-### 12. Packaging and install paths
-
-Leech the distribution ergonomics:
-
-- Homebrew tap/cask after tagged release.
-- `go install github.com/KyaniteHQ/linctl/cmd/linctl@latest`.
-- GitHub release binaries for Linux/macOS/Windows.
-- Static shell completions.
-- Optional dynamic completions that query teams/projects/statuses.
-- OCI image or wrapper script only if there is actual demand.
-
-Useful evidence:
-- `Finesssee__linear-cli/README.md`
-- `rubyists__linear-cli/Readme.adoc`
-- `joa23__linear-cli/README.md`
-
-## Suggested `linctl` Feature Backlog
-
-### P0: Preserve the moat
-
-- Keep target-pinned writes mandatory.
-- Keep schema-aligned GraphQL operations, not ad hoc raw query strings.
-- Add tests for every new write proving org/team/project mismatch fails closed.
-- Prefer archive over hard delete.
-
-### P1: Agent daily-driver slice
-
-Implemented:
-- Compact `usage`, global machine output controls, broad issue list/search filters, branch helpers, `issue start`, `done`, comments/replies, stdin bodies, file-backed issue text, ranked `next --dry-run`, and `doctor`.
-
-Remaining:
-- Generate `skills/linctl/SKILL.md` from command help and add a drift check.
-- Add stronger tolerant aliases and wrong-flag suggestions.
-
-### P2: Coordination layer
-
-Implemented:
-- Dependency graph reads, project updates, ProjectMilestone list/get/create/update, Cycle commands, Sprint report aliases, Document reads, labels, teams, and users.
-
-Remaining:
-- Relation writes, project update writes, ProjectMilestone delete safety design, document writes, issue export, and template-driven issue create with dry-run.
-
-### P3: Power-user automation
-
-1. Add import/export for CSV/JSON with dry-run.
-2. Add watch/monitor commands.
-3. Add dynamic completions.
-4. Add file upload/download.
-5. Extend `next` from dry-run preview into a branch/worktree flow only after the read-only picker stays solid.
-
-## Things Not To Leech Blindly
-
-- Hard delete commands. Prefer archive or require a separate, explicit design.
-- Raw GraphQL escape hatches. They undermine schema-aligned safety unless
-  isolated under a clearly unsafe debug namespace.
-- Implicit workspace switching. `linctl` should keep explicit pinned targets.
-- Printing tokens or using `.env` examples that expose secret values.
-- Large all-in-one command surfaces before the smaller safe slices are proven.
-
-## Verification Evidence
-
-The cloned repos and primary evidence files:
-
-- `/tmp/linctl-linear-cli-research/schpet__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/schpet__linear-cli/docs/authentication.md`
-- `/tmp/linctl-linear-cli-research/schpet__linear-cli/skills/linear-cli/`
-- `/tmp/linctl-linear-cli-research/linearis-oss__linearis/README.md`
-- `/tmp/linctl-linear-cli-research/joa23__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/Finesssee__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/flipbit03__lineark/README.md`
-- `/tmp/linctl-linear-cli-research/frr149__lql/README.md`
-- `/tmp/linctl-linear-cli-research/Securiteru__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/juanbermudez__linear-agent-cli/README.md`
-- `/tmp/linctl-linear-cli-research/choam2426__Linear-CLI/README.md`
-- `/tmp/linctl-linear-cli-research/choam2426__Linear-CLI/plugins/claude/skills/linear-cli/SKILL.md`
-- `/tmp/linctl-linear-cli-research/Valian__linear-cli-skill/README.md`
-- `/tmp/linctl-linear-cli-research/dabblewriter__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/nikpietanze__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/evangodon__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/rubyists__linear-cli/Readme.adoc`
-- `/tmp/linctl-linear-cli-research/AdiKsOnDev__linear-cli/README.md`
-- `/tmp/linctl-linear-cli-research/danielrearden__linear-cli/README.md`
+# Linear CLI Feature Leech
+
+This doc lists ideas worth borrowing from comparable Linear/agent/API CLIs into linctl —
+in plain words, with why each is worth taking and what it brings — plus the ideas we should
+*not* copy. It was built from a primary-source read of 47 comparable repos, and every
+"already have / missing / partial" call below was checked against linctl's actual code.
+
+## linctl's moat (everything borrowed must preserve this)
+
+linctl's value is **target-pinned writes**: before any mutation it re-resolves the active
+credential's org, team, and optional project and compares them to `.linctl.toml`. On a
+mismatch the write fails immediately — no prompt, no `--force`, no soft warning. Reads are
+free; writes fail closed. Borrowed features must keep this, keep operations schema-aligned
+(genqlient, no raw query strings on the main surface), prefer archive over hard delete, and
+never print token values.
+
+## Comparable repositories
+
+| Repo | Stack | Best idea |
+|---|---|---|
+| `schpet/linear-cli` | Deno/TS | Git/jj-aware `issue start` with branch creation; generated SKILL.md kept in sync with the binary |
+| `linearis-oss/linearis` | Node/TS | Two-tier `usage` discovery (top-level <200 tokens, domain <500); explicit "CLI instead of MCP" agent framing |
+| `joa23/linear-cli` | Go | Skill installer + task export for Claude Code; cycle analytics; token-efficient ASCII output |
+| `Finesssee/linear-cli` | Rust | Broad output flags (`--fail-on-empty`, `--id-only`, `--dry-run`, `--fields`); dynamic completions querying live Linear |
+| `flipbit03/lineark` | Rust | Usage-first agent setup snippet; human-readable names instead of raw UUIDs |
+| `frr149/lql` | Rust | Tolerant alias contract: accepts common agent mistakes, then reports the normalization |
+| `Securiteru/linear-cli` | Go | JSON-lines batch create; quiet flag that suppresses all output on success |
+| `juanbermudez/linear-agent-cli` | Deno/TS | Smart resource resolution (name/identifier/ID interchangeable); structured JSON errors with codes |
+| `choam2426/Linear-CLI` | Python | Single-file agent CLI; JSON errors on stderr; idempotent `save-*` (create-or-update) |
+| `Valian/linear-cli-skill` | JS | Minimal Claude skill bundled with the CLI so invocation stays in sync |
+| `dabblewriter/linear-cli` | Node | `--unblocked` + `next` worktree flow; append-to-description update mode |
+| `nikpietanze/linear-cli` | Go | Template-driven issue creation with cache + dry-run preview |
+| `evangodon/linear-cli` | Node/oclif | Multiple output formats (csv/json/yaml); column selection; list sort/filter |
+| `rubyists/linear-cli` | Ruby | Short command aliases (`lcls`, `lcomment`, `lclose`); semantic PR title workflow |
+| `AdiKsOnDev/linear-cli` | Python | Project health update history as a first-class read surface |
+| `danielrearden/linear-cli` | Node | Cached org metadata with an explicit `cache clear` |
+| `dorkitude/linctl` | Go | Dynamic MCP namespace; doctor-style smoke command |
+| `tdwells90/lncli` | Rust | Structured agent error envelopes with a machine-readable `error_code` |
+| `0x80/pick-linear-ticket` | TS | Ranked next-work picker (unblock count, priority, age) → `branchName` JSON |
+| `alleneubank/linear-cli` | Zig | Config hygiene: `0600` config, redacted auth show, separate `auth test` |
+| `aliou/linear-cli` | TS | Multi-profile auth with per-directory profile selection (explicit, not implicit) |
+| `TrevorS/linear-cli` | Rust | Markdown/frontmatter issue creation; browser open; dry-run shows parsed fields |
+| `wiseiodev/linear-cli` | TS | `bulk-update --dry-run --json` to plan batch mutations |
+| `anoncam/linear-cli` | JS | AI-assisted label cleanup proposed before any write |
+| `rinadelph/clinear` | Python | Typed validation (Pydantic/Typer) that rejects malformed input before any API call |
+| `ChuckMayo/linear-multi-workspace-cli` | TS | Multi-workspace surface — a useful *contrast* to our pinned single-target model |
+
+## What linctl already has (so we don't re-propose it)
+
+- **Output controls**: `--json`, `--compact`, `--fields`, `--id-only`, `--quiet`,
+  `--fail-on-empty`, `--sort`/`--order`, `--format minimal|compact|full`, `--debug`,
+  `--profile`, `--org`/`--team`/`--project` overrides, `--timeout`.
+- **Discovery / health**: `usage [overview|issue|project|cycle]`, `target --json`,
+  `doctor` (reports config/token/target without printing the token), `whoami`.
+- **Issue reads**: `issue list` (state, project, assignee, label, cycle, created-after/
+  since/before, has-blockers, blocks, blocked-by, all-teams, mine), `search`, `get`,
+  `deps`, `pr`, `id`/`title`/`url`/`branch`, `vcs-branch-search`, AI helpers
+  (filter/title suggestion, figma key, priority-values).
+- **Issue writes**: `create` (+`--description-file`), `update` (+`--append`/`--append-file`/
+  `--description-file`), `start`, `comment` (+`--body-file`, `--body -`), `reply`, `close`.
+- **Current-branch flow**: `current`, `done`, `next --dry-run` (ranked by unblock count,
+  priority, age).
+- **Projects**: list/get/members, create/update/archive, `updates` (read), plus
+  `project-update`/`project-status`/`project-label` reads.
+- **ProjectMilestone**: all/list/get/create/update (no delete). **Cycle**: list/get/create/
+  update/archive, issues, uncompleted-issues. **Sprint**: current/report (read-only aliases).
+- **Reads across the schema**: documents, templates, initiatives, roadmaps (legacy),
+  search + semantic-search, labels/teams/users/workflow-states, releases & pipelines,
+  comments, attachments, notifications, custom views, organization, rate-limit, customers,
+  and more.
+- **Packaging is configured**: `.goreleaser.yaml` + `.github/workflows/release.yml` build
+  cross-platform binaries and generate a Homebrew cask (`dist/homebrew/Casks/linctl.rb`).
+  It only needs the first tagged release to go live.
+- **Quality**: 100% statement-coverage gate, ~30 linters, build-tag integration tests,
+  fuzz tests, genqlient drift check.
+
+There is **no** linctl agent `SKILL.md` today (only unrelated vendored skill files).
+
+---
+
+## P1 — high value, safe, start now
+
+### 1. Tolerant alias normalization for agent mistakes
+*(status: done — `issue create`/`update`/`list` normalize `--status`→`--state`, human state
+names → schema state types, and priority words → Linear ints before target comparison, printing
+one stderr note per changed field and rejecting unknown values. Sources: `frr149/lql`,
+`linearis-oss/linearis`.)*
+
+- **What it is**: when an agent passes a near-miss — `--status` for `--state`, `high`
+  instead of Linear's priority integer, a human state name — linctl maps it to the correct
+  value, runs the command, and prints **one line on stderr** saying what it normalized.
+  Truly ambiguous or destructive input is still rejected.
+- **Why leech it**: agents constantly emit field names from training data that differ from
+  Linear's schema. lql showed this kills a whole class of failed runs without loosening
+  safety, because normalization happens *before* target comparison.
+- **What it brings**: fewer dead-end runs on valid intent; agents stop needing to memorize
+  Linear's enum internals.
+- **Moat fit**: pure pre-write transform on flag values. Doesn't touch `write_guard.go`;
+  the normalized value resolves against the pinned target exactly as a raw value would.
+
+### 2. Generated command reference with a CI drift check
+*(status: done — `scripts/gen-skill.go` generates `skills/linctl/references/commands.md`
+from the cobra tree; `task gen-skill` refreshes it and `generate-check` + CI fail on drift.
+The curated `SKILL.md` is hand-maintained and links to the generated reference rather than
+being overwritten. Sources: `schpet/linear-cli`, `joa23/linear-cli`.)*
+
+- **What it is**: a generator reads every command's `--help` and writes
+  `skills/linctl/references/commands.md` (the curated `SKILL.md` links to it). CI re-runs it
+  and fails if the committed file differs from the binary's surface.
+- **Why leech it**: agents read the skill doc to learn the commands. Without a drift check
+  it silently goes stale as commands are added, so agents call things that don't exist or
+  miss things that do.
+- **What it brings**: the agent-facing doc always matches the running binary; CI blocks
+  drift before merge.
+- **Moat fit**: pure docs generation at build time. No writes, no tokens, no schema change.
+
+### 3. Dynamic shell completions
+*(status: done — `internal/cli/completion.go` adds live flag completion for `--team`,
+`--project`, and `--state`, plus `ValidArgsFunction` for `team get`/`project get`, all via
+existing read paths and degrading silently without a token; static completions documented in
+`skills/linctl/references/completions.md`. Sources: `Finesssee/linear-cli`, `aliou/linear-cli`,
+`AdiKsOnDev/linear-cli`.)*
+
+- **What it is**: wire `ValidArgsFunction`/flag-completion so the shell can complete *live*
+  values — team keys, project IDs, workflow-state names — by calling read commands. Also
+  document and test the static completions we already get for free.
+- **Why leech it**: Cobra makes this cheap, and value-completion is the difference between
+  "completion exists" and "completion is useful." Several peers ship it.
+- **What it brings**: operators stop hand-looking-up IDs; far fewer typos at the prompt.
+- **Moat fit**: read-only. Completion callbacks use existing read paths; the write guard is
+  never involved.
+
+### 4. Structured error envelope on stderr
+*(status: done — `execute` in `internal/cli/root.go` emits one JSON `{error_code, message}`
+line to stderr on any failure; `errorCode` in `output.go` maps the `errors.Is` sentinels
+(`TARGET_MISMATCH`, `RATE_LIMITED`, `MUTATION_FAILED`, `INVALID_WRITE`, `GRAPHQL_ERROR`),
+not-found, and `INTERNAL`. Human text still follows. Documented in
+`references/json-output.md`. Sources: `tdwells90/lncli`, `choam2426/Linear-CLI`,
+`juanbermudez/linear-agent-cli`.)*
+
+- **What it is**: on failure, emit a JSON object to stderr with a machine `error_code`
+  (`TARGET_MISMATCH`, `NOT_FOUND`, `RATE_LIMITED`, …), a human `message`, and optional
+  context. Human-readable text stays available too.
+- **Why leech it**: agents that shell out to linctl need to branch on *what* failed without
+  parsing English. `TARGET_MISMATCH` must never look like `NOT_FOUND`.
+- **What it brings**: reliable agent retry/escalation — retry only on `RATE_LIMITED`,
+  inspect config on `TARGET_MISMATCH`, give up on `NOT_FOUND`.
+- **Moat fit**: output-only and additive. Maps the existing `errors.Is` sentinels to codes;
+  doesn't touch the guard.
+
+---
+
+## P2 — high coordination value, after P1
+
+### 5. Document writes (create / update)
+*(status: done — `document create`/`document update` in `internal/cli/document.go` backed by
+`CreateDocument`/`UpdateDocument` (`internal/client/document_write.go`): create is team-scoped
+(+ pinned project), update resolves the document and fails closed unless its team and pinned
+project match. `--content`, `--content-file`, and `--content -` (stdin) supported. Sources:
+`schpet`, `linearis`.)*
+- **What/why/brings**: `document create --title T --content-file F` and
+  `document update ID --content-file F` (both `--body -` for stdin) let agents write plans,
+  notes, and spec drafts into Linear Documents mid-workflow instead of bouncing to the web
+  UI/MCP.
+- **Moat fit**: same guarded-write pattern as issue writes (resolve → compare team/optional
+  project → mutate).
+
+### 6. Project status-update writes
+*(status: done — `project-update create PROJECT --health --body` in
+`internal/cli/project_update.go` backed by `CreateProjectUpdate`
+(`internal/client/project_update_write.go`): resource-scoped via `requireProject`, fails
+closed unless the resolved project matches the pinned `project_id` and team. `--health`
+accepts tolerant aliases (`on-track`/`onTrack`/...), `--body`/`--body-file`/`--body -`
+(stdin) supported. Sources: `AdiKsOnDev`, `schpet`, `Finesssee`.)*
+- **What/why/brings**: `project-update create PROJECT --health onTrack|atRisk|offTrack
+  --body T` lets an agent post automated health-check results back to Linear, keeping
+  dashboards current without a human.
+- **Moat fit**: resource-scoped write — resolve project, compare to pinned `project_id` if
+  set, then create.
+
+### 7. Relation writes (`issue relate` / `unrelate`)
+*(status: done — `issue relate ISSUE RELATED --type` and `issue unrelate RELATION_ID` in
+`internal/cli/issue_relation_write.go` backed by `CreateIssueRelation`/`DeleteIssueRelation`
+(`internal/client/issue_relation_write.go`): both endpoints resolve through `requireIssue`
+and fail closed unless each issue belongs to the resolved team. `--type blocks` is rejected
+when the related issue already blocks the source issue (cycle pre-check via the existing deps
+read). Sources: `Finesssee`, `joa23`.)*
+- **What/why/brings**: `issue relate LIT-123 blocks LIT-456` / `unrelate …` lets agents
+  maintain the dependency graph as work progresses. With existing `issue deps` reads, this
+  turns Linear into a live execution state machine for agent-driven work.
+- **Moat fit**: resolve both issues; guard compares the pinned team against both. Add
+  circular-dependency detection as a pre-write check using the existing deps read.
+
+### 8. Comment edit / delete
+*(status: done — `comment update ID --body` and `comment delete ID` in
+`internal/cli/comment.go` backed by `UpdateComment`/`DeleteComment`
+(`internal/client/comment_write.go`): both resolve the comment and fail closed unless its
+parent issue belongs to the resolved team (`guardCommentTarget`); a comment not attached to
+an issue is refused. `comment delete` is the one approved delete. `--body`/`--body-file`/
+`--body -` (stdin) supported on update. Sources: `linearis`, `rubyists`.)*
+- **What/why/brings**: `comment update ID --body T` / `comment delete ID` let an agent fix
+  or remove a progress note it posted, instead of stacking stale comments.
+- **Moat fit**: resource-scoped write — resolve the comment's parent issue, compare to
+  pinned target, then mutate.
+
+### 9. `issue create --template` with `--dry-run`
+*(status: done — `issue create --template ID --section NAME=VALUE --dry-run` in
+`internal/cli/issue_write.go`/`issue_template.go`: `--template` reads `Template.templateData`
+(free read via `GetIssueTemplateContent`, tolerant of object or JSON-encoded-string data) and
+fills title/description defaults that explicit flags override; `--section` fills/appends a
+markdown section locally; `--dry-run` renders the assembled draft and performs no mutation.
+The real write reuses the guarded `issue create` (`CreateIssue`). Sources: `nikpietanze`,
+`Finesssee`.)*
+- **What/why/brings**: apply a Linear template by ID with `--section Name=Value`;
+  `--dry-run` prints the rendered description without writing. Consistent, high-quality
+  issues from agents, previewable before commit.
+- **Moat fit**: write path reuses the guarded `issue create`; dry-run is local and never
+  hits the API.
+
+### 10. `next` with branch checkout
+*(status: done — `next` in `internal/cli/next.go` now starts the picked issue through the
+guarded `StartIssue`; `--dry-run` keeps the read-only preview, and `--checkout` runs
+`git checkout -b <branchName>` (injectable `checkoutBranch`) before starting. The pick still
+goes through target comparison and `StartIssue` re-runs the write guard. Sources: `schpet`,
+`dabblewriter`, `0x80/pick-linear-ticket`.)*
+- **What/why/brings**: after picking the top unblocked issue, optionally
+  `git checkout -b <branchName>` so pick-and-start is one command — closing the window where
+  the agent might act on a different issue between steps.
+- **Moat fit**: the pick still goes through target comparison; branch creation is a local
+  git op; the existing guarded `issue start` can run on the same issue.
+
+### 11. File upload / download for Linear assets
+*(status: done — `files upload PATH` and `files download URL --output PATH` in
+`internal/cli/files.go` backed by `PrepareFileUpload` (`internal/client/file.go`): upload calls
+`fileUpload` for a pre-signed target, PUTs the bytes with the returned headers (injectable
+`fileHTTPClient`), and prints the asset URL for a later guarded attachment write; download is a
+plain unauthenticated GET so a user-supplied URL never receives the Linear token. Sources:
+`linearis`, `choam2426`, `joa23`.)*
+- **What/why/brings**: `files upload PATH` → asset URL; `files download URL --output PATH`.
+  Lets agents attach CI artifacts, screenshots, and diagrams to issues without a browser.
+- **Moat fit**: upload returns a URL; attaching it uses the existing attachment write path.
+  Download is read-only.
+
+---
+
+## P3 — nice to have / lower urgency
+
+### 12. `issue open` / `project open` (browser)
+*(status: done — `issue open ISSUE_ID` and `project open PROJECT_ID` in
+`internal/cli/open.go` resolve the entity's existing `url` via the free `GetIssueByID` /
+`GetProjectByID` reads, then launch the platform opener (`xdg-open`/`open`/`rundll32`,
+injectable `openExecutor`) with the URL as a discrete argv argument — no shell. Read-only,
+no guard; respects `--id-only`/`--json`/`--quiet`. Sources: `schpet`, `TrevorS`.)* Open the
+entity's existing URL via `xdg-open`. Read-only, no guard. Smooths CLI→web handoff for human
+operators.
+
+### 13. `issue export ISSUE DIR`
+*(status: done — `issue export ISSUE_ID DIR` in `internal/cli/export.go` assembles
+`GetIssueDetail` (description + metadata), `ListIssueComments`, and `ListIssueAttachments`
+into `<DIR>/<identifier>.md` (metadata header → description → comments → attachment URLs).
+All three are free reads; the only write is the local markdown file. Comments/attachments
+are capped at 250 with a stderr note when more pages exist. Respects
+`--id-only`/`--json`/`--quiet`. Sources: `joa23`, `choam2426`.)* Dump description + comments
++ attachment URLs to local files for retrospectives or feeding a local LLM. Read-only
+assembly of existing reads.
+
+### 14. CSV/JSON import-export with `--dry-run`
+*(status: done — `issue import FILE` and `issue bulk-export FILE` in
+`internal/cli/bulk.go`. Import parses CSV or JSON (format from the extension), normalizes
+each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then
+creates each issue through the guarded `CreateIssue` (each create re-runs the write guard);
+`--dry-run` renders the normalized rows and writes nothing. `bulk-export` writes the resolved
+team's issues (`ListIssuesByTeam`, `--limit` default 250) to a CSV or JSON file — the only
+write is the local file. Both respect `--id-only`/`--json`/`--quiet`. Sources: `Finesssee`,
+`wiseiodev`.)* Bulk create from a file with a preview step; export the team's issues to a
+file. Each create goes through the guarded `CreateIssue`; import rejects rows whose team key
+≠ pinned target.
+
+### 15. Finish the release (packaging is already built)
+*(status: ready — release pipeline verified, tag/push left to a human by design.)*
+goreleaser (`.goreleaser.yaml`), the tag-triggered release workflow
+(`.github/workflows/release.yml`, `on: push: tags: v*`), and the Homebrew cask
+(`homebrew_casks` → `KyaniteHQ/homebrew-linctl`) are all wired: the workflow runs the full
+preflight gate, then `goreleaser release --clean` publishes the GitHub release, archives,
+checksums, SBOM, cosign signature, and the cask, and a final job downloads and verifies the
+published archive. The binary version is injected from the tag via
+`-X main.version={{ .Version }}`. The latest tag is `v0.2.1`; this branch adds 14 features,
+so the next release is a minor bump to **v0.3.0**.
+
+Cutting the release is intentionally a **human** action — this agent never tags or pushes.
+After `feat/feature-leech-backlog` is merged to `master`, run from `master`:
+
+```sh
+git tag v0.3.0
+git push origin v0.3.0
+```
+
+The pushed tag triggers `release.yml`, which builds, signs, and publishes the release and
+updates the Homebrew cask. **This is "finish," not "build."**
+
+---
+
+## Do not leech
+
+| Thing | Why not |
+|---|---|
+| Raw GraphQL escape hatch (`--query` for arbitrary mutations) | Bypasses schema-aligned ops and the write guard; an agent could mutate anything regardless of pinned target. Predictable, constrained writes are the whole point. |
+| Implicit workspace switching (auto-pick org from repo) | The pinned target is the guarantee that writes land in the right org/team. Implicit switching silently breaks it and creates hard-to-diagnose mismatches. |
+| Hard delete for issues/projects | Archive is the safe cleanup path. Hard delete is irreversible; it needs a separate explicit design that doesn't exist, and the data-loss risk outweighs the benefit. |
+| Printing/logging token values | `doctor` deliberately reports `set`, not the value. Any path that could leak a token breaks the never-print-tokens rule. |
+| OAuth device flow as the *primary* auth | For an agent-first CLI, API-key auth is simpler and CI-stable (no browser redirect). OAuth can be a secondary path later if asked. |
+| Watch/monitor polling loops | Adds process-lifecycle complexity; agents are better served calling explicit poll commands on their own schedule. Add only on real demand. |
+| Interactive TUI | Incompatible with agent use, which needs deterministic scriptable output; pulls in deps that complicate the output contract. |
+| OS keychain/keyring token storage | Adds platform-specific deps and complicates CI token flow. `LINCTL_TOKEN` env + `.linctl.toml` is simpler and more portable. |

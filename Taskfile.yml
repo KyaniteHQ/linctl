@@ -25,11 +25,18 @@ tasks:
     cmds:
       - go tool govulncheck $(bash scripts/go-packages.sh)
 
+  gen-skill:
+    desc: Regenerate the linctl agent command reference from the command tree
+    cmds:
+      - go run scripts/gen-skill.go
+
   generate-check:
-    desc: Regenerate GraphQL client and verify it is committed
+    desc: Regenerate the GraphQL client and command reference and verify they are committed
     cmds:
       - go generate ./...
       - git diff --exit-code -- internal/client/generated.go
+      - task: gen-skill
+      - git diff --exit-code -- skills/linctl/references/commands.md
 
   test:
     desc: Run tests

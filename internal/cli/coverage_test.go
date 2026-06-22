@@ -2098,6 +2098,58 @@ func Test_CommandFlows_cover_issue_reply_stdin_read_error(t *testing.T) {
 	require.Contains(t, err.Error(), "read body from stdin")
 }
 
+func Test_CommandFlows_cover_document_create_stdin_read_error(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetIn(commandFailingReader{})
+	command.SetArgs([]string{"document", "create", "--title", "x", "--content", "-"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "read body from stdin")
+}
+
+func Test_CommandFlows_cover_document_update_stdin_read_error(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetIn(commandFailingReader{})
+	command.SetArgs([]string{"document", "update", "document-id", "--content", "-"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "read body from stdin")
+}
+
+func Test_CommandFlows_cover_comment_update_stdin_read_error(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetIn(commandFailingReader{})
+	command.SetArgs([]string{"comment", "update", "comment-id", "--body", "-"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "read body from stdin")
+}
+
+func Test_CommandFlows_cover_project_update_create_stdin_read_error(t *testing.T) {
+	restore := useCommandRuntime(t, commandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetIn(commandFailingReader{})
+	command.SetArgs([]string{"project-update", "create", "project-id", "--body", "-"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "read body from stdin")
+}
+
 func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 	t.Run("operation error", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "issue_comments"})

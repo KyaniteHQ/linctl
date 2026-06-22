@@ -204,7 +204,7 @@ Planned commands:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type`, `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only |
+| `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only |
 | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only |
 | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only |
 | `issue priority-values` | `Query.issuePriorityValues` | Read-only |
@@ -247,12 +247,16 @@ Planned commands:
 | `issue id` | Current checkout issue identifier from git/jj context | Read-only |
 | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
 | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
+| `issue open` | `Query.issue` resolves `Issue.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only |
+| `issue export` | `Query.issue` (`GetIssueDetail`), `Issue.comments`, and `Issue.attachments` are assembled into a single markdown file (`<DIR>/<identifier>.md`) holding the metadata header, description, comments, and attachment URLs; capped at 250 comments/attachments with a stderr note when more pages exist | Read-only, writes only local files |
+| `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` renders the normalized rows locally and performs no mutation | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing |
+| `issue bulk-export` | `Query.team`/`Team.issues` (`ListIssuesByTeam`) for the resolved team are written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file |
 | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only |
 | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only |
-| `next --dry-run` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age before printing one candidate without checkout/worktree creation | Read-only |
+| `next` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age. `--dry-run` prints the top candidate and writes nothing; without it the top candidate is started via guarded `Mutation.issueUpdate` (`StartIssue`); `--checkout` runs `git checkout -b <Issue.branchName>` before starting | `--dry-run` read-only; otherwise resource-scoped start of the picked issue |
 | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
-| `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation | Team-scoped unless `projectId` is set |
-| `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description` | Resource-scoped when a project target is involved |
+| `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation; `--template` reads `Template.templateData` via `Query.template` (free read) and fills title/description defaults that explicit flags override; `--section NAME=VALUE` fills a markdown section locally before mutation; `--dry-run` renders the assembled draft locally and performs no mutation; `--state` (alias `--status`) normalizes a human state name to a schema state type and resolves `IssueCreateInput.stateId` via `Query.workflowStates` filtered by team + type; `--priority` normalizes human words (`urgent`/`high`/`medium`/`low`/`none`) or `0-4` to `IssueCreateInput.priority` | Team-scoped unless `projectId` is set; `--dry-run` writes nothing |
+| `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description`; `--state` (alias `--status`) and `--priority` are normalized the same way as on `issue create`, with `stateId` resolved via `Query.workflowStates` filtered by the issue's team + type | Resource-scoped when a project target is involved |
 | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved |
 | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project |
 | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project |
@@ -279,11 +283,11 @@ Command status:
 | --- | --- | --- |
 | `issue-relation list` | `Query.issueRelations` | Read-only |
 | `issue-relation get` | `Query.issueRelation` | Read-only |
-| `issue-relation create` | `Mutation.issueRelationCreate` | Blocked: create must resolve and compare both issue endpoints before mutation |
+| `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle |
+| `issue unrelate` | `Mutation.issueRelationDelete` | Resolve the relation, then compare the pinned team for both linked issues before deleting |
 | `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation |
-| `issue-relation delete` | `Mutation.issueRelationDelete` | Blocked: destructive command needs explicit issue relation safety semantics |
 
-Only `issue-relation list` and `issue-relation get` are implemented in the current CLI. IssueRelation writes are deferred until their endpoint guard model is explicit.
+`issue-relation list` and `issue-relation get` (reads) plus `issue relate ISSUE RELATED --type` and `issue unrelate RELATION_ID` (writes) are implemented in the current CLI. `issue relate` resolves both endpoints through `requireIssue` so a relation lands only when both issues belong to the resolved team, and a `blocks` relation is rejected when the related issue already blocks the source issue. `issue unrelate` is the one approved relation delete; it resolves the relation and confirms both linked issues before removing it. `issue-relation update` stays deferred until its endpoint guard model is explicit.
 
 ## Comment
 
@@ -291,8 +295,8 @@ Schema backing:
 
 - Types: `Comment`, `CommentConnection`
 - Reads: `Query.comments`, `Query.comment`, `Issue.comments`, `Comment.botActor`, `Comment.children`, `Comment.createdIssues`
-- Writes: `Mutation.commentCreate`, `Mutation.commentResolve`, `Mutation.commentUnresolve`
-- Inputs: `CommentCreateInput`
+- Writes: `Mutation.commentCreate`, `Mutation.commentUpdate`, `Mutation.commentDelete`, `Mutation.commentResolve`, `Mutation.commentUnresolve`
+- Inputs: `CommentCreateInput`, `CommentUpdateInput`
 - Relevant fields: `Comment.id`, `Comment.body`, `Comment.url`, `Comment.createdAt`, `Comment.updatedAt`, `Comment.parentId`, `Comment.issueId`, `Comment.projectId`, `Comment.projectUpdateId`, `Comment.initiativeId`, `Comment.initiativeUpdateId`, `Comment.documentContentId`, `Comment.user`
 
 Planned commands:
@@ -304,10 +308,12 @@ Planned commands:
 | `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only |
 | `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata |
 | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only |
+| `comment update` | `Mutation.commentUpdate` with `CommentUpdateInput` | Resolve the comment, then compare the pinned team through its parent issue; non-issue comments are refused |
+| `comment delete` | `Mutation.commentDelete` | Resolve the comment, then compare the pinned team through its parent issue before deleting; non-issue comments are refused |
 | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope |
 | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope |
 
-`comment list`, `comment get`, `comment bot-actor`, `comment children`, and `comment created-issues` are implemented in the current CLI. Comment child reads omit comment body content by default. Document content and external thread reads remain out of the default surface because they expose content/thread payloads. Issue-scoped comment creation and replies remain under the guarded `issue comment` and `issue reply` commands.
+`comment list`, `comment get`, `comment bot-actor`, `comment children`, and `comment created-issues` (reads) plus `comment update COMMENT_ID --body` and `comment delete COMMENT_ID` (writes) are implemented in the current CLI. Both writes resolve the comment, then compare the pinned team through the comment's parent issue (`guardCommentTarget`): a comment not attached to an issue is refused because the issue guard cannot prove its target. `comment delete` is the one approved delete. Comment child reads omit comment body content by default. Document content and external thread reads remain out of the default surface because they expose content/thread payloads. Issue-scoped comment creation and replies remain under the guarded `issue comment` and `issue reply` commands.
 
 ## Project
 
@@ -326,6 +332,7 @@ Planned commands:
 | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped |
 | `project all` | `Query.projects` | Read-only |
 | `project get` | `Query.project` | Read-only |
+| `project open` | `Query.project` resolves `Project.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only |
 | `project attachments` | `Project.attachments` | Read-only |
 | `project documents` | `Project.documents` | Read-only |
 | `project external-links` | `Project.externalLinks` | Read-only |
@@ -366,11 +373,11 @@ Planned commands:
 | `project-update list` | `Query.projectUpdates` | Read-only |
 | `project-update get` | `Query.projectUpdate` | Read-only |
 | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata |
-| `project-update create` | `Mutation.projectUpdateCreate` | Blocked: create must resolve and compare the target project before posting |
+| `project-update create` | `Mutation.projectUpdateCreate` with `ProjectUpdateCreateInput` | Resource-scoped, compare `project_id` (pinned project) and team ownership |
 | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation |
 | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics |
 
-`project-update list`, `project-update get`, and `project-update comments` are implemented in the current top-level CLI. `project updates PROJECT_ID` remains the project-scoped history view and omits update body content by default.
+`project-update list`, `project-update get`, `project-update comments`, and `project-update create` are implemented in the current top-level CLI. `project-update create PROJECT --health --body` resolves the pinned project through `requireProject` before posting, so a status update lands only when the resolved project matches the pinned target. `project updates PROJECT_ID` remains the project-scoped history view and omits update body content by default.
 
 ## ProjectStatus
 
@@ -529,11 +536,11 @@ Planned commands:
 | `document list` | `Query.documents` | Read-only |
 | `document get` | `Query.document` | Read-only |
 | `document comments` | `Document.comments` | Read-only, body-free metadata |
-| `document create` | `Mutation.documentCreate` with optional `projectId`, `teamId`, `issueId`, `cycleId` | Blocked: parent can be project, team, issue, or cycle; write guard needs explicit parent-resolution semantics |
-| `document update` | `Mutation.documentUpdate` | Blocked: update must resolve and compare the existing parent before changing content |
+| `document create` | `Mutation.documentCreate` with `DocumentCreateInput.teamId` from the resolved team and optional `projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Team-scoped unless a `project_id` is pinned |
+| `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `team` (and pinned `project`) before mutating | Resource-scoped, compare team and pinned project |
 | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics |
 
-`document list`, `document get`, and `document comments` are implemented in the current CLI. Document comment reads omit comment body content by default. Document writes are deferred until the parent-resolution guard is designed.
+`document list`, `document get`, `document comments`, `document create`, and `document update` are implemented in the current CLI. Document comment reads omit comment body content by default. `document create` is a team-scoped guarded write (carrying the pinned project when set); `document update` resolves the existing document and fails closed unless its team — and the pinned project, when configured — match. Document delete stays deferred.
 
 ## Label
 
@@ -1074,6 +1081,25 @@ Planned commands:
 | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics |
 
 Only `emoji list` and `emoji get` are implemented in the current CLI. Emoji writes are deferred as organization-scoped asset surface.
+
+## File
+
+Use `File` for raw asset upload/download. A file upload produces a workspace asset URL; it is not a target-pinned write because a raw asset has no team or project. The asset URL is attached to an issue or project through the guarded attachment commands.
+
+Schema backing:
+
+- Types: `UploadPayload`, `UploadFile`, `UploadFileHeader`
+- Writes: `Mutation.fileUpload` (prepares a pre-signed upload target; the bytes are then PUT to storage out of band)
+- Relevant fields: `UploadFile.uploadUrl`, `UploadFile.assetUrl`, `UploadFile.headers`, `UploadFile.contentType`, `UploadFile.size`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Workspace asset, not target-pinned; prints the asset URL for a later guarded attachment write |
+| `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token |
+
+`files upload PATH` infers the content type from the file extension (overridable with `--content-type`), calls `fileUpload` for a pre-signed target, PUTs the bytes with the returned headers, and prints `UploadFile.assetUrl`. `files download URL --output PATH` performs an unauthenticated GET and writes the body to the path; it is meant for public or signed asset URLs.
 
 ## Attachment
 

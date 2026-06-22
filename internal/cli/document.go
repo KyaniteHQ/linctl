@@ -28,6 +28,77 @@ func addDocumentCommand(ctx context.Context, root *cobra.Command, options *rootO
 		},
 	)
 	addDocumentCommentsCommand(ctx, documentCommand, options)
+	addDocumentCreateCommand(ctx, documentCommand, options)
+	addDocumentUpdateCommand(ctx, documentCommand, options)
+}
+
+func addDocumentCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.DocumentCreateRequest{}
+	contentFile := ""
+	command := &cobra.Command{
+		Use:   "create",
+		Short: "Create a document in the pinned target",
+		Args:  cobra.NoArgs,
+		RunE: func(command *cobra.Command, _ []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
+				return err
+			}
+			document, err := client.CreateDocument(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeDocument(command, options, document)
+		},
+	}
+	command.Flags().StringVar(&request.Title, "title", "", "document title")
+	command.Flags().StringVar(&request.Content, "content", "", "document content as markdown; use - to read stdin")
+	command.Flags().StringVar(&contentFile, "content-file", "", "read document content from file")
+	root.AddCommand(command)
+}
+
+func addDocumentUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.DocumentUpdateRequest{}
+	contentFile := ""
+	command := &cobra.Command{
+		Use:   "update DOCUMENT_ID",
+		Short: "Update a document after pinned-target comparison",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			request.ID = args[0]
+			if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
+				return err
+			}
+			document, err := client.UpdateDocument(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeDocument(command, options, document)
+		},
+	}
+	command.Flags().StringVar(&request.Title, "title", "", "new document title")
+	command.Flags().StringVar(&request.Content, "content", "", "new document content as markdown; use - to read stdin")
+	command.Flags().StringVar(&contentFile, "content-file", "", "read new document content from file")
+	root.AddCommand(command)
+}
+
+// resolveDocumentContent resolves the document content from --content (with "-"
+// reading stdin) and the mutually exclusive --content-file.
+func resolveDocumentContent(command *cobra.Command, content *string, contentFile string) error {
+	if err := resolveBodyFlag(command, content); err != nil {
+		return err
+	}
+
+	return resolveFileFlag(content, contentFile, "content")
 }
 
 func addDocumentCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
