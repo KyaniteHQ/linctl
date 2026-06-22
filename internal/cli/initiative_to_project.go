@@ -11,21 +11,23 @@ import (
 )
 
 func addInitiativeToProjectCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand[
-		client.InitiativeToProjectList,
-		client.InitiativeToProjectSummary,
-	](ctx, root, options, readListGetSpec[client.InitiativeToProjectList, client.InitiativeToProjectSummary]{
-		Use:           "initiative-to-project",
-		Short:         "Read Linear Initiative-to-Project associations",
-		ListShort:     "List visible Initiative-to-Project associations",
-		LimitHelp:     "maximum Initiative-to-Project associations to return",
-		GetUse:        "get INITIATIVE_TO_PROJECT_ID",
-		GetShort:      "Get one Initiative-to-Project association by id",
-		LoadList:      loadInitiativeToProjectList,
-		PageWithItems: initiativeToProjectPageWithItems,
-		LoadGet:       loadInitiativeToProject,
-		WriteItem:     writeInitiativeToProject,
-	})
+	addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.InitiativeToProjectList, client.InitiativeToProjectSummary]{
+			Use:           "initiative-to-project",
+			Short:         "Read Linear Initiative-to-Project associations",
+			ListShort:     "List visible Initiative-to-Project associations",
+			LimitHelp:     "maximum Initiative-to-Project associations to return",
+			GetUse:        "get INITIATIVE_TO_PROJECT_ID",
+			GetShort:      "Get one Initiative-to-Project association by id",
+			LoadList:      loadInitiativeToProjectList,
+			PageWithItems: initiativeToProjectPageWithItems,
+			LoadGet:       loadInitiativeToProject,
+			WriteItem:     writeInitiativeToProject,
+		},
+	)
 }
 
 func writeInitiativeToProject(

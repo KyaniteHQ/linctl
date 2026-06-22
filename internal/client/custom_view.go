@@ -183,6 +183,10 @@ func GetCustomViewOrganizationPreferences(
 	}
 
 	fields := result.CustomView.OrganizationViewPreferences.CustomViewPreferencesFields
+	return buildCustomViewPreferences(id, fields), nil
+}
+
+func buildCustomViewPreferences(id string, fields CustomViewPreferencesFields) CustomViewPreferences {
 	return CustomViewPreferences{
 		CustomViewID: id,
 		ID:           fields.Id,
@@ -192,7 +196,7 @@ func GetCustomViewOrganizationPreferences(
 		UpdatedAt:    fields.UpdatedAt,
 		ArchivedAt:   stringValue(fields.ArchivedAt),
 		Values:       customViewPreferencesValues(id, fields.Preferences.CustomViewPreferencesValueFields),
-	}, nil
+	}
 }
 
 // GetCustomViewOrganizationPreferenceValues returns organization default display settings for one custom view.
@@ -260,16 +264,7 @@ func GetCustomViewUserPreferences(
 	}
 
 	fields := result.CustomView.UserViewPreferences.CustomViewPreferencesFields
-	return CustomViewPreferences{
-		CustomViewID: id,
-		ID:           fields.Id,
-		Type:         fields.Type,
-		ViewType:     fields.ViewType,
-		CreatedAt:    fields.CreatedAt,
-		UpdatedAt:    fields.UpdatedAt,
-		ArchivedAt:   stringValue(fields.ArchivedAt),
-		Values:       customViewPreferencesValues(id, fields.Preferences.CustomViewPreferencesValueFields),
-	}, nil
+	return buildCustomViewPreferences(id, fields), nil
 }
 
 // GetCustomViewUserPreferenceValues returns current-user display settings for one custom view.

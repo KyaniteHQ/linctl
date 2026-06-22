@@ -245,3 +245,15 @@ func intPtr(value int) *int {
 func boolPtr(value bool) *bool {
 	return &value
 }
+
+func optionalString(value string) *string {
+	if value == "" {
+		return nil
+	}
+
+	return &value
+}
+
+func stringPtr(value string) *string {
+	return &value
+}

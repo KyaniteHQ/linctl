@@ -11,21 +11,23 @@ import (
 )
 
 func addInitiativeUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	initiativeUpdateCommand := addReadListGetCommand[
-		client.InitiativeUpdateList,
-		client.InitiativeUpdateSummary,
-	](ctx, root, options, readListGetSpec[client.InitiativeUpdateList, client.InitiativeUpdateSummary]{
-		Use:           "initiative-update",
-		Short:         "Read Linear initiative updates",
-		ListShort:     "List visible initiative updates",
-		LimitHelp:     "maximum initiative updates to return",
-		GetUse:        "get INITIATIVE_UPDATE_ID",
-		GetShort:      "Get one initiative update by id",
-		LoadList:      loadInitiativeUpdateList,
-		PageWithItems: initiativeUpdatePageWithItems,
-		LoadGet:       loadInitiativeUpdate,
-		WriteItem:     writeInitiativeUpdate,
-	})
+	initiativeUpdateCommand := addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.InitiativeUpdateList, client.InitiativeUpdateSummary]{
+			Use:           "initiative-update",
+			Short:         "Read Linear initiative updates",
+			ListShort:     "List visible initiative updates",
+			LimitHelp:     "maximum initiative updates to return",
+			GetUse:        "get INITIATIVE_UPDATE_ID",
+			GetShort:      "Get one initiative update by id",
+			LoadList:      loadInitiativeUpdateList,
+			PageWithItems: initiativeUpdatePageWithItems,
+			LoadGet:       loadInitiativeUpdate,
+			WriteItem:     writeInitiativeUpdate,
+		},
+	)
 	addInitiativeUpdateCommentsCommand(ctx, initiativeUpdateCommand, options)
 }
 

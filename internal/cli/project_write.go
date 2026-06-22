@@ -15,16 +15,12 @@ func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *
 		Short: "Create a project in the pinned team",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			project, err := client.CreateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
-
-			return writeProject(command, options, project)
+			return runProjectWriteCommand(ctx, command, options, func(runtime commandRuntime) (
+				client.ProjectSummary,
+				error,
+			) {
+				return client.CreateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			})
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "project name")
@@ -40,7 +36,12 @@ func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			request.ID = args[0]
-			return runProjectUpdateCommand(ctx, command, options, request)
+			return runProjectWriteCommand(ctx, command, options, func(runtime commandRuntime) (
+				client.ProjectSummary,
+				error,
+			) {
+				return client.UpdateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			})
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "new project name")
@@ -54,31 +55,27 @@ func addProjectArchiveCommand(ctx context.Context, root *cobra.Command, options 
 		Short: "Archive a project after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			project, err := client.ArchiveProject(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeProject(command, options, project)
+			return runProjectWriteCommand(ctx, command, options, func(runtime commandRuntime) (
+				client.ProjectSummary,
+				error,
+			) {
+				return client.ArchiveProject(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			})
 		},
 	})
 }
 
-func runProjectUpdateCommand(
+func runProjectWriteCommand(
 	ctx context.Context,
 	command *cobra.Command,
 	options *rootOptions,
-	request client.ProjectUpdateRequest,
+	write func(commandRuntime) (client.ProjectSummary, error),
 ) error {
 	runtime, err := buildCommandRuntime(ctx, options)
 	if err != nil {
 		return err
 	}
-	project, err := client.UpdateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
+	project, err := write(runtime)
 	if err != nil {
 		return err
 	}

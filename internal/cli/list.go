@@ -122,3 +122,53 @@ func runReadListCommand[Page any, Item any](
 
 	return nil
 }
+
+func addChildListCommand[List any, Item any](
+	ctx context.Context,
+	root *cobra.Command,
+	options *rootOptions,
+	use string,
+	short string,
+	limitHelp string,
+	fetch func(commandRuntime, string, int) (List, error),
+	count func(List) int,
+	sortList func(List) (List, error),
+	writeItem func(*cobra.Command, Item) error,
+	items func(List) []Item,
+) {
+	limit := 50
+	command := &cobra.Command{
+		Use:   use,
+		Short: short,
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			list, err := fetch(runtime, args[0], limit)
+			if err != nil {
+				return err
+			}
+			if err := ensureNonEmpty(options, count(list)); err != nil {
+				return err
+			}
+			list, err = sortList(list)
+			if err != nil {
+				return err
+			}
+			if options.json {
+				return writeJSONValue(command, options, list)
+			}
+			for _, item := range items(list) {
+				if err := writeItem(command, item); err != nil {
+					return err
+				}
+			}
+
+			return nil
+		},
+	}
+	command.Flags().IntVar(&limit, "limit", limit, "maximum "+limitHelp+" to return")
+	root.AddCommand(command)
+}

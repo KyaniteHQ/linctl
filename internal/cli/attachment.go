@@ -112,7 +112,7 @@ func addAttachmentIssueCommentsCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addAttachmentIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -160,7 +160,7 @@ func addAttachmentIssueBotActorCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addAttachmentIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -188,7 +188,7 @@ func addAttachmentIssueChildrenCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addAttachmentIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -216,7 +216,7 @@ func addAttachmentIssueDocumentsCommand(ctx context.Context, root *cobra.Command
 }
 
 func addAttachmentIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -258,7 +258,7 @@ func addAttachmentIssueFormerNeedsCommand(ctx context.Context, root *cobra.Comma
 }
 
 func addAttachmentIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -305,7 +305,7 @@ func addAttachmentIssueInverseRelationsCommand(ctx context.Context, root *cobra.
 }
 
 func addAttachmentIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -366,7 +366,7 @@ func addAttachmentIssueRelationsCommand(ctx context.Context, root *cobra.Command
 }
 
 func addAttachmentIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -414,7 +414,7 @@ func addAttachmentIssueSharedAccessCommand(ctx context.Context, root *cobra.Comm
 }
 
 func addAttachmentIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -442,7 +442,7 @@ func addAttachmentIssueStateHistoryCommand(ctx context.Context, root *cobra.Comm
 }
 
 func addAttachmentIssueSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,

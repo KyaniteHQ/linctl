@@ -11,21 +11,23 @@ import (
 )
 
 func addIssueRelationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand[
-		client.IssueRelationList,
-		client.IssueRelationSummary,
-	](ctx, root, options, readListGetSpec[client.IssueRelationList, client.IssueRelationSummary]{
-		Use:           "issue-relation",
-		Short:         "Read Linear issue relations",
-		ListShort:     "List visible issue relations",
-		LimitHelp:     "maximum issue relations to return",
-		GetUse:        "get ISSUE_RELATION_ID",
-		GetShort:      "Get one issue relation by id",
-		LoadList:      loadIssueRelationList,
-		PageWithItems: issueRelationPageWithItems,
-		LoadGet:       loadIssueRelation,
-		WriteItem:     writeIssueRelation,
-	})
+	addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.IssueRelationList, client.IssueRelationSummary]{
+			Use:           "issue-relation",
+			Short:         "Read Linear issue relations",
+			ListShort:     "List visible issue relations",
+			LimitHelp:     "maximum issue relations to return",
+			GetUse:        "get ISSUE_RELATION_ID",
+			GetShort:      "Get one issue relation by id",
+			LoadList:      loadIssueRelationList,
+			PageWithItems: issueRelationPageWithItems,
+			LoadGet:       loadIssueRelation,
+			WriteItem:     writeIssueRelation,
+		},
+	)
 }
 
 func writeIssueRelation(

@@ -217,44 +217,24 @@ func validateIssueListFilters(
 	mine bool,
 ) error {
 	filterCount := 0
-	if stateType != "" {
-		filterCount++
-	}
-	if projectID != "" {
-		filterCount++
-	}
-	if assigneeID != "" {
-		filterCount++
-	}
-	if labelID != "" {
-		filterCount++
-	}
-	if cycleID != "" {
-		filterCount++
-	}
-	if createdAfter != "" {
-		filterCount++
-	}
-	if createdSince != "" {
-		filterCount++
-	}
-	if createdBefore != "" {
-		filterCount++
-	}
-	if hasBlockers {
-		filterCount++
-	}
-	if blocks {
-		filterCount++
-	}
-	if blockedBy != "" {
-		filterCount++
-	}
-	if allTeams {
-		filterCount++
-	}
-	if mine {
-		filterCount++
+	for _, active := range []bool{
+		stateType != "",
+		projectID != "",
+		assigneeID != "",
+		labelID != "",
+		cycleID != "",
+		createdAfter != "",
+		createdSince != "",
+		createdBefore != "",
+		hasBlockers,
+		blocks,
+		blockedBy != "",
+		allTeams,
+		mine,
+	} {
+		if active {
+			filterCount++
+		}
 	}
 	if filterCount > 1 {
 		return errors.New(
@@ -323,34 +303,35 @@ func addIssueSearchCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "Search issues for the resolved team",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			target, err := runtime.resolveTarget(ctx)
-			if err != nil {
-				return err
-			}
-			issues, err := client.SearchIssuesByTeam(ctx, runtime.graphqlClient, target.Team.ID, args[0], limit)
-			if err != nil {
-				return err
-			}
-			if err := ensureNonEmpty(options, len(issues.Issues)); err != nil {
-				return err
-			}
-			issues.Issues, err = sortByJSONField(issues.Issues, options.sortField, options.sortOrder)
-			if err != nil {
-				return err
-			}
-			if options.json {
-				return writeJSONValue(command, options, issues)
-			}
-
-			return writeIssues(command, options, issues.Issues)
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadIssueSearch,
+				issuePageWithItems,
+				writeIssue,
+			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
 	root.AddCommand(command)
+}
+
+func loadIssueSearch(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.IssueList, []client.IssueSummary, error) {
+	target, err := runtime.resolveTarget(ctx)
+	if err != nil {
+		return client.IssueList{}, nil, err
+	}
+	issues, err := client.SearchIssuesByTeam(ctx, runtime.graphqlClient, target.Team.ID, args[0], limit)
+
+	return issues, issues.Issues, err
 }
 
 func addIssueFigmaFileKeySearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -360,30 +341,31 @@ func addIssueFigmaFileKeySearchCommand(ctx context.Context, root *cobra.Command,
 		Short: "Search issues linked to a Figma file key",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			issues, err := client.SearchIssuesByFigmaFileKey(ctx, runtime.graphqlClient, args[0], limit)
-			if err != nil {
-				return err
-			}
-			if err := ensureNonEmpty(options, len(issues.Issues)); err != nil {
-				return err
-			}
-			issues.Issues, err = sortByJSONField(issues.Issues, options.sortField, options.sortOrder)
-			if err != nil {
-				return err
-			}
-			if options.json {
-				return writeJSONValue(command, options, issues)
-			}
-
-			return writeIssues(command, options, issues.Issues)
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadIssueFigmaFileKeySearch,
+				issuePageWithItems,
+				writeIssue,
+			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
 	root.AddCommand(command)
+}
+
+func loadIssueFigmaFileKeySearch(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.IssueList, []client.IssueSummary, error) {
+	issues, err := client.SearchIssuesByFigmaFileKey(ctx, runtime.graphqlClient, args[0], limit)
+
+	return issues, issues.Issues, err
 }
 
 func addIssuePriorityValuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -531,7 +513,7 @@ func addIssueVCSBranchFormerNeedsCommand(ctx context.Context, root *cobra.Comman
 }
 
 func addIssueVCSBranchAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -579,7 +561,7 @@ func addIssueVCSBranchBotActorCommand(ctx context.Context, root *cobra.Command, 
 }
 
 func addIssueVCSBranchChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -607,7 +589,7 @@ func addIssueVCSBranchChildrenCommand(ctx context.Context, root *cobra.Command, 
 }
 
 func addIssueVCSBranchDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -635,7 +617,7 @@ func addIssueVCSBranchDocumentsCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addIssueVCSBranchFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -663,7 +645,7 @@ func addIssueVCSBranchFormerAttachmentsCommand(ctx context.Context, root *cobra.
 }
 
 func addIssueVCSBranchHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -710,7 +692,7 @@ func addIssueVCSBranchInverseRelationsCommand(ctx context.Context, root *cobra.C
 }
 
 func addIssueVCSBranchLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -771,7 +753,7 @@ func addIssueVCSBranchRelationsCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addIssueVCSBranchReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -819,7 +801,7 @@ func addIssueVCSBranchSharedAccessCommand(ctx context.Context, root *cobra.Comma
 }
 
 func addIssueVCSBranchStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -847,7 +829,7 @@ func addIssueVCSBranchStateHistoryCommand(ctx context.Context, root *cobra.Comma
 }
 
 func addIssueVCSBranchSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -895,7 +877,7 @@ func addIssueGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 }
 
 func addIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -943,7 +925,7 @@ func addIssueBotActorCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func addIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -971,7 +953,7 @@ func addIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func addIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -999,7 +981,7 @@ func addIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options 
 }
 
 func addIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1041,7 +1023,7 @@ func addIssueFormerNeedsCommand(ctx context.Context, root *cobra.Command, option
 }
 
 func addIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1083,7 +1065,7 @@ func addIssueInverseRelationsCommand(ctx context.Context, root *cobra.Command, o
 }
 
 func addIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1139,7 +1121,7 @@ func addIssueRelationsCommand(ctx context.Context, root *cobra.Command, options 
 }
 
 func addIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1187,7 +1169,7 @@ func addIssueSharedAccessCommand(ctx context.Context, root *cobra.Command, optio
 }
 
 func addIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1215,7 +1197,7 @@ func addIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, optio
 }
 
 func addIssueSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1251,7 +1233,7 @@ func addIssueRelationChildListCommand(
 	limitHelp string,
 	fetch func(context.Context, commandRuntime, string, int) (client.IssueRelationList, error),
 ) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1287,7 +1269,7 @@ func addIssueCommentMetadataListCommand(
 	limitHelp string,
 	fetch func(commandRuntime, string, int) (client.IssueCommentMetadataList, error),
 ) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1321,7 +1303,7 @@ func addIssueCustomerNeedMetadataListCommand(
 	limitHelp string,
 	fetch func(commandRuntime, string, int) (client.IssueCustomerNeedMetadataList, error),
 ) {
-	addIssueChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -1344,56 +1326,6 @@ func addIssueCustomerNeedMetadataListCommand(
 			return list.Needs
 		},
 	)
-}
-
-func addIssueChildListCommand[List any, Item any](
-	ctx context.Context,
-	root *cobra.Command,
-	options *rootOptions,
-	use string,
-	short string,
-	limitHelp string,
-	fetch func(commandRuntime, string, int) (List, error),
-	count func(List) int,
-	sortList func(List) (List, error),
-	writeItem func(*cobra.Command, Item) error,
-	items func(List) []Item,
-) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   use,
-		Short: short,
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			list, err := fetch(runtime, args[0], limit)
-			if err != nil {
-				return err
-			}
-			if err := ensureNonEmpty(options, count(list)); err != nil {
-				return err
-			}
-			list, err = sortList(list)
-			if err != nil {
-				return err
-			}
-			if options.json {
-				return writeJSONValue(command, options, list)
-			}
-			for _, item := range items(list) {
-				if err := writeItem(command, item); err != nil {
-					return err
-				}
-			}
-
-			return nil
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum "+limitHelp+" to return")
-	root.AddCommand(command)
 }
 
 func writeIssueBotActor(command *cobra.Command, options *rootOptions, actor client.IssueBotActor) error {

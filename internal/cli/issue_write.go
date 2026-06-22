@@ -105,31 +105,41 @@ func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *r
 		Short: "Comment on an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
 			request.ID = args[0]
-			if err := resolveBodyFlag(command, &request.Body); err != nil {
-				return err
-			}
-			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
-				return err
-			}
-			comment, err := client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
-			if options.json {
-				return writeJSONValue(command, options, comment)
-			}
-
-			return render.WriteLine(command.OutOrStdout(), "comment %s on %s", comment.ID, comment.Issue.Identifier)
+			return runIssueBodyWriteCommand(ctx, command, options, request, bodyFile)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "comment body")
 	command.Flags().StringVar(&bodyFile, "body-file", "", "read comment body from file")
 	root.AddCommand(command)
+}
+
+func runIssueBodyWriteCommand(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	request client.IssueCommentRequest,
+	bodyFile string,
+) error {
+	runtime, err := buildCommandRuntime(ctx, options)
+	if err != nil {
+		return err
+	}
+	if err := resolveBodyFlag(command, &request.Body); err != nil {
+		return err
+	}
+	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+		return err
+	}
+	comment, err := client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
+	if err != nil {
+		return err
+	}
+	if options.json {
+		return writeJSONValue(command, options, comment)
+	}
+
+	return render.WriteLine(command.OutOrStdout(), "comment %s on %s", comment.ID, comment.Issue.Identifier)
 }
 
 func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -140,27 +150,9 @@ func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Reply to an issue comment after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
 			request.ID = args[0]
 			request.ParentID = args[1]
-			if err := resolveBodyFlag(command, &request.Body); err != nil {
-				return err
-			}
-			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
-				return err
-			}
-			comment, err := client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
-			if options.json {
-				return writeJSONValue(command, options, comment)
-			}
-
-			return render.WriteLine(command.OutOrStdout(), "comment %s on %s", comment.ID, comment.Issue.Identifier)
+			return runIssueBodyWriteCommand(ctx, command, options, request, bodyFile)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "reply body")

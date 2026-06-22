@@ -432,11 +432,6 @@ func issuePageWithItems(page client.IssueList, issues []client.IssueSummary) cli
 	return page
 }
 
-func projectPageWithItems(page client.ProjectList, projects []client.ProjectSummary) client.ProjectList {
-	page.Projects = projects
-	return page
-}
-
 func gitAutomationStatePageWithItems(
 	page client.GitAutomationStateList,
 	states []client.GitAutomationStateSummary,

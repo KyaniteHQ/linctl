@@ -11,21 +11,23 @@ import (
 )
 
 func addTeamMembershipCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand[
-		client.TeamMembershipList,
-		client.TeamMembershipSummary,
-	](ctx, root, options, readListGetSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
-		Use:           "team-membership",
-		Short:         "Read Linear team memberships",
-		ListShort:     "List visible team memberships",
-		LimitHelp:     "maximum team memberships to return",
-		GetUse:        "get TEAM_MEMBERSHIP_ID",
-		GetShort:      "Get one team membership by id",
-		LoadList:      loadTeamMembershipList,
-		PageWithItems: teamMembershipPageWithItems,
-		LoadGet:       loadTeamMembership,
-		WriteItem:     writeTeamMembership,
-	})
+	addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
+			Use:           "team-membership",
+			Short:         "Read Linear team memberships",
+			ListShort:     "List visible team memberships",
+			LimitHelp:     "maximum team memberships to return",
+			GetUse:        "get TEAM_MEMBERSHIP_ID",
+			GetShort:      "Get one team membership by id",
+			LoadList:      loadTeamMembershipList,
+			PageWithItems: teamMembershipPageWithItems,
+			LoadGet:       loadTeamMembership,
+			WriteItem:     writeTeamMembership,
+		},
+	)
 }
 
 func writeTeamMembership(

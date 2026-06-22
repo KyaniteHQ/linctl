@@ -292,15 +292,3 @@ func firstStartedStateID(ctx context.Context, graphqlClient graphql.Client, team
 
 	return state.Id, nil
 }
-
-func optionalString(value string) *string {
-	if value == "" {
-		return nil
-	}
-
-	return &value
-}
-
-func stringPtr(value string) *string {
-	return &value
-}

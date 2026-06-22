@@ -141,7 +141,7 @@ func ListIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (I
 
 	summaries := make([]IssueSummary, 0, len(issuePage.Issues.Nodes))
 	for _, issue := range issuePage.Issues.Nodes {
-		summaries = append(summaries, allTeamIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -196,7 +196,7 @@ func ListIssuesByTeam(
 	}
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, listIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -220,7 +220,7 @@ func listIssuesByTeamState(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, filteredIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -244,7 +244,7 @@ func listIssuesByTeamProject(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, projectIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -268,7 +268,7 @@ func listIssuesByTeamAssignee(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, assigneeIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -292,7 +292,7 @@ func listIssuesByTeamLabel(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, labelIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -316,7 +316,7 @@ func listIssuesByTeamCycle(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, cycleIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -340,7 +340,7 @@ func listIssuesByTeamCreatedAfter(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, createdAfterIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -364,7 +364,7 @@ func listIssuesByTeamCreatedBefore(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, createdBeforeIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -387,7 +387,7 @@ func listIssuesByTeamHasBlockers(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, hasBlockersIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -410,7 +410,7 @@ func listIssuesByTeamBlocks(
 
 	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
 	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, blocksIssueSummary(issue))
+		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
 	}
 
 	return IssueList{
@@ -460,7 +460,7 @@ func listIssuesBlockedByIssue(
 	summaries := make([]IssueSummary, 0, len(issue.Issue.Relations.Nodes))
 	for _, relation := range issue.Issue.Relations.Nodes {
 		if relation.Type == "blocks" && relation.RelatedIssue.Team.Id == teamID {
-			summaries = append(summaries, blockedByIssueSummary(relation.RelatedIssue))
+			summaries = append(summaries, issueSummaryFromFields(relation.RelatedIssue.IssueSummaryFields))
 		}
 	}
 
@@ -1249,50 +1249,6 @@ func GetIssueDetail(ctx context.Context, graphqlClient graphql.Client, id string
 	return detailIssue(issueResult.Issue), nil
 }
 
-func allTeamIssueSummary(issue issuesIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func listIssueSummary(issue IssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func filteredIssueSummary(issue IssuesByTeamStateIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func projectIssueSummary(issue IssuesByTeamProjectIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func assigneeIssueSummary(issue IssuesByTeamAssigneeIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func labelIssueSummary(issue IssuesByTeamLabelIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func cycleIssueSummary(issue IssuesByTeamCycleIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func createdAfterIssueSummary(issue IssuesByTeamCreatedAfterIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func createdBeforeIssueSummary(issue IssuesByTeamCreatedBeforeIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func hasBlockersIssueSummary(issue IssuesByTeamHasBlockersIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func blocksIssueSummary(issue IssuesByTeamBlocksIssuesIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
 func nextIssueSummary(issue NextIssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
 	summary := issueSummaryFromFields(issue.IssueSummaryFields)
 	summary.CreatedAt = issue.CreatedAt
@@ -1340,12 +1296,6 @@ func linearPriorityRank(priority float64) float64 {
 	}
 
 	return 5 - priority
-}
-
-func blockedByIssueSummary(
-	issue IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue,
-) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
 func issueDependencyParent(issue *IssueDependenciesIssueParentIssue) *IssueSummary {

@@ -426,14 +426,20 @@ func operationsByStatus(operations []accountedOperation) map[string][]accountedO
 	return byStatus
 }
 
-func accountedKindCount(operations []accountedOperation, kind string) int {
+func countWhere[T any](items []T, predicate func(T) bool) int {
 	count := 0
-	for _, operation := range operations {
-		if operation.Kind == kind {
+	for _, item := range items {
+		if predicate(item) {
 			count++
 		}
 	}
 	return count
+}
+
+func accountedKindCount(operations []accountedOperation, kind string) int {
+	return countWhere(operations, func(operation accountedOperation) bool {
+		return operation.Kind == kind
+	})
 }
 
 func mustRootFields(path string, typeName string) []rootField {
@@ -1388,23 +1394,15 @@ func organizationInviteRationale() string {
 }
 
 func countImplemented(fields []rootField, implementedRoots map[string]bool) int {
-	count := 0
-	for _, field := range fields {
-		if implementedRoots[rootKey(field.Kind, field.Name)] {
-			count++
-		}
-	}
-	return count
+	return countWhere(fields, func(field rootField) bool {
+		return implementedRoots[rootKey(field.Kind, field.Name)]
+	})
 }
 
 func countImplementedSDK(methods []sdkMethod, implementedRoots map[string]bool) int {
-	count := 0
-	for _, method := range methods {
-		if sdkImplemented(method.Name, implementedRoots) {
-			count++
-		}
-	}
-	return count
+	return countWhere(methods, func(method sdkMethod) bool {
+		return sdkImplemented(method.Name, implementedRoots)
+	})
 }
 
 func sdkImplemented(name string, implementedRoots map[string]bool) bool {
@@ -1454,22 +1452,22 @@ func hasWritePrefix(lowerName string) bool {
 }
 
 func countImplementedDomain(commands []domainCommand) int {
-	count := 0
-	for _, command := range commands {
-		if commandImplemented(command.Command) {
-			count++
-		}
-	}
-	return count
+	return countWhere(commands, func(command domainCommand) bool {
+		return commandImplemented(command.Command)
+	})
 }
 
+var (
+	kebabCasePattern      = regexp.MustCompile(`([a-z0-9])([A-Z])`)
+	commandLookupReplacer = strings.NewReplacer("-", " ", "_", " ")
+)
+
 func kebabCase(value string) string {
-	pattern := regexp.MustCompile(`([a-z0-9])([A-Z])`)
-	return strings.ToLower(pattern.ReplaceAllString(value, `${1}-${2}`))
+	return strings.ToLower(kebabCasePattern.ReplaceAllString(value, `${1}-${2}`))
 }
 
 func commandLookupName(value string) string {
-	return strings.NewReplacer("-", " ", "_", " ").Replace(kebabCase(value))
+	return commandLookupReplacer.Replace(kebabCase(value))
 }
 
 func lowerFirst(value string) string {
@@ -1500,21 +1498,12 @@ func mustRead(path string) []byte {
 
 func runGit(dir string, args ...string) string {
 	command := append([]string{"-C", dir}, args...)
-	output, err := runGitCommand(command...)
+	// #nosec G204 -- arguments are fixed git metadata commands assembled by this generator.
+	output, err := exec.Command("git", command...).Output()
 	if err != nil {
 		return "unknown"
 	}
-	return output
-}
-
-func runGitCommand(args ...string) (string, error) {
-	// #nosec G204 -- arguments are fixed git metadata commands assembled by this generator.
-	command := exec.Command("git", args...)
-	output, err := command.Output()
-	if err != nil {
-		return "", err
-	}
-	return string(output), nil
+	return string(output)
 }
 
 func fail(err error) {

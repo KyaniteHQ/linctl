@@ -777,16 +777,10 @@ func projectUpdateSummary(update TopLevelProjectUpdateSummaryFields) ProjectUpda
 }
 
 func projectHistorySummary(fields ProjectHistorySummaryFields) ProjectHistorySummary {
-	entryCount := 0
-	var entries []json.RawMessage
-	if err := json.Unmarshal(fields.Entries, &entries); err == nil {
-		entryCount = len(entries)
-	}
-
 	return ProjectHistorySummary{
 		ID:         fields.Id,
 		ProjectID:  fields.Project.Id,
-		EntryCount: entryCount,
+		EntryCount: countJSONArrayEntries(fields.Entries),
 		Entries:    fields.Entries,
 		CreatedAt:  fields.CreatedAt,
 		UpdatedAt:  fields.UpdatedAt,

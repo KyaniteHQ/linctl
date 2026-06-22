@@ -76,20 +76,11 @@ type LinearProjectMilestoneUpdateInput struct {
 }
 
 func projectMilestoneSummary(milestone ProjectMilestoneSummaryFields) ProjectMilestoneSummary {
-	description := ""
-	if milestone.Description != nil {
-		description = *milestone.Description
-	}
-	targetDate := ""
-	if milestone.TargetDate != nil {
-		targetDate = *milestone.TargetDate
-	}
-
 	return ProjectMilestoneSummary{
 		ID:          milestone.Id,
 		Name:        milestone.Name,
-		Description: description,
-		TargetDate:  targetDate,
+		Description: stringValue(milestone.Description),
+		TargetDate:  stringValue(milestone.TargetDate),
 		Status:      string(milestone.Status),
 		Progress:    milestone.Progress,
 		SortOrder:   milestone.SortOrder,

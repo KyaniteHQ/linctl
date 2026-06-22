@@ -1902,7 +1902,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			t.Cleanup(func() {
 				buildCommandRuntime = originalBuildCommandRuntime
 			})
-			addProjectChildListCommand(
+			addChildListCommand(
 				context.Background(),
 				root,
 				&options,

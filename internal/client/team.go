@@ -308,21 +308,12 @@ func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id str
 }
 
 func teamSummary(team TeamSummaryFields) TeamSummary {
-	description := ""
-	if team.Description != nil {
-		description = *team.Description
-	}
-	archivedAt := ""
-	if team.ArchivedAt != nil {
-		archivedAt = *team.ArchivedAt
-	}
-
 	return TeamSummary{
 		ID:          team.Id,
 		Key:         team.Key,
 		Name:        team.Name,
-		Description: description,
-		ArchivedAt:  archivedAt,
+		Description: stringValue(team.Description),
+		ArchivedAt:  stringValue(team.ArchivedAt),
 		OrgID:       team.Organization.Id,
 		OrgName:     team.Organization.Name,
 		OrgURLKey:   team.Organization.UrlKey,

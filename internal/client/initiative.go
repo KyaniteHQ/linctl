@@ -236,16 +236,10 @@ func initiativeSummary(fields InitiativeSummaryFields) InitiativeSummary {
 }
 
 func initiativeHistorySummary(fields InitiativeHistorySummaryFields) InitiativeHistorySummary {
-	entryCount := 0
-	var entries []json.RawMessage
-	if err := json.Unmarshal(fields.Entries, &entries); err == nil {
-		entryCount = len(entries)
-	}
-
 	return InitiativeHistorySummary{
 		ID:           fields.Id,
 		InitiativeID: fields.Initiative.Id,
-		EntryCount:   entryCount,
+		EntryCount:   countJSONArrayEntries(fields.Entries),
 		Entries:      fields.Entries,
 		CreatedAt:    fields.CreatedAt,
 		UpdatedAt:    fields.UpdatedAt,

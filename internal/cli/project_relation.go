@@ -11,21 +11,23 @@ import (
 )
 
 func addProjectRelationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand[
-		client.ProjectRelationList,
-		client.ProjectRelationSummary,
-	](ctx, root, options, readListGetSpec[client.ProjectRelationList, client.ProjectRelationSummary]{
-		Use:           "project-relation",
-		Short:         "Read Linear project relations",
-		ListShort:     "List visible project relations",
-		LimitHelp:     "maximum project relations to return",
-		GetUse:        "get PROJECT_RELATION_ID",
-		GetShort:      "Get one project relation by id",
-		LoadList:      loadProjectRelationList,
-		PageWithItems: projectRelationPageWithItems,
-		LoadGet:       loadProjectRelation,
-		WriteItem:     writeProjectRelation,
-	})
+	addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.ProjectRelationList, client.ProjectRelationSummary]{
+			Use:           "project-relation",
+			Short:         "Read Linear project relations",
+			ListShort:     "List visible project relations",
+			LimitHelp:     "maximum project relations to return",
+			GetUse:        "get PROJECT_RELATION_ID",
+			GetShort:      "Get one project relation by id",
+			LoadList:      loadProjectRelationList,
+			PageWithItems: projectRelationPageWithItems,
+			LoadGet:       loadProjectRelation,
+			WriteItem:     writeProjectRelation,
+		},
+	)
 }
 
 func writeProjectRelation(

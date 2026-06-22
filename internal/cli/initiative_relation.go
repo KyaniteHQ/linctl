@@ -11,21 +11,23 @@ import (
 )
 
 func addInitiativeRelationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand[
-		client.InitiativeRelationList,
-		client.InitiativeRelationSummary,
-	](ctx, root, options, readListGetSpec[client.InitiativeRelationList, client.InitiativeRelationSummary]{
-		Use:           "initiative-relation",
-		Short:         "Read Linear initiative relations",
-		ListShort:     "List visible initiative relations",
-		LimitHelp:     "maximum initiative relations to return",
-		GetUse:        "get INITIATIVE_RELATION_ID",
-		GetShort:      "Get one initiative relation by id",
-		LoadList:      loadInitiativeRelationList,
-		PageWithItems: initiativeRelationPageWithItems,
-		LoadGet:       loadInitiativeRelation,
-		WriteItem:     writeInitiativeRelation,
-	})
+	addReadListGetCommand(
+		ctx,
+		root,
+		options,
+		readListGetSpec[client.InitiativeRelationList, client.InitiativeRelationSummary]{
+			Use:           "initiative-relation",
+			Short:         "Read Linear initiative relations",
+			ListShort:     "List visible initiative relations",
+			LimitHelp:     "maximum initiative relations to return",
+			GetUse:        "get INITIATIVE_RELATION_ID",
+			GetShort:      "Get one initiative relation by id",
+			LoadList:      loadInitiativeRelationList,
+			PageWithItems: initiativeRelationPageWithItems,
+			LoadGet:       loadInitiativeRelation,
+			WriteItem:     writeInitiativeRelation,
+		},
+	)
 }
 
 func writeInitiativeRelation(

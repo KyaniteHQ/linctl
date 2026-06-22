@@ -17,32 +17,16 @@ func addSemanticSearchCommand(ctx context.Context, root *cobra.Command, options 
 		Short: "Search Linear issues, projects, initiatives, and documents semantically",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			results, err := client.SearchSemantic(ctx, runtime.graphqlClient, args[0], limit)
-			if err != nil {
-				return err
-			}
-			if err := ensureNonEmpty(options, len(results.Results)); err != nil {
-				return err
-			}
-			items, err := sortByJSONField(results.Results, options.sortField, options.sortOrder)
-			if err != nil {
-				return err
-			}
-			results.Results = items
-			if options.json {
-				return writeJSONValue(command, options, results)
-			}
-			for _, result := range items {
-				if err := writeSemanticSearchResult(command, options, result); err != nil {
-					return err
-				}
-			}
-
-			return nil
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				loadSemanticSearch,
+				semanticSearchPageWithItems,
+				writeSemanticSearchResult,
+			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum semantic search results to return")
@@ -72,4 +56,22 @@ func writeSemanticSearchResult(
 		emptyDash(result.Key),
 		result.Title,
 	)
+}
+
+func loadSemanticSearch(
+	ctx context.Context,
+	runtime commandRuntime,
+	args []string,
+	limit int,
+) (client.SemanticSearchList, []client.SemanticSearchResultSummary, error) {
+	page, err := client.SearchSemantic(ctx, runtime.graphqlClient, args[0], limit)
+	return page, page.Results, err
+}
+
+func semanticSearchPageWithItems(
+	page client.SemanticSearchList,
+	results []client.SemanticSearchResultSummary,
+) client.SemanticSearchList {
+	page.Results = results
+	return page
 }

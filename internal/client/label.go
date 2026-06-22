@@ -121,14 +121,10 @@ func ListLabelIssues(ctx context.Context, graphqlClient graphql.Client, id strin
 }
 
 func labelSummary(label IssueLabelSummaryFields) LabelSummary {
-	description := ""
-	if label.Description != nil {
-		description = *label.Description
-	}
 	summary := LabelSummary{
 		ID:          label.Id,
 		Name:        label.Name,
-		Description: description,
+		Description: stringValue(label.Description),
 		Color:       label.Color,
 		IsGroup:     label.IsGroup,
 	}

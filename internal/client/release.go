@@ -336,16 +336,10 @@ func releaseSummary(fields ReleaseSummaryFields) ReleaseSummary {
 }
 
 func releaseHistorySummary(fields ReleaseHistorySummaryFields) ReleaseHistorySummary {
-	entryCount := 0
-	var entries []json.RawMessage
-	if err := json.Unmarshal(fields.Entries, &entries); err == nil {
-		entryCount = len(entries)
-	}
-
 	return ReleaseHistorySummary{
 		ID:         fields.Id,
 		ReleaseID:  fields.Release.Id,
-		EntryCount: entryCount,
+		EntryCount: countJSONArrayEntries(fields.Entries),
 		Entries:    fields.Entries,
 		CreatedAt:  fields.CreatedAt,
 		UpdatedAt:  fields.UpdatedAt,
