@@ -3733,6 +3733,8 @@ func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
 	require.False(t, isRateLimited(http.StatusBadRequest, []byte(`{"errors":[{"extensions":{"code":"BAD_USER_INPUT"}}]}`)))
 	require.False(t, isRateLimited(http.StatusBadRequest, []byte("not json")))
 	require.False(t, isRateLimited(http.StatusOK, nil))
+	rateLimitedBody := []byte(`{"errors":[{"extensions":{"code":"RATELIMITED"}}]}`)
+	require.False(t, isRateLimited(http.StatusInternalServerError, rateLimitedBody))
 	require.ErrorIs(t, rateLimitError(http.StatusTooManyRequests, []byte("slow down")), ErrRateLimited)
 
 	response := graphql.Response{}

@@ -135,7 +135,7 @@ func isRateLimited(statusCode int, body []byte) bool {
 	if statusCode == http.StatusTooManyRequests {
 		return true
 	}
-	if statusCode >= http.StatusBadRequest {
+	if statusCode == http.StatusBadRequest {
 		return bodyHasErrorCode(body, "RATELIMITED")
 	}
 
@@ -218,8 +218,9 @@ func (transport *Transport) send(ctx context.Context, payload []byte) ([]byte, i
 	return body, httpResponse.StatusCode, httpResponse.Header, nil
 }
 
-// maxRetryDelay caps how long a single retry waits, so a hostile or
-// misconfigured Retry-After header cannot block the process indefinitely.
+// maxRetryDelay caps how long a single retry waits, so neither a hostile or
+// misconfigured Retry-After header nor a large MaxRetries can block the
+// process indefinitely.
 const maxRetryDelay = 30 * time.Second
 
 // maxResponseBytes bounds how much of a response body is buffered, as
@@ -230,19 +231,11 @@ func retryDelay(header http.Header, attempt int) time.Duration {
 	if retryAfter := header.Get("Retry-After"); retryAfter != "" {
 		seconds, err := strconv.Atoi(retryAfter)
 		if err == nil {
-			return capRetryDelay(time.Duration(seconds) * time.Second)
+			return min(time.Duration(seconds)*time.Second, maxRetryDelay)
 		}
 	}
 
-	return time.Duration(attempt+1) * 100 * time.Millisecond
-}
-
-func capRetryDelay(delay time.Duration) time.Duration {
-	if delay > maxRetryDelay {
-		return maxRetryDelay
-	}
-
-	return delay
+	return min(time.Duration(attempt+1)*100*time.Millisecond, maxRetryDelay)
 }
 
 func waitForRetry(ctx context.Context, delay time.Duration) error {
