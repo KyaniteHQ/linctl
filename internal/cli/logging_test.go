@@ -3,10 +3,14 @@ package cli
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_newDiagnosticLogger_debug_emits_text_diagnostics(t *testing.T) {
@@ -61,4 +65,47 @@ func Test_newTransportDiagnosticWriter_forwards_trimmed_lines_under_debug(t *tes
 
 func Test_newTransportDiagnosticWriter_is_nil_without_debug(t *testing.T) {
 	require.Nil(t, newTransportDiagnosticWriter(newDiagnosticLogger(false, false, io.Discard), false))
+}
+
+func Test_commandRuntime_log_falls_back_to_discard_logger(t *testing.T) {
+	require.Same(t, discardLogger, commandRuntime{}.log())
+
+	logger := newDiagnosticLogger(true, false, io.Discard)
+	require.Same(t, logger, commandRuntime{logger: logger}.log())
+}
+
+func Test_logTargetResolution_marks_target_mismatch(t *testing.T) {
+	var buffer bytes.Buffer
+	logger := newDiagnosticLogger(true, false, &buffer)
+
+	logTargetResolution(logger, client.ResolvedTarget{}, fmt.Errorf("%w: org", client.ErrTargetMismatch))
+
+	require.Contains(t, buffer.String(), "msg=\"target unresolved\"")
+	require.Contains(t, buffer.String(), "mismatch=true")
+}
+
+func Test_logTargetResolution_marks_non_mismatch_errors(t *testing.T) {
+	var buffer bytes.Buffer
+	logger := newDiagnosticLogger(true, false, &buffer)
+
+	logTargetResolution(logger, client.ResolvedTarget{}, errors.New("resolve viewer failed"))
+
+	require.Contains(t, buffer.String(), "msg=\"target unresolved\"")
+	require.Contains(t, buffer.String(), "mismatch=false")
+}
+
+func Test_logTargetResolution_records_resolved_target(t *testing.T) {
+	var buffer bytes.Buffer
+	logger := newDiagnosticLogger(true, false, &buffer)
+
+	logTargetResolution(logger, client.ResolvedTarget{
+		Org:       client.TargetOrg{ID: "org-id"},
+		Team:      client.TargetTeam{ID: "team-id", Key: "LIT"},
+		Confirmed: true,
+	}, nil)
+
+	output := buffer.String()
+	require.Contains(t, output, "msg=\"target resolved\"")
+	require.Contains(t, output, "team_key=LIT")
+	require.Contains(t, output, "confirmed=true")
 }

@@ -59,7 +59,10 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 }
 
 func (runtime commandRuntime) resolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
-	return client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
+	target, err := client.ResolveTarget(ctx, runtime.graphqlClient, runtime.config.Target)
+	logTargetResolution(runtime.log(), target, err)
+
+	return target, err
 }
 
 func defaultGlobalConfigPath() string {
