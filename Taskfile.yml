@@ -58,6 +58,13 @@ tasks:
     cmds:
       - go vet $(bash scripts/go-packages.sh)
 
+  actionlint:
+    desc: Lint GitHub Actions workflows (matches CI; needs shellcheck on PATH for shell checks)
+    env:
+      SHELLCHECK_OPTS: --exclude=SC2046
+    cmds:
+      - go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+
   build:
     desc: Build linctl
     cmds:
@@ -71,4 +78,5 @@ tasks:
       - task: test
       - go build $(bash scripts/go-packages.sh)
       - task: lint
+      - task: actionlint
       - task: vuln

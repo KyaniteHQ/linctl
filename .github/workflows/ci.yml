@@ -130,6 +130,11 @@ jobs:
       - name: Shellcheck
         run: shellcheck scripts/*.sh
       - name: Actionlint
+        # scripts/go-packages.sh emits a space-separated package list, so the
+        # unquoted command substitution in the Go steps is intentional word
+        # splitting — SC2046 does not apply here.
+        env:
+          SHELLCHECK_OPTS: --exclude=SC2046
         run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
 
   security:
