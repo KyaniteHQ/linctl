@@ -4,12 +4,17 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("fakes git/jj via POSIX shell scripts on PATH; not portable to Windows")
+	}
+
 	t.Run("non git directory returns current branch error", func(t *testing.T) {
 		_, err := CurrentIssueIdentifier(context.Background(), t.TempDir())
 

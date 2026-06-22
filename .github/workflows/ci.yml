@@ -38,9 +38,19 @@ jobs:
           git diff --exit-code -- internal/client/generated.go
 
   test:
-    name: test
-    runs-on: ubuntu-latest
+    name: test / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            race: "-race"
+          - os: macos-latest
+            race: "-race"
+          - os: windows-latest
+            race: ""
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -55,9 +65,13 @@ jobs:
       - name: Vet
         run: go vet $(bash scripts/go-packages.sh)
       - name: Test
-        run: go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
+        run: go test ${{ matrix.race }} -shuffle=on -count=1 $(bash scripts/go-packages.sh)
       - name: Build
         run: go build $(bash scripts/go-packages.sh)
+      - name: Smoke run
+        run: |
+          go run ./cmd/linctl --version
+          go run ./cmd/linctl --help
 
   coverage:
     name: coverage
