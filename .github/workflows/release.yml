@@ -72,7 +72,7 @@ jobs:
           git diff --exit-code -- internal/client/generated.go
           go run scripts/gen-skill.go
           git diff --exit-code -- skills/linctl/references/commands.md
-          go run scripts/linear_api_coverage.go -h >/dev/null
+          go run scripts/linear_api_coverage*.go -h >/dev/null
       - name: Vet
         run: go vet $(bash scripts/go-packages.sh)
       - name: Test

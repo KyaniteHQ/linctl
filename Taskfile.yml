@@ -37,7 +37,7 @@ tasks:
       - git diff --exit-code -- internal/client/generated.go
       - task: gen-skill
       - git diff --exit-code -- skills/linctl/references/commands.md
-      - go run scripts/linear_api_coverage.go -h >/dev/null
+      - go run scripts/linear_api_coverage*.go -h >/dev/null
       - task: coverage-ledger-check
 
   coverage-ledger-check:
@@ -50,7 +50,7 @@ tasks:
         fi
         tmp="$(mktemp)"
         trap 'rm -f "$tmp"' EXIT
-        go run scripts/linear_api_coverage.go --output "$tmp"
+        go run scripts/linear_api_coverage*.go --output "$tmp"
         diff -u docs/linear-api-coverage.md "$tmp"
 
   domain-language-check:
