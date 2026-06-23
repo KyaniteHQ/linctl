@@ -57,7 +57,7 @@ func writeJSONValue(command *cobra.Command, options *rootOptions, value any) err
 	if options.quiet {
 		return nil
 	}
-	projected, err := projectJSONFields(value, options.fields)
+	projected, err := projectJSONFieldsForCommand(command, value, options.fields)
 	if err != nil {
 		return err
 	}
@@ -174,6 +174,14 @@ func normalizedHumanFormat(options *rootOptions) (string, error) {
 }
 
 func projectJSONFields(value any, fields string) (any, error) {
+	return projectJSONFieldsWithCollectionKey(value, fields, "")
+}
+
+func projectJSONFieldsForCommand(command *cobra.Command, value any, fields string) (any, error) {
+	return projectJSONFieldsWithCollectionKey(value, fields, commandCollectionKey(command))
+}
+
+func projectJSONFieldsWithCollectionKey(value any, fields string, collectionKey string) (any, error) {
 	paths := fieldPaths(fields)
 	if len(paths) == 0 {
 		return value, nil
@@ -184,7 +192,7 @@ func projectJSONFields(value any, fields string) (any, error) {
 		return nil, err
 	}
 
-	if projected, ok, err := projectCollection(raw, paths); ok || err != nil {
+	if projected, ok, err := projectCollection(raw, paths, collectionKey); ok || err != nil {
 		return projected, err
 	}
 
@@ -230,96 +238,43 @@ func jsonRoundTrip(value any) (map[string]any, error) {
 	return raw, nil
 }
 
-// collectionKeys is the explicit allowlist of collection field names that list
-// pages emit (each list page carries exactly one such array plus scalar
-// pagination/context fields). It is deliberately NOT generic top-level []any
-// detection: some detail responses embed an incidental array that is not a
-// collection (for example a TimeScheduleSummary's "entries", or a
-// ProjectSummary's "teams"), so treating "the single top-level array" as the
-// collection would wrongly project per-element instead of over the object.
-// Equally, list pages are not all paginated (AuditEntryTypeList,
-// SemanticSearchList, SLAConfigurationList, TemplateList carry no
-// has_next_page), so a pagination marker cannot stand in for the allowlist
-// either. Multi-array responses (IssueDependencyGraph) and detail objects fall
-// through to whole-object projection. When adding a new list command, add its
-// collection key here.
-var collectionKeys = []string{
-	"issues",
-	"associations",
-	"cycles",
-	"projects",
-	"members",
-	"comments",
-	"updates",
-	"milestones",
-	"documents",
-	"labels",
-	"teams",
-	"users",
-	"memberships",
-	"drafts",
-	"initiatives",
-	"notifications",
-	"notification_subscriptions",
-	"release_pipelines",
-	"release_stages",
-	"releases",
-	"history",
-	"links",
-	"release_notes",
-	"customers",
-	"customer_needs",
-	"customer_statuses",
-	"customer_tiers",
-	"relations",
-	"roadmaps",
-	"time_schedules",
-	"triage_responsibilities",
-	"sla_configurations",
-	"results",
-	"templates",
-	"workflow_states",
-	"agent_activities",
-	"agent_skills",
-	"external_users",
-	"audit_entry_types",
-	"favorites",
-	"emojis",
-	"attachments",
-	"custom_views",
-	"project_labels",
-	"project_statuses",
-	"spans",
-	"git_automation_states",
-}
-
 // projectCollection projects --fields over the items of a list-page envelope.
-func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bool, error) {
-	for _, key := range collectionKeys {
-		items, ok := raw[key].([]any)
-		if !ok {
-			continue
-		}
+func projectCollection(raw map[string]any, paths [][]string, collectionKey string) (map[string]any, bool, error) {
+	if collectionKey != "" {
+		return projectCollectionKey(raw, paths, collectionKey)
+	}
 
-		projectedItems := make([]any, 0, len(items))
-		for _, item := range items {
-			itemMap, ok := item.(map[string]any)
-			if !ok {
-				return nil, true, fmt.Errorf("project json fields: %s item is not an object", key)
-			}
-			projectedItem := map[string]any{}
-			for _, path := range paths {
-				if err := copyJSONPath(itemMap, projectedItem, path); err != nil {
-					return nil, true, err
-				}
-			}
-			projectedItems = append(projectedItems, projectedItem)
+	for _, key := range CollectionKeys() {
+		if projected, ok, err := projectCollectionKey(raw, paths, key); ok || err != nil {
+			return projected, ok, err
 		}
-
-		return map[string]any{key: projectedItems}, true, nil
 	}
 
 	return nil, false, nil
+}
+
+func projectCollectionKey(raw map[string]any, paths [][]string, key string) (map[string]any, bool, error) {
+	items, ok := raw[key].([]any)
+	if !ok {
+		return nil, false, nil
+	}
+
+	projectedItems := make([]any, 0, len(items))
+	for _, item := range items {
+		itemMap, ok := item.(map[string]any)
+		if !ok {
+			return nil, true, fmt.Errorf("project json fields: %s item is not an object", key)
+		}
+		projectedItem := map[string]any{}
+		for _, path := range paths {
+			if err := copyJSONPath(itemMap, projectedItem, path); err != nil {
+				return nil, true, err
+			}
+		}
+		projectedItems = append(projectedItems, projectedItem)
+	}
+
+	return map[string]any{key: projectedItems}, true, nil
 }
 
 func copyJSONPath(source map[string]any, destination map[string]any, path []string) error {

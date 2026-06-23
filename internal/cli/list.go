@@ -61,6 +61,7 @@ func addReadListGetCommand[Page any, Item any](
 			)
 		},
 	}
+	annotateReadCollectionCommand(listCommand, collectionKeyForPage[Page]())
 	listCommand.Flags().IntVar(&limit, "limit", limit, spec.LimitHelp)
 
 	getCommand := &cobra.Command{
@@ -112,6 +113,7 @@ func runReadListCommand[Page any, Item any](
 		return err
 	}
 	if options.json {
+		annotateReadCollectionCommand(command, collectionKeyForPage[Page]())
 		return writeJSONValue(command, options, pageWithItems(page, items))
 	}
 	for _, item := range items {
@@ -169,6 +171,7 @@ func addChildListCommand[List any, Item any](
 			return nil
 		},
 	}
+	annotateReadCollectionCommand(command, collectionKeyForPage[List]())
 	command.Flags().IntVar(&limit, "limit", limit, "maximum "+limitHelp+" to return")
 	root.AddCommand(command)
 }
