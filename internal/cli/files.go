@@ -52,6 +52,8 @@ var newFileTransferHTTPClient = func(options *rootOptions) httpDoer {
 	return &http.Client{Timeout: options.timeout}
 }
 
+var openUploadFile = os.Open
+
 func addFilesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	filesCommand := &cobra.Command{
 		Use:   "files",
@@ -98,7 +100,7 @@ func runFileUpload(
 		return fmt.Errorf("read %s: not a regular file", path)
 	}
 	//nolint:gosec // G304: the upload command's purpose is to read the user-named file.
-	file, err := os.Open(path)
+	file, err := openUploadFile(path)
 	if err != nil {
 		return fmt.Errorf("read %s: %w", path, err)
 	}

@@ -154,10 +154,13 @@ func Test_Files_upload_reports_non_regular_file(t *testing.T) {
 
 func Test_Files_upload_reports_open_error(t *testing.T) {
 	path := writeUploadFile(t)
-	require.NoError(t, os.Chmod(path, 0o000))
-	t.Cleanup(func() {
-		require.NoError(t, os.Chmod(path, 0o600))
-	})
+	original := openUploadFile
+	openUploadFile = func(_ string) (*os.File, error) {
+		return nil, errors.New("open boom")
+	}
+	defer func() {
+		openUploadFile = original
+	}()
 
 	_, err := runFilesCommand(t, &fakeHTTPDoer{status: http.StatusOK}, []string{
 		"files", "upload", path,
