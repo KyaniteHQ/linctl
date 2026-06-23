@@ -24,18 +24,35 @@ const (
 	CommandSafetyUnknown CommandSafety = "unknown"
 )
 
+// CommandGraphQLRoot describes a GraphQL root field that backs a public command.
+type CommandGraphQLRoot struct {
+	Kind      string
+	Field     string
+	Operation string
+}
+
+// CommandBacking is the domain-map side of a command's control-surface metadata.
+type CommandBacking struct {
+	OperationBacking string
+	TargetScope      string
+	GraphQLRoots     []CommandGraphQLRoot
+}
+
 // CommandInfo is the normalized command metadata used by generators and
 // drift checks that need the public Cobra surface without re-walking it.
 type CommandInfo struct {
-	Path          string
-	UseLine       string
-	Short         string
-	Aliases       []string
-	Entity        string
-	TargetArgs    []string
-	Safety        CommandSafety
-	CollectionKey string
-	DocCategory   string
+	Path             string
+	UseLine          string
+	Short            string
+	Aliases          []string
+	Entity           string
+	TargetArgs       []string
+	Safety           CommandSafety
+	CollectionKey    string
+	DocCategory      string
+	OperationBacking string
+	TargetScope      string
+	GraphQLRoots     []CommandGraphQLRoot
 }
 
 // CommandInventory returns available non-help commands in stable path order.
@@ -47,6 +64,36 @@ func CommandInventory(root *cobra.Command) []CommandInfo {
 	}
 
 	return commands
+}
+
+// EnrichCommandInventory merges domain-map backing into the normalized command
+// inventory without making Cobra registration depend on repo documentation.
+func EnrichCommandInventory(commands []CommandInfo, backingByPath map[string]CommandBacking) []CommandInfo {
+	enriched := make([]CommandInfo, len(commands))
+	for index, command := range commands {
+		enriched[index] = command
+		backing, ok := commandBacking(command, backingByPath)
+		if !ok {
+			continue
+		}
+		enriched[index].OperationBacking = backing.OperationBacking
+		enriched[index].TargetScope = backing.TargetScope
+		enriched[index].GraphQLRoots = append([]CommandGraphQLRoot(nil), backing.GraphQLRoots...)
+	}
+
+	return enriched
+}
+
+func commandBacking(command CommandInfo, backingByPath map[string]CommandBacking) (CommandBacking, bool) {
+	if backing, ok := backingByPath[command.Path]; ok {
+		return backing, true
+	}
+	for _, alias := range command.Aliases {
+		if backing, ok := backingByPath[alias]; ok {
+			return backing, true
+		}
+	}
+	return CommandBacking{}, false
 }
 
 // SortedAvailableCommands returns the available child commands in stable path order.

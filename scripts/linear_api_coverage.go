@@ -51,6 +51,8 @@ type domainCommand struct {
 }
 
 type domainReference struct {
+	Kind          string
+	Field         string
 	RootKey       string
 	OperationName string
 }
@@ -75,7 +77,7 @@ func main() {
 	localGenerated := mustGeneratedOperations(localGeneratedPath)
 	domainCommands := mustDomainCommands(domainMapPath)
 	sdkOperations := mustSDKOperations(upstreamDocumentsPath)
-	commandNames := commandInventorySet()
+	commandInventory := commandInventoryByName(domainCommands)
 
 	implementedRoots := implementedRootSet(localOperations)
 	operationRoots := operationRootSet(localOperations)
@@ -91,15 +93,15 @@ func main() {
 		upstreamMutations,
 		localGenerated,
 		domainCommands,
-		commandNames,
+		commandInventory,
 		implementedRoots,
 		operationRoots,
 	)
-	writeSDKTable(&output, sdkMethods, commandNames, implementedRoots, rootKinds)
+	writeSDKTable(&output, sdkMethods, commandInventory, implementedRoots, rootKinds)
 	writeRootTable(&output, "Upstream Query Root Fields", upstreamQueries, implementedRoots)
 	writeRootTable(&output, "Upstream Mutation Root Fields", upstreamMutations, implementedRoots)
 	writeLocalOperationsTable(&output, localOperations, localOperationNames)
-	writeDomainCommandTable(&output, domainCommands, commandNames, implementedRoots, operationRoots)
+	writeDomainCommandTable(&output, domainCommands, commandInventory, implementedRoots, operationRoots)
 
 	// #nosec G306 -- this generated markdown ledger is intended to be world-readable repo documentation.
 	if err := os.WriteFile(*outputPath, output.Bytes(), 0o644); err != nil {
@@ -139,7 +141,7 @@ func writeSummary(
 	mutations []rootField,
 	localGenerated []string,
 	domainCommands []domainCommand,
-	commandNames map[string]bool,
+	commandInventory map[string]cli.CommandInfo,
 	implementedRoots map[string]bool,
 	operationRoots map[string][]string,
 ) {
@@ -181,7 +183,7 @@ func writeSummary(
 		output,
 		"| Domain-map commands | %d | %d | %d |\n\n",
 		len(domainCommands),
-		countImplementedDomain(domainCommands, commandNames, implementedRoots, operationRoots),
+		countImplementedDomain(domainCommands, commandInventory, implementedRoots, operationRoots),
 		len(domainCommands),
 	)
 }
@@ -189,7 +191,7 @@ func writeSummary(
 func writeSDKTable(
 	output *bytes.Buffer,
 	methods []sdkMethod,
-	commandNames map[string]bool,
+	commandInventory map[string]cli.CommandInfo,
 	implementedRoots map[string]bool,
 	rootKinds map[string]string,
 ) {
@@ -197,7 +199,7 @@ func writeSDKTable(
 	fmt.Fprintf(output, "| Method | Kind | Status | Evidence |\n")
 	fmt.Fprintf(output, "| --- | --- | --- | --- |\n")
 	for _, method := range methods {
-		status, evidence := classifySDKMethod(method.Name, commandNames, implementedRoots, rootKinds)
+		status, evidence := classifySDKMethod(method.Name, commandInventory, implementedRoots, rootKinds)
 		fmt.Fprintf(output, "| `%s` | %s | %s | %s |\n", method.Name, method.Kind, status, evidence)
 	}
 	fmt.Fprintf(output, "\n")
@@ -241,7 +243,7 @@ func writeLocalOperationsTable(output *bytes.Buffer, operations []localOperation
 func writeDomainCommandTable(
 	output *bytes.Buffer,
 	commands []domainCommand,
-	commandNames map[string]bool,
+	commandInventory map[string]cli.CommandInfo,
 	implementedRoots map[string]bool,
 	operationRoots map[string][]string,
 ) {
@@ -251,8 +253,8 @@ func writeDomainCommandTable(
 	for _, command := range commands {
 		status := "accepted_gap"
 		evidence := "planned in `docs/domain-map.md`"
-		if commandNames[command.Command] {
-			status, evidence = classifyDomainCommand(command, implementedRoots, operationRoots)
+		if commandInfo, ok := commandInventory[command.Command]; ok {
+			status, evidence = classifyDomainCommand(commandInfo, implementedRoots, operationRoots)
 		}
 		if domainCommandBlocked(command.Command) {
 			status = "blocked_needs_design"
@@ -288,11 +290,11 @@ func writeDomainCommandTable(
 }
 
 func classifyDomainCommand(
-	command domainCommand,
+	command cli.CommandInfo,
 	implementedRoots map[string]bool,
 	operationRoots map[string][]string,
 ) (string, string) {
-	references := domainCommandReferences(command)
+	references := commandGraphQLReferences(command)
 	if len(references) == 0 {
 		return "implemented", "`linctl --help` / public CLI tests; no direct GraphQL root in backing"
 	}
@@ -701,20 +703,46 @@ func mapSet(values []string) map[string]bool {
 	return set
 }
 
-func commandInventorySet() map[string]bool {
+func commandInventoryByName(domainCommands []domainCommand) map[string]cli.CommandInfo {
 	root := cli.NewRootCommand(context.Background(), cli.BuildInfo{})
-	commands := map[string]bool{}
-	for _, command := range cli.CommandInventory(root) {
-		commands[command.Path] = true
+	inventory := cli.EnrichCommandInventory(
+		cli.CommandInventory(root),
+		domainCommandBacking(domainCommands),
+	)
+	commands := map[string]cli.CommandInfo{}
+	for _, command := range inventory {
+		commands[command.Path] = command
 		for _, alias := range command.Aliases {
-			commands[alias] = true
+			commands[alias] = command
 		}
 	}
-	if commands["next"] {
-		commands["next --dry-run"] = true
+	if command, ok := commands["next"]; ok {
+		command.Safety = cli.CommandSafetyRead
+		command.TargetScope = "`--dry-run` read-only"
+		commands["next --dry-run"] = command
 	}
 
 	return commands
+}
+
+func domainCommandBacking(commands []domainCommand) map[string]cli.CommandBacking {
+	backingByPath := map[string]cli.CommandBacking{}
+	for _, command := range commands {
+		roots := make([]cli.CommandGraphQLRoot, 0, len(domainCommandReferences(command)))
+		for _, reference := range domainCommandReferences(command) {
+			roots = append(roots, cli.CommandGraphQLRoot{
+				Kind:      reference.Kind,
+				Field:     reference.Field,
+				Operation: reference.OperationName,
+			})
+		}
+		backingByPath[command.Command] = cli.CommandBacking{
+			OperationBacking: command.Backing,
+			TargetScope:      command.Scope,
+			GraphQLRoots:     roots,
+		}
+	}
+	return backingByPath
 }
 
 var blockedDomainCommands = map[string]bool{
@@ -840,11 +868,14 @@ func domainCommandBlocked(command string) bool {
 
 func classifySDKMethod(
 	name string,
-	commandNames map[string]bool,
+	commandInventory map[string]cli.CommandInfo,
 	implementedRoots map[string]bool,
 	rootKinds map[string]string,
 ) (string, string) {
-	if sdkImplemented(name, implementedRoots) || commandNames[commandLookupName(name)] {
+	if sdkImplemented(name, implementedRoots) {
+		return "implemented", "local operation or command exists"
+	}
+	if command, ok := commandInventory[commandLookupName(name)]; ok && command.OperationBacking != "" {
 		return "implemented", "local operation or command exists"
 	}
 	if kind, ok := sdkRootKind(name, rootKinds); ok {
@@ -1265,13 +1296,17 @@ func hasWritePrefix(lowerName string) bool {
 
 func countImplementedDomain(
 	commands []domainCommand,
-	commandNames map[string]bool,
+	commandInventory map[string]cli.CommandInfo,
 	implementedRoots map[string]bool,
 	operationRoots map[string][]string,
 ) int {
 	return countWhere(commands, func(command domainCommand) bool {
-		status, _ := classifyDomainCommand(command, implementedRoots, operationRoots)
-		return commandNames[command.Command] && status == "implemented"
+		commandInfo, ok := commandInventory[command.Command]
+		if !ok {
+			return false
+		}
+		status, _ := classifyDomainCommand(commandInfo, implementedRoots, operationRoots)
+		return status == "implemented"
 	})
 }
 
@@ -1294,8 +1329,32 @@ func domainCommandReferences(command domainCommand) []domainReference {
 		}
 		seen[key] = true
 		references = append(references, domainReference{
+			Kind:          kind,
+			Field:         name,
 			RootKey:       key,
 			OperationName: name,
+		})
+	}
+	sort.Slice(references, func(left int, right int) bool {
+		return references[left].RootKey < references[right].RootKey
+	})
+	return references
+}
+
+func commandGraphQLReferences(command cli.CommandInfo) []domainReference {
+	references := make([]domainReference, 0, len(command.GraphQLRoots))
+	seen := map[string]bool{}
+	for _, root := range command.GraphQLRoots {
+		key := rootKey(root.Kind, root.Field)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		references = append(references, domainReference{
+			Kind:          root.Kind,
+			Field:         root.Field,
+			RootKey:       key,
+			OperationName: root.Operation,
 		})
 	}
 	sort.Slice(references, func(left int, right int) bool {

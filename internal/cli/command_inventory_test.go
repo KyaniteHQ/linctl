@@ -54,6 +54,48 @@ func Test_CommandInventory_exposes_stable_public_command_surface(t *testing.T) {
 	require.Equal(t, "document", documentCreate.Entity)
 }
 
+func Test_EnrichCommandInventory_adds_graphql_backing_without_mutating_source(t *testing.T) {
+	commands := []CommandInfo{
+		{
+			Path:   "issue list",
+			Safety: CommandSafetyRead,
+		},
+		{
+			Path:    "issue get",
+			Aliases: []string{"issue get ISSUE_ID"},
+			Safety:  CommandSafetyRead,
+		},
+	}
+	graphqlRoots := []CommandGraphQLRoot{
+		{Kind: "query", Field: "issues", Operation: "issues"},
+	}
+	backingByPath := map[string]CommandBacking{
+		"issue list": {
+			OperationBacking: "Query.issues",
+			TargetScope:      "Read-only",
+			GraphQLRoots:     graphqlRoots,
+		},
+		"issue get ISSUE_ID": {
+			OperationBacking: "Query.issue",
+			TargetScope:      "Read-only",
+			GraphQLRoots: []CommandGraphQLRoot{
+				{Kind: "query", Field: "issue", Operation: "issue"},
+			},
+		},
+	}
+
+	enriched := EnrichCommandInventory(commands, backingByPath)
+	graphqlRoots[0].Field = "mutated"
+
+	require.Empty(t, commands[0].OperationBacking)
+	require.Equal(t, "Query.issues", enriched[0].OperationBacking)
+	require.Equal(t, "Read-only", enriched[0].TargetScope)
+	require.Equal(t, []CommandGraphQLRoot{
+		{Kind: "query", Field: "issues", Operation: "issues"},
+	}, enriched[0].GraphQLRoots)
+	require.Equal(t, "Query.issue", enriched[1].OperationBacking)
+}
+
 func Test_collectionKeyForPage_uses_typed_list_envelope(t *testing.T) {
 	require.Equal(t, "attachments", collectionKeyForPage[client.AttachmentList]())
 	require.Equal(t, "users", collectionKeyForPage[client.UserList]())
