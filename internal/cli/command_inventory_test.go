@@ -2,7 +2,10 @@ package cli
 
 import (
 	"context"
+	"os"
+	"regexp"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -52,6 +55,35 @@ func Test_CommandInventory_exposes_stable_public_command_surface(t *testing.T) {
 	documentCreate := commandsByPath["document create"]
 	require.Equal(t, CommandSafetyWrite, documentCreate.Safety)
 	require.Equal(t, "document", documentCreate.Entity)
+}
+
+func Test_CommandInventory_covers_live_smoke_commands(t *testing.T) {
+	script, err := os.ReadFile("../../scripts/live-smoke.sh")
+	require.NoError(t, err)
+
+	root := NewRootCommand(context.Background(), BuildInfo{})
+	knownPaths := map[string]bool{}
+	for _, command := range CommandInventory(root) {
+		knownPaths[command.Path] = true
+	}
+
+	commandPattern := regexp.MustCompile(`"\$binary"\s+([^;\n]+)`)
+	matches := commandPattern.FindAllStringSubmatch(string(script), -1)
+	require.NotEmpty(t, matches)
+	for _, match := range matches {
+		commandText := match[1]
+		if strings.Contains(commandText, "./cmd/linctl") {
+			continue
+		}
+		tokens := smokeCommandTokens(commandText)
+		if len(tokens) == 0 || tokens[0] == "__complete" {
+			continue
+		}
+
+		path, ok := longestKnownCommandPath(tokens, knownPaths)
+		require.Truef(t, ok, "live smoke command is not in inventory: %q", commandText)
+		require.NotEmpty(t, path)
+	}
 }
 
 func Test_EnrichCommandInventory_adds_graphql_backing_without_mutating_source(t *testing.T) {
@@ -169,4 +201,31 @@ func commandWithPath(parentUse string, childUse string, childShort string) *cobr
 	group.AddCommand(child)
 
 	return child
+}
+
+func smokeCommandTokens(commandText string) []string {
+	fields := strings.Fields(commandText)
+	tokens := make([]string, 0, len(fields))
+	for _, field := range fields {
+		token := strings.Trim(field, `"'();`)
+		if token == "" ||
+			strings.HasPrefix(token, "-") ||
+			strings.HasPrefix(token, "$") ||
+			strings.HasPrefix(token, ">") ||
+			strings.Contains(token, "=") {
+			break
+		}
+		tokens = append(tokens, token)
+	}
+	return tokens
+}
+
+func longestKnownCommandPath(tokens []string, knownPaths map[string]bool) (string, bool) {
+	for length := len(tokens); length > 0; length-- {
+		candidate := strings.Join(tokens[:length], " ")
+		if knownPaths[candidate] {
+			return candidate, true
+		}
+	}
+	return "", false
 }
