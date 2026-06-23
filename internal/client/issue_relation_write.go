@@ -46,32 +46,31 @@ func CreateIssueRelation(
 	if err := validateIssueRelationCreateRequest(request); err != nil {
 		return IssueRelationSummary{}, err
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return IssueRelationSummary{}, err
-	}
-	resolved, err := requireIssuePair(ctx, graphqlClient, guard, request.IssueID, request.RelatedIssueID)
-	if err != nil {
-		return IssueRelationSummary{}, err
-	}
-	issue, related := resolved[0], resolved[1]
-	if err := guardBlockingCycle(ctx, graphqlClient, request.Type, issue, related); err != nil {
-		return IssueRelationSummary{}, err
-	}
 
-	created, err := IssueRelationCreate(ctx, graphqlClient, LinearIssueRelationCreateInput{
-		Type:           request.Type,
-		IssueID:        issue.ID,
-		RelatedIssueID: related.ID,
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueRelationSummary, error) {
+		resolved, err := requireIssuePair(ctx, graphqlClient, guard, request.IssueID, request.RelatedIssueID)
+		if err != nil {
+			return IssueRelationSummary{}, err
+		}
+		issue, related := resolved[0], resolved[1]
+		if err := guardBlockingCycle(ctx, graphqlClient, request.Type, issue, related); err != nil {
+			return IssueRelationSummary{}, err
+		}
+
+		created, err := IssueRelationCreate(ctx, graphqlClient, LinearIssueRelationCreateInput{
+			Type:           request.Type,
+			IssueID:        issue.ID,
+			RelatedIssueID: related.ID,
+		})
+		if err != nil {
+			return IssueRelationSummary{}, fmt.Errorf("create issue relation: %w", err)
+		}
+		if !created.IssueRelationCreate.Success {
+			return IssueRelationSummary{}, fmt.Errorf("%w: issueRelationCreate returned no relation", ErrMutationFailed)
+		}
+
+		return issueRelationSummary(created.IssueRelationCreate.IssueRelation.IssueRelationSummaryFields), nil
 	})
-	if err != nil {
-		return IssueRelationSummary{}, fmt.Errorf("create issue relation: %w", err)
-	}
-	if !created.IssueRelationCreate.Success {
-		return IssueRelationSummary{}, fmt.Errorf("%w: issueRelationCreate returned no relation", ErrMutationFailed)
-	}
-
-	return issueRelationSummary(created.IssueRelationCreate.IssueRelation.IssueRelationSummaryFields), nil
 }
 
 // DeleteIssueRelation removes an existing relation after resolving the relation
@@ -85,29 +84,28 @@ func DeleteIssueRelation(
 	if relationID == "" {
 		return "", fmt.Errorf("%w: relation id is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return "", err
-	}
-	relation, err := GetIssueRelationByID(ctx, graphqlClient, relationID)
-	if err != nil {
-		return "", err
-	}
-	if _, err := requireIssuePair(
-		ctx, graphqlClient, guard, relation.IssueIdentifier, relation.RelatedIssueIdentifier,
-	); err != nil {
-		return "", err
-	}
 
-	deleted, err := IssueRelationDelete(ctx, graphqlClient, relationID)
-	if err != nil {
-		return "", fmt.Errorf("delete issue relation %s: %w", relationID, err)
-	}
-	if !deleted.IssueRelationDelete.Success {
-		return "", fmt.Errorf("%w: issueRelationDelete reported no success", ErrMutationFailed)
-	}
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (string, error) {
+		relation, err := GetIssueRelationByID(ctx, graphqlClient, relationID)
+		if err != nil {
+			return "", err
+		}
+		if _, err := requireIssuePair(
+			ctx, graphqlClient, guard, relation.IssueIdentifier, relation.RelatedIssueIdentifier,
+		); err != nil {
+			return "", err
+		}
 
-	return relation.ID, nil
+		deleted, err := IssueRelationDelete(ctx, graphqlClient, relationID)
+		if err != nil {
+			return "", fmt.Errorf("delete issue relation %s: %w", relationID, err)
+		}
+		if !deleted.IssueRelationDelete.Success {
+			return "", fmt.Errorf("%w: issueRelationDelete reported no success", ErrMutationFailed)
+		}
+
+		return relation.ID, nil
+	})
 }
 
 // requireIssuePair resolves both endpoints of a relation through the guard,

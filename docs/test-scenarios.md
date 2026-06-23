@@ -171,7 +171,7 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 33. Project milestone list
-   - Success: `linctl project-milestone all --limit N` and `linctl project-milestone list PROJECT --limit N` list workspace and project-scoped ProjectMilestones with status through the public CLI and JSON output controls.
+   - Success: `linctl project-milestone all --limit N` and `linctl project-milestone list PROJECT --limit N` list organization-visible and project-scoped ProjectMilestones with status through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_list`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
@@ -180,7 +180,7 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_update_comments`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_issues`, `Test_CommandFlows_project_comment_children_omit_body_from_json`;
 
 35. Project all
-   - Success: `linctl project all --limit N` lists visible workspace Projects through root `Query.projects`.
+   - Success: `linctl project all --limit N` lists organization-visible Projects through root `Query.projects`.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_all`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
@@ -516,7 +516,7 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 96. Emoji list
-   - Success: `linctl emoji list --limit N` lists workspace custom Emojis through the public CLI and JSON output controls.
+   - Success: `linctl emoji list --limit N` lists organization custom Emojis through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/emoji_list`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
@@ -555,31 +555,31 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 103. Organization labels
-   - Success: `linctl organization labels --limit N` lists workspace-level issue labels through the public CLI and JSON output controls.
+   - Success: `linctl organization labels --limit N` lists organization-level issue labels through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/organization_labels`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 104. Organization project labels
-   - Success: `linctl organization project-labels --limit N` lists workspace-level project labels through the public CLI and JSON output controls.
+   - Success: `linctl organization project-labels --limit N` lists organization-level project labels through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/organization_project_labels`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 105. Organization teams
-   - Success: `linctl organization teams --limit N` lists workspace teams visible to the authenticated user through the public CLI and JSON output controls.
+   - Success: `linctl organization teams --limit N` lists teams visible to the authenticated user through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/organization_teams`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 106. Organization users
-   - Success: `linctl organization users --limit N` lists active workspace users visible to the authenticated user through the public CLI and JSON output controls.
+   - Success: `linctl organization users --limit N` lists active users visible to the authenticated user through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/organization_users`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 107. Organization templates
-   - Success: `linctl organization templates --limit N` lists workspace-level Linear Templates through the public CLI and JSON output controls.
+   - Success: `linctl organization templates --limit N` lists organization-level Linear Templates through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/organization_templates`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
@@ -613,7 +613,7 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 113. Customer status list
-   - Success: `linctl customer-status list --limit N` lists workspace CustomerStatuses through the public CLI and JSON output controls.
+   - Success: `linctl customer-status list --limit N` lists organization CustomerStatuses through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/customer_status_list`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
@@ -624,7 +624,7 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 115. Customer tier list
-   - Success: `linctl customer-tier list --limit N` lists workspace CustomerTiers through the public CLI and JSON output controls.
+   - Success: `linctl customer-tier list --limit N` lists organization CustomerTiers through the public CLI and JSON output controls.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/customer_tier_list`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
@@ -1086,9 +1086,10 @@ Run the complete live smoke suite with:
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 ```
 
-The command requires a disposable Linear token in `LINCTL_TEST_TOKEN`, `LINCTL_TOKEN`, or `LINEAR_API_KEY`.
+The command requires a disposable Linear token in `LINCTL_TEST_TOKEN`.
 It builds a temporary `linctl` binary, smoke-tests read-only CLI commands, then runs the integration-tagged
-client round trips. Write smoke tests create `linctl-it-<runid>` resources and archive them during cleanup.
+client read checks. Guarded write round trips are opt-in with `LINCTL_TEST_ENABLE_WRITES=1`; each enabled
+run creates namespaced `linctl-it-<runid>` issue and project resources, then archives them during cleanup.
 
-The missing-token readiness check is `env -u LINCTL_TEST_TOKEN -u LINCTL_TOKEN -u LINEAR_API_KEY bash scripts/live-smoke.sh`,
+The missing-token readiness check is `env -u LINCTL_TEST_TOKEN bash scripts/live-smoke.sh`,
 which must exit 2 with a missing-token message and without printing secret values.

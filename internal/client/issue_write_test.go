@@ -398,6 +398,17 @@ func Test_parsePriority_returns_error_for_non_numeric_string(t *testing.T) {
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
+func Test_parsePriority_rejects_out_of_range_values(t *testing.T) {
+	for _, raw := range []string{"-1", "5"} {
+		t.Run(raw, func(t *testing.T) {
+			_, err := parsePriority(raw)
+
+			require.Error(t, err)
+			require.ErrorIs(t, err, ErrWriteInvalid)
+		})
+	}
+}
+
 func Test_firstStateIDOfType_returns_state_with_lowest_position(t *testing.T) {
 	// Given
 	graphqlClient := fakeGraphQLClient(map[string]string{

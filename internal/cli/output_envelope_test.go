@@ -23,7 +23,7 @@ func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
 		{name: "mutation failed", err: fmt.Errorf("%w: x", client.ErrMutationFailed), code: "MUTATION_FAILED"},
 		{name: "invalid write", err: fmt.Errorf("%w: x", client.ErrWriteInvalid), code: "INVALID_WRITE"},
 		{name: "graphql", err: fmt.Errorf("%w: x", client.ErrGraphQL), code: "GRAPHQL_ERROR"},
-		{name: "not found", err: errors.New("get issue LIT-1: not found"), code: "NOT_FOUND"},
+		{name: "not found", err: fmt.Errorf("get issue LIT-1: %w", client.ErrNotFound), code: "NOT_FOUND"},
 		{name: "fallback", err: errors.New("something unexpected"), code: "INTERNAL"},
 	}
 	for _, tt := range tests {
@@ -31,11 +31,6 @@ func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
 			require.Equal(t, tt.code, errorCode(tt.err))
 		})
 	}
-}
-
-func Test_isNotFoundError_matches_suffix(t *testing.T) {
-	require.True(t, isNotFoundError(errors.New("get issue by vcs branch x: not found")))
-	require.False(t, isNotFoundError(errors.New("some other failure")))
 }
 
 func Test_writeErrorEnvelope_emits_code_and_message(t *testing.T) {

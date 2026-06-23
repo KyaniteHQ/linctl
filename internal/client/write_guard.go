@@ -26,6 +26,21 @@ func newWriteGuard(
 	return writeGuard{target: target}, nil
 }
 
+func guardedMutation[T any](
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+	mutate func(writeGuard) (T, error),
+) (T, error) {
+	var zero T
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return zero, err
+	}
+
+	return mutate(guard)
+}
+
 func (guard writeGuard) requireIssue(
 	ctx context.Context,
 	graphqlClient graphql.Client,

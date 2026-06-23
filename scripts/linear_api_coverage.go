@@ -8,6 +8,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -17,8 +18,11 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/spf13/cobra"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/parser"
+
+	"github.com/KyaniteHQ/linctl/internal/cli"
 )
 
 type rootField struct {
@@ -67,10 +71,11 @@ func main() {
 	localGenerated := mustGeneratedOperations(localGeneratedPath)
 	domainCommands := mustDomainCommands(domainMapPath)
 	sdkOperations := mustSDKOperations(upstreamDocumentsPath)
+	commandNames := commandInventorySet()
 
 	implementedRoots := implementedRootSet(localOperations)
+	rootKinds := rootKindSet(upstreamQueries, upstreamMutations)
 	localOperationNames := mapSet(localGenerated)
-	commandNames := domainCommandSet(domainCommands)
 
 	var output bytes.Buffer
 	writeHeader(&output, *upstreamDir, upstreamSchemaPath, upstreamSDKPath)
@@ -81,9 +86,10 @@ func main() {
 		upstreamMutations,
 		localGenerated,
 		domainCommands,
+		commandNames,
 		implementedRoots,
 	)
-	writeSDKTable(&output, sdkMethods, commandNames, implementedRoots)
+	writeSDKTable(&output, sdkMethods, commandNames, implementedRoots, rootKinds)
 	writeRootTable(&output, "Upstream Query Root Fields", upstreamQueries, implementedRoots)
 	writeRootTable(&output, "Upstream Mutation Root Fields", upstreamMutations, implementedRoots)
 	writeLocalOperationsTable(&output, localOperations, localOperationNames)
@@ -127,6 +133,7 @@ func writeSummary(
 	mutations []rootField,
 	localGenerated []string,
 	domainCommands []domainCommand,
+	commandNames map[string]bool,
 	implementedRoots map[string]bool,
 ) {
 	implementedQueryCount := countImplemented(queries, implementedRoots)
@@ -167,7 +174,7 @@ func writeSummary(
 		output,
 		"| Domain-map commands | %d | %d | %d |\n\n",
 		len(domainCommands),
-		countImplementedDomain(domainCommands),
+		countImplementedDomain(domainCommands, commandNames),
 		len(domainCommands),
 	)
 }
@@ -177,12 +184,13 @@ func writeSDKTable(
 	methods []sdkMethod,
 	commandNames map[string]bool,
 	implementedRoots map[string]bool,
+	rootKinds map[string]string,
 ) {
 	fmt.Fprintf(output, "## Upstream SDK Root Methods\n\n")
 	fmt.Fprintf(output, "| Method | Kind | Status | Evidence |\n")
 	fmt.Fprintf(output, "| --- | --- | --- | --- |\n")
 	for _, method := range methods {
-		status, evidence := classifyName(method.Name, method.Kind, commandNames, implementedRoots)
+		status, evidence := classifySDKMethod(method.Name, commandNames, implementedRoots, rootKinds)
 		fmt.Fprintf(output, "| `%s` | %s | %s | %s |\n", method.Name, method.Kind, status, evidence)
 	}
 	fmt.Fprintf(output, "\n")
@@ -624,6 +632,18 @@ func implementedRootSet(operations []localOperation) map[string]bool {
 	return implemented
 }
 
+func rootKindSet(queries []rootField, mutations []rootField) map[string]string {
+	roots := map[string]string{}
+	for _, field := range queries {
+		roots[strings.ToLower(field.Name)] = field.Kind
+	}
+	for _, field := range mutations {
+		roots[strings.ToLower(field.Name)] = field.Kind
+	}
+
+	return roots
+}
+
 func mapSet(values []string) map[string]bool {
 	set := map[string]bool{}
 	for _, value := range values {
@@ -632,301 +652,36 @@ func mapSet(values []string) map[string]bool {
 	return set
 }
 
-func domainCommandSet(commands []domainCommand) map[string]bool {
-	set := map[string]bool{}
-	for _, command := range commands {
-		if commandImplemented(command.Command) {
-			set[command.Command] = true
-		}
+func commandInventorySet() map[string]bool {
+	root := cli.NewRootCommand(context.Background(), cli.BuildInfo{})
+	commands := map[string]bool{}
+	collectCommandAliases(root, commands)
+	if commands["next"] {
+		commands["next --dry-run"] = true
 	}
-	return set
+
+	return commands
 }
 
-//nolint:funlen // The command registry intentionally mirrors the full documented CLI surface.
-func commandImplemented(command string) bool {
-	implemented := map[string]bool{
-		"whoami":                                       true,
-		"target":                                       true,
-		"doctor":                                       true,
-		"application info":                             true,
-		"agent-activity list":                          true,
-		"agent-activity get":                           true,
-		"agent-skill list":                             true,
-		"agent-skill get":                              true,
-		"external-user list":                           true,
-		"external-user get":                            true,
-		"audit-entry types":                            true,
-		"organization exists":                          true,
-		"organization labels":                          true,
-		"organization project-labels":                  true,
-		"organization teams":                           true,
-		"organization templates":                       true,
-		"organization users":                           true,
-		"rate-limit status":                            true,
-		"notification list":                            true,
-		"notification get":                             true,
-		"notification subscription list":               true,
-		"notification subscription get":                true,
-		"triage-responsibility list":                   true,
-		"triage-responsibility get":                    true,
-		"triage-responsibility manual-selection":       true,
-		"sla-configuration list":                       true,
-		"semantic-search":                              true,
-		"search documents":                             true,
-		"search issues":                                true,
-		"search projects":                              true,
-		"release-pipeline list":                        true,
-		"release-pipeline get":                         true,
-		"release-pipeline releases":                    true,
-		"release-pipeline stages":                      true,
-		"release-pipeline teams":                       true,
-		"release-stage list":                           true,
-		"release-stage get":                            true,
-		"release-stage releases":                       true,
-		"release list":                                 true,
-		"release search":                               true,
-		"release get":                                  true,
-		"release history":                              true,
-		"release documents":                            true,
-		"release issues":                               true,
-		"release links":                                true,
-		"external-link get":                            true,
-		"release-note list":                            true,
-		"release-note get":                             true,
-		"issue list":                                   true,
-		"issue search":                                 true,
-		"issue figma-file-key-search":                  true,
-		"issue priority-values":                        true,
-		"issue filter-suggestion":                      true,
-		"issue title-suggestion":                       true,
-		"issue get":                                    true,
-		"issue deps":                                   true,
-		"issue attachments":                            true,
-		"issue bot-actor":                              true,
-		"issue children":                               true,
-		"issue documents":                              true,
-		"issue former-attachments":                     true,
-		"issue former-needs":                           true,
-		"issue history":                                true,
-		"issue inverse-relations":                      true,
-		"issue labels":                                 true,
-		"issue needs":                                  true,
-		"issue relations":                              true,
-		"issue releases":                               true,
-		"issue shared-access":                          true,
-		"issue state-history":                          true,
-		"issue subscribers":                            true,
-		"issue vcs-branch-search get":                  true,
-		"issue vcs-branch-search attachments":          true,
-		"issue vcs-branch-search bot-actor":            true,
-		"issue vcs-branch-search children":             true,
-		"issue vcs-branch-search documents":            true,
-		"issue vcs-branch-search former-attachments":   true,
-		"issue vcs-branch-search comments":             true,
-		"issue vcs-branch-search former-needs":         true,
-		"issue vcs-branch-search history":              true,
-		"issue vcs-branch-search inverse-relations":    true,
-		"issue vcs-branch-search labels":               true,
-		"issue vcs-branch-search needs":                true,
-		"issue vcs-branch-search relations":            true,
-		"issue vcs-branch-search releases":             true,
-		"issue vcs-branch-search shared-access":        true,
-		"issue vcs-branch-search state-history":        true,
-		"issue vcs-branch-search subscribers":          true,
-		"issue id":                                     true,
-		"issue title":                                  true,
-		"issue url":                                    true,
-		"issue branch":                                 true,
-		"issue-relation list":                          true,
-		"issue-relation get":                           true,
-		"issue-to-release list":                        true,
-		"issue-to-release get":                         true,
-		"issue pr":                                     true,
-		"next --dry-run":                               true,
-		"done":                                         true,
-		"issue create":                                 true,
-		"issue update":                                 true,
-		"issue start":                                  true,
-		"issue comment":                                true,
-		"issue reply":                                  true,
-		"issue close":                                  true,
-		"issue comments":                               true,
-		"comment list":                                 true,
-		"comment get":                                  true,
-		"comment bot-actor":                            true,
-		"comment children":                             true,
-		"comment created-issues":                       true,
-		"cycle list":                                   true,
-		"cycle get":                                    true,
-		"cycle issues":                                 true,
-		"cycle uncompleted-issues":                     true,
-		"cycle create":                                 true,
-		"cycle update":                                 true,
-		"cycle archive":                                true,
-		"sprint current":                               true,
-		"sprint report":                                true,
-		"project list":                                 true,
-		"project all":                                  true,
-		"project get":                                  true,
-		"project create":                               true,
-		"project update":                               true,
-		"project archive":                              true,
-		"project attachments":                          true,
-		"project documents":                            true,
-		"project external-links":                       true,
-		"project history":                              true,
-		"project initiative-links":                     true,
-		"project initiatives":                          true,
-		"project inverse-relations":                    true,
-		"project issues":                               true,
-		"project comments":                             true,
-		"project labels":                               true,
-		"project members":                              true,
-		"project needs":                                true,
-		"project relations":                            true,
-		"project teams":                                true,
-		"project updates":                              true,
-		"project filter-suggestion":                    true,
-		"project-status project-count":                 true,
-		"project-update list":                          true,
-		"project-update get":                           true,
-		"project-update comments":                      true,
-		"project-milestone all":                        true,
-		"project-milestone list":                       true,
-		"project-milestone get":                        true,
-		"project-milestone issues":                     true,
-		"project-milestone create":                     true,
-		"project-milestone update":                     true,
-		"project-status list":                          true,
-		"project-status get":                           true,
-		"project-label list":                           true,
-		"project-label get":                            true,
-		"project-label children":                       true,
-		"project-label projects":                       true,
-		"project-relation list":                        true,
-		"project-relation get":                         true,
-		"document list":                                true,
-		"document get":                                 true,
-		"document comments":                            true,
-		"label list":                                   true,
-		"label get":                                    true,
-		"label children":                               true,
-		"label issues":                                 true,
-		"team list":                                    true,
-		"team get":                                     true,
-		"team cycles":                                  true,
-		"team issues":                                  true,
-		"team labels":                                  true,
-		"team members":                                 true,
-		"team memberships":                             true,
-		"team projects":                                true,
-		"team release-pipelines":                       true,
-		"team states":                                  true,
-		"team git-automation-states":                   true,
-		"team templates":                               true,
-		"team-membership list":                         true,
-		"team-membership get":                          true,
-		"user list":                                    true,
-		"user get":                                     true,
-		"user me":                                      true,
-		"user drafts":                                  true,
-		"user settings get":                            true,
-		"user settings notification-categories":        true,
-		"user settings notification-category":          true,
-		"user settings notification-category CATEGORY": true,
-		"user settings notification-channels":          true,
-		"user settings notification-delivery":          true,
-		"user settings mobile-delivery":                true,
-		"user settings mobile-schedule":                true,
-		"user settings mobile-schedule-day":            true,
-		"user settings mobile-schedule-day DAY":        true,
-		"user settings theme":                          true,
-		"user settings custom-theme":                   true,
-		"user settings custom-sidebar-theme":           true,
-		"user assigned-issues":                         true,
-		"user created-issues":                          true,
-		"user delegated-issues":                        true,
-		"user team-memberships":                        true,
-		"user teams":                                   true,
-		"user my-assigned-issues":                      true,
-		"user my-created-issues":                       true,
-		"user my-delegated-issues":                     true,
-		"user my-team-memberships":                     true,
-		"user my-teams":                                true,
-		"workflow-state list":                          true,
-		"workflow-state get":                           true,
-		"workflow-state issues":                        true,
-		"time-schedule list":                           true,
-		"time-schedule get":                            true,
-		"template list":                                true,
-		"template get":                                 true,
-		"initiative list":                              true,
-		"initiative get":                               true,
-		"initiative history":                           true,
-		"initiative links":                             true,
-		"initiative sub-initiatives":                   true,
-		"initiative updates":                           true,
-		"initiative documents":                         true,
-		"initiative projects":                          true,
-		"initiative-relation list":                     true,
-		"initiative-relation get":                      true,
-		"initiative-to-project list":                   true,
-		"initiative-to-project get":                    true,
-		"initiative-update list":                       true,
-		"initiative-update get":                        true,
-		"initiative-update comments":                   true,
-		"roadmap list":                                 true,
-		"roadmap get":                                  true,
-		"roadmap projects":                             true,
-		"roadmap-to-project list":                      true,
-		"roadmap-to-project get":                       true,
-		"custom-view list":                             true,
-		"custom-view subscribers":                      true,
-		"custom-view get":                              true,
-		"custom-view initiatives":                      true,
-		"custom-view issues":                           true,
-		"custom-view organization-preferences":         true,
-		"custom-view organization-preferences values":  true,
-		"custom-view projects":                         true,
-		"custom-view user-preferences":                 true,
-		"custom-view user-preferences values":          true,
-		"custom-view preference-values":                true,
-		"customer list":                                true,
-		"customer get":                                 true,
-		"customer-need list":                           true,
-		"customer-need get":                            true,
-		"customer-need project-attachment":             true,
-		"customer-status list":                         true,
-		"customer-status get":                          true,
-		"customer-tier list":                           true,
-		"customer-tier get":                            true,
-		"favorite list":                                true,
-		"favorite children":                            true,
-		"favorite get":                                 true,
-		"emoji list":                                   true,
-		"emoji get":                                    true,
-		"attachment list":                              true,
-		"attachment url":                               true,
-		"attachment get":                               true,
-		"attachment issue get":                         true,
-		"attachment issue attachments":                 true,
-		"attachment issue bot-actor":                   true,
-		"attachment issue children":                    true,
-		"attachment issue comments":                    true,
-		"attachment issue documents":                   true,
-		"attachment issue former-attachments":          true,
-		"attachment issue former-needs":                true,
-		"attachment issue history":                     true,
-		"attachment issue inverse-relations":           true,
-		"attachment issue labels":                      true,
-		"attachment issue needs":                       true,
-		"attachment issue relations":                   true,
-		"attachment issue releases":                    true,
-		"attachment issue shared-access":               true,
-		"attachment issue state-history":               true,
-		"attachment issue subscribers":                 true,
+func collectCommandAliases(parent *cobra.Command, commands map[string]bool) {
+	for _, command := range parent.Commands() {
+		if !command.IsAvailableCommand() || command.Name() == "help" || command.Name() == "completion" {
+			continue
+		}
+		path := strings.TrimPrefix(command.CommandPath(), "linctl ")
+		commands[path] = true
+		if use := commandUseAlias(command); use != "" {
+			commands[use] = true
+		}
+		collectCommandAliases(command, commands)
 	}
-	return implemented[command]
+}
+
+func commandUseAlias(command *cobra.Command) string {
+	use := strings.TrimPrefix(command.UseLine(), "linctl ")
+	use = strings.TrimSuffix(use, " [flags]")
+
+	return strings.TrimSpace(use)
 }
 
 var blockedDomainCommands = map[string]bool{
@@ -1050,16 +805,23 @@ func domainCommandBlocked(command string) bool {
 	return blockedDomainCommands[command]
 }
 
-func classifyName(
+func classifySDKMethod(
 	name string,
-	kind string,
 	commandNames map[string]bool,
 	implementedRoots map[string]bool,
+	rootKinds map[string]string,
 ) (string, string) {
 	if sdkImplemented(name, implementedRoots) || commandNames[commandLookupName(name)] {
 		return "implemented", "local operation or command exists"
 	}
-	return classifyLoose(name, kind)
+	if kind, ok := sdkRootKind(name, rootKinds); ok {
+		return classifyLoose(name, kind)
+	}
+	if status, rationale, ok := explicitRiskClassification(strings.ToLower(name)); ok {
+		return status, rationale
+	}
+
+	return "blocked_needs_design", "SDK method is not matched to a GraphQL root field; explicit classification required"
 }
 
 func classifyRoot(field rootField, implementedRoots map[string]bool) (string, string) {
@@ -1151,7 +913,7 @@ var explicitRiskClassifications = map[string]riskClassification{
 	},
 	"cycleshiftall": {
 		status: "blocked_needs_design",
-		rationale: "bulk Cycle date shifting is a state-changing workspace operation that " +
+		rationale: "bulk Cycle date shifting is a state-changing organization operation that " +
 			"needs target-pinned guard semantics",
 	},
 	"cyclestartupcomingcycletoday": {
@@ -1215,11 +977,11 @@ var explicitRiskClassifications = map[string]riskClassification{
 	},
 	"issuelabelrestore": {
 		status:    "blocked_needs_design",
-		rationale: "issue label lifecycle restore needs explicit workspace/admin safety semantics",
+		rationale: "issue label lifecycle restore needs explicit organization/admin safety semantics",
 	},
 	"issuelabelretire": {
 		status:    "blocked_needs_design",
-		rationale: "issue label lifecycle retire needs explicit workspace/admin safety semantics",
+		rationale: "issue label lifecycle retire needs explicit organization/admin safety semantics",
 	},
 	"issuereminder": {
 		status: "blocked_needs_design",
@@ -1303,11 +1065,11 @@ var explicitRiskClassifications = map[string]riskClassification{
 	},
 	"projectlabelrestore": {
 		status:    "blocked_needs_design",
-		rationale: "project label lifecycle restore needs explicit workspace/admin safety semantics",
+		rationale: "project label lifecycle restore needs explicit organization/admin safety semantics",
 	},
 	"projectlabelretire": {
 		status:    "blocked_needs_design",
-		rationale: "project label lifecycle retire needs explicit workspace/admin safety semantics",
+		rationale: "project label lifecycle retire needs explicit organization/admin safety semantics",
 	},
 	"projectaddlabel": {
 		status:    "blocked_needs_design",
@@ -1350,7 +1112,7 @@ var explicitRiskClassifications = map[string]riskClassification{
 	},
 	"userchangerole": {
 		status:    "intentionally_excluded",
-		rationale: "user role changes are workspace administration outside the ordinary agent CLI surface",
+		rationale: "user role changes are organization administration outside the ordinary agent CLI surface",
 	},
 	"userdiscordconnect": {
 		status:    "intentionally_excluded",
@@ -1421,6 +1183,19 @@ func sdkImplemented(name string, implementedRoots map[string]bool) bool {
 	return false
 }
 
+func sdkRootKind(name string, rootKinds map[string]string) (string, bool) {
+	if kind, ok := rootKinds[strings.ToLower(name)]; ok {
+		return kind, true
+	}
+	for _, candidate := range sdkMutationRootCandidates(name) {
+		if kind, ok := rootKinds[strings.ToLower(candidate)]; ok {
+			return kind, true
+		}
+	}
+
+	return "", false
+}
+
 func rootKey(kind string, name string) string {
 	return strings.ToLower(kind) + ":" + name
 }
@@ -1455,9 +1230,9 @@ func hasWritePrefix(lowerName string) bool {
 	return false
 }
 
-func countImplementedDomain(commands []domainCommand) int {
+func countImplementedDomain(commands []domainCommand, commandNames map[string]bool) int {
 	return countWhere(commands, func(command domainCommand) bool {
-		return commandImplemented(command.Command)
+		return commandNames[command.Command]
 	})
 }
 

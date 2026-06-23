@@ -206,30 +206,29 @@ func CreateProjectMilestone(
 	if request.Name == "" {
 		return ProjectMilestoneSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return ProjectMilestoneSummary{}, err
-	}
-	if err := guard.requireProject(ctx, graphqlClient, request.ProjectID); err != nil {
-		return ProjectMilestoneSummary{}, err
-	}
 
-	created, err := ProjectMilestoneCreate(ctx, graphqlClient, LinearProjectMilestoneCreateInput{
-		ProjectID:   request.ProjectID,
-		Name:        request.Name,
-		Description: optionalString(request.Description),
-		TargetDate:  optionalString(request.TargetDate),
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectMilestoneSummary, error) {
+		if err := guard.requireProject(ctx, graphqlClient, request.ProjectID); err != nil {
+			return ProjectMilestoneSummary{}, err
+		}
+
+		created, err := ProjectMilestoneCreate(ctx, graphqlClient, LinearProjectMilestoneCreateInput{
+			ProjectID:   request.ProjectID,
+			Name:        request.Name,
+			Description: optionalString(request.Description),
+			TargetDate:  optionalString(request.TargetDate),
+		})
+		if err != nil {
+			return ProjectMilestoneSummary{}, fmt.Errorf("create project milestone: %w", err)
+		}
+		if !created.ProjectMilestoneCreate.Success {
+			return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneCreate failed", ErrMutationFailed)
+		}
+
+		return projectMilestoneSummary(
+			created.ProjectMilestoneCreate.ProjectMilestone.ProjectMilestoneSummaryFields,
+		), nil
 	})
-	if err != nil {
-		return ProjectMilestoneSummary{}, fmt.Errorf("create project milestone: %w", err)
-	}
-	if !created.ProjectMilestoneCreate.Success {
-		return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneCreate failed", ErrMutationFailed)
-	}
-
-	return projectMilestoneSummary(
-		created.ProjectMilestoneCreate.ProjectMilestone.ProjectMilestoneSummaryFields,
-	), nil
 }
 
 // UpdateProjectMilestone updates a ProjectMilestone after resolving and comparing its project.
@@ -242,29 +241,28 @@ func UpdateProjectMilestone(
 	if err := validateProjectMilestoneUpdateRequest(request); err != nil {
 		return ProjectMilestoneSummary{}, err
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return ProjectMilestoneSummary{}, err
-	}
-	if _, err := guard.requireProjectMilestone(ctx, graphqlClient, request.ID); err != nil {
-		return ProjectMilestoneSummary{}, err
-	}
 
-	updated, err := ProjectMilestoneUpdate(ctx, graphqlClient, request.ID, LinearProjectMilestoneUpdateInput{
-		Name:        optionalString(request.Name),
-		Description: optionalString(request.Description),
-		TargetDate:  optionalString(request.TargetDate),
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectMilestoneSummary, error) {
+		if _, err := guard.requireProjectMilestone(ctx, graphqlClient, request.ID); err != nil {
+			return ProjectMilestoneSummary{}, err
+		}
+
+		updated, err := ProjectMilestoneUpdate(ctx, graphqlClient, request.ID, LinearProjectMilestoneUpdateInput{
+			Name:        optionalString(request.Name),
+			Description: optionalString(request.Description),
+			TargetDate:  optionalString(request.TargetDate),
+		})
+		if err != nil {
+			return ProjectMilestoneSummary{}, fmt.Errorf("update project milestone %s: %w", request.ID, err)
+		}
+		if !updated.ProjectMilestoneUpdate.Success {
+			return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneUpdate failed", ErrMutationFailed)
+		}
+
+		return projectMilestoneSummary(
+			updated.ProjectMilestoneUpdate.ProjectMilestone.ProjectMilestoneSummaryFields,
+		), nil
 	})
-	if err != nil {
-		return ProjectMilestoneSummary{}, fmt.Errorf("update project milestone %s: %w", request.ID, err)
-	}
-	if !updated.ProjectMilestoneUpdate.Success {
-		return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneUpdate failed", ErrMutationFailed)
-	}
-
-	return projectMilestoneSummary(
-		updated.ProjectMilestoneUpdate.ProjectMilestone.ProjectMilestoneSummaryFields,
-	), nil
 }
 
 func validateProjectMilestoneUpdateRequest(request ProjectMilestoneUpdateRequest) error {

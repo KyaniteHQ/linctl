@@ -35,25 +35,24 @@ func UpdateComment(
 	if request.Body == "" {
 		return CommentSummary{}, fmt.Errorf("%w: body is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return CommentSummary{}, err
-	}
-	if err := guardCommentTarget(ctx, graphqlClient, guard, request.ID); err != nil {
-		return CommentSummary{}, err
-	}
 
-	updated, err := CommentUpdate(ctx, graphqlClient, request.ID, LinearCommentUpdateInput{
-		Body: stringPtr(request.Body),
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CommentSummary, error) {
+		if err := guardCommentTarget(ctx, graphqlClient, guard, request.ID); err != nil {
+			return CommentSummary{}, err
+		}
+
+		updated, err := CommentUpdate(ctx, graphqlClient, request.ID, LinearCommentUpdateInput{
+			Body: stringPtr(request.Body),
+		})
+		if err != nil {
+			return CommentSummary{}, fmt.Errorf("update comment %s: %w", request.ID, err)
+		}
+		if !updated.CommentUpdate.Success {
+			return CommentSummary{}, fmt.Errorf("%w: commentUpdate reported no success", ErrMutationFailed)
+		}
+
+		return topLevelCommentSummary(updated.CommentUpdate.Comment.TopLevelCommentSummaryFields), nil
 	})
-	if err != nil {
-		return CommentSummary{}, fmt.Errorf("update comment %s: %w", request.ID, err)
-	}
-	if !updated.CommentUpdate.Success {
-		return CommentSummary{}, fmt.Errorf("%w: commentUpdate reported no success", ErrMutationFailed)
-	}
-
-	return topLevelCommentSummary(updated.CommentUpdate.Comment.TopLevelCommentSummaryFields), nil
 }
 
 // DeleteComment removes a comment after resolving the comment and comparing the
@@ -68,23 +67,22 @@ func DeleteComment(
 	if commentID == "" {
 		return "", fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return "", err
-	}
-	if err := guardCommentTarget(ctx, graphqlClient, guard, commentID); err != nil {
-		return "", err
-	}
 
-	deleted, err := CommentDelete(ctx, graphqlClient, commentID)
-	if err != nil {
-		return "", fmt.Errorf("delete comment %s: %w", commentID, err)
-	}
-	if !deleted.CommentDelete.Success {
-		return "", fmt.Errorf("%w: commentDelete reported no success", ErrMutationFailed)
-	}
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (string, error) {
+		if err := guardCommentTarget(ctx, graphqlClient, guard, commentID); err != nil {
+			return "", err
+		}
 
-	return commentID, nil
+		deleted, err := CommentDelete(ctx, graphqlClient, commentID)
+		if err != nil {
+			return "", fmt.Errorf("delete comment %s: %w", commentID, err)
+		}
+		if !deleted.CommentDelete.Success {
+			return "", fmt.Errorf("%w: commentDelete reported no success", ErrMutationFailed)
+		}
+
+		return commentID, nil
+	})
 }
 
 // guardCommentTarget resolves a comment and confirms its parent issue belongs to

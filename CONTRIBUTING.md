@@ -13,6 +13,7 @@ go vet $(bash scripts/go-packages.sh)
 go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
 go tool govulncheck $(bash scripts/go-packages.sh)
+go run github.com/go-task/task/v3/cmd/task@latest actionlint
 go run github.com/go-task/task/v3/cmd/task@latest ci
 go run github.com/go-task/task/v3/cmd/task@latest coverage
 ```

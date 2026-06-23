@@ -36,17 +36,11 @@ func errorCode(err error) string {
 		return "INVALID_WRITE"
 	case errors.Is(err, client.ErrGraphQL):
 		return "GRAPHQL_ERROR"
-	case isNotFoundError(err):
+	case errors.Is(err, client.ErrNotFound):
 		return "NOT_FOUND"
 	default:
 		return "INTERNAL"
 	}
-}
-
-// isNotFoundError detects the client's not-found errors, which have no dedicated
-// sentinel and all end with "not found".
-func isNotFoundError(err error) bool {
-	return strings.HasSuffix(err.Error(), "not found")
 }
 
 // writeErrorEnvelope emits the structured error envelope (one JSON line) to the

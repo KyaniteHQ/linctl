@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -2513,9 +2514,17 @@ func (writer commandFailingWriter) Write(_ []byte) (int, error) {
 func useCommandRuntime(t *testing.T, graphqlClient graphql.Client) func() {
 	t.Helper()
 
+	return useCommandRuntimeWithFiles(t, graphqlClient, http.DefaultClient)
+}
+
+func useCommandRuntimeWithFiles(t *testing.T, graphqlClient graphql.Client, fileClient httpDoer) func() {
+	t.Helper()
+
 	original := buildCommandRuntime
 	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
-		return testCommandRuntime(graphqlClient), nil
+		runtime := testCommandRuntime(graphqlClient)
+		runtime.fileClient = fileClient
+		return runtime, nil
 	}
 
 	return func() {

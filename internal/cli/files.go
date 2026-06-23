@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -17,13 +16,10 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
-// httpDoer is the subset of *http.Client used for file transfers; it is a var so
-// tests can substitute the network round-trip.
+// httpDoer is the subset of *http.Client used for file transfers.
 type httpDoer interface {
 	Do(request *http.Request) (*http.Response, error)
 }
-
-var fileHTTPClient httpDoer = http.DefaultClient
 
 // closeQuietly closes a response body; the close error on an already-consumed
 // body is not actionable on the upload/download paths.
@@ -39,7 +35,21 @@ type fileUploadResult struct {
 // fileDownloadResult is the structured confirmation of a completed download.
 type fileDownloadResult struct {
 	Path  string `json:"path"`
-	Bytes int    `json:"bytes"`
+	Bytes int64  `json:"bytes"`
+}
+
+type downloadTempFile interface {
+	io.Writer
+	Close() error
+	Name() string
+}
+
+var createDownloadTempFile = func(directory string, pattern string) (downloadTempFile, error) {
+	return os.CreateTemp(directory, pattern)
+}
+
+var newFileTransferHTTPClient = func(options *rootOptions) httpDoer {
+	return &http.Client{Timeout: options.timeout}
 }
 
 func addFilesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -80,19 +90,33 @@ func runFileUpload(
 	if err != nil {
 		return err
 	}
-	//nolint:gosec // G304: the upload command's purpose is to read the user-named file.
-	data, err := os.ReadFile(path)
+	info, err := os.Stat(path)
 	if err != nil {
 		return fmt.Errorf("read %s: %w", path, err)
 	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("read %s: not a regular file", path)
+	}
+	//nolint:gosec // G304: the upload command's purpose is to read the user-named file.
+	file, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("read %s: %w", path, err)
+	}
+	defer closeQuietly(file)
 	if contentType == "" {
 		contentType = inferContentType(path)
 	}
-	upload, err := client.PrepareFileUpload(ctx, runtime.graphqlClient, filepath.Base(path), contentType, len(data))
+	upload, err := client.PrepareFileUpload(
+		ctx,
+		runtime.graphqlClient,
+		filepath.Base(path),
+		contentType,
+		int(info.Size()),
+	)
 	if err != nil {
 		return err
 	}
-	if err := putFileContents(ctx, upload, data); err != nil {
+	if err := putFileContents(ctx, runtime.fileHTTPClient(), upload, file, info.Size()); err != nil {
 		return err
 	}
 
@@ -107,16 +131,23 @@ func inferContentType(path string) string {
 	return "application/octet-stream"
 }
 
-func putFileContents(ctx context.Context, upload client.FileUpload, data []byte) error {
-	request, err := http.NewRequestWithContext(ctx, http.MethodPut, upload.UploadURL, bytes.NewReader(data))
+func putFileContents(
+	ctx context.Context,
+	httpClient httpDoer,
+	upload client.FileUpload,
+	content io.Reader,
+	size int64,
+) error {
+	request, err := http.NewRequestWithContext(ctx, http.MethodPut, upload.UploadURL, content)
 	if err != nil {
 		return err
 	}
+	request.ContentLength = size
 	request.Header.Set("Content-Type", upload.ContentType)
 	for _, header := range upload.Headers {
 		request.Header.Set(header.Key, header.Value)
 	}
-	response, err := fileHTTPClient.Do(request)
+	response, err := httpClient.Do(request)
 	if err != nil {
 		return fmt.Errorf("upload to storage: %w", err)
 	}
@@ -157,7 +188,7 @@ func runFileDownload(
 	if err != nil {
 		return err
 	}
-	response, err := fileHTTPClient.Do(request)
+	response, err := newFileTransferHTTPClient(options).Do(request)
 	if err != nil {
 		return fmt.Errorf("download %s: %w", url, err)
 	}
@@ -165,15 +196,51 @@ func runFileDownload(
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
 		return fmt.Errorf("download %s: unexpected status %d", url, response.StatusCode)
 	}
-	data, err := io.ReadAll(response.Body)
+	size, err := writeDownloadedFile(response.Body, output)
 	if err != nil {
-		return fmt.Errorf("read %s: %w", url, err)
-	}
-	if err := os.WriteFile(output, data, 0o600); err != nil {
 		return fmt.Errorf("write %s: %w", output, err)
 	}
 
-	return writeDownloadResult(command, options, output, len(data))
+	return writeDownloadResult(command, options, output, size)
+}
+
+func (runtime commandRuntime) fileHTTPClient() httpDoer {
+	if runtime.fileClient != nil {
+		return runtime.fileClient
+	}
+
+	return http.DefaultClient
+}
+
+func writeDownloadedFile(body io.Reader, output string) (int64, error) {
+	directory := filepath.Dir(output)
+	pattern := "." + filepath.Base(output) + ".tmp-*"
+	file, err := createDownloadTempFile(directory, pattern)
+	if err != nil {
+		return 0, err
+	}
+	tempPath := file.Name()
+	keepTemp := false
+	defer func() {
+		if !keepTemp {
+			_ = os.Remove(tempPath) //nolint:errcheck // temp cleanup is best effort after a failed write.
+		}
+	}()
+
+	size, copyErr := io.Copy(file, body)
+	closeErr := file.Close()
+	if copyErr != nil {
+		return 0, copyErr
+	}
+	if closeErr != nil {
+		return 0, closeErr
+	}
+	if err := os.Rename(tempPath, output); err != nil {
+		return 0, err
+	}
+	keepTemp = true
+
+	return size, nil
 }
 
 func writeAssetURL(command *cobra.Command, options *rootOptions, assetURL string) error {
@@ -190,7 +257,7 @@ func writeAssetURL(command *cobra.Command, options *rootOptions, assetURL string
 	return render.WriteLine(command.OutOrStdout(), "%s", assetURL)
 }
 
-func writeDownloadResult(command *cobra.Command, options *rootOptions, path string, size int) error {
+func writeDownloadResult(command *cobra.Command, options *rootOptions, path string, size int64) error {
 	if options.quiet {
 		return nil
 	}

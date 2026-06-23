@@ -37,6 +37,21 @@ tasks:
       - git diff --exit-code -- internal/client/generated.go
       - task: gen-skill
       - git diff --exit-code -- skills/linctl/references/commands.md
+      - go run scripts/linear_api_coverage.go -h >/dev/null
+      - task: coverage-ledger-check
+
+  coverage-ledger-check:
+    desc: Verify the generated Linear API coverage ledger when the upstream SDK checkout is available
+    cmds:
+      - |
+        if [[ ! -d /tmp/linctl-upstream-linear/.git ]]; then
+          printf 'skipping coverage ledger drift check: /tmp/linctl-upstream-linear is not available\n'
+          exit 0
+        fi
+        tmp="$(mktemp)"
+        trap 'rm -f "$tmp"' EXIT
+        go run scripts/linear_api_coverage.go --output "$tmp"
+        diff -u docs/linear-api-coverage.md "$tmp"
 
   test:
     desc: Run tests

@@ -27,7 +27,7 @@ func addProjectMilestoneAllCommand(ctx context.Context, root *cobra.Command, opt
 	limit := 50
 	command := &cobra.Command{
 		Use:   "all",
-		Short: "List visible ProjectMilestones across the workspace",
+		Short: "List visible ProjectMilestones across the organization",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, args []string) error {
 			return runReadListCommand(

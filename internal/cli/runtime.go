@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -15,6 +16,7 @@ import (
 
 type commandRuntime struct {
 	config        config.Resolved
+	fileClient    httpDoer
 	graphqlClient graphql.Client
 	logger        *slog.Logger
 }
@@ -48,8 +50,9 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 	)
 
 	return commandRuntime{
-		config: resolvedConfig,
-		logger: logger,
+		config:     resolvedConfig,
+		fileClient: &http.Client{Timeout: options.timeout},
+		logger:     logger,
 		graphqlClient: client.NewTransport(client.TransportConfig{
 			Token:            client.PersonalAPIToken(resolvedConfig.Token),
 			Timeout:          options.timeout,

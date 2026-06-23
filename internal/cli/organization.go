@@ -38,7 +38,7 @@ func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *r
 	})
 	templatesCommand := &cobra.Command{
 		Use:   "templates",
-		Short: "List workspace-level Linear templates",
+		Short: "List organization-level Linear templates",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			return runReadListCommand(
@@ -62,7 +62,7 @@ func addOrganizationLabelsCommand(ctx context.Context, root *cobra.Command, opti
 	limit := 50
 	command := &cobra.Command{
 		Use:   "labels",
-		Short: "List workspace-level issue labels",
+		Short: "List organization-level issue labels",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			return runReadListCommand(
@@ -85,7 +85,7 @@ func addOrganizationProjectLabelsCommand(ctx context.Context, root *cobra.Comman
 	limit := 50
 	command := &cobra.Command{
 		Use:   "project-labels",
-		Short: "List workspace-level project labels",
+		Short: "List organization-level project labels",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			return runReadListCommand(
@@ -108,7 +108,7 @@ func addOrganizationTeamsCommand(ctx context.Context, root *cobra.Command, optio
 	limit := 50
 	command := &cobra.Command{
 		Use:   "teams",
-		Short: "List teams visible in the workspace",
+		Short: "List teams visible to the authenticated user",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			return runReadListCommand(
@@ -131,7 +131,7 @@ func addOrganizationUsersCommand(ctx context.Context, root *cobra.Command, optio
 	limit := 50
 	command := &cobra.Command{
 		Use:   "users",
-		Short: "List active users visible in the workspace",
+		Short: "List active users visible to the authenticated user",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			return runReadListCommand(

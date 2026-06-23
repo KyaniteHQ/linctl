@@ -36,7 +36,7 @@ func writeTemplate(command *cobra.Command, options *rootOptions, template client
 		return writeJSONValue(command, options, template)
 	}
 
-	scope := "workspace"
+	scope := "organization"
 	if template.TeamKey != "" {
 		scope = "team " + template.TeamKey
 	}

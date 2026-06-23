@@ -1,6 +1,8 @@
 package client
 
 import (
+	"context"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -53,4 +55,19 @@ func FuzzRequireTargetMatch(f *testing.F) {
 
 		require.ErrorIs(t, err, ErrTargetMismatch)
 	})
+}
+
+func Test_guardedMutation_returns_guard_resolution_error(t *testing.T) {
+	_, err := guardedMutation(
+		context.Background(),
+		errorGraphQLClient{err: errors.New("resolve failed")},
+		matchingTarget(),
+		func(writeGuard) (IssueSummary, error) {
+			t.Fatal("mutation ran before guard resolved")
+			return IssueSummary{}, nil
+		},
+	)
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "resolve failed")
 }

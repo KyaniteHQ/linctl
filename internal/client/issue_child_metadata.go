@@ -136,7 +136,7 @@ func ListIssueVCSBranchComments(
 		return IssueCommentMetadataList{}, fmt.Errorf("list issue vcs branch comments %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueCommentMetadataList{}, fmt.Errorf("list issue vcs branch comments %s: not found", branchName)
+		return IssueCommentMetadataList{}, notFoundError("list issue vcs branch comments %s", branchName)
 	}
 
 	comments := make([]CommentMetadataSummary, 0, len(result.IssueVcsBranchSearch.Comments.Nodes))
@@ -171,10 +171,7 @@ func ListIssueVCSBranchNeeds(
 		)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
-			"list issue vcs branch customer needs %s: not found",
-			branchName,
-		)
+		return IssueCustomerNeedMetadataList{}, notFoundError("list issue vcs branch customer needs %s", branchName)
 	}
 
 	needs := make([]CustomerNeedMetadataSummary, 0, len(result.IssueVcsBranchSearch.Needs.Nodes))
@@ -209,8 +206,8 @@ func ListIssueVCSBranchFormerNeeds(
 		)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
-			"list issue vcs branch former customer needs %s: not found",
+		return IssueCustomerNeedMetadataList{}, notFoundError(
+			"list issue vcs branch former customer needs %s",
 			branchName,
 		)
 	}
@@ -240,7 +237,7 @@ func GetIssueVCSBranchSharedAccess(
 		return IssueSharedAccessSummary{}, fmt.Errorf("get issue vcs branch shared access %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueSharedAccessSummary{}, fmt.Errorf("get issue vcs branch shared access %s: not found", branchName)
+		return IssueSharedAccessSummary{}, notFoundError("get issue vcs branch shared access %s", branchName)
 	}
 
 	return issueSharedAccessSummary(

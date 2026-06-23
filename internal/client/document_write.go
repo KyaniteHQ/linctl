@@ -46,28 +46,26 @@ func CreateDocument(
 	if request.Title == "" {
 		return DocumentSummary{}, fmt.Errorf("%w: title is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return DocumentSummary{}, err
-	}
 
-	input := LinearDocumentCreateInput{
-		Title:   request.Title,
-		Content: optionalString(request.Content),
-		TeamID:  stringPtr(guard.target.Team.ID),
-	}
-	if guard.target.Project != nil {
-		input.ProjectID = stringPtr(guard.target.Project.ID)
-	}
-	created, err := DocumentCreate(ctx, graphqlClient, input)
-	if err != nil {
-		return DocumentSummary{}, fmt.Errorf("create document: %w", err)
-	}
-	if !created.DocumentCreate.Success {
-		return DocumentSummary{}, fmt.Errorf("%w: documentCreate returned no document", ErrMutationFailed)
-	}
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (DocumentSummary, error) {
+		input := LinearDocumentCreateInput{
+			Title:   request.Title,
+			Content: optionalString(request.Content),
+			TeamID:  stringPtr(guard.target.Team.ID),
+		}
+		if guard.target.Project != nil {
+			input.ProjectID = stringPtr(guard.target.Project.ID)
+		}
+		created, err := DocumentCreate(ctx, graphqlClient, input)
+		if err != nil {
+			return DocumentSummary{}, fmt.Errorf("create document: %w", err)
+		}
+		if !created.DocumentCreate.Success {
+			return DocumentSummary{}, fmt.Errorf("%w: documentCreate returned no document", ErrMutationFailed)
+		}
 
-	return documentSummary(created.DocumentCreate.Document.DocumentSummaryFields), nil
+		return documentSummary(created.DocumentCreate.Document.DocumentSummaryFields), nil
+	})
 }
 
 // UpdateDocument updates an existing document after resolving and comparing the pinned target.
@@ -83,26 +81,25 @@ func UpdateDocument(
 	if request.Title == "" && request.Content == "" {
 		return DocumentSummary{}, fmt.Errorf("%w: title or content is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return DocumentSummary{}, err
-	}
-	if err := guardDocumentTarget(ctx, graphqlClient, guard, request.ID); err != nil {
-		return DocumentSummary{}, err
-	}
 
-	updated, err := DocumentUpdate(ctx, graphqlClient, request.ID, LinearDocumentUpdateInput{
-		Title:   optionalString(request.Title),
-		Content: optionalString(request.Content),
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (DocumentSummary, error) {
+		if err := guardDocumentTarget(ctx, graphqlClient, guard, request.ID); err != nil {
+			return DocumentSummary{}, err
+		}
+
+		updated, err := DocumentUpdate(ctx, graphqlClient, request.ID, LinearDocumentUpdateInput{
+			Title:   optionalString(request.Title),
+			Content: optionalString(request.Content),
+		})
+		if err != nil {
+			return DocumentSummary{}, fmt.Errorf("update document %s: %w", request.ID, err)
+		}
+		if !updated.DocumentUpdate.Success {
+			return DocumentSummary{}, fmt.Errorf("%w: documentUpdate returned no document", ErrMutationFailed)
+		}
+
+		return documentSummary(updated.DocumentUpdate.Document.DocumentSummaryFields), nil
 	})
-	if err != nil {
-		return DocumentSummary{}, fmt.Errorf("update document %s: %w", request.ID, err)
-	}
-	if !updated.DocumentUpdate.Success {
-		return DocumentSummary{}, fmt.Errorf("%w: documentUpdate returned no document", ErrMutationFailed)
-	}
-
-	return documentSummary(updated.DocumentUpdate.Document.DocumentSummaryFields), nil
 }
 
 // guardDocumentTarget fails closed unless the document belongs to the pinned team

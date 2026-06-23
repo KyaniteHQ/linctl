@@ -66,10 +66,23 @@ surface and matches the requested Linear domain.
 
 Guarded writes currently cover:
 
-- Issues: create, update, append, start, comment, reply, close, `done`.
+- Issues: create, template-backed create, import, update, append, start, comment, reply,
+  close, `done`, `next` start.
+- Issue relations and comments: `issue relate`, `issue unrelate`, `comment update`,
+  `comment delete`.
 - Projects: create, update, archive.
+- Project updates: create.
+- Documents: create, update.
 - Cycles: create, update, archive.
 - ProjectMilestones: create, update.
+
+Helpers outside target-pinned mutations:
+
+- `files upload` prepares and uploads bytes to Linear storage, then prints an asset URL;
+  `files download` fetches a user-supplied URL to a local path.
+- `issue export` and `issue bulk-export` write local files from reads.
+- `issue open` and `project open` resolve URLs and launch the browser.
+- `issue create --dry-run` and `issue import --dry-run` preview locally without mutation.
 
 Safety rules:
 
@@ -153,7 +166,7 @@ Three tiers, cheapest first. Pick the one the task needs.
    go run github.com/go-task/task/v3/cmd/task@latest live-smoke
    ```
 
-   Accepts `LINCTL_TEST_TOKEN` first, then `LINCTL_TOKEN`, then `LINEAR_API_KEY`.
+   Requires a disposable token in `LINCTL_TEST_TOKEN`.
    Do not print any value.
 
 Completion criterion: the chosen smoke passed with redacted command/status evidence,

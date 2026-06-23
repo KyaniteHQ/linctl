@@ -57,24 +57,29 @@ never print token values.
   `deps`, `pr`, `id`/`title`/`url`/`branch`, `vcs-branch-search`, AI helpers
   (filter/title suggestion, figma key, priority-values).
 - **Issue writes**: `create` (+`--description-file`), `update` (+`--append`/`--append-file`/
-  `--description-file`), `start`, `comment` (+`--body-file`, `--body -`), `reply`, `close`.
+  `--description-file`), `start`, `comment` (+`--body-file`, `--body -`), `reply`, `close`,
+  template-backed create, guarded import, relation writes, and comment update/delete.
 - **Current-branch flow**: `current`, `done`, `next --dry-run` (ranked by unblock count,
   priority, age).
 - **Projects**: list/get/members, create/update/archive, `updates` (read), plus
-  `project-update`/`project-status`/`project-label` reads.
+  `project-update` create/read and `project-status`/`project-label` reads.
 - **ProjectMilestone**: all/list/get/create/update (no delete). **Cycle**: list/get/create/
   update/archive, issues, uncompleted-issues. **Sprint**: current/report (read-only aliases).
+- **v0.3.0 coordination surface**: guarded document create/update, project-update create,
+  issue relate/unrelate, comment update/delete, issue template dry-run, `next --checkout`,
+  file upload/download, browser open, issue export, and CSV/JSON import/export.
 - **Reads across the schema**: documents, templates, initiatives, roadmaps (legacy),
   search + semantic-search, labels/teams/users/workflow-states, releases & pipelines,
   comments, attachments, notifications, custom views, organization, rate-limit, customers,
   and more.
-- **Packaging is configured**: `.goreleaser.yaml` + `.github/workflows/release.yml` build
-  cross-platform binaries and generate a Homebrew cask (`dist/homebrew/Casks/linctl.rb`).
-  It only needs the first tagged release to go live.
+- **Packaging is live for `v0.3.0`**: `.goreleaser.yaml` +
+  `.github/workflows/release.yml` build cross-platform binaries and generate the Homebrew
+  cask (`dist/homebrew/Casks/linctl.rb`) from `v*` tags.
 - **Quality**: 100% statement-coverage gate, ~30 linters, build-tag integration tests,
-  fuzz tests, genqlient drift check.
+  fuzz tests, genqlient/skill drift checks, and `actionlint` in the local `task ci` gate.
 
-There is **no** linctl agent `SKILL.md` today (only unrelated vendored skill files).
+The linctl agent skill lives at `skills/linctl/SKILL.md`; its generated command reference is
+drift-checked from the Cobra tree.
 
 ---
 
@@ -277,26 +282,17 @@ file. Each create goes through the guarded `CreateIssue`; import rejects rows wh
 ≠ pinned target.
 
 ### 15. Finish the release (packaging is already built)
-*(status: ready — release pipeline verified, tag/push left to a human by design.)*
+*(status: done — `v0.3.0` is tagged at `ee4b3b9` after the feature-leech merge and
+the local `actionlint` gate.)*
 goreleaser (`.goreleaser.yaml`), the tag-triggered release workflow
 (`.github/workflows/release.yml`, `on: push: tags: v*`), and the Homebrew cask
 (`homebrew_casks` → `KyaniteHQ/homebrew-linctl`) are all wired: the workflow runs the full
 preflight gate, then `goreleaser release --clean` publishes the GitHub release, archives,
 checksums, SBOM, cosign signature, and the cask, and a final job downloads and verifies the
 published archive. The binary version is injected from the tag via
-`-X main.version={{ .Version }}`. The latest tag is `v0.2.1`; this branch adds 14 features,
-so the next release is a minor bump to **v0.3.0**.
-
-Cutting the release is intentionally a **human** action — this agent never tags or pushes.
-After `feat/feature-leech-backlog` is merged to `master`, run from `master`:
-
-```sh
-git tag v0.3.0
-git push origin v0.3.0
-```
-
-The pushed tag triggers `release.yml`, which builds, signs, and publishes the release and
-updates the Homebrew cask. **This is "finish," not "build."**
+`-X main.version={{ .Version }}`. The local repo state now has `HEAD`, `origin/master`, and
+tag `v0.3.0` on the actionlint-gated release commit; no follow-up tag command remains for
+this branch state.
 
 ---
 

@@ -214,27 +214,25 @@ func CreateCycle(
 	if request.EndsAt == "" {
 		return CycleSummary{}, fmt.Errorf("%w: ends at is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return CycleSummary{}, err
-	}
 
-	created, err := CycleCreate(ctx, graphqlClient, LinearCycleCreateInput{
-		TeamID:      guard.target.Team.ID,
-		Name:        optionalString(request.Name),
-		Description: optionalString(request.Description),
-		StartsAt:    request.StartsAt,
-		EndsAt:      request.EndsAt,
-		CompletedAt: optionalString(request.CompletedAt),
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CycleSummary, error) {
+		created, err := CycleCreate(ctx, graphqlClient, LinearCycleCreateInput{
+			TeamID:      guard.target.Team.ID,
+			Name:        optionalString(request.Name),
+			Description: optionalString(request.Description),
+			StartsAt:    request.StartsAt,
+			EndsAt:      request.EndsAt,
+			CompletedAt: optionalString(request.CompletedAt),
+		})
+		if err != nil {
+			return CycleSummary{}, fmt.Errorf("create cycle: %w", err)
+		}
+		if !created.CycleCreate.Success || created.CycleCreate.Cycle == nil {
+			return CycleSummary{}, fmt.Errorf("%w: cycleCreate failed", ErrMutationFailed)
+		}
+
+		return cycleSummary(created.CycleCreate.Cycle.CycleSummaryFields), nil
 	})
-	if err != nil {
-		return CycleSummary{}, fmt.Errorf("create cycle: %w", err)
-	}
-	if !created.CycleCreate.Success || created.CycleCreate.Cycle == nil {
-		return CycleSummary{}, fmt.Errorf("%w: cycleCreate failed", ErrMutationFailed)
-	}
-
-	return cycleSummary(created.CycleCreate.Cycle.CycleSummaryFields), nil
 }
 
 // UpdateCycle updates a Cycle after resolving and comparing its team.
@@ -247,29 +245,28 @@ func UpdateCycle(
 	if err := validateCycleUpdateRequest(request); err != nil {
 		return CycleSummary{}, err
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return CycleSummary{}, err
-	}
-	if err := guard.requireCycle(ctx, graphqlClient, request.ID); err != nil {
-		return CycleSummary{}, err
-	}
 
-	updated, err := CycleUpdate(ctx, graphqlClient, request.ID, LinearCycleUpdateInput{
-		Name:        optionalString(request.Name),
-		Description: optionalString(request.Description),
-		StartsAt:    optionalString(request.StartsAt),
-		EndsAt:      optionalString(request.EndsAt),
-		CompletedAt: optionalString(request.CompletedAt),
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CycleSummary, error) {
+		if err := guard.requireCycle(ctx, graphqlClient, request.ID); err != nil {
+			return CycleSummary{}, err
+		}
+
+		updated, err := CycleUpdate(ctx, graphqlClient, request.ID, LinearCycleUpdateInput{
+			Name:        optionalString(request.Name),
+			Description: optionalString(request.Description),
+			StartsAt:    optionalString(request.StartsAt),
+			EndsAt:      optionalString(request.EndsAt),
+			CompletedAt: optionalString(request.CompletedAt),
+		})
+		if err != nil {
+			return CycleSummary{}, fmt.Errorf("update cycle %s: %w", request.ID, err)
+		}
+		if !updated.CycleUpdate.Success || updated.CycleUpdate.Cycle == nil {
+			return CycleSummary{}, fmt.Errorf("%w: cycleUpdate failed", ErrMutationFailed)
+		}
+
+		return cycleSummary(updated.CycleUpdate.Cycle.CycleSummaryFields), nil
 	})
-	if err != nil {
-		return CycleSummary{}, fmt.Errorf("update cycle %s: %w", request.ID, err)
-	}
-	if !updated.CycleUpdate.Success || updated.CycleUpdate.Cycle == nil {
-		return CycleSummary{}, fmt.Errorf("%w: cycleUpdate failed", ErrMutationFailed)
-	}
-
-	return cycleSummary(updated.CycleUpdate.Cycle.CycleSummaryFields), nil
 }
 
 // ArchiveCycle archives a Cycle after resolving and comparing its team.
@@ -282,23 +279,21 @@ func ArchiveCycle(
 	if id == "" {
 		return CycleSummary{}, fmt.Errorf("%w: cycle id is required", ErrWriteInvalid)
 	}
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return CycleSummary{}, err
-	}
-	if err := guard.requireCycle(ctx, graphqlClient, id); err != nil {
-		return CycleSummary{}, err
-	}
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CycleSummary, error) {
+		if err := guard.requireCycle(ctx, graphqlClient, id); err != nil {
+			return CycleSummary{}, err
+		}
 
-	archived, err := CycleArchive(ctx, graphqlClient, id)
-	if err != nil {
-		return CycleSummary{}, fmt.Errorf("archive cycle %s: %w", id, err)
-	}
-	if !archived.CycleArchive.Success || archived.CycleArchive.Entity == nil {
-		return CycleSummary{}, fmt.Errorf("%w: cycleArchive failed", ErrMutationFailed)
-	}
+		archived, err := CycleArchive(ctx, graphqlClient, id)
+		if err != nil {
+			return CycleSummary{}, fmt.Errorf("archive cycle %s: %w", id, err)
+		}
+		if !archived.CycleArchive.Success || archived.CycleArchive.Entity == nil {
+			return CycleSummary{}, fmt.Errorf("%w: cycleArchive failed", ErrMutationFailed)
+		}
 
-	return cycleSummary(archived.CycleArchive.Entity.CycleSummaryFields), nil
+		return cycleSummary(archived.CycleArchive.Entity.CycleSummaryFields), nil
+	})
 }
 
 func validateCycleUpdateRequest(request CycleUpdateRequest) error {

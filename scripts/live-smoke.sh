@@ -2,9 +2,9 @@
 # shellcheck shell=bash
 set -euo pipefail
 
-token="${LINCTL_TEST_TOKEN:-${LINCTL_TOKEN:-${LINEAR_API_KEY:-}}}"
+token="${LINCTL_TEST_TOKEN:-}"
 if [[ -z "$token" ]]; then
-  printf 'missing disposable Linear token: set LINCTL_TEST_TOKEN, LINCTL_TOKEN, or LINEAR_API_KEY\n' >&2
+  printf 'missing disposable Linear token: set LINCTL_TEST_TOKEN\n' >&2
   exit 2
 fi
 
@@ -64,12 +64,24 @@ PY
   target_json="$("$binary" target --json)"
   org_url_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["org"]["url_key"])' <<<"$target_json")"
   team_id="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["team"]["id"])' <<<"$target_json")"
+  team_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["team"]["key"])' <<<"$target_json")"
   project_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); print(data.get("project", {}).get("id", ""))' <<<"$target_json")"
+  "$binary" __complete target --team "" >/dev/null 2>/dev/null
+  "$binary" __complete target --project "" >/dev/null 2>/dev/null
+  "$binary" __complete issue create --state "" >/dev/null 2>/dev/null
   if [[ -n "${LINCTL_APPLICATION_CLIENT_ID:-}" ]]; then
     "$binary" application info "$LINCTL_APPLICATION_CLIENT_ID" --json >/dev/null
   fi
-  "$binary" agent-activity list --json --limit 5 >/dev/null
-  "$binary" agent-skill list --json --limit 5 >/dev/null
+  agent_activity_json="$("$binary" agent-activity list --json --limit 5)"
+  agent_activity_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("agent_activities", []); print(items[0]["id"] if items else "")' <<<"$agent_activity_json")"
+  if [[ -n "$agent_activity_id" ]]; then
+    "$binary" agent-activity get "$agent_activity_id" --json >/dev/null
+  fi
+  agent_skill_json="$("$binary" agent-skill list --json --limit 5)"
+  agent_skill_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("agent_skills", []); print(items[0]["id"] if items else "")' <<<"$agent_skill_json")"
+  if [[ -n "$agent_skill_id" ]]; then
+    "$binary" agent-skill get "$agent_skill_id" --json >/dev/null
+  fi
   "$binary" audit-entry types --json >/dev/null
   "$binary" organization exists "$org_url_key" --json >/dev/null
   "$binary" organization labels --json --limit 5 >/dev/null
@@ -277,9 +289,10 @@ PY
   fi
   "$binary" time-schedule list --json --limit 5 >/dev/null
   template_json="$("$binary" template list --json --limit 5)"
-  template_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("templates", []); print(items[0]["id"] if items else "")' <<<"$template_json")"
+  template_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); print(next((item["id"] for item in data.get("templates", []) if item.get("type") == "issue"), ""))' <<<"$template_json")"
   if [[ -n "$template_id" ]]; then
     "$binary" template get "$template_id" --json >/dev/null
+    "$binary" issue create --template "$template_id" --section "Live smoke=verified" --dry-run --quiet
   fi
   initiative_json="$("$binary" initiative list --json --limit 5)"
   initiative_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("initiatives", []); print(items[0]["id"] if items else "")' <<<"$initiative_json")"
@@ -326,6 +339,27 @@ PY
   fi
   "$binary" customer-status list --json --limit 5 >/dev/null
   "$binary" customer-tier list --json --limit 5 >/dev/null
+  import_path="$smoke_dir/issue-import.json"
+  python3 - "$import_path" "$team_key" <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+team_key = sys.argv[2]
+
+with open(path, "w", encoding="utf-8") as output:
+    json.dump([
+        {
+            "team": team_key,
+            "title": "linctl live smoke dry-run import",
+            "description": "dry run only",
+        }
+    ], output)
+PY
+  "$binary" issue import "$import_path" --dry-run --quiet
+  "$binary" issue bulk-export "$smoke_dir/issues.json" --limit 1 --quiet
 )
 
+# Guarded write round trips are opt-in inside the integration test suite. Set
+# LINCTL_TEST_ENABLE_WRITES=1 when the run should create disposable resources.
 go test -count=1 -tags=integration ./internal/client

@@ -21,6 +21,8 @@ type liveIntegrationConfig struct {
 	ProjectID string `json:"project_id"`
 }
 
+const liveWriteIntegrationEnv = "LINCTL_TEST_ENABLE_WRITES"
+
 func Test_Integration_generatedViewerOrganizationTeams_whenTokenConfigured(t *testing.T) {
 	// Given
 	config := readLiveIntegrationConfig(t)
@@ -46,6 +48,7 @@ func Test_Integration_generatedViewerOrganizationTeams_whenTokenConfigured(t *te
 
 func Test_Integration_issueWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	// Given
+	requireLiveWriteIntegration(t)
 	fixture := readLiveIntegrationConfig(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -92,6 +95,7 @@ func Test_Integration_issueWriteRoundTrip_whenTargetPinned(t *testing.T) {
 
 func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	// Given
+	requireLiveWriteIntegration(t)
 	fixture := readLiveIntegrationConfig(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -149,6 +153,67 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 	require.Equal(t, created.ID, members.ProjectID)
 }
 
+func Test_Integration_issueCoordinationWriteRoundTrip_whenTargetPinned(t *testing.T) {
+	// Given
+	requireLiveWriteIntegration(t)
+	fixture := readLiveIntegrationConfig(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	defer cancel()
+	transport := newLiveIntegrationTransport(t, 10*time.Second)
+	target := config.Target{
+		OrgID:     fixture.OrgID,
+		TeamKey:   fixture.TeamKey,
+		TeamID:    fixture.TeamID,
+		ProjectID: fixture.ProjectID,
+	}
+	runID := "linctl-it-" + time.Now().UTC().Format("20060102T150405")
+
+	source, sourceErr := CreateIssue(ctx, transport, target, IssueCreateRequest{
+		Title:       runID + " coordination source",
+		Description: "created by linctl coordination integration test",
+	})
+	require.NoError(t, sourceErr)
+	registerLiveIssueCleanup(t, transport, source.ID)
+	related, relatedErr := CreateIssue(ctx, transport, target, IssueCreateRequest{
+		Title:       runID + " coordination related",
+		Description: "created by linctl coordination integration test",
+	})
+	require.NoError(t, relatedErr)
+	registerLiveIssueCleanup(t, transport, related.ID)
+
+	// When
+	started, startErr := StartIssue(ctx, transport, target, source.Identifier)
+	require.NoError(t, startErr)
+	comment, commentErr := CommentOnIssue(ctx, transport, target, IssueCommentRequest{
+		ID:   source.Identifier,
+		Body: "linctl integration coordination comment",
+	})
+	require.NoError(t, commentErr)
+	updatedComment, updateCommentErr := UpdateComment(ctx, transport, target, CommentUpdateRequest{
+		ID:   comment.ID,
+		Body: "linctl integration coordination comment updated",
+	})
+	require.NoError(t, updateCommentErr)
+	relation, relateErr := CreateIssueRelation(ctx, transport, target, IssueRelationCreateRequest{
+		IssueID:        source.Identifier,
+		RelatedIssueID: related.Identifier,
+		Type:           "related",
+	})
+	require.NoError(t, relateErr)
+	deletedRelationID, unrelateErr := DeleteIssueRelation(ctx, transport, target, relation.ID)
+	require.NoError(t, unrelateErr)
+	deletedCommentID, deleteCommentErr := DeleteComment(ctx, transport, target, comment.ID)
+	require.NoError(t, deleteCommentErr)
+
+	// Then
+	require.Equal(t, source.Identifier, started.Identifier)
+	require.Equal(t, "started", started.StateType)
+	require.Equal(t, comment.ID, updatedComment.ID)
+	require.Equal(t, "linctl integration coordination comment updated", updatedComment.Body)
+	require.Equal(t, relation.ID, deletedRelationID)
+	require.Equal(t, comment.ID, deletedCommentID)
+}
+
 func readLiveIntegrationConfig(t *testing.T) liveIntegrationConfig {
 	t.Helper()
 
@@ -195,6 +260,25 @@ func newLiveIntegrationTransport(t *testing.T, timeout time.Duration) *Transport
 		Timeout:    timeout,
 		MaxRetries: 1,
 	})
+}
+
+func registerLiveIssueCleanup(t *testing.T, transport *Transport, issueID string) {
+	t.Helper()
+
+	t.Cleanup(func() {
+		_, err := archiveIntegrationIssue(context.Background(), transport, issueID)
+		require.NoError(t, err)
+	})
+}
+
+func requireLiveWriteIntegration(t *testing.T) {
+	t.Helper()
+
+	if os.Getenv(liveWriteIntegrationEnv) == "1" {
+		return
+	}
+
+	t.Skip(liveWriteIntegrationEnv + "=1 is required for live write integration tests")
 }
 
 func archiveIntegrationIssue(ctx context.Context, transport *Transport, issueID string) (IssueSummary, error) {

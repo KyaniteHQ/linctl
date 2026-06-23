@@ -901,7 +901,7 @@ func GetIssueByVCSBranch(ctx context.Context, graphqlClient graphql.Client, bran
 		return IssueSummary{}, fmt.Errorf("get issue by vcs branch %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueSummary{}, fmt.Errorf("get issue by vcs branch %s: not found", branchName)
+		return IssueSummary{}, notFoundError("get issue by vcs branch %s", branchName)
 	}
 
 	return issueSummaryFromFields(result.IssueVcsBranchSearch.IssueSummaryFields), nil
@@ -919,7 +919,7 @@ func ListIssueVCSBranchAttachments(
 		return AttachmentList{}, fmt.Errorf("list issue vcs branch attachments %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return AttachmentList{}, fmt.Errorf("list issue vcs branch attachments %s: not found", branchName)
+		return AttachmentList{}, notFoundError("list issue vcs branch attachments %s", branchName)
 	}
 
 	attachments := make([]AttachmentSummary, 0, len(result.IssueVcsBranchSearch.Attachments.Nodes))
@@ -945,7 +945,7 @@ func GetIssueVCSBranchBotActor(
 		return IssueBotActor{}, fmt.Errorf("get issue vcs branch bot actor %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueBotActor{}, fmt.Errorf("get issue vcs branch bot actor %s: not found", branchName)
+		return IssueBotActor{}, notFoundError("get issue vcs branch bot actor %s", branchName)
 	}
 
 	return IssueBotActor{
@@ -966,7 +966,7 @@ func ListIssueVCSBranchChildren(
 		return IssueList{}, fmt.Errorf("list issue vcs branch children %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueList{}, fmt.Errorf("list issue vcs branch children %s: not found", branchName)
+		return IssueList{}, notFoundError("list issue vcs branch children %s", branchName)
 	}
 
 	issues := make([]IssueSummary, 0, len(result.IssueVcsBranchSearch.Children.Nodes))
@@ -993,7 +993,7 @@ func ListIssueVCSBranchDocuments(
 		return DocumentList{}, fmt.Errorf("list issue vcs branch documents %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return DocumentList{}, fmt.Errorf("list issue vcs branch documents %s: not found", branchName)
+		return DocumentList{}, notFoundError("list issue vcs branch documents %s", branchName)
 	}
 
 	documents := make([]DocumentSummary, 0, len(result.IssueVcsBranchSearch.Documents.Nodes))
@@ -1027,7 +1027,7 @@ func ListIssueVCSBranchFormerAttachments(
 		return AttachmentList{}, fmt.Errorf("list issue vcs branch former attachments %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return AttachmentList{}, fmt.Errorf("list issue vcs branch former attachments %s: not found", branchName)
+		return AttachmentList{}, notFoundError("list issue vcs branch former attachments %s", branchName)
 	}
 
 	attachments := make([]AttachmentSummary, 0, len(result.IssueVcsBranchSearch.FormerAttachments.Nodes))
@@ -1054,7 +1054,7 @@ func ListIssueVCSBranchHistory(
 		return IssueHistoryList{}, fmt.Errorf("list issue vcs branch history %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueHistoryList{}, fmt.Errorf("list issue vcs branch history %s: not found", branchName)
+		return IssueHistoryList{}, notFoundError("list issue vcs branch history %s", branchName)
 	}
 
 	history := make([]IssueHistorySummary, 0, len(result.IssueVcsBranchSearch.History.Nodes))
@@ -1088,7 +1088,7 @@ func ListIssueVCSBranchInverseRelations(
 		return IssueRelationList{}, fmt.Errorf("list issue vcs branch inverse relations %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueRelationList{}, fmt.Errorf("list issue vcs branch inverse relations %s: not found", branchName)
+		return IssueRelationList{}, notFoundError("list issue vcs branch inverse relations %s", branchName)
 	}
 
 	relations := make([]IssueRelationSummary, 0, len(result.IssueVcsBranchSearch.InverseRelations.Nodes))
@@ -1115,7 +1115,7 @@ func ListIssueVCSBranchLabels(
 		return LabelList{}, fmt.Errorf("list issue vcs branch labels %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return LabelList{}, fmt.Errorf("list issue vcs branch labels %s: not found", branchName)
+		return LabelList{}, notFoundError("list issue vcs branch labels %s", branchName)
 	}
 
 	labels := make([]LabelSummary, 0, len(result.IssueVcsBranchSearch.Labels.Nodes))
@@ -1142,7 +1142,7 @@ func ListIssueVCSBranchRelations(
 		return IssueRelationList{}, fmt.Errorf("list issue vcs branch relations %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueRelationList{}, fmt.Errorf("list issue vcs branch relations %s: not found", branchName)
+		return IssueRelationList{}, notFoundError("list issue vcs branch relations %s", branchName)
 	}
 
 	relations := make([]IssueRelationSummary, 0, len(result.IssueVcsBranchSearch.Relations.Nodes))
@@ -1169,7 +1169,7 @@ func ListIssueVCSBranchReleases(
 		return ReleaseList{}, fmt.Errorf("list issue vcs branch releases %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return ReleaseList{}, fmt.Errorf("list issue vcs branch releases %s: not found", branchName)
+		return ReleaseList{}, notFoundError("list issue vcs branch releases %s", branchName)
 	}
 
 	releases := make([]ReleaseSummary, 0, len(result.IssueVcsBranchSearch.Releases.Nodes))
@@ -1196,7 +1196,7 @@ func ListIssueVCSBranchStateHistory(
 		return IssueStateHistoryList{}, fmt.Errorf("list issue vcs branch state history %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return IssueStateHistoryList{}, fmt.Errorf("list issue vcs branch state history %s: not found", branchName)
+		return IssueStateHistoryList{}, notFoundError("list issue vcs branch state history %s", branchName)
 	}
 
 	spans := make([]IssueStateSpanSummary, 0, len(result.IssueVcsBranchSearch.StateHistory.Nodes))
@@ -1224,7 +1224,7 @@ func ListIssueVCSBranchSubscribers(
 		return UserList{}, fmt.Errorf("list issue vcs branch subscribers %s: %w", branchName, err)
 	}
 	if result.IssueVcsBranchSearch == nil {
-		return UserList{}, fmt.Errorf("list issue vcs branch subscribers %s: not found", branchName)
+		return UserList{}, notFoundError("list issue vcs branch subscribers %s", branchName)
 	}
 
 	users := make([]UserSummary, 0, len(result.IssueVcsBranchSearch.Subscribers.Nodes))

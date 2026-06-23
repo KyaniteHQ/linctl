@@ -693,7 +693,7 @@ linctl customer-status get CUSTOMER_STATUS_ID
 
 ### linctl customer-status list
 
-List workspace customer statuses
+List organization customer statuses
 
 ```
 linctl customer-status list [flags]
@@ -723,7 +723,7 @@ linctl customer-tier get CUSTOMER_TIER_ID
 
 ### linctl customer-tier list
 
-List workspace customer tiers
+List organization customer tiers
 
 ```
 linctl customer-tier list [flags]
@@ -955,7 +955,7 @@ linctl emoji get EMOJI_ID
 
 ### linctl emoji list
 
-List workspace custom emojis
+List organization custom emojis
 
 ```
 linctl emoji list [flags]
@@ -2283,7 +2283,7 @@ linctl organization exists URL_KEY
 
 ### linctl organization labels
 
-List workspace-level issue labels
+List organization-level issue labels
 
 ```
 linctl organization labels [flags]
@@ -2297,7 +2297,7 @@ Flags:
 
 ### linctl organization project-labels
 
-List workspace-level project labels
+List organization-level project labels
 
 ```
 linctl organization project-labels [flags]
@@ -2311,7 +2311,7 @@ Flags:
 
 ### linctl organization teams
 
-List teams visible in the workspace
+List teams visible to the authenticated user
 
 ```
 linctl organization teams [flags]
@@ -2325,7 +2325,7 @@ Flags:
 
 ### linctl organization templates
 
-List workspace-level Linear templates
+List organization-level Linear templates
 
 ```
 linctl organization templates [flags]
@@ -2339,7 +2339,7 @@ Flags:
 
 ### linctl organization users
 
-List active users visible in the workspace
+List active users visible to the authenticated user
 
 ```
 linctl organization users [flags]
@@ -2361,7 +2361,7 @@ linctl project
 
 ### linctl project all
 
-List visible Linear projects across the workspace
+List visible Linear projects across the organization
 
 ```
 linctl project all [flags]
@@ -2741,7 +2741,7 @@ linctl project-milestone
 
 ### linctl project-milestone all
 
-List visible ProjectMilestones across the workspace
+List visible ProjectMilestones across the organization
 
 ```
 linctl project-milestone all [flags]

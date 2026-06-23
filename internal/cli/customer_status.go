@@ -14,7 +14,7 @@ func addCustomerStatusCommand(ctx context.Context, root *cobra.Command, options 
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.CustomerStatusList, client.CustomerStatusSummary]{
 		Use:           "customer-status",
 		Short:         "Read Linear customer statuses",
-		ListShort:     "List workspace customer statuses",
+		ListShort:     "List organization customer statuses",
 		LimitHelp:     "maximum customer statuses to return",
 		GetUse:        "get CUSTOMER_STATUS_ID",
 		GetShort:      "Get one customer status by id",

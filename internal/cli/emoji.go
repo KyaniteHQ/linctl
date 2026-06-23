@@ -14,7 +14,7 @@ func addEmojiCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.EmojiList, client.EmojiSummary]{
 		Use:           "emoji",
 		Short:         "Read Linear custom emojis",
-		ListShort:     "List workspace custom emojis",
+		ListShort:     "List organization custom emojis",
 		LimitHelp:     "maximum emojis to return",
 		GetUse:        "get EMOJI_ID",
 		GetShort:      "Get one custom emoji by id or name",

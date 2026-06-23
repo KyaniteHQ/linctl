@@ -35,10 +35,13 @@ jobs:
         run: |
           go mod download
           go mod verify
-      - name: Verify generated client
+      - name: Verify generated artifacts
         run: |
           go generate ./...
           git diff --exit-code -- internal/client/generated.go
+          go run scripts/gen-skill.go
+          git diff --exit-code -- skills/linctl/references/commands.md
+          go run scripts/linear_api_coverage.go -h >/dev/null
       - name: Vet
         run: go vet $(bash scripts/go-packages.sh)
       - name: Test
@@ -54,6 +57,10 @@ jobs:
           args: ./cmd/... ./internal/...
       - name: Shellcheck
         run: shellcheck scripts/*.sh
+      - name: Actionlint
+        env:
+          SHELLCHECK_OPTS: --exclude=SC2046
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - name: Vulnerability scan
         run: go tool govulncheck $(bash scripts/go-packages.sh)
       - name: Verify GoReleaser config

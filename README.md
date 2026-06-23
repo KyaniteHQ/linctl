@@ -33,19 +33,17 @@ Prebuilt binaries (darwin/linux/windows × amd64/arm64) and checksums are attach
 every [release](https://github.com/KyaniteHQ/linctl/releases/latest).
 
 <details>
-<summary>From source on a clean Linux machine</summary>
+<summary>From source checkout</summary>
 
 ```bash
-apt-get update
-apt-get install -y build-essential ca-certificates curl git tar
-
-curl -fsSL https://go.dev/dl/go1.26.4.linux-amd64.tar.gz -o /tmp/go.tar.gz
-rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tar.gz
-export PATH="/usr/local/go/bin:$PATH"
-
 git clone https://github.com/KyaniteHQ/linctl.git && cd linctl
-go run ./cmd/linctl --version
+go install ./cmd/linctl
+linctl --version
 ```
+
+Use your platform or distro package manager to install Go first. If you install
+Go manually from `go.dev/dl`, verify the published checksum and follow Go's
+platform-specific instructions instead of replacing a managed `/usr/local/go`.
 
 </details>
 
@@ -104,7 +102,7 @@ updates and archives resolve the existing entity first, then compare the pinned
 
 ## 📖 Command reference
 
-Across 58 top-level commands, linctl maps the Linear schema. The most-used ones are
+Across 59 documented command groups, linctl maps the Linear schema. The most-used ones are
 below; the exhaustive catalog with GraphQL backing lives in
 [`docs/domain-map.md`](docs/domain-map.md), and `linctl <group> --help` lists every
 subcommand.
@@ -224,12 +222,15 @@ parsing are documented in
 
 ## ✍️ Guarded writes
 
-Writes currently cover **issues** (`create`, `update`/`--append`, `start`, `comment`,
-`reply`, `close`, and `done` for the branch issue), **projects** (`create`, `update`,
-`archive`), **cycles** (`create`, `update`, `archive`), and **project milestones**
-(`create`, `update`). Each is checked against the pinned target before it runs. For test
-runs, create namespaced throwaway resources (`linctl-it-<runid>`) and clean them up —
-close disposable issues, archive disposable projects.
+Writes currently cover **issues** (`create`, template-backed create, guarded import,
+`update`/`--append`, `start`, `comment`, `reply`, `close`, `done`, and `next` start),
+**issue relations** (`relate`, `unrelate`), **comments** (`update`, `delete`), **projects**
+(`create`, `update`, `archive`), **project updates** (`create`), **documents**
+(`create`, `update`), **cycles** (`create`, `update`, `archive`), and
+**project milestones** (`create`, `update`). Each mutation is checked against the pinned
+target before it runs. For test runs, create namespaced throwaway resources
+(`linctl-it-<runid>`) and clean them up — close disposable issues, archive disposable
+projects.
 
 ## 🤖 For agents
 
@@ -242,7 +243,7 @@ drop-in `AGENTS.md` snippet for consuming repos.
 ## 🔧 Development
 
 ```bash
-go run github.com/go-task/task/v3/cmd/task@latest ci        # generate-check → vet → test → build → lint → vuln
+go run github.com/go-task/task/v3/cmd/task@latest ci        # generate-check → vet → test → build → lint → actionlint → vuln
 go run github.com/go-task/task/v3/cmd/task@latest coverage  # 100% hand-written statement coverage
 ```
 

@@ -85,7 +85,7 @@ func addProjectAllCommand(ctx context.Context, root *cobra.Command, options *roo
 	limit := 50
 	command := &cobra.Command{
 		Use:   "all",
-		Short: "List visible Linear projects across the workspace",
+		Short: "List visible Linear projects across the organization",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			return runReadListCommand(
