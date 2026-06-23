@@ -25,7 +25,7 @@ type FileUpload struct {
 }
 
 // PrepareFileUpload asks Linear for a pre-signed upload target for a file. It is
-// a workspace-level asset operation, not a target-pinned write: the returned
+// an organization asset operation, not a target-pinned write: the returned
 // asset URL is attached to an issue or project through the existing guarded
 // attachment commands.
 func PrepareFileUpload(

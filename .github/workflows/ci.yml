@@ -129,6 +129,8 @@ jobs:
           args: ./cmd/... ./internal/...
       - name: Shellcheck
         run: shellcheck scripts/*.sh
+      - name: Domain language
+        run: bash scripts/domain-language-check.sh
       - name: Actionlint
         # scripts/go-packages.sh emits a space-separated package list, so the
         # unquoted command substitution in the Go steps is intentional word

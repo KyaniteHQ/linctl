@@ -240,7 +240,7 @@ func ListProjectsByTeam(
 	}, nil
 }
 
-// ListProjects returns visible Linear projects across the workspace.
+// ListProjects returns Linear projects visible to the authenticated user.
 func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectList, error) {
 	result, err := projects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
@@ -249,7 +249,7 @@ func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) 
 
 	summaries := make([]ProjectSummary, 0, len(result.Projects.Nodes))
 	for _, project := range result.Projects.Nodes {
-		summaries = append(summaries, workspaceProjectSummary(project))
+		summaries = append(summaries, visibleProjectSummary(project))
 	}
 
 	return ProjectList{
@@ -798,7 +798,7 @@ func projectAttachmentSummary(fields ProjectAttachmentSummaryFields) AttachmentS
 	}
 }
 
-func workspaceProjectSummary(project projectsProjectsProjectConnectionNodesProject) ProjectSummary {
+func visibleProjectSummary(project projectsProjectsProjectConnectionNodesProject) ProjectSummary {
 	return projectSummaryFromFields(project.ProjectSummaryFields)
 }
 

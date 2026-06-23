@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -65,25 +64,10 @@ func writeHeader(builder *strings.Builder, root *cobra.Command) {
 }
 
 func writeCommandTree(builder *strings.Builder, parent *cobra.Command) {
-	for _, command := range sortedSubcommands(parent) {
+	for _, command := range cli.SortedAvailableCommands(parent) {
 		writeCommandEntry(builder, command)
 		writeCommandTree(builder, command)
 	}
-}
-
-func sortedSubcommands(parent *cobra.Command) []*cobra.Command {
-	commands := make([]*cobra.Command, 0, len(parent.Commands()))
-	for _, command := range parent.Commands() {
-		if !command.IsAvailableCommand() || command.Name() == "help" || command.Name() == "completion" {
-			continue
-		}
-		commands = append(commands, command)
-	}
-	sort.Slice(commands, func(left int, right int) bool {
-		return commands[left].CommandPath() < commands[right].CommandPath()
-	})
-
-	return commands
 }
 
 func writeCommandEntry(builder *strings.Builder, command *cobra.Command) {

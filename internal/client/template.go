@@ -37,7 +37,7 @@ type TemplateList struct {
 	EndCursor   *string           `json:"end_cursor,omitempty"`
 }
 
-// ListOrganizationTemplates returns workspace-level Linear templates.
+// ListOrganizationTemplates returns organization-wide Linear templates.
 func ListOrganizationTemplates(ctx context.Context, graphqlClient graphql.Client, limit int) (TemplateList, error) {
 	result, err := organization_templates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {

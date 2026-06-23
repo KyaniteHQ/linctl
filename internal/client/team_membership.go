@@ -34,7 +34,7 @@ type TeamMembershipList struct {
 	EndCursor   *string                 `json:"end_cursor,omitempty"`
 }
 
-// ListTeamMemberships returns visible team memberships in the workspace.
+// ListTeamMemberships returns team memberships visible to the authenticated user.
 func ListTeamMemberships(
 	ctx context.Context,
 	graphqlClient graphql.Client,

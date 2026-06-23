@@ -110,13 +110,27 @@ func addUserDraftsCommand(ctx context.Context, root *cobra.Command, options *roo
 	root.AddCommand(command)
 }
 
-//nolint:funlen,gocognit,gocyclo // This mirrors one compact Cobra family for official UserSettings reads.
 func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	settingsCommand := &cobra.Command{
 		Use:   "settings",
 		Short: "Read authenticated User settings",
 	}
-	settingsCommand.AddCommand(&cobra.Command{
+	addUserSettingsGetCommand(ctx, settingsCommand, options)
+	addUserSettingsNotificationCategoriesCommand(ctx, settingsCommand, options)
+	addUserSettingsNotificationCategoryCommand(ctx, settingsCommand, options)
+	addUserSettingsNotificationChannelsCommand(ctx, settingsCommand, options)
+	addUserSettingsNotificationDeliveryCommand(ctx, settingsCommand, options)
+	addUserSettingsMobileDeliveryCommand(ctx, settingsCommand, options)
+	addUserSettingsMobileScheduleCommand(ctx, settingsCommand, options)
+	addUserSettingsMobileScheduleDayCommand(ctx, settingsCommand, options)
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "theme")
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-theme")
+	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-sidebar-theme")
+	root.AddCommand(settingsCommand)
+}
+
+func addUserSettingsGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get authenticated User settings",
 		Args:  cobra.NoArgs,
@@ -133,7 +147,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeUserSettings(command, options, settings)
 		},
 	})
-	settingsCommand.AddCommand(&cobra.Command{
+}
+
+func addUserSettingsNotificationCategoriesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "notification-categories",
 		Short: "Get User notification category preferences",
 		Args:  cobra.NoArgs,
@@ -150,7 +167,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeUserSettingsValue(command, options, preferences, "notification categories")
 		},
 	})
-	settingsCommand.AddCommand(&cobra.Command{
+}
+
+func addUserSettingsNotificationCategoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "notification-category CATEGORY",
 		Short: "Get one User notification category preference",
 		Args:  cobra.ExactArgs(1),
@@ -167,7 +187,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeUserSettingsValue(command, options, preference, notificationChannelsText(args[0], preference))
 		},
 	})
-	settingsCommand.AddCommand(&cobra.Command{
+}
+
+func addUserSettingsNotificationChannelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "notification-channels",
 		Short: "Get User notification channel preferences",
 		Args:  cobra.NoArgs,
@@ -189,7 +212,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			)
 		},
 	})
-	settingsCommand.AddCommand(&cobra.Command{
+}
+
+func addUserSettingsNotificationDeliveryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "notification-delivery",
 		Short: "Get User notification delivery preferences",
 		Args:  cobra.NoArgs,
@@ -206,7 +232,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeUserSettingsValue(command, options, preferences, "notification delivery")
 		},
 	})
-	settingsCommand.AddCommand(&cobra.Command{
+}
+
+func addUserSettingsMobileDeliveryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "mobile-delivery",
 		Short: "Get User mobile notification delivery preferences",
 		Args:  cobra.NoArgs,
@@ -223,7 +252,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeUserSettingsNullableValue(command, options, channel, "mobile delivery")
 		},
 	})
-	settingsCommand.AddCommand(&cobra.Command{
+}
+
+func addUserSettingsMobileScheduleCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "mobile-schedule",
 		Short: "Get User mobile notification schedule",
 		Args:  cobra.NoArgs,
@@ -240,7 +272,10 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeUserSettingsNullableValue(command, options, schedule, "mobile schedule")
 		},
 	})
-	settingsCommand.AddCommand(&cobra.Command{
+}
+
+func addUserSettingsMobileScheduleDayCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
 		Use:   "mobile-schedule-day DAY",
 		Short: "Get one User mobile notification schedule day",
 		Args:  cobra.ExactArgs(1),
@@ -257,10 +292,6 @@ func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeUserSettingsValue(command, options, day, notificationDayText(args[0], day))
 		},
 	})
-	addUserSettingsThemeCommand(ctx, settingsCommand, options, "theme")
-	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-theme")
-	addUserSettingsThemeCommand(ctx, settingsCommand, options, "custom-sidebar-theme")
-	root.AddCommand(settingsCommand)
 }
 
 func addUserSettingsThemeCommand(

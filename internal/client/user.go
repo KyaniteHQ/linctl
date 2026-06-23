@@ -255,117 +255,235 @@ func GetUserSettingsNotificationCategoryPreferences(
 }
 
 // GetUserSettingsNotificationCategoryPreference returns one notification category preference.
-//
-//nolint:funlen,gocognit,gocyclo // Each case calls a distinct official SDK operation.
 func GetUserSettingsNotificationCategoryPreference(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	category string,
 ) (NotificationChannelPreference, error) {
-	switch normalizedUserSettingsKey(category) {
-	case "apps-and-integrations":
-		result, err := userSettings_notificationCategoryPreferences_appsAndIntegrations(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(
-			&result.UserSettings.NotificationCategoryPreferences.AppsAndIntegrations,
-		), nil
-	case "assignments":
-		result, err := userSettings_notificationCategoryPreferences_assignments(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Assignments), nil
-	case "billing":
-		result, err := userSettings_notificationCategoryPreferences_billing(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Billing), nil
-	case "comments-and-replies":
-		result, err := userSettings_notificationCategoryPreferences_commentsAndReplies(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(
-			&result.UserSettings.NotificationCategoryPreferences.CommentsAndReplies,
-		), nil
-	case "customers":
-		result, err := userSettings_notificationCategoryPreferences_customers(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Customers), nil
-	case "document-changes":
-		result, err := userSettings_notificationCategoryPreferences_documentChanges(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.DocumentChanges), nil
-	case "feed":
-		result, err := userSettings_notificationCategoryPreferences_feed(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Feed), nil
-	case "mentions":
-		result, err := userSettings_notificationCategoryPreferences_mentions(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Mentions), nil
-	case "posts-and-updates":
-		result, err := userSettings_notificationCategoryPreferences_postsAndUpdates(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.PostsAndUpdates), nil
-	case "reactions":
-		result, err := userSettings_notificationCategoryPreferences_reactions(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reactions), nil
-	case "reminders":
-		result, err := userSettings_notificationCategoryPreferences_reminders(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reminders), nil
-	case "reviews":
-		result, err := userSettings_notificationCategoryPreferences_reviews(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reviews), nil
-	case "status-changes":
-		result, err := userSettings_notificationCategoryPreferences_statusChanges(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.StatusChanges), nil
-	case "subscriptions":
-		result, err := userSettings_notificationCategoryPreferences_subscriptions(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Subscriptions), nil
-	case "system":
-		result, err := userSettings_notificationCategoryPreferences_system(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.System), nil
-	case "triage":
-		result, err := userSettings_notificationCategoryPreferences_triage(ctx, graphqlClient)
-		if err != nil {
-			return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
-		}
-		return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Triage), nil
-	default:
+	loader, ok := notificationCategoryPreferenceLoaders[normalizedUserSettingsKey(category)]
+	if !ok {
 		return NotificationChannelPreference{}, fmt.Errorf("unknown user settings notification category %q", category)
 	}
+
+	preference, err := loader(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
+	}
+
+	return preference, nil
+}
+
+type notificationCategoryPreferenceLoader func(context.Context, graphql.Client) (NotificationChannelPreference, error)
+
+var notificationCategoryPreferenceLoaders = map[string]notificationCategoryPreferenceLoader{
+	"apps-and-integrations": loadAppsAndIntegrationsNotificationCategoryPreference,
+	"assignments":           loadAssignmentsNotificationCategoryPreference,
+	"billing":               loadBillingNotificationCategoryPreference,
+	"comments-and-replies":  loadCommentsAndRepliesNotificationCategoryPreference,
+	"customers":             loadCustomersNotificationCategoryPreference,
+	"document-changes":      loadDocumentChangesNotificationCategoryPreference,
+	"feed":                  loadFeedNotificationCategoryPreference,
+	"mentions":              loadMentionsNotificationCategoryPreference,
+	"posts-and-updates":     loadPostsAndUpdatesNotificationCategoryPreference,
+	"reactions":             loadReactionsNotificationCategoryPreference,
+	"reminders":             loadRemindersNotificationCategoryPreference,
+	"reviews":               loadReviewsNotificationCategoryPreference,
+	"status-changes":        loadStatusChangesNotificationCategoryPreference,
+	"subscriptions":         loadSubscriptionsNotificationCategoryPreference,
+	"system":                loadSystemNotificationCategoryPreference,
+	"triage":                loadTriageNotificationCategoryPreference,
+}
+
+func loadAppsAndIntegrationsNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_appsAndIntegrations(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.AppsAndIntegrations), nil
+}
+
+func loadAssignmentsNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_assignments(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Assignments), nil
+}
+
+func loadBillingNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_billing(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Billing), nil
+}
+
+func loadCommentsAndRepliesNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_commentsAndReplies(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.CommentsAndReplies), nil
+}
+
+func loadCustomersNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_customers(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Customers), nil
+}
+
+func loadDocumentChangesNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_documentChanges(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.DocumentChanges), nil
+}
+
+func loadFeedNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_feed(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Feed), nil
+}
+
+func loadMentionsNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_mentions(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Mentions), nil
+}
+
+func loadPostsAndUpdatesNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_postsAndUpdates(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.PostsAndUpdates), nil
+}
+
+func loadReactionsNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_reactions(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reactions), nil
+}
+
+func loadRemindersNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_reminders(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reminders), nil
+}
+
+func loadReviewsNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_reviews(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reviews), nil
+}
+
+func loadStatusChangesNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_statusChanges(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.StatusChanges), nil
+}
+
+func loadSubscriptionsNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_subscriptions(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Subscriptions), nil
+}
+
+func loadSystemNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_system(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.System), nil
+}
+
+func loadTriageNotificationCategoryPreference(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+) (NotificationChannelPreference, error) {
+	result, err := userSettings_notificationCategoryPreferences_triage(ctx, graphqlClient)
+	if err != nil {
+		return NotificationChannelPreference{}, err
+	}
+
+	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Triage), nil
 }
 
 // GetUserSettingsNotificationChannelPreferences returns the top-level notification channel preferences.

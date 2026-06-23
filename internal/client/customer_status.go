@@ -26,7 +26,7 @@ type CustomerStatusList struct {
 	EndCursor   *string                 `json:"end_cursor,omitempty"`
 }
 
-// ListCustomerStatuses returns workspace customer lifecycle statuses.
+// ListCustomerStatuses returns organization customer lifecycle statuses.
 func ListCustomerStatuses(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerStatusList, error) {
 	result, err := customerStatuses(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {

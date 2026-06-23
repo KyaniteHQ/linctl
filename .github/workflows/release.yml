@@ -88,6 +88,8 @@ jobs:
           args: ./cmd/... ./internal/...
       - name: Shellcheck
         run: shellcheck scripts/*.sh
+      - name: Domain language
+        run: bash scripts/domain-language-check.sh
       - name: Actionlint
         env:
           SHELLCHECK_OPTS: --exclude=SC2046

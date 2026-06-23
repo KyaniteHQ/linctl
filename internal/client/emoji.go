@@ -22,7 +22,7 @@ type EmojiList struct {
 	EndCursor   *string        `json:"end_cursor,omitempty"`
 }
 
-// ListEmojis returns the workspace custom emojis.
+// ListEmojis returns custom emojis visible to the authenticated user.
 func ListEmojis(ctx context.Context, graphqlClient graphql.Client, limit int) (EmojiList, error) {
 	result, err := emojis(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {

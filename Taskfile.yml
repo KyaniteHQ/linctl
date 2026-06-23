@@ -53,6 +53,11 @@ tasks:
         go run scripts/linear_api_coverage.go --output "$tmp"
         diff -u docs/linear-api-coverage.md "$tmp"
 
+  domain-language-check:
+    desc: Verify user-facing docs and help avoid workspace terminology
+    cmds:
+      - bash scripts/domain-language-check.sh
+
   test:
     desc: Run tests
     cmds:
@@ -89,6 +94,7 @@ tasks:
     desc: Run the local CI gate
     cmds:
       - task: generate-check
+      - task: domain-language-check
       - task: vet
       - task: test
       - go build $(bash scripts/go-packages.sh)

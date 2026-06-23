@@ -26,7 +26,7 @@ type CustomerTierList struct {
 	EndCursor   *string               `json:"end_cursor,omitempty"`
 }
 
-// ListCustomerTiers returns workspace customer tiers.
+// ListCustomerTiers returns organization customer tiers.
 func ListCustomerTiers(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerTierList, error) {
 	result, err := customerTiers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {

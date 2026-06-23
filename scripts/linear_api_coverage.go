@@ -18,7 +18,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/spf13/cobra"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/parser"
 
@@ -655,33 +654,17 @@ func mapSet(values []string) map[string]bool {
 func commandInventorySet() map[string]bool {
 	root := cli.NewRootCommand(context.Background(), cli.BuildInfo{})
 	commands := map[string]bool{}
-	collectCommandAliases(root, commands)
+	for _, command := range cli.CommandInventory(root) {
+		commands[command.Path] = true
+		for _, alias := range command.Aliases {
+			commands[alias] = true
+		}
+	}
 	if commands["next"] {
 		commands["next --dry-run"] = true
 	}
 
 	return commands
-}
-
-func collectCommandAliases(parent *cobra.Command, commands map[string]bool) {
-	for _, command := range parent.Commands() {
-		if !command.IsAvailableCommand() || command.Name() == "help" || command.Name() == "completion" {
-			continue
-		}
-		path := strings.TrimPrefix(command.CommandPath(), "linctl ")
-		commands[path] = true
-		if use := commandUseAlias(command); use != "" {
-			commands[use] = true
-		}
-		collectCommandAliases(command, commands)
-	}
-}
-
-func commandUseAlias(command *cobra.Command) string {
-	use := strings.TrimPrefix(command.UseLine(), "linctl ")
-	use = strings.TrimSuffix(use, " [flags]")
-
-	return strings.TrimSpace(use)
 }
 
 var blockedDomainCommands = map[string]bool{

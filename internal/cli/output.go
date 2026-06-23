@@ -230,9 +230,7 @@ func jsonRoundTrip(value any) (map[string]any, error) {
 	return raw, nil
 }
 
-// projectCollection projects --fields over the items of a list-page envelope.
-//
-// The key set is an explicit allowlist of the collection field names that list
+// collectionKeys is the explicit allowlist of collection field names that list
 // pages emit (each list page carries exactly one such array plus scalar
 // pagination/context fields). It is deliberately NOT generic top-level []any
 // detection: some detail responses embed an incidental array that is not a
@@ -245,56 +243,59 @@ func jsonRoundTrip(value any) (map[string]any, error) {
 // either. Multi-array responses (IssueDependencyGraph) and detail objects fall
 // through to whole-object projection. When adding a new list command, add its
 // collection key here.
+var collectionKeys = []string{
+	"issues",
+	"associations",
+	"cycles",
+	"projects",
+	"members",
+	"comments",
+	"updates",
+	"milestones",
+	"documents",
+	"labels",
+	"teams",
+	"users",
+	"memberships",
+	"drafts",
+	"initiatives",
+	"notifications",
+	"notification_subscriptions",
+	"release_pipelines",
+	"release_stages",
+	"releases",
+	"history",
+	"links",
+	"release_notes",
+	"customers",
+	"customer_needs",
+	"customer_statuses",
+	"customer_tiers",
+	"relations",
+	"roadmaps",
+	"time_schedules",
+	"triage_responsibilities",
+	"sla_configurations",
+	"results",
+	"templates",
+	"workflow_states",
+	"agent_activities",
+	"agent_skills",
+	"external_users",
+	"audit_entry_types",
+	"favorites",
+	"emojis",
+	"attachments",
+	"custom_views",
+	"project_labels",
+	"project_statuses",
+	"spans",
+	"git_automation_states",
+}
+
+// projectCollection projects --fields over the items of a list-page envelope.
 func projectCollection(raw map[string]any, paths [][]string) (map[string]any, bool, error) {
-	for _, key := range []string{
-		"issues",
-		"associations",
-		"cycles",
-		"projects",
-		"members",
-		"comments",
-		"updates",
-		"milestones",
-		"documents",
-		"labels",
-		"teams",
-		"users",
-		"memberships",
-		"drafts",
-		"initiatives",
-		"notifications",
-		"notification_subscriptions",
-		"release_pipelines",
-		"release_stages",
-		"releases",
-		"history",
-		"links",
-		"release_notes",
-		"customers",
-		"customer_needs",
-		"customer_statuses",
-		"customer_tiers",
-		"relations",
-		"roadmaps",
-		"time_schedules",
-		"triage_responsibilities",
-		"sla_configurations",
-		"results",
-		"templates",
-		"workflow_states",
-		"agent_activities",
-		"agent_skills",
-		"external_users",
-		"audit_entry_types",
-		"favorites",
-		"emojis",
-		"attachments",
-		"custom_views",
-		"project_labels",
-		"project_statuses",
-		"spans",
-		"git_automation_states",
-	} {
+	for _, key := range collectionKeys {
 		items, ok := raw[key].([]any)
 		if !ok {
 			continue

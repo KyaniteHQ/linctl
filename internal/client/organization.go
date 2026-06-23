@@ -7,7 +7,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
-// ListOrganizationLabels returns workspace-level issue labels.
+// ListOrganizationLabels returns organization-wide issue labels.
 func ListOrganizationLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (LabelList, error) {
 	result, err := organization_labels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
@@ -26,7 +26,7 @@ func ListOrganizationLabels(ctx context.Context, graphqlClient graphql.Client, l
 	}, nil
 }
 
-// ListOrganizationProjectLabels returns workspace-level project labels.
+// ListOrganizationProjectLabels returns organization-wide project labels.
 func ListOrganizationProjectLabels(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -49,7 +49,7 @@ func ListOrganizationProjectLabels(
 	}, nil
 }
 
-// ListOrganizationTeams returns teams visible in the workspace.
+// ListOrganizationTeams returns teams visible to the authenticated user.
 func ListOrganizationTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
 	result, err := organization_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
@@ -68,7 +68,7 @@ func ListOrganizationTeams(ctx context.Context, graphqlClient graphql.Client, li
 	}, nil
 }
 
-// ListOrganizationUsers returns active users visible in the workspace.
+// ListOrganizationUsers returns active users visible to the authenticated user.
 func ListOrganizationUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (UserList, error) {
 	result, err := organization_users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {

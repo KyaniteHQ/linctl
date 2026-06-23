@@ -113,7 +113,7 @@ func ListProjectMilestones(
 	}, nil
 }
 
-// ListAllProjectMilestones returns visible ProjectMilestones across the workspace.
+// ListAllProjectMilestones returns project milestones visible to the authenticated user.
 func ListAllProjectMilestones(
 	ctx context.Context,
 	graphqlClient graphql.Client,
