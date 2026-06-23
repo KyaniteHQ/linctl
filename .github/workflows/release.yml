@@ -6,6 +6,7 @@ on:
       - "v*"
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -17,10 +18,40 @@ defaults:
     shell: bash
 
 jobs:
+  require-ci:
+    name: require branch ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require successful branch CI for tagged commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_SHA: ${{ github.sha }}
+        run: |
+          ci_url="$(
+            gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow ci.yml \
+              --branch master \
+              --commit "$TAG_SHA" \
+              --event push \
+              --status success \
+              --json url \
+              --jq '.[0].url // ""' \
+              --limit 1
+          )"
+          if [[ -z "$ci_url" ]]; then
+            echo "No successful ci.yml branch run found for tagged commit $TAG_SHA."
+            echo "Push the commit to master and wait for the full CI matrix before tagging a release."
+            exit 1
+          fi
+          echo "Found successful branch CI: $ci_url"
+
   preflight:
     name: preflight
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    needs: require-ci
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
