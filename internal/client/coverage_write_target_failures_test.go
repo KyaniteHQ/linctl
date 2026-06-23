@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 func Test_ClientWriteFailureScenarios_refuse_unpinned_targets(t *testing.T) {

@@ -7,9 +7,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {

@@ -7,9 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {

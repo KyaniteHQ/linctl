@@ -3,8 +3,9 @@ package cli
 import (
 	"testing"
 
-	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {

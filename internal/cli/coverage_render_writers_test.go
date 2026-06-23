@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
