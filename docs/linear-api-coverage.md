@@ -1340,35 +1340,35 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Domain | Command | Backing | Scope | Status | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help` / public CLI tests |
-| Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help` / public CLI tests |
-| Core target | `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | implemented | `linctl --help` / public CLI tests |
-| Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | implemented | `linctl --help` / public CLI tests |
-| Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. | implemented | `linctl --help` / public CLI tests |
-| Core target | `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. | implemented | `linctl --help` / public CLI tests |
-| Core target | `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only organization-level project labels. | implemented | `linctl --help` / public CLI tests |
-| Core target | `organization teams` | `Organization.teams` via `Query.organization` | Read-only teams visible to the authenticated user. | implemented | `linctl --help` / public CLI tests |
-| Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only organization-level templates. | implemented | `linctl --help` / public CLI tests |
-| Core target | `organization users` | `Organization.users` via `Query.organization` | Read-only active users visible to the authenticated user. | implemented | `linctl --help` / public CLI tests |
-| Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help` / public CLI tests |
-| AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | implemented | `linctl --help` / public CLI tests |
-| AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only organization-level project labels. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization teams` | `Organization.teams` via `Query.organization` | Read-only teams visible to the authenticated user. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only organization-level templates. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization users` | `Organization.users` via `Query.organization` | Read-only active users visible to the authenticated user. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | AgentActivity | `agent-activity create` | `Mutation.agentActivityCreate` | Blocked: create writes into an agent session and needs explicit session/comment guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentActivity | `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentActivity | `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | implemented | `linctl --help` / public CLI tests |
-| AgentSkill | `agent-skill get` | `Query.agentSkill` | Read-only | implemented | `linctl --help` / public CLI tests |
+| AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentSkill | `agent-skill get` | `Query.agentSkill` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ExternalUser | `external-user get` | `Query.externalUser` | Read-only | implemented | `linctl --help` / public CLI tests |
-| AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ExternalUser | `external-user get` | `Query.externalUser` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Notification | `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification archive all` | `Mutation.notificationArchiveAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification update` | `Mutation.notificationUpdate` | Blocked: direct inbox-state mutation needs an explicit viewer-state safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
@@ -1380,26 +1380,26 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Notification | `notification subscription create` | `Mutation.notificationSubscriptionCreate` | Blocked: subscription writes can target several entity types and need explicit target-resolution semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Release | `release-pipeline list` | `Query.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-pipeline get` | `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-pipeline releases` | `ReleasePipeline.releases` via `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-pipeline stages` | `ReleasePipeline.stages` via `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-pipeline teams` | `ReleasePipeline.teams` via `Query.releasePipeline` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-stage list` | `Query.releaseStages` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-stage get` | `Query.releaseStage` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-stage releases` | `ReleaseStage.releases` via `Query.releaseStage` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release list` | `Query.releases` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release search` | `Query.releaseSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release get` | `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release history` | `Release.history` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release documents` | `Release.documents` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release issues` | `Release.issues` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release links` | `Release.links` via `Query.release` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `external-link get` | `Query.entityExternalLink` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-note list` | `Query.releaseNotes` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `release-note get` | `Query.releaseNote` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `issue-to-release list` | `Query.issueToReleases` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Release | `issue-to-release get` | `Query.issueToRelease` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Release | `release-pipeline list` | `Query.releasePipelines` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline get` | `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline releases` | `ReleasePipeline.releases` via `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline stages` | `ReleasePipeline.stages` via `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline teams` | `ReleasePipeline.teams` via `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-stage list` | `Query.releaseStages` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-stage get` | `Query.releaseStage` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-stage releases` | `ReleaseStage.releases` via `Query.releaseStage` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release list` | `Query.releases` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release search` | `Query.releaseSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release get` | `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release history` | `Release.history` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release documents` | `Release.documents` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release issues` | `Release.issues` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release links` | `Release.links` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `external-link get` | `Query.entityExternalLink` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-note list` | `Query.releaseNotes` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-note get` | `Query.releaseNote` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `issue-to-release list` | `Query.issueToReleases` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `issue-to-release get` | `Query.issueToRelease` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
@@ -1423,293 +1423,293 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title plus log id only | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue bot-actor` | `Issue.botActor` via `Query.issue` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue children` | `Issue.children` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue documents` | `Issue.documents` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue former-needs` | `Issue.formerNeeds` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue history` | `Issue.history` via `Query.issue`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue inverse-relations` | `Issue.inverseRelations` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue labels` | `Issue.labels` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue needs` | `Issue.needs` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue relations` | `Issue.relations` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue releases` | `Issue.releases` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue shared-access` | `Issue.sharedAccess` via `Query.issue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search attachments` | `Issue.attachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search bot-actor` | `Issue.botActor` via `Query.issueVcsBranchSearch` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search comments` | `Issue.comments` via `Query.issueVcsBranchSearch`; returns comment metadata without body | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search former-needs` | `Issue.formerNeeds` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search needs` | `Issue.needs` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search shared-access` | `Issue.sharedAccess` via `Query.issueVcsBranchSearch`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue id` | Current checkout issue identifier from git/jj context | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue open` | `Query.issue` resolves `Issue.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue export` | `Query.issue` (`GetIssueDetail`), `Issue.comments`, and `Issue.attachments` are assembled into a single markdown file (`<DIR>/<identifier>.md`) holding the metadata header, description, comments, and attachment URLs; capped at 250 comments/attachments with a stderr note when more pages exist | Read-only, writes only local files | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` renders the normalized rows locally and performs no mutation | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue bulk-export` | `Query.team`/`Team.issues` (`ListIssuesByTeam`) for the resolved team are written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only | implemented | `linctl --help` / public CLI tests |
-| Issue | `next` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age. `--dry-run` prints the top candidate and writes nothing; without it the top candidate is started via guarded `Mutation.issueUpdate` (`StartIssue`); `--checkout` runs `git checkout -b <Issue.branchName>` before starting | `--dry-run` read-only; otherwise resource-scoped start of the picked issue | implemented | `linctl --help` / public CLI tests |
-| Issue | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation; `--template` reads `Template.templateData` via `Query.template` (free read) and fills title/description defaults that explicit flags override; `--section NAME=VALUE` fills a markdown section locally before mutation; `--dry-run` renders the assembled draft locally and performs no mutation; `--state` (alias `--status`) normalizes a human state name to a schema state type and resolves `IssueCreateInput.stateId` via `Query.workflowStates` filtered by team + type; `--priority` normalizes human words (`urgent`/`high`/`medium`/`low`/`none`) or `0-4` to `IssueCreateInput.priority` | Team-scoped unless `projectId` is set; `--dry-run` writes nothing | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description`; `--state` (alias `--status`) and `--priority` are normalized the same way as on `issue create`, with `stateId` resolved via `Query.workflowStates` filtered by the issue's team + type | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help` / public CLI tests |
-| Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
-| IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
-| IssueRelation | `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle | implemented | `linctl --help` / public CLI tests |
-| IssueRelation | `issue unrelate` | `Mutation.issueRelationDelete` | Resolve the relation, then compare the pinned team for both linked issues before deleting | implemented | `linctl --help` / public CLI tests |
+| Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title plus log id only | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue bot-actor` | `Issue.botActor` via `Query.issue` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue children` | `Issue.children` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue documents` | `Issue.documents` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue former-needs` | `Issue.formerNeeds` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue history` | `Issue.history` via `Query.issue`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue inverse-relations` | `Issue.inverseRelations` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue labels` | `Issue.labels` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue needs` | `Issue.needs` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue relations` | `Issue.relations` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue releases` | `Issue.releases` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue shared-access` | `Issue.sharedAccess` via `Query.issue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search attachments` | `Issue.attachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search bot-actor` | `Issue.botActor` via `Query.issueVcsBranchSearch` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search comments` | `Issue.comments` via `Query.issueVcsBranchSearch`; returns comment metadata without body | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search former-needs` | `Issue.formerNeeds` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search needs` | `Issue.needs` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search shared-access` | `Issue.sharedAccess` via `Query.issueVcsBranchSearch`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue id` | Current checkout issue identifier from git/jj context | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Issue | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue open` | `Query.issue` resolves `Issue.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue export` | `Query.issue` (`GetIssueDetail`), `Issue.comments`, and `Issue.attachments` are assembled into a single markdown file (`<DIR>/<identifier>.md`) holding the metadata header, description, comments, and attachment URLs; capped at 250 comments/attachments with a stderr note when more pages exist | Read-only, writes only local files | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` renders the normalized rows locally and performs no mutation | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue bulk-export` | `Query.team`/`Team.issues` (`ListIssuesByTeam`) for the resolved team are written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `next` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age. `--dry-run` prints the top candidate and writes nothing; without it the top candidate is started via guarded `Mutation.issueUpdate` (`StartIssue`); `--checkout` runs `git checkout -b <Issue.branchName>` before starting | `--dry-run` read-only; otherwise resource-scoped start of the picked issue | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation; `--template` reads `Template.templateData` via `Query.template` (free read) and fills title/description defaults that explicit flags override; `--section NAME=VALUE` fills a markdown section locally before mutation; `--dry-run` renders the assembled draft locally and performs no mutation; `--state` (alias `--status`) normalizes a human state name to a schema state type and resolves `IssueCreateInput.stateId` via `Query.workflowStates` filtered by team + type; `--priority` normalizes human words (`urgent`/`high`/`medium`/`low`/`none`) or `0-4` to `IssueCreateInput.priority` | Team-scoped unless `projectId` is set; `--dry-run` writes nothing | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description`; `--state` (alias `--status`) and `--priority` are normalized the same way as on `issue create`, with `stateId` resolved via `Query.workflowStates` filtered by the issue's team + type | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue unrelate` | `Mutation.issueRelationDelete` | Resolve the relation, then compare the pinned team for both linked issues before deleting | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Comment | `comment list` | `Query.comments` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Comment | `comment get` | `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Comment | `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
-| Comment | `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
-| Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Comment | `comment update` | `Mutation.commentUpdate` with `CommentUpdateInput` | Resolve the comment, then compare the pinned team through its parent issue; non-issue comments are refused | implemented | `linctl --help` / public CLI tests |
+| Comment | `comment list` | `Query.comments` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment get` | `Query.comment` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment update` | `Mutation.commentUpdate` with `CommentUpdateInput` | Resolve the comment, then compare the pinned team through its parent issue; non-issue comments are refused | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Comment | `comment delete` | `Mutation.commentDelete` | Resolve the comment, then compare the pinned team through its parent issue before deleting; non-issue comments are refused | blocked_needs_design | destructive command needs explicit safety semantics |
 | Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | implemented | `linctl --help` / public CLI tests |
-| Project | `project all` | `Query.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project get` | `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project open` | `Query.project` resolves `Project.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project attachments` | `Project.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project documents` | `Project.documents` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project external-links` | `Project.externalLinks` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project history` | `Project.history` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project initiative-links` | `Project.initiativeToProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project initiatives` | `Project.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project inverse-relations` | `Project.inverseRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project issues` | `Project.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project comments` | `Project.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
-| Project | `project labels` | `Project.labels` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | implemented | `linctl --help` / public CLI tests |
-| Project | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` | implemented | `linctl --help` / public CLI tests |
-| Project | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` | implemented | `linctl --help` / public CLI tests |
-| Project | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes | implemented | `linctl --help` / public CLI tests |
-| Project | `project needs` | `Project.needs` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project relations` | `Project.relations` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project teams` | `Project.teams` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Project | `project updates` | `Project.projectUpdates` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
-| Project | `project filter-suggestion` | `Query.projectFilterSuggestion` | Read-only suggestion payload | implemented | `linctl --help` / public CLI tests |
-| ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectUpdate | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
+| Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project all` | `Query.projects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project get` | `Query.project` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project open` | `Query.project` resolves `Project.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project attachments` | `Project.attachments` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project documents` | `Project.documents` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project external-links` | `Project.externalLinks` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project history` | `Project.history` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project initiative-links` | `Project.initiativeToProjects` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project initiatives` | `Project.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project inverse-relations` | `Project.inverseRelations` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project issues` | `Project.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project comments` | `Project.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project labels` | `Project.labels` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project needs` | `Project.needs` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project relations` | `Project.relations` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project teams` | `Project.teams` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project updates` | `Project.projectUpdates` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project filter-suggestion` | `Query.projectFilterSuggestion` | Read-only suggestion payload | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectUpdate | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | ProjectUpdate | `project-update create` | `Mutation.projectUpdateCreate` with `ProjectUpdateCreateInput` | Resource-scoped, compare `project_id` (pinned project) and team ownership | blocked_needs_design | write command needs explicit target and safety semantics |
 | ProjectUpdate | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectStatus | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload | implemented | `linctl --help` / public CLI tests |
+| ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectStatus | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: organization project status configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectLabel | `project-label list` | `Query.projectLabels` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectLabel | `project-label get` | `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectLabel | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectLabel | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectLabel | `project-label list` | `Query.projectLabels` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label get` | `Query.projectLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectLabel | `project-label create` | `Mutation.projectLabelCreate` | Blocked: organization label configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | ProjectLabel | `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectRelation | `project-relation list` | `Query.projectRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectRelation | `project-relation get` | `Query.projectRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
+| ProjectRelation | `project-relation list` | `Query.projectRelations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectRelation | `project-relation get` | `Query.projectRelation` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectRelation | `project-relation create` | `Mutation.projectRelationCreate` | Blocked: create must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectRelation | `project-relation update` | `Mutation.projectRelationUpdate` | Blocked: update must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectRelation | `project-relation delete` | `Mutation.projectRelationDelete` | Blocked: destructive command needs explicit project dependency safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Cycle | `cycle list` | `Query.cycles` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Cycle | `cycle get` | `Query.cycle` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Cycle | `cycle issues` | `Cycle.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Cycle | `cycle uncompleted-issues` | `Cycle.uncompletedIssuesUponClose` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Cycle | `cycle create` | `Mutation.cycleCreate` | Team-scoped | implemented | `linctl --help` / public CLI tests |
-| Cycle | `cycle update` | `Mutation.cycleUpdate` | Team-scoped | implemented | `linctl --help` / public CLI tests |
-| Cycle | `cycle archive` | `Mutation.cycleArchive` | Team-scoped | implemented | `linctl --help` / public CLI tests |
-| Sprint | `sprint current` | `Query.cycles` filtered to active/current cycles | Read-only | implemented | `linctl --help` / public CLI tests |
-| Sprint | `sprint report` | `Query.cycle` plus `Cycle.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectMilestone | `project-milestone all` | `Query.projectMilestones` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectMilestone | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectMilestone | `project-milestone get` | `Query.projectMilestone` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectMilestone | `project-milestone issues` | `ProjectMilestone.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| ProjectMilestone | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` | implemented | `linctl --help` / public CLI tests |
-| ProjectMilestone | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project | implemented | `linctl --help` / public CLI tests |
+| Cycle | `cycle list` | `Query.cycles` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle get` | `Query.cycle` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle issues` | `Cycle.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Cycle | `cycle uncompleted-issues` | `Cycle.uncompletedIssuesUponClose` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Cycle | `cycle create` | `Mutation.cycleCreate` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle update` | `Mutation.cycleUpdate` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle archive` | `Mutation.cycleArchive` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Sprint | `sprint current` | `Query.cycles` filtered to active/current cycles | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Sprint | `sprint report` | `Query.cycle` plus `Cycle.issues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone all` | `Query.projectMilestones` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone get` | `Query.projectMilestone` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone issues` | `ProjectMilestone.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| ProjectMilestone | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectMilestone | `project-milestone delete` | `Mutation.projectMilestoneDelete` | Resource-scoped, compare resolved project | blocked_needs_design | destructive command needs explicit safety semantics |
-| Document | `document list` | `Query.documents` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Document | `document get` | `Query.document` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Document | `document comments` | `Document.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
+| Document | `document list` | `Query.documents` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Document | `document get` | `Query.document` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Document | `document comments` | `Document.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Document | `document create` | `Mutation.documentCreate` with `DocumentCreateInput.teamId` from the resolved team and optional `projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Team-scoped unless a `project_id` is pinned | blocked_needs_design | write command needs explicit target and safety semantics |
 | Document | `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `team` (and pinned `project`) before mutating | Resource-scoped, compare team and pinned project | blocked_needs_design | write command needs explicit target and safety semantics |
 | Document | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Label | `label list` | `Query.issueLabels` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Label | `label get` | `Query.issueLabel` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Label | `label children` | `IssueLabel.children` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Label | `label issues` | `IssueLabel.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Label | `label list` | `Query.issueLabels` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label get` | `Query.issueLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label children` | `IssueLabel.children` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Label | `label issues` | `IssueLabel.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Label | `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Label | `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Team | `team list` | `Query.teams` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team get` | `Query.team` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team list` | `Query.teams` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Team | `team get` | `Query.team` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Team | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Team | `team cycles` | `Team.cycles` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team issues` | `Team.issues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team labels` | `Team.labels` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team members` | `Team.members` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team memberships` | `Team.memberships` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team projects` | `Team.projects` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team release-pipelines` | `Team.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team states` | `Team.states` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team git-automation-states` | `Team.gitAutomationStates` | Read-only, rule/state/target-branch metadata only | implemented | `linctl --help` / public CLI tests |
-| Team | `team templates` | `Team.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team-membership list` | `Query.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Team | `team-membership get` | `Query.teamMembership` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Team | `team cycles` | `Team.cycles` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team issues` | `Team.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team labels` | `Team.labels` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team members` | `Team.members` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team memberships` | `Team.memberships` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team projects` | `Team.projects` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team release-pipelines` | `Team.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team states` | `Team.states` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team git-automation-states` | `Team.gitAutomationStates` | Read-only, rule/state/target-branch metadata only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team templates` | `Team.templates` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team-membership list` | `Query.teamMemberships` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Team | `team-membership get` | `Query.teamMembership` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Team | `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team-membership delete` | `Mutation.teamMembershipDelete` | Blocked: destructive membership command needs explicit admin safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| User | `user list` | `Query.users` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user get` | `Query.user` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user drafts` | `User.drafts` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings get` | `Query.userSettings` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings notification-categories` | `Query.userSettings.notificationCategoryPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings notification-category CATEGORY` | `Query.userSettings.notificationCategoryPreferences.<category>` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings notification-channels` | `Query.userSettings.notificationChannelPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings notification-delivery` | `Query.userSettings.notificationDeliveryPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings mobile-delivery` | `Query.userSettings.notificationDeliveryPreferences.mobile` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings mobile-schedule` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings mobile-schedule-day DAY` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule.<day>` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings theme` | `Query.userSettings.theme` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings custom-theme` | `Query.userSettings.theme.custom` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user settings custom-sidebar-theme` | `Query.userSettings.theme.custom.sidebar` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user assigned-issues` | `User.assignedIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user created-issues` | `User.createdIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user delegated-issues` | `User.delegatedIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user team-memberships` | `User.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user teams` | `User.teams` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user my-assigned-issues` | `User.assignedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user my-created-issues` | `User.createdIssues` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user my-delegated-issues` | `User.delegatedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user my-team-memberships` | `User.teamMemberships` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| User | `user my-teams` | `User.teams` via `Query.viewer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help` / public CLI tests |
-| WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
-| WorkflowState | `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only | implemented | `linctl --help` / public CLI tests |
+| User | `user list` | `Query.users` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user get` | `Query.user` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user drafts` | `User.drafts` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings get` | `Query.userSettings` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-categories` | `Query.userSettings.notificationCategoryPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-category CATEGORY` | `Query.userSettings.notificationCategoryPreferences.<category>` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-channels` | `Query.userSettings.notificationChannelPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-delivery` | `Query.userSettings.notificationDeliveryPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings mobile-delivery` | `Query.userSettings.notificationDeliveryPreferences.mobile` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings mobile-schedule` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings mobile-schedule-day DAY` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule.<day>` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings theme` | `Query.userSettings.theme` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings custom-theme` | `Query.userSettings.theme.custom` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings custom-sidebar-theme` | `Query.userSettings.theme.custom.sidebar` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user assigned-issues` | `User.assignedIssues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user created-issues` | `User.createdIssues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user delegated-issues` | `User.delegatedIssues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user team-memberships` | `User.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user teams` | `User.teams` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user my-assigned-issues` | `User.assignedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-created-issues` | `User.createdIssues` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-delegated-issues` | `User.delegatedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-team-memberships` | `User.teamMemberships` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-teams` | `User.teams` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| WorkflowState | `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| TimeSchedule | `time-schedule list` | `Query.timeSchedules` | Read-only | implemented | `linctl --help` / public CLI tests |
-| TimeSchedule | `time-schedule get` | `Query.timeSchedule` | Read-only | implemented | `linctl --help` / public CLI tests |
+| TimeSchedule | `time-schedule list` | `Query.timeSchedules` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TimeSchedule | `time-schedule get` | `Query.timeSchedule` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | TimeSchedule | `time-schedule create` | `Mutation.timeScheduleCreate` | Blocked: schedule create needs explicit owner/admin safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TimeSchedule | `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TimeSchedule | `time-schedule delete` | `Mutation.timeScheduleDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| TriageResponsibility | `triage-responsibility list` | `Query.triageResponsibilities` | Read-only | implemented | `linctl --help` / public CLI tests |
-| TriageResponsibility | `triage-responsibility get` | `Query.triageResponsibility` | Read-only | implemented | `linctl --help` / public CLI tests |
-| TriageResponsibility | `triage-responsibility manual-selection` | `TriageResponsibility.manualSelection` via `Query.triageResponsibility` | Read-only | implemented | `linctl --help` / public CLI tests |
+| TriageResponsibility | `triage-responsibility list` | `Query.triageResponsibilities` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TriageResponsibility | `triage-responsibility get` | `Query.triageResponsibility` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TriageResponsibility | `triage-responsibility manual-selection` | `TriageResponsibility.manualSelection` via `Query.triageResponsibility` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | TriageResponsibility | `triage-responsibility create` | `Mutation.triageResponsibilityCreate` | Blocked: team triage configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TriageResponsibility | `triage-responsibility update` | `Mutation.triageResponsibilityUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TriageResponsibility | `triage-responsibility delete` | `Mutation.triageResponsibilityDelete` | Blocked: destructive team triage configuration command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| SLA Configuration | `sla-configuration list` | `Query.slaConfigurations` | Read-only | implemented | `linctl --help` / public CLI tests |
-| SemanticSearch | `semantic-search` | `Query.semanticSearch` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Search | `search documents` | `Query.searchDocuments` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Search | `search issues` | `Query.searchIssues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Search | `search projects` | `Query.searchProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help` / public CLI tests |
+| SLA Configuration | `sla-configuration list` | `Query.slaConfigurations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| SemanticSearch | `semantic-search` | `Query.semanticSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Search | `search documents` | `Query.searchDocuments` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Search | `search issues` | `Query.searchIssues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Search | `search projects` | `Query.searchProjects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Template | `template create` | `Mutation.templateCreate` | Blocked: create can be organization-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Template | `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's organization, team, or pipeline scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Template | `template delete` | `Mutation.templateDelete` | Blocked: destructive command needs explicit template-scope safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative history` | `Initiative.history` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative links` | `Initiative.links` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative sub-initiatives` | `Initiative.subInitiatives` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Initiative | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects | implemented | `linctl --help` / public CLI tests |
+| Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative history` | `Initiative.history` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative links` | `Initiative.links` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative sub-initiatives` | `Initiative.subInitiatives` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| InitiativeRelation | `initiative-relation list` | `Query.initiativeRelations` | Read-only | implemented | `linctl --help` / public CLI tests |
-| InitiativeRelation | `initiative-relation get` | `Query.initiativeRelation` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeRelation | `initiative-relation list` | `Query.initiativeRelations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeRelation | `initiative-relation get` | `Query.initiativeRelation` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | InitiativeRelation | `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeRelation | `initiative-relation update` | `Mutation.initiativeRelationUpdate` | Blocked: update must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeRelation | `initiative-relation delete` | `Mutation.initiativeRelationDelete` | Blocked: destructive command needs explicit hierarchy safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| InitiativeToProject | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only | implemented | `linctl --help` / public CLI tests |
-| InitiativeToProject | `initiative-to-project get` | `Query.initiativeToProject` | Read-only | implemented | `linctl --help` / public CLI tests |
+| InitiativeToProject | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeToProject | `initiative-to-project get` | `Query.initiativeToProject` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | InitiativeToProject | `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeToProject | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeToProject | `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| RoadmapToProject | `roadmap-to-project list` | `Query.roadmapToProjects` | Legacy read-only | implemented | `linctl --help` / public CLI tests |
-| RoadmapToProject | `roadmap-to-project get` | `Query.roadmapToProject` | Legacy read-only | implemented | `linctl --help` / public CLI tests |
+| RoadmapToProject | `roadmap-to-project list` | `Query.roadmapToProjects` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| RoadmapToProject | `roadmap-to-project get` | `Query.roadmapToProject` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | RoadmapToProject | `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | RoadmapToProject | `roadmap-to-project update` | `Mutation.roadmapToProjectUpdate` | Blocked: deprecated update must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | RoadmapToProject | `roadmap-to-project delete` | `Mutation.roadmapToProjectDelete` | Blocked: destructive deprecated association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help` / public CLI tests |
-| InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help` / public CLI tests |
-| InitiativeUpdate | `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests |
+| InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeUpdate | `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeUpdate | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeUpdate | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeUpdate | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Roadmap | `roadmap list` | `Query.roadmaps` | Legacy read-only | implemented | `linctl --help` / public CLI tests |
-| Roadmap | `roadmap get` | `Query.roadmap` | Legacy read-only | implemented | `linctl --help` / public CLI tests |
-| Roadmap | `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Legacy read-only | implemented | `linctl --help` / public CLI tests |
+| Roadmap | `roadmap list` | `Query.roadmaps` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Roadmap | `roadmap get` | `Query.roadmap` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Roadmap | `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Roadmap | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap delete` | `Mutation.roadmapDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| CustomView | `custom-view list` | `Query.customViews` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view get` | `Query.customView` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view initiatives` | `Query.customView_initiatives` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view issues` | `Query.customView_issues` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view projects` | `Query.customView_projects` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only | implemented | `linctl --help` / public CLI tests |
-| CustomView | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only | implemented | `linctl --help` / public CLI tests |
+| CustomView | `custom-view list` | `Query.customViews` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| CustomView | `custom-view get` | `Query.customView` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| CustomView | `custom-view initiatives` | `Query.customView_initiatives` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view issues` | `Query.customView_issues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view projects` | `Query.customView_projects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
 | CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | CustomView | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Customer | `customer list` | `Query.customers` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer get` | `Query.customer` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer-need list` | `Query.customerNeeds` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer-need get` | `Query.customerNeed` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer-need project-attachment` | `CustomerNeed.projectAttachment` via `Query.customerNeed` | Read-only, metadata-only projection | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer-status list` | `Query.customerStatuses` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer-status get` | `Query.customerStatus` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer-tier list` | `Query.customerTiers` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Customer | `customer-tier get` | `Query.customerTier` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Customer | `customer list` | `Query.customers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer get` | `Query.customer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-need list` | `Query.customerNeeds` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-need get` | `Query.customerNeed` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-need project-attachment` | `CustomerNeed.projectAttachment` via `Query.customerNeed` | Read-only, metadata-only projection | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-status list` | `Query.customerStatuses` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-status get` | `Query.customerStatus` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-tier list` | `Query.customerTiers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-tier get` | `Query.customerTier` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Customer | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
@@ -1723,38 +1723,38 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Customer | `customer-tier create` | `Mutation.customerTierCreate` | Blocked: organization tier configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: organization tier configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-tier delete` | `Mutation.customerTierDelete` | Blocked: destructive admin command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Favorite | `favorite list` | `Query.favorites` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Favorite | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Favorite | `favorite get` | `Query.favorite` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Favorite | `favorite list` | `Query.favorites` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Favorite | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Favorite | `favorite get` | `Query.favorite` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Favorite | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Favorite | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Favorite | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Emoji | `emoji list` | `Query.emojis` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Emoji | `emoji get` | `Query.emoji` | Read-only | implemented | `linctl --help` / public CLI tests |
+| Emoji | `emoji list` | `Query.emojis` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Emoji | `emoji get` | `Query.emoji` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| File | `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Workspace asset, not target-pinned; prints the asset URL for a later guarded attachment write | implemented | `linctl --help` / public CLI tests |
-| File | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment get` | `Query.attachment` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue get` | `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue comments` | `Issue.comments` via `Query.attachmentIssue`; returns comment metadata without body | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue former-needs` | `Issue.formerNeeds` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue needs` | `Issue.needs` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue shared-access` | `Issue.sharedAccess` via `Query.attachmentIssue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata | implemented | `linctl --help` / public CLI tests |
-| Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help` / public CLI tests |
+| File | `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Workspace asset, not target-pinned; prints the asset URL for a later guarded attachment write | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| File | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment get` | `Query.attachment` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue get` | `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue comments` | `Issue.comments` via `Query.attachmentIssue`; returns comment metadata without body | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue former-needs` | `Issue.formerNeeds` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue needs` | `Issue.needs` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue shared-access` | `Issue.sharedAccess` via `Query.attachmentIssue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |

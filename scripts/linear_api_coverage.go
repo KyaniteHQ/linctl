@@ -50,6 +50,11 @@ type domainCommand struct {
 	Scope   string
 }
 
+type domainReference struct {
+	RootKey       string
+	OperationName string
+}
+
 func main() {
 	upstreamDir := flag.String("upstream", "/tmp/linctl-upstream-linear", "upstream linear repo checkout")
 	outputPath := flag.String("output", "docs/linear-api-coverage.md", "coverage ledger path")
@@ -73,6 +78,7 @@ func main() {
 	commandNames := commandInventorySet()
 
 	implementedRoots := implementedRootSet(localOperations)
+	operationRoots := operationRootSet(localOperations)
 	rootKinds := rootKindSet(upstreamQueries, upstreamMutations)
 	localOperationNames := mapSet(localGenerated)
 
@@ -87,12 +93,13 @@ func main() {
 		domainCommands,
 		commandNames,
 		implementedRoots,
+		operationRoots,
 	)
 	writeSDKTable(&output, sdkMethods, commandNames, implementedRoots, rootKinds)
 	writeRootTable(&output, "Upstream Query Root Fields", upstreamQueries, implementedRoots)
 	writeRootTable(&output, "Upstream Mutation Root Fields", upstreamMutations, implementedRoots)
 	writeLocalOperationsTable(&output, localOperations, localOperationNames)
-	writeDomainCommandTable(&output, domainCommands, commandNames)
+	writeDomainCommandTable(&output, domainCommands, commandNames, implementedRoots, operationRoots)
 
 	// #nosec G306 -- this generated markdown ledger is intended to be world-readable repo documentation.
 	if err := os.WriteFile(*outputPath, output.Bytes(), 0o644); err != nil {
@@ -134,6 +141,7 @@ func writeSummary(
 	domainCommands []domainCommand,
 	commandNames map[string]bool,
 	implementedRoots map[string]bool,
+	operationRoots map[string][]string,
 ) {
 	implementedQueryCount := countImplemented(queries, implementedRoots)
 	implementedMutationCount := countImplemented(mutations, implementedRoots)
@@ -173,7 +181,7 @@ func writeSummary(
 		output,
 		"| Domain-map commands | %d | %d | %d |\n\n",
 		len(domainCommands),
-		countImplementedDomain(domainCommands, commandNames),
+		countImplementedDomain(domainCommands, commandNames, implementedRoots, operationRoots),
 		len(domainCommands),
 	)
 }
@@ -230,7 +238,13 @@ func writeLocalOperationsTable(output *bytes.Buffer, operations []localOperation
 	fmt.Fprintf(output, "\n")
 }
 
-func writeDomainCommandTable(output *bytes.Buffer, commands []domainCommand, commandNames map[string]bool) {
+func writeDomainCommandTable(
+	output *bytes.Buffer,
+	commands []domainCommand,
+	commandNames map[string]bool,
+	implementedRoots map[string]bool,
+	operationRoots map[string][]string,
+) {
 	fmt.Fprintf(output, "## Repo Domain-Map Commands\n\n")
 	fmt.Fprintf(output, "| Domain | Command | Backing | Scope | Status | Evidence |\n")
 	fmt.Fprintf(output, "| --- | --- | --- | --- | --- | --- |\n")
@@ -238,8 +252,7 @@ func writeDomainCommandTable(output *bytes.Buffer, commands []domainCommand, com
 		status := "accepted_gap"
 		evidence := "planned in `docs/domain-map.md`"
 		if commandNames[command.Command] {
-			status = "implemented"
-			evidence = "`linctl --help` / public CLI tests"
+			status, evidence = classifyDomainCommand(command, implementedRoots, operationRoots)
 		}
 		if domainCommandBlocked(command.Command) {
 			status = "blocked_needs_design"
@@ -272,6 +285,29 @@ func writeDomainCommandTable(output *bytes.Buffer, commands []domainCommand, com
 		)
 	}
 	fmt.Fprintf(output, "\n")
+}
+
+func classifyDomainCommand(
+	command domainCommand,
+	implementedRoots map[string]bool,
+	operationRoots map[string][]string,
+) (string, string) {
+	references := domainCommandReferences(command)
+	if len(references) == 0 {
+		return "implemented", "`linctl --help` / public CLI tests; no direct GraphQL root in backing"
+	}
+	for _, reference := range references {
+		if implementedRoots[reference.RootKey] {
+			return "implemented", "`linctl --help`, `docs/domain-map.md`, and local GraphQL root"
+		}
+		for _, key := range operationRoots[reference.OperationName] {
+			if implementedRoots[key] {
+				return "implemented", "`linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root"
+			}
+		}
+	}
+
+	return "accepted_gap", "public command exists, but domain-map backing is not matched to local GraphQL roots"
 }
 
 // statusOrder lists accounting statuses from most to least settled for stable output.
@@ -629,6 +665,20 @@ func implementedRootSet(operations []localOperation) map[string]bool {
 		}
 	}
 	return implemented
+}
+
+func operationRootSet(operations []localOperation) map[string][]string {
+	roots := map[string][]string{}
+	for _, operation := range operations {
+		keys := make([]string, 0, len(operation.RootFields))
+		for _, field := range operation.RootFields {
+			keys = append(keys, rootKey(operation.Kind, field))
+		}
+		sort.Strings(keys)
+		roots[operation.Name] = keys
+		roots[strings.ToLower(operation.Name)] = keys
+	}
+	return roots
 }
 
 func rootKindSet(queries []rootField, mutations []rootField) map[string]string {
@@ -1213,16 +1263,46 @@ func hasWritePrefix(lowerName string) bool {
 	return false
 }
 
-func countImplementedDomain(commands []domainCommand, commandNames map[string]bool) int {
+func countImplementedDomain(
+	commands []domainCommand,
+	commandNames map[string]bool,
+	implementedRoots map[string]bool,
+	operationRoots map[string][]string,
+) int {
 	return countWhere(commands, func(command domainCommand) bool {
-		return commandNames[command.Command]
+		status, _ := classifyDomainCommand(command, implementedRoots, operationRoots)
+		return commandNames[command.Command] && status == "implemented"
 	})
 }
 
 var (
 	kebabCasePattern      = regexp.MustCompile(`([a-z0-9])([A-Z])`)
 	commandLookupReplacer = strings.NewReplacer("-", " ", "_", " ")
+	domainRootPattern     = regexp.MustCompile(`\b(Query|Mutation)\.([A-Za-z_][A-Za-z0-9_]*)`)
 )
+
+func domainCommandReferences(command domainCommand) []domainReference {
+	matches := domainRootPattern.FindAllStringSubmatch(command.Backing, -1)
+	references := make([]domainReference, 0, len(matches))
+	seen := map[string]bool{}
+	for _, match := range matches {
+		kind := strings.ToLower(match[1])
+		name := match[2]
+		key := rootKey(kind, name)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		references = append(references, domainReference{
+			RootKey:       key,
+			OperationName: name,
+		})
+	}
+	sort.Slice(references, func(left int, right int) bool {
+		return references[left].RootKey < references[right].RootKey
+	})
+	return references
+}
 
 func kebabCase(value string) string {
 	return strings.ToLower(kebabCasePattern.ReplaceAllString(value, `${1}-${2}`))
