@@ -139,7 +139,7 @@ func Test_runProjectArchive_propagates_port_error(t *testing.T) {
 }
 
 func Test_projectClientAdapter_forwards_to_client(t *testing.T) {
-	adapter := projectAdapterFor(testCommandRuntime(commandFlowFakeClient{}))
+	adapter := commandAdapterFor(testCommandRuntime(commandFlowFakeClient{}))
 	ctx := context.Background()
 
 	created, err := adapter.CreateProject(ctx, client.ProjectCreateRequest{Name: "Created project"})

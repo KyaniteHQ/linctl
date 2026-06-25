@@ -20,7 +20,7 @@ func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 
-			return runProjectCreate(ctx, command, options, projectAdapterFor(runtime), request)
+			return runProjectCreate(ctx, command, options, commandAdapterFor(runtime), request)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "project name")
@@ -41,7 +41,7 @@ func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *
 			}
 			request.ID = args[0]
 
-			return runProjectUpdate(ctx, command, options, projectAdapterFor(runtime), request)
+			return runProjectUpdate(ctx, command, options, commandAdapterFor(runtime), request)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "new project name")
@@ -60,7 +60,7 @@ func addProjectArchiveCommand(ctx context.Context, root *cobra.Command, options 
 				return err
 			}
 
-			return runProjectArchive(ctx, command, options, projectAdapterFor(runtime), args[0])
+			return runProjectArchive(ctx, command, options, commandAdapterFor(runtime), args[0])
 		},
 	})
 }

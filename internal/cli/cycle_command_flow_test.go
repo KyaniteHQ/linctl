@@ -503,6 +503,16 @@ func Test_CycleCommandFlows_report_cycle_write_edges(t *testing.T) {
 			wantMessage: "runtime failed",
 		},
 		{
+			name:        "update runtime",
+			args:        []string{"cycle", "update", "cycle-id", "--name", "Updated cycle"},
+			wantMessage: "runtime failed",
+		},
+		{
+			name:        "archive runtime",
+			args:        []string{"cycle", "archive", "cycle-id"},
+			wantMessage: "runtime failed",
+		},
+		{
 			name:        "create operation",
 			args:        []string{"cycle", "create", "--starts-at", "2026-07-01T00:00:00Z", "--ends-at", "2026-07-15T00:00:00Z"},
 			fake:        cycleCommandFlowFakeClient{failOperation: "CycleCreate"},
