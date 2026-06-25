@@ -31,6 +31,12 @@ type fakeIssuePort struct {
 	commented     client.IssueCommentResult
 	commentReq    client.IssueCommentRequest
 	commentErr    error
+	relation      client.IssueRelationSummary
+	relationReq   client.IssueRelationCreateRequest
+	relationErr   error
+	deletedID     string
+	deleteID      string
+	deleteErr     error
 	resolved      client.ResolvedTarget
 	resolveErr    error
 	listAll       client.IssueList
@@ -81,6 +87,21 @@ func (port *fakeIssuePort) CommentOnIssue(
 	port.commentReq = request
 
 	return port.commented, port.commentErr
+}
+
+func (port *fakeIssuePort) CreateIssueRelation(
+	_ context.Context,
+	request client.IssueRelationCreateRequest,
+) (client.IssueRelationSummary, error) {
+	port.relationReq = request
+
+	return port.relation, port.relationErr
+}
+
+func (port *fakeIssuePort) DeleteIssueRelation(_ context.Context, relationID string) (string, error) {
+	port.deleteID = relationID
+
+	return port.deletedID, port.deleteErr
 }
 
 func (port *fakeIssuePort) CreateIssue(
@@ -302,6 +323,75 @@ func Test_runIssueBodyWriteCommand_propagates_port_error(t *testing.T) {
 	require.ErrorContains(t, err, "comment failed")
 }
 
+func Test_runIssueRelationCreate_calls_the_port_and_renders(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		relation: client.IssueRelationSummary{
+			ID:                     "rel-1",
+			Type:                   "blocks",
+			IssueIdentifier:        "LIT-1",
+			RelatedIssueIdentifier: "LIT-2",
+		},
+	}
+
+	err := runIssueRelationCreate(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.IssueRelationCreateRequest{
+			IssueID:        "LIT-1",
+			RelatedIssueID: "LIT-2",
+			Type:           "blocks",
+		},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-1", port.relationReq.IssueID)
+	require.Equal(t, "LIT-2", port.relationReq.RelatedIssueID)
+	require.Equal(t, "blocks", port.relationReq.Type)
+	require.Contains(t, stdout.String(), "rel-1 blocks LIT-1 -> LIT-2")
+}
+
+func Test_runIssueRelationCreate_propagates_port_error(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	port := &fakeIssuePort{relationErr: errors.New("relation failed")}
+
+	err := runIssueRelationCreate(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.IssueRelationCreateRequest{
+			IssueID:        "LIT-1",
+			RelatedIssueID: "LIT-2",
+			Type:           "related",
+		},
+	)
+
+	require.ErrorContains(t, err, "relation failed")
+}
+
+func Test_runIssueRelationDelete_calls_the_port_and_renders(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{deletedID: "rel-1"}
+
+	err := runIssueRelationDelete(context.Background(), command, &rootOptions{}, port, "rel-1")
+
+	require.NoError(t, err)
+	require.Equal(t, "rel-1", port.deleteID)
+	require.Contains(t, stdout.String(), "rel-1 deleted")
+}
+
+func Test_runIssueRelationDelete_propagates_port_error(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	port := &fakeIssuePort{deleteErr: errors.New("delete failed")}
+
+	err := runIssueRelationDelete(context.Background(), command, &rootOptions{}, port, "rel-1")
+
+	require.ErrorContains(t, err, "delete failed")
+}
+
 func Test_issueList_lists_across_teams_when_all_teams(t *testing.T) {
 	port := &fakeIssuePort{
 		listAll: client.IssueList{Issues: []client.IssueSummary{{Identifier: "LIT-1"}}},
@@ -387,4 +477,16 @@ func Test_issueClientAdapter_forwards_to_client(t *testing.T) {
 
 	_, err = adapter.GetIssueDependencies(ctx, "LIT-1", 5)
 	require.NoError(t, err)
+
+	relation, err := adapter.CreateIssueRelation(ctx, client.IssueRelationCreateRequest{
+		IssueID:        "LIT-1",
+		RelatedIssueID: "LIT-2",
+		Type:           "related",
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, relation.ID)
+
+	deletedID, err := adapter.DeleteIssueRelation(ctx, relation.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, deletedID)
 }

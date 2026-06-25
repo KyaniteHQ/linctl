@@ -43,6 +43,19 @@ type issueCommenter interface {
 	CommentOnIssue(ctx context.Context, request client.IssueCommentRequest) (client.IssueCommentResult, error)
 }
 
+// issueRelationCreator is the port the issue relate command depends on.
+type issueRelationCreator interface {
+	CreateIssueRelation(
+		ctx context.Context,
+		request client.IssueRelationCreateRequest,
+	) (client.IssueRelationSummary, error)
+}
+
+// issueRelationDeleter is the port the issue unrelate command depends on.
+type issueRelationDeleter interface {
+	DeleteIssueRelation(ctx context.Context, relationID string) (string, error)
+}
+
 // issueReader is the port the issue list command depends on for its dispatch:
 // it either lists across teams or resolves the pinned team and lists with the
 // assembled filters.
