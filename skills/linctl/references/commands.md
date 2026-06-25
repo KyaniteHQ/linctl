@@ -56,6 +56,36 @@ Flags:
       --limit int   maximum AgentActivities to return (default 50)
 ```
 
+### linctl agent-session
+
+Read Linear AgentSessions
+
+```
+linctl agent-session
+```
+
+### linctl agent-session get
+
+Get one AgentSession by id
+
+```
+linctl agent-session get AGENT_SESSION_ID
+```
+
+### linctl agent-session list
+
+List Linear AgentSessions
+
+```
+linctl agent-session list [flags]
+```
+
+Flags:
+
+```
+      --limit int   maximum AgentSessions to return (default 50)
+```
+
 ### linctl agent-skill
 
 Read Linear AgentSkills
@@ -1425,9 +1455,14 @@ linctl issue create [flags]
 Flags:
 
 ```
+      --assignee string           assign the issue to a user id
       --description string        issue description
       --description-file string   read issue description from file
       --dry-run                   render the assembled issue without creating it
+      --due-date string           set the due date (YYYY-MM-DD)
+      --estimate int              set the estimate (validated against team config)
+      --label stringArray         attach a label by id (repeatable)
+      --parent string             create as a sub-issue of a parent issue id
       --priority string           set priority (urgent/high/medium/low/none or 0-4)
       --section stringArray       fill a markdown section: NAME=VALUE (repeatable)
       --state string              set workflow state type (e.g. started, completed)
@@ -1599,6 +1634,21 @@ Flags:
 
 ```
       --limit int   maximum labels to return (default 50)
+```
+
+### linctl issue link
+
+Attach a URL to an issue after pinned-target comparison
+
+```
+linctl issue link URL ISSUE_ID [flags]
+```
+
+Flags:
+
+```
+      --subtitle string   attachment subtitle
+      --title string      attachment title
 ```
 
 ### linctl issue list
@@ -1819,8 +1869,14 @@ Flags:
 ```
       --append string             text to append to the issue description
       --append-file string        read text to append from file
+      --assignee string           reassign the issue to a user id
+      --clear-due-date            clear the due date
+      --clear-estimate            clear the estimate
       --description string        new issue description
       --description-file string   read new issue description from file
+      --due-date string           set the due date (YYYY-MM-DD)
+      --estimate int              set the estimate (validated against team config)
+      --label stringArray         set labels by id (repeatable, replaces existing)
       --priority string           set priority (urgent/high/medium/low/none or 0-4)
       --state string              set workflow state type (e.g. started, completed)
       --status string             alias for --state

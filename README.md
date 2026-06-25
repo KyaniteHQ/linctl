@@ -5,17 +5,68 @@
 [![Release](https://img.shields.io/github/v/release/KyaniteHQ/linctl)](https://github.com/KyaniteHQ/linctl/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/KyaniteHQ/linctl)](LICENSE)
 
-> A **Linear control surface** for agent-safe coordination — free reads, target-pinned guarded writes.
+> **Zero standing tokens. Writes that can't hit the wrong team.**
 
-`linctl` is a schema-aligned Go CLI for Linear. Reads are broad and cheap, so an agent
-can inspect anything. Writes are different: every mutation re-resolves the active token
-and **fails closed** unless the resolved org/team/project matches the target pinned for
-the repo. One agent, scoped to exactly one place it is allowed to change.
+Your agent's Linear MCP server can eat ~13k tokens of tool definitions before it does any
+work.[^mcp] `linctl` is one binary: zero standing tokens, reads are free. And every write
+re-resolves the active token and **fails closed** when the resolved org/team doesn't match
+the target pinned for the repo, so an agent with a stale token can't create issues in the
+wrong team. There is no bypass flag.
+
+![linctl: reads are free; the same write to a team the token can't reach fails closed with TARGET_MISMATCH](docs/assets/demo.gif)
 
 ```bash
 linctl issue list --mine --state started     # read anything
 linctl issue create --title "Spike: exports" # write only inside the pinned target
 ```
+
+## 🔒 How writes stay safe
+
+linctl's vocabulary deliberately separates reads from writes:
+
+- **Pinned Target** — the org/team/(optional project) a repo declares in `.linctl.toml`
+  as the *only* allowed destination for writes.
+- **Resolved Target** — the org/team/project proven from the active token at command time.
+- **Target Mismatch** — when the two disagree. For a guarded write this is a **hard stop**,
+  never a prompt or a warning.
+
+![Guarded write flow: resolve the target from the active token, compare it to the pinned target, proceed on a match or hard-stop with no mutation on a mismatch](docs/assets/guard-flow.png)
+
+The guard checks the **token**, not just the file. An agent that edits `.linctl.toml` to
+point at another org still can't write there unless the token *it holds* also resolves to
+that org. Team-scoped creates compare org + team (the entity does not exist yet);
+resource-scoped updates and archives resolve the existing entity first, then compare the
+pinned `project_id` when one is configured. There is **no bypass flag** — `--org`,
+`--team`, and `--project` set the pinned target, they do not relax the guard. See
+[`docs/adr/0001-target-pinned-linear-writes.md`](docs/adr/0001-target-pinned-linear-writes.md).
+
+<details>
+<summary>Mermaid source for the diagram above</summary>
+
+```mermaid
+flowchart LR
+    A[linctl write command] --> B[Resolve Target<br/>from active token]
+    B --> C{Resolved matches<br/>Pinned Target?}
+    C -->|match| D[Guarded write proceeds]
+    C -->|mismatch| E[Target Mismatch<br/>hard stop · no mutation]
+```
+
+</details>
+
+## 🤖 Agent-first
+
+linctl is built to be driven by an LLM agent from a Bash tool, with deterministic output
+and no standing context cost:
+
+- **No MCP tax.** The Linear MCP server loads ~13k tokens of tool definitions into every
+  session before any work.[^mcp] linctl loads none — `linctl usage` returns a compact,
+  on-demand reference (~400 tokens) and `linctl <group> --help` covers the rest.
+- **Structured output.** `--json` / `--compact` / `--fields` / `--id-only` give stable,
+  pipeable shapes; diagnostics go to stderr so stdout stays clean.
+- **Drop-in skill.** [`skills/linctl/SKILL.md`](skills/linctl/SKILL.md) teaches an agent to
+  drive linctl and ships an `AGENTS.md` snippet for consuming repos. Verify a checkout with
+  no credentials via `bash skills/linctl/scripts/linctl-offline-smoke.sh`, or do a read-only
+  token check via `bash skills/linctl/scripts/linctl-smoke.sh`.
 
 ## ⚡ Quickstart
 
@@ -27,6 +78,10 @@ brew install --cask KyaniteHQ/linctl/linctl
 
 # Go toolchain (macOS / Linux / Windows)
 go install github.com/KyaniteHQ/linctl/cmd/linctl@latest
+```
+
+```bash
+linctl --version && linctl usage   # zero-config smoke check — no token required
 ```
 
 Prebuilt binaries (darwin/linux/windows × amd64/arm64) and checksums are attached to
@@ -51,6 +106,13 @@ platform-specific instructions instead of replacing a managed `/usr/local/go`.
 
 Pin the target in `.linctl.toml` at the repo root, then supply a token by environment.
 
+```bash
+export LINCTL_TOKEN="lin_api_..."   # or LINEAR_API_KEY; never commit a token
+```
+
+<details>
+<summary><code>.linctl.toml</code> example + credential precedence</summary>
+
 ```toml
 [target]
 org_id     = "linear-org-id"
@@ -59,13 +121,11 @@ team_id    = "linear-team-id"
 project_id = "optional-linear-project-id"   # omit for team-scoped writes
 ```
 
-```bash
-export LINCTL_TOKEN="lin_api_..."   # or LINEAR_API_KEY; never commit a token
-```
-
 Credential precedence is `LINCTL_TOKEN` → `LINEAR_API_KEY` → a `token` in
 `.linctl.toml` / `~/.config/linctl/config.toml`. A repo `.linctl.toml` overlays the
 global config.
+
+</details>
 
 ### First commands
 
@@ -76,36 +136,11 @@ linctl doctor             # config, token, and target health
 linctl issue list --mine  # your issues in the pinned team
 ```
 
-## 🔒 How writes stay safe
-
-linctl's vocabulary deliberately separates reads from writes:
-
-- **Pinned Target** — the org/team/(optional project) a repo declares in `.linctl.toml`
-  as the *only* allowed destination for writes.
-- **Resolved Target** — the org/team/project proven from the active token at command time.
-- **Target Mismatch** — when the two disagree. For a guarded write this is a **hard stop**,
-  never a prompt or a warning.
-
-```mermaid
-flowchart LR
-    A[linctl write command] --> B[Resolve Target<br/>from active token]
-    B --> C{Resolved matches<br/>Pinned Target?}
-    C -->|match| D[Guarded write proceeds]
-    C -->|mismatch| E[Target Mismatch<br/>hard stop · no mutation]
-```
-
-Team-scoped creates compare org + team (the entity does not exist yet). Resource-scoped
-updates and archives resolve the existing entity first, then compare the pinned
-`project_id` when one is configured. There is **no bypass flag** — `--org`, `--team`, and
-`--project` set the pinned target, they do not relax the guard. See
-[`docs/adr/0001-target-pinned-linear-writes.md`](docs/adr/0001-target-pinned-linear-writes.md).
-
 ## 📖 Command reference
 
-Across 59 documented command groups, linctl maps the Linear schema. The most-used ones are
-below; the exhaustive catalog with GraphQL backing lives in
-[`docs/domain-map.md`](docs/domain-map.md), and `linctl <group> --help` lists every
-subcommand.
+Across 59 command groups, linctl maps the Linear schema. The most-used ones are below; the
+exhaustive catalog with GraphQL backing lives in [`docs/domain-map.md`](docs/domain-map.md),
+and `linctl <group> --help` lists every subcommand.
 
 **Context & health**
 
@@ -116,16 +151,19 @@ linctl current                # the issue for the current git branch
 linctl next --dry-run         # preview the top-ranked unblocked issue
 ```
 
-**Issues** — reads, rich `list` filters, and guarded writes. Related: `issue-relation`, `comment`.
+**Issues** — reads, rich `list` filters, and guarded writes. Related: `issue-relation`, `comment`, `agent-session`.
 
 ```bash
 linctl issue list --state started --mine --limit 20
-linctl issue list --has-blockers --created-after 2026-06-01
 linctl issue get LIT-123 --json
 linctl issue deps LIT-123                       # parent / children / blocks / blocked-by
 linctl issue search "flaky export test"
-linctl issue create --title "Spike: exports" --description-file ./spec.md
+linctl issue create --title "Spike: exports" --assignee <user-id> --label <label-id> --estimate 3
+linctl issue link https://example.com/spec LIT-123   # attach a URL (guarded)
 ```
+
+<details>
+<summary>More groups — projects, cycles, planning, teams, search, releases, customers, metadata</summary>
 
 **Projects** — reads plus create/update/archive. Related: `project-update`, `project-status`, `project-label`, `project-relation`.
 
@@ -140,7 +178,6 @@ linctl project-milestone list <project-id>
 
 ```bash
 linctl cycle list
-linctl cycle issues <cycle-id>
 linctl sprint current                           # active cycle for the team
 linctl sprint report <cycle-id>
 ```
@@ -151,7 +188,6 @@ linctl sprint report <cycle-id>
 linctl initiative list
 linctl initiative projects <initiative-id>
 linctl initiative-to-project list
-linctl initiative-update list
 ```
 
 **Teams, users & org**
@@ -160,7 +196,6 @@ linctl initiative-update list
 linctl team list
 linctl team members <team-id>
 linctl user me
-linctl user my-assigned-issues
 linctl organization teams
 ```
 
@@ -168,7 +203,6 @@ linctl organization teams
 
 ```bash
 linctl search issues "rate limit"
-linctl search projects "billing"
 linctl semantic-search "exports are slow" --limit 20
 ```
 
@@ -177,7 +211,6 @@ linctl semantic-search "exports are slow" --limit 20
 ```bash
 linctl release list
 linctl release-pipeline list
-linctl release-stage list
 ```
 
 **Customers** — `customer`, `customer-need`, `customer-status`, `customer-tier`.
@@ -190,8 +223,11 @@ linctl customer-need list
 **Metadata & more** — every group supports `list`/`get` plus entity-specific reads:
 `label`, `document`, `template`, `workflow-state`, `time-schedule`, `notification`,
 `triage-responsibility`, `sla-configuration`, `rate-limit`, `application`, `audit-entry`,
-`agent-activity`, `agent-skill`, `external-user`, `custom-view`, `favorite`, `emoji`,
-`attachment`. Run `linctl <group> --help` or see [`docs/domain-map.md`](docs/domain-map.md).
+`agent-activity`, `agent-session`, `agent-skill`, `external-user`, `custom-view`,
+`favorite`, `emoji`, `attachment`. Run `linctl <group> --help` or see
+[`docs/domain-map.md`](docs/domain-map.md).
+
+</details>
 
 ## 🧰 Output & scripting
 
@@ -216,29 +252,27 @@ id=$(linctl --id-only issue create --title "task"); linctl issue start "$id"
 linctl issue list --fail-on-empty --sort title --order asc
 ```
 
-Diagnostics go to stderr, so stdout stays clean for piping. Stable JSON shapes for
-parsing are documented in
+Stable JSON shapes for parsing are documented in
 [`skills/linctl/references/json-output.md`](skills/linctl/references/json-output.md).
 
 ## ✍️ Guarded writes
 
-Writes currently cover **issues** (`create`, template-backed create, guarded import,
-`update`/`--append`, `start`, `comment`, `reply`, `close`, `done`, and `next` start),
-**issue relations** (`relate`, `unrelate`), **comments** (`update`, `delete`), **projects**
-(`create`, `update`, `archive`), **project updates** (`create`), **documents**
-(`create`, `update`), **cycles** (`create`, `update`, `archive`), and
-**project milestones** (`create`, `update`). Each mutation is checked against the pinned
-target before it runs. For test runs, create namespaced throwaway resources
+Every mutation is checked against the pinned target before it runs. Coverage:
+
+- **Issues** — `create` (with `--assignee`, `--label`, `--due-date`, `--estimate`,
+  `--parent` for sub-issues, templates, and guarded `import`), `update` / `--append`,
+  `start`, `comment`, `reply`, `close`, `done`, `next` start, and `link` (attach a URL).
+- **Issue relations** — `relate`, `unrelate`.
+- **Comments** — `update`, `delete`.
+- **Projects** — `create`, `update`, `archive`. **Project updates** — `create`.
+- **Documents** — `create`, `update`.
+- **Cycles** — `create`, `update`, `archive`.
+- **Project milestones** — `create`, `update`.
+
+`--estimate` is validated against the team's estimation config; `--parent` confirms the
+parent belongs to the pinned target. For test runs, create namespaced throwaway resources
 (`linctl-it-<runid>`) and clean them up — close disposable issues, archive disposable
 projects.
-
-## 🤖 For agents
-
-linctl ships a skill that teaches an agent to drive it: see
-[`skills/linctl/SKILL.md`](skills/linctl/SKILL.md). Verify a checkout with no
-credentials via `bash skills/linctl/scripts/linctl-offline-smoke.sh`, or do a read-only
-check with a token via `bash skills/linctl/scripts/linctl-smoke.sh`. The skill includes a
-drop-in `AGENTS.md` snippet for consuming repos.
 
 ## 🔧 Development
 
@@ -264,3 +298,7 @@ command-to-GraphQL mapping and named test scenarios are under [`docs/`](docs/).
 ## 📄 License
 
 [MIT](LICENSE) © 2026 KyaniteHQ
+
+[^mcp]: Roughly 13k of a 200k context window, spent on tool definitions before any work.
+    Measured by Carlo Zottmann in [*Linearis: my Linear CLI*](https://zottmann.org/2025/09/03/linearis-my-linear-cli-built.html)
+    (2025); the exact figure varies by MCP client and Linear server version.

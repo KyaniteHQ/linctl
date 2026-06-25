@@ -459,3 +459,118 @@ func issueJSON(issue issueFixture) string {
 		"project":` + project + `
 	}`
 }
+
+func b1IssueFixture(identifier string) issueFixture {
+	return issueFixture{
+		Identifier: identifier,
+		Title:      "b1",
+		ProjectID:  "project-id",
+		Project:    "fixture",
+		StateID:    "todo-state",
+		State:      "Todo",
+		StateType:  "unstarted",
+	}
+}
+
+func Test_CreateIssue_sets_assignee_label_and_due_date(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-7")) + `}}`,
+	})
+
+	// When
+	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+		Title:      "b1",
+		AssigneeID: "user-id",
+		LabelIDs:   []string{"label-id"},
+		DueDate:    "2026-07-01",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "LIT-7", issue.Identifier)
+}
+
+func Test_CreateIssue_rejects_invalid_due_date(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+
+	// When
+	_, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+		Title:   "b1",
+		DueDate: "July 1",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_UpdateIssue_sets_assignee_label_and_due_date(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+	})
+
+	// When
+	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID:         "LIT-1",
+		AssigneeID: "user-id",
+		LabelIDs:   []string{"label-id"},
+		DueDate:    "2026-07-01",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "LIT-1", issue.Identifier)
+}
+
+func Test_UpdateIssue_clears_due_date_when_requested(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+	})
+
+	// When
+	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID:           "LIT-1",
+		ClearDueDate: true,
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "LIT-1", issue.Identifier)
+}
+
+func Test_UpdateIssue_rejects_due_date_with_clear_due_date(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+
+	// When
+	_, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID:           "LIT-1",
+		DueDate:      "2026-07-01",
+		ClearDueDate: true,
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_UpdateIssue_rejects_invalid_due_date(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+
+	// When
+	_, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+		ID:      "LIT-1",
+		DueDate: "not-a-date",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}

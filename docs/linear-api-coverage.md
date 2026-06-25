@@ -2,10 +2,10 @@
 
 Generated from current local sources and upstream Linear SDK commit `28d6461`.
 
-Sources:
+Sources (paths relative to the upstream Linear SDK checkout):
 
-- Upstream SDK methods: `/tmp/linctl-upstream-linear/packages/sdk/src/_generated_sdk.ts`
-- Upstream schema roots: `/tmp/linctl-upstream-linear/packages/sdk/src/schema.graphql`
+- Upstream SDK methods: `packages/sdk/src/_generated_sdk.ts`
+- Upstream schema roots: `packages/sdk/src/schema.graphql`
 - Local generated operations: `internal/client/generated.go`
 - Local GraphQL operations: `internal/client/operations/*.graphql`
 - Repo domain map: `docs/domain-map.md`
@@ -16,11 +16,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 130 | 458 |
-| Upstream Query root fields | 158 | 111 | 158 |
-| Upstream Mutation root fields | 364 | 20 | 364 |
-| Local generated Go operations | 328 | 328 | 328 |
-| Domain-map commands | 418 | 292 | 418 |
+| Upstream SDK root methods | 458 | 133 | 458 |
+| Upstream Query root fields | 158 | 113 | 158 |
+| Upstream Mutation root fields | 364 | 21 | 364 |
+| Local generated Go operations | 332 | 332 | 332 |
+| Domain-map commands | 421 | 295 | 421 |
 
 ## Upstream SDK Root Methods
 
@@ -29,11 +29,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `administrableTeams` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentActivities` | method | implemented | local operation or command exists |
 | `agentActivity` | method | implemented | local operation or command exists |
-| `agentSession` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSession` | method | implemented | local operation or command exists |
 | `agentSessionCreateOnComment` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnIssue` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdateExternalUrl` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSessions` | method | implemented | local operation or command exists |
 | `agentSkill` | method | implemented | local operation or command exists |
 | `agentSkills` | method | implemented | local operation or command exists |
 | `airbyteIntegrationConnect` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -81,7 +81,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `constructor` | method | blocked_needs_design | SDK method is not matched to a GraphQL root field; explicit classification required |
 | `createAgentActivity` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createAgentSkill` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createAttachment` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createAttachment` | method | implemented | local operation or command exists |
 | `createComment` | method | implemented | local operation or command exists |
 | `createContact` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCsvExportReport` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -493,9 +493,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `administrableTeams` | `TeamConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentActivities` | `AgentActivityConnection!` | implemented | root field used by local GraphQL operation |
 | `agentActivity` | `AgentActivity!` | implemented | root field used by local GraphQL operation |
-| `agentSession` | `AgentSession!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSession` | `AgentSession!` | implemented | root field used by local GraphQL operation |
 | `agentSessionSandbox` | `CodingAgentSandboxPayload` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSessions` | `AgentSessionConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
+| `agentSessions` | `AgentSessionConnection!` | implemented | root field used by local GraphQL operation |
 | `agentSkill` | `AgentSkill!` | implemented | root field used by local GraphQL operation |
 | `agentSkills` | `AgentSkillConnection!` | implemented | root field used by local GraphQL operation |
 | `applicationInfo` | `Application!` | implemented | root field used by local GraphQL operation |
@@ -583,10 +583,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `oauthApplication` | `OAuthApplication!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplications` | `[OAuthApplication!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `organization` | `Organization!` | implemented | root field used by local GraphQL operation |
-| `organizationDomainClaimRequest` | `OrganizationDomainClaimPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `organizationDomainClaimRequest` | `OrganizationDomainClaimPayload!` | intentionally_excluded | organization domain claim requests expose org-admin domain-verification metadata outside the ordinary agent CLI surface |
 | `organizationExists` | `OrganizationExistsPayload!` | implemented | root field used by local GraphQL operation |
 | `organizationInvite` | `OrganizationInvite!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
-| `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | implemented | root field used by local GraphQL operation |
@@ -665,7 +665,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSkillDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `agentSkillUpdate` | `AgentSkillPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `airbyteIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `attachmentCreate` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `attachmentCreate` | `AttachmentPayload!` | implemented | root field used by local GraphQL operation |
 | `attachmentDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `attachmentLinkDiscord` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkFront` | `FrontAttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -1021,6 +1021,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Operation | Kind | Root fields | Status | Evidence |
 | --- | --- | --- | --- | --- |
+| `AttachmentLinkURL` | mutation | `attachmentCreate` | implemented | `internal/client/generated.go` |
 | `CommentDelete` | mutation | `commentDelete` | implemented | `internal/client/generated.go` |
 | `CommentUpdate` | mutation | `commentUpdate` | implemented | `internal/client/generated.go` |
 | `CompletedWorkflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
@@ -1067,6 +1068,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `WorkflowStatesByType` | query | `workflowStates` | implemented | `internal/client/generated.go` |
 | `agentActivities` | query | `agentActivities` | implemented | `internal/client/generated.go` |
 | `agentActivity` | query | `agentActivity` | implemented | `internal/client/generated.go` |
+| `agentSession` | query | `agentSession` | implemented | `internal/client/generated.go` |
+| `agentSessions` | query | `agentSessions` | implemented | `internal/client/generated.go` |
 | `agentSkill` | query | `agentSkill` | implemented | `internal/client/generated.go` |
 | `agentSkills` | query | `agentSkills` | implemented | `internal/client/generated.go` |
 | `applicationInfo` | query | `applicationInfo` | implemented | `internal/client/generated.go` |
@@ -1266,6 +1269,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `semanticSearch` | query | `semanticSearch` | implemented | `internal/client/generated.go` |
 | `slaConfigurations` | query | `slaConfigurations` | implemented | `internal/client/generated.go` |
 | `team` | query | `team` | implemented | `internal/client/generated.go` |
+| `teamEstimateConfig` | query | `team` | implemented | `internal/client/generated.go` |
 | `teamMembership` | query | `teamMembership` | implemented | `internal/client/generated.go` |
 | `teamMemberships` | query | `teamMemberships` | implemented | `internal/client/generated.go` |
 | `team_cycles` | query | `team` | implemented | `internal/client/generated.go` |
@@ -1361,6 +1365,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| AgentSession | `agent-session list` | `Query.agentSessions` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentSession | `agent-session get` | `Query.agentSession` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ExternalUser | `external-user get` | `Query.externalUser` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
@@ -1480,6 +1486,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |

@@ -44,6 +44,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "agent-activity", "get", "agent-activity-id"},
 		{"--json", "--fields", "id,title,shared", "agent-skill", "list", "--limit", "1"},
 		{"--json", "agent-skill", "get", "agent-skill-id"},
+		{"--json", "--fields", "id,slug_id,status", "agent-session", "list", "--limit", "1"},
+		{"--json", "agent-session", "get", "agent-session-id"},
 		{"--json", "--fields", "id,display_name,last_seen", "external-user", "list", "--limit", "1"},
 		{"--json", "external-user", "get", "external-user-id"},
 		{"--json", "--fields", "type,description", "audit-entry", "types"},
@@ -75,6 +77,7 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{"--json", "issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"},
 		{"--json", "issue", "relate", "LIT-1", "LIT-2", "--type", "related"},
 		{"--json", "issue", "unrelate", "issue-relation-id"},
+		{"--json", "issue", "link", "https://example.com/pr/1", "LIT-1"},
 		{"--json", "--fields", "id,display_name", "issue", "comments", "LIT-1", "--limit", "1"},
 		{"--json", "--fields", "identifier,title", "issue", "figma-file-key-search", "figma-key", "--limit", "1"},
 		{"--json", "issue", "priority-values"},
@@ -241,6 +244,8 @@ func Test_CommandFlows_print_only_id_when_id_only_flag_is_set(t *testing.T) {
 		{name: "issue get", args: []string{"--id-only", "issue", "get", "LIT-1"}, output: "issue-id\n"},
 		{name: "issue history", args: []string{"--id-only", "issue", "history", "LIT-1"}, output: "issue-history-id\n"},
 		{name: "issue unrelate", args: []string{"--id-only", "issue", "unrelate", "issue-relation-id"}, output: "issue-relation-id\n"},
+		{name: "issue link", args: []string{"--id-only", "issue", "link", "https://example.com/pr/1", "LIT-1"}, output: "attachment-id\n"},
+		{name: "agent session get", args: []string{"--id-only", "agent-session", "get", "agent-session-id"}, output: "agent-session-id\n"},
 		{name: "team git automation states", args: []string{"--id-only", "team", "git-automation-states", "team-id"}, output: "git-automation-state-id\n"},
 	}
 
@@ -267,6 +272,8 @@ func Test_CommandFlows_suppress_success_output_when_quiet_flag_is_set(t *testing
 		{"--quiet", "issue", "get", "LIT-1"},
 		{"--quiet", "issue", "history", "LIT-1"},
 		{"--quiet", "issue", "unrelate", "issue-relation-id"},
+		{"--quiet", "issue", "link", "https://example.com/pr/1", "LIT-1"},
+		{"--quiet", "agent-session", "get", "agent-session-id"},
 		{"--quiet", "team", "git-automation-states", "team-id"},
 		{"--quiet", "customer-need", "project-attachment", "customer-need-id"},
 	}

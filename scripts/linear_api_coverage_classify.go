@@ -381,6 +381,15 @@ var explicitRiskClassifications = map[string]riskClassification{
 		status:    "intentionally_excluded",
 		rationale: organizationInviteRationale(),
 	},
+	"organizationinvitedetails": {
+		status:    "intentionally_excluded",
+		rationale: organizationInviteRationale(),
+	},
+	"organizationdomainclaimrequest": {
+		status: "intentionally_excluded",
+		rationale: "organization domain claim requests expose org-admin domain-verification " +
+			"metadata outside the ordinary agent CLI surface",
+	},
 	"organization_subscription": {
 		status:    "intentionally_excluded",
 		rationale: "organization subscription and billing state is outside the ordinary agent CLI surface",

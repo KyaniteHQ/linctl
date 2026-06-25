@@ -1,0 +1,13 @@
+linctl
+*.local.*
+
+# hyperframes composition: keep the source (index.html, plan, brief, render config),
+# ignore generated/heavy artifacts and copied media
+launch/composition/node_modules/
+launch/composition/renders/
+launch/composition/.hyperframes/
+launch/composition/.claude/
+launch/composition/assets/
+launch/composition/skills-lock.json
+launch/composition/AGENTS.md
+launch/composition/CLAUDE.md

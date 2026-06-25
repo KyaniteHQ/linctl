@@ -113,9 +113,17 @@ func writeHeader(output *bytes.Buffer, upstreamDir string, upstreamSchemaPath st
 	commit := strings.TrimSpace(runGit(upstreamDir, "rev-parse", "--short", "HEAD"))
 	fmt.Fprintf(output, "# Linear API coverage ledger\n\n")
 	fmt.Fprintf(output, "Generated from current local sources and upstream Linear SDK commit `%s`.\n\n", commit)
-	fmt.Fprintf(output, "Sources:\n\n")
-	fmt.Fprintf(output, "- Upstream SDK methods: `%s`\n", upstreamSDKPath)
-	fmt.Fprintf(output, "- Upstream schema roots: `%s`\n", upstreamSchemaPath)
+	sdkRel, err := filepath.Rel(upstreamDir, upstreamSDKPath)
+	if err != nil {
+		sdkRel = upstreamSDKPath
+	}
+	schemaRel, err := filepath.Rel(upstreamDir, upstreamSchemaPath)
+	if err != nil {
+		schemaRel = upstreamSchemaPath
+	}
+	fmt.Fprintf(output, "Sources (paths relative to the upstream Linear SDK checkout):\n\n")
+	fmt.Fprintf(output, "- Upstream SDK methods: `%s`\n", sdkRel)
+	fmt.Fprintf(output, "- Upstream schema roots: `%s`\n", schemaRel)
 	fmt.Fprintf(output, "- Local generated operations: `internal/client/generated.go`\n")
 	fmt.Fprintf(output, "- Local GraphQL operations: `internal/client/operations/*.graphql`\n")
 	fmt.Fprintf(output, "- Repo domain map: `docs/domain-map.md`\n\n")

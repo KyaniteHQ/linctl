@@ -1,0 +1,40 @@
+query agentSessions($first: Int, $after: String, $includeArchived: Boolean) {
+  agentSessions(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...AgentSessionSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query agentSession($id: String!) {
+  agentSession(id: $id) {
+    ...AgentSessionSummaryFields
+  }
+}
+
+fragment AgentSessionSummaryFields on AgentSession {
+  id
+  slugId
+  status
+  summary
+  url
+  startedAt
+  endedAt
+  createdAt
+  updatedAt
+  archivedAt
+  creator {
+    id
+  }
+  appUser {
+    id
+  }
+  issue {
+    id
+    identifier
+  }
+}

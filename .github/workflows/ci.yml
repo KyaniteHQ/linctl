@@ -157,7 +157,14 @@ jobs:
           go mod download
           go mod verify
       - name: Vulnerability scan
-        run: go tool govulncheck $(bash scripts/go-packages.sh)
+        # Official reachability-aware scan, scoped to the product packages; the
+        # scripts/ build-ignored generator and gitignored skill examples break a
+        # bare ./... so the patterns mirror scripts/go-packages.sh. Local parity
+        # stays via `task ci` (go tool govulncheck).
+        uses: golang/govulncheck-action@b625fbe08f3bccbe446d94fbf87fcc875a4f50ee # v1.0.4
+        with:
+          go-version-file: go.mod
+          go-package: ./cmd/... ./internal/...
 
   dependency-review:
     name: dependency review

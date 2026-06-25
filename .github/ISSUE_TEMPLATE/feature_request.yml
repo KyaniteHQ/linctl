@@ -1,0 +1,40 @@
+name: Feature request
+description: Suggest a new command, flag, or capability
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        linctl keeps reads free and writes target-pinned and fail-closed (no bypass flag).
+        Requests that preserve that model are easiest to accept.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that linctl can't do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed command or flag
+      description: The command surface you'd want, e.g. `linctl issue create --assignee USER_ID`.
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Read or write?
+      options:
+        - Read (free)
+        - Guarded write (team-scoped or resource-scoped)
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: moat
+    attributes:
+      label: Safety fit
+      description: If it's a write, how should the pinned target be compared before it runs?
+    validations:
+      required: false

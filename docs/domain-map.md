@@ -63,6 +63,24 @@ Planned commands:
 
 Only `agent-skill list` and `agent-skill get` are implemented in the current CLI. AgentSkill writes remain deferred until their guard model is explicit.
 
+## AgentSession
+
+Schema backing:
+
+- Types: `AgentSession`, `AgentSessionConnection`, `AgentSessionStatus`
+- Reads: `Query.agentSessions`, `Query.agentSession`
+- Writes: `Mutation.agentSessionCreateExternal`, `Mutation.agentSessionTransitionExternal`, and prompt/sandbox session mutations
+- Relevant fields: `AgentSession.id`, `AgentSession.slugId`, `AgentSession.status`, `AgentSession.summary`, `AgentSession.url`, `AgentSession.startedAt`, `AgentSession.endedAt`, `AgentSession.creator`, `AgentSession.appUser`, `AgentSession.issue`, `AgentSession.createdAt`, `AgentSession.updatedAt`
+
+Command coverage:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `agent-session list` | `Query.agentSessions` | Read-only |
+| `agent-session get` | `Query.agentSession` | Read-only |
+
+Only `agent-session list` and `agent-session get` are implemented in the current CLI. AgentSession reads omit the activity stream, plan, and `sourceMetadata` payloads and expose only session status and identity. AgentSession writes remain deferred until their session and delegation guard model is explicit.
+
 ## ExternalUser
 
 Schema backing:
@@ -261,6 +279,7 @@ Planned commands:
 | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project |
 | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project |
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
+| `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
 
 Issue customer-need child reads use a metadata-only projection and intentionally omit `body` and `content`. Shared-access reads omit shared user details and expose only booleans, counts, and disallowed field names.

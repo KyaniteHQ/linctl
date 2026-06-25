@@ -8,6 +8,8 @@ func commandFlowBasePayload(operation string) (string, bool) {
 		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "TargetProject":
 		return `{"project":{"id":"project-id","name":"Pinned project","teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}]}}}`, true
+	case "teamEstimateConfig":
+		return `{"team":{"id":"team-id","issueEstimationType":"fibonacci","issueEstimationAllowZero":false}}`, true
 	case "applicationInfo":
 		return commandApplicationInfoPayload(), true
 	case "agentActivities":
@@ -18,6 +20,10 @@ func commandFlowBasePayload(operation string) (string, bool) {
 		return `{"agentSkills":{"nodes":[` + commandAgentSkillJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "agentSkill":
 		return `{"agentSkill":` + commandAgentSkillJSON() + `}`, true
+	case "agentSessions":
+		return `{"agentSessions":{"nodes":[` + commandAgentSessionJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "agentSession":
+		return `{"agentSession":` + commandAgentSessionJSON() + `}`, true
 	case "externalUsers":
 		return `{"externalUsers":{"nodes":[` + commandExternalUserJSON() + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "externalUser":
@@ -61,6 +67,24 @@ func commandFlowTeamMembershipPayload(operation string) (string, bool) {
 
 func commandRateLimitStatusPayload() string {
 	return `{"rateLimitStatus":{"identifier":"api-key","kind":"api","limits":[{"type":"complexity","requestedAmount":1,"allowedAmount":1000,"period":60000,"remainingAmount":900,"reset":1720000000000}]}}`
+}
+
+func commandAgentSessionJSON() string {
+	return `{
+		"id":"agent-session-id",
+		"slugId":"session-slug",
+		"status":"active",
+		"summary":"did work",
+		"url":"https://linear.app/kyanite/agent/session-slug",
+		"startedAt":"2026-06-19T12:00:00Z",
+		"endedAt":null,
+		"createdAt":"2026-06-19T11:00:00Z",
+		"updatedAt":"2026-06-19T12:30:00Z",
+		"archivedAt":null,
+		"creator":{"id":"creator-id"},
+		"appUser":{"id":"app-user-id"},
+		"issue":{"id":"issue-id","identifier":"LIT-1"}
+	}`
 }
 
 func commandApplicationInfoPayload() string {

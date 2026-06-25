@@ -4,6 +4,14 @@ query team($id: String!) {
   }
 }
 
+query teamEstimateConfig($id: String!) {
+  team(id: $id) {
+    id
+    issueEstimationType
+    issueEstimationAllowZero
+  }
+}
+
 query team_members($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   team(id: $id) {
     id

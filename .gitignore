@@ -20,3 +20,16 @@ test/integration-config.json
 skills/cc-skills-golang/
 .agents/
 .claude/skills/cc-skills-golang
+
+# Launch announcement drafts — kept local, never part of the public tree
+/launch/
+
+# Internal working notes — kept local, not part of the public tree
+/ATTEMPTS.md
+/NOTES.md
+/PLAN.md
+/CONTROL.md
+/THERMO_NUCLEAR_CODE_QUALITY_REVIEW.md
+/plans/
+/docs/setup-gap-log.md
+/.superset/

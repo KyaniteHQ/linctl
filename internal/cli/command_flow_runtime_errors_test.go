@@ -63,6 +63,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"issue", "close", "LIT-1"},
 			{"issue", "relate", "LIT-1", "LIT-2", "--type", "related"},
 			{"issue", "unrelate", "issue-relation-id"},
+			{"issue", "link", "https://example.com/pr/1", "LIT-1"},
 			{"issue", "open", "LIT-1"},
 			{"issue", "export", "LIT-1", "."},
 			{"issue", "import", "rows.json"},

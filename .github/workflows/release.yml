@@ -34,7 +34,6 @@ jobs:
               --workflow ci.yml \
               --branch master \
               --commit "$TAG_SHA" \
-              --event push \
               --status success \
               --json url \
               --jq '.[0].url // ""' \
@@ -156,6 +155,8 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
       - name: Download and verify published archive
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -165,7 +166,15 @@ jobs:
           cd verify
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
             --pattern "linctl_*_linux_amd64.tar.gz" \
-            --pattern "checksums.txt"
+            --pattern "checksums.txt" \
+            --pattern "checksums.txt.sigstore.json"
+          # Sigstore round-trip: the bundle must verify against checksums.txt and
+          # carry the KyaniteHQ/linctl release-workflow identity from GitHub OIDC.
+          cosign verify-blob \
+            --bundle checksums.txt.sigstore.json \
+            --certificate-identity-regexp 'https://github.com/KyaniteHQ/linctl/.*' \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            checksums.txt
           sha256sum --ignore-missing -c checksums.txt
           tar -xzf linctl_*_linux_amd64.tar.gz
           ./linctl --version

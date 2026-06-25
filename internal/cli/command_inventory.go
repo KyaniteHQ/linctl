@@ -350,6 +350,7 @@ var collectionKeys = []string{
 	"workflow_states",
 	"agent_activities",
 	"agent_skills",
+	"agent_sessions",
 	"external_users",
 	"audit_entry_types",
 	"favorites",

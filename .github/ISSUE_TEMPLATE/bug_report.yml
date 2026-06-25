@@ -1,0 +1,54 @@
+name: Bug report
+description: Report incorrect behavior in a linctl command
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Never paste a token value — redact it as `lin_api_…`.
+        For a suspected security issue, use private reporting instead of this form.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you run, and what did it do instead of what you expected?
+      placeholder: |
+        Command: linctl issue create --title "..."
+        Expected: ...
+        Actual: ...
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output (token redacted)
+      description: Paste the command output, including any `error_code` from stderr. Add `--debug` if helpful.
+      render: shell
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: linctl version
+      description: Output of `linctl --version`.
+      placeholder: v0.4.0
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS / arch
+      placeholder: linux/amd64, macOS/arm64, windows/amd64
+    validations:
+      required: true
+  - type: dropdown
+    id: write-or-read
+    attributes:
+      label: Read or guarded write?
+      description: Did the failing command read, or attempt a guarded write?
+      options:
+        - Read command
+        - Guarded write
+        - Not sure
+    validations:
+      required: true

@@ -46,11 +46,17 @@ Generated code must be committed with the operation that requires it.
 
 ## Releases
 
-Release builds are produced by GoReleaser from `v*` tags:
+A release is triggered by pushing a `v*` tag. The release workflow then runs GoReleaser to
+publish the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless cosign sigstore
+bundle) and update the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be provided as
+`HOMEBREW_TAP_GITHUB_TOKEN`.
+
+```bash
+git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z
+```
+
+To dry-run the build locally without publishing anything (no tag, no upload):
 
 ```bash
 goreleaser release --snapshot --clean
 ```
-
-The release workflow publishes GitHub artifacts and updates the `KyaniteHQ/homebrew-linctl` tap cask.
-The tap token must be provided as `HOMEBREW_TAP_GITHUB_TOKEN`.

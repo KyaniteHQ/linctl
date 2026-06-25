@@ -4,6 +4,8 @@ operations:
 generated: generated.go
 optional: pointer
 bindings:
+  AttachmentCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearAttachmentCreateInput
   CommentCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearCommentCreateInput
   CommentUpdateInput:

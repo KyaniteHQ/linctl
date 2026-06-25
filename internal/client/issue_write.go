@@ -2,9 +2,11 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Khan/genqlient/graphql"
 
@@ -17,16 +19,27 @@ type IssueCreateRequest struct {
 	Description string
 	StateType   string
 	Priority    string
+	AssigneeID  string
+	LabelIDs    []string
+	DueDate     string
+	Estimate    *int
+	ParentID    string
 }
 
 // IssueUpdateRequest describes a guarded issue update.
 type IssueUpdateRequest struct {
-	ID          string
-	Title       string
-	Description string
-	Append      string
-	StateType   string
-	Priority    string
+	ID            string
+	Title         string
+	Description   string
+	Append        string
+	StateType     string
+	Priority      string
+	AssigneeID    string
+	LabelIDs      []string
+	DueDate       string
+	ClearDueDate  bool
+	Estimate      *int
+	ClearEstimate bool
 }
 
 // IssueCommentRequest describes a guarded issue comment.
@@ -46,21 +59,31 @@ type IssueCommentResult struct {
 
 // LinearIssueCreateInput is the sparse Linear issueCreate payload linctl supports.
 type LinearIssueCreateInput struct {
-	Title       *string `json:"title,omitempty"`
-	Description *string `json:"description,omitempty"`
-	TeamID      string  `json:"teamId"`
-	ProjectID   *string `json:"projectId,omitempty"`
-	StateID     *string `json:"stateId,omitempty"`
-	Priority    *int    `json:"priority,omitempty"`
+	Title       *string  `json:"title,omitempty"`
+	Description *string  `json:"description,omitempty"`
+	TeamID      string   `json:"teamId"`
+	ProjectID   *string  `json:"projectId,omitempty"`
+	StateID     *string  `json:"stateId,omitempty"`
+	Priority    *int     `json:"priority,omitempty"`
+	AssigneeID  *string  `json:"assigneeId,omitempty"`
+	LabelIDs    []string `json:"labelIds,omitempty"`
+	DueDate     *string  `json:"dueDate,omitempty"`
+	Estimate    *int     `json:"estimate,omitempty"`
+	ParentID    *string  `json:"parentId,omitempty"`
 }
 
 // LinearIssueUpdateInput is the sparse Linear issueUpdate payload linctl supports.
+// DueDate is a RawMessage so an explicit null can clear the date while an absent
+// value leaves it untouched.
 type LinearIssueUpdateInput struct {
-	Title       *string `json:"title,omitempty"`
-	Description *string `json:"description,omitempty"`
-	AssigneeID  *string `json:"assigneeId,omitempty"`
-	StateID     *string `json:"stateId,omitempty"`
-	Priority    *int    `json:"priority,omitempty"`
+	Title       *string         `json:"title,omitempty"`
+	Description *string         `json:"description,omitempty"`
+	AssigneeID  *string         `json:"assigneeId,omitempty"`
+	StateID     *string         `json:"stateId,omitempty"`
+	Priority    *int            `json:"priority,omitempty"`
+	LabelIDs    []string        `json:"labelIds,omitempty"`
+	DueDate     json.RawMessage `json:"dueDate,omitempty"`
+	Estimate    json.RawMessage `json:"estimate,omitempty"`
 }
 
 // LinearCommentCreateInput is the sparse Linear commentCreate payload linctl supports.
@@ -80,12 +103,28 @@ func CreateIssue(
 	if request.Title == "" {
 		return IssueSummary{}, fmt.Errorf("%w: title is required", ErrWriteInvalid)
 	}
+	if err := validateDueDate(request.DueDate); err != nil {
+		return IssueSummary{}, err
+	}
 
 	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
+		if err := validateEstimate(ctx, graphqlClient, guard.target.Team.ID, request.Estimate); err != nil {
+			return IssueSummary{}, err
+		}
+		if request.ParentID != "" {
+			if _, err := guard.requireIssue(ctx, graphqlClient, request.ParentID); err != nil {
+				return IssueSummary{}, err
+			}
+		}
 		input := LinearIssueCreateInput{
 			Title:       stringPtr(request.Title),
 			Description: optionalString(request.Description),
 			TeamID:      guard.target.Team.ID,
+			AssigneeID:  optionalString(request.AssigneeID),
+			LabelIDs:    request.LabelIDs,
+			DueDate:     optionalString(request.DueDate),
+			Estimate:    request.Estimate,
+			ParentID:    optionalString(request.ParentID),
 		}
 		if guard.target.Project != nil {
 			input.ProjectID = stringPtr(guard.target.Project.ID)
@@ -130,6 +169,9 @@ func UpdateIssue(
 		if err != nil {
 			return IssueSummary{}, err
 		}
+		if err = validateEstimate(ctx, graphqlClient, issue.Summary.TeamID, request.Estimate); err != nil {
+			return IssueSummary{}, err
+		}
 		description := request.Description
 		if request.Append != "" {
 			description = appendIssueDescription(issue.Description, request.Append)
@@ -155,15 +197,30 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 	if request.ID == "" {
 		return fmt.Errorf("%w: issue id is required", ErrWriteInvalid)
 	}
-	if request.Title == "" && request.Description == "" && request.Append == "" &&
-		request.StateType == "" && request.Priority == "" {
-		return fmt.Errorf("%w: title, description, state, or priority is required", ErrWriteInvalid)
+	if issueUpdateHasNoFields(request) {
+		return fmt.Errorf(
+			"%w: title, description, state, priority, assignee, label, due date, or estimate is required",
+			ErrWriteInvalid,
+		)
 	}
 	if request.Description != "" && request.Append != "" {
 		return fmt.Errorf("%w: description and append are mutually exclusive", ErrWriteInvalid)
 	}
+	if request.DueDate != "" && request.ClearDueDate {
+		return fmt.Errorf("%w: due-date and clear-due-date are mutually exclusive", ErrWriteInvalid)
+	}
+	if request.Estimate != nil && request.ClearEstimate {
+		return fmt.Errorf("%w: estimate and clear-estimate are mutually exclusive", ErrWriteInvalid)
+	}
 
-	return nil
+	return validateDueDate(request.DueDate)
+}
+
+func issueUpdateHasNoFields(request IssueUpdateRequest) bool {
+	return request.Title == "" && request.Description == "" && request.Append == "" &&
+		request.StateType == "" && request.Priority == "" && request.AssigneeID == "" &&
+		len(request.LabelIDs) == 0 && request.DueDate == "" && !request.ClearDueDate &&
+		request.Estimate == nil && !request.ClearEstimate
 }
 
 func buildIssueUpdateInput(
@@ -176,6 +233,10 @@ func buildIssueUpdateInput(
 	input := LinearIssueUpdateInput{
 		Title:       optionalString(request.Title),
 		Description: optionalString(description),
+		AssigneeID:  optionalString(request.AssigneeID),
+		LabelIDs:    request.LabelIDs,
+		DueDate:     dueDateUpdateJSON(request),
+		Estimate:    estimateUpdateJSON(request),
 	}
 	if request.StateType != "" {
 		stateID, err := firstStateIDOfType(ctx, graphqlClient, teamID, request.StateType)
@@ -379,4 +440,69 @@ func parsePriority(raw string) (*int, error) {
 	}
 
 	return &value, nil
+}
+
+// validateDueDate ensures a non-empty due date is a calendar date (YYYY-MM-DD).
+func validateDueDate(raw string) error {
+	if raw == "" {
+		return nil
+	}
+	if _, err := time.Parse("2006-01-02", raw); err != nil {
+		return fmt.Errorf("%w: due date must be YYYY-MM-DD, got %q", ErrWriteInvalid, raw)
+	}
+
+	return nil
+}
+
+// dueDateUpdateJSON renders the issueUpdate dueDate field: an explicit null to
+// clear it, a quoted date to set it, or nil to leave it untouched.
+func dueDateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
+	if request.ClearDueDate {
+		return json.RawMessage("null")
+	}
+	if request.DueDate == "" {
+		return nil
+	}
+
+	return json.RawMessage(strconv.Quote(request.DueDate))
+}
+
+// validateEstimate fails closed before a mutation when the team cannot accept
+// the requested estimate. It performs a free read of the team's estimate
+// configuration and enforces the team-level constraints linctl can verify from
+// that configuration: estimates must be enabled, and a zero estimate is only
+// accepted when the team allows it. Linear remains authoritative for the exact
+// point scale of each estimation type.
+func validateEstimate(ctx context.Context, graphqlClient graphql.Client, teamID string, estimate *int) error {
+	if estimate == nil {
+		return nil
+	}
+	if *estimate < 0 {
+		return fmt.Errorf("%w: estimate must not be negative, got %d", ErrWriteInvalid, *estimate)
+	}
+	config, err := teamEstimateConfig(ctx, graphqlClient, teamID)
+	if err != nil {
+		return fmt.Errorf("read team estimate config for team_id=%s: %w", teamID, err)
+	}
+	if config.Team.IssueEstimationType == "" || config.Team.IssueEstimationType == "notUsed" {
+		return fmt.Errorf("%w: team team_id=%s has estimates disabled", ErrWriteInvalid, teamID)
+	}
+	if *estimate == 0 && !config.Team.IssueEstimationAllowZero {
+		return fmt.Errorf("%w: team team_id=%s does not allow a zero estimate", ErrWriteInvalid, teamID)
+	}
+
+	return nil
+}
+
+// estimateUpdateJSON renders the issueUpdate estimate field: an explicit null to
+// clear it, the integer to set it, or nil to leave it untouched.
+func estimateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
+	if request.ClearEstimate {
+		return json.RawMessage("null")
+	}
+	if request.Estimate == nil {
+		return nil
+	}
+
+	return json.RawMessage(strconv.Itoa(*request.Estimate))
 }

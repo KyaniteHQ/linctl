@@ -183,6 +183,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, operation: "IssueClose", contains: "close issue LIT-1"},
 		{name: "issue relate", args: []string{"issue", "relate", "LIT-1", "LIT-2", "--type", "related"}, operation: "IssueRelationCreate", contains: "create issue relation"},
 		{name: "issue unrelate", args: []string{"issue", "unrelate", "issue-relation-id"}, operation: "IssueRelationDelete", contains: "delete issue relation issue-relation-id"},
+		{name: "issue link", args: []string{"issue", "link", "https://example.com/pr/1", "LIT-1"}, operation: "AttachmentLinkURL", contains: "link attachment to issue LIT-1"},
 		{name: "project list target resolve", args: []string{"project", "list"}, operation: "Teams", contains: "resolve teams"},
 		{name: "project list", args: []string{"project", "list"}, operation: "Projects", contains: "list projects"},
 		{name: "project all", args: []string{"project", "all"}, operation: "projects", contains: "list projects"},

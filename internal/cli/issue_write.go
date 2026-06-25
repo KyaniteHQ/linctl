@@ -21,6 +21,7 @@ type issueCreateFlags struct {
 	status          string
 	priority        string
 	dryRun          bool
+	estimate        int
 }
 
 func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -46,6 +47,11 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().StringVar(&flags.state, "state", "", "set workflow state type (e.g. started, completed)")
 	command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
 	command.Flags().StringVar(&flags.priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
+	command.Flags().StringVar(&request.AssigneeID, "assignee", "", "assign the issue to a user id")
+	command.Flags().StringArrayVar(&request.LabelIDs, "label", nil, "attach a label by id (repeatable)")
+	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
+	command.Flags().IntVar(&flags.estimate, "estimate", 0, "set the estimate (validated against team config)")
+	command.Flags().StringVar(&request.ParentID, "parent", "", "create as a sub-issue of a parent issue id")
 	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
 }
@@ -78,6 +84,9 @@ func runIssueCreate(
 	}
 	request.StateType = stateType
 	request.Priority = normalizedPriority
+	if command.Flags().Changed("estimate") {
+		request.Estimate = &flags.estimate
+	}
 	if flags.dryRun {
 		return writeIssueDraft(command, options, request)
 	}
@@ -96,6 +105,7 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 	state := ""
 	status := ""
 	priority := ""
+	estimate := 0
 	command := &cobra.Command{
 		Use:   "update ISSUE_ID",
 		Short: "Update an issue after pinned-target comparison",
@@ -118,6 +128,9 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 			}
 			request.StateType = stateType
 			request.Priority = normalizedPriority
+			if command.Flags().Changed("estimate") {
+				request.Estimate = &estimate
+			}
 			issue, err := client.UpdateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
 			if err != nil {
 				return err
@@ -134,6 +147,12 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().StringVar(&state, "state", "", "set workflow state type (e.g. started, completed)")
 	command.Flags().StringVar(&status, "status", "", "alias for --state")
 	command.Flags().StringVar(&priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
+	command.Flags().StringVar(&request.AssigneeID, "assignee", "", "reassign the issue to a user id")
+	command.Flags().StringArrayVar(&request.LabelIDs, "label", nil, "set labels by id (repeatable, replaces existing)")
+	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
+	command.Flags().BoolVar(&request.ClearDueDate, "clear-due-date", false, "clear the due date")
+	command.Flags().IntVar(&estimate, "estimate", 0, "set the estimate (validated against team config)")
+	command.Flags().BoolVar(&request.ClearEstimate, "clear-estimate", false, "clear the estimate")
 	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
 }
@@ -332,4 +351,44 @@ func emptyDash(value string) string {
 	}
 
 	return value
+}
+
+func addIssueLinkCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.AttachmentLinkRequest{}
+	command := &cobra.Command{
+		Use:   "link URL ISSUE_ID",
+		Short: "Attach a URL to an issue after pinned-target comparison",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			request.URL = args[0]
+			request.IssueID = args[1]
+			attachment, err := client.LinkIssueAttachment(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeAttachmentLink(command, options, attachment)
+		},
+	}
+	command.Flags().StringVar(&request.Title, "title", "", "attachment title")
+	command.Flags().StringVar(&request.Subtitle, "subtitle", "", "attachment subtitle")
+	root.AddCommand(command)
+}
+
+func writeAttachmentLink(command *cobra.Command, options *rootOptions, attachment client.AttachmentSummary) error {
+	if wrote, err := writeIDOnly(command, options, attachment.ID); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, attachment)
+	}
+
+	return render.WriteLine(command.OutOrStdout(), "%s %s", attachment.ID, attachment.URL)
 }

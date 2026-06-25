@@ -7,7 +7,7 @@ updates:
       interval: weekly
       day: monday
       time: "07:00"
-      timezone: Europe/Istanbul
+      timezone: Etc/UTC
     open-pull-requests-limit: 5
     groups:
       github-actions:
@@ -23,7 +23,7 @@ updates:
       interval: weekly
       day: monday
       time: "07:10"
-      timezone: Europe/Istanbul
+      timezone: Etc/UTC
     open-pull-requests-limit: 5
     groups:
       go-minor-patch:

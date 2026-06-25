@@ -273,6 +273,15 @@ query attachmentIssue_subscribers($id: String!, $first: Int, $after: String, $in
   }
 }
 
+mutation AttachmentLinkURL($input: AttachmentCreateInput!) {
+  attachmentCreate(input: $input) {
+    success
+    attachment {
+      ...AttachmentSummaryFields
+    }
+  }
+}
+
 fragment AttachmentSummaryFields on Attachment {
   id
   title
