@@ -5,13 +5,14 @@
 [![Release](https://img.shields.io/github/v/release/KyaniteHQ/linctl)](https://github.com/KyaniteHQ/linctl/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/KyaniteHQ/linctl)](LICENSE)
 
-> **Zero standing tokens. Writes that can't hit the wrong team.**
+> **Reads everywhere. Writes fail closed. No standing context cost.**
 
-Your agent's Linear MCP server can eat ~13k tokens of tool definitions before it does any
-work.[^mcp] `linctl` is one binary: zero standing tokens, reads are free. And every write
-re-resolves the active token and **fails closed** when the resolved org/team doesn't match
-the target pinned for the repo, so an agent with a stale token can't create issues in the
-wrong team. There is no bypass flag.
+Your agent's Linear MCP server loads its tool definitions into every session before it does any
+work, on the order of ~13k tokens (measured).[^mcp] `linctl` is one binary with no standing
+context: only a command's output costs tokens, and reads need no pin. Every write re-resolves the
+active token and **fails closed** when the resolved org/team doesn't match the target pinned for
+the repo, so a stale or wrong token can't quietly land issues in the wrong team. There is no
+bypass flag.
 
 ![linctl: reads are free; the same write to a team the token can't reach fails closed with TARGET_MISMATCH](docs/assets/demo.gif)
 
@@ -299,6 +300,4 @@ command-to-GraphQL mapping and named test scenarios are under [`docs/`](docs/).
 
 [MIT](LICENSE) © 2026 KyaniteHQ
 
-[^mcp]: Roughly 13k of a 200k context window, spent on tool definitions before any work.
-    Measured by Carlo Zottmann in [*Linearis: my Linear CLI*](https://zottmann.org/2025/09/03/linearis-my-linear-cli-built.html)
-    (2025); the exact figure varies by MCP client and Linear server version.
+[^mcp]: Measured against the official Linear MCP server's tools/list: 38 tools, ~10.2k tokens compact and ~15.3k pretty-printed (tiktoken o200k_base), loaded before any work. The common ~13k is a midpoint; where you land depends on how your client serializes the schema and the Linear server version.
