@@ -1,5 +1,5 @@
 # linctl — guarded-writes terminal demo (the README hero)
-# Render with: LINEAR_API_KEY=<demo-workspace-token> ./render.sh
+# Render with: LINEAR_API_KEY=<demo-target-token> ./render.sh
 # Reads are free; the guarded write is refused when the token does not
 # resolve to the pinned target. See README.md in this directory.
 

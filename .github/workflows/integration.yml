@@ -1,6 +1,6 @@
 name: integration
 
-# Live integration + e2e against a disposable Linear workspace. Token-gated:
+# Live integration + e2e against a disposable Linear target. Token-gated:
 # when LINCTL_TEST_TOKEN is not configured the job runs but skips the live
 # steps, so forks and unconfigured repos stay green.
 on:

@@ -1069,6 +1069,21 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_vcs_branch_*`;
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
+199. AgentSession list
+   - Success: `linctl agent-session list --limit N` lists visible AgentSessions with status and issue identity metadata.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/agent_session_list`;
+     `go test ./internal/client`, `Test_ListAgentSessions_returns_compact_sessions`.
+
+200. AgentSession get
+   - Success: `linctl agent-session get AGENT_SESSION_ID` reads one AgentSession by id without selecting activity-stream, plan, or `sourceMetadata` payloads.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/agent_session_get`;
+     `go test ./internal/client`, `Test_GetAgentSessionByID_returns_session_without_creator_or_issue`.
+
+201. Issue URL link
+   - Success: `linctl issue link URL ISSUE_ID --title TITLE --subtitle SUBTITLE` creates a Linear Attachment URL on an Issue only after resolving the Issue and comparing the pinned target.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_link`;
+     `go test ./internal/client`, `Test_LinkIssueAttachment_attaches_url_when_target_matches`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

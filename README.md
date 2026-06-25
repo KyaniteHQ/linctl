@@ -138,7 +138,7 @@ linctl issue list --mine  # your issues in the pinned team
 
 ## 📖 Command reference
 
-Across 59 command groups, linctl maps the Linear schema. The most-used ones are below; the
+Across 60 top-level command groups, linctl maps the Linear schema. The most-used ones are below; the
 exhaustive catalog with GraphQL backing lives in [`docs/domain-map.md`](docs/domain-map.md),
 and `linctl <group> --help` lists every subcommand.
 
@@ -220,7 +220,7 @@ linctl customer list
 linctl customer-need list
 ```
 
-**Metadata & more** — every group supports `list`/`get` plus entity-specific reads:
+**Metadata & more** — most groups support `list`/`get` plus entity-specific reads:
 `label`, `document`, `template`, `workflow-state`, `time-schedule`, `notification`,
 `triage-responsibility`, `sla-configuration`, `rate-limit`, `application`, `audit-entry`,
 `agent-activity`, `agent-session`, `agent-skill`, `external-user`, `custom-view`,
