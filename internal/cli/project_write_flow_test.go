@@ -8,10 +8,9 @@ import (
 )
 
 // Test_ProjectCommandFlows_report_project_write_writer_errors covers the render
-// step of runGuardedWrite for project create/update/archive: the guarded write
-// succeeds but stdout fails, so the error must propagate. It mirrors the cycle
-// and project-milestone writer-error tests so the project surface is verified
-// directly, not only transitively through the shared helper.
+// step for project create/update/archive: the guarded write succeeds but stdout
+// fails, so the error must propagate. It mirrors the Cycle and ProjectMilestone
+// writer-error tests so the project surface is verified directly.
 func Test_ProjectCommandFlows_report_project_write_writer_errors(t *testing.T) {
 	tests := []struct {
 		name string

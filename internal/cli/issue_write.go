@@ -211,15 +211,29 @@ func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Assign and start an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			return runGuardedWrite(
-				ctx, command, options,
-				func(runtime commandRuntime) (client.IssueSummary, error) {
-					return issueAdapterFor(runtime).StartIssue(ctx, args[0])
-				},
-				writeIssue,
-			)
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+
+			return runIssueStart(ctx, command, options, issueAdapterFor(runtime), args[0])
 		},
 	})
+}
+
+func runIssueStart(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	starter issueStarter,
+	issueID string,
+) error {
+	issue, err := starter.StartIssue(ctx, issueID)
+	if err != nil {
+		return err
+	}
+
+	return writeIssue(command, options, issue)
 }
 
 func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

@@ -22,6 +22,9 @@ type fakeIssuePort struct {
 	closed        client.IssueSummary
 	closeID       string
 	closeCalls    int
+	started       client.IssueSummary
+	startID       string
+	startErr      error
 	template      client.IssueTemplateContent
 	templateErr   error
 	updated       client.IssueSummary
@@ -131,6 +134,12 @@ func (port *fakeIssuePort) CloseIssue(_ context.Context, issueID string) (client
 	port.closeID = issueID
 
 	return port.closed, nil
+}
+
+func (port *fakeIssuePort) StartIssue(_ context.Context, issueID string) (client.IssueSummary, error) {
+	port.startID = issueID
+
+	return port.started, port.startErr
 }
 
 func (port *fakeIssuePort) GetIssueTemplateContent(
@@ -250,6 +259,28 @@ func Test_runIssueClose_calls_the_port_and_renders(t *testing.T) {
 	require.Equal(t, 1, port.closeCalls)
 	require.Equal(t, "LIT-3", port.closeID)
 	require.Contains(t, stdout.String(), "LIT-3")
+}
+
+func Test_runIssueStart_calls_the_port_and_renders(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		started: client.IssueSummary{ID: "s-id", Identifier: "LIT-4", Title: "Started", State: "Started"},
+	}
+
+	err := runIssueStart(context.Background(), command, &rootOptions{}, port, "LIT-4")
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-4", port.startID)
+	require.Contains(t, stdout.String(), "LIT-4")
+}
+
+func Test_runIssueStart_propagates_port_error(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	port := &fakeIssuePort{startErr: errors.New("start failed")}
+
+	err := runIssueStart(context.Background(), command, &rootOptions{}, port, "LIT-4")
+
+	require.ErrorContains(t, err, "start failed")
 }
 
 func Test_runIssueUpdate_assembles_request_through_the_port(t *testing.T) {
@@ -503,6 +534,10 @@ func Test_issueClientAdapter_forwards_to_client(t *testing.T) {
 	closed, err := adapter.CloseIssue(ctx, "LIT-1")
 	require.NoError(t, err)
 	require.NotEmpty(t, closed.ID)
+
+	started, err := adapter.StartIssue(ctx, "LIT-1")
+	require.NoError(t, err)
+	require.NotEmpty(t, started.ID)
 
 	_, err = adapter.GetIssueTemplateContent(ctx, "tmpl-1")
 	require.NoError(t, err)

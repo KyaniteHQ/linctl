@@ -33,6 +33,11 @@ type issueCloser interface {
 	CloseIssue(ctx context.Context, issueID string) (client.IssueSummary, error)
 }
 
+// issueStarter is the port the issue start command depends on.
+type issueStarter interface {
+	StartIssue(ctx context.Context, issueID string) (client.IssueSummary, error)
+}
+
 // issueUpdater is the port the issue update command depends on.
 type issueUpdater interface {
 	UpdateIssue(ctx context.Context, request client.IssueUpdateRequest) (client.IssueSummary, error)
