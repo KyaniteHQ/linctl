@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"strings"
@@ -10,7 +11,68 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
+
+func Test_CommandFlows_emit_guarded_write_target_error_codes(t *testing.T) {
+	tests := []struct {
+		name        string
+		target      config.Target
+		wantErr     error
+		wantCode    string
+		wantMessage string
+	}{
+		{
+			name:        "missing pinned target",
+			target:      config.Target{},
+			wantErr:     client.ErrTargetNotConfigured,
+			wantCode:    `"error_code":"TARGET_NOT_CONFIGURED"`,
+			wantMessage: "set org_id, team_key, and team_id in .linctl.toml",
+		},
+		{
+			name: "resolved target mismatch",
+			target: config.Target{
+				OrgID:     "other-org",
+				TeamKey:   "LIT",
+				TeamID:    "team-id",
+				ProjectID: "project-id",
+			},
+			wantErr:     client.ErrTargetMismatch,
+			wantCode:    `"error_code":"TARGET_MISMATCH"`,
+			wantMessage: "expected team_id=team-id team_key=LIT",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			original := buildCommandRuntime
+			buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+				runtime := testCommandRuntime(commandFlowFakeClient{})
+				runtime.config.Target = test.target
+				return runtime, nil
+			}
+			defer func() {
+				buildCommandRuntime = original
+			}()
+
+			var stdout bytes.Buffer
+			var stderr bytes.Buffer
+
+			err := execute(
+				context.Background(),
+				BuildInfo{},
+				strings.NewReader(""),
+				&stdout,
+				&stderr,
+				[]string{"issue", "create", "--title", "Created issue"},
+			)
+
+			require.ErrorIs(t, err, test.wantErr)
+			require.Empty(t, stdout.String())
+			require.Contains(t, stderr.String(), test.wantCode)
+			require.Contains(t, stderr.String(), test.wantMessage)
+		})
+	}
+}
 
 func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 	t.Run("runtime error returns from command", func(t *testing.T) {

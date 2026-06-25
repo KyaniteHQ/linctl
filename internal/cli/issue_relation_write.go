@@ -19,10 +19,8 @@ func addIssueRelateCommand(ctx context.Context, root *cobra.Command, options *ro
 			if err != nil {
 				return err
 			}
-			relation, err := client.CreateIssueRelation(
+			relation, err := issueAdapterFor(runtime).CreateIssueRelation(
 				ctx,
-				runtime.graphqlClient,
-				runtime.config.Target,
 				client.IssueRelationCreateRequest{
 					IssueID:        args[0],
 					RelatedIssueID: args[1],
@@ -53,7 +51,7 @@ func addIssueUnrelateCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			id, err := client.DeleteIssueRelation(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			id, err := issueAdapterFor(runtime).DeleteIssueRelation(ctx, args[0])
 			if err != nil {
 				return err
 			}
