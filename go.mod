@@ -18,7 +18,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
 	golang.org/x/mod v0.37.0 // indirect
@@ -38,5 +37,3 @@ tool (
 	golang.org/x/vuln/cmd/govulncheck
 	mvdan.cc/gofumpt
 )
-
-replace golang.org/x/tools => golang.org/x/tools v0.46.0
