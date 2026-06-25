@@ -5,7 +5,7 @@
 - Repo: `/home/oruc/Desktop/workspace/linctl`.
 - Branch: `master`.
 - Baseline commit: `c389900`.
-- Latest completed slice: Cycle write Command Port slice.
+- Latest completed slice: ProjectMilestone write Command Port slice.
 - Rolling report: `/tmp/codex-codebase-quality/linctl-quality-report.html`.
 - Worktree exception at run start: `.gitignore` modified with local ignore rules and untracked `.directory`; both are treated as pre-existing Omer changes and must remain unstaged.
 - Likely next action: after the first slice is committed, re-discover whether a similarly small Command Port locality slice remains.
@@ -61,6 +61,13 @@
   - Validation: `go test ./internal/cli -run 'Test_CycleCommandFlows_report_cycle_write_edges|Test_runCycle|Test_cycleClientAdapter|Test_projectClientAdapter'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
   - Notes: first `task ci` attempt failed on `dupl` between Cycle and project port adapters; the slice was adjusted to use one shared command client adapter. First `task coverage` attempt exposed uncovered Cycle update/archive runtime error branches; focused command-flow tests now cover all new statements. `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed.
   - Commit: this commit.
+- 2026-06-26: Port-level ProjectMilestone writes.
+  - Files: `internal/cli/project_milestone_write.go`, `internal/cli/project_milestone_port.go`, `internal/cli/project_milestone_port_test.go`, `internal/cli/command_port.go`.
+  - Behavior impact: no public CLI behavior change; `project-milestone create` and `project-milestone update` still accept the same args and flags, call guarded client writes with the same Pinned Target / Resolved Target comparison, and render the same ProjectMilestone output.
+  - Quality impact: replaced closure-based direct client calls in ProjectMilestone command wiring with small Command Ports and focused run functions while keeping the shared command builder.
+  - Validation: `go test ./internal/cli -run 'Test_runProjectMilestone|Test_projectMilestoneClientAdapter|Test_CommandFlows_execute_read_and_write_commands|Test_CommandFlows_report_runtime_errors|Test_CommandFlows_report_rendering_errors'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
+  - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed. New ProjectMilestone port and shared adapter methods are fully covered.
+  - Commit: this commit.
 
 ## Deferred Needs Omer
 
@@ -72,7 +79,8 @@
 - Candidate: `issueClientAdapter` now satisfies issue, bulk issue import, and project-update Command Ports; a later naming/locality cleanup may make sense if it stays small.
 - Candidate: `issue start` remains a simple one-id guarded write; it is lower leverage than request-assembly ports unless a future refactor touches start semantics.
 - Candidate: simple guarded-write wrappers may benefit from one more characterization test if a future refactor touches `runGuardedWrite`.
-- Candidate: ProjectMilestone writes still use generic closure wrappers; they are safe only if the next slice keeps the ProjectMilestone domain name precise and avoids public CLI changes.
+- Candidate: `issue start` remains a simple one-id guarded write; it may be safe only if the port adds real locality without obscuring the small existing flow.
+- Candidate: command client adapter methods now cover project, Cycle, and ProjectMilestone writes; a later cleanup may group or split the shared adapter only if lint and locality stay clear.
 - Deferred for now: docs/test scenario cleanup unless tied to verified behavior from a code slice.
 
 ## Recently Failed
@@ -95,3 +103,4 @@ None yet.
 - 2026-06-26T00:13:00+03:00: Completed and validated the document write Command Port slice; ready to commit after staged diff checks.
 - 2026-06-26T00:16:00+03:00: Completed and validated the project write Command Port slice after fixing one line-length lint issue; ready to commit after staged diff checks.
 - 2026-06-26T00:31:00+03:00: Completed and validated the Cycle write Command Port slice after replacing duplicate adapters with a shared command client adapter and covering runtime-error edges; ready to commit after staged diff checks.
+- 2026-06-26T00:39:00+03:00: Completed and validated the ProjectMilestone write Command Port slice; ready to commit after staged diff checks.

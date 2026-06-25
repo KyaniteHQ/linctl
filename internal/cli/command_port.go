@@ -56,3 +56,17 @@ func (adapter commandClientAdapter) ArchiveProject(
 ) (client.ProjectSummary, error) {
 	return client.ArchiveProject(ctx, adapter.graphqlClient, adapter.target, projectID)
 }
+
+func (adapter commandClientAdapter) CreateProjectMilestone(
+	ctx context.Context,
+	request client.ProjectMilestoneCreateRequest,
+) (client.ProjectMilestoneSummary, error) {
+	return client.CreateProjectMilestone(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter commandClientAdapter) UpdateProjectMilestone(
+	ctx context.Context,
+	request client.ProjectMilestoneUpdateRequest,
+) (client.ProjectMilestoneSummary, error) {
+	return client.UpdateProjectMilestone(ctx, adapter.graphqlClient, adapter.target, request)
+}

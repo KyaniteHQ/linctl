@@ -15,10 +15,14 @@ func addProjectMilestoneCreateCommand(ctx context.Context, root *cobra.Command, 
 		NameHelp:        "ProjectMilestone name",
 		DescriptionHelp: "ProjectMilestone description",
 		TargetDateHelp:  "ProjectMilestone target date",
-		Run: func(ctx context.Context, runtime commandRuntime, id string, flags projectMilestoneWriteFlags) (
-			client.ProjectMilestoneSummary,
-			error,
-		) {
+		Run: func(
+			ctx context.Context,
+			command *cobra.Command,
+			options *rootOptions,
+			adapter commandClientAdapter,
+			id string,
+			flags projectMilestoneWriteFlags,
+		) error {
 			request := client.ProjectMilestoneCreateRequest{
 				ProjectID:   id,
 				Name:        flags.Name,
@@ -26,7 +30,7 @@ func addProjectMilestoneCreateCommand(ctx context.Context, root *cobra.Command, 
 				TargetDate:  flags.TargetDate,
 			}
 
-			return client.CreateProjectMilestone(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			return runProjectMilestoneCreate(ctx, command, options, adapter, request)
 		},
 	})
 }
@@ -38,10 +42,14 @@ func addProjectMilestoneUpdateCommand(ctx context.Context, root *cobra.Command, 
 		NameHelp:        "new ProjectMilestone name",
 		DescriptionHelp: "new ProjectMilestone description",
 		TargetDateHelp:  "new ProjectMilestone target date",
-		Run: func(ctx context.Context, runtime commandRuntime, id string, flags projectMilestoneWriteFlags) (
-			client.ProjectMilestoneSummary,
-			error,
-		) {
+		Run: func(
+			ctx context.Context,
+			command *cobra.Command,
+			options *rootOptions,
+			adapter commandClientAdapter,
+			id string,
+			flags projectMilestoneWriteFlags,
+		) error {
 			request := client.ProjectMilestoneUpdateRequest{
 				ID:          id,
 				Name:        flags.Name,
@@ -49,7 +57,7 @@ func addProjectMilestoneUpdateCommand(ctx context.Context, root *cobra.Command, 
 				TargetDate:  flags.TargetDate,
 			}
 
-			return client.UpdateProjectMilestone(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			return runProjectMilestoneUpdate(ctx, command, options, adapter, request)
 		},
 	})
 }
@@ -68,10 +76,12 @@ type projectMilestoneWriteSpec struct {
 	TargetDateHelp  string
 	Run             func(
 		context.Context,
-		commandRuntime,
+		*cobra.Command,
+		*rootOptions,
+		commandClientAdapter,
 		string,
 		projectMilestoneWriteFlags,
-	) (client.ProjectMilestoneSummary, error)
+	) error
 }
 
 func addProjectMilestoneWriteCommand(
@@ -86,12 +96,12 @@ func addProjectMilestoneWriteCommand(
 		Short: spec.Short,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			return runProjectMilestoneWriteCommand(ctx, command, options, func(runtime commandRuntime) (
-				client.ProjectMilestoneSummary,
-				error,
-			) {
-				return spec.Run(ctx, runtime, args[0], flags)
-			})
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+
+			return spec.Run(ctx, command, options, commandAdapterFor(runtime), args[0], flags)
 		},
 	}
 	command.Flags().StringVar(&flags.Name, "name", "", spec.NameHelp)
@@ -100,11 +110,32 @@ func addProjectMilestoneWriteCommand(
 	root.AddCommand(command)
 }
 
-func runProjectMilestoneWriteCommand(
+func runProjectMilestoneCreate(
 	ctx context.Context,
 	command *cobra.Command,
 	options *rootOptions,
-	write func(commandRuntime) (client.ProjectMilestoneSummary, error),
+	creator projectMilestoneCreator,
+	request client.ProjectMilestoneCreateRequest,
 ) error {
-	return runGuardedWrite(ctx, command, options, write, writeProjectMilestone)
+	milestone, err := creator.CreateProjectMilestone(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return writeProjectMilestone(command, options, milestone)
+}
+
+func runProjectMilestoneUpdate(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	updater projectMilestoneUpdater,
+	request client.ProjectMilestoneUpdateRequest,
+) error {
+	milestone, err := updater.UpdateProjectMilestone(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return writeProjectMilestone(command, options, milestone)
 }
