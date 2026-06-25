@@ -44,21 +44,33 @@ func addDocumentCreateCommand(ctx context.Context, root *cobra.Command, options 
 			if err != nil {
 				return err
 			}
-			if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
-				return err
-			}
-			document, err := client.CreateDocument(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
 
-			return writeDocument(command, options, document)
+			return runDocumentCreate(ctx, command, options, documentAdapterFor(runtime), request, contentFile)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "document title")
 	command.Flags().StringVar(&request.Content, "content", "", "document content as markdown; use - to read stdin")
 	command.Flags().StringVar(&contentFile, "content-file", "", "read document content from file")
 	root.AddCommand(command)
+}
+
+func runDocumentCreate(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	creator documentCreator,
+	request client.DocumentCreateRequest,
+	contentFile string,
+) error {
+	if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
+		return err
+	}
+	document, err := creator.CreateDocument(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return writeDocument(command, options, document)
 }
 
 func addDocumentUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -74,21 +86,33 @@ func addDocumentUpdateCommand(ctx context.Context, root *cobra.Command, options 
 				return err
 			}
 			request.ID = args[0]
-			if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
-				return err
-			}
-			document, err := client.UpdateDocument(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
 
-			return writeDocument(command, options, document)
+			return runDocumentUpdate(ctx, command, options, documentAdapterFor(runtime), request, contentFile)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "new document title")
 	command.Flags().StringVar(&request.Content, "content", "", "new document content as markdown; use - to read stdin")
 	command.Flags().StringVar(&contentFile, "content-file", "", "read new document content from file")
 	root.AddCommand(command)
+}
+
+func runDocumentUpdate(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	updater documentUpdater,
+	request client.DocumentUpdateRequest,
+	contentFile string,
+) error {
+	if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
+		return err
+	}
+	document, err := updater.UpdateDocument(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return writeDocument(command, options, document)
 }
 
 // resolveDocumentContent resolves the document content from --content (with "-"
