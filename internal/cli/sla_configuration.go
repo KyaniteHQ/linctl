@@ -59,25 +59,18 @@ func writeSLAConfiguration(
 	options *rootOptions,
 	configuration client.SLAConfigurationSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, configuration.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, configuration)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s sla %s type %s removes %t",
-		configuration.ID,
-		configuration.Name,
-		slaValue(configuration.SLA),
-		emptyDash(configuration.SLAType),
-		configuration.RemovesSLA,
-	)
+	return writeItem(command, options, configuration, configuration.ID,
+		func(command *cobra.Command, _ *rootOptions, configuration client.SLAConfigurationSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s sla %s type %s removes %t",
+				configuration.ID,
+				configuration.Name,
+				slaValue(configuration.SLA),
+				emptyDash(configuration.SLAType),
+				configuration.RemovesSLA,
+			)
+		})
 }
 
 func slaValue(value float64) string {

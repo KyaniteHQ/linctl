@@ -230,22 +230,11 @@ func addCustomViewPreferenceValuesCommand(ctx context.Context, root *cobra.Comma
 	root.AddCommand(command)
 }
 
-func writeCustomView(
-	command *cobra.Command,
-	options *rootOptions,
-	view client.CustomViewSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, view.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, view)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", view.ID, view.Name, view.ModelName)
+func writeCustomView(command *cobra.Command, options *rootOptions, view client.CustomViewSummary) error {
+	return writeItem(command, options, view, view.ID,
+		func(command *cobra.Command, _ *rootOptions, view client.CustomViewSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", view.ID, view.Name, view.ModelName)
+		})
 }
 
 func writeCustomViewSubscriberStatus(
@@ -253,22 +242,15 @@ func writeCustomViewSubscriberStatus(
 	options *rootOptions,
 	status client.CustomViewSubscriberStatus,
 ) error {
-	if wrote, err := writeIDOnly(command, options, status.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, status)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s has_subscribers %t",
-		status.ID,
-		status.HasSubscribers,
-	)
+	return writeItem(command, options, status, status.ID,
+		func(command *cobra.Command, _ *rootOptions, status client.CustomViewSubscriberStatus) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s has_subscribers %t",
+				status.ID,
+				status.HasSubscribers,
+			)
+		})
 }
 
 func writeCustomViewPreferences(
@@ -285,28 +267,22 @@ func writeCustomViewScopedPreferences(
 	scope string,
 	preferences client.CustomViewPreferences,
 ) error {
-	if wrote, err := writeIDOnly(command, options, preferences.CustomViewID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, preferences)
-	}
-	if preferences.ID == "" {
-		return render.WriteLine(command.OutOrStdout(), "%s %s preferences -", preferences.CustomViewID, scope)
-	}
+	return writeItem(command, options, preferences, preferences.ID,
+		func(command *cobra.Command, _ *rootOptions, preferences client.CustomViewPreferences) error {
+			if preferences.ID == "" {
+				return render.WriteLine(command.OutOrStdout(), "%s %s preferences -", preferences.CustomViewID, scope)
+			}
 
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s preferences %s %s layout %s",
-		preferences.CustomViewID,
-		scope,
-		preferences.Type,
-		preferences.ViewType,
-		emptyDash(preferences.Values.Layout),
-	)
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s preferences %s %s layout %s",
+				preferences.CustomViewID,
+				scope,
+				preferences.Type,
+				preferences.ViewType,
+				emptyDash(preferences.Values.Layout),
+			)
+		})
 }
 
 func writeCustomViewPreferenceValues(
@@ -314,23 +290,16 @@ func writeCustomViewPreferenceValues(
 	options *rootOptions,
 	values client.CustomViewPreferencesValues,
 ) error {
-	if wrote, err := writeIDOnly(command, options, values.CustomViewID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, values)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s preference values layout %s ordering %s",
-		values.CustomViewID,
-		emptyDash(values.Layout),
-		emptyDash(values.ViewOrdering),
-	)
+	return writeItemNoID(command, options, values,
+		func(command *cobra.Command, _ *rootOptions, values client.CustomViewPreferencesValues) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s preference values layout %s ordering %s",
+				values.CustomViewID,
+				emptyDash(values.Layout),
+				emptyDash(values.ViewOrdering),
+			)
+		})
 }
 
 func loadCustomViewList(

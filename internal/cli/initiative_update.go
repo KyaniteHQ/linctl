@@ -54,29 +54,18 @@ func addInitiativeUpdateCommentsCommand(ctx context.Context, root *cobra.Command
 	root.AddCommand(command)
 }
 
-func writeInitiativeUpdate(
-	command *cobra.Command,
-	options *rootOptions,
-	update client.InitiativeUpdateSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, update.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, update)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s %s",
-		update.ID,
-		update.Health,
-		update.DisplayName,
-		update.Body,
-	)
+func writeInitiativeUpdate(command *cobra.Command, options *rootOptions, update client.InitiativeUpdateSummary) error {
+	return writeItem(command, options, update, update.ID,
+		func(command *cobra.Command, _ *rootOptions, update client.InitiativeUpdateSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s %s",
+				update.ID,
+				update.Health,
+				update.DisplayName,
+				update.Body,
+			)
+		})
 }
 
 func loadInitiativeUpdateList(

@@ -25,29 +25,18 @@ func addCustomerStatusCommand(ctx context.Context, root *cobra.Command, options 
 	})
 }
 
-func writeCustomerStatus(
-	command *cobra.Command,
-	options *rootOptions,
-	status client.CustomerStatusSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, status.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, status)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s %.0f",
-		status.ID,
-		status.DisplayName,
-		status.Color,
-		status.Position,
-	)
+func writeCustomerStatus(command *cobra.Command, options *rootOptions, status client.CustomerStatusSummary) error {
+	return writeItem(command, options, status, status.ID,
+		func(command *cobra.Command, _ *rootOptions, status client.CustomerStatusSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s %.0f",
+				status.ID,
+				status.DisplayName,
+				status.Color,
+				status.Position,
+			)
+		})
 }
 
 func loadCustomerStatusList(

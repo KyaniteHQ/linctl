@@ -25,29 +25,18 @@ func addExternalUserCommand(ctx context.Context, root *cobra.Command, options *r
 	})
 }
 
-func writeExternalUser(
-	command *cobra.Command,
-	options *rootOptions,
-	user client.ExternalUserSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, user.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, user)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s last_seen %s",
-		user.ID,
-		user.Name,
-		user.DisplayName,
-		emptyDash(user.LastSeen),
-	)
+func writeExternalUser(command *cobra.Command, options *rootOptions, user client.ExternalUserSummary) error {
+	return writeItem(command, options, user, user.ID,
+		func(command *cobra.Command, _ *rootOptions, user client.ExternalUserSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s last_seen %s",
+				user.ID,
+				user.Name,
+				user.DisplayName,
+				emptyDash(user.LastSeen),
+			)
+		})
 }
 
 func loadExternalUserList(

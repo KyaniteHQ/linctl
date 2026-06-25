@@ -469,22 +469,17 @@ func addAttachmentIssueSubscribersCommand(ctx context.Context, root *cobra.Comma
 	)
 }
 
-func writeAttachment(
-	command *cobra.Command,
-	options *rootOptions,
-	attachment client.AttachmentSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, attachment.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, attachment)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", attachment.ID, attachment.Title, attachment.SourceType)
+func writeAttachment(command *cobra.Command, options *rootOptions, attachment client.AttachmentSummary) error {
+	return writeItem(command, options, attachment, attachment.ID,
+		func(command *cobra.Command, _ *rootOptions, attachment client.AttachmentSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s]",
+				attachment.ID,
+				attachment.Title,
+				attachment.SourceType,
+			)
+		})
 }
 
 func loadAttachmentList(

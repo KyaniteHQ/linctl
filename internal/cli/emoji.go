@@ -25,22 +25,11 @@ func addEmojiCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	})
 }
 
-func writeEmoji(
-	command *cobra.Command,
-	options *rootOptions,
-	emoji client.EmojiSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, emoji.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, emoji)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", emoji.ID, emoji.Name, emoji.Source)
+func writeEmoji(command *cobra.Command, options *rootOptions, emoji client.EmojiSummary) error {
+	return writeItem(command, options, emoji, emoji.ID,
+		func(command *cobra.Command, _ *rootOptions, emoji client.EmojiSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", emoji.ID, emoji.Name, emoji.Source)
+		})
 }
 
 func loadEmojiList(

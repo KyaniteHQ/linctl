@@ -30,29 +30,18 @@ func addIssueRelationCommand(ctx context.Context, root *cobra.Command, options *
 	)
 }
 
-func writeIssueRelation(
-	command *cobra.Command,
-	options *rootOptions,
-	relation client.IssueRelationSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, relation.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, relation)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s -> %s",
-		relation.ID,
-		relation.Type,
-		relation.IssueIdentifier,
-		relation.RelatedIssueIdentifier,
-	)
+func writeIssueRelation(command *cobra.Command, options *rootOptions, relation client.IssueRelationSummary) error {
+	return writeItem(command, options, relation, relation.ID,
+		func(command *cobra.Command, _ *rootOptions, relation client.IssueRelationSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s -> %s",
+				relation.ID,
+				relation.Type,
+				relation.IssueIdentifier,
+				relation.RelatedIssueIdentifier,
+			)
+		})
 }
 
 func loadIssueRelationList(

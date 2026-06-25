@@ -3,15 +3,11 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"sort"
 
 	"github.com/Khan/genqlient/graphql"
 )
-
-// ErrWriteInvalid marks a malformed write request.
-var ErrWriteInvalid = errors.New("invalid write")
 
 // IssueSummary is the compact issue model used by read-only commands.
 type IssueSummary struct {

@@ -35,24 +35,17 @@ func writeInitiativeToProject(
 	options *rootOptions,
 	association client.InitiativeToProjectSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, association.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, association)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s -> %s order %s",
-		association.ID,
-		association.InitiativeName,
-		association.ProjectName,
-		association.SortOrder,
-	)
+	return writeItem(command, options, association, association.ID,
+		func(command *cobra.Command, _ *rootOptions, association client.InitiativeToProjectSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s -> %s order %s",
+				association.ID,
+				association.InitiativeName,
+				association.ProjectName,
+				association.SortOrder,
+			)
+		})
 }
 
 func loadInitiativeToProjectList(

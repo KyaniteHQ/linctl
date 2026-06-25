@@ -117,36 +117,29 @@ func writeProjectMilestone(
 	options *rootOptions,
 	milestone client.ProjectMilestoneSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, milestone.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, milestone)
-	}
+	return writeItem(command, options, milestone, milestone.ID,
+		func(command *cobra.Command, options *rootOptions, milestone client.ProjectMilestoneSummary) error {
+			format, err := normalizedHumanFormat(options)
+			if err != nil {
+				return err
+			}
+			if format == "minimal" {
+				return render.WriteLine(command.OutOrStdout(), "%s", milestone.ID)
+			}
+			if format == "full" {
+				return render.WriteLine(
+					command.OutOrStdout(),
+					"%s %s [%s] target_date=%s progress=%0.2f",
+					milestone.ID,
+					milestone.Name,
+					milestone.Status,
+					emptyDash(milestone.TargetDate),
+					milestone.Progress,
+				)
+			}
 
-	format, err := normalizedHumanFormat(options)
-	if err != nil {
-		return err
-	}
-	if format == "minimal" {
-		return render.WriteLine(command.OutOrStdout(), "%s", milestone.ID)
-	}
-	if format == "full" {
-		return render.WriteLine(
-			command.OutOrStdout(),
-			"%s %s [%s] target_date=%s progress=%0.2f",
-			milestone.ID,
-			milestone.Name,
-			milestone.Status,
-			emptyDash(milestone.TargetDate),
-			milestone.Progress,
-		)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", milestone.ID, milestone.Name, milestone.Status)
+			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", milestone.ID, milestone.Name, milestone.Status)
+		})
 }
 
 func loadAllProjectMilestones(

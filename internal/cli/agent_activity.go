@@ -25,29 +25,18 @@ func addAgentActivityCommand(ctx context.Context, root *cobra.Command, options *
 	})
 }
 
-func writeAgentActivity(
-	command *cobra.Command,
-	options *rootOptions,
-	activity client.AgentActivitySummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, activity.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, activity)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s session %s [%s] signal %s",
-		activity.ID,
-		activity.AgentSessionID,
-		activity.ContentType,
-		emptyDash(activity.Signal),
-	)
+func writeAgentActivity(command *cobra.Command, options *rootOptions, activity client.AgentActivitySummary) error {
+	return writeItem(command, options, activity, activity.ID,
+		func(command *cobra.Command, _ *rootOptions, activity client.AgentActivitySummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s session %s [%s] signal %s",
+				activity.ID,
+				activity.AgentSessionID,
+				activity.ContentType,
+				emptyDash(activity.Signal),
+			)
+		})
 }
 
 func loadAgentActivityList(

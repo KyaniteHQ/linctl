@@ -274,40 +274,26 @@ func addViewerTeamsCommand(ctx context.Context, root *cobra.Command, options *ro
 }
 
 func writeUser(command *cobra.Command, options *rootOptions, user client.UserSummary) error {
-	if wrote, err := writeIDOnly(command, options, user.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, user)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s <%s>", user.ID, user.DisplayName, user.Email)
+	return writeItem(command, options, user, user.ID,
+		func(command *cobra.Command, _ *rootOptions, user client.UserSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s <%s>", user.ID, user.DisplayName, user.Email)
+		})
 }
 
 func writeDraft(command *cobra.Command, options *rootOptions, draft client.DraftSummary) error {
-	if wrote, err := writeIDOnly(command, options, draft.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, draft)
-	}
-
-	parentKey := defaultString(draft.ParentKey, "-")
-	parentTitle := defaultString(draft.ParentTitle, "-")
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s %s",
-		draft.ID,
-		draft.ParentType,
-		parentKey,
-		parentTitle,
-	)
+	return writeItem(command, options, draft, draft.ID,
+		func(command *cobra.Command, _ *rootOptions, draft client.DraftSummary) error {
+			parentKey := defaultString(draft.ParentKey, "-")
+			parentTitle := defaultString(draft.ParentTitle, "-")
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s %s",
+				draft.ID,
+				draft.ParentType,
+				parentKey,
+				parentTitle,
+			)
+		})
 }
 
 func loadUserList(

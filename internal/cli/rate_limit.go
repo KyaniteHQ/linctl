@@ -35,27 +35,29 @@ func addRateLimitCommand(ctx context.Context, root *cobra.Command, options *root
 }
 
 func writeRateLimitStatus(command *cobra.Command, options *rootOptions, status client.RateLimitStatus) error {
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, status)
-	}
-	if err := render.WriteLine(command.OutOrStdout(), "%s %s", status.Kind, emptyDash(status.Identifier)); err != nil {
-		return err
-	}
-	for _, limit := range status.Limits {
-		if err := render.WriteLine(
-			command.OutOrStdout(),
-			"%s remaining %.0f/%.0f reset %.0f",
-			limit.Type,
-			limit.RemainingAmount,
-			limit.AllowedAmount,
-			limit.Reset,
-		); err != nil {
-			return err
-		}
-	}
+	return writeItemNoID(command, options, status,
+		func(command *cobra.Command, _ *rootOptions, status client.RateLimitStatus) error {
+			if err := render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s",
+				status.Kind,
+				emptyDash(status.Identifier),
+			); err != nil {
+				return err
+			}
+			for _, limit := range status.Limits {
+				if err := render.WriteLine(
+					command.OutOrStdout(),
+					"%s remaining %.0f/%.0f reset %.0f",
+					limit.Type,
+					limit.RemainingAmount,
+					limit.AllowedAmount,
+					limit.Reset,
+				); err != nil {
+					return err
+				}
+			}
 
-	return nil
+			return nil
+		})
 }

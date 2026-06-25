@@ -155,20 +155,16 @@ func writeOrganizationExists(
 	options *rootOptions,
 	status client.OrganizationExistsStatus,
 ) error {
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, status)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s exists %t success %t",
-		status.URLKey,
-		status.Exists,
-		status.Success,
-	)
+	return writeItem(command, options, status, status.URLKey,
+		func(command *cobra.Command, _ *rootOptions, status client.OrganizationExistsStatus) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s exists %t success %t",
+				status.URLKey,
+				status.Exists,
+				status.Success,
+			)
+		})
 }
 
 func loadOrganizationLabels(

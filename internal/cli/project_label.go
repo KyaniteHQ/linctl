@@ -79,36 +79,29 @@ func addProjectLabelProjectsCommand(ctx context.Context, root *cobra.Command, op
 }
 
 func writeProjectLabel(command *cobra.Command, options *rootOptions, label client.ProjectLabelSummary) error {
-	if wrote, err := writeIDOnly(command, options, label.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, label)
-	}
+	return writeItem(command, options, label, label.ID,
+		func(command *cobra.Command, options *rootOptions, label client.ProjectLabelSummary) error {
+			format, err := normalizedHumanFormat(options)
+			if err != nil {
+				return err
+			}
+			if format == "minimal" {
+				return render.WriteLine(command.OutOrStdout(), "%s", label.ID)
+			}
+			if format == "full" {
+				return render.WriteLine(
+					command.OutOrStdout(),
+					"%s %s %s group=%t parent=%s",
+					label.ID,
+					label.Name,
+					label.Color,
+					label.IsGroup,
+					emptyDash(label.ParentName),
+				)
+			}
 
-	format, err := normalizedHumanFormat(options)
-	if err != nil {
-		return err
-	}
-	if format == "minimal" {
-		return render.WriteLine(command.OutOrStdout(), "%s", label.ID)
-	}
-	if format == "full" {
-		return render.WriteLine(
-			command.OutOrStdout(),
-			"%s %s %s group=%t parent=%s",
-			label.ID,
-			label.Name,
-			label.Color,
-			label.IsGroup,
-			emptyDash(label.ParentName),
-		)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s %s", label.ID, label.Name, label.Color)
+			return render.WriteLine(command.OutOrStdout(), "%s %s %s", label.ID, label.Name, label.Color)
+		})
 }
 
 func loadProjectLabelList(

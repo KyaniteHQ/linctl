@@ -174,22 +174,17 @@ func addInitiativeProjectsCommand(ctx context.Context, root *cobra.Command, opti
 	root.AddCommand(command)
 }
 
-func writeInitiative(
-	command *cobra.Command,
-	options *rootOptions,
-	initiative client.InitiativeSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, initiative.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, initiative)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", initiative.ID, initiative.Name, initiative.Status)
+func writeInitiative(command *cobra.Command, options *rootOptions, initiative client.InitiativeSummary) error {
+	return writeItem(command, options, initiative, initiative.ID,
+		func(command *cobra.Command, _ *rootOptions, initiative client.InitiativeSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s]",
+				initiative.ID,
+				initiative.Name,
+				initiative.Status,
+			)
+		})
 }
 
 func writeInitiativeHistory(
@@ -197,23 +192,16 @@ func writeInitiativeHistory(
 	options *rootOptions,
 	history client.InitiativeHistorySummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, history.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, history)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s initiative %s entries %d",
-		history.ID,
-		history.InitiativeID,
-		history.EntryCount,
-	)
+	return writeItem(command, options, history, history.ID,
+		func(command *cobra.Command, _ *rootOptions, history client.InitiativeHistorySummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s initiative %s entries %d",
+				history.ID,
+				history.InitiativeID,
+				history.EntryCount,
+			)
+		})
 }
 
 func loadInitiativeList(

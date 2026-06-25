@@ -208,19 +208,12 @@ func renderExportAttachments(attachments []client.AttachmentSummary) string {
 }
 
 func writeIssueExport(command *cobra.Command, options *rootOptions, result issueExportResult) error {
-	if wrote, err := writeIDOnly(command, options, result.Path); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, result)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s (%d comments, %d attachments)",
-		result.Path, result.Comments, result.Attachments,
-	)
+	return writeItem(command, options, result, result.Path,
+		func(command *cobra.Command, _ *rootOptions, result issueExportResult) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s (%d comments, %d attachments)",
+				result.Path, result.Comments, result.Attachments,
+			)
+		})
 }

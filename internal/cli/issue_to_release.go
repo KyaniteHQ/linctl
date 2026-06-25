@@ -28,28 +28,17 @@ func addIssueToReleaseCommand(ctx context.Context, root *cobra.Command, options 
 	})
 }
 
-func writeIssueToRelease(
-	command *cobra.Command,
-	options *rootOptions,
-	association client.IssueToReleaseSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, association.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, association)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s issue %s -> release %s",
-		association.ID,
-		association.IssueID,
-		association.ReleaseID,
-	)
+func writeIssueToRelease(command *cobra.Command, options *rootOptions, association client.IssueToReleaseSummary) error {
+	return writeItem(command, options, association, association.ID,
+		func(command *cobra.Command, _ *rootOptions, association client.IssueToReleaseSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s issue %s -> release %s",
+				association.ID,
+				association.IssueID,
+				association.ReleaseID,
+			)
+		})
 }
 
 func loadIssueToReleaseList(

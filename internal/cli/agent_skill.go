@@ -25,29 +25,18 @@ func addAgentSkillCommand(ctx context.Context, root *cobra.Command, options *roo
 	})
 }
 
-func writeAgentSkill(
-	command *cobra.Command,
-	options *rootOptions,
-	skill client.AgentSkillSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, skill.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, skill)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s shared %t recent %.0f",
-		skill.ID,
-		skill.Title,
-		skill.Shared,
-		skill.RecentUsageCount,
-	)
+func writeAgentSkill(command *cobra.Command, options *rootOptions, skill client.AgentSkillSummary) error {
+	return writeItem(command, options, skill, skill.ID,
+		func(command *cobra.Command, _ *rootOptions, skill client.AgentSkillSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s shared %t recent %.0f",
+				skill.ID,
+				skill.Title,
+				skill.Shared,
+				skill.RecentUsageCount,
+			)
+		})
 }
 
 func loadAgentSkillList(

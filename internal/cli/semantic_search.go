@@ -38,24 +38,17 @@ func writeSemanticSearchResult(
 	options *rootOptions,
 	result client.SemanticSearchResultSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, result.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, result)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s %s",
-		result.Type,
-		result.ID,
-		emptyDash(result.Key),
-		result.Title,
-	)
+	return writeItem(command, options, result, result.ID,
+		func(command *cobra.Command, _ *rootOptions, result client.SemanticSearchResultSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s %s",
+				result.Type,
+				result.ID,
+				emptyDash(result.Key),
+				result.Title,
+			)
+		})
 }
 
 func loadSemanticSearch(

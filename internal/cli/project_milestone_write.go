@@ -106,14 +106,5 @@ func runProjectMilestoneWriteCommand(
 	options *rootOptions,
 	write func(commandRuntime) (client.ProjectMilestoneSummary, error),
 ) error {
-	runtime, err := buildCommandRuntime(ctx, options)
-	if err != nil {
-		return err
-	}
-	milestone, err := write(runtime)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectMilestone(command, options, milestone)
+	return runGuardedWrite(ctx, command, options, write, writeProjectMilestone)
 }

@@ -30,30 +30,19 @@ func addTeamMembershipCommand(ctx context.Context, root *cobra.Command, options 
 	)
 }
 
-func writeTeamMembership(
-	command *cobra.Command,
-	options *rootOptions,
-	membership client.TeamMembershipSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, membership.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, membership)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s owner %t order %.2f",
-		membership.ID,
-		membership.TeamKey,
-		membership.DisplayName,
-		membership.Owner,
-		membership.SortOrder,
-	)
+func writeTeamMembership(command *cobra.Command, options *rootOptions, membership client.TeamMembershipSummary) error {
+	return writeItem(command, options, membership, membership.ID,
+		func(command *cobra.Command, _ *rootOptions, membership client.TeamMembershipSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s owner %t order %.2f",
+				membership.ID,
+				membership.TeamKey,
+				membership.DisplayName,
+				membership.Owner,
+				membership.SortOrder,
+			)
+		})
 }
 
 func loadTeamMembershipList(

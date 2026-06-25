@@ -47,29 +47,18 @@ func addNotificationCommand(ctx context.Context, root *cobra.Command, options *r
 	)
 }
 
-func writeNotification(
-	command *cobra.Command,
-	options *rootOptions,
-	notification client.NotificationSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, notification.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, notification)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s] %s",
-		notification.ID,
-		notification.Type,
-		notification.Category,
-		notification.Title,
-	)
+func writeNotification(command *cobra.Command, options *rootOptions, notification client.NotificationSummary) error {
+	return writeItem(command, options, notification, notification.ID,
+		func(command *cobra.Command, _ *rootOptions, notification client.NotificationSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s] %s",
+				notification.ID,
+				notification.Type,
+				notification.Category,
+				notification.Title,
+			)
+		})
 }
 
 func writeNotificationSubscription(
@@ -77,24 +66,17 @@ func writeNotificationSubscription(
 	options *rootOptions,
 	subscription client.NotificationSubscriptionSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, subscription.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, subscription)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s active %t",
-		subscription.ID,
-		emptyDash(subscription.TargetType),
-		emptyDash(subscription.TargetName),
-		subscription.Active,
-	)
+	return writeItem(command, options, subscription, subscription.ID,
+		func(command *cobra.Command, _ *rootOptions, subscription client.NotificationSubscriptionSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s active %t",
+				subscription.ID,
+				emptyDash(subscription.TargetType),
+				emptyDash(subscription.TargetName),
+				subscription.Active,
+			)
+		})
 }
 
 func loadNotificationList(

@@ -54,22 +54,11 @@ func addFavoriteChildrenCommand(ctx context.Context, root *cobra.Command, option
 	root.AddCommand(command)
 }
 
-func writeFavorite(
-	command *cobra.Command,
-	options *rootOptions,
-	favorite client.FavoriteSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, favorite.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, favorite)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s [%s] %s", favorite.ID, favorite.Type, favorite.URL)
+func writeFavorite(command *cobra.Command, options *rootOptions, favorite client.FavoriteSummary) error {
+	return writeItem(command, options, favorite, favorite.ID,
+		func(command *cobra.Command, _ *rootOptions, favorite client.FavoriteSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s [%s] %s", favorite.ID, favorite.Type, favorite.URL)
+		})
 }
 
 func loadFavoriteList(

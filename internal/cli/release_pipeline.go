@@ -146,54 +146,32 @@ func addReleaseStageReleasesCommand(ctx context.Context, root *cobra.Command, op
 	root.AddCommand(command)
 }
 
-func writeReleasePipeline(
-	command *cobra.Command,
-	options *rootOptions,
-	pipeline client.ReleasePipelineSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, pipeline.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, pipeline)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s releases %d",
-		pipeline.ID,
-		pipeline.Name,
-		pipeline.SlugID,
-		pipeline.ApproximateReleaseCount,
-	)
+func writeReleasePipeline(command *cobra.Command, options *rootOptions, pipeline client.ReleasePipelineSummary) error {
+	return writeItem(command, options, pipeline, pipeline.ID,
+		func(command *cobra.Command, _ *rootOptions, pipeline client.ReleasePipelineSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s releases %d",
+				pipeline.ID,
+				pipeline.Name,
+				pipeline.SlugID,
+				pipeline.ApproximateReleaseCount,
+			)
+		})
 }
 
-func writeReleaseStage(
-	command *cobra.Command,
-	options *rootOptions,
-	stage client.ReleaseStageSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, stage.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, stage)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s] pipeline %s",
-		stage.ID,
-		stage.Name,
-		stage.Type,
-		stage.PipelineName,
-	)
+func writeReleaseStage(command *cobra.Command, options *rootOptions, stage client.ReleaseStageSummary) error {
+	return writeItem(command, options, stage, stage.ID,
+		func(command *cobra.Command, _ *rootOptions, stage client.ReleaseStageSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s] pipeline %s",
+				stage.ID,
+				stage.Name,
+				stage.Type,
+				stage.PipelineName,
+			)
+		})
 }
 
 func loadReleasePipelineList(

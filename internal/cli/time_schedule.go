@@ -25,22 +25,17 @@ func addTimeScheduleCommand(ctx context.Context, root *cobra.Command, options *r
 	})
 }
 
-func writeTimeSchedule(
-	command *cobra.Command,
-	options *rootOptions,
-	schedule client.TimeScheduleSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, schedule.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, schedule)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s entries %d", schedule.ID, schedule.Name, schedule.EntryCount)
+func writeTimeSchedule(command *cobra.Command, options *rootOptions, schedule client.TimeScheduleSummary) error {
+	return writeItem(command, options, schedule, schedule.ID,
+		func(command *cobra.Command, _ *rootOptions, schedule client.TimeScheduleSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s entries %d",
+				schedule.ID,
+				schedule.Name,
+				schedule.EntryCount,
+			)
+		})
 }
 
 func loadTimeScheduleList(

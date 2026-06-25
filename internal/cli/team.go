@@ -265,17 +265,10 @@ func addTeamTemplatesCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func writeTeam(command *cobra.Command, options *rootOptions, team client.TeamSummary) error {
-	if wrote, err := writeIDOnly(command, options, team.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, team)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s %s", team.ID, team.Key, team.Name)
+	return writeItem(command, options, team, team.ID,
+		func(command *cobra.Command, _ *rootOptions, team client.TeamSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s %s", team.ID, team.Key, team.Name)
+		})
 }
 
 func writeGitAutomationState(
@@ -283,24 +276,17 @@ func writeGitAutomationState(
 	options *rootOptions,
 	state client.GitAutomationStateSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, state.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, state)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s state %s target %s",
-		state.ID,
-		state.Event,
-		emptyDash(state.StateName),
-		emptyDash(state.TargetBranchPattern),
-	)
+	return writeItem(command, options, state, state.ID,
+		func(command *cobra.Command, _ *rootOptions, state client.GitAutomationStateSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s state %s target %s",
+				state.ID,
+				state.Event,
+				emptyDash(state.StateName),
+				emptyDash(state.TargetBranchPattern),
+			)
+		})
 }
 
 func loadTeamList(

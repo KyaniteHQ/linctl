@@ -186,46 +186,32 @@ func addReleaseNoteCommand(ctx context.Context, root *cobra.Command, options *ro
 }
 
 func writeRelease(command *cobra.Command, options *rootOptions, release client.ReleaseSummary) error {
-	if wrote, err := writeIDOnly(command, options, release.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, release)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s] pipeline %s stage %s issues %d",
-		release.ID,
-		release.Name,
-		emptyDash(release.Version),
-		release.PipelineName,
-		release.StageName,
-		release.IssueCount,
-	)
+	return writeItem(command, options, release, release.ID,
+		func(command *cobra.Command, _ *rootOptions, release client.ReleaseSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s] pipeline %s stage %s issues %d",
+				release.ID,
+				release.Name,
+				emptyDash(release.Version),
+				release.PipelineName,
+				release.StageName,
+				release.IssueCount,
+			)
+		})
 }
 
 func writeReleaseHistory(command *cobra.Command, options *rootOptions, history client.ReleaseHistorySummary) error {
-	if wrote, err := writeIDOnly(command, options, history.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, history)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s release %s entries %d",
-		history.ID,
-		history.ReleaseID,
-		history.EntryCount,
-	)
+	return writeItem(command, options, history, history.ID,
+		func(command *cobra.Command, _ *rootOptions, history client.ReleaseHistorySummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s release %s entries %d",
+				history.ID,
+				history.ReleaseID,
+				history.EntryCount,
+			)
+		})
 }
 
 func writeEntityExternalLink(
@@ -233,45 +219,31 @@ func writeEntityExternalLink(
 	options *rootOptions,
 	link client.EntityExternalLinkSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, link.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, link)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s order %g",
-		link.ID,
-		link.Label,
-		link.URL,
-		link.SortOrder,
-	)
+	return writeItem(command, options, link, link.ID,
+		func(command *cobra.Command, _ *rootOptions, link client.EntityExternalLinkSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s order %g",
+				link.ID,
+				link.Label,
+				link.URL,
+				link.SortOrder,
+			)
+		})
 }
 
 func writeReleaseNote(command *cobra.Command, options *rootOptions, note client.ReleaseNoteSummary) error {
-	if wrote, err := writeIDOnly(command, options, note.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, note)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s pipeline %s releases %d",
-		note.ID,
-		emptyDash(note.Title),
-		note.PipelineName,
-		note.ReleaseCount,
-	)
+	return writeItem(command, options, note, note.ID,
+		func(command *cobra.Command, _ *rootOptions, note client.ReleaseNoteSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s pipeline %s releases %d",
+				note.ID,
+				emptyDash(note.Title),
+				note.PipelineName,
+				note.ReleaseCount,
+			)
+		})
 }
 
 func loadReleaseList(

@@ -101,14 +101,5 @@ func runCycleWriteCommand(
 	options *rootOptions,
 	write func(commandRuntime) (client.CycleSummary, error),
 ) error {
-	runtime, err := buildCommandRuntime(ctx, options)
-	if err != nil {
-		return err
-	}
-	cycle, err := write(runtime)
-	if err != nil {
-		return err
-	}
-
-	return writeCycle(command, options, cycle)
+	return runGuardedWrite(ctx, command, options, write, writeCycle)
 }

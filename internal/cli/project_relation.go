@@ -30,29 +30,18 @@ func addProjectRelationCommand(ctx context.Context, root *cobra.Command, options
 	)
 }
 
-func writeProjectRelation(
-	command *cobra.Command,
-	options *rootOptions,
-	relation client.ProjectRelationSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, relation.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, relation)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s -> %s",
-		relation.ID,
-		relation.Type,
-		relation.ProjectName,
-		relation.RelatedProjectName,
-	)
+func writeProjectRelation(command *cobra.Command, options *rootOptions, relation client.ProjectRelationSummary) error {
+	return writeItem(command, options, relation, relation.ID,
+		func(command *cobra.Command, _ *rootOptions, relation client.ProjectRelationSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s -> %s",
+				relation.ID,
+				relation.Type,
+				relation.ProjectName,
+				relation.RelatedProjectName,
+			)
+		})
 }
 
 func loadProjectRelationList(

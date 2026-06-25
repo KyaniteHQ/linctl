@@ -81,6 +81,41 @@ func writeIDOnly(command *cobra.Command, options *rootOptions, id string) (bool,
 	return true, render.WriteLine(command.OutOrStdout(), "%s", id)
 }
 
+// itemRenderer writes the human-readable form of one item. It receives options
+// so format-aware renderers can honor --format; renderers that ignore format
+// simply discard it.
+type itemRenderer[T any] func(*cobra.Command, *rootOptions, T) error
+
+// writeItemNoID renders an item that has no --id-only form across the id-only,
+// quiet, JSON, and human output modes. The item carries no id to print, so
+// --id-only emits nothing; container writers that delegate to id-bearing item
+// writers dispatch their own modes rather than routing through this helper.
+func writeItemNoID[T any](command *cobra.Command, options *rootOptions, item T, human itemRenderer[T]) error {
+	if options.idOnly {
+		return nil
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, item)
+	}
+
+	return human(command, options, item)
+}
+
+// writeItem renders an item across the id-only, quiet, JSON, and human output
+// modes. It is the single dispatch every entity writer delegates to: id feeds
+// --id-only, human produces the compact line. This concentrates the output
+// policy that previously lived inline in every write* function.
+func writeItem[T any](command *cobra.Command, options *rootOptions, item T, id string, human itemRenderer[T]) error {
+	if wrote, err := writeIDOnly(command, options, id); wrote || err != nil {
+		return err
+	}
+
+	return writeItemNoID(command, options, item, human)
+}
+
 // deletionResult is the structured confirmation returned by guarded delete commands.
 type deletionResult struct {
 	ID     string `json:"id"`

@@ -71,14 +71,5 @@ func runProjectWriteCommand(
 	options *rootOptions,
 	write func(commandRuntime) (client.ProjectSummary, error),
 ) error {
-	runtime, err := buildCommandRuntime(ctx, options)
-	if err != nil {
-		return err
-	}
-	project, err := write(runtime)
-	if err != nil {
-		return err
-	}
-
-	return writeProject(command, options, project)
+	return runGuardedWrite(ctx, command, options, write, writeProject)
 }

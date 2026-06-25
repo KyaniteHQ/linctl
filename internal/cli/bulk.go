@@ -114,23 +114,43 @@ func runIssueImport(
 		return writeImportPreview(command, options, requests)
 	}
 
-	return createImportedIssues(ctx, command, options, runtime, requests)
+	return createImportedIssues(ctx, command, options, issueAdapterFor(runtime), requests)
 }
+
+// bulkIssueCreator is the narrow Command Port the import create loop depends on.
+// Defined by its consumer (it needs only CreateIssue, not the wider issue port)
+// and satisfied in production by issueClientAdapter, so the per-row error
+// wrapping is tested against an in-memory fake rather than canned GraphQL JSON.
+type bulkIssueCreator interface {
+	CreateIssue(ctx context.Context, request client.IssueCreateRequest) (client.IssueSummary, error)
+}
+
+// The shared production adapter satisfies the narrow bulk port; this assertion
+// fails the build if CreateIssue's shape drifts, keeping the write-guard
+// forwarding intact rather than letting an adapter quietly stop satisfying it.
+var _ bulkIssueCreator = issueClientAdapter{}
 
 func createImportedIssues(
 	ctx context.Context,
 	command *cobra.Command,
 	options *rootOptions,
-	runtime commandRuntime,
+	creator bulkIssueCreator,
 	requests []client.IssueCreateRequest,
 ) error {
-	created := make([]client.IssueSummary, 0, len(requests))
+	// --quiet renders nothing, so skip accumulating the created summaries; the
+	// default, --json, and --id-only modes still consume them downstream.
+	var created []client.IssueSummary
+	if !options.quiet {
+		created = make([]client.IssueSummary, 0, len(requests))
+	}
 	for index, request := range requests {
-		issue, err := client.CreateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
+		issue, err := creator.CreateIssue(ctx, request)
 		if err != nil {
 			return fmt.Errorf("import row %d %q: %w", index+1, request.Title, err)
 		}
-		created = append(created, issue)
+		if !options.quiet {
+			created = append(created, issue)
+		}
 	}
 
 	return writeImportResult(command, options, created)
@@ -395,15 +415,8 @@ func issuesToCSVRecords(issues []client.IssueSummary) [][]string {
 }
 
 func writeBulkExportResult(command *cobra.Command, options *rootOptions, path string, count int) error {
-	if wrote, err := writeIDOnly(command, options, path); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, bulkExportResult{Path: path, Count: count})
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s (%d issues)", path, count)
+	return writeItem(command, options, bulkExportResult{Path: path, Count: count}, path,
+		func(command *cobra.Command, _ *rootOptions, result bulkExportResult) error {
+			return render.WriteLine(command.OutOrStdout(), "%s (%d issues)", result.Path, result.Count)
+		})
 }

@@ -87,17 +87,16 @@ func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func writeComment(command *cobra.Command, options *rootOptions, comment client.CommentSummary) error {
-	if wrote, err := writeIDOnly(command, options, comment.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, comment)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s %s", comment.ID, emptyDash(comment.DisplayName), comment.Body)
+	return writeItem(command, options, comment, comment.ID,
+		func(command *cobra.Command, _ *rootOptions, comment client.CommentSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s",
+				comment.ID,
+				emptyDash(comment.DisplayName),
+				comment.Body,
+			)
+		})
 }
 
 func addCommentBotActorCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -167,24 +166,21 @@ func addCommentCreatedIssuesCommand(ctx context.Context, root *cobra.Command, op
 }
 
 func writeCommentBotActor(command *cobra.Command, options *rootOptions, actor client.CommentBotActor) error {
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, actor)
-	}
-	if actor.Bot == nil {
-		return render.WriteLine(command.OutOrStdout(), "%s bot -", actor.CommentID)
-	}
+	return writeItem(command, options, actor, actor.CommentID,
+		func(command *cobra.Command, _ *rootOptions, actor client.CommentBotActor) error {
+			if actor.Bot == nil {
+				return render.WriteLine(command.OutOrStdout(), "%s bot -", actor.CommentID)
+			}
 
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s bot %s %s [%s]",
-		actor.CommentID,
-		emptyDash(actor.Bot.ID),
-		emptyDash(actor.Bot.Name),
-		actor.Bot.Type,
-	)
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s bot %s %s [%s]",
+				actor.CommentID,
+				emptyDash(actor.Bot.ID),
+				emptyDash(actor.Bot.Name),
+				actor.Bot.Type,
+			)
+		})
 }
 
 func loadCommentList(

@@ -46,22 +46,10 @@ func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, opt
 				return err
 			}
 			request.ProjectID = args[0]
-			if err := resolveBodyFlag(command, &request.Body); err != nil {
-				return err
-			}
-			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
-				return err
-			}
-			request.Health, err = normalizeAndNote(command, "health", health, normalizedHealthValue)
-			if err != nil {
-				return err
-			}
-			update, err := client.CreateProjectUpdate(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
 
-			return writeProjectUpdate(command, options, update)
+			return runProjectUpdateCreate(
+				ctx, command, options, issueAdapterFor(runtime), request, health, bodyFile,
+			)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "update body as markdown; use - to read stdin")
@@ -70,25 +58,50 @@ func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, opt
 	root.AddCommand(command)
 }
 
-func writeProjectUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {
-	if wrote, err := writeIDOnly(command, options, update.ID); wrote || err != nil {
+// runProjectUpdateCreate resolves the body (stdin or file), normalizes the
+// health alias, then posts the update through the Command Port. Splitting it
+// from the cobra wiring makes the port the test surface: the body and health
+// logic is exercised against an in-memory fake, not canned GraphQL JSON.
+func runProjectUpdateCreate(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	creator projectUpdateCreator,
+	request client.ProjectUpdateCreateRequest,
+	health string,
+	bodyFile string,
+) error {
+	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
 		return err
 	}
-	if options.quiet {
-		return nil
+	if err := resolveBodyFlag(command, &request.Body); err != nil {
+		return err
 	}
-	if options.json {
-		return writeJSONValue(command, options, update)
+	normalizedHealth, err := normalizeAndNote(command, "health", health, normalizedHealthValue)
+	if err != nil {
+		return err
+	}
+	request.Health = normalizedHealth
+	update, err := creator.CreateProjectUpdate(ctx, request)
+	if err != nil {
+		return err
 	}
 
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s %s",
-		update.ID,
-		update.Health,
-		update.DisplayName,
-		update.Body,
-	)
+	return writeProjectUpdate(command, options, update)
+}
+
+func writeProjectUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {
+	return writeItem(command, options, update, update.ID,
+		func(command *cobra.Command, _ *rootOptions, update client.ProjectUpdateSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s %s",
+				update.ID,
+				update.Health,
+				update.DisplayName,
+				update.Body,
+			)
+		})
 }
 
 func loadProjectUpdateList(

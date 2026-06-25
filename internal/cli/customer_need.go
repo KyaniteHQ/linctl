@@ -51,29 +51,18 @@ func addCustomerNeedProjectAttachmentCommand(ctx context.Context, root *cobra.Co
 	})
 }
 
-func writeCustomerNeed(
-	command *cobra.Command,
-	options *rootOptions,
-	need client.CustomerNeedSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, need.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, need)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s priority %.0f",
-		need.ID,
-		emptyDash(need.CustomerName),
-		emptyDash(need.Issue),
-		need.Priority,
-	)
+func writeCustomerNeed(command *cobra.Command, options *rootOptions, need client.CustomerNeedSummary) error {
+	return writeItem(command, options, need, need.ID,
+		func(command *cobra.Command, _ *rootOptions, need client.CustomerNeedSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s priority %.0f",
+				need.ID,
+				emptyDash(need.CustomerName),
+				emptyDash(need.Issue),
+				need.Priority,
+			)
+		})
 }
 
 func writeCustomerNeedProjectAttachment(
@@ -81,24 +70,21 @@ func writeCustomerNeedProjectAttachment(
 	options *rootOptions,
 	attachment client.CustomerNeedProjectAttachment,
 ) error {
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, attachment)
-	}
-	if attachment.Attachment == nil {
-		return render.WriteLine(command.OutOrStdout(), "%s project_attachment -", attachment.CustomerNeedID)
-	}
+	return writeItemNoID(command, options, attachment,
+		func(command *cobra.Command, _ *rootOptions, attachment client.CustomerNeedProjectAttachment) error {
+			if attachment.Attachment == nil {
+				return render.WriteLine(command.OutOrStdout(), "%s project_attachment -", attachment.CustomerNeedID)
+			}
 
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s project_attachment %s %s [%s]",
-		attachment.CustomerNeedID,
-		attachment.Attachment.ID,
-		attachment.Attachment.Title,
-		attachment.Attachment.SourceType,
-	)
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s project_attachment %s %s [%s]",
+				attachment.CustomerNeedID,
+				attachment.Attachment.ID,
+				attachment.Attachment.Title,
+				attachment.Attachment.SourceType,
+			)
+		})
 }
 
 func loadCustomerNeedList(

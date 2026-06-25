@@ -90,64 +90,31 @@ func addSearchProjectsCommand(ctx context.Context, root *cobra.Command, options 
 	root.AddCommand(command)
 }
 
-func writeSearchDocument(
-	command *cobra.Command,
-	options *rootOptions,
-	document client.SearchDocumentSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, document.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, document)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s]",
-		document.ID,
-		document.Title,
-		emptyDash(document.ParentType),
-	)
+func writeSearchDocument(command *cobra.Command, options *rootOptions, document client.SearchDocumentSummary) error {
+	return writeItem(command, options, document, document.ID,
+		func(command *cobra.Command, _ *rootOptions, document client.SearchDocumentSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s]",
+				document.ID,
+				document.Title,
+				emptyDash(document.ParentType),
+			)
+		})
 }
 
-func writeSearchIssue(
-	command *cobra.Command,
-	options *rootOptions,
-	issue client.SearchIssueSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, issue.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, issue)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", issue.Identifier, issue.Title, issue.StateName)
+func writeSearchIssue(command *cobra.Command, options *rootOptions, issue client.SearchIssueSummary) error {
+	return writeItem(command, options, issue, issue.ID,
+		func(command *cobra.Command, _ *rootOptions, issue client.SearchIssueSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", issue.Identifier, issue.Title, issue.StateName)
+		})
 }
 
-func writeSearchProject(
-	command *cobra.Command,
-	options *rootOptions,
-	project client.SearchProjectSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, project.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, project)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", project.ID, project.Name, project.Status.Name)
+func writeSearchProject(command *cobra.Command, options *rootOptions, project client.SearchProjectSummary) error {
+	return writeItem(command, options, project, project.ID,
+		func(command *cobra.Command, _ *rootOptions, project client.SearchProjectSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", project.ID, project.Name, project.Status.Name)
+		})
 }
 
 func loadSearchDocuments(

@@ -31,29 +31,18 @@ func addProjectStatusCommand(ctx context.Context, root *cobra.Command, options *
 	addProjectStatusProjectCountCommand(ctx, projectStatusCommand, options)
 }
 
-func writeProjectStatus(
-	command *cobra.Command,
-	options *rootOptions,
-	status client.ProjectStatusSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, status.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, status)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s] %s",
-		status.ID,
-		status.Name,
-		status.Type,
-		status.Color,
-	)
+func writeProjectStatus(command *cobra.Command, options *rootOptions, status client.ProjectStatusSummary) error {
+	return writeItem(command, options, status, status.ID,
+		func(command *cobra.Command, _ *rootOptions, status client.ProjectStatusSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s] %s",
+				status.ID,
+				status.Name,
+				status.Type,
+				status.Color,
+			)
+		})
 }
 
 func addProjectStatusProjectCountCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -81,21 +70,17 @@ func writeProjectStatusProjectCount(
 	options *rootOptions,
 	count client.ProjectStatusProjectCount,
 ) error {
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, count)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s count %.0f private %.0f archived_team %.0f",
-		count.ProjectStatusID,
-		count.Count,
-		count.PrivateCount,
-		count.ArchivedTeamCount,
-	)
+	return writeItem(command, options, count, count.ProjectStatusID,
+		func(command *cobra.Command, _ *rootOptions, count client.ProjectStatusProjectCount) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s count %.0f private %.0f archived_team %.0f",
+				count.ProjectStatusID,
+				count.Count,
+				count.PrivateCount,
+				count.ArchivedTeamCount,
+			)
+		})
 }
 
 func loadProjectStatusList(

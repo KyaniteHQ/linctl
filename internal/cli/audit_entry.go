@@ -39,35 +39,26 @@ func writeAuditEntryTypes(
 	options *rootOptions,
 	types client.AuditEntryTypeList,
 ) error {
+	// A container, not a leaf: dispatch its own modes so --id-only delegates to
+	// writeAuditEntryType (each type's identifier) rather than emitting nothing.
 	if options.quiet {
 		return nil
 	}
 	if options.json {
 		return writeJSONValue(command, options, types)
 	}
-
 	for _, entryType := range types.AuditEntryTypes {
 		if err := writeAuditEntryType(command, options, entryType); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
-func writeAuditEntryType(
-	command *cobra.Command,
-	options *rootOptions,
-	entryType client.AuditEntryTypeSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, entryType.Type); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, entryType)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s", entryType.Type, entryType.Description)
+func writeAuditEntryType(command *cobra.Command, options *rootOptions, entryType client.AuditEntryTypeSummary) error {
+	return writeItem(command, options, entryType, entryType.Type,
+		func(command *cobra.Command, _ *rootOptions, entryType client.AuditEntryTypeSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s", entryType.Type, entryType.Description)
+		})
 }

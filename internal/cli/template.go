@@ -26,22 +26,22 @@ func addTemplateCommand(ctx context.Context, root *cobra.Command, options *rootO
 }
 
 func writeTemplate(command *cobra.Command, options *rootOptions, template client.TemplateSummary) error {
-	if wrote, err := writeIDOnly(command, options, template.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, template)
-	}
+	return writeItem(command, options, template, template.ID,
+		func(command *cobra.Command, _ *rootOptions, template client.TemplateSummary) error {
+			scope := "organization"
+			if template.TeamKey != "" {
+				scope = "team " + template.TeamKey
+			}
 
-	scope := "organization"
-	if template.TeamKey != "" {
-		scope = "team " + template.TeamKey
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s] %s", template.ID, template.Name, template.Type, scope)
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s] %s",
+				template.ID,
+				template.Name,
+				template.Type,
+				scope,
+			)
+		})
 }
 
 func loadTemplateList(

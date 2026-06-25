@@ -125,23 +125,16 @@ func addDocumentCommentsCommand(ctx context.Context, root *cobra.Command, option
 }
 
 func writeDocument(command *cobra.Command, options *rootOptions, document client.DocumentSummary) error {
-	if wrote, err := writeIDOnly(command, options, document.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, document)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s]",
-		document.ID,
-		document.Title,
-		emptyDash(document.ParentType),
-	)
+	return writeItem(command, options, document, document.ID,
+		func(command *cobra.Command, _ *rootOptions, document client.DocumentSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s]",
+				document.ID,
+				document.Title,
+				emptyDash(document.ParentType),
+			)
+		})
 }
 
 func loadDocumentList(

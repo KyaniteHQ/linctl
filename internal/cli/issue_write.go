@@ -211,16 +211,13 @@ func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Assign and start an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			issue, err := issueAdapterFor(runtime).StartIssue(ctx, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
+			return runGuardedWrite(
+				ctx, command, options,
+				func(runtime commandRuntime) (client.IssueSummary, error) {
+					return issueAdapterFor(runtime).StartIssue(ctx, args[0])
+				},
+				writeIssue,
+			)
 		},
 	})
 }
@@ -255,21 +252,21 @@ func runIssueBodyWriteCommand(
 	request client.IssueCommentRequest,
 	bodyFile string,
 ) error {
-	if err := resolveBodyFlag(command, &request.Body); err != nil {
+	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
 		return err
 	}
-	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+	if err := resolveBodyFlag(command, &request.Body); err != nil {
 		return err
 	}
 	comment, err := commenter.CommentOnIssue(ctx, request)
 	if err != nil {
 		return err
 	}
-	if options.json {
-		return writeJSONValue(command, options, comment)
-	}
 
-	return render.WriteLine(command.OutOrStdout(), "comment %s on %s", comment.ID, comment.Issue.Identifier)
+	return writeItem(command, options, comment, comment.ID,
+		func(command *cobra.Command, _ *rootOptions, comment client.IssueCommentResult) error {
+			return render.WriteLine(command.OutOrStdout(), "comment %s on %s", comment.ID, comment.Issue.Identifier)
+		})
 }
 
 func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -358,16 +355,10 @@ func runIssueClose(
 }
 
 func writeIssue(command *cobra.Command, options *rootOptions, issue client.IssueSummary) error {
-	if wrote, err := writeIDOnly(command, options, issue.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, issue)
-	}
+	return writeItem(command, options, issue, issue.ID, issueHumanLine)
+}
 
+func issueHumanLine(command *cobra.Command, options *rootOptions, issue client.IssueSummary) error {
 	format, err := normalizedHumanFormat(options)
 	if err != nil {
 		return err
@@ -405,18 +396,16 @@ func addIssueLinkCommand(ctx context.Context, root *cobra.Command, options *root
 		Short: "Attach a URL to an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
 			request.URL = args[0]
 			request.IssueID = args[1]
-			attachment, err := issueAdapterFor(runtime).LinkIssueAttachment(ctx, request)
-			if err != nil {
-				return err
-			}
 
-			return writeAttachmentLink(command, options, attachment)
+			return runGuardedWrite(
+				ctx, command, options,
+				func(runtime commandRuntime) (client.AttachmentSummary, error) {
+					return issueAdapterFor(runtime).LinkIssueAttachment(ctx, request)
+				},
+				writeAttachmentLink,
+			)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "attachment title")
@@ -425,15 +414,8 @@ func addIssueLinkCommand(ctx context.Context, root *cobra.Command, options *root
 }
 
 func writeAttachmentLink(command *cobra.Command, options *rootOptions, attachment client.AttachmentSummary) error {
-	if wrote, err := writeIDOnly(command, options, attachment.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, attachment)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s", attachment.ID, attachment.URL)
+	return writeItem(command, options, attachment, attachment.ID,
+		func(command *cobra.Command, _ *rootOptions, attachment client.AttachmentSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s", attachment.ID, attachment.URL)
+		})
 }

@@ -95,7 +95,7 @@ func runReadListCommand[Page any, Item any](
 	limit int,
 	loader readListLoader[Page, Item],
 	pageWithItems readListPage[Page, Item],
-	writeItem readListItemWriter[Item],
+	writeOne readListItemWriter[Item],
 ) error {
 	runtime, err := buildCommandRuntime(ctx, options)
 	if err != nil {
@@ -117,7 +117,7 @@ func runReadListCommand[Page any, Item any](
 		return writeJSONValue(command, options, pageWithItems(page, items))
 	}
 	for _, item := range items {
-		if err := writeItem(command, options, item); err != nil {
+		if err := writeOne(command, options, item); err != nil {
 			return err
 		}
 	}

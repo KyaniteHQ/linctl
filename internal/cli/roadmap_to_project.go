@@ -35,24 +35,17 @@ func writeRoadmapToProject(
 	options *rootOptions,
 	association client.RoadmapToProjectSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, association.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, association)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s -> %s order %s [legacy]",
-		association.ID,
-		association.RoadmapName,
-		association.ProjectName,
-		association.SortOrder,
-	)
+	return writeItem(command, options, association, association.ID,
+		func(command *cobra.Command, _ *rootOptions, association client.RoadmapToProjectSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s -> %s order %s [legacy]",
+				association.ID,
+				association.RoadmapName,
+				association.ProjectName,
+				association.SortOrder,
+			)
+		})
 }
 
 func loadRoadmapToProjectList(

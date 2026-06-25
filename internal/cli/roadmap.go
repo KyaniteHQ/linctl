@@ -59,22 +59,17 @@ func addRoadmapProjectsCommand(ctx context.Context, root *cobra.Command, options
 	root.AddCommand(command)
 }
 
-func writeRoadmap(
-	command *cobra.Command,
-	options *rootOptions,
-	roadmap client.RoadmapSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, roadmap.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, roadmap)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s %s [legacy]", roadmap.ID, roadmap.Name, roadmap.SlugID)
+func writeRoadmap(command *cobra.Command, options *rootOptions, roadmap client.RoadmapSummary) error {
+	return writeItem(command, options, roadmap, roadmap.ID,
+		func(command *cobra.Command, _ *rootOptions, roadmap client.RoadmapSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s [legacy]",
+				roadmap.ID,
+				roadmap.Name,
+				roadmap.SlugID,
+			)
+		})
 }
 
 func loadRoadmapList(

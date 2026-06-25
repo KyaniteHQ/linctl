@@ -102,17 +102,10 @@ func addLabelIssuesCommand(ctx context.Context, root *cobra.Command, options *ro
 }
 
 func writeLabel(command *cobra.Command, options *rootOptions, label client.LabelSummary) error {
-	if wrote, err := writeIDOnly(command, options, label.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, label)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s %s", label.ID, label.Name, label.Color)
+	return writeItem(command, options, label, label.ID,
+		func(command *cobra.Command, _ *rootOptions, label client.LabelSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s %s", label.ID, label.Name, label.Color)
+		})
 }
 
 func loadLabelList(

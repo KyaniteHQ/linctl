@@ -25,29 +25,18 @@ func addAgentSessionCommand(ctx context.Context, root *cobra.Command, options *r
 	})
 }
 
-func writeAgentSession(
-	command *cobra.Command,
-	options *rootOptions,
-	session client.AgentSessionSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, session.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, session)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s] %s",
-		session.ID,
-		session.SlugID,
-		session.Status,
-		emptyDash(session.IssueIdentifier),
-	)
+func writeAgentSession(command *cobra.Command, options *rootOptions, session client.AgentSessionSummary) error {
+	return writeItem(command, options, session, session.ID,
+		func(command *cobra.Command, _ *rootOptions, session client.AgentSessionSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s] %s",
+				session.ID,
+				session.SlugID,
+				session.Status,
+				emptyDash(session.IssueIdentifier),
+			)
+		})
 }
 
 func loadAgentSessionList(

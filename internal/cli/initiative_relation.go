@@ -35,24 +35,17 @@ func writeInitiativeRelation(
 	options *rootOptions,
 	relation client.InitiativeRelationSummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, relation.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, relation)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s -> %s order %.2f",
-		relation.ID,
-		relation.ParentInitiativeName,
-		relation.RelatedInitiativeName,
-		relation.SortOrder,
-	)
+	return writeItem(command, options, relation, relation.ID,
+		func(command *cobra.Command, _ *rootOptions, relation client.InitiativeRelationSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s -> %s order %.2f",
+				relation.ID,
+				relation.ParentInitiativeName,
+				relation.RelatedInitiativeName,
+				relation.SortOrder,
+			)
+		})
 }
 
 func loadInitiativeRelationList(

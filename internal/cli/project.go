@@ -401,23 +401,16 @@ func addProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func writeCommentMetadata(command *cobra.Command, options *rootOptions, comment client.CommentMetadataSummary) error {
-	if wrote, err := writeIDOnly(command, options, comment.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, comment)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s",
-		comment.ID,
-		emptyDash(comment.DisplayName),
-		comment.CreatedAt,
-	)
+	return writeItem(command, options, comment, comment.ID,
+		func(command *cobra.Command, _ *rootOptions, comment client.CommentMetadataSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s",
+				comment.ID,
+				emptyDash(comment.DisplayName),
+				comment.CreatedAt,
+			)
+		})
 }
 
 func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -572,19 +565,15 @@ func writeProjectFilterSuggestion(
 	options *rootOptions,
 	suggestion client.ProjectFilterSuggestion,
 ) error {
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, suggestion)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"log_id=%s filter=%s",
-		emptyDash(suggestion.LogID),
-		emptyDash(string(suggestion.Filter)),
-	)
+	return writeItem(command, options, suggestion, suggestion.LogID,
+		func(command *cobra.Command, _ *rootOptions, suggestion client.ProjectFilterSuggestion) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"log_id=%s filter=%s",
+				emptyDash(suggestion.LogID),
+				emptyDash(string(suggestion.Filter)),
+			)
+		})
 }
 
 func addProjectRelationChildListCommand(
@@ -624,55 +613,41 @@ func addProjectRelationChildListCommand(
 }
 
 func writeProjectHistory(command *cobra.Command, options *rootOptions, history client.ProjectHistorySummary) error {
-	if wrote, err := writeIDOnly(command, options, history.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, history)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s project %s entries %d",
-		history.ID,
-		history.ProjectID,
-		history.EntryCount,
-	)
+	return writeItem(command, options, history, history.ID,
+		func(command *cobra.Command, _ *rootOptions, history client.ProjectHistorySummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s project %s entries %d",
+				history.ID,
+				history.ProjectID,
+				history.EntryCount,
+			)
+		})
 }
 
 func writeProject(command *cobra.Command, options *rootOptions, project client.ProjectSummary) error {
-	if wrote, err := writeIDOnly(command, options, project.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, project)
-	}
+	return writeItem(command, options, project, project.ID,
+		func(command *cobra.Command, options *rootOptions, project client.ProjectSummary) error {
+			format, err := normalizedHumanFormat(options)
+			if err != nil {
+				return err
+			}
+			if format == "minimal" {
+				return render.WriteLine(command.OutOrStdout(), "%s", project.ID)
+			}
+			if format == "full" {
+				return render.WriteLine(
+					command.OutOrStdout(),
+					"%s %s [%s] url=%s",
+					project.ID,
+					project.Name,
+					project.Status.Name,
+					project.URL,
+				)
+			}
 
-	format, err := normalizedHumanFormat(options)
-	if err != nil {
-		return err
-	}
-	if format == "minimal" {
-		return render.WriteLine(command.OutOrStdout(), "%s", project.ID)
-	}
-	if format == "full" {
-		return render.WriteLine(
-			command.OutOrStdout(),
-			"%s %s [%s] url=%s",
-			project.ID,
-			project.Name,
-			project.Status.Name,
-			project.URL,
-		)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", project.ID, project.Name, project.Status.Name)
+			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", project.ID, project.Name, project.Status.Name)
+		})
 }
 
 func projectPageWithItems(page client.ProjectList, projects []client.ProjectSummary) client.ProjectList {

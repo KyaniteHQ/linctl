@@ -163,16 +163,10 @@ func runCycleIssueListCommand(
 }
 
 func writeCycle(command *cobra.Command, options *rootOptions, cycle client.CycleSummary) error {
-	if wrote, err := writeIDOnly(command, options, cycle.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, cycle)
-	}
+	return writeItem(command, options, cycle, cycle.ID, cycleHumanLine)
+}
 
+func cycleHumanLine(command *cobra.Command, options *rootOptions, cycle client.CycleSummary) error {
 	format, err := normalizedHumanFormat(options)
 	if err != nil {
 		return err

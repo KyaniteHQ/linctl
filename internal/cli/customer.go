@@ -25,29 +25,18 @@ func addCustomerCommand(ctx context.Context, root *cobra.Command, options *rootO
 	})
 }
 
-func writeCustomer(
-	command *cobra.Command,
-	options *rootOptions,
-	customer client.CustomerSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, customer.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, customer)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s [%s] needs %.0f",
-		customer.ID,
-		customer.Name,
-		customer.StatusName,
-		customer.ApproximateNeedCount,
-	)
+func writeCustomer(command *cobra.Command, options *rootOptions, customer client.CustomerSummary) error {
+	return writeItem(command, options, customer, customer.ID,
+		func(command *cobra.Command, _ *rootOptions, customer client.CustomerSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s [%s] needs %.0f",
+				customer.ID,
+				customer.Name,
+				customer.StatusName,
+				customer.ApproximateNeedCount,
+			)
+		})
 }
 
 func loadCustomerList(

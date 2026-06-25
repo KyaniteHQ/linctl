@@ -25,29 +25,18 @@ func addCustomerTierCommand(ctx context.Context, root *cobra.Command, options *r
 	})
 }
 
-func writeCustomerTier(
-	command *cobra.Command,
-	options *rootOptions,
-	tier client.CustomerTierSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, tier.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, tier)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s %s %s %.0f",
-		tier.ID,
-		tier.DisplayName,
-		tier.Color,
-		tier.Position,
-	)
+func writeCustomerTier(command *cobra.Command, options *rootOptions, tier client.CustomerTierSummary) error {
+	return writeItem(command, options, tier, tier.ID,
+		func(command *cobra.Command, _ *rootOptions, tier client.CustomerTierSummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s %s %s %.0f",
+				tier.ID,
+				tier.DisplayName,
+				tier.Color,
+				tier.Position,
+			)
+		})
 }
 
 func loadCustomerTierList(

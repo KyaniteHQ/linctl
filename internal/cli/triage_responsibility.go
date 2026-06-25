@@ -61,24 +61,17 @@ func writeTriageResponsibility(
 	options *rootOptions,
 	responsibility client.TriageResponsibilitySummary,
 ) error {
-	if wrote, err := writeIDOnly(command, options, responsibility.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, responsibility)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s team %s action %s current %s",
-		responsibility.ID,
-		responsibility.TeamKey,
-		responsibility.Action,
-		emptyDash(responsibility.CurrentUserName),
-	)
+	return writeItem(command, options, responsibility, responsibility.ID,
+		func(command *cobra.Command, _ *rootOptions, responsibility client.TriageResponsibilitySummary) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s team %s action %s current %s",
+				responsibility.ID,
+				responsibility.TeamKey,
+				responsibility.Action,
+				emptyDash(responsibility.CurrentUserName),
+			)
+		})
 }
 
 func writeTriageResponsibilityManualSelection(
@@ -86,22 +79,15 @@ func writeTriageResponsibilityManualSelection(
 	options *rootOptions,
 	selection client.TriageResponsibilityManualSelection,
 ) error {
-	if wrote, err := writeIDOnly(command, options, selection.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, selection)
-	}
-
-	return render.WriteLine(
-		command.OutOrStdout(),
-		"%s manual users %s",
-		selection.ID,
-		emptyDash(strings.Join(selection.UserIDs, ",")),
-	)
+	return writeItem(command, options, selection, selection.ID,
+		func(command *cobra.Command, _ *rootOptions, selection client.TriageResponsibilityManualSelection) error {
+			return render.WriteLine(
+				command.OutOrStdout(),
+				"%s manual users %s",
+				selection.ID,
+				emptyDash(strings.Join(selection.UserIDs, ",")),
+			)
+		})
 }
 
 func loadTriageResponsibilityList(

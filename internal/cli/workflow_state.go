@@ -54,22 +54,11 @@ func addWorkflowStateIssuesCommand(ctx context.Context, root *cobra.Command, opt
 	root.AddCommand(command)
 }
 
-func writeWorkflowState(
-	command *cobra.Command,
-	options *rootOptions,
-	state client.WorkflowStateSummary,
-) error {
-	if wrote, err := writeIDOnly(command, options, state.ID); wrote || err != nil {
-		return err
-	}
-	if options.quiet {
-		return nil
-	}
-	if options.json {
-		return writeJSONValue(command, options, state)
-	}
-
-	return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", state.ID, state.Name, state.Type)
+func writeWorkflowState(command *cobra.Command, options *rootOptions, state client.WorkflowStateSummary) error {
+	return writeItem(command, options, state, state.ID,
+		func(command *cobra.Command, _ *rootOptions, state client.WorkflowStateSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", state.ID, state.Name, state.Type)
+		})
 }
 
 func loadWorkflowStateList(
