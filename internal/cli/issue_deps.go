@@ -20,7 +20,7 @@ func addIssueDepsCommand(ctx context.Context, root *cobra.Command, options *root
 			if err != nil {
 				return err
 			}
-			dependencies, err := client.GetIssueDependencies(ctx, runtime.graphqlClient, args[0], limit)
+			dependencies, err := issueAdapterFor(runtime).GetIssueDependencies(ctx, args[0], limit)
 			if err != nil {
 				return err
 			}

@@ -108,22 +108,8 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 			if err != nil {
 				return err
 			}
-			issues, err := issueList(ctx, runtime, limit, flags)
-			if err != nil {
-				return err
-			}
-			if err := ensureNonEmpty(options, len(issues.Issues)); err != nil {
-				return err
-			}
-			issues.Issues, err = sortByJSONField(issues.Issues, options.sortField, options.sortOrder)
-			if err != nil {
-				return err
-			}
-			if options.json {
-				return writeJSONValue(command, options, issues)
-			}
 
-			return writeIssues(command, options, issues.Issues)
+			return runIssueList(ctx, command, options, issueAdapterFor(runtime), limit, flags)
 		},
 	}
 	bindIssueListFlags(
@@ -234,22 +220,48 @@ func validateIssueListFilters(flags issueListFlagValues) error {
 	return nil
 }
 
+func runIssueList(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	reader issueReader,
+	limit int,
+	flags issueListFlagValues,
+) error {
+	issues, err := issueList(ctx, reader, limit, flags)
+	if err != nil {
+		return err
+	}
+	if err := ensureNonEmpty(options, len(issues.Issues)); err != nil {
+		return err
+	}
+	issues.Issues, err = sortByJSONField(issues.Issues, options.sortField, options.sortOrder)
+	if err != nil {
+		return err
+	}
+	if options.json {
+		return writeJSONValue(command, options, issues)
+	}
+
+	return writeIssues(command, options, issues.Issues)
+}
+
 func issueList(
 	ctx context.Context,
-	runtime commandRuntime,
+	reader issueReader,
 	limit int,
 	flags issueListFlagValues,
 ) (client.IssueList, error) {
 	if flags.allTeams {
-		return client.ListIssues(ctx, runtime.graphqlClient, limit)
+		return reader.ListIssues(ctx, limit)
 	}
 
-	target, err := runtime.resolveTarget(ctx)
+	target, err := reader.ResolveTarget(ctx)
 	if err != nil {
 		return client.IssueList{}, err
 	}
 
-	return client.ListIssuesByTeam(ctx, runtime.graphqlClient, target.Team.ID, limit,
+	return reader.ListIssuesByTeam(ctx, target.Team.ID, limit,
 		client.IssueListFilters{
 			StateType:     flags.stateType,
 			ProjectID:     flags.projectID,
@@ -439,7 +451,7 @@ func addIssueGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 			if err != nil {
 				return err
 			}
-			issue, err := client.GetIssueByID(ctx, runtime.graphqlClient, args[0])
+			issue, err := issueAdapterFor(runtime).GetIssueByID(ctx, args[0])
 			if err != nil {
 				return err
 			}

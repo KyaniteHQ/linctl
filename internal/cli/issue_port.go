@@ -43,6 +43,20 @@ type issueCommenter interface {
 	CommentOnIssue(ctx context.Context, request client.IssueCommentRequest) (client.IssueCommentResult, error)
 }
 
+// issueReader is the port the issue list command depends on for its dispatch:
+// it either lists across teams or resolves the pinned team and lists with the
+// assembled filters.
+type issueReader interface {
+	ResolveTarget(ctx context.Context) (client.ResolvedTarget, error)
+	ListIssues(ctx context.Context, limit int) (client.IssueList, error)
+	ListIssuesByTeam(
+		ctx context.Context,
+		teamID string,
+		limit int,
+		filters client.IssueListFilters,
+	) (client.IssueList, error)
+}
+
 // issueClientAdapter satisfies the issue command ports by forwarding to the
 // client package's guarded free functions with the runtime's transport and
 // pinned target. It is a pass-through adapter: large surface, trivial body.
@@ -108,4 +122,33 @@ func (adapter issueClientAdapter) CreateIssueRelation(
 
 func (adapter issueClientAdapter) DeleteIssueRelation(ctx context.Context, relationID string) (string, error) {
 	return client.DeleteIssueRelation(ctx, adapter.graphqlClient, adapter.target, relationID)
+}
+
+func (adapter issueClientAdapter) ResolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
+	return client.ResolveTarget(ctx, adapter.graphqlClient, adapter.target)
+}
+
+func (adapter issueClientAdapter) ListIssues(ctx context.Context, limit int) (client.IssueList, error) {
+	return client.ListIssues(ctx, adapter.graphqlClient, limit)
+}
+
+func (adapter issueClientAdapter) ListIssuesByTeam(
+	ctx context.Context,
+	teamID string,
+	limit int,
+	filters client.IssueListFilters,
+) (client.IssueList, error) {
+	return client.ListIssuesByTeam(ctx, adapter.graphqlClient, teamID, limit, filters)
+}
+
+func (adapter issueClientAdapter) GetIssueByID(ctx context.Context, issueID string) (client.IssueSummary, error) {
+	return client.GetIssueByID(ctx, adapter.graphqlClient, issueID)
+}
+
+func (adapter issueClientAdapter) GetIssueDependencies(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueDependencyGraph, error) {
+	return client.GetIssueDependencies(ctx, adapter.graphqlClient, issueID, limit)
 }

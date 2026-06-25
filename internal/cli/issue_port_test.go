@@ -15,22 +15,53 @@ import (
 // fakeIssuePort is an in-memory Command Port: it returns domain summaries
 // directly, so issue command logic is tested without canned GraphQL JSON.
 type fakeIssuePort struct {
-	created     client.IssueSummary
-	createReq   client.IssueCreateRequest
-	createCalls int
-	createErr   error
-	closed      client.IssueSummary
-	closeID     string
-	closeCalls  int
-	template    client.IssueTemplateContent
-	templateErr error
-	updated     client.IssueSummary
-	updateReq   client.IssueUpdateRequest
-	updateCalls int
-	updateErr   error
-	commented   client.IssueCommentResult
-	commentReq  client.IssueCommentRequest
-	commentErr  error
+	created       client.IssueSummary
+	createReq     client.IssueCreateRequest
+	createCalls   int
+	createErr     error
+	closed        client.IssueSummary
+	closeID       string
+	closeCalls    int
+	template      client.IssueTemplateContent
+	templateErr   error
+	updated       client.IssueSummary
+	updateReq     client.IssueUpdateRequest
+	updateCalls   int
+	updateErr     error
+	commented     client.IssueCommentResult
+	commentReq    client.IssueCommentRequest
+	commentErr    error
+	resolved      client.ResolvedTarget
+	resolveErr    error
+	listAll       client.IssueList
+	listAllCalls  int
+	listTeam      client.IssueList
+	listTeamID    string
+	listFilters   client.IssueListFilters
+	listTeamCalls int
+}
+
+func (port *fakeIssuePort) ResolveTarget(_ context.Context) (client.ResolvedTarget, error) {
+	return port.resolved, port.resolveErr
+}
+
+func (port *fakeIssuePort) ListIssues(_ context.Context, _ int) (client.IssueList, error) {
+	port.listAllCalls++
+
+	return port.listAll, nil
+}
+
+func (port *fakeIssuePort) ListIssuesByTeam(
+	_ context.Context,
+	teamID string,
+	_ int,
+	filters client.IssueListFilters,
+) (client.IssueList, error) {
+	port.listTeamCalls++
+	port.listTeamID = teamID
+	port.listFilters = filters
+
+	return port.listTeam, nil
 }
 
 func (port *fakeIssuePort) UpdateIssue(
@@ -271,6 +302,49 @@ func Test_runIssueBodyWriteCommand_propagates_port_error(t *testing.T) {
 	require.ErrorContains(t, err, "comment failed")
 }
 
+func Test_issueList_lists_across_teams_when_all_teams(t *testing.T) {
+	port := &fakeIssuePort{
+		listAll: client.IssueList{Issues: []client.IssueSummary{{Identifier: "LIT-1"}}},
+	}
+
+	list, err := issueList(context.Background(), port, 50, issueListFlagValues{allTeams: true})
+
+	require.NoError(t, err)
+	require.Equal(t, 1, port.listAllCalls)
+	require.Equal(t, 0, port.listTeamCalls)
+	require.Len(t, list.Issues, 1)
+}
+
+func Test_issueList_resolves_team_and_assembles_filters(t *testing.T) {
+	port := &fakeIssuePort{
+		resolved: client.ResolvedTarget{
+			Team:   client.TargetTeam{ID: "team-id"},
+			Viewer: client.TargetViewer{ID: "viewer-id"},
+		},
+		listTeam: client.IssueList{Issues: []client.IssueSummary{{Identifier: "LIT-2"}}},
+	}
+
+	_, err := issueList(context.Background(), port, 50, issueListFlagValues{mine: true, stateType: "started"})
+
+	require.NoError(t, err)
+	require.Equal(t, 1, port.listTeamCalls)
+	require.Equal(t, "team-id", port.listTeamID)
+	require.Equal(t, "viewer-id", port.listFilters.AssigneeID) // --mine resolves to the viewer id
+	require.Equal(t, "started", port.listFilters.StateType)
+}
+
+func Test_runIssueList_renders_issues_through_the_port(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		listAll: client.IssueList{Issues: []client.IssueSummary{{Identifier: "LIT-7", Title: "Listed", State: "Todo"}}},
+	}
+
+	err := runIssueList(context.Background(), command, &rootOptions{}, port, 50, issueListFlagValues{allTeams: true})
+
+	require.NoError(t, err)
+	require.Contains(t, stdout.String(), "LIT-7")
+}
+
 // Test_issueClientAdapter_forwards_to_client proves the production adapter wires
 // each port method to the right client free function. The canned GraphQL JSON is
 // confined here, at the adapter seam, rather than smeared across command tests.
@@ -296,4 +370,21 @@ func Test_issueClientAdapter_forwards_to_client(t *testing.T) {
 	comment, err := adapter.CommentOnIssue(ctx, client.IssueCommentRequest{ID: "LIT-1", Body: "note"})
 	require.NoError(t, err)
 	require.NotEmpty(t, comment.ID)
+
+	resolved, err := adapter.ResolveTarget(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, resolved.Team.ID)
+
+	_, err = adapter.ListIssues(ctx, 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssuesByTeam(ctx, resolved.Team.ID, 5, client.IssueListFilters{})
+	require.NoError(t, err)
+
+	got, err := adapter.GetIssueByID(ctx, "LIT-1")
+	require.NoError(t, err)
+	require.NotEmpty(t, got.ID)
+
+	_, err = adapter.GetIssueDependencies(ctx, "LIT-1", 5)
+	require.NoError(t, err)
 }
