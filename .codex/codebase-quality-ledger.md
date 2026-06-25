@@ -5,7 +5,7 @@
 - Repo: `/home/oruc/Desktop/workspace/linctl`.
 - Branch: `master`.
 - Baseline commit: `c389900`.
-- Latest local commit: `ef87dd3` ported issue relation writes through narrow Command Ports.
+- Latest local commit: `b596c17` ported issue link writes through a narrow Command Port.
 - Rolling report: `/tmp/codex-codebase-quality/linctl-quality-report.html`.
 - Worktree exception at run start: `.gitignore` modified with local ignore rules and untracked `.directory`; both are treated as pre-existing Omer changes and must remain unstaged.
 - Likely next action: after the first slice is committed, re-discover whether a similarly small Command Port locality slice remains.
@@ -33,6 +33,13 @@
   - Validation: `go test ./internal/cli -run 'Test_runIssueLink|Test_issueClientAdapter_forwards_to_client'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
   - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed.
   - Commit: this commit.
+- 2026-06-26: Port-level comment writes.
+  - Files: `internal/cli/comment.go`, `internal/cli/comment_port.go`, `internal/cli/comment_port_test.go`.
+  - Behavior impact: no public CLI behavior change; `comment update` still resolves `--body`, stdin, and `--body-file` before the same guarded client write, and `comment delete` renders the same deletion output.
+  - Quality impact: moved comment update/delete execution behind small Command Ports and focused run functions, so command request/body handling is covered without GraphQL payloads.
+  - Validation: `go test ./internal/cli -run 'Test_runComment|Test_commentClientAdapter'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
+  - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed.
+  - Commit: this commit.
 
 ## Deferred Needs Omer
 
@@ -43,6 +50,7 @@
 
 - Candidate: `issueClientAdapter` now satisfies issue, bulk issue import, and project-update Command Ports; a later naming/locality cleanup may make sense if it stays small.
 - Candidate: `issue start` remains a simple one-id guarded write; it is lower leverage than request-assembly ports unless a future refactor touches start semantics.
+- Candidate: `document create` and `document update` are a larger content-resolution write seam and may be safe if tackled as one small document-specific Command Port slice.
 - Candidate: simple guarded-write wrappers may benefit from one more characterization test if a future refactor touches `runGuardedWrite`.
 - Deferred for now: docs/test scenario cleanup unless tied to verified behavior from a code slice.
 
@@ -62,3 +70,4 @@ None yet.
 - 2026-06-26T00:04:00+03:00: Ranked first slice as Command Port coverage/locality for `issue relate` and `issue unrelate`; no product code changed yet.
 - 2026-06-26T00:05:00+03:00: Completed and validated the issue relation Command Port slice; ready to commit after staged diff checks.
 - 2026-06-26T00:07:00+03:00: Completed and validated the issue link Command Port slice; ready to commit after staged diff checks.
+- 2026-06-26T00:10:00+03:00: Completed and validated the comment write Command Port slice; ready to commit after staged diff checks.

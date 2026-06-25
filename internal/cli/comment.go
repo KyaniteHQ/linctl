@@ -47,23 +47,35 @@ func addCommentUpdateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 			request.ID = args[0]
-			if err := resolveBodyFlag(command, &request.Body); err != nil {
-				return err
-			}
-			if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
-				return err
-			}
-			comment, err := client.UpdateComment(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
 
-			return writeComment(command, options, comment)
+			return runCommentUpdate(ctx, command, options, commentAdapterFor(runtime), request, bodyFile)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "new comment body as markdown; use - to read stdin")
 	command.Flags().StringVar(&bodyFile, "body-file", "", "read new comment body from file")
 	root.AddCommand(command)
+}
+
+func runCommentUpdate(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	updater commentUpdater,
+	request client.CommentUpdateRequest,
+	bodyFile string,
+) error {
+	if err := resolveBodyFlag(command, &request.Body); err != nil {
+		return err
+	}
+	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+		return err
+	}
+	comment, err := updater.UpdateComment(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return writeComment(command, options, comment)
 }
 
 func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -76,14 +88,25 @@ func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			id, err := client.DeleteComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
 
-			return writeDeletion(command, options, id)
+			return runCommentDelete(ctx, command, options, commentAdapterFor(runtime), args[0])
 		},
 	})
+}
+
+func runCommentDelete(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	deleter commentDeleter,
+	commentID string,
+) error {
+	deletedID, err := deleter.DeleteComment(ctx, commentID)
+	if err != nil {
+		return err
+	}
+
+	return writeDeletion(command, options, deletedID)
 }
 
 func writeComment(command *cobra.Command, options *rootOptions, comment client.CommentSummary) error {
