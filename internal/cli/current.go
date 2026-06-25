@@ -46,7 +46,7 @@ func addDoneCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 			if err != nil {
 				return err
 			}
-			issue, err := client.CloseIssue(ctx, runtime.graphqlClient, runtime.config.Target, issueID)
+			issue, err := issueAdapterFor(runtime).CloseIssue(ctx, issueID)
 			if err != nil {
 				return err
 			}

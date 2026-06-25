@@ -82,7 +82,7 @@ func runNext(ctx context.Context, command *cobra.Command, options *rootOptions, 
 			return err
 		}
 	}
-	started, err := client.StartIssue(ctx, runtime.graphqlClient, runtime.config.Target, picked.Identifier)
+	started, err := issueAdapterFor(runtime).StartIssue(ctx, picked.Identifier)
 	if err != nil {
 		return err
 	}

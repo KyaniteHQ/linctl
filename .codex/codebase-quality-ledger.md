@@ -5,7 +5,7 @@
 - Repo: `/home/oruc/Desktop/workspace/linctl`.
 - Branch: `master`.
 - Baseline commit: `c389900`.
-- Latest completed slice: issue start Command Port slice.
+- Latest completed slice: remaining issue workflow write routing slice.
 - Rolling report: `/tmp/codex-codebase-quality/linctl-quality-report.html`.
 - Worktree exception at run start: `.gitignore` modified with local ignore rules and untracked `.directory`; both are treated as pre-existing Omer changes and must remain unstaged.
 - Likely next action: after the first slice is committed, re-discover whether a similarly small Command Port locality slice remains.
@@ -75,6 +75,13 @@
   - Validation: `go test ./internal/cli -run 'Test_runIssueStart|Test_issueClientAdapter_forwards_to_client|Test_CommandFlows_execute_read_and_write_commands|Test_CommandFlows_report_runtime_errors|Test_CommandFlows_report_rendering_errors|Test_ProjectCommandFlows_report_project_write_writer_errors'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
   - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed. The deleted helper has no remaining callers.
   - Commit: this commit.
+- 2026-06-26: Remaining issue workflow write routing.
+  - Files: `internal/cli/current.go`, `internal/cli/next.go`.
+  - Behavior impact: no public CLI behavior change; `done` still closes the current checkout issue and `next` still starts the picked issue after the same selection/checkout logic.
+  - Quality impact: routed the remaining high-level issue write call sites through the existing issue Command Port adapter, leaving read/selection code unchanged.
+  - Validation: `go test ./internal/cli -run 'Test_CommandFlows_(resolve_current_issue_from_branch|print_current_issue_as_json|close_current_issue_from_done|next_starts_picked_issue|next_checkout_creates_branch_then_starts|next_surfaces_start_failure|report_current_issue_errors)'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
+  - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed. Remaining direct `runtime.graphqlClient` call sites are reads or selection queries rather than guarded issue writes.
+  - Commit: this commit.
 
 ## Deferred Needs Omer
 
@@ -87,7 +94,7 @@
 - Candidate: `issue start` remains a simple one-id guarded write; it is lower leverage than request-assembly ports unless a future refactor touches start semantics.
 - Candidate: simple guarded-write wrappers may benefit from one more characterization test if a future refactor touches `runGuardedWrite`.
 - Candidate: command client adapter methods now cover project, Cycle, and ProjectMilestone writes; a later cleanup may group or split the shared adapter only if lint and locality stay clear.
-- Candidate: remaining direct `runtime.graphqlClient` call sites are read flows or richer workflows outside the v0.5.0 write-port slice; broad conversion would be a design choice rather than a small safe cleanup.
+- Candidate: remaining direct `runtime.graphqlClient` call sites are read flows or selection queries outside the v0.5.0 write-port slice; broad conversion would be a design choice rather than a small safe cleanup.
 - Deferred for now: docs/test scenario cleanup unless tied to verified behavior from a code slice.
 
 ## Recently Failed
@@ -112,3 +119,4 @@ None yet.
 - 2026-06-26T00:31:00+03:00: Completed and validated the Cycle write Command Port slice after replacing duplicate adapters with a shared command client adapter and covering runtime-error edges; ready to commit after staged diff checks.
 - 2026-06-26T00:39:00+03:00: Completed and validated the ProjectMilestone write Command Port slice; ready to commit after staged diff checks.
 - 2026-06-26T00:47:00+03:00: Completed and validated the issue start Command Port slice and removed the unused generic guarded-write helper; ready to commit after staged diff checks.
+- 2026-06-26T00:54:00+03:00: Completed and validated the remaining issue workflow write routing slice for `done` and `next`; ready to commit after staged diff checks.
