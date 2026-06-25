@@ -19,6 +19,7 @@ func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
 		code string
 	}{
 		{name: "target mismatch", err: fmt.Errorf("%w: x", client.ErrTargetMismatch), code: "TARGET_MISMATCH"},
+		{name: "target not configured", err: fmt.Errorf("%w: x", client.ErrTargetNotConfigured), code: "TARGET_NOT_CONFIGURED"},
 		{name: "rate limited", err: fmt.Errorf("%w: x", client.ErrRateLimited), code: "RATE_LIMITED"},
 		{name: "mutation failed", err: fmt.Errorf("%w: x", client.ErrMutationFailed), code: "MUTATION_FAILED"},
 		{name: "invalid write", err: fmt.Errorf("%w: x", client.ErrWriteInvalid), code: "INVALID_WRITE"},

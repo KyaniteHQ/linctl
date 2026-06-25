@@ -14,7 +14,7 @@ import (
 
 func Test_TargetFailureScenarios_refuse_unpinned_or_mismatched_targets(t *testing.T) {
 	_, err := ResolveTarget(context.Background(), fakeGraphQLClient{}, config.Target{})
-	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorIs(t, err, ErrTargetNotConfigured)
 
 	_, err = ResolveTarget(context.Background(), fakeGraphQLClient{
 		"Viewer": `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,

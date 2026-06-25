@@ -110,6 +110,7 @@ error), so an agent can branch on a stable code instead of parsing prose:
 `error_code` is one of:
 
 - `TARGET_MISMATCH` — resolved target does not match the pinned target (hard stop; do not retry blindly).
+- `TARGET_NOT_CONFIGURED` — no pinned target found; set org_id, team_key, and team_id in .linctl.toml.
 - `RATE_LIMITED` — Linear returned a rate-limit response; back off and retry.
 - `MUTATION_FAILED` — the mutation ran but Linear reported no success/entity.
 - `INVALID_WRITE` — the write request was rejected before any API call (missing/!valid input).

@@ -13,6 +13,11 @@ import (
 // ErrTargetMismatch marks a resolved target that does not match the pinned target.
 var ErrTargetMismatch = errors.New("target mismatch")
 
+// ErrTargetNotConfigured marks a missing or incomplete pinned target (no
+// org_id/team_key/team_id). It is distinct from ErrTargetMismatch, which is a
+// token that resolves to a target other than the one pinned.
+var ErrTargetNotConfigured = errors.New("target not configured")
+
 // ResolvedTarget is the token-resolved Linear write target.
 type ResolvedTarget struct {
 	Viewer    TargetViewer     `json:"viewer"`
@@ -118,8 +123,8 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 func requireExpectedTarget(expected config.Target) error {
 	if expected.OrgID == "" || expected.TeamID == "" || expected.TeamKey == "" {
 		return fmt.Errorf(
-			"%w: expected org_id, team_id, and team_key are required",
-			ErrTargetMismatch,
+			"%w: set org_id, team_key, and team_id in .linctl.toml",
+			ErrTargetNotConfigured,
 		)
 	}
 

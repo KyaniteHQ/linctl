@@ -28,6 +28,8 @@ func errorCode(err error) string {
 	switch {
 	case errors.Is(err, client.ErrTargetMismatch):
 		return "TARGET_MISMATCH"
+	case errors.Is(err, client.ErrTargetNotConfigured):
+		return "TARGET_NOT_CONFIGURED"
 	case errors.Is(err, client.ErrRateLimited):
 		return "RATE_LIMITED"
 	case errors.Is(err, client.ErrMutationFailed):
