@@ -36,6 +36,10 @@ _Avoid_: Unscoped create, workspace write
 A guarded write against an existing Linear entity. It resolves the entity first and compares the pinned project when a project is configured.
 _Avoid_: Direct update, blind write
 
+**Command Port**:
+The narrow, domain-typed interface a Read Command or Guarded Write depends on to reach Linear, decoupled from the GraphQL transport. A command port is defined by its consumer, returns domain summaries rather than GraphQL responses, and is satisfied in production by a thin adapter over the client and in tests by an in-memory fake. It makes the command's interface the test surface.
+_Avoid_: client, gateway, service, mock
+
 **Current Issue**:
 The Linear issue referenced by the current checkout context. It comes from an issue identifier in the branch name or checkout metadata.
 _Avoid_: Active ticket, selected issue
