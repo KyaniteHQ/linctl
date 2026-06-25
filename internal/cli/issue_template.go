@@ -24,14 +24,14 @@ type issueDraft struct {
 // the template only supplies defaults for fields left empty.
 func applyIssueTemplate(
 	ctx context.Context,
-	runtime commandRuntime,
+	templates issueTemplateReader,
 	request *client.IssueCreateRequest,
 	templateID string,
 ) error {
 	if templateID == "" {
 		return nil
 	}
-	content, err := client.GetIssueTemplateContent(ctx, runtime.graphqlClient, templateID)
+	content, err := templates.GetIssueTemplateContent(ctx, templateID)
 	if err != nil {
 		return err
 	}

@@ -32,7 +32,16 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "Create an issue in the pinned target",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			return runIssueCreate(ctx, command, options, request, flags)
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+			var estimate *int
+			if command.Flags().Changed("estimate") {
+				estimate = &flags.estimate
+			}
+
+			return runIssueCreate(ctx, command, options, issueAdapterFor(runtime), request, flags, estimate)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "issue title")
@@ -60,17 +69,15 @@ func runIssueCreate(
 	ctx context.Context,
 	command *cobra.Command,
 	options *rootOptions,
+	creator issueCreator,
 	request client.IssueCreateRequest,
 	flags issueCreateFlags,
+	estimate *int,
 ) error {
-	runtime, err := buildCommandRuntime(ctx, options)
-	if err != nil {
-		return err
-	}
 	if err := resolveFileFlag(&request.Description, flags.descriptionFile, "description"); err != nil {
 		return err
 	}
-	if err := applyIssueTemplate(ctx, runtime, &request, flags.templateID); err != nil {
+	if err := applyIssueTemplate(ctx, creator, &request, flags.templateID); err != nil {
 		return err
 	}
 	if err := applyIssueSections(&request, flags.sections); err != nil {
@@ -84,13 +91,11 @@ func runIssueCreate(
 	}
 	request.StateType = stateType
 	request.Priority = normalizedPriority
-	if command.Flags().Changed("estimate") {
-		request.Estimate = &flags.estimate
-	}
+	request.Estimate = estimate
 	if flags.dryRun {
 		return writeIssueDraft(command, options, request)
 	}
-	issue, err := client.CreateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
+	issue, err := creator.CreateIssue(ctx, request)
 	if err != nil {
 		return err
 	}
@@ -302,14 +307,25 @@ func addIssueCloseCommand(ctx context.Context, root *cobra.Command, options *roo
 			if err != nil {
 				return err
 			}
-			issue, err := client.CloseIssue(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
 
-			return writeIssue(command, options, issue)
+			return runIssueClose(ctx, command, options, issueAdapterFor(runtime), args[0])
 		},
 	})
+}
+
+func runIssueClose(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	closer issueCloser,
+	issueID string,
+) error {
+	issue, err := closer.CloseIssue(ctx, issueID)
+	if err != nil {
+		return err
+	}
+
+	return writeIssue(command, options, issue)
 }
 
 func writeIssue(command *cobra.Command, options *rootOptions, issue client.IssueSummary) error {
