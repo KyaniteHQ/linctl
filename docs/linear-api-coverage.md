@@ -1740,7 +1740,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Emoji | `emoji get` | `Query.emoji` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| File | `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Workspace asset, not target-pinned; prints the asset URL for a later guarded attachment write | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| File | `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Raw Linear asset, not target-pinned; prints the asset URL for a later guarded attachment write | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | File | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
@@ -1765,4 +1765,3 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-

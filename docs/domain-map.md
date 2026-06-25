@@ -1103,7 +1103,7 @@ Only `emoji list` and `emoji get` are implemented in the current CLI. Emoji writ
 
 ## File
 
-Use `File` for raw asset upload/download. A file upload produces a workspace asset URL; it is not a target-pinned write because a raw asset has no team or project. The asset URL is attached to an issue or project through the guarded attachment commands.
+Use `File` for raw asset upload/download. A file upload produces a raw Linear asset URL; it is not a target-pinned write because a raw asset has no team or project. The asset URL is attached to an issue or project through the guarded attachment commands.
 
 Schema backing:
 
@@ -1115,7 +1115,7 @@ Command status:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Workspace asset, not target-pinned; prints the asset URL for a later guarded attachment write |
+| `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Raw Linear asset, not target-pinned; prints the asset URL for a later guarded attachment write |
 | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token |
 
 `files upload PATH` infers the content type from the file extension (overridable with `--content-type`), calls `fileUpload` for a pre-signed target, PUTs the bytes with the returned headers, and prints `UploadFile.assetUrl`. `files download URL --output PATH` performs an unauthenticated GET and writes the body to the path; it is meant for public or signed asset URLs.

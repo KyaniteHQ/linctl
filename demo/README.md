@@ -1,7 +1,7 @@
 # Demo assets
 
 Source for the terminal demo shown in the project README. The tape runs the **real
-`linctl` binary** against a Linear workspace, so the output is genuine — reads are free,
+`linctl` binary** against a disposable Linear org/team, so the output is genuine — reads are free,
 and the guarded write is refused when the active token does not resolve to the pinned target.
 
 ## Files
@@ -10,19 +10,19 @@ and the guarded write is refused when the active token does not resolve to the p
 | --- | --- |
 | `demo.tape` | [vhs](https://github.com/charmbracelet/vhs) script for the recording |
 | `render.sh` | builds `linctl` and runs vhs → `../docs/assets/demo.{gif,mp4}` |
-| `.linctl.toml` | pins the demo workspace (you provide this; it is gitignored) |
+| `.linctl.toml` | pins the demo org/team (you provide this; it is gitignored) |
 
 ## Render
 
 Prerequisites: [vhs](https://github.com/charmbracelet/vhs), Go, and a **throwaway** Linear
-workspace. Pin that workspace in `demo/.linctl.toml` (`org_id`, `team_key`, `team_id`), then:
+org/team. Pin that target in `demo/.linctl.toml` (`org_id`, `team_key`, `team_id`), then:
 
 ```bash
-LINEAR_API_KEY=<demo-workspace-token> ./render.sh
+LINEAR_API_KEY=<demo-target-token> ./render.sh
 ```
 
 The token is read from the environment and never printed. The successful `issue create`
-lands a real issue in the demo workspace, so use a disposable one.
+lands a real issue in the demo target, so use a disposable one.
 
 ## Storyboard
 

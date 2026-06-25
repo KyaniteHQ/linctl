@@ -4,7 +4,7 @@
 A Go CLI for Linear whose one trick is refusing to write to the wrong place: every guarded write re-resolves the active token's org/team live and fails closed on mismatch, with no bypass flag. Reads are free.
 
 ## The angle
-The whole video is one flat, unbothered demonstration: the same `issue create` command, run twice. Once it lands. Once it is refused, because the token does not resolve to the team the command aimed at. No drama, no music swell at the "fail" — the joke of deadpan is that the guard treats a catastrophe (an agent writing to the wrong workspace) as a shrug. The refusal IS the product.
+The whole video is one flat, unbothered demonstration: the same `issue create` command, run twice. Once it lands. Once it is refused, because the token does not resolve to the team the command aimed at. No drama, no music swell at the "fail" — the joke of deadpan is that the guard treats a catastrophe (an agent writing to the wrong team) as a shrug. The refusal IS the product.
 
 ## Hook (first 2-3 seconds)
 A single dry line on black: "An agent with the wrong token writes to the wrong team." Beat. A dim second line: "Usually, nothing stops it." That sets up the only thing linctl does.
