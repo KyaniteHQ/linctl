@@ -251,30 +251,12 @@ func writeDomainCommandTable(
 	fmt.Fprintf(output, "| Domain | Command | Backing | Scope | Status | Evidence |\n")
 	fmt.Fprintf(output, "| --- | --- | --- | --- | --- | --- |\n")
 	for _, command := range commands {
-		status := "accepted_gap"
-		evidence := "planned in `docs/domain-map.md`"
-		if commandInfo, ok := commandInventory[command.Command]; ok {
-			status, evidence = classifyDomainCommand(commandInfo, implementedRoots, operationRoots)
-		}
-		if domainCommandBlocked(command.Command) {
-			status = "blocked_needs_design"
-			evidence = "write command needs explicit target and safety semantics"
-		}
-		if strings.HasPrefix(command.Scope, "Blocked:") {
-			status = "blocked_needs_design"
-			evidence = "blocked in `docs/domain-map.md` pending explicit safety semantics"
-		}
-		if strings.Contains(command.Command, "delete") {
-			status = "blocked_needs_design"
-			evidence = "destructive command needs explicit safety semantics"
-		}
-		isSprintNonReport := strings.Contains(command.Command, "sprint ") &&
-			!strings.Contains(command.Command, "current") &&
-			!strings.Contains(command.Command, "report")
-		if isSprintNonReport {
-			status = "intentionally_excluded"
-			evidence = "Sprint is a read-only alias over Cycle"
-		}
+		status, evidence := classifyDomainLedgerCommand(
+			command,
+			commandInventory,
+			implementedRoots,
+			operationRoots,
+		)
 		fmt.Fprintf(
 			output,
 			"| %s | `%s` | %s | %s | %s | %s |\n",
@@ -287,6 +269,43 @@ func writeDomainCommandTable(
 		)
 	}
 	fmt.Fprintf(output, "\n")
+}
+
+func classifyDomainLedgerCommand(
+	command domainCommand,
+	commandInventory map[string]cli.CommandInfo,
+	implementedRoots map[string]bool,
+	operationRoots map[string][]string,
+) (string, string) {
+	status := "accepted_gap"
+	evidence := "planned in `docs/domain-map.md`"
+	if commandInfo, ok := commandInventory[command.Command]; ok {
+		status, evidence = classifyDomainCommand(commandInfo, implementedRoots, operationRoots)
+	}
+	if status == "implemented" {
+		return status, evidence
+	}
+	if domainCommandBlocked(command.Command) {
+		status = "blocked_needs_design"
+		evidence = "write command needs explicit target and safety semantics"
+	}
+	if strings.HasPrefix(command.Scope, "Blocked:") {
+		status = "blocked_needs_design"
+		evidence = "blocked in `docs/domain-map.md` pending explicit safety semantics"
+	}
+	if strings.Contains(command.Command, "delete") {
+		status = "blocked_needs_design"
+		evidence = "destructive command needs explicit safety semantics"
+	}
+	isSprintNonReport := strings.Contains(command.Command, "sprint ") &&
+		!strings.Contains(command.Command, "current") &&
+		!strings.Contains(command.Command, "report")
+	if isSprintNonReport {
+		status = "intentionally_excluded"
+		evidence = "Sprint is a read-only alias over Cycle"
+	}
+
+	return status, evidence
 }
 
 func classifyDomainCommand(

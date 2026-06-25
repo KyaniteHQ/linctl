@@ -20,11 +20,12 @@ func countImplementedDomain(
 	operationRoots map[string][]string,
 ) int {
 	return countWhere(commands, func(command domainCommand) bool {
-		commandInfo, ok := commandInventory[command.Command]
-		if !ok {
-			return false
-		}
-		status, _ := classifyDomainCommand(commandInfo, implementedRoots, operationRoots)
+		status, _ := classifyDomainLedgerCommand(
+			command,
+			commandInventory,
+			implementedRoots,
+			operationRoots,
+		)
 		return status == "implemented"
 	})
 }
