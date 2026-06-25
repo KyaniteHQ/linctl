@@ -33,6 +33,16 @@ type issueCloser interface {
 	CloseIssue(ctx context.Context, issueID string) (client.IssueSummary, error)
 }
 
+// issueUpdater is the port the issue update command depends on.
+type issueUpdater interface {
+	UpdateIssue(ctx context.Context, request client.IssueUpdateRequest) (client.IssueSummary, error)
+}
+
+// issueCommenter is the port the issue comment and reply commands depend on.
+type issueCommenter interface {
+	CommentOnIssue(ctx context.Context, request client.IssueCommentRequest) (client.IssueCommentResult, error)
+}
+
 // issueClientAdapter satisfies the issue command ports by forwarding to the
 // client package's guarded free functions with the runtime's transport and
 // pinned target. It is a pass-through adapter: large surface, trivial body.
@@ -62,4 +72,40 @@ func (adapter issueClientAdapter) GetIssueTemplateContent(
 	templateID string,
 ) (client.IssueTemplateContent, error) {
 	return client.GetIssueTemplateContent(ctx, adapter.graphqlClient, templateID)
+}
+
+func (adapter issueClientAdapter) UpdateIssue(
+	ctx context.Context,
+	request client.IssueUpdateRequest,
+) (client.IssueSummary, error) {
+	return client.UpdateIssue(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter issueClientAdapter) CommentOnIssue(
+	ctx context.Context,
+	request client.IssueCommentRequest,
+) (client.IssueCommentResult, error) {
+	return client.CommentOnIssue(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter issueClientAdapter) StartIssue(ctx context.Context, issueID string) (client.IssueSummary, error) {
+	return client.StartIssue(ctx, adapter.graphqlClient, adapter.target, issueID)
+}
+
+func (adapter issueClientAdapter) LinkIssueAttachment(
+	ctx context.Context,
+	request client.AttachmentLinkRequest,
+) (client.AttachmentSummary, error) {
+	return client.LinkIssueAttachment(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter issueClientAdapter) CreateIssueRelation(
+	ctx context.Context,
+	request client.IssueRelationCreateRequest,
+) (client.IssueRelationSummary, error) {
+	return client.CreateIssueRelation(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter issueClientAdapter) DeleteIssueRelation(ctx context.Context, relationID string) (string, error) {
+	return client.DeleteIssueRelation(ctx, adapter.graphqlClient, adapter.target, relationID)
 }

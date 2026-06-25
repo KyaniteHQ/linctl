@@ -103,13 +103,18 @@ func runIssueCreate(
 	return writeIssue(command, options, issue)
 }
 
+// issueUpdateFlags collects the non-request inputs of the issue update command.
+type issueUpdateFlags struct {
+	descriptionFile string
+	appendFile      string
+	state           string
+	status          string
+	priority        string
+}
+
 func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueUpdateRequest{}
-	descriptionFile := ""
-	appendFile := ""
-	state := ""
-	status := ""
-	priority := ""
+	flags := issueUpdateFlags{}
 	estimate := 0
 	command := &cobra.Command{
 		Use:   "update ISSUE_ID",
@@ -121,37 +126,22 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 				return err
 			}
 			request.ID = args[0]
-			if err := resolveFileFlag(&request.Description, descriptionFile, "description"); err != nil {
-				return err
-			}
-			if err := resolveFileFlag(&request.Append, appendFile, "append"); err != nil {
-				return err
-			}
-			stateType, normalizedPriority, normErr := applyIssueWriteNormalization(command, state, status, priority)
-			if normErr != nil {
-				return normErr
-			}
-			request.StateType = stateType
-			request.Priority = normalizedPriority
+			var resolvedEstimate *int
 			if command.Flags().Changed("estimate") {
-				request.Estimate = &estimate
-			}
-			issue, err := client.UpdateIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
+				resolvedEstimate = &estimate
 			}
 
-			return writeIssue(command, options, issue)
+			return runIssueUpdate(ctx, command, options, issueAdapterFor(runtime), request, flags, resolvedEstimate)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "new issue title")
 	command.Flags().StringVar(&request.Description, "description", "", "new issue description")
-	command.Flags().StringVar(&descriptionFile, "description-file", "", "read new issue description from file")
+	command.Flags().StringVar(&flags.descriptionFile, "description-file", "", "read new issue description from file")
 	command.Flags().StringVar(&request.Append, "append", "", "text to append to the issue description")
-	command.Flags().StringVar(&appendFile, "append-file", "", "read text to append from file")
-	command.Flags().StringVar(&state, "state", "", "set workflow state type (e.g. started, completed)")
-	command.Flags().StringVar(&status, "status", "", "alias for --state")
-	command.Flags().StringVar(&priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
+	command.Flags().StringVar(&flags.appendFile, "append-file", "", "read text to append from file")
+	command.Flags().StringVar(&flags.state, "state", "", "set workflow state type (e.g. started, completed)")
+	command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
+	command.Flags().StringVar(&flags.priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
 	command.Flags().StringVar(&request.AssigneeID, "assignee", "", "reassign the issue to a user id")
 	command.Flags().StringArrayVar(&request.LabelIDs, "label", nil, "set labels by id (repeatable, replaces existing)")
 	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
@@ -160,6 +150,38 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().BoolVar(&request.ClearEstimate, "clear-estimate", false, "clear the estimate")
 	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
+}
+
+func runIssueUpdate(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	updater issueUpdater,
+	request client.IssueUpdateRequest,
+	flags issueUpdateFlags,
+	estimate *int,
+) error {
+	if err := resolveFileFlag(&request.Description, flags.descriptionFile, "description"); err != nil {
+		return err
+	}
+	if err := resolveFileFlag(&request.Append, flags.appendFile, "append"); err != nil {
+		return err
+	}
+	stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
+		command, flags.state, flags.status, flags.priority,
+	)
+	if normErr != nil {
+		return normErr
+	}
+	request.StateType = stateType
+	request.Priority = normalizedPriority
+	request.Estimate = estimate
+	issue, err := updater.UpdateIssue(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return writeIssue(command, options, issue)
 }
 
 // applyIssueWriteNormalization merges the --state/--status alias pair and
@@ -193,7 +215,7 @@ func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *roo
 			if err != nil {
 				return err
 			}
-			issue, err := client.StartIssue(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			issue, err := issueAdapterFor(runtime).StartIssue(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -211,8 +233,13 @@ func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *r
 		Short: "Comment on an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
 			request.ID = args[0]
-			return runIssueBodyWriteCommand(ctx, command, options, request, bodyFile)
+
+			return runIssueBodyWriteCommand(ctx, command, options, issueAdapterFor(runtime), request, bodyFile)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "comment body")
@@ -224,20 +251,17 @@ func runIssueBodyWriteCommand(
 	ctx context.Context,
 	command *cobra.Command,
 	options *rootOptions,
+	commenter issueCommenter,
 	request client.IssueCommentRequest,
 	bodyFile string,
 ) error {
-	runtime, err := buildCommandRuntime(ctx, options)
-	if err != nil {
-		return err
-	}
 	if err := resolveBodyFlag(command, &request.Body); err != nil {
 		return err
 	}
 	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
 		return err
 	}
-	comment, err := client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
+	comment, err := commenter.CommentOnIssue(ctx, request)
 	if err != nil {
 		return err
 	}
@@ -256,9 +280,14 @@ func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Reply to an issue comment after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
 			request.ID = args[0]
 			request.ParentID = args[1]
-			return runIssueBodyWriteCommand(ctx, command, options, request, bodyFile)
+
+			return runIssueBodyWriteCommand(ctx, command, options, issueAdapterFor(runtime), request, bodyFile)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "reply body")
@@ -382,7 +411,7 @@ func addIssueLinkCommand(ctx context.Context, root *cobra.Command, options *root
 			}
 			request.URL = args[0]
 			request.IssueID = args[1]
-			attachment, err := client.LinkIssueAttachment(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			attachment, err := issueAdapterFor(runtime).LinkIssueAttachment(ctx, request)
 			if err != nil {
 				return err
 			}

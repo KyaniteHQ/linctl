@@ -24,6 +24,32 @@ type fakeIssuePort struct {
 	closeCalls  int
 	template    client.IssueTemplateContent
 	templateErr error
+	updated     client.IssueSummary
+	updateReq   client.IssueUpdateRequest
+	updateCalls int
+	updateErr   error
+	commented   client.IssueCommentResult
+	commentReq  client.IssueCommentRequest
+	commentErr  error
+}
+
+func (port *fakeIssuePort) UpdateIssue(
+	_ context.Context,
+	request client.IssueUpdateRequest,
+) (client.IssueSummary, error) {
+	port.updateCalls++
+	port.updateReq = request
+
+	return port.updated, port.updateErr
+}
+
+func (port *fakeIssuePort) CommentOnIssue(
+	_ context.Context,
+	request client.IssueCommentRequest,
+) (client.IssueCommentResult, error) {
+	port.commentReq = request
+
+	return port.commented, port.commentErr
 }
 
 func (port *fakeIssuePort) CreateIssue(
@@ -162,6 +188,89 @@ func Test_runIssueClose_calls_the_port_and_renders(t *testing.T) {
 	require.Contains(t, stdout.String(), "LIT-3")
 }
 
+func Test_runIssueUpdate_assembles_request_through_the_port(t *testing.T) {
+	command, stdout, stderr := bufferedCommand()
+	port := &fakeIssuePort{
+		updated: client.IssueSummary{ID: "u-id", Identifier: "LIT-1", Title: "Renamed", State: "Done"},
+	}
+	estimate := 8
+
+	err := runIssueUpdate(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.IssueUpdateRequest{ID: "LIT-1", Title: "Renamed"},
+		issueUpdateFlags{state: "done", priority: "urgent"},
+		&estimate,
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, 1, port.updateCalls)
+	require.Equal(t, "LIT-1", port.updateReq.ID)
+	require.Equal(t, "completed", port.updateReq.StateType)
+	require.Equal(t, "1", port.updateReq.Priority)
+	require.NotNil(t, port.updateReq.Estimate)
+	require.Equal(t, 8, *port.updateReq.Estimate)
+	require.Contains(t, stderr.String(), "normalized")
+	require.Contains(t, stdout.String(), "LIT-1")
+}
+
+func Test_runIssueUpdate_propagates_port_error(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	port := &fakeIssuePort{updateErr: errors.New("update failed")}
+
+	err := runIssueUpdate(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.IssueUpdateRequest{ID: "LIT-1"},
+		issueUpdateFlags{},
+		nil,
+	)
+
+	require.ErrorContains(t, err, "update failed")
+	require.Equal(t, 1, port.updateCalls)
+}
+
+func Test_runIssueBodyWriteCommand_comments_through_the_port(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		commented: client.IssueCommentResult{ID: "cmt-1", Issue: client.IssueSummary{Identifier: "LIT-1"}},
+	}
+
+	err := runIssueBodyWriteCommand(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.IssueCommentRequest{ID: "LIT-1", Body: "looks good"},
+		"",
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "looks good", port.commentReq.Body)
+	require.Equal(t, "LIT-1", port.commentReq.ID)
+	require.Contains(t, stdout.String(), "comment cmt-1 on LIT-1")
+}
+
+func Test_runIssueBodyWriteCommand_propagates_port_error(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	port := &fakeIssuePort{commentErr: errors.New("comment failed")}
+
+	err := runIssueBodyWriteCommand(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.IssueCommentRequest{ID: "LIT-1", Body: "x"},
+		"",
+	)
+
+	require.ErrorContains(t, err, "comment failed")
+}
+
 // Test_issueClientAdapter_forwards_to_client proves the production adapter wires
 // each port method to the right client free function. The canned GraphQL JSON is
 // confined here, at the adapter seam, rather than smeared across command tests.
@@ -179,4 +288,12 @@ func Test_issueClientAdapter_forwards_to_client(t *testing.T) {
 
 	_, err = adapter.GetIssueTemplateContent(ctx, "tmpl-1")
 	require.NoError(t, err)
+
+	updated, err := adapter.UpdateIssue(ctx, client.IssueUpdateRequest{ID: "LIT-1", Title: "Renamed"})
+	require.NoError(t, err)
+	require.NotEmpty(t, updated.ID)
+
+	comment, err := adapter.CommentOnIssue(ctx, client.IssueCommentRequest{ID: "LIT-1", Body: "note"})
+	require.NoError(t, err)
+	require.NotEmpty(t, comment.ID)
 }
