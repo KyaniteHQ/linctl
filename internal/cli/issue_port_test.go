@@ -31,6 +31,9 @@ type fakeIssuePort struct {
 	commented     client.IssueCommentResult
 	commentReq    client.IssueCommentRequest
 	commentErr    error
+	linked        client.AttachmentSummary
+	linkReq       client.AttachmentLinkRequest
+	linkErr       error
 	relation      client.IssueRelationSummary
 	relationReq   client.IssueRelationCreateRequest
 	relationErr   error
@@ -87,6 +90,15 @@ func (port *fakeIssuePort) CommentOnIssue(
 	port.commentReq = request
 
 	return port.commented, port.commentErr
+}
+
+func (port *fakeIssuePort) LinkIssueAttachment(
+	_ context.Context,
+	request client.AttachmentLinkRequest,
+) (client.AttachmentSummary, error) {
+	port.linkReq = request
+
+	return port.linked, port.linkErr
 }
 
 func (port *fakeIssuePort) CreateIssueRelation(
@@ -323,6 +335,48 @@ func Test_runIssueBodyWriteCommand_propagates_port_error(t *testing.T) {
 	require.ErrorContains(t, err, "comment failed")
 }
 
+func Test_runIssueLink_calls_the_port_and_renders(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		linked: client.AttachmentSummary{ID: "att-1", URL: "https://example.com/pr/1"},
+	}
+
+	err := runIssueLink(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.AttachmentLinkRequest{
+			IssueID:  "LIT-1",
+			URL:      "https://example.com/pr/1",
+			Title:    "PR",
+			Subtitle: "review",
+		},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-1", port.linkReq.IssueID)
+	require.Equal(t, "https://example.com/pr/1", port.linkReq.URL)
+	require.Equal(t, "PR", port.linkReq.Title)
+	require.Equal(t, "review", port.linkReq.Subtitle)
+	require.Contains(t, stdout.String(), "att-1 https://example.com/pr/1")
+}
+
+func Test_runIssueLink_propagates_port_error(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	port := &fakeIssuePort{linkErr: errors.New("link failed")}
+
+	err := runIssueLink(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		client.AttachmentLinkRequest{IssueID: "LIT-1", URL: "https://example.com/pr/1"},
+	)
+
+	require.ErrorContains(t, err, "link failed")
+}
+
 func Test_runIssueRelationCreate_calls_the_port_and_renders(t *testing.T) {
 	command, stdout, _ := bufferedCommand()
 	port := &fakeIssuePort{
@@ -460,6 +514,13 @@ func Test_issueClientAdapter_forwards_to_client(t *testing.T) {
 	comment, err := adapter.CommentOnIssue(ctx, client.IssueCommentRequest{ID: "LIT-1", Body: "note"})
 	require.NoError(t, err)
 	require.NotEmpty(t, comment.ID)
+
+	attachment, err := adapter.LinkIssueAttachment(ctx, client.AttachmentLinkRequest{
+		IssueID: "LIT-1",
+		URL:     "https://example.com/pr/1",
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, attachment.ID)
 
 	resolved, err := adapter.ResolveTarget(ctx)
 	require.NoError(t, err)

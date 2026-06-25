@@ -43,6 +43,11 @@ type issueCommenter interface {
 	CommentOnIssue(ctx context.Context, request client.IssueCommentRequest) (client.IssueCommentResult, error)
 }
 
+// issueAttachmentLinker is the port the issue link command depends on.
+type issueAttachmentLinker interface {
+	LinkIssueAttachment(ctx context.Context, request client.AttachmentLinkRequest) (client.AttachmentSummary, error)
+}
+
 // issueRelationCreator is the port the issue relate command depends on.
 type issueRelationCreator interface {
 	CreateIssueRelation(

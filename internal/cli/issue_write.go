@@ -396,21 +396,34 @@ func addIssueLinkCommand(ctx context.Context, root *cobra.Command, options *root
 		Short: "Attach a URL to an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
 			request.URL = args[0]
 			request.IssueID = args[1]
 
-			return runGuardedWrite(
-				ctx, command, options,
-				func(runtime commandRuntime) (client.AttachmentSummary, error) {
-					return issueAdapterFor(runtime).LinkIssueAttachment(ctx, request)
-				},
-				writeAttachmentLink,
-			)
+			return runIssueLink(ctx, command, options, issueAdapterFor(runtime), request)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "attachment title")
 	command.Flags().StringVar(&request.Subtitle, "subtitle", "", "attachment subtitle")
 	root.AddCommand(command)
+}
+
+func runIssueLink(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	linker issueAttachmentLinker,
+	request client.AttachmentLinkRequest,
+) error {
+	attachment, err := linker.LinkIssueAttachment(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return writeAttachmentLink(command, options, attachment)
 }
 
 func writeAttachmentLink(command *cobra.Command, options *rootOptions, attachment client.AttachmentSummary) error {

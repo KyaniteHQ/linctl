@@ -5,7 +5,7 @@
 - Repo: `/home/oruc/Desktop/workspace/linctl`.
 - Branch: `master`.
 - Baseline commit: `c389900`.
-- Latest local commit: `b7407cc` bootstrapped this ledger before product-code edits.
+- Latest local commit: `ef87dd3` ported issue relation writes through narrow Command Ports.
 - Rolling report: `/tmp/codex-codebase-quality/linctl-quality-report.html`.
 - Worktree exception at run start: `.gitignore` modified with local ignore rules and untracked `.directory`; both are treated as pre-existing Omer changes and must remain unstaged.
 - Likely next action: after the first slice is committed, re-discover whether a similarly small Command Port locality slice remains.
@@ -26,6 +26,13 @@
   - Validation: `go test ./internal/cli -run 'Test_runIssue.*Relation|Test_issueClientAdapter_forwards_to_client'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
   - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed.
   - Commit: this commit.
+- 2026-06-26: Port-level issue link write.
+  - Files: `internal/cli/issue_port.go`, `internal/cli/issue_write.go`, `internal/cli/issue_port_test.go`.
+  - Behavior impact: no public CLI behavior change; `issue link` still accepts the same positional args and `--title` / `--subtitle` flags, calls the same guarded client adapter, and renders the same attachment-link output.
+  - Quality impact: moved attachment-link command execution behind a narrow Command Port and focused run function, so request assembly is characterized without transport payloads.
+  - Validation: `go test ./internal/cli -run 'Test_runIssueLink|Test_issueClientAdapter_forwards_to_client'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
+  - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed.
+  - Commit: this commit.
 
 ## Deferred Needs Omer
 
@@ -35,6 +42,7 @@
 ## Candidate Signals
 
 - Candidate: `issueClientAdapter` now satisfies issue, bulk issue import, and project-update Command Ports; a later naming/locality cleanup may make sense if it stays small.
+- Candidate: `issue start` remains a simple one-id guarded write; it is lower leverage than request-assembly ports unless a future refactor touches start semantics.
 - Candidate: simple guarded-write wrappers may benefit from one more characterization test if a future refactor touches `runGuardedWrite`.
 - Deferred for now: docs/test scenario cleanup unless tied to verified behavior from a code slice.
 
@@ -53,3 +61,4 @@ None yet.
 - 2026-06-26T00:04:00+03:00: Started autonomous quality loop from `c389900`; read `CLAUDE.md`, `CONTEXT.md`, recent Command Port commits, and quality-loop instructions.
 - 2026-06-26T00:04:00+03:00: Ranked first slice as Command Port coverage/locality for `issue relate` and `issue unrelate`; no product code changed yet.
 - 2026-06-26T00:05:00+03:00: Completed and validated the issue relation Command Port slice; ready to commit after staged diff checks.
+- 2026-06-26T00:07:00+03:00: Completed and validated the issue link Command Port slice; ready to commit after staged diff checks.
