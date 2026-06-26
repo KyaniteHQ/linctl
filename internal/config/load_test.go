@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -174,4 +175,55 @@ token = "default-token"
 
 	// Then
 	require.ErrorIs(t, err, ErrProfileNotFound)
+}
+
+func Test_Load_refuses_token_bearing_config_with_broad_permissions(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("windows file modes do not expose unix group/world permission bits")
+	}
+	root := t.TempDir()
+	configPath := filepath.Join(root, "config.toml")
+	require.NoError(t, os.WriteFile(configPath, []byte(`token = "file-token"`), 0o644))
+
+	_, err := Load(context.Background(), LoadRequest{
+		Env:      staticEnv{},
+		RepoPath: configPath,
+	})
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "token-bearing config")
+}
+
+func Test_Load_allows_broad_config_permissions_without_tokens(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("windows file modes do not expose unix group/world permission bits")
+	}
+	root := t.TempDir()
+	configPath := filepath.Join(root, "config.toml")
+	require.NoError(t, os.WriteFile(configPath, []byte(`
+[target]
+team_key = "ENG"
+`), 0o644))
+
+	resolved, err := Load(context.Background(), LoadRequest{
+		Env:      staticEnv{},
+		RepoPath: configPath,
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, "ENG", resolved.Target.TeamKey)
+}
+
+func Test_Load_reports_read_error_after_config_stat_succeeds(t *testing.T) {
+	root := t.TempDir()
+	configPath := filepath.Join(root, "config-dir")
+	require.NoError(t, os.Mkdir(configPath, 0o700))
+
+	_, err := Load(context.Background(), LoadRequest{
+		Env:      staticEnv{},
+		RepoPath: configPath,
+	})
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "read config")
 }

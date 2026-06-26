@@ -97,6 +97,10 @@ func Test_EnrichCommandInventory_adds_graphql_backing_without_mutating_source(t 
 			Aliases: []string{"issue get ISSUE_ID"},
 			Safety:  CommandSafetyRead,
 		},
+		{
+			Path:   "issue sync",
+			Safety: CommandSafetyUnknown,
+		},
 	}
 	graphqlRoots := []CommandGraphQLRoot{
 		{Kind: "query", Field: "issues", Operation: "issues"},
@@ -126,6 +130,34 @@ func Test_EnrichCommandInventory_adds_graphql_backing_without_mutating_source(t 
 		{Kind: "query", Field: "issues", Operation: "issues"},
 	}, enriched[0].GraphQLRoots)
 	require.Equal(t, "Query.issue", enriched[1].OperationBacking)
+	require.Empty(t, enriched[2].OperationBacking)
+	require.False(t, slices.ContainsFunc(enriched, func(command CommandInfo) bool {
+		return command.OperationBacking == "Query.missing"
+	}))
+}
+
+func Test_commandBacking_reports_missing_backing(t *testing.T) {
+	backing, ok := commandBacking(CommandInfo{
+		Path:    "issue get",
+		Aliases: []string{"issue get ISSUE_ID"},
+	}, map[string]CommandBacking{
+		"issue list": {OperationBacking: "Query.issues"},
+	})
+
+	require.False(t, ok)
+	require.Empty(t, backing)
+}
+
+func Test_SortedAvailableCommands_skips_unavailable_commands(t *testing.T) {
+	parent := &cobra.Command{Use: "linctl"}
+	parent.AddCommand(&cobra.Command{Use: "visible", Run: func(_ *cobra.Command, _ []string) {}})
+	parent.AddCommand(&cobra.Command{Use: "hidden", Hidden: true, Run: func(_ *cobra.Command, _ []string) {}})
+	parent.AddCommand(&cobra.Command{Use: "completion", Run: func(_ *cobra.Command, _ []string) {}})
+
+	commands := SortedAvailableCommands(parent)
+
+	require.Len(t, commands, 1)
+	require.Equal(t, "visible", commands[0].Name())
 }
 
 func Test_collectionKeyForPage_uses_typed_list_envelope(t *testing.T) {

@@ -25,7 +25,7 @@ func addIssueVCSBranchSearchCommand(ctx context.Context, root *cobra.Command, op
 			if err != nil {
 				return err
 			}
-			issue, err := client.GetIssueByVCSBranch(ctx, runtime.graphqlClient, args[0])
+			issue, err := issueAdapterFor(runtime).GetIssueByVCSBranch(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -60,7 +60,7 @@ func addIssueVCSBranchCommentsCommand(ctx context.Context, root *cobra.Command, 
 		"List body-free comments for the issue matched by a VCS branch",
 		"comments",
 		func(runtime commandRuntime, branchName string, limit int) (client.IssueCommentMetadataList, error) {
-			return client.ListIssueVCSBranchComments(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchComments(ctx, branchName, limit)
 		},
 	)
 }
@@ -74,7 +74,7 @@ func addIssueVCSBranchFormerNeedsCommand(ctx context.Context, root *cobra.Comman
 		"List body-free former customer needs for the issue matched by a VCS branch",
 		"former customer needs",
 		func(runtime commandRuntime, branchName string, limit int) (client.IssueCustomerNeedMetadataList, error) {
-			return client.ListIssueVCSBranchFormerNeeds(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchFormerNeeds(ctx, branchName, limit)
 		},
 	)
 }
@@ -88,7 +88,7 @@ func addIssueVCSBranchAttachmentsCommand(ctx context.Context, root *cobra.Comman
 		"List attachments for the issue matched by a VCS branch",
 		"attachments",
 		func(runtime commandRuntime, branchName string, limit int) (client.AttachmentList, error) {
-			return client.ListIssueVCSBranchAttachments(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchAttachments(ctx, branchName, limit)
 		},
 		func(list client.AttachmentList) int {
 			return len(list.Attachments)
@@ -117,7 +117,7 @@ func addIssueVCSBranchBotActorCommand(ctx context.Context, root *cobra.Command, 
 			if err != nil {
 				return err
 			}
-			actor, err := client.GetIssueVCSBranchBotActor(ctx, runtime.graphqlClient, args[0])
+			actor, err := issueAdapterFor(runtime).GetIssueVCSBranchBotActor(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -136,7 +136,7 @@ func addIssueVCSBranchChildrenCommand(ctx context.Context, root *cobra.Command, 
 		"List child issues for the issue matched by a VCS branch",
 		"child issues",
 		func(runtime commandRuntime, branchName string, limit int) (client.IssueList, error) {
-			return client.ListIssueVCSBranchChildren(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchChildren(ctx, branchName, limit)
 		},
 		func(list client.IssueList) int {
 			return len(list.Issues)
@@ -164,7 +164,7 @@ func addIssueVCSBranchDocumentsCommand(ctx context.Context, root *cobra.Command,
 		"List documents for the issue matched by a VCS branch",
 		"documents",
 		func(runtime commandRuntime, branchName string, limit int) (client.DocumentList, error) {
-			return client.ListIssueVCSBranchDocuments(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchDocuments(ctx, branchName, limit)
 		},
 		func(list client.DocumentList) int {
 			return len(list.Documents)
@@ -192,7 +192,7 @@ func addIssueVCSBranchFormerAttachmentsCommand(ctx context.Context, root *cobra.
 		"List former attachments for the issue matched by a VCS branch",
 		"former attachments",
 		func(runtime commandRuntime, branchName string, limit int) (client.AttachmentList, error) {
-			return client.ListIssueVCSBranchFormerAttachments(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchFormerAttachments(ctx, branchName, limit)
 		},
 		func(list client.AttachmentList) int {
 			return len(list.Attachments)
@@ -220,7 +220,7 @@ func addIssueVCSBranchHistoryCommand(ctx context.Context, root *cobra.Command, o
 		"List history metadata for the issue matched by a VCS branch",
 		"history entries",
 		func(runtime commandRuntime, branchName string, limit int) (client.IssueHistoryList, error) {
-			return client.ListIssueVCSBranchHistory(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchHistory(ctx, branchName, limit)
 		},
 		func(list client.IssueHistoryList) int {
 			return len(list.History)
@@ -253,7 +253,7 @@ func addIssueVCSBranchInverseRelationsCommand(ctx context.Context, root *cobra.C
 			branchName string,
 			limit int,
 		) (client.IssueRelationList, error) {
-			return client.ListIssueVCSBranchInverseRelations(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchInverseRelations(ctx, branchName, limit)
 		},
 	)
 }
@@ -267,7 +267,7 @@ func addIssueVCSBranchLabelsCommand(ctx context.Context, root *cobra.Command, op
 		"List labels for the issue matched by a VCS branch",
 		"labels",
 		func(runtime commandRuntime, branchName string, limit int) (client.LabelList, error) {
-			return client.ListIssueVCSBranchLabels(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchLabels(ctx, branchName, limit)
 		},
 		func(list client.LabelList) int {
 			return len(list.Labels)
@@ -295,7 +295,7 @@ func addIssueVCSBranchNeedsCommand(ctx context.Context, root *cobra.Command, opt
 		"List body-free customer needs for the issue matched by a VCS branch",
 		"customer needs",
 		func(runtime commandRuntime, branchName string, limit int) (client.IssueCustomerNeedMetadataList, error) {
-			return client.ListIssueVCSBranchNeeds(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchNeeds(ctx, branchName, limit)
 		},
 	)
 }
@@ -314,7 +314,7 @@ func addIssueVCSBranchRelationsCommand(ctx context.Context, root *cobra.Command,
 			branchName string,
 			limit int,
 		) (client.IssueRelationList, error) {
-			return client.ListIssueVCSBranchRelations(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchRelations(ctx, branchName, limit)
 		},
 	)
 }
@@ -328,7 +328,7 @@ func addIssueVCSBranchReleasesCommand(ctx context.Context, root *cobra.Command, 
 		"List releases for the issue matched by a VCS branch",
 		"releases",
 		func(runtime commandRuntime, branchName string, limit int) (client.ReleaseList, error) {
-			return client.ListIssueVCSBranchReleases(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchReleases(ctx, branchName, limit)
 		},
 		func(list client.ReleaseList) int {
 			return len(list.Releases)
@@ -357,7 +357,7 @@ func addIssueVCSBranchSharedAccessCommand(ctx context.Context, root *cobra.Comma
 			if err != nil {
 				return err
 			}
-			access, err := client.GetIssueVCSBranchSharedAccess(ctx, runtime.graphqlClient, args[0])
+			access, err := issueAdapterFor(runtime).GetIssueVCSBranchSharedAccess(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -376,7 +376,7 @@ func addIssueVCSBranchStateHistoryCommand(ctx context.Context, root *cobra.Comma
 		"List workflow state history for the issue matched by a VCS branch",
 		"state spans",
 		func(runtime commandRuntime, branchName string, limit int) (client.IssueStateHistoryList, error) {
-			return client.ListIssueVCSBranchStateHistory(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchStateHistory(ctx, branchName, limit)
 		},
 		func(list client.IssueStateHistoryList) int {
 			return len(list.Spans)
@@ -404,7 +404,7 @@ func addIssueVCSBranchSubscribersCommand(ctx context.Context, root *cobra.Comman
 		"List subscribers for the issue matched by a VCS branch",
 		"subscribers",
 		func(runtime commandRuntime, branchName string, limit int) (client.UserList, error) {
-			return client.ListIssueVCSBranchSubscribers(ctx, runtime.graphqlClient, branchName, limit)
+			return issueAdapterFor(runtime).ListIssueVCSBranchSubscribers(ctx, branchName, limit)
 		},
 		func(list client.UserList) int {
 			return len(list.Users)

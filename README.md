@@ -38,7 +38,7 @@ point at another org still can't write there unless the token *it holds* also re
 that org. Team-scoped creates compare org + team (the entity does not exist yet);
 resource-scoped updates and archives resolve the existing entity first, then compare the
 pinned `project_id` when one is configured. There is **no bypass flag** — `--org`,
-`--team`, and `--project` set the pinned target, they do not relax the guard. See
+`--team`, `--team-id`, and `--project` set the pinned target, they do not relax the guard. See
 [`docs/adr/0001-target-pinned-linear-writes.md`](docs/adr/0001-target-pinned-linear-writes.md).
 
 <details>
@@ -243,7 +243,7 @@ Output controls are global flags — combine them with any command.
 | `--fail-on-empty` | exit non-zero when a list result is empty (monitors) |
 | `--sort FIELD --order asc\|desc` | deterministic list ordering |
 | `--format minimal\|compact\|full` | human (non-JSON) output detail |
-| `--profile` / `--org` / `--team` / `--project` | config profile and target overrides |
+| `--profile` / `--org` / `--team` / `--team-id` / `--project` | config profile and target overrides |
 | `--timeout 30s` | per-request timeout |
 | `--debug` | structured diagnostics to **stderr** (`LINCTL_DEBUG_JSON=1` for JSON) |
 

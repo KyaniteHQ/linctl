@@ -49,8 +49,10 @@ type domainReference struct {
 	OperationName string
 }
 
+const defaultUpstreamDir = "/tmp/linear-sdk-source"
+
 func main() {
-	upstreamDir := flag.String("upstream", "/tmp/linctl-upstream-linear", "upstream linear repo checkout")
+	upstreamDir := flag.String("upstream", defaultUpstreamDir, "upstream linear repo checkout")
 	outputPath := flag.String("output", "docs/linear-api-coverage.md", "coverage ledger path")
 	operationAuditPath := flag.String("operation-audit", "", "optional SDK operation audit output path")
 	flag.Parse()
@@ -62,6 +64,12 @@ func main() {
 	localGeneratedPath := "internal/client/generated.go"
 	domainMapPath := "docs/domain-map.md"
 
+	mustValidateUpstreamCheckout(
+		*upstreamDir,
+		upstreamSchemaPath,
+		upstreamSDKPath,
+		upstreamDocumentsPath,
+	)
 	upstreamQueries := mustRootFields(upstreamSchemaPath, "Query")
 	upstreamMutations := mustRootFields(upstreamSchemaPath, "Mutation")
 	sdkMethods := mustSDKMethods(upstreamSDKPath)

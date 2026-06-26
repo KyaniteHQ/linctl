@@ -33,3 +33,8 @@ skills/cc-skills-golang/
 /plans/
 /docs/setup-gap-log.md
 /.superset/
+
+# /brag launch-video artifacts (local only)
+/brag-output/
+/brag-output-*/
+.directory

@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -30,6 +31,48 @@ func Test_IssueCreate_dry_run_renders_title_and_description(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, output, "Draft issue")
 	require.Contains(t, output, "Body text")
+}
+
+func Test_IssueCreate_plain_dry_run_does_not_build_runtime(t *testing.T) {
+	output := bytes.Buffer{}
+	runtimeErr := errors.New("runtime should not be built")
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, runtimeErr
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{
+		"issue", "create", "--dry-run", "--title", "Draft issue", "--description", "Body text",
+	})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "Draft issue")
+}
+
+func Test_IssueCreate_template_dry_run_builds_runtime(t *testing.T) {
+	output := bytes.Buffer{}
+	runtimeErr := errors.New("runtime failed")
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, runtimeErr
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"issue", "create", "--dry-run", "--template", "template-id"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.ErrorIs(t, err, runtimeErr)
+	require.Empty(t, output.String())
 }
 
 func Test_IssueCreate_dry_run_uses_template_defaults(t *testing.T) {

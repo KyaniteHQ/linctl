@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -115,6 +116,17 @@ func mustRead(path string) []byte {
 		fail(err)
 	}
 	return content
+}
+
+func mustValidateUpstreamCheckout(upstreamDir string, requiredPaths ...string) {
+	if _, err := os.Stat(filepath.Join(upstreamDir, ".git")); err != nil {
+		fail(fmt.Errorf("upstream Linear SDK checkout not found at %s: %w", upstreamDir, err))
+	}
+	for _, path := range requiredPaths {
+		if _, err := os.Stat(path); err != nil {
+			fail(fmt.Errorf("upstream Linear SDK checkout at %s is missing %s: %w", upstreamDir, path, err))
+		}
+	}
 }
 
 func runGit(dir string, args ...string) string {

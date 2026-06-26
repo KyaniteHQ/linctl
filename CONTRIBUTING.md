@@ -18,6 +18,13 @@ go run github.com/go-task/task/v3/cmd/task@latest ci
 go run github.com/go-task/task/v3/cmd/task@latest coverage
 ```
 
+`task ci` also verifies `docs/linear-api-coverage.md` against the upstream Linear SDK checkout.
+Clone or refresh that checkout at `/tmp/linear-sdk-source` before running the full gate:
+
+```bash
+git clone https://github.com/linear/linear.git /tmp/linear-sdk-source
+```
+
 Run live integration tests only with a disposable Linear API token:
 
 ```bash

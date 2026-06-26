@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
@@ -343,6 +344,7 @@ func Test_CliHelpers_resolve_target_overrides_and_project_ids(t *testing.T) {
 	options := rootOptions{
 		orgID:   "org-id",
 		team:    "LIT",
+		teamID:  "team-id",
 		project: "project-id",
 	}
 
@@ -350,10 +352,28 @@ func Test_CliHelpers_resolve_target_overrides_and_project_ids(t *testing.T) {
 
 	require.Equal(t, "org-id", target.OrgID)
 	require.Equal(t, "LIT", target.TeamKey)
+	require.Equal(t, "team-id", target.TeamID)
 	require.Equal(t, "project-id", target.ProjectID)
 	require.Empty(t, projectID(nil))
 	require.Equal(t, "project-id", projectID(&client.ResolvedProject{ID: "project-id"}))
 	require.NotEmpty(t, defaultGlobalConfigPath())
+}
+
+func Test_CliHelpers_clear_config_team_id_when_org_or_team_override_changes_target(t *testing.T) {
+	resolved := config.Resolved{Target: config.Target{
+		OrgID:     "configured-org",
+		TeamKey:   "CFG",
+		TeamID:    "configured-team-id",
+		ProjectID: "project-id",
+	}}
+
+	applyTargetOverrideFlagSemantics(&resolved, &rootOptions{team: "LIT"})
+
+	require.Equal(t, config.Target{
+		OrgID:     "configured-org",
+		TeamKey:   "CFG",
+		ProjectID: "project-id",
+	}, resolved.Target)
 }
 
 func Test_CommandRuntime_loads_config_and_requires_token(t *testing.T) {

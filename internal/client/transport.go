@@ -61,9 +61,10 @@ func PersonalAPIToken(value string) AuthToken {
 
 // NewTransport creates a Linear GraphQL transport.
 func NewTransport(config TransportConfig) *Transport {
+	timeout := defaultDuration(config.Timeout, 30*time.Second)
 	httpClient := config.Client
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = defaultHTTPClient(timeout)
 	}
 
 	return &Transport{
@@ -71,7 +72,7 @@ func NewTransport(config TransportConfig) *Transport {
 		diagnosticWriter: config.DiagnosticWriter,
 		endpoint:         firstNonEmpty(config.Endpoint, "https://api.linear.app/graphql"),
 		token:            config.Token,
-		timeout:          defaultDuration(config.Timeout, 30*time.Second),
+		timeout:          timeout,
 		maxRetries:       defaultRetries(config.MaxRetries),
 	}
 }
@@ -130,7 +131,9 @@ func (transport *Transport) log(format string, args ...any) {
 
 // isRateLimited reports whether a response is a Linear rate-limit signal.
 // Linear answers HTTP 429 for some limits and HTTP 400 with a RATELIMITED
-// GraphQL error code for the documented per-key quota, so both are checked.
+// GraphQL error code. Keep this response-driven instead of hard-coding the
+// hourly quota; Linear's public docs have disagreed between prose and table
+// values while the response shape and rate-limit headers are the contract.
 func isRateLimited(statusCode int, body []byte) bool {
 	if statusCode == http.StatusTooManyRequests {
 		return true
@@ -164,15 +167,15 @@ func bodyHasErrorCode(body []byte, code string) bool {
 	return false
 }
 
-// rateLimitError wraps ErrRateLimited with the terminal status and body so
-// callers can detect quota exhaustion with errors.Is.
+// rateLimitError wraps ErrRateLimited with the terminal status and GraphQL code
+// without echoing Linear's response body back to users or logs.
 func rateLimitError(statusCode int, body []byte) error {
-	return fmt.Errorf("%w: graphql http status %d: %s", ErrRateLimited, statusCode, strings.TrimSpace(string(body)))
+	return fmt.Errorf("%w: %s", ErrRateLimited, responseFailureMessage(statusCode, body))
 }
 
 func decodeGraphQLResponse(body []byte, statusCode int, response *graphql.Response) error {
 	if statusCode < http.StatusOK || statusCode >= http.StatusMultipleChoices {
-		return fmt.Errorf("graphql http status %d: %s", statusCode, strings.TrimSpace(string(body)))
+		return errors.New(responseFailureMessage(statusCode, body))
 	}
 	if err := json.Unmarshal(body, response); err != nil {
 		return fmt.Errorf("decode graphql response: %w", err)
@@ -182,6 +185,53 @@ func decodeGraphQLResponse(body []byte, statusCode int, response *graphql.Respon
 	}
 
 	return nil
+}
+
+func responseFailureMessage(statusCode int, body []byte) string {
+	if code := firstGraphQLErrorCode(body); code != "" {
+		return fmt.Sprintf("graphql http status %d code=%s", statusCode, code)
+	}
+
+	return fmt.Sprintf("graphql http status %d", statusCode)
+}
+
+func firstGraphQLErrorCode(body []byte) string {
+	var payload struct {
+		Errors []struct {
+			Extensions struct {
+				Code string `json:"code"`
+			} `json:"extensions"`
+		} `json:"errors"`
+	}
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return ""
+	}
+	for _, graphqlError := range payload.Errors {
+		if graphqlError.Extensions.Code != "" {
+			return graphqlError.Extensions.Code
+		}
+	}
+
+	return ""
+}
+
+func defaultHTTPClient(timeout time.Duration) *http.Client {
+	baseTransport, ok := http.DefaultTransport.(*http.Transport)
+	if !ok {
+		return &http.Client{
+			Timeout:   timeout,
+			Transport: http.DefaultTransport,
+		}
+	}
+
+	transport := baseTransport.Clone()
+	transport.MaxIdleConns = 100
+	transport.MaxIdleConnsPerHost = 20
+
+	return &http.Client{
+		Timeout:   timeout,
+		Transport: transport,
+	}
 }
 
 func (transport *Transport) send(ctx context.Context, payload []byte) ([]byte, int, http.Header, error) {

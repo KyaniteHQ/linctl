@@ -164,6 +164,43 @@ func (adapter issueClientAdapter) ListIssuesByTeam(
 	return client.ListIssuesByTeam(ctx, adapter.graphqlClient, teamID, limit, filters)
 }
 
+func (adapter issueClientAdapter) SearchIssuesByTeam(
+	ctx context.Context,
+	teamID string,
+	query string,
+	limit int,
+) (client.IssueList, error) {
+	return client.SearchIssuesByTeam(ctx, adapter.graphqlClient, teamID, query, limit)
+}
+
+func (adapter issueClientAdapter) SearchIssuesByFigmaFileKey(
+	ctx context.Context,
+	fileKey string,
+	limit int,
+) (client.IssueList, error) {
+	return client.SearchIssuesByFigmaFileKey(ctx, adapter.graphqlClient, fileKey, limit)
+}
+
+func (adapter issueClientAdapter) ListIssuePriorityValues(ctx context.Context) ([]client.IssuePriorityValue, error) {
+	return client.ListIssuePriorityValues(ctx, adapter.graphqlClient)
+}
+
+func (adapter issueClientAdapter) GetIssueFilterSuggestion(
+	ctx context.Context,
+	prompt string,
+	teamID string,
+	projectID string,
+) (client.IssueFilterSuggestion, error) {
+	return client.GetIssueFilterSuggestion(ctx, adapter.graphqlClient, prompt, teamID, projectID)
+}
+
+func (adapter issueClientAdapter) GetIssueTitleSuggestionFromCustomerRequest(
+	ctx context.Context,
+	request string,
+) (client.IssueTitleSuggestion, error) {
+	return client.GetIssueTitleSuggestionFromCustomerRequest(ctx, adapter.graphqlClient, request)
+}
+
 func (adapter issueClientAdapter) GetIssueByID(ctx context.Context, issueID string) (client.IssueSummary, error) {
 	return client.GetIssueByID(ctx, adapter.graphqlClient, issueID)
 }
@@ -174,4 +211,260 @@ func (adapter issueClientAdapter) GetIssueDependencies(
 	limit int,
 ) (client.IssueDependencyGraph, error) {
 	return client.GetIssueDependencies(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueComments(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueCommentList, error) {
+	return client.ListIssueComments(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueAttachments(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.AttachmentList, error) {
+	return client.ListIssueAttachments(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) GetIssueBotActor(ctx context.Context, issueID string) (client.IssueBotActor, error) {
+	return client.GetIssueBotActor(ctx, adapter.graphqlClient, issueID)
+}
+
+func (adapter issueClientAdapter) ListIssueChildren(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueList, error) {
+	return client.ListIssueChildren(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueDocuments(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.DocumentList, error) {
+	return client.ListIssueDocuments(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueFormerAttachments(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.AttachmentList, error) {
+	return client.ListIssueFormerAttachments(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueFormerNeeds(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueCustomerNeedMetadataList, error) {
+	return client.ListIssueFormerNeeds(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueHistory(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueHistoryList, error) {
+	return client.ListIssueHistory(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueInverseRelations(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueRelationList, error) {
+	return client.ListIssueInverseRelations(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueLabels(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.LabelList, error) {
+	return client.ListIssueLabels(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueNeeds(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueCustomerNeedMetadataList, error) {
+	return client.ListIssueNeeds(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueRelationsForIssue(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueRelationList, error) {
+	return client.ListIssueRelationsForIssue(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueReleases(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.ReleaseList, error) {
+	return client.ListIssueReleases(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) GetIssueSharedAccess(
+	ctx context.Context,
+	issueID string,
+) (client.IssueSharedAccessSummary, error) {
+	return client.GetIssueSharedAccess(ctx, adapter.graphqlClient, issueID)
+}
+
+func (adapter issueClientAdapter) ListIssueStateHistory(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.IssueStateHistoryList, error) {
+	return client.ListIssueStateHistory(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueSubscribers(
+	ctx context.Context,
+	issueID string,
+	limit int,
+) (client.UserList, error) {
+	return client.ListIssueSubscribers(ctx, adapter.graphqlClient, issueID, limit)
+}
+
+func (adapter issueClientAdapter) GetIssueByVCSBranch(
+	ctx context.Context,
+	branchName string,
+) (client.IssueSummary, error) {
+	return client.GetIssueByVCSBranch(ctx, adapter.graphqlClient, branchName)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchComments(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueCommentMetadataList, error) {
+	return client.ListIssueVCSBranchComments(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchFormerNeeds(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueCustomerNeedMetadataList, error) {
+	return client.ListIssueVCSBranchFormerNeeds(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchAttachments(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.AttachmentList, error) {
+	return client.ListIssueVCSBranchAttachments(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) GetIssueVCSBranchBotActor(
+	ctx context.Context,
+	branchName string,
+) (client.IssueBotActor, error) {
+	return client.GetIssueVCSBranchBotActor(ctx, adapter.graphqlClient, branchName)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchChildren(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueList, error) {
+	return client.ListIssueVCSBranchChildren(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchDocuments(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.DocumentList, error) {
+	return client.ListIssueVCSBranchDocuments(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchFormerAttachments(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.AttachmentList, error) {
+	return client.ListIssueVCSBranchFormerAttachments(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchHistory(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueHistoryList, error) {
+	return client.ListIssueVCSBranchHistory(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchInverseRelations(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueRelationList, error) {
+	return client.ListIssueVCSBranchInverseRelations(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchLabels(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.LabelList, error) {
+	return client.ListIssueVCSBranchLabels(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchNeeds(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueCustomerNeedMetadataList, error) {
+	return client.ListIssueVCSBranchNeeds(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchRelations(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueRelationList, error) {
+	return client.ListIssueVCSBranchRelations(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchReleases(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.ReleaseList, error) {
+	return client.ListIssueVCSBranchReleases(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) GetIssueVCSBranchSharedAccess(
+	ctx context.Context,
+	branchName string,
+) (client.IssueSharedAccessSummary, error) {
+	return client.GetIssueVCSBranchSharedAccess(ctx, adapter.graphqlClient, branchName)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchStateHistory(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.IssueStateHistoryList, error) {
+	return client.ListIssueVCSBranchStateHistory(ctx, adapter.graphqlClient, branchName, limit)
+}
+
+func (adapter issueClientAdapter) ListIssueVCSBranchSubscribers(
+	ctx context.Context,
+	branchName string,
+	limit int,
+) (client.UserList, error) {
+	return client.ListIssueVCSBranchSubscribers(ctx, adapter.graphqlClient, branchName, limit)
 }

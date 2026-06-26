@@ -166,6 +166,8 @@ func Test_Transport_returns_rate_limited_error_after_exhausting_retries(t *testi
 	// Then
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrRateLimited)
+	require.Contains(t, err.Error(), "graphql http status 400 code=RATELIMITED")
+	require.NotContains(t, err.Error(), "rate limit exceeded")
 	require.Equal(t, 2, requests)
 	require.Contains(t, logs.String(), "graphql_rate_limited attempt=2 status=400")
 	require.NotContains(t, logs.String(), "test-token")
@@ -314,6 +316,23 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "close response body")
 	})
+
+	t.Run("http error body is redacted", func(t *testing.T) {
+		transport := NewTransport(TransportConfig{
+			Client: &http.Client{Transport: bodyFailureTransport{
+				statusCode: http.StatusBadGateway,
+				body:       io.NopCloser(bytes.NewReader([]byte("sensitive upstream body"))),
+			}},
+			Timeout: 2 * time.Second,
+		})
+		response := graphql.Response{Data: &testGraphQLData{}}
+
+		err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "graphql http status 502")
+		require.NotContains(t, err.Error(), "sensitive upstream body")
+	})
 }
 
 func Test_Transport_logs_terminal_http_failures_without_response_body(t *testing.T) {
@@ -343,9 +362,37 @@ func Test_Transport_logs_terminal_http_failures_without_response_body(t *testing
 
 	// Then
 	require.Error(t, err)
+	require.NotContains(t, err.Error(), "sensitive outage detail")
 	require.Contains(t, logs.String(), "graphql_decode_failed attempt=1 status=500")
 	require.NotContains(t, logs.String(), "sensitive outage detail")
 	require.NotContains(t, logs.String(), "test-token")
+}
+
+func Test_NewTransport_uses_project_owned_default_client(t *testing.T) {
+	transport := NewTransport(TransportConfig{Timeout: 2 * time.Second})
+
+	require.NotSame(t, http.DefaultClient, transport.httpClient)
+	require.Equal(t, 2*time.Second, transport.httpClient.Timeout)
+}
+
+func Test_defaultHTTPClient_falls_back_when_default_transport_is_custom(t *testing.T) {
+	originalTransport := http.DefaultTransport
+	customTransport := staticResponseTransport{}
+	http.DefaultTransport = customTransport
+	t.Cleanup(func() {
+		http.DefaultTransport = originalTransport
+	})
+
+	client := defaultHTTPClient(2 * time.Second)
+
+	require.Equal(t, 2*time.Second, client.Timeout)
+	require.Equal(t, customTransport, client.Transport)
+}
+
+func Test_firstGraphQLErrorCode_returns_empty_when_errors_have_no_code(t *testing.T) {
+	code := firstGraphQLErrorCode([]byte(`{"errors":[{"message":"body stays private"}]}`))
+
+	require.Empty(t, code)
 }
 
 func Test_Transport_returns_error_when_retry_wait_is_canceled(t *testing.T) {
@@ -443,12 +490,18 @@ func (transport staticResponseTransport) RoundTrip(_ *http.Request) (*http.Respo
 }
 
 type bodyFailureTransport struct {
-	body io.ReadCloser
+	statusCode int
+	body       io.ReadCloser
 }
 
 func (transport bodyFailureTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
+	statusCode := transport.statusCode
+	if statusCode == 0 {
+		statusCode = http.StatusOK
+	}
+
 	return &http.Response{
-		StatusCode: http.StatusOK,
+		StatusCode: statusCode,
 		Header:     http.Header{},
 		Body:       transport.body,
 	}, nil

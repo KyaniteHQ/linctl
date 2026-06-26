@@ -370,7 +370,7 @@ func runIssueBulkExport(
 
 func writeIssueFile(path string, format string, issues []client.IssueSummary) error {
 	//nolint:gosec // G304: the export command's purpose is to write the user-named file.
-	file, err := os.Create(path)
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
 	if err != nil {
 		return fmt.Errorf("create %s: %w", path, err)
 	}

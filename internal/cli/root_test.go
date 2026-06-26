@@ -35,11 +35,31 @@ func Test_RootCommand_exposes_global_flags_when_created(t *testing.T) {
 		"profile",
 		"org",
 		"team",
+		"team-id",
 		"project",
 		"timeout",
 	} {
 		require.NotNil(t, flags.Lookup(flagName), "missing persistent flag %s", flagName)
 	}
+	require.Equal(t, "pinned Linear team key", flags.Lookup("team").Usage)
+	require.Equal(t, "pinned Linear team id", flags.Lookup("team-id").Usage)
+}
+
+func Test_RootCommand_rejects_non_positive_limit_before_runtime(t *testing.T) {
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, nil
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"issue", "list", "--limit", "0"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.ErrorContains(t, err, "invalid --limit 0")
 }
 
 func Test_Execute_prints_version_when_version_flag_is_set(t *testing.T) {

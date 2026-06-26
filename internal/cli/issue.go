@@ -324,11 +324,12 @@ func loadIssueSearch(
 	args []string,
 	limit int,
 ) (client.IssueList, []client.IssueSummary, error) {
-	target, err := runtime.resolveTarget(ctx)
+	issueReader := issueAdapterFor(runtime)
+	target, err := issueReader.ResolveTarget(ctx)
 	if err != nil {
 		return client.IssueList{}, nil, err
 	}
-	issues, err := client.SearchIssuesByTeam(ctx, runtime.graphqlClient, target.Team.ID, args[0], limit)
+	issues, err := issueReader.SearchIssuesByTeam(ctx, target.Team.ID, args[0], limit)
 
 	return issues, issues.Issues, err
 }
@@ -362,7 +363,7 @@ func loadIssueFigmaFileKeySearch(
 	args []string,
 	limit int,
 ) (client.IssueList, []client.IssueSummary, error) {
-	issues, err := client.SearchIssuesByFigmaFileKey(ctx, runtime.graphqlClient, args[0], limit)
+	issues, err := issueAdapterFor(runtime).SearchIssuesByFigmaFileKey(ctx, args[0], limit)
 
 	return issues, issues.Issues, err
 }
@@ -377,7 +378,7 @@ func addIssuePriorityValuesCommand(ctx context.Context, root *cobra.Command, opt
 			if err != nil {
 				return err
 			}
-			values, err := client.ListIssuePriorityValues(ctx, runtime.graphqlClient)
+			values, err := issueAdapterFor(runtime).ListIssuePriorityValues(ctx)
 			if err != nil {
 				return err
 			}
@@ -402,9 +403,8 @@ func addIssueFilterSuggestionCommand(ctx context.Context, root *cobra.Command, o
 			if err != nil {
 				return err
 			}
-			suggestion, err := client.GetIssueFilterSuggestion(
+			suggestion, err := issueAdapterFor(runtime).GetIssueFilterSuggestion(
 				ctx,
-				runtime.graphqlClient,
 				args[0],
 				teamID,
 				projectID,
@@ -431,7 +431,7 @@ func addIssueTitleSuggestionCommand(ctx context.Context, root *cobra.Command, op
 			if err != nil {
 				return err
 			}
-			suggestion, err := client.GetIssueTitleSuggestionFromCustomerRequest(ctx, runtime.graphqlClient, args[0])
+			suggestion, err := issueAdapterFor(runtime).GetIssueTitleSuggestionFromCustomerRequest(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -470,7 +470,7 @@ func addIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, option
 		"List issue attachments",
 		"attachments",
 		func(runtime commandRuntime, issueID string, limit int) (client.AttachmentList, error) {
-			return client.ListIssueAttachments(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueAttachments(ctx, issueID, limit)
 		},
 		func(list client.AttachmentList) int {
 			return len(list.Attachments)
@@ -499,7 +499,7 @@ func addIssueBotActorCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			actor, err := client.GetIssueBotActor(ctx, runtime.graphqlClient, args[0])
+			actor, err := issueAdapterFor(runtime).GetIssueBotActor(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -518,7 +518,7 @@ func addIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *
 		"List issue children",
 		"child issues",
 		func(runtime commandRuntime, issueID string, limit int) (client.IssueList, error) {
-			return client.ListIssueChildren(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueChildren(ctx, issueID, limit)
 		},
 		func(list client.IssueList) int {
 			return len(list.Issues)
@@ -546,7 +546,7 @@ func addIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options 
 		"List issue documents",
 		"documents",
 		func(runtime commandRuntime, issueID string, limit int) (client.DocumentList, error) {
-			return client.ListIssueDocuments(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueDocuments(ctx, issueID, limit)
 		},
 		func(list client.DocumentList) int {
 			return len(list.Documents)
@@ -574,7 +574,7 @@ func addIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, 
 		"List former issue attachments",
 		"former attachments",
 		func(runtime commandRuntime, issueID string, limit int) (client.AttachmentList, error) {
-			return client.ListIssueFormerAttachments(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueFormerAttachments(ctx, issueID, limit)
 		},
 		func(list client.AttachmentList) int {
 			return len(list.Attachments)
@@ -602,7 +602,7 @@ func addIssueFormerNeedsCommand(ctx context.Context, root *cobra.Command, option
 		"List body-free former issue customer needs",
 		"former customer needs",
 		func(runtime commandRuntime, issueID string, limit int) (client.IssueCustomerNeedMetadataList, error) {
-			return client.ListIssueFormerNeeds(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueFormerNeeds(ctx, issueID, limit)
 		},
 	)
 }
@@ -616,7 +616,7 @@ func addIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *r
 		"List issue history metadata",
 		"history entries",
 		func(runtime commandRuntime, issueID string, limit int) (client.IssueHistoryList, error) {
-			return client.ListIssueHistory(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueHistory(ctx, issueID, limit)
 		},
 		func(list client.IssueHistoryList) int {
 			return len(list.History)
@@ -644,7 +644,7 @@ func addIssueInverseRelationsCommand(ctx context.Context, root *cobra.Command, o
 		"List issue inverse relations",
 		"inverse relations",
 		func(ctx context.Context, runtime commandRuntime, issueID string, limit int) (client.IssueRelationList, error) {
-			return client.ListIssueInverseRelations(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueInverseRelations(ctx, issueID, limit)
 		},
 	)
 }
@@ -658,7 +658,7 @@ func addIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *ro
 		"List issue labels",
 		"labels",
 		func(runtime commandRuntime, issueID string, limit int) (client.LabelList, error) {
-			return client.ListIssueLabels(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueLabels(ctx, issueID, limit)
 		},
 		func(list client.LabelList) int {
 			return len(list.Labels)
@@ -686,7 +686,7 @@ func addIssueNeedsCommand(ctx context.Context, root *cobra.Command, options *roo
 		"List body-free issue customer needs",
 		"customer needs",
 		func(runtime commandRuntime, issueID string, limit int) (client.IssueCustomerNeedMetadataList, error) {
-			return client.ListIssueNeeds(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueNeeds(ctx, issueID, limit)
 		},
 	)
 }
@@ -700,7 +700,7 @@ func addIssueRelationsCommand(ctx context.Context, root *cobra.Command, options 
 		"List issue relations",
 		"relations",
 		func(ctx context.Context, runtime commandRuntime, issueID string, limit int) (client.IssueRelationList, error) {
-			return client.ListIssueRelationsForIssue(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueRelationsForIssue(ctx, issueID, limit)
 		},
 	)
 }
@@ -714,7 +714,7 @@ func addIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *
 		"List issue releases",
 		"releases",
 		func(runtime commandRuntime, issueID string, limit int) (client.ReleaseList, error) {
-			return client.ListIssueReleases(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueReleases(ctx, issueID, limit)
 		},
 		func(list client.ReleaseList) int {
 			return len(list.Releases)
@@ -743,7 +743,7 @@ func addIssueSharedAccessCommand(ctx context.Context, root *cobra.Command, optio
 			if err != nil {
 				return err
 			}
-			access, err := client.GetIssueSharedAccess(ctx, runtime.graphqlClient, args[0])
+			access, err := issueAdapterFor(runtime).GetIssueSharedAccess(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -762,7 +762,7 @@ func addIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, optio
 		"List issue workflow state history",
 		"state spans",
 		func(runtime commandRuntime, issueID string, limit int) (client.IssueStateHistoryList, error) {
-			return client.ListIssueStateHistory(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueStateHistory(ctx, issueID, limit)
 		},
 		func(list client.IssueStateHistoryList) int {
 			return len(list.Spans)
@@ -790,7 +790,7 @@ func addIssueSubscribersCommand(ctx context.Context, root *cobra.Command, option
 		"List issue subscribers",
 		"subscribers",
 		func(runtime commandRuntime, issueID string, limit int) (client.UserList, error) {
-			return client.ListIssueSubscribers(ctx, runtime.graphqlClient, issueID, limit)
+			return issueAdapterFor(runtime).ListIssueSubscribers(ctx, issueID, limit)
 		},
 		func(list client.UserList) int {
 			return len(list.Users)

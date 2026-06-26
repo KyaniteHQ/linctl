@@ -32,16 +32,20 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "Create an issue in the pinned target",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
+			var creator issueCreator
+			if issueCreateRequiresRuntime(flags) {
+				runtime, err := buildCommandRuntime(ctx, options)
+				if err != nil {
+					return err
+				}
+				creator = issueAdapterFor(runtime)
 			}
 			var estimate *int
 			if command.Flags().Changed("estimate") {
 				estimate = &flags.estimate
 			}
 
-			return runIssueCreate(ctx, command, options, issueAdapterFor(runtime), request, flags, estimate)
+			return runIssueCreate(ctx, command, options, creator, request, flags, estimate)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "issue title")
@@ -63,6 +67,10 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().StringVar(&request.ParentID, "parent", "", "create as a sub-issue of a parent issue id")
 	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
+}
+
+func issueCreateRequiresRuntime(flags issueCreateFlags) bool {
+	return !flags.dryRun || flags.templateID != ""
 }
 
 func runIssueCreate(

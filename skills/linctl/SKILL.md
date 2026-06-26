@@ -55,7 +55,7 @@ Useful global flags:
 --id-only --quiet --fail-on-empty
 --sort title --order asc
 --format minimal|compact|full
---profile NAME --org ORG_ID --team TEAM --project PROJECT_ID
+--profile NAME --org ORG_ID --team TEAM_KEY --team-id TEAM_ID --project PROJECT_ID
 --timeout 30s
 ```
 
@@ -89,7 +89,7 @@ Safety rules:
 - Target Mismatch is a hard stop. Do not retry blindly with a different token.
 - Team-scoped writes compare organization and team.
 - Resource-scoped writes resolve the existing resource first and compare pinned `project_id` when configured.
-- `--org`, `--team`, and `--project` are explicit pinned-target overrides, not bypasses.
+- `--org`, `--team`, `--team-id`, and `--project` are explicit pinned-target overrides, not bypasses.
 - Never print Linear tokens. Credential precedence is `LINCTL_TOKEN` > `LINEAR_API_KEY` > config `token`.
 - For tests, create `linctl-it-<runid>` resources and clean them up: close disposable issues, archive disposable projects.
 
@@ -179,9 +179,9 @@ or is explicitly blocked on missing credentials or target.
 - `target --json` reports `expected` and `resolved` with Go-capitalized keys (`OrgID`,
   `TeamKey`, `TeamID`, `ProjectID`), not the snake_case used elsewhere. Compare them
   field by field to explain a mismatch.
-- Target Mismatch is a hard stop. There is no bypass flag; `--org`, `--team`, and
-  `--project` set the pinned target, they do not relax the guard. Do not retry with a
-  different token.
+- Target Mismatch is a hard stop. There is no bypass flag; `--org`, `--team`,
+  `--team-id`, and `--project` set the pinned target, they do not relax the guard.
+  Do not retry with a different token.
 - `--body -` reads a comment body from stdin; `--body-file` reads it from a file. Use
   these instead of inlining multi-line markdown.
 - Keep `$prefix` unquoted when it may be `go run ./cmd/linctl`, so it word-splits into

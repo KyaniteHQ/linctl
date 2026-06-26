@@ -20,7 +20,7 @@ func addIssueCommentsCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			comments, err := client.ListIssueComments(ctx, runtime.graphqlClient, args[0], limit)
+			comments, err := issueAdapterFor(runtime).ListIssueComments(ctx, args[0], limit)
 			if err != nil {
 				return err
 			}

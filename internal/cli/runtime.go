@@ -35,6 +35,7 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 	if err != nil {
 		return commandRuntime{}, err
 	}
+	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
 	if resolvedConfig.Token == "" {
 		return commandRuntime{}, errors.New("missing Linear token: set LINCTL_TOKEN or LINEAR_API_KEY")
 	}
@@ -81,6 +82,15 @@ func targetOverride(options *rootOptions) config.Target {
 	return config.Target{
 		OrgID:     options.orgID,
 		TeamKey:   options.team,
+		TeamID:    options.teamID,
 		ProjectID: options.project,
 	}
+}
+
+func applyTargetOverrideFlagSemantics(resolved *config.Resolved, options *rootOptions) {
+	if options.orgID == "" && options.team == "" && options.teamID == "" {
+		return
+	}
+
+	resolved.Target.TeamID = options.teamID
 }

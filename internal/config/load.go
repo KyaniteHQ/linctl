@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"runtime"
 
 	"github.com/pelletier/go-toml/v2"
 )
@@ -108,11 +109,15 @@ func readConfigFile(path string) (fileConfig, error) {
 		return fileConfig{Profiles: map[string]profileConfig{}}, nil
 	}
 
-	//nolint:gosec // Config paths are explicit user/repo inputs; loading them is the feature.
-	data, err := os.ReadFile(path)
+	info, err := os.Stat(path)
 	if errors.Is(err, fs.ErrNotExist) {
 		return fileConfig{Profiles: map[string]profileConfig{}}, nil
 	}
+	if err != nil {
+		return fileConfig{}, fmt.Errorf("read config %s: %w", path, err)
+	}
+	//nolint:gosec // Config paths are explicit user/repo inputs; loading them is the feature.
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return fileConfig{}, fmt.Errorf("read config %s: %w", path, err)
 	}
@@ -124,8 +129,32 @@ func readConfigFile(path string) (fileConfig, error) {
 	if config.Profiles == nil {
 		config.Profiles = map[string]profileConfig{}
 	}
+	if err := validateConfigPermissions(path, info.Mode(), config); err != nil {
+		return fileConfig{}, err
+	}
 
 	return config, nil
+}
+
+func validateConfigPermissions(path string, mode fs.FileMode, config fileConfig) error {
+	if runtime.GOOS == "windows" || !configHasToken(config) || mode.Perm()&0o077 == 0 {
+		return nil
+	}
+
+	return fmt.Errorf("read config %s: token-bearing config must not be group/world-readable", path)
+}
+
+func configHasToken(config fileConfig) bool {
+	if config.Token != "" {
+		return true
+	}
+	for _, profile := range config.Profiles {
+		if profile.Token != "" {
+			return true
+		}
+	}
+
+	return false
 }
 
 func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {

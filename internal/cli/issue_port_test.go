@@ -574,6 +574,61 @@ func Test_issueClientAdapter_forwards_to_client(t *testing.T) {
 	_, err = adapter.GetIssueDependencies(ctx, "LIT-1", 5)
 	require.NoError(t, err)
 
+	_, err = adapter.ListIssueComments(ctx, "LIT-1", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchComments(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchFormerNeeds(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchAttachments(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.GetIssueVCSBranchBotActor(ctx, "omer/branch")
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchChildren(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchDocuments(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchFormerAttachments(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchHistory(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchInverseRelations(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchLabels(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchNeeds(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchRelations(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchReleases(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.GetIssueVCSBranchSharedAccess(ctx, "omer/branch")
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchStateHistory(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	_, err = adapter.ListIssueVCSBranchSubscribers(ctx, "omer/branch", 5)
+	require.NoError(t, err)
+
+	branchIssue, err := adapter.GetIssueByVCSBranch(ctx, "omer/branch")
+	require.NoError(t, err)
+	require.NotEmpty(t, branchIssue.ID)
+
 	relation, err := adapter.CreateIssueRelation(ctx, client.IssueRelationCreateRequest{
 		IssueID:        "LIT-1",
 		RelatedIssueID: "LIT-2",

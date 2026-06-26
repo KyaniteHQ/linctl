@@ -32,6 +32,7 @@ type rootOptions struct {
 	profile     string
 	orgID       string
 	team        string
+	teamID      string
 	project     string
 	debug       bool
 }
@@ -48,6 +49,9 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Version:       build.versionText(),
+		PersistentPreRunE: func(command *cobra.Command, _ []string) error {
+			return validateCommandFlags(command)
+		},
 	}
 	command.SetVersionTemplate("linctl {{.Version}}\n")
 
@@ -63,7 +67,8 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	flags.StringVar(&options.format, "format", "compact", "human output format: minimal, compact, or full")
 	flags.StringVar(&options.profile, "profile", "", "config profile to load")
 	flags.StringVar(&options.orgID, "org", "", "pinned Linear organization id")
-	flags.StringVar(&options.team, "team", "", "pinned Linear team key or id")
+	flags.StringVar(&options.team, "team", "", "pinned Linear team key")
+	flags.StringVar(&options.teamID, "team-id", "", "pinned Linear team id")
 	flags.StringVar(&options.project, "project", "", "pinned Linear project id")
 	flags.DurationVar(&options.timeout, "timeout", options.timeout, "request timeout")
 	flags.BoolVar(&options.debug, "debug", false, "emit debug diagnostics to stderr")
@@ -73,6 +78,21 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	command.SetContext(ctx)
 
 	return command
+}
+
+func validateCommandFlags(command *cobra.Command) error {
+	if command.Flags().Lookup("limit") == nil {
+		return nil
+	}
+	limit, err := command.Flags().GetInt("limit")
+	if err != nil {
+		return fmt.Errorf("read --limit: %w", err)
+	}
+	if limit <= 0 {
+		return fmt.Errorf("invalid --limit %d: must be greater than 0", limit)
+	}
+
+	return nil
 }
 
 func addCommands(ctx context.Context, command *cobra.Command, options *rootOptions) {
