@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -194,9 +195,11 @@ func Test_CommandFlows_issue_bulk_export_writes_file(t *testing.T) {
 	data, err := os.ReadFile(jsonPath) //nolint:gosec // G304: test-controlled temp path.
 	require.NoError(t, err)
 	require.Contains(t, string(data), `"identifier": "LIT-1"`)
-	info, err := os.Stat(jsonPath)
-	require.NoError(t, err)
-	require.Equal(t, os.FileMode(0o600), info.Mode().Perm())
+	if runtime.GOOS != "windows" {
+		info, err := os.Stat(jsonPath)
+		require.NoError(t, err)
+		require.Equal(t, os.FileMode(0o600), info.Mode().Perm())
+	}
 
 	csvPath := filepath.Join(dir, "issues.csv")
 	_, err = runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "bulk-export", csvPath})

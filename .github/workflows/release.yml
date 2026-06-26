@@ -71,9 +71,11 @@ jobs:
           git diff --exit-code -- internal/client/generated.go
           go run scripts/gen-skill.go
           git diff --exit-code -- skills/linctl/references/commands.md
+          upstream="$RUNNER_TEMP/linear-sdk-source"
+          git clone --depth=1 https://github.com/linear/linear.git "$upstream"
           tmp="$(mktemp)"
           trap 'rm -f "$tmp"' EXIT
-          go run scripts/linear_api_coverage*.go --output "$tmp"
+          go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
           diff -u docs/linear-api-coverage.md "$tmp"
       - name: Vet
         run: go vet $(bash scripts/go-packages.sh)
