@@ -85,7 +85,16 @@ func resolveIssueArgument(ctx context.Context, options *rootOptions, args []stri
 	if err != nil {
 		return client.IssueSummary{}, err
 	}
-	issue, err := client.GetIssueByID(ctx, runtime.graphqlClient, issueID)
+
+	return resolveIssueArgumentWithReader(ctx, issueAdapterFor(runtime), issueID)
+}
+
+func resolveIssueArgumentWithReader(
+	ctx context.Context,
+	reader currentIssueReader,
+	issueID string,
+) (client.IssueSummary, error) {
+	issue, err := reader.GetIssueByID(ctx, issueID)
 	if err != nil {
 		return client.IssueSummary{}, err
 	}

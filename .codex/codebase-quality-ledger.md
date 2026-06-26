@@ -5,7 +5,7 @@
 - Repo: `/home/oruc/Desktop/workspace/linctl`.
 - Branch: `master`.
 - Baseline commit: `c389900`.
-- Latest completed slice: remaining issue workflow write routing slice.
+- Latest completed slice: checkout-centric issue read Command Port slice.
 - Rolling report: `/tmp/codex-codebase-quality/linctl-quality-report.html`.
 - Worktree exception at run start: `.gitignore` modified with local ignore rules and untracked `.directory`; both are treated as pre-existing Omer changes and must remain unstaged.
 - Likely next action: after the first slice is committed, re-discover whether a similarly small Command Port locality slice remains.
@@ -82,6 +82,13 @@
   - Validation: `go test ./internal/cli -run 'Test_CommandFlows_(resolve_current_issue_from_branch|print_current_issue_as_json|close_current_issue_from_done|next_starts_picked_issue|next_checkout_creates_branch_then_starts|next_surfaces_start_failure|report_current_issue_errors)'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
   - Notes: `task ci` skipped coverage-ledger drift because `/tmp/linctl-upstream-linear` is unavailable; all other CI steps passed. Remaining direct `runtime.graphqlClient` call sites are reads or selection queries rather than guarded issue writes.
   - Commit: this commit.
+- 2026-06-26: Checkout-centric issue read Command Port slice.
+  - Files: `internal/cli/current.go`, `internal/cli/issue_current.go`, `internal/cli/next.go`, `internal/cli/issue_port.go`, `internal/cli/issue_port_test.go`, `internal/cli/command_flow_current_next_test.go`.
+  - Behavior impact: no public CLI behavior change; `current`, `issue title`, `issue url`, `issue branch`, and `next` still resolve and render the same issue summaries, and `next` still preserves its target-resolution diagnostics before reading candidates and starting the pick.
+  - Quality impact: moved checkout-centric issue lookups and next candidate reads behind narrow typed Command Ports, with focused in-memory port tests for current issue resolution, issue argument resolution, and next read/pick/start flow.
+  - Validation: `go test ./internal/cli -run 'Test_runCurrentIssueRead|Test_resolveIssueArgumentWithReader|Test_runNextWithPicker|Test_CommandFlows_(resolve_current_issue_from_branch|print_current_issue_as_json|print_current_issue_identifier_from_issue_id|print_current_issue_title_from_issue_title|print_current_issue_url_from_issue_url|close_current_issue_from_done|rank_next_issue_candidates|next_starts_picked_issue|next_checkout_creates_branch_then_starts|next_surfaces_start_failure|report_current_issue_errors)|Test_issueClientAdapter_forwards_to_client'`; `go test ./internal/cli -cover`; `go generate ./...`; `go run github.com/go-task/task/v3/cmd/task@latest ci`; `go run github.com/go-task/task/v3/cmd/task@latest coverage`.
+  - Notes: all requested gates passed; `task coverage` reported 100.0% total statements. The allowed `.gitignore` / `.directory` exception did not appear in `git status` during this slice and was not touched.
+  - Commit: this commit.
 
 ## Deferred Needs Omer
 
@@ -94,7 +101,7 @@
 - Candidate: `issue start` remains a simple one-id guarded write; it is lower leverage than request-assembly ports unless a future refactor touches start semantics.
 - Candidate: simple guarded-write wrappers may benefit from one more characterization test if a future refactor touches `runGuardedWrite`.
 - Candidate: command client adapter methods now cover project, Cycle, and ProjectMilestone writes; a later cleanup may group or split the shared adapter only if lint and locality stay clear.
-- Candidate: remaining direct `runtime.graphqlClient` call sites are read flows or selection queries outside the v0.5.0 write-port slice; broad conversion would be a design choice rather than a small safe cleanup.
+- Candidate: issue search shared-runner reads remain the explicit deferred read seam from PR #5; broad conversion outside that seam would be a design choice rather than a small safe cleanup.
 - Deferred for now: docs/test scenario cleanup unless tied to verified behavior from a code slice.
 
 ## Recently Failed
@@ -120,3 +127,4 @@ None yet.
 - 2026-06-26T00:39:00+03:00: Completed and validated the ProjectMilestone write Command Port slice; ready to commit after staged diff checks.
 - 2026-06-26T00:47:00+03:00: Completed and validated the issue start Command Port slice and removed the unused generic guarded-write helper; ready to commit after staged diff checks.
 - 2026-06-26T00:54:00+03:00: Completed and validated the remaining issue workflow write routing slice for `done` and `next`; ready to commit after staged diff checks.
+- 2026-06-26T12:24:00+03:00: Completed and validated the checkout-centric issue read Command Port slice for `current`, `issue current` reads, and `next` candidate selection; ready to commit after staged diff checks.

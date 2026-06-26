@@ -59,11 +59,45 @@ func runNext(ctx context.Context, command *cobra.Command, options *rootOptions, 
 	if err != nil {
 		return err
 	}
-	target, err := runtime.resolveTarget(ctx)
+	return runNextWithPicker(ctx, command, options, nextIssueAdapterFor(runtime), flags)
+}
+
+type nextIssueClientAdapter struct {
+	runtime commandRuntime
+}
+
+func nextIssueAdapterFor(runtime commandRuntime) nextIssueClientAdapter {
+	return nextIssueClientAdapter{runtime: runtime}
+}
+
+func (adapter nextIssueClientAdapter) ResolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
+	return adapter.runtime.resolveTarget(ctx)
+}
+
+func (adapter nextIssueClientAdapter) ListNextIssuesByTeam(
+	ctx context.Context,
+	teamID string,
+	limit int,
+) (client.IssueList, error) {
+	return client.ListNextIssuesByTeam(ctx, adapter.runtime.graphqlClient, teamID, limit)
+}
+
+func (adapter nextIssueClientAdapter) StartIssue(ctx context.Context, issueID string) (client.IssueSummary, error) {
+	return issueAdapterFor(adapter.runtime).StartIssue(ctx, issueID)
+}
+
+func runNextWithPicker(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	picker nextIssuePicker,
+	flags nextFlags,
+) error {
+	target, err := picker.ResolveTarget(ctx)
 	if err != nil {
 		return err
 	}
-	issues, err := client.ListNextIssuesByTeam(ctx, runtime.graphqlClient, target.Team.ID, flags.limit)
+	issues, err := picker.ListNextIssuesByTeam(ctx, target.Team.ID, flags.limit)
 	if err != nil {
 		return err
 	}
@@ -82,7 +116,7 @@ func runNext(ctx context.Context, command *cobra.Command, options *rootOptions, 
 			return err
 		}
 	}
-	started, err := issueAdapterFor(runtime).StartIssue(ctx, picked.Identifier)
+	started, err := picker.StartIssue(ctx, picked.Identifier)
 	if err != nil {
 		return err
 	}

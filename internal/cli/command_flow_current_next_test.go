@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 func Test_CommandFlows_report_normalization_note_write_errors(t *testing.T) {
@@ -115,6 +117,40 @@ func Test_CommandFlows_close_current_issue_from_done(t *testing.T) {
 	require.Contains(t, output, "LIT-1 Closed issue [Done]")
 }
 
+func clientIssue(identifier string, title string) client.IssueSummary {
+	return client.IssueSummary{
+		ID:         identifier + "-id",
+		Identifier: identifier,
+		Title:      title,
+		State:      "Todo",
+	}
+}
+
+func Test_runCurrentIssueRead_reads_current_issue_through_the_port(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		gotIssue: clientIssue("LIT-9", "Current from port"),
+	}
+
+	err := runCurrentIssueRead(context.Background(), command, &rootOptions{}, port, "LIT-9")
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-9", port.getIssueID)
+	require.Contains(t, stdout.String(), "LIT-9 Current from port")
+}
+
+func Test_resolveIssueArgumentWithReader_reads_issue_argument_through_the_port(t *testing.T) {
+	port := &fakeIssuePort{
+		gotIssue: clientIssue("LIT-10", "Issue current from port"),
+	}
+
+	issue, err := resolveIssueArgumentWithReader(context.Background(), port, "LIT-10")
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-10", port.getIssueID)
+	require.Equal(t, "Issue current from port", issue.Title)
+}
+
 func Test_CommandFlows_report_next_errors(t *testing.T) {
 	t.Run("empty candidate list", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{emptyNextIssues: true})
@@ -212,6 +248,37 @@ func Test_CommandFlows_next_checkout_failure_aborts(t *testing.T) {
 
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "checkout boom")
+}
+
+func Test_runNextWithPicker_reads_and_starts_through_the_port(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		resolved: client.ResolvedTarget{Team: client.TargetTeam{ID: "team-id"}},
+		nextList: client.IssueList{Issues: []client.IssueSummary{
+			{
+				Identifier: "LIT-12",
+				Title:      "Picked from port",
+				BranchName: "lit-12-picked-from-port",
+				State:      "Todo",
+			},
+		}},
+		started: clientIssue("LIT-12", "Started from port"),
+	}
+
+	err := runNextWithPicker(
+		context.Background(),
+		command,
+		&rootOptions{},
+		port,
+		nextFlags{limit: 7},
+	)
+
+	require.NoError(t, err)
+	require.Equal(t, 1, port.nextCalls)
+	require.Equal(t, "team-id", port.nextTeamID)
+	require.Equal(t, 7, port.nextLimit)
+	require.Equal(t, "LIT-12", port.startID)
+	require.Contains(t, stdout.String(), "LIT-12 Started from port")
 }
 
 func Test_CommandFlows_next_surfaces_start_failure(t *testing.T) {

@@ -38,6 +38,12 @@ type issueStarter interface {
 	StartIssue(ctx context.Context, issueID string) (client.IssueSummary, error)
 }
 
+// currentIssueReader is the port checkout-centric commands depend on to resolve
+// a Current Issue into its printable issue summary.
+type currentIssueReader interface {
+	GetIssueByID(ctx context.Context, issueID string) (client.IssueSummary, error)
+}
+
 // issueUpdater is the port the issue update command depends on.
 type issueUpdater interface {
 	UpdateIssue(ctx context.Context, request client.IssueUpdateRequest) (client.IssueSummary, error)
@@ -78,6 +84,14 @@ type issueReader interface {
 		limit int,
 		filters client.IssueListFilters,
 	) (client.IssueList, error)
+}
+
+// nextIssuePicker is the port the next command depends on to read candidates
+// and start the selected issue after optional checkout.
+type nextIssuePicker interface {
+	ResolveTarget(ctx context.Context) (client.ResolvedTarget, error)
+	ListNextIssuesByTeam(ctx context.Context, teamID string, limit int) (client.IssueList, error)
+	StartIssue(ctx context.Context, issueID string) (client.IssueSummary, error)
 }
 
 // issueClientAdapter satisfies the issue command ports by forwarding to the
@@ -162,6 +176,14 @@ func (adapter issueClientAdapter) ListIssuesByTeam(
 	filters client.IssueListFilters,
 ) (client.IssueList, error) {
 	return client.ListIssuesByTeam(ctx, adapter.graphqlClient, teamID, limit, filters)
+}
+
+func (adapter issueClientAdapter) ListNextIssuesByTeam(
+	ctx context.Context,
+	teamID string,
+	limit int,
+) (client.IssueList, error) {
+	return client.ListNextIssuesByTeam(ctx, adapter.graphqlClient, teamID, limit)
 }
 
 func (adapter issueClientAdapter) SearchIssuesByTeam(

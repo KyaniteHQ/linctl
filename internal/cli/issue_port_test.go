@@ -25,6 +25,9 @@ type fakeIssuePort struct {
 	started       client.IssueSummary
 	startID       string
 	startErr      error
+	gotIssue      client.IssueSummary
+	getIssueID    string
+	getIssueErr   error
 	template      client.IssueTemplateContent
 	templateErr   error
 	updated       client.IssueSummary
@@ -51,6 +54,10 @@ type fakeIssuePort struct {
 	listTeamID    string
 	listFilters   client.IssueListFilters
 	listTeamCalls int
+	nextList      client.IssueList
+	nextTeamID    string
+	nextLimit     int
+	nextCalls     int
 }
 
 func (port *fakeIssuePort) ResolveTarget(_ context.Context) (client.ResolvedTarget, error) {
@@ -74,6 +81,18 @@ func (port *fakeIssuePort) ListIssuesByTeam(
 	port.listFilters = filters
 
 	return port.listTeam, nil
+}
+
+func (port *fakeIssuePort) ListNextIssuesByTeam(
+	_ context.Context,
+	teamID string,
+	limit int,
+) (client.IssueList, error) {
+	port.nextCalls++
+	port.nextTeamID = teamID
+	port.nextLimit = limit
+
+	return port.nextList, nil
 }
 
 func (port *fakeIssuePort) UpdateIssue(
@@ -140,6 +159,12 @@ func (port *fakeIssuePort) StartIssue(_ context.Context, issueID string) (client
 	port.startID = issueID
 
 	return port.started, port.startErr
+}
+
+func (port *fakeIssuePort) GetIssueByID(_ context.Context, issueID string) (client.IssueSummary, error) {
+	port.getIssueID = issueID
+
+	return port.gotIssue, port.getIssueErr
 }
 
 func (port *fakeIssuePort) GetIssueTemplateContent(
@@ -565,6 +590,9 @@ func Test_issueClientAdapter_forwards_to_client(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = adapter.ListIssuesByTeam(ctx, resolved.Team.ID, 5, client.IssueListFilters{})
+	require.NoError(t, err)
+
+	_, err = adapter.ListNextIssuesByTeam(ctx, resolved.Team.ID, 5)
 	require.NoError(t, err)
 
 	got, err := adapter.GetIssueByID(ctx, "LIT-1")
