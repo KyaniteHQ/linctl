@@ -94,12 +94,7 @@ func resolveIssueArgumentWithReader(
 	reader currentIssueReader,
 	issueID string,
 ) (client.IssueSummary, error) {
-	issue, err := reader.GetIssueByID(ctx, issueID)
-	if err != nil {
-		return client.IssueSummary{}, err
-	}
-
-	return issue, nil
+	return reader.GetIssueByID(ctx, issueID)
 }
 
 func issueArgumentOrCurrent(ctx context.Context, args []string) (string, error) {

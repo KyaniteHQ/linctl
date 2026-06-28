@@ -89,9 +89,9 @@ type issueReader interface {
 // nextIssuePicker is the port the next command depends on to read candidates
 // and start the selected issue after optional checkout.
 type nextIssuePicker interface {
+	issueStarter
 	ResolveTarget(ctx context.Context) (client.ResolvedTarget, error)
 	ListNextIssuesByTeam(ctx context.Context, teamID string, limit int) (client.IssueList, error)
-	StartIssue(ctx context.Context, issueID string) (client.IssueSummary, error)
 }
 
 // issueClientAdapter satisfies the issue command ports by forwarding to the
