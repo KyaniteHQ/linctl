@@ -54,6 +54,12 @@ type fakeIssuePort struct {
 	listTeamID    string
 	listFilters   client.IssueListFilters
 	listTeamCalls int
+	searchList    client.IssueList
+	searchTeamID  string
+	searchQuery   string
+	searchLimit   int
+	searchCalls   int
+	searchErr     error
 	nextList      client.IssueList
 	nextTeamID    string
 	nextLimit     int
@@ -81,6 +87,20 @@ func (port *fakeIssuePort) ListIssuesByTeam(
 	port.listFilters = filters
 
 	return port.listTeam, nil
+}
+
+func (port *fakeIssuePort) SearchIssuesByTeam(
+	_ context.Context,
+	teamID string,
+	query string,
+	limit int,
+) (client.IssueList, error) {
+	port.searchCalls++
+	port.searchTeamID = teamID
+	port.searchQuery = query
+	port.searchLimit = limit
+
+	return port.searchList, port.searchErr
 }
 
 func (port *fakeIssuePort) ListNextIssuesByTeam(
@@ -234,6 +254,25 @@ func Test_runIssueCreate_dry_run_never_calls_the_port(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 0, port.createCalls)
 	require.Contains(t, stdout.String(), "Draft only")
+}
+
+func Test_runIssueSearch_reads_resolved_team_through_the_port(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeIssuePort{
+		resolved: client.ResolvedTarget{Team: client.TargetTeam{ID: "team-id"}},
+		searchList: client.IssueList{Issues: []client.IssueSummary{
+			clientIssue("LIT-13", "Search from port"),
+		}},
+	}
+
+	err := runIssueSearch(context.Background(), command, &rootOptions{}, port, "needle", 7)
+
+	require.NoError(t, err)
+	require.Equal(t, 1, port.searchCalls)
+	require.Equal(t, "team-id", port.searchTeamID)
+	require.Equal(t, "needle", port.searchQuery)
+	require.Equal(t, 7, port.searchLimit)
+	require.Contains(t, stdout.String(), "LIT-13 Search from port")
 }
 
 func Test_runIssueCreate_propagates_port_error(t *testing.T) {

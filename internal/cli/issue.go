@@ -302,36 +302,47 @@ func addIssueSearchCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "Search issues for the resolved team",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadIssueSearch,
-				issuePageWithItems,
-				writeIssue,
-			)
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+
+			return runIssueSearch(ctx, command, options, issueAdapterFor(runtime), args[0], limit)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
 	root.AddCommand(command)
 }
 
-func loadIssueSearch(
+func runIssueSearch(
 	ctx context.Context,
-	runtime commandRuntime,
-	args []string,
+	command *cobra.Command,
+	options *rootOptions,
+	searcher issueSearcher,
+	query string,
 	limit int,
-) (client.IssueList, []client.IssueSummary, error) {
-	issueReader := issueAdapterFor(runtime)
-	target, err := issueReader.ResolveTarget(ctx)
+) error {
+	target, err := searcher.ResolveTarget(ctx)
 	if err != nil {
-		return client.IssueList{}, nil, err
+		return err
 	}
-	issues, err := issueReader.SearchIssuesByTeam(ctx, target.Team.ID, args[0], limit)
+	issues, err := searcher.SearchIssuesByTeam(ctx, target.Team.ID, query, limit)
+	if err != nil {
+		return err
+	}
+	if err := ensureNonEmpty(options, len(issues.Issues)); err != nil {
+		return err
+	}
+	issues.Issues, err = sortByJSONField(issues.Issues, options.sortField, options.sortOrder)
+	if err != nil {
+		return err
+	}
+	if options.json {
+		annotateReadCollectionCommand(command, collectionKeyForPage[client.IssueList]())
+		return writeJSONValue(command, options, issues)
+	}
 
-	return issues, issues.Issues, err
+	return writeIssues(command, options, issues.Issues)
 }
 
 func addIssueFigmaFileKeySearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

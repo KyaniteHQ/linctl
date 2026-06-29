@@ -304,7 +304,7 @@ this branch state.
 | Implicit workspace switching (auto-pick org from repo) | The pinned target is the guarantee that writes land in the right org/team. Implicit switching silently breaks it and creates hard-to-diagnose mismatches. |
 | Hard delete for issues/projects | Archive is the safe cleanup path. Hard delete is irreversible; it needs a separate explicit design that doesn't exist, and the data-loss risk outweighs the benefit. |
 | Printing/logging token values | `doctor` deliberately reports `set`, not the value. Any path that could leak a token breaks the never-print-tokens rule. |
-| OAuth device flow as the *primary* auth | For an agent-first CLI, API-key auth is simpler and CI-stable (no browser redirect). OAuth can be a secondary path later if asked. |
+| Browser or device OAuth flow as the first OAuth cut | linctl's product auth model is OAuth app credentials, but an agent-first CLI should start with non-interactive app credentials before adding browser redirects. |
 | Watch/monitor polling loops | Adds process-lifecycle complexity; agents are better served calling explicit poll commands on their own schedule. Add only on real demand. |
 | Interactive TUI | Incompatible with agent use, which needs deterministic scriptable output; pulls in deps that complicate the output contract. |
 | OS keychain/keyring token storage | Adds platform-specific deps and complicates CI token flow. `LINCTL_TOKEN` env + `.linctl.toml` is simpler and more portable. |

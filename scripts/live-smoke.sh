@@ -61,7 +61,32 @@ PY
 (
   cd "$smoke_dir"
   "$binary" usage >/dev/null
-  target_json="$("$binary" target --json)"
+  target_output="$smoke_dir/target.json"
+  target_error="$smoke_dir/target.err"
+  if "$binary" target --json >"$target_output" 2>"$target_error"; then
+    target_json="$(<"$target_output")"
+  else
+    status=$?
+    target_code="$(python3 - "$target_error" <<'PY'
+import json
+import sys
+
+code = "UNKNOWN"
+with open(sys.argv[1], "r", encoding="utf-8") as error_file:
+    for line in error_file:
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict) and payload.get("error_code"):
+            code = payload["error_code"]
+            break
+print(code)
+PY
+)"
+    printf 'live smoke target preflight failed (%s): LINCTL_TEST_TOKEN must match LINCTL_TEST_ORG_ID, LINCTL_TEST_TEAM_KEY, LINCTL_TEST_TEAM_ID, and optional LINCTL_TEST_PROJECT_ID.\n' "$target_code" >&2
+    exit "$status"
+  fi
   org_url_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["org"]["url_key"])' <<<"$target_json")"
   team_id="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["team"]["id"])' <<<"$target_json")"
   team_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["team"]["key"])' <<<"$target_json")"

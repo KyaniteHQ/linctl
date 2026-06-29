@@ -86,6 +86,13 @@ type issueReader interface {
 	) (client.IssueList, error)
 }
 
+// issueSearcher is the port the issue search command depends on for resolved
+// team-scoped text search.
+type issueSearcher interface {
+	ResolveTarget(ctx context.Context) (client.ResolvedTarget, error)
+	SearchIssuesByTeam(ctx context.Context, teamID string, query string, limit int) (client.IssueList, error)
+}
+
 // nextIssuePicker is the port the next command depends on to read candidates
 // and start the selected issue after optional checkout.
 type nextIssuePicker interface {
