@@ -11,8 +11,13 @@ if [[ -z "$token" ]]; then
   exit 1
 fi
 
-if ! command -v npx >/dev/null 2>&1; then
-  printf 'npx (Node.js) is required to introspect the Linear schema\n' >&2
+if ! command -v node >/dev/null 2>&1; then
+  printf 'node is required to introspect the Linear schema\n' >&2
+  exit 1
+fi
+
+if [[ ! -d "$repo_root/node_modules/graphql" ]]; then
+  printf 'managed Node dependencies are missing: run npm ci before refreshing the schema\n' >&2
   exit 1
 fi
 
@@ -20,7 +25,7 @@ mkdir -p "$(dirname "$schema_path")"
 tmp_schema="$(mktemp)"
 trap 'rm -f "$tmp_schema"' EXIT
 
-npx --yes --package graphql@16.14.2 node >"$tmp_schema" <<'NODE'
+(cd "$repo_root" && node >"$tmp_schema" <<'NODE'
 const { buildClientSchema, getIntrospectionQuery, printSchema } = require("graphql");
 
 async function main() {
@@ -35,11 +40,11 @@ async function main() {
   });
   const responseBody = await response.text();
   if (!response.ok) {
-    throw new Error(`Linear schema request failed (${response.status}): ${responseBody}`);
+    throw new Error(`Linear schema request failed with HTTP ${response.status}`);
   }
   const payload = JSON.parse(responseBody);
   if (payload.errors && payload.errors.length > 0) {
-    throw new Error(`Linear schema introspection failed: ${JSON.stringify(payload.errors)}`);
+    throw new Error("Linear schema introspection returned GraphQL errors");
   }
   process.stdout.write(printSchema(buildClientSchema(payload.data)));
   process.stdout.write("\n");
@@ -50,5 +55,6 @@ main().catch((error) => {
   process.exit(1);
 });
 NODE
+)
 
 mv "$tmp_schema" "$schema_path"

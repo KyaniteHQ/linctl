@@ -18,11 +18,26 @@ go run github.com/go-task/task/v3/cmd/task@latest ci
 go run github.com/go-task/task/v3/cmd/task@latest coverage
 ```
 
-`task ci` also verifies `docs/linear-api-coverage.md` against the upstream Linear SDK checkout.
-Clone or refresh that checkout at `/tmp/linear-sdk-source` before running the full gate:
+`task ci` also validates local GraphQL operations and `docs/linear-api-coverage.md`
+against the upstream Linear SDK checkout. The shared source contract is:
+
+- Remote: `https://github.com/linear/linear.git`
+- Default checkout: `/tmp/linctl-upstream-linear`
+- Default ref: `master`
+- Override path: `LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear`
+- Override ref: `LINCTL_LINEAR_SDK_REF=<branch-or-tag>`
+
+Prepare or refresh the default checkout with:
 
 ```bash
-git clone https://github.com/linear/linear.git /tmp/linear-sdk-source
+go run github.com/go-task/task/v3/cmd/task@latest linear-sdk-upstream-checkout
+```
+
+If the default path is unavailable, use an override:
+
+```bash
+LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear \
+go run github.com/go-task/task/v3/cmd/task@latest coverage-ledger-check
 ```
 
 Run live integration tests only with a disposable OAuth app fixture:
@@ -58,11 +73,15 @@ be archived during cleanup.
 Refresh the vendored Linear schema before adding or changing GraphQL operations:
 
 ```bash
+npm ci
 ./scripts/refresh-schema.sh
 go generate ./...
 ```
 
-Generated code must be committed with the operation that requires it.
+`scripts/refresh-schema.sh` uses the repo-managed `graphql` dependency from
+`package-lock.json`. Set `LINCTL_OAUTH_ACCESS_TOKEN` for the command, but never
+print or paste the token value into logs. Generated code must be committed with
+the operation that requires it.
 
 ## Releases
 

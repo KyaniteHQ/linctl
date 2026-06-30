@@ -49,7 +49,7 @@ type domainReference struct {
 	OperationName string
 }
 
-const defaultUpstreamDir = "/tmp/linear-sdk-source"
+const defaultUpstreamDir = "/tmp/linctl-upstream-linear"
 
 func main() {
 	upstreamDir := flag.String("upstream", defaultUpstreamDir, "upstream linear repo checkout")
@@ -134,11 +134,15 @@ func writeHeader(output *bytes.Buffer, upstreamDir string, upstreamSchemaPath st
 	fmt.Fprintf(output, "- Upstream schema roots: `%s`\n", schemaRel)
 	fmt.Fprintf(output, "- Local generated operations: `internal/client/generated.go`\n")
 	fmt.Fprintf(output, "- Local GraphQL operations: `internal/client/operations/*.graphql`\n")
-	fmt.Fprintf(output, "- Repo domain map: `docs/domain-map.md`\n\n")
+	fmt.Fprintf(output, "- Public CLI commands: Cobra command inventory enriched by `docs/domain-map.md`\n\n")
 	fmt.Fprintf(
 		output,
-		"Statuses: `implemented`, `accepted_gap`, `safe_candidate`, "+
-			"`blocked_needs_design`, `intentionally_excluded`.\n\n",
+		"Status vocabulary is surface-specific: upstream SDK/root tables use `generated_operation` "+
+			"for local GraphQL operation coverage, local operation rows use `generated`, and "+
+			"public CLI rows use `public_command` or `guarded_write_command` only when a "+
+			"registered command exposes the operation. Generated operations alone are not "+
+			"counted as public CLI coverage. Planning statuses remain `accepted_gap`, "+
+			"`safe_candidate`, `blocked_needs_design`, and `intentionally_excluded`.\n\n",
 	)
 }
 
@@ -157,39 +161,39 @@ func writeSummary(
 	implementedMutationCount := countImplemented(mutations, implementedRoots)
 
 	fmt.Fprintf(output, "## Summary\n\n")
-	fmt.Fprintf(output, "| Surface | Total | Implemented/root-backed | Classified |\n")
+	fmt.Fprintf(output, "| Surface | Total | Covered/exposed | Classified |\n")
 	fmt.Fprintf(output, "| --- | ---: | ---: | ---: |\n")
 	fmt.Fprintf(
 		output,
-		"| Upstream SDK root methods | %d | %d | %d |\n",
+		"| Upstream SDK root methods with generated local operations | %d | %d | %d |\n",
 		len(sdkMethods),
 		countImplementedSDK(sdkMethods, implementedRoots),
 		len(sdkMethods),
 	)
 	fmt.Fprintf(
 		output,
-		"| Upstream Query root fields | %d | %d | %d |\n",
+		"| Upstream Query root fields used by generated local operations | %d | %d | %d |\n",
 		len(queries),
 		implementedQueryCount,
 		len(queries),
 	)
 	fmt.Fprintf(
 		output,
-		"| Upstream Mutation root fields | %d | %d | %d |\n",
+		"| Upstream Mutation root fields used by generated local operations | %d | %d | %d |\n",
 		len(mutations),
 		implementedMutationCount,
 		len(mutations),
 	)
 	fmt.Fprintf(
 		output,
-		"| Local generated Go operations | %d | %d | %d |\n",
+		"| Local generated Go operations declared in GraphQL files | %d | %d | %d |\n",
 		len(localGenerated),
 		len(localGenerated),
 		len(localGenerated),
 	)
 	fmt.Fprintf(
 		output,
-		"| Domain-map commands | %d | %d | %d |\n\n",
+		"| Public CLI commands from command inventory | %d | %d | %d |\n\n",
 		len(domainCommands),
 		countImplementedDomain(domainCommands, commandInventory, implementedRoots, operationRoots),
 		len(domainCommands),
@@ -232,7 +236,7 @@ func writeLocalOperationsTable(output *bytes.Buffer, operations []localOperation
 		status := "accepted_gap"
 		evidence := "operation is declared but generated function not found"
 		if localOperationNames[operation.Name] {
-			status = "implemented"
+			status = "generated"
 			evidence = "`internal/client/generated.go`"
 		}
 		fmt.Fprintf(
@@ -290,7 +294,7 @@ func classifyDomainLedgerCommand(
 	if commandInfo, ok := commandInventory[command.Command]; ok {
 		status, evidence = classifyDomainCommand(commandInfo, implementedRoots, operationRoots)
 	}
-	if status == "implemented" {
+	if status == "public_command" || status == "guarded_write_command" {
 		return status, evidence
 	}
 	if domainCommandBlocked(command.Command) {
@@ -323,18 +327,25 @@ func classifyDomainCommand(
 ) (string, string) {
 	references := commandGraphQLReferences(command)
 	if len(references) == 0 {
-		return "implemented", "`linctl --help` / public CLI tests; no direct GraphQL root in backing"
+		return "public_command", "`linctl --help` / public CLI tests; no direct GraphQL root in backing"
 	}
 	for _, reference := range references {
 		if implementedRoots[reference.RootKey] {
-			return "implemented", "`linctl --help`, `docs/domain-map.md`, and local GraphQL root"
+			return commandCoverageStatus(command), "`linctl --help`, `docs/domain-map.md`, and local GraphQL root"
 		}
 		for _, key := range operationRoots[reference.OperationName] {
 			if implementedRoots[key] {
-				return "implemented", "`linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root"
+				return commandCoverageStatus(command), "`linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root"
 			}
 		}
 	}
 
 	return "accepted_gap", "public command exists, but domain-map backing is not matched to local GraphQL roots"
+}
+
+func commandCoverageStatus(command cli.CommandInfo) string {
+	if command.Safety == cli.CommandSafetyWrite {
+		return "guarded_write_command"
+	}
+	return "public_command"
 }

@@ -1,0 +1,9 @@
+{
+  "name": "linctl-maintenance",
+  "private": true,
+  "description": "Maintenance tooling dependencies for linctl.",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "graphql": "16.14.2"
+  }
+}
