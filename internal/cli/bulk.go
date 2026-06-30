@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
@@ -94,6 +95,26 @@ func runIssueImport(
 	path string,
 	dryRun bool,
 ) error {
+	if dryRun {
+		format, err := dataFormat(path)
+		if err != nil {
+			return err
+		}
+		rows, err := parseImportFile(format, path)
+		if err != nil {
+			return err
+		}
+		pinnedTeamKey, err := importDryRunTeamKey(ctx, options)
+		if err != nil {
+			return err
+		}
+		requests, err := buildImportRequests(rows, pinnedTeamKey)
+		if err != nil {
+			return err
+		}
+
+		return writeImportPreview(command, options, requests)
+	}
 	runtime, err := buildCommandRuntime(ctx, options)
 	if err != nil {
 		return err
@@ -110,11 +131,26 @@ func runIssueImport(
 	if err != nil {
 		return err
 	}
-	if dryRun {
-		return writeImportPreview(command, options, requests)
-	}
 
 	return createImportedIssues(ctx, command, options, issueAdapterFor(runtime), requests)
+}
+
+func importDryRunTeamKey(ctx context.Context, options *rootOptions) (string, error) {
+	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
+		GlobalPath:      defaultGlobalConfigPath(),
+		RepoPath:        ".linctl.toml",
+		ProfileOverride: options.profile,
+		TargetOverride:  targetOverride(options),
+	})
+	if err != nil {
+		return "", err
+	}
+	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
+	if strings.TrimSpace(resolvedConfig.Target.TeamKey) == "" {
+		return "", fmt.Errorf("%w: set team_key in .linctl.toml", client.ErrTargetNotConfigured)
+	}
+
+	return resolvedConfig.Target.TeamKey, nil
 }
 
 // bulkIssueCreator is the narrow Command Port the import create loop depends on.

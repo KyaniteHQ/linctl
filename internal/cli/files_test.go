@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
@@ -38,6 +39,21 @@ func (doer *fakeHTTPDoer) Do(request *http.Request) (*http.Response, error) {
 	}
 
 	return &http.Response{StatusCode: doer.status, Body: body}, nil
+}
+
+type recordingGraphQLClient struct {
+	client commandFlowFakeClient
+	calls  []string
+}
+
+func (client *recordingGraphQLClient) MakeRequest(
+	ctx context.Context,
+	request *graphql.Request,
+	response *graphql.Response,
+) error {
+	client.calls = append(client.calls, request.OpName)
+
+	return client.client.MakeRequest(ctx, request, response)
 }
 
 type errorReader struct{}
@@ -184,6 +200,29 @@ func Test_Files_upload_reports_mutation_error(t *testing.T) {
 
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "prepare file upload")
+}
+
+func Test_Files_upload_target_mismatch_stops_before_file_upload_and_put(t *testing.T) {
+	graphqlClient := &recordingGraphQLClient{client: commandFlowFakeClient{}}
+	doer := &fakeHTTPDoer{status: http.StatusOK}
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		runtime := testCommandRuntime(graphqlClient)
+		runtime.config.Target.OrgID = "other-org"
+		runtime.fileClient = doer
+		return runtime, nil
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"files", "upload", writeUploadFile(t)})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.ErrorIs(t, err, client.ErrTargetMismatch)
+	require.NotContains(t, graphqlClient.calls, "fileUpload")
+	require.Nil(t, doer.requestContext)
 }
 
 func Test_Files_upload_reports_put_failure(t *testing.T) {

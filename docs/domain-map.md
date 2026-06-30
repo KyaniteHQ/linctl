@@ -267,7 +267,7 @@ Planned commands:
 | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only |
 | `issue open` | `Query.issue` resolves `Issue.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only |
 | `issue export` | `Query.issue` (`GetIssueDetail`), `Issue.comments`, and `Issue.attachments` are assembled into a single markdown file (`<DIR>/<identifier>.md`) holding the metadata header, description, comments, and attachment URLs; capped at 250 comments/attachments with a stderr note when more pages exist | Read-only, writes only local files |
-| `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` renders the normalized rows locally and performs no mutation | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing |
+| `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` loads only local config, renders the normalized rows locally, and performs no auth, network, or mutation setup | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing |
 | `issue bulk-export` | `Query.team`/`Team.issues` (`ListIssuesByTeam`) for the resolved team are written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file |
 | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only |
 | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only |
@@ -1103,7 +1103,7 @@ Only `emoji list` and `emoji get` are implemented in the current CLI. Emoji writ
 
 ## File
 
-Use `File` for raw asset upload/download. A file upload produces a raw Linear asset URL; it is not a target-pinned write because a raw asset has no team or project. The asset URL is attached to an issue or project through the guarded attachment commands.
+Use `File` for raw asset upload/download. A file upload produces a raw Linear asset URL. `files upload` first proves the active credential matches the pinned target, then prepares the upload target and writes the bytes to storage.
 
 Schema backing:
 
@@ -1115,10 +1115,10 @@ Command status:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Raw Linear asset, not target-pinned; prints the asset URL for a later guarded attachment write |
+| `files upload` | Target resolution, `Mutation.fileUpload`, then an HTTP PUT of the bytes to the pre-signed URL | Guarded by the pinned target before upload preparation; prints the asset URL for a later guarded attachment write |
 | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token |
 
-`files upload PATH` infers the content type from the file extension (overridable with `--content-type`), calls `fileUpload` for a pre-signed target, PUTs the bytes with the returned headers, and prints `UploadFile.assetUrl`. `files download URL --output PATH` performs an unauthenticated GET and writes the body to the path; it is meant for public or signed asset URLs.
+`files upload PATH` validates the local file, infers the content type from the file extension (overridable with `--content-type`), proves the active credential matches the pinned target, calls `fileUpload` for a pre-signed target, PUTs the bytes with the returned headers, and prints `UploadFile.assetUrl`. `files download URL --output PATH` performs an unauthenticated GET and writes the body to the path; it is meant for public or signed asset URLs.
 
 ## Attachment
 

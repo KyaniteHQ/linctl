@@ -108,6 +108,9 @@ func runFileUpload(
 	if contentType == "" {
 		contentType = inferContentType(path)
 	}
+	if _, err := runtime.resolveTarget(ctx); err != nil {
+		return err
+	}
 	upload, err := client.PrepareFileUpload(
 		ctx,
 		runtime.graphqlClient,

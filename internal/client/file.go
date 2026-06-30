@@ -24,10 +24,7 @@ type FileUpload struct {
 	Headers     []FileUploadHeader `json:"headers"`
 }
 
-// PrepareFileUpload asks Linear for a pre-signed upload target for a file. It is
-// an organization asset operation, not a target-pinned write: the returned
-// asset URL is attached to an issue or project through the existing guarded
-// attachment commands.
+// PrepareFileUpload asks Linear for a pre-signed upload target for a file.
 func PrepareFileUpload(
 	ctx context.Context,
 	graphqlClient graphql.Client,
