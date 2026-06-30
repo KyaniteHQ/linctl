@@ -94,6 +94,29 @@ Two things to know when parsing `target --json`:
   `ProjectID`), not the snake_case used elsewhere — they mirror the config struct. Compare them
   field by field to explain a target mismatch.
 
+## Auth
+
+`auth app` · `auth login --callback ...` · `auth status` · `auth refresh` → **AuthStatus**:
+
+```json
+{
+  "app": { "client_id": "set", "client_secret": "set", "redirect_uri": "...", "scopes": ["read"] },
+  "token": { "status": "set", "type": "Bearer", "expires_at": "...", "scopes": ["read"] },
+  "actor": "app",
+  "scopes": ["read"],
+  "expires_at": "...",
+  "token_type": "Bearer",
+  "target": {
+    "status": "ready",
+    "expected": { "org_id": "...", "team_key": "LIT", "team_id": "...", "project_id": "..." },
+    "resolved": { "org_id": "...", "team_key": "LIT", "team_id": "...", "project_id": "..." }
+  }
+}
+```
+
+Auth readiness succeeds only after linctl proves the token actor, token scopes, and pinned target.
+App config and token material are reported as `set` or `missing`; secret values are never printed.
+
 ## Usage
 
 `usage` · `issue usage` · `project usage` → `{ "topic": string, "text": string }`
@@ -116,6 +139,12 @@ error), so an agent can branch on a stable code instead of parsing prose:
 - `INVALID_WRITE` — the write request was rejected before any API call (missing/!valid input).
 - `GRAPHQL_ERROR` — the GraphQL request itself failed.
 - `NOT_FOUND` — the referenced entity was not found.
+- `AUTH_TARGET_MISMATCH` — OAuth readiness could not prove the token can access the pinned target.
+- `AUTH_ACTOR_MISMATCH` — OAuth readiness could not prove the expected actor.
+- `MISSING_SCOPE` — OAuth token state does not include every configured required scope.
+- `AUTH_NOT_CONFIGURED` — required OAuth app or token state is missing.
+- `REAUTH_REQUIRED` — the saved OAuth state cannot be refreshed without a new login.
+- `AUTH_REFRESH_FAILED` — Linear rejected or failed an OAuth refresh request.
 - `INTERNAL` — any other error (config, unknown command, decode, etc.).
 
 Read the JSON line from stderr; the human-readable line follows it on stderr too.

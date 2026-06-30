@@ -216,6 +216,49 @@ func Test_AuthApp_reports_missing_client_configuration(t *testing.T) {
 	})
 }
 
+func Test_AuthApp_passes_root_timeout_to_oauth_client_factory(t *testing.T) {
+	paths := cliAuthTestPaths(t)
+	require.NoError(t, auth.NewStore(paths).SaveAppConfig(context.Background(), "", auth.AppConfig{
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+		Scopes:       []string{"read"},
+	}))
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"oauth-access-token",
+		"",
+		"Bearer",
+		time.Now().Add(time.Hour),
+		[]string{"read"},
+	)}
+	fakeReadiness := &fakeAuthReadinessChecker{report: readyAuthReport("app")}
+	restorePaths := useAuthPaths(t, paths)
+	defer restorePaths()
+	originalOAuthClient := newAuthOAuthClient
+	originalReadiness := checkAuthReadiness
+	var gotTimeout time.Duration
+	newAuthOAuthClient = func(timeout time.Duration) authOAuthClient {
+		gotTimeout = timeout
+		return fakeOAuth
+	}
+	checkAuthReadiness = fakeReadiness.check
+	defer func() {
+		checkAuthReadiness = originalReadiness
+		newAuthOAuthClient = originalOAuthClient
+	}()
+
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+		"--timeout", "7s",
+		"--org", "org-id",
+		"--team", "LIT",
+		"--team-id", "team-id",
+		"auth",
+		"app",
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, 7*time.Second, gotTimeout)
+}
+
 func Test_AuthApp_quiet_and_human_output(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -851,6 +894,45 @@ func Test_AuthReadiness_and_status_helpers(t *testing.T) {
 		require.Equal(t, string(auth.ErrorCodeActorMismatch), errorCode(err))
 	})
 
+	t.Run("expected actor without proven actor fails closed", func(t *testing.T) {
+		restore := useAuthCommandHooks(
+			t,
+			cliAuthTestPaths(t),
+			&fakeOAuthTokenClient{},
+			&fakeAuthReadinessChecker{report: authReadinessReport{}},
+		)
+		defer restore()
+
+		_, err := requireAuthReadiness(context.Background(), authReadinessRequest{
+			AccessToken:   "access-token",
+			ExpectedActor: "app",
+		})
+
+		require.Error(t, err)
+		require.Equal(t, string(auth.ErrorCodeActorMismatch), errorCode(err))
+	})
+
+	t.Run("missing required scope fails readiness", func(t *testing.T) {
+		restore := useAuthCommandHooks(
+			t,
+			cliAuthTestPaths(t),
+			&fakeOAuthTokenClient{},
+			&fakeAuthReadinessChecker{report: readyAuthReport("app")},
+		)
+		defer restore()
+
+		_, err := requireAuthReadiness(context.Background(), authReadinessRequest{
+			AccessToken:    "access-token",
+			TokenActor:     "app",
+			TokenScopes:    []string{"read"},
+			ExpectedActor:  "app",
+			RequiredScopes: []string{"read", "write"},
+		})
+
+		require.Error(t, err)
+		require.Equal(t, string(auth.ErrorCodeMissingScope), errorCode(err))
+	})
+
 	t.Run("readiness error mapping", func(t *testing.T) {
 		authErr := auth.NewError(auth.ErrorCodeNotConfigured, "missing")
 		require.Same(t, authErr, mapAuthReadinessError(authErr))
@@ -931,6 +1013,8 @@ func Test_AuthReadiness_and_status_helpers(t *testing.T) {
 
 		report, err := defaultCheckAuthReadiness(context.Background(), authReadinessRequest{
 			AccessToken:   "access-token",
+			TokenActor:    "app",
+			TokenScopes:   []string{"read"},
 			ExpectedActor: "app",
 			ExpectedTarget: config.Target{
 				OrgID:   "org-id",

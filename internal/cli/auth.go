@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"slices"
 	"strings"
@@ -37,8 +38,8 @@ var (
 			Timeout: timeout,
 		})
 	}
-	newAuthOAuthClient = func() authOAuthClient {
-		return oauth.NewClient(oauth.ClientConfig{})
+	newAuthOAuthClient = func(timeout time.Duration) authOAuthClient {
+		return oauth.NewClient(oauth.ClientConfig{HTTPClient: newOAuthHTTPClient(timeout)})
 	}
 )
 
@@ -78,6 +79,8 @@ type authLogoutFlags struct {
 
 type authReadinessRequest struct {
 	AccessToken    string
+	TokenActor     string
+	TokenScopes    []string
 	ExpectedTarget config.Target
 	ExpectedActor  string
 	RequiredScopes []string
@@ -148,7 +151,7 @@ func addAuthConfigureCommand(ctx context.Context, root *cobra.Command, options *
 		Short: "Save OAuth app client configuration",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			paths, err := authDefaultPaths(nil)
+			authContext, err := loadAuthProfileContext(ctx, command, options)
 			if err != nil {
 				return err
 			}
@@ -161,7 +164,7 @@ func addAuthConfigureCommand(ctx context.Context, root *cobra.Command, options *
 				RedirectURI:  strings.TrimSpace(flags.redirectURI),
 				Scopes:       normalizedScopes(flags.scopes),
 			}
-			if err := auth.NewStore(paths).SaveAppConfig(ctx, options.profile, app); err != nil {
+			if err := authContext.store.SaveAppConfig(ctx, authContext.profile, app); err != nil {
 				return err
 			}
 			if options.quiet {
@@ -252,6 +255,8 @@ func addAuthStatusCommand(ctx context.Context, root *cobra.Command, options *roo
 
 			readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
 				AccessToken:    token.AccessToken,
+				TokenActor:     token.Actor,
+				TokenScopes:    token.Scopes,
 				ExpectedTarget: authContext.target,
 				ExpectedActor:  firstNonEmptyString(token.Actor, appActor),
 				RequiredScopes: requiredScopes(app),
@@ -308,7 +313,7 @@ func addAuthLogoutCommand(ctx context.Context, root *cobra.Command, options *roo
 			revoked, revocationFailed := revokeTokenState(
 				ctx,
 				authContext.log(),
-				newAuthOAuthClient(),
+				newAuthOAuthClient(options.timeout),
 				authContext.token,
 			)
 			if err := authContext.store.ClearTokenState(ctx, authContext.profile); err != nil {
@@ -362,6 +367,28 @@ func loadAuthCommandContext(
 	command *cobra.Command,
 	options *rootOptions,
 ) (authCommandContext, error) {
+	authContext, err := loadAuthProfileContext(ctx, command, options)
+	if err != nil {
+		return authCommandContext{}, err
+	}
+	session, err := auth.SelectSession(ctx, auth.SessionRequest{
+		Store:   authContext.store,
+		Profile: authContext.profile,
+	})
+	if err != nil {
+		return authCommandContext{}, err
+	}
+	authContext.app = session.App
+	authContext.token = session.Token
+
+	return authContext, nil
+}
+
+func loadAuthProfileContext(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+) (authCommandContext, error) {
 	paths, err := authDefaultPaths(nil)
 	if err != nil {
 		return authCommandContext{}, err
@@ -378,21 +405,12 @@ func loadAuthCommandContext(
 	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
 
 	store := auth.NewStore(paths)
-	session, err := auth.SelectSession(ctx, auth.SessionRequest{
-		Store:   store,
-		Profile: resolvedConfig.Profile,
-	})
-	if err != nil {
-		return authCommandContext{}, err
-	}
 
 	return authCommandContext{
 		paths:   paths,
 		store:   store,
 		profile: resolvedConfig.Profile,
 		target:  resolvedConfig.Target,
-		app:     session.App,
-		token:   session.Token,
 		logger:  authDiagnosticLogger(command, options),
 	}, nil
 }
@@ -455,12 +473,14 @@ func acquireClientCredentialsToken(
 	timeout time.Duration,
 ) (auth.TokenState, authReadinessReport, error) {
 	scopes := requiredScopes(app)
-	token, err := exchangeClientCredentialsToken(ctx, newAuthOAuthClient(), app)
+	token, err := exchangeClientCredentialsToken(ctx, newAuthOAuthClient(timeout), app)
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
 	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
 		AccessToken:    token.AccessToken,
+		TokenActor:     token.Actor,
+		TokenScopes:    token.Scopes,
 		ExpectedTarget: authContext.target,
 		ExpectedActor:  appActor,
 		RequiredScopes: scopes,
@@ -510,12 +530,14 @@ func refreshAuthTokenState(
 	}
 
 	scopes := requiredScopes(app)
-	refreshed, err := refreshAuthorizationCodeToken(ctx, newAuthOAuthClient(), app, token, scopes)
+	refreshed, err := refreshAuthorizationCodeToken(ctx, newAuthOAuthClient(timeout), app, token, scopes)
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
 	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
 		AccessToken:    refreshed.AccessToken,
+		TokenActor:     refreshed.Actor,
+		TokenScopes:    refreshed.Scopes,
 		ExpectedTarget: authContext.target,
 		ExpectedActor:  firstNonEmptyString(token.Actor, appActor),
 		RequiredScopes: scopes,
@@ -628,7 +650,10 @@ func requireAuthReadiness(ctx context.Context, request authReadinessRequest) (au
 	if err != nil {
 		return authReadinessReport{}, mapAuthReadinessError(err)
 	}
-	if request.ExpectedActor != "" && readiness.Actor != "" && readiness.Actor != request.ExpectedActor {
+	if err := requireScopes(request.TokenScopes, request.RequiredScopes); err != nil {
+		return authReadinessReport{}, err
+	}
+	if request.ExpectedActor != "" && readiness.Actor != request.ExpectedActor {
 		return authReadinessReport{}, auth.NewError(
 			auth.ErrorCodeActorMismatch,
 			fmt.Sprintf("expected actor %q but resolved %q", request.ExpectedActor, readiness.Actor),
@@ -697,7 +722,11 @@ func defaultCheckAuthReadiness(ctx context.Context, request authReadinessRequest
 		return authReadinessReport{}, err
 	}
 
-	return authReadinessReport{Actor: request.ExpectedActor, Target: target}, nil
+	return authReadinessReport{Actor: request.TokenActor, Target: target}, nil
+}
+
+func newOAuthHTTPClient(timeout time.Duration) *http.Client {
+	return &http.Client{Timeout: timeout}
 }
 
 func mapAuthReadinessError(err error) error {
