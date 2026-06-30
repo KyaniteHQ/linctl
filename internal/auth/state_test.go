@@ -535,6 +535,7 @@ func Test_DefaultPaths_use_os_config_and_state_locations(t *testing.T) {
 	case "windows":
 		env["APPDATA"] = root
 		env["LOCALAPPDATA"] = filepath.Join(root, "local")
+		wantAppConfigPath = filepath.Join(root, "linctl", appConfigFileName)
 		wantTokenPath = filepath.Join(root, "local", "linctl", tokenFileName)
 	default:
 		env["XDG_CONFIG_HOME"] = filepath.Join(root, "config")
