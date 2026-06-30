@@ -96,24 +96,7 @@ func runIssueImport(
 	dryRun bool,
 ) error {
 	if dryRun {
-		format, err := dataFormat(path)
-		if err != nil {
-			return err
-		}
-		rows, err := parseImportFile(format, path)
-		if err != nil {
-			return err
-		}
-		pinnedTeamKey, err := importDryRunTeamKey(ctx, options)
-		if err != nil {
-			return err
-		}
-		requests, err := buildImportRequests(rows, pinnedTeamKey)
-		if err != nil {
-			return err
-		}
-
-		return writeImportPreview(command, options, requests)
+		return runIssueImportDryRun(ctx, command, options, path)
 	}
 	runtime, err := buildCommandRuntime(ctx, options)
 	if err != nil {
@@ -133,6 +116,32 @@ func runIssueImport(
 	}
 
 	return createImportedIssues(ctx, command, options, issueAdapterFor(runtime), requests)
+}
+
+func runIssueImportDryRun(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	path string,
+) error {
+	format, err := dataFormat(path)
+	if err != nil {
+		return err
+	}
+	rows, err := parseImportFile(format, path)
+	if err != nil {
+		return err
+	}
+	pinnedTeamKey, err := importDryRunTeamKey(ctx, options)
+	if err != nil {
+		return err
+	}
+	requests, err := buildImportRequests(rows, pinnedTeamKey)
+	if err != nil {
+		return err
+	}
+
+	return writeImportPreview(command, options, requests)
 }
 
 func importDryRunTeamKey(ctx context.Context, options *rootOptions) (string, error) {

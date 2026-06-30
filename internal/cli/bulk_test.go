@@ -36,20 +36,18 @@ func writeImportFile(t *testing.T, name string, content string) string {
 	return path
 }
 
-func writeImportDryRunConfig(t *testing.T, content string) string {
+func writeImportDryRunConfig(t *testing.T, content string) {
 	t.Helper()
 	dir := t.TempDir()
 	t.Chdir(dir)
 	configureTestAuthEnvironment(t)
 	require.NoError(t, os.WriteFile(".linctl.toml", []byte(content), 0o600))
-
-	return dir
 }
 
-func writePinnedImportDryRunConfig(t *testing.T) string {
+func writePinnedImportDryRunConfig(t *testing.T) {
 	t.Helper()
 
-	return writeImportDryRunConfig(t, `
+	writeImportDryRunConfig(t, `
 [target]
 org_id = "org-id"
 team_key = "LIT"
