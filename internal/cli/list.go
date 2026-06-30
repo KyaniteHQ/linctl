@@ -135,7 +135,7 @@ func addChildListCommand[List any, Item any](
 	fetch func(commandRuntime, string, int) (List, error),
 	count func(List) int,
 	sortList func(List) (List, error),
-	writeItem func(*cobra.Command, Item) error,
+	writeItem readListItemWriter[Item],
 	items func(List) []Item,
 ) {
 	limit := 50
@@ -163,7 +163,7 @@ func addChildListCommand[List any, Item any](
 				return writeJSONValue(command, options, list)
 			}
 			for _, item := range items(list) {
-				if err := writeItem(command, item); err != nil {
+				if err := writeItem(command, options, item); err != nil {
 					return err
 				}
 			}

@@ -80,7 +80,7 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 			Timeout:     options.timeout,
 			Persist:     authSession.PersistentToken,
 			Logger:      logger,
-			OAuthClient: newAuthOAuthClient(),
+			OAuthClient: newAuthOAuthClient(options.timeout),
 			NewClient: func(accessToken string) graphql.Client {
 				return client.NewTransport(client.TransportConfig{
 					Token:            client.OAuthAccessToken(accessToken),
@@ -129,7 +129,7 @@ func newRecoveringGraphQLClient(config recoveringGraphQLClientConfig) *recoverin
 	}
 	oauthClient := config.OAuthClient
 	if oauthClient == nil {
-		oauthClient = newAuthOAuthClient()
+		oauthClient = newAuthOAuthClient(config.Timeout)
 	}
 	logger := config.Logger
 	if logger == nil {

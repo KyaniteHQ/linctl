@@ -51,6 +51,7 @@ func Test_AuthLogin_builds_authorization_url_with_app_actor_by_default(t *testin
 	require.Equal(t, "challenge-123", query.Get("code_challenge"))
 	require.Equal(t, "S256", query.Get("code_challenge_method"))
 	require.Equal(t, "app", query.Get("actor"))
+	require.Equal(t, "consent", query.Get("prompt"))
 }
 
 func Test_AuthLogin_builds_authorization_url_with_user_actor(t *testing.T) {

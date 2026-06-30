@@ -46,11 +46,11 @@ query Teams($first: Int, $after: String, $includeArchived: Boolean) {
   }
 }
 
-query TargetProject($id: String!) {
+query TargetProject($id: String!, $first: Int, $after: String) {
   project(id: $id) {
     id
     name
-    teams(first: 50) {
+    teams(first: $first, after: $after) {
       nodes {
         id
         key
@@ -60,6 +60,10 @@ query TargetProject($id: String!) {
           name
           urlKey
         }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }

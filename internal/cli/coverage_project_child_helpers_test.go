@@ -28,7 +28,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 		options     rootOptions
 		fetch       func(commandRuntime, string, int) (list, error)
 		sortList    func(list) (list, error)
-		writeItem   func(*cobra.Command, item) error
+		writeItem   readListItemWriter[item]
 		requirement func(*testing.T, string, error)
 	}{
 		{
@@ -39,7 +39,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			sortList: func(value list) (list, error) {
 				return value, nil
 			},
-			writeItem: func(*cobra.Command, item) error {
+			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
@@ -55,7 +55,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			sortList: func(value list) (list, error) {
 				return value, nil
 			},
-			writeItem: func(*cobra.Command, item) error {
+			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
@@ -72,7 +72,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			sortList: func(value list) (list, error) {
 				return value, nil
 			},
-			writeItem: func(*cobra.Command, item) error {
+			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
@@ -88,7 +88,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			sortList: func(list) (list, error) {
 				return list{}, errors.New("sort failed")
 			},
-			writeItem: func(*cobra.Command, item) error {
+			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
@@ -105,7 +105,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			sortList: func(value list) (list, error) {
 				return value, nil
 			},
-			writeItem: func(*cobra.Command, item) error {
+			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, output string, err error) {
@@ -121,7 +121,7 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			sortList: func(value list) (list, error) {
 				return value, nil
 			},
-			writeItem: func(*cobra.Command, item) error {
+			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return errors.New("write failed")
 			},
 			requirement: func(t *testing.T, _ string, err error) {
@@ -217,6 +217,78 @@ func Test_ProjectHistoryWriter_covers_output_modes(t *testing.T) {
 
 			require.NoError(t, err)
 			if test.options.json {
+				require.JSONEq(t, test.expected, output.String())
+				return
+			}
+			require.Equal(t, test.expected, output.String())
+		})
+	}
+}
+
+func Test_CommandFlows_project_child_lists_route_output_policy(t *testing.T) {
+	tests := []struct {
+		name       string
+		args       []string
+		expected   string
+		assertJSON bool
+	}{
+		{
+			name:       "members json emits page object",
+			args:       []string{"--json", "project", "members", "project-id", "--limit", "1"},
+			expected:   `{"project_id":"project-id","project_name":"Detail project","members":[{"id":"user-id","name":"omer","display_name":"Omer","email":"omer@example.com"}],"has_next_page":false}`,
+			assertJSON: true,
+		},
+		{
+			name:     "members quiet emits nothing",
+			args:     []string{"--quiet", "project", "members", "project-id", "--limit", "1"},
+			expected: "",
+		},
+		{
+			name:     "members id-only emits ids",
+			args:     []string{"--id-only", "project", "members", "project-id", "--limit", "1"},
+			expected: "user-id\n",
+		},
+		{
+			name:     "members human output",
+			args:     []string{"project", "members", "project-id", "--limit", "1"},
+			expected: "user-id Omer\n",
+		},
+		{
+			name:       "updates json emits page object",
+			args:       []string{"--json", "project", "updates", "project-id", "--limit", "1"},
+			expected:   `{"project_id":"project-id","project_name":"Detail project","updates":[{"id":"project-update-id","health":"onTrack","created_at":"2026-06-19T12:00:00Z","updated_at":"2026-06-19T12:00:00Z","url":"https://linear.app/project-update/project-update-id","user_id":"user-id","name":"omer","display_name":"Omer"}],"has_next_page":false}`,
+			assertJSON: true,
+		},
+		{
+			name:     "updates quiet emits nothing",
+			args:     []string{"--quiet", "project", "updates", "project-id", "--limit", "1"},
+			expected: "",
+		},
+		{
+			name:     "updates id-only emits ids",
+			args:     []string{"--id-only", "project", "updates", "project-id", "--limit", "1"},
+			expected: "project-update-id\n",
+		},
+		{
+			name:     "updates human output",
+			args:     []string{"project", "updates", "project-id", "--limit", "1"},
+			expected: "project-update-id onTrack Omer\n",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			if test.assertJSON {
 				require.JSONEq(t, test.expected, output.String())
 				return
 			}

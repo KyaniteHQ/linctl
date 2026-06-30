@@ -491,9 +491,7 @@ func addIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, option
 			list.Attachments = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.AttachmentSummary) error {
-			return writeAttachment(command, options, item)
-		},
+		writeAttachment,
 		func(list client.AttachmentList) []client.AttachmentSummary {
 			return list.Attachments
 		},
@@ -539,9 +537,7 @@ func addIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *
 			list.Issues = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.IssueSummary) error {
-			return writeIssue(command, options, item)
-		},
+		writeIssue,
 		func(list client.IssueList) []client.IssueSummary {
 			return list.Issues
 		},
@@ -567,9 +563,7 @@ func addIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options 
 			list.Documents = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.DocumentSummary) error {
-			return writeDocument(command, options, item)
-		},
+		writeDocument,
 		func(list client.DocumentList) []client.DocumentSummary {
 			return list.Documents
 		},
@@ -595,9 +589,7 @@ func addIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, 
 			list.Attachments = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.AttachmentSummary) error {
-			return writeAttachment(command, options, item)
-		},
+		writeAttachment,
 		func(list client.AttachmentList) []client.AttachmentSummary {
 			return list.Attachments
 		},
@@ -637,9 +629,7 @@ func addIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *r
 			list.History = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.IssueHistorySummary) error {
-			return writeIssueHistory(command, options, item)
-		},
+		writeIssueHistory,
 		func(list client.IssueHistoryList) []client.IssueHistorySummary {
 			return list.History
 		},
@@ -679,9 +669,7 @@ func addIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *ro
 			list.Labels = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.LabelSummary) error {
-			return writeLabel(command, options, item)
-		},
+		writeLabel,
 		func(list client.LabelList) []client.LabelSummary {
 			return list.Labels
 		},
@@ -735,9 +723,7 @@ func addIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *
 			list.Releases = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.ReleaseSummary) error {
-			return writeRelease(command, options, item)
-		},
+		writeRelease,
 		func(list client.ReleaseList) []client.ReleaseSummary {
 			return list.Releases
 		},
@@ -783,9 +769,7 @@ func addIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, optio
 			list.Spans = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.IssueStateSpanSummary) error {
-			return writeIssueStateSpan(command, options, item)
-		},
+		writeIssueStateSpan,
 		func(list client.IssueStateHistoryList) []client.IssueStateSpanSummary {
 			return list.Spans
 		},
@@ -811,9 +795,7 @@ func addIssueSubscribersCommand(ctx context.Context, root *cobra.Command, option
 			list.Users = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.UserSummary) error {
-			return writeUser(command, options, item)
-		},
+		writeUser,
 		func(list client.UserList) []client.UserSummary {
 			return list.Users
 		},
@@ -847,9 +829,7 @@ func addIssueRelationChildListCommand(
 			list.Relations = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.IssueRelationSummary) error {
-			return writeIssueRelation(command, options, item)
-		},
+		writeIssueRelation,
 		func(list client.IssueRelationList) []client.IssueRelationSummary {
 			return list.Relations
 		},
@@ -881,9 +861,7 @@ func addIssueCommentMetadataListCommand(
 			list.Comments = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.CommentMetadataSummary) error {
-			return writeCommentMetadata(command, options, item)
-		},
+		writeCommentMetadata,
 		func(list client.IssueCommentMetadataList) []client.CommentMetadataSummary {
 			return list.Comments
 		},
@@ -915,9 +893,7 @@ func addIssueCustomerNeedMetadataListCommand(
 			list.Needs = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.CustomerNeedMetadataSummary) error {
-			return writeCustomerNeedMetadata(command, options, item)
-		},
+		writeCustomerNeedMetadata,
 		func(list client.IssueCustomerNeedMetadataList) []client.CustomerNeedMetadataSummary {
 			return list.Needs
 		},

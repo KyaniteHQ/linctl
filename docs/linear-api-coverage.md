@@ -8,44 +8,44 @@ Sources (paths relative to the upstream Linear SDK checkout):
 - Upstream schema roots: `packages/sdk/src/schema.graphql`
 - Local generated operations: `internal/client/generated.go`
 - Local GraphQL operations: `internal/client/operations/*.graphql`
-- Repo domain map: `docs/domain-map.md`
+- Public CLI commands: Cobra command inventory enriched by `docs/domain-map.md`
 
-Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design`, `intentionally_excluded`.
+Status vocabulary is surface-specific: upstream SDK/root tables use `generated_operation` for local GraphQL operation coverage, local operation rows use `generated`, and public CLI rows use `public_command` or `guarded_write_command` only when a registered command exposes the operation. Generated operations alone are not counted as public CLI coverage. Planning statuses remain `accepted_gap`, `safe_candidate`, `blocked_needs_design`, and `intentionally_excluded`.
 
 ## Summary
 
-| Surface | Total | Implemented/root-backed | Classified |
+| Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods | 458 | 133 | 458 |
-| Upstream Query root fields | 159 | 113 | 159 |
-| Upstream Mutation root fields | 365 | 21 | 365 |
-| Local generated Go operations | 332 | 332 | 332 |
-| Domain-map commands | 421 | 295 | 421 |
+| Upstream SDK root methods with generated local operations | 458 | 133 | 458 |
+| Upstream Query root fields used by generated local operations | 159 | 113 | 159 |
+| Upstream Mutation root fields used by generated local operations | 365 | 21 | 365 |
+| Local generated Go operations declared in GraphQL files | 332 | 332 | 332 |
+| Public CLI commands from command inventory | 421 | 295 | 421 |
 
 ## Upstream SDK Root Methods
 
 | Method | Kind | Status | Evidence |
 | --- | --- | --- | --- |
 | `administrableTeams` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentActivities` | method | implemented | local operation or command exists |
-| `agentActivity` | method | implemented | local operation or command exists |
-| `agentSession` | method | implemented | local operation or command exists |
+| `agentActivities` | method | generated_operation | local GraphQL operation uses this root |
+| `agentActivity` | method | generated_operation | local GraphQL operation uses this root |
+| `agentSession` | method | generated_operation | local GraphQL operation uses this root |
 | `agentSessionCreateOnComment` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionCreateOnIssue` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `agentSessionUpdateExternalUrl` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSessions` | method | implemented | local operation or command exists |
-| `agentSkill` | method | implemented | local operation or command exists |
-| `agentSkills` | method | implemented | local operation or command exists |
+| `agentSessions` | method | generated_operation | local GraphQL operation uses this root |
+| `agentSkill` | method | generated_operation | local GraphQL operation uses this root |
+| `agentSkills` | method | generated_operation | local GraphQL operation uses this root |
 | `airbyteIntegrationConnect` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `applicationInfo` | method | implemented | local operation or command exists |
+| `applicationInfo` | method | generated_operation | local GraphQL operation uses this root |
 | `archiveCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `archiveCycle` | method | implemented | local operation or command exists |
+| `archiveCycle` | method | generated_operation | local GraphQL operation uses this root |
 | `archiveInitiative` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archiveInitiativeUpdate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archiveIntegration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `archiveIssue` | method | implemented | local operation or command exists |
+| `archiveIssue` | method | generated_operation | local GraphQL operation uses this root |
 | `archiveNotification` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `archiveProject` | method | implemented | local operation or command exists |
+| `archiveProject` | method | generated_operation | local GraphQL operation uses this root |
 | `archiveProjectStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archiveProjectUpdate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archiveRelease` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -54,8 +54,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `archiveRoadmap` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archiveWorkflowState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `archivedIntegrations` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `attachment` | method | implemented | local operation or command exists |
-| `attachmentIssue` | method | implemented | local operation or command exists |
+| `attachment` | method | generated_operation | local GraphQL operation uses this root |
+| `attachmentIssue` | method | generated_operation | local GraphQL operation uses this root |
 | `attachmentLinkDiscord` | method | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkFront` | method | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkGitHubIssue` | method | blocked_needs_design | attachment-to-GitHub linking mutates third-party integration state; needs explicit integration guard semantics |
@@ -68,21 +68,21 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentLinkURL` | method | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkZendesk` | method | blocked_needs_design | mutation needs product and safety design |
 | `attachmentSyncToSlack` | method | blocked_needs_design | mutation needs product and safety design |
-| `attachments` | method | implemented | local operation or command exists |
-| `attachmentsForURL` | method | implemented | local operation or command exists |
+| `attachments` | method | generated_operation | local GraphQL operation uses this root |
+| `attachmentsForURL` | method | generated_operation | local GraphQL operation uses this root |
 | `auditEntries` | method | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
-| `auditEntryTypes` | getter | implemented | local operation or command exists |
+| `auditEntryTypes` | getter | generated_operation | local GraphQL operation uses this root |
 | `authenticationSessions` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | getter | intentionally_excluded | available-user picker enumeration is a specialized product resolver; `user list` is the supported user read surface |
-| `comment` | method | implemented | local operation or command exists |
+| `comment` | method | generated_operation | local GraphQL operation uses this root |
 | `commentResolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
 | `commentUnresolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
-| `comments` | method | implemented | local operation or command exists |
+| `comments` | method | generated_operation | local GraphQL operation uses this root |
 | `constructor` | method | blocked_needs_design | SDK method is not matched to a GraphQL root field; explicit classification required |
 | `createAgentActivity` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createAgentSkill` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createAttachment` | method | implemented | local operation or command exists |
-| `createComment` | method | implemented | local operation or command exists |
+| `createAttachment` | method | generated_operation | local GraphQL operation uses this root |
+| `createComment` | method | generated_operation | local GraphQL operation uses this root |
 | `createContact` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCsvExportReport` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCustomView` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -90,8 +90,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `createCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCustomerStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCustomerTier` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createCycle` | method | implemented | local operation or command exists |
-| `createDocument` | method | implemented | local operation or command exists |
+| `createCycle` | method | generated_operation | local GraphQL operation uses this root |
+| `createDocument` | method | generated_operation | local GraphQL operation uses this root |
 | `createEmailIntakeAddress` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createEmoji` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createEntityExternalLink` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -106,19 +106,19 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `createIntegrationGithubCommit` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `createIntegrationTemplate` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `createIntegrationsSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `createIssue` | method | implemented | local operation or command exists |
+| `createIssue` | method | generated_operation | local GraphQL operation uses this root |
 | `createIssueBatch` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createIssueLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createIssueRelation` | method | implemented | local operation or command exists |
+| `createIssueRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `createIssueToRelease` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createNotificationSubscription` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createOrganizationInvite` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createProject` | method | implemented | local operation or command exists |
+| `createProject` | method | generated_operation | local GraphQL operation uses this root |
 | `createProjectLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createProjectMilestone` | method | implemented | local operation or command exists |
+| `createProjectMilestone` | method | generated_operation | local GraphQL operation uses this root |
 | `createProjectRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createProjectStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createProjectUpdate` | method | implemented | local operation or command exists |
+| `createProjectUpdate` | method | generated_operation | local GraphQL operation uses this root |
 | `createProjectUpdateReminder` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createPushSubscription` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createReaction` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -136,28 +136,28 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `createViewPreferences` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `createWorkflowState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `customView` | method | implemented | local operation or command exists |
-| `customViewHasSubscribers` | method | implemented | local operation or command exists |
-| `customViews` | method | implemented | local operation or command exists |
-| `customer` | method | implemented | local operation or command exists |
+| `customView` | method | generated_operation | local GraphQL operation uses this root |
+| `customViewHasSubscribers` | method | generated_operation | local GraphQL operation uses this root |
+| `customViews` | method | generated_operation | local GraphQL operation uses this root |
+| `customer` | method | generated_operation | local GraphQL operation uses this root |
 | `customerMerge` | method | blocked_needs_design | mutation needs product and safety design |
-| `customerNeed` | method | implemented | local operation or command exists |
+| `customerNeed` | method | generated_operation | local GraphQL operation uses this root |
 | `customerNeedCreateFromAttachment` | method | blocked_needs_design | mutation needs product and safety design |
-| `customerNeeds` | method | implemented | local operation or command exists |
-| `customerStatus` | method | implemented | local operation or command exists |
-| `customerStatuses` | method | implemented | local operation or command exists |
-| `customerTier` | method | implemented | local operation or command exists |
-| `customerTiers` | method | implemented | local operation or command exists |
+| `customerNeeds` | method | generated_operation | local GraphQL operation uses this root |
+| `customerStatus` | method | generated_operation | local GraphQL operation uses this root |
+| `customerStatuses` | method | generated_operation | local GraphQL operation uses this root |
+| `customerTier` | method | generated_operation | local GraphQL operation uses this root |
+| `customerTiers` | method | generated_operation | local GraphQL operation uses this root |
 | `customerUnsync` | method | blocked_needs_design | mutation needs product and safety design |
 | `customerUpsert` | method | blocked_needs_design | mutation needs product and safety design |
-| `customers` | method | implemented | local operation or command exists |
-| `cycle` | method | implemented | local operation or command exists |
+| `customers` | method | generated_operation | local GraphQL operation uses this root |
+| `cycle` | method | generated_operation | local GraphQL operation uses this root |
 | `cycleShiftAll` | method | blocked_needs_design | bulk Cycle date shifting is a state-changing organization operation that needs target-pinned guard semantics |
 | `cycleStartUpcomingCycleToday` | method | blocked_needs_design | starting an upcoming Cycle changes team planning state and needs target-pinned guard semantics |
-| `cycles` | method | implemented | local operation or command exists |
+| `cycles` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteAgentSkill` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteAttachment` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `deleteComment` | method | implemented | local operation or command exists |
+| `deleteComment` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteCustomView` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteCustomer` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteCustomerNeed` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -179,7 +179,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `deleteIssue` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteIssueImport` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteIssueLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `deleteIssueRelation` | method | implemented | local operation or command exists |
+| `deleteIssueRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteIssueToRelease` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteNotificationSubscription` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteOrganization` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -207,34 +207,34 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `deleteTriageResponsibility` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteViewPreferences` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteWebhook` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `document` | method | implemented | local operation or command exists |
+| `document` | method | generated_operation | local GraphQL operation uses this root |
 | `documentContentHistory` | method | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
-| `documents` | method | implemented | local operation or command exists |
+| `documents` | method | generated_operation | local GraphQL operation uses this root |
 | `emailIntakeAddress` | method | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
 | `emailIntakeAddressRefreshSesDomainStatus` | method | blocked_needs_design | mutation needs product and safety design |
 | `emailIntakeAddressRotate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `emailUnsubscribe` | method | blocked_needs_design | mutation needs product and safety design |
 | `emailUserAccountAuthChallenge` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `emoji` | method | implemented | local operation or command exists |
-| `emojis` | method | implemented | local operation or command exists |
-| `entityExternalLink` | method | implemented | local operation or command exists |
-| `externalUser` | method | implemented | local operation or command exists |
-| `externalUsers` | method | implemented | local operation or command exists |
-| `favorite` | method | implemented | local operation or command exists |
-| `favorites` | method | implemented | local operation or command exists |
-| `fileUpload` | method | implemented | local operation or command exists |
+| `emoji` | method | generated_operation | local GraphQL operation uses this root |
+| `emojis` | method | generated_operation | local GraphQL operation uses this root |
+| `entityExternalLink` | method | generated_operation | local GraphQL operation uses this root |
+| `externalUser` | method | generated_operation | local GraphQL operation uses this root |
+| `externalUsers` | method | generated_operation | local GraphQL operation uses this root |
+| `favorite` | method | generated_operation | local GraphQL operation uses this root |
+| `favorites` | method | generated_operation | local GraphQL operation uses this root |
+| `fileUpload` | method | generated_operation | local GraphQL operation uses this root |
 | `googleUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `imageUploadFromUrl` | method | blocked_needs_design | mutation needs product and safety design |
 | `importFileUpload` | method | blocked_needs_design | mutation needs product and safety design |
-| `initiative` | method | implemented | local operation or command exists |
-| `initiativeRelation` | method | implemented | local operation or command exists |
-| `initiativeRelations` | method | implemented | local operation or command exists |
-| `initiativeToProject` | method | implemented | local operation or command exists |
-| `initiativeToProjects` | method | implemented | local operation or command exists |
-| `initiativeUpdate` | method | implemented | local operation or command exists |
-| `initiativeUpdates` | method | implemented | local operation or command exists |
-| `initiatives` | method | implemented | local operation or command exists |
+| `initiative` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeRelation` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeRelations` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeToProject` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeToProjects` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeUpdate` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeUpdates` | method | generated_operation | local GraphQL operation uses this root |
+| `initiatives` | method | generated_operation | local GraphQL operation uses this root |
 | `integration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationAsksConnectChannel` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationDiscord` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -274,11 +274,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `integrationZendesk` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrations` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `issue` | method | implemented | local operation or command exists |
+| `issue` | method | generated_operation | local GraphQL operation uses this root |
 | `issueAddLabel` | method | blocked_needs_design | issue label mutation needs issue target pinning and target-mismatch tests |
 | `issueExternalSyncDisable` | method | blocked_needs_design | issue external-sync disable changes integration state and needs explicit integration guard semantics |
-| `issueFigmaFileKeySearch` | method | implemented | local operation or command exists |
-| `issueFilterSuggestion` | method | implemented | local operation or command exists |
+| `issueFigmaFileKeySearch` | method | generated_operation | local GraphQL operation uses this root |
+| `issueFilterSuggestion` | method | generated_operation | local GraphQL operation uses this root |
 | `issueImportCheckCSV` | method | blocked_needs_design | CSV import validation can expose imported row payloads and needs an explicit redaction/output model |
 | `issueImportCheckSync` | method | blocked_needs_design | sync import validation can expose external tracker payloads and needs an explicit redaction/output model |
 | `issueImportCreateAsana` | method | blocked_needs_design | Asana issue import creation starts external import workflow state and needs explicit integration guard semantics |
@@ -288,115 +288,115 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueImportCreateJira` | method | blocked_needs_design | Jira issue import creation starts external import workflow state and needs explicit integration guard semantics |
 | `issueImportJqlCheck` | method | blocked_needs_design | JQL import validation can expose external tracker payloads and needs an explicit redaction/output model |
 | `issueImportProcess` | method | blocked_needs_design | issue import processing advances external import workflow state and needs explicit integration guard semantics |
-| `issueLabel` | method | implemented | local operation or command exists |
+| `issueLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `issueLabelRestore` | method | blocked_needs_design | issue label lifecycle restore needs explicit organization/admin safety semantics |
 | `issueLabelRetire` | method | blocked_needs_design | issue label lifecycle retire needs explicit organization/admin safety semantics |
-| `issueLabels` | method | implemented | local operation or command exists |
-| `issuePriorityValues` | getter | implemented | local operation or command exists |
-| `issueRelation` | method | implemented | local operation or command exists |
-| `issueRelations` | method | implemented | local operation or command exists |
+| `issueLabels` | method | generated_operation | local GraphQL operation uses this root |
+| `issuePriorityValues` | getter | generated_operation | local GraphQL operation uses this root |
+| `issueRelation` | method | generated_operation | local GraphQL operation uses this root |
+| `issueRelations` | method | generated_operation | local GraphQL operation uses this root |
 | `issueReminder` | method | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueRepositorySuggestions` | method | intentionally_excluded | repository suggestion reads expose VCS integration metadata outside the default Linear work CLI surface |
-| `issueSearch` | method | implemented | local operation or command exists |
+| `issueSearch` | method | generated_operation | local GraphQL operation uses this root |
 | `issueShare` | method | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
 | `issueSubscribe` | method | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
-| `issueTitleSuggestionFromCustomerRequest` | method | implemented | local operation or command exists |
-| `issueToRelease` | method | implemented | local operation or command exists |
+| `issueTitleSuggestionFromCustomerRequest` | method | generated_operation | local GraphQL operation uses this root |
+| `issueToRelease` | method | generated_operation | local GraphQL operation uses this root |
 | `issueToReleaseDeleteByIssueAndRelease` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueToReleases` | method | implemented | local operation or command exists |
+| `issueToReleases` | method | generated_operation | local GraphQL operation uses this root |
 | `issueUnshare` | method | blocked_needs_design | issue unsharing changes access state and needs target-pinned guard semantics |
 | `issueUnsubscribe` | method | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
-| `issueVcsBranchSearch` | method | implemented | local operation or command exists |
-| `issues` | method | implemented | local operation or command exists |
+| `issueVcsBranchSearch` | method | generated_operation | local GraphQL operation uses this root |
+| `issues` | method | generated_operation | local GraphQL operation uses this root |
 | `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `logout` | method | blocked_needs_design | mutation needs product and safety design |
 | `logoutAllSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutSession` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `notification` | method | implemented | local operation or command exists |
+| `notification` | method | generated_operation | local GraphQL operation uses this root |
 | `notificationArchiveAll` | method | blocked_needs_design | mutation needs product and safety design |
 | `notificationMarkReadAll` | method | blocked_needs_design | mutation needs product and safety design |
 | `notificationMarkUnreadAll` | method | blocked_needs_design | mutation needs product and safety design |
 | `notificationSnoozeAll` | method | blocked_needs_design | mutation needs product and safety design |
-| `notificationSubscription` | method | implemented | local operation or command exists |
-| `notificationSubscriptions` | method | implemented | local operation or command exists |
+| `notificationSubscription` | method | generated_operation | local GraphQL operation uses this root |
+| `notificationSubscriptions` | method | generated_operation | local GraphQL operation uses this root |
 | `notificationUnsnoozeAll` | method | blocked_needs_design | mutation needs product and safety design |
-| `notifications` | method | implemented | local operation or command exists |
-| `organization` | getter | implemented | local operation or command exists |
+| `notifications` | method | generated_operation | local GraphQL operation uses this root |
+| `organization` | getter | generated_operation | local GraphQL operation uses this root |
 | `organizationDeleteChallenge` | getter | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `organizationExists` | method | implemented | local operation or command exists |
+| `organizationExists` | method | generated_operation | local GraphQL operation uses this root |
 | `organizationInvite` | method | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInvites` | method | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationStartTrial` | getter | blocked_needs_design | mutation needs product and safety design |
 | `organizationStartTrialForPlan` | method | blocked_needs_design | mutation needs product and safety design |
-| `project` | method | implemented | local operation or command exists |
+| `project` | method | generated_operation | local GraphQL operation uses this root |
 | `projectAddLabel` | method | blocked_needs_design | project label mutation needs project target pinning and target-mismatch tests |
 | `projectExternalSyncDisable` | method | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
-| `projectFilterSuggestion` | method | implemented | local operation or command exists |
-| `projectLabel` | method | implemented | local operation or command exists |
+| `projectFilterSuggestion` | method | generated_operation | local GraphQL operation uses this root |
+| `projectLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `projectLabelRestore` | method | blocked_needs_design | project label lifecycle restore needs explicit organization/admin safety semantics |
 | `projectLabelRetire` | method | blocked_needs_design | project label lifecycle retire needs explicit organization/admin safety semantics |
-| `projectLabels` | method | implemented | local operation or command exists |
-| `projectMilestone` | method | implemented | local operation or command exists |
-| `projectMilestones` | method | implemented | local operation or command exists |
-| `projectRelation` | method | implemented | local operation or command exists |
-| `projectRelations` | method | implemented | local operation or command exists |
+| `projectLabels` | method | generated_operation | local GraphQL operation uses this root |
+| `projectMilestone` | method | generated_operation | local GraphQL operation uses this root |
+| `projectMilestones` | method | generated_operation | local GraphQL operation uses this root |
+| `projectRelation` | method | generated_operation | local GraphQL operation uses this root |
+| `projectRelations` | method | generated_operation | local GraphQL operation uses this root |
 | `projectRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectStatus` | method | implemented | local operation or command exists |
-| `projectStatuses` | method | implemented | local operation or command exists |
-| `projectUpdate` | method | implemented | local operation or command exists |
-| `projectUpdates` | method | implemented | local operation or command exists |
-| `projects` | method | implemented | local operation or command exists |
+| `projectStatus` | method | generated_operation | local GraphQL operation uses this root |
+| `projectStatuses` | method | generated_operation | local GraphQL operation uses this root |
+| `projectUpdate` | method | generated_operation | local GraphQL operation uses this root |
+| `projectUpdates` | method | generated_operation | local GraphQL operation uses this root |
+| `projects` | method | generated_operation | local GraphQL operation uses this root |
 | `pushSubscriptionTest` | method | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
-| `rateLimitStatus` | getter | implemented | local operation or command exists |
+| `rateLimitStatus` | getter | generated_operation | local GraphQL operation uses this root |
 | `recentReleasesByAccessKey` | method | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `refreshGoogleSheetsData` | method | blocked_needs_design | mutation needs product and safety design |
-| `release` | method | implemented | local operation or command exists |
+| `release` | method | generated_operation | local GraphQL operation uses this root |
 | `releaseComplete` | method | blocked_needs_design | mutation needs product and safety design |
 | `releaseCompleteByAccessKey` | method | blocked_needs_design | mutation needs product and safety design |
-| `releaseNote` | method | implemented | local operation or command exists |
-| `releaseNotes` | method | implemented | local operation or command exists |
-| `releasePipeline` | method | implemented | local operation or command exists |
+| `releaseNote` | method | generated_operation | local GraphQL operation uses this root |
+| `releaseNotes` | method | generated_operation | local GraphQL operation uses this root |
+| `releasePipeline` | method | generated_operation | local GraphQL operation uses this root |
 | `releasePipelineByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
-| `releasePipelines` | method | implemented | local operation or command exists |
-| `releaseSearch` | method | implemented | local operation or command exists |
-| `releaseStage` | method | implemented | local operation or command exists |
-| `releaseStages` | method | implemented | local operation or command exists |
+| `releasePipelines` | method | generated_operation | local GraphQL operation uses this root |
+| `releaseSearch` | method | generated_operation | local GraphQL operation uses this root |
+| `releaseStage` | method | generated_operation | local GraphQL operation uses this root |
+| `releaseStages` | method | generated_operation | local GraphQL operation uses this root |
 | `releaseSync` | method | blocked_needs_design | mutation needs product and safety design |
 | `releaseSyncByAccessKey` | method | blocked_needs_design | mutation needs product and safety design |
 | `releaseUpdateByPipeline` | method | blocked_needs_design | mutation needs product and safety design |
 | `releaseUpdateByPipelineByAccessKey` | method | blocked_needs_design | mutation needs product and safety design |
-| `releases` | method | implemented | local operation or command exists |
+| `releases` | method | generated_operation | local GraphQL operation uses this root |
 | `resendOrganizationInvite` | method | blocked_needs_design | mutation needs product and safety design |
 | `resendOrganizationInviteByEmail` | method | blocked_needs_design | mutation needs product and safety design |
-| `roadmap` | method | implemented | local operation or command exists |
-| `roadmapToProject` | method | implemented | local operation or command exists |
-| `roadmapToProjects` | method | implemented | local operation or command exists |
-| `roadmaps` | method | implemented | local operation or command exists |
+| `roadmap` | method | generated_operation | local GraphQL operation uses this root |
+| `roadmapToProject` | method | generated_operation | local GraphQL operation uses this root |
+| `roadmapToProjects` | method | generated_operation | local GraphQL operation uses this root |
+| `roadmaps` | method | generated_operation | local GraphQL operation uses this root |
 | `rotateSecretWebhook` | method | blocked_needs_design | SDK method is not matched to a GraphQL root field; explicit classification required |
 | `samlTokenUserAccountAuth` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `searchDocuments` | method | implemented | local operation or command exists |
-| `searchIssues` | method | implemented | local operation or command exists |
-| `searchProjects` | method | implemented | local operation or command exists |
-| `semanticSearch` | method | implemented | local operation or command exists |
-| `slaConfigurations` | method | implemented | local operation or command exists |
+| `searchDocuments` | method | generated_operation | local GraphQL operation uses this root |
+| `searchIssues` | method | generated_operation | local GraphQL operation uses this root |
+| `searchProjects` | method | generated_operation | local GraphQL operation uses this root |
+| `semanticSearch` | method | generated_operation | local GraphQL operation uses this root |
+| `slaConfigurations` | method | generated_operation | local GraphQL operation uses this root |
 | `ssoUrlFromEmail` | method | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
 | `suspendUser` | method | blocked_needs_design | SDK method is not matched to a GraphQL root field; explicit classification required |
-| `team` | method | implemented | local operation or command exists |
-| `teamMembership` | method | implemented | local operation or command exists |
-| `teamMemberships` | method | implemented | local operation or command exists |
-| `teams` | method | implemented | local operation or command exists |
-| `template` | method | implemented | local operation or command exists |
-| `templates` | getter | implemented | local operation or command exists |
+| `team` | method | generated_operation | local GraphQL operation uses this root |
+| `teamMembership` | method | generated_operation | local GraphQL operation uses this root |
+| `teamMemberships` | method | generated_operation | local GraphQL operation uses this root |
+| `teams` | method | generated_operation | local GraphQL operation uses this root |
+| `template` | method | generated_operation | local GraphQL operation uses this root |
+| `templates` | getter | generated_operation | local GraphQL operation uses this root |
 | `templatesForIntegration` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `timeSchedule` | method | implemented | local operation or command exists |
+| `timeSchedule` | method | generated_operation | local GraphQL operation uses this root |
 | `timeScheduleRefreshIntegrationSchedule` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `timeScheduleUpsertExternal` | method | blocked_needs_design | mutation needs product and safety design |
-| `timeSchedules` | method | implemented | local operation or command exists |
+| `timeSchedules` | method | generated_operation | local GraphQL operation uses this root |
 | `trackAnonymousEvent` | method | blocked_needs_design | mutation needs product and safety design |
-| `triageResponsibilities` | method | implemented | local operation or command exists |
-| `triageResponsibility` | method | implemented | local operation or command exists |
+| `triageResponsibilities` | method | generated_operation | local GraphQL operation uses this root |
+| `triageResponsibility` | method | generated_operation | local GraphQL operation uses this root |
 | `unarchiveCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `unarchiveDocument` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `unarchiveInitiative` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -415,14 +415,14 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `updateAgentSession` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `updateAgentSkill` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateAttachment` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `updateComment` | method | implemented | local operation or command exists |
+| `updateComment` | method | generated_operation | local GraphQL operation uses this root |
 | `updateCustomView` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateCustomer` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateCustomerNeed` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateCustomerStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateCustomerTier` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `updateCycle` | method | implemented | local operation or command exists |
-| `updateDocument` | method | implemented | local operation or command exists |
+| `updateCycle` | method | generated_operation | local GraphQL operation uses this root |
+| `updateDocument` | method | generated_operation | local GraphQL operation uses this root |
 | `updateEmailIntakeAddress` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateEntityExternalLink` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateFavorite` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -434,7 +434,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `updateInitiativeUpdate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateIntegrationIntercomSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `updateIntegrationsSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `updateIssue` | method | implemented | local operation or command exists |
+| `updateIssue` | method | generated_operation | local GraphQL operation uses this root |
 | `updateIssueBatch` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateIssueImport` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateIssueLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -444,9 +444,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `updateNotificationSubscription` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateOrganization` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateOrganizationInvite` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `updateProject` | method | implemented | local operation or command exists |
+| `updateProject` | method | generated_operation | local GraphQL operation uses this root |
 | `updateProjectLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `updateProjectMilestone` | method | implemented | local operation or command exists |
+| `updateProjectMilestone` | method | generated_operation | local GraphQL operation uses this root |
 | `updateProjectRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateProjectStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateProjectUpdate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -467,23 +467,23 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `updateViewPreferences` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateWebhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `updateWorkflowState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `user` | method | implemented | local operation or command exists |
+| `user` | method | generated_operation | local GraphQL operation uses this root |
 | `userChangeRole` | method | intentionally_excluded | user role changes are organization administration outside the ordinary agent CLI surface |
 | `userDiscordConnect` | method | intentionally_excluded | Discord account connection belongs to user auth/integration setup, not work CLI reads |
 | `userExternalUserDisconnect` | method | intentionally_excluded | external-user disconnection is identity integration administration outside the ordinary agent CLI surface |
 | `userRevokeAllSessions` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userRevokeSession` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `userSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `userSettings` | getter | implemented | local operation or command exists |
+| `userSettings` | getter | generated_operation | local GraphQL operation uses this root |
 | `userSettingsFlagsReset` | method | intentionally_excluded | user settings flag reset is internal preference administration outside the ordinary agent CLI surface |
 | `userUnlinkFromIdentityProvider` | method | intentionally_excluded | identity-provider unlinking is auth administration outside the ordinary agent CLI surface |
-| `users` | method | implemented | local operation or command exists |
+| `users` | method | generated_operation | local GraphQL operation uses this root |
 | `verifyGitHubEnterpriseServerInstallation` | method | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
-| `viewer` | getter | implemented | local operation or command exists |
+| `viewer` | getter | generated_operation | local GraphQL operation uses this root |
 | `webhook` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhooks` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `workflowState` | method | implemented | local operation or command exists |
-| `workflowStates` | method | implemented | local operation or command exists |
+| `workflowState` | method | generated_operation | local GraphQL operation uses this root |
+| `workflowStates` | method | generated_operation | local GraphQL operation uses this root |
 
 ## Upstream Query Root Fields
 
@@ -491,163 +491,163 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | --- | --- | --- | --- |
 | `_dummy` | `String!` | safe_candidate | read operation may fit future CLI coverage |
 | `administrableTeams` | `TeamConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentActivities` | `AgentActivityConnection!` | implemented | root field used by local GraphQL operation |
-| `agentActivity` | `AgentActivity!` | implemented | root field used by local GraphQL operation |
-| `agentSession` | `AgentSession!` | implemented | root field used by local GraphQL operation |
+| `agentActivities` | `AgentActivityConnection!` | generated_operation | root field used by local GraphQL operation |
+| `agentActivity` | `AgentActivity!` | generated_operation | root field used by local GraphQL operation |
+| `agentSession` | `AgentSession!` | generated_operation | root field used by local GraphQL operation |
 | `agentSessionSandbox` | `CodingAgentSandboxPayload` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `agentSessions` | `AgentSessionConnection!` | implemented | root field used by local GraphQL operation |
-| `agentSkill` | `AgentSkill!` | implemented | root field used by local GraphQL operation |
-| `agentSkills` | `AgentSkillConnection!` | implemented | root field used by local GraphQL operation |
-| `applicationInfo` | `Application!` | implemented | root field used by local GraphQL operation |
+| `agentSessions` | `AgentSessionConnection!` | generated_operation | root field used by local GraphQL operation |
+| `agentSkill` | `AgentSkill!` | generated_operation | root field used by local GraphQL operation |
+| `agentSkills` | `AgentSkillConnection!` | generated_operation | root field used by local GraphQL operation |
+| `applicationInfo` | `Application!` | generated_operation | root field used by local GraphQL operation |
 | `archivedIntegrations` | `[ArchivedIntegrationPayload!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `archivedTeams` | `[Team!]!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `attachment` | `Attachment!` | implemented | root field used by local GraphQL operation |
-| `attachmentIssue` | `Issue!` | implemented | root field used by local GraphQL operation |
+| `attachment` | `Attachment!` | generated_operation | root field used by local GraphQL operation |
+| `attachmentIssue` | `Issue!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentSources` | `AttachmentSourcesPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `attachments` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
-| `attachmentsForURL` | `AttachmentConnection!` | implemented | root field used by local GraphQL operation |
+| `attachments` | `AttachmentConnection!` | generated_operation | root field used by local GraphQL operation |
+| `attachmentsForURL` | `AttachmentConnection!` | generated_operation | root field used by local GraphQL operation |
 | `auditEntries` | `AuditEntryConnection!` | blocked_needs_design | audit logs can expose actor, IP, country, and request metadata; needs explicit admin/security output model |
-| `auditEntryTypes` | `[AuditEntryType!]!` | implemented | root field used by local GraphQL operation |
+| `auditEntryTypes` | `[AuditEntryType!]!` | generated_operation | root field used by local GraphQL operation |
 | `authenticationSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | `AuthResolverResponse!` | intentionally_excluded | available-user picker enumeration is a specialized product resolver; `user list` is the supported user read surface |
-| `comment` | `Comment!` | implemented | root field used by local GraphQL operation |
-| `comments` | `CommentConnection!` | implemented | root field used by local GraphQL operation |
-| `customView` | `CustomView!` | implemented | root field used by local GraphQL operation |
+| `comment` | `Comment!` | generated_operation | root field used by local GraphQL operation |
+| `comments` | `CommentConnection!` | generated_operation | root field used by local GraphQL operation |
+| `customView` | `CustomView!` | generated_operation | root field used by local GraphQL operation |
 | `customViewDetailsSuggestion` | `CustomViewSuggestionPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `customViewHasSubscribers` | `CustomViewHasSubscribersPayload!` | implemented | root field used by local GraphQL operation |
-| `customViews` | `CustomViewConnection!` | implemented | root field used by local GraphQL operation |
-| `customer` | `Customer!` | implemented | root field used by local GraphQL operation |
-| `customerNeed` | `CustomerNeed!` | implemented | root field used by local GraphQL operation |
-| `customerNeeds` | `CustomerNeedConnection!` | implemented | root field used by local GraphQL operation |
-| `customerStatus` | `CustomerStatus!` | implemented | root field used by local GraphQL operation |
-| `customerStatuses` | `CustomerStatusConnection!` | implemented | root field used by local GraphQL operation |
-| `customerTier` | `CustomerTier!` | implemented | root field used by local GraphQL operation |
-| `customerTiers` | `CustomerTierConnection!` | implemented | root field used by local GraphQL operation |
-| `customers` | `CustomerConnection!` | implemented | root field used by local GraphQL operation |
-| `cycle` | `Cycle!` | implemented | root field used by local GraphQL operation |
-| `cycles` | `CycleConnection!` | implemented | root field used by local GraphQL operation |
-| `document` | `Document!` | implemented | root field used by local GraphQL operation |
+| `customViewHasSubscribers` | `CustomViewHasSubscribersPayload!` | generated_operation | root field used by local GraphQL operation |
+| `customViews` | `CustomViewConnection!` | generated_operation | root field used by local GraphQL operation |
+| `customer` | `Customer!` | generated_operation | root field used by local GraphQL operation |
+| `customerNeed` | `CustomerNeed!` | generated_operation | root field used by local GraphQL operation |
+| `customerNeeds` | `CustomerNeedConnection!` | generated_operation | root field used by local GraphQL operation |
+| `customerStatus` | `CustomerStatus!` | generated_operation | root field used by local GraphQL operation |
+| `customerStatuses` | `CustomerStatusConnection!` | generated_operation | root field used by local GraphQL operation |
+| `customerTier` | `CustomerTier!` | generated_operation | root field used by local GraphQL operation |
+| `customerTiers` | `CustomerTierConnection!` | generated_operation | root field used by local GraphQL operation |
+| `customers` | `CustomerConnection!` | generated_operation | root field used by local GraphQL operation |
+| `cycle` | `Cycle!` | generated_operation | root field used by local GraphQL operation |
+| `cycles` | `CycleConnection!` | generated_operation | root field used by local GraphQL operation |
+| `document` | `Document!` | generated_operation | root field used by local GraphQL operation |
 | `documentContentHistory` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documentContentHistoryEntries` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documentContentHistoryTimeline` | `DocumentContentHistoryTimelinePayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
-| `documents` | `DocumentConnection!` | implemented | root field used by local GraphQL operation |
+| `documents` | `DocumentConnection!` | generated_operation | root field used by local GraphQL operation |
 | `emailIntakeAddress` | `EmailIntakeAddress!` | intentionally_excluded | email intake administration sits outside the ordinary agent CLI read surface |
-| `emoji` | `Emoji!` | implemented | root field used by local GraphQL operation |
-| `emojis` | `EmojiConnection!` | implemented | root field used by local GraphQL operation |
-| `entityExternalLink` | `EntityExternalLink!` | implemented | root field used by local GraphQL operation |
-| `externalUser` | `ExternalUser!` | implemented | root field used by local GraphQL operation |
-| `externalUsers` | `ExternalUserConnection!` | implemented | root field used by local GraphQL operation |
+| `emoji` | `Emoji!` | generated_operation | root field used by local GraphQL operation |
+| `emojis` | `EmojiConnection!` | generated_operation | root field used by local GraphQL operation |
+| `entityExternalLink` | `EntityExternalLink!` | generated_operation | root field used by local GraphQL operation |
+| `externalUser` | `ExternalUser!` | generated_operation | root field used by local GraphQL operation |
+| `externalUsers` | `ExternalUserConnection!` | generated_operation | root field used by local GraphQL operation |
 | `failuresForOauthWebhooks` | `[WebhookFailureEvent!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `favorite` | `Favorite!` | implemented | root field used by local GraphQL operation |
-| `favorites` | `FavoriteConnection!` | implemented | root field used by local GraphQL operation |
+| `favorite` | `Favorite!` | generated_operation | root field used by local GraphQL operation |
+| `favorites` | `FavoriteConnection!` | generated_operation | root field used by local GraphQL operation |
 | `fetchData` | `FetchDataPayload!` | safe_candidate | read operation may fit future CLI coverage |
-| `initiative` | `Initiative!` | implemented | root field used by local GraphQL operation |
+| `initiative` | `Initiative!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeLeadTeamChangeImpact` | `InitiativeLeadTeamChangeImpact!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeRelation` | `InitiativeRelation!` | implemented | root field used by local GraphQL operation |
-| `initiativeRelations` | `InitiativeRelationConnection!` | implemented | root field used by local GraphQL operation |
-| `initiativeToProject` | `InitiativeToProject!` | implemented | root field used by local GraphQL operation |
-| `initiativeToProjects` | `InitiativeToProjectConnection!` | implemented | root field used by local GraphQL operation |
-| `initiativeUpdate` | `InitiativeUpdate!` | implemented | root field used by local GraphQL operation |
-| `initiativeUpdates` | `InitiativeUpdateConnection!` | implemented | root field used by local GraphQL operation |
-| `initiatives` | `InitiativeConnection!` | implemented | root field used by local GraphQL operation |
+| `initiativeRelation` | `InitiativeRelation!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeRelations` | `InitiativeRelationConnection!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeToProject` | `InitiativeToProject!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeToProjects` | `InitiativeToProjectConnection!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeUpdate` | `InitiativeUpdate!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeUpdates` | `InitiativeUpdateConnection!` | generated_operation | root field used by local GraphQL operation |
+| `initiatives` | `InitiativeConnection!` | generated_operation | root field used by local GraphQL operation |
 | `integration` | `Integration!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationHasScopes` | `IntegrationHasScopesPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplate` | `IntegrationTemplate!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationTemplates` | `IntegrationTemplateConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrations` | `IntegrationConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettings` | `IntegrationsSettings!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `issue` | `Issue!` | implemented | root field used by local GraphQL operation |
-| `issueFigmaFileKeySearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
-| `issueFilterSuggestion` | `IssueFilterSuggestionPayload!` | implemented | root field used by local GraphQL operation |
+| `issue` | `Issue!` | generated_operation | root field used by local GraphQL operation |
+| `issueFigmaFileKeySearch` | `IssueConnection!` | generated_operation | root field used by local GraphQL operation |
+| `issueFilterSuggestion` | `IssueFilterSuggestionPayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueImportCheckCSV` | `IssueImportCheckPayload!` | blocked_needs_design | CSV import validation can expose imported row payloads and needs an explicit redaction/output model |
 | `issueImportCheckSync` | `IssueImportSyncCheckPayload!` | blocked_needs_design | sync import validation can expose external tracker payloads and needs an explicit redaction/output model |
 | `issueImportJqlCheck` | `IssueImportJqlCheckPayload!` | blocked_needs_design | JQL import validation can expose external tracker payloads and needs an explicit redaction/output model |
-| `issueLabel` | `IssueLabel!` | implemented | root field used by local GraphQL operation |
-| `issueLabels` | `IssueLabelConnection!` | implemented | root field used by local GraphQL operation |
-| `issuePriorityValues` | `[IssuePriorityValue!]!` | implemented | root field used by local GraphQL operation |
-| `issueRelation` | `IssueRelation!` | implemented | root field used by local GraphQL operation |
-| `issueRelations` | `IssueRelationConnection!` | implemented | root field used by local GraphQL operation |
+| `issueLabel` | `IssueLabel!` | generated_operation | root field used by local GraphQL operation |
+| `issueLabels` | `IssueLabelConnection!` | generated_operation | root field used by local GraphQL operation |
+| `issuePriorityValues` | `[IssuePriorityValue!]!` | generated_operation | root field used by local GraphQL operation |
+| `issueRelation` | `IssueRelation!` | generated_operation | root field used by local GraphQL operation |
+| `issueRelations` | `IssueRelationConnection!` | generated_operation | root field used by local GraphQL operation |
 | `issueRepositorySuggestions` | `RepositorySuggestionsPayload!` | intentionally_excluded | repository suggestion reads expose VCS integration metadata outside the default Linear work CLI surface |
-| `issueSearch` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
-| `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | implemented | root field used by local GraphQL operation |
-| `issueToRelease` | `IssueToRelease!` | implemented | root field used by local GraphQL operation |
-| `issueToReleases` | `IssueToReleaseConnection!` | implemented | root field used by local GraphQL operation |
-| `issueVcsBranchSearch` | `Issue` | implemented | root field used by local GraphQL operation |
-| `issues` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
+| `issueSearch` | `IssueConnection!` | generated_operation | root field used by local GraphQL operation |
+| `issueTitleSuggestionFromCustomerRequest` | `IssueTitleSuggestionFromCustomerRequestPayload!` | generated_operation | root field used by local GraphQL operation |
+| `issueToRelease` | `IssueToRelease!` | generated_operation | root field used by local GraphQL operation |
+| `issueToReleases` | `IssueToReleaseConnection!` | generated_operation | root field used by local GraphQL operation |
+| `issueVcsBranchSearch` | `Issue` | generated_operation | root field used by local GraphQL operation |
+| `issues` | `IssueConnection!` | generated_operation | root field used by local GraphQL operation |
 | `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | intentionally_excluded | Microsoft Teams channel enumeration exposes chat integration metadata outside the default Linear work CLI surface |
-| `notification` | `Notification!` | implemented | root field used by local GraphQL operation |
-| `notificationSubscription` | `NotificationSubscription!` | implemented | root field used by local GraphQL operation |
-| `notificationSubscriptions` | `NotificationSubscriptionConnection!` | implemented | root field used by local GraphQL operation |
-| `notifications` | `NotificationConnection!` | implemented | root field used by local GraphQL operation |
+| `notification` | `Notification!` | generated_operation | root field used by local GraphQL operation |
+| `notificationSubscription` | `NotificationSubscription!` | generated_operation | root field used by local GraphQL operation |
+| `notificationSubscriptions` | `NotificationSubscriptionConnection!` | generated_operation | root field used by local GraphQL operation |
+| `notifications` | `NotificationConnection!` | generated_operation | root field used by local GraphQL operation |
 | `notificationsUnreadCount` | `Int!` | safe_candidate | read operation may fit future CLI coverage |
 | `oauthApplication` | `OAuthApplication!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplications` | `[OAuthApplication!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `organization` | `Organization!` | implemented | root field used by local GraphQL operation |
+| `organization` | `Organization!` | generated_operation | root field used by local GraphQL operation |
 | `organizationDomainClaimRequest` | `OrganizationDomainClaimPayload!` | intentionally_excluded | organization domain claim requests expose org-admin domain-verification metadata outside the ordinary agent CLI surface |
-| `organizationExists` | `OrganizationExistsPayload!` | implemented | root field used by local GraphQL operation |
+| `organizationExists` | `OrganizationExistsPayload!` | generated_operation | root field used by local GraphQL operation |
 | `organizationInvite` | `OrganizationInvite!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
-| `project` | `Project!` | implemented | root field used by local GraphQL operation |
-| `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | implemented | root field used by local GraphQL operation |
-| `projectLabel` | `ProjectLabel!` | implemented | root field used by local GraphQL operation |
-| `projectLabels` | `ProjectLabelConnection!` | implemented | root field used by local GraphQL operation |
-| `projectMilestone` | `ProjectMilestone!` | implemented | root field used by local GraphQL operation |
-| `projectMilestones` | `ProjectMilestoneConnection!` | implemented | root field used by local GraphQL operation |
-| `projectRelation` | `ProjectRelation!` | implemented | root field used by local GraphQL operation |
-| `projectRelations` | `ProjectRelationConnection!` | implemented | root field used by local GraphQL operation |
-| `projectStatus` | `ProjectStatus!` | implemented | root field used by local GraphQL operation |
-| `projectStatusProjectCount` | `ProjectStatusCountPayload!` | implemented | root field used by local GraphQL operation |
-| `projectStatuses` | `ProjectStatusConnection!` | implemented | root field used by local GraphQL operation |
-| `projectUpdate` | `ProjectUpdate!` | implemented | root field used by local GraphQL operation |
-| `projectUpdates` | `ProjectUpdateConnection!` | implemented | root field used by local GraphQL operation |
-| `projects` | `ProjectConnection!` | implemented | root field used by local GraphQL operation |
+| `project` | `Project!` | generated_operation | root field used by local GraphQL operation |
+| `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | generated_operation | root field used by local GraphQL operation |
+| `projectLabel` | `ProjectLabel!` | generated_operation | root field used by local GraphQL operation |
+| `projectLabels` | `ProjectLabelConnection!` | generated_operation | root field used by local GraphQL operation |
+| `projectMilestone` | `ProjectMilestone!` | generated_operation | root field used by local GraphQL operation |
+| `projectMilestones` | `ProjectMilestoneConnection!` | generated_operation | root field used by local GraphQL operation |
+| `projectRelation` | `ProjectRelation!` | generated_operation | root field used by local GraphQL operation |
+| `projectRelations` | `ProjectRelationConnection!` | generated_operation | root field used by local GraphQL operation |
+| `projectStatus` | `ProjectStatus!` | generated_operation | root field used by local GraphQL operation |
+| `projectStatusProjectCount` | `ProjectStatusCountPayload!` | generated_operation | root field used by local GraphQL operation |
+| `projectStatuses` | `ProjectStatusConnection!` | generated_operation | root field used by local GraphQL operation |
+| `projectUpdate` | `ProjectUpdate!` | generated_operation | root field used by local GraphQL operation |
+| `projectUpdates` | `ProjectUpdateConnection!` | generated_operation | root field used by local GraphQL operation |
+| `projects` | `ProjectConnection!` | generated_operation | root field used by local GraphQL operation |
 | `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
-| `rateLimitStatus` | `RateLimitPayload!` | implemented | root field used by local GraphQL operation |
+| `rateLimitStatus` | `RateLimitPayload!` | generated_operation | root field used by local GraphQL operation |
 | `recentReleasesByAccessKey` | `[Release!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
-| `release` | `Release!` | implemented | root field used by local GraphQL operation |
-| `releaseNote` | `ReleaseNote!` | implemented | root field used by local GraphQL operation |
-| `releaseNotes` | `ReleaseNoteConnection!` | implemented | root field used by local GraphQL operation |
-| `releasePipeline` | `ReleasePipeline!` | implemented | root field used by local GraphQL operation |
+| `release` | `Release!` | generated_operation | root field used by local GraphQL operation |
+| `releaseNote` | `ReleaseNote!` | generated_operation | root field used by local GraphQL operation |
+| `releaseNotes` | `ReleaseNoteConnection!` | generated_operation | root field used by local GraphQL operation |
+| `releasePipeline` | `ReleasePipeline!` | generated_operation | root field used by local GraphQL operation |
 | `releasePipelineByAccessKey` | `ReleasePipeline!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
-| `releasePipelines` | `ReleasePipelineConnection!` | implemented | root field used by local GraphQL operation |
-| `releaseSearch` | `[Release!]!` | implemented | root field used by local GraphQL operation |
-| `releaseStage` | `ReleaseStage!` | implemented | root field used by local GraphQL operation |
-| `releaseStages` | `ReleaseStageConnection!` | implemented | root field used by local GraphQL operation |
-| `releases` | `ReleaseConnection!` | implemented | root field used by local GraphQL operation |
-| `roadmap` | `Roadmap!` | implemented | root field used by local GraphQL operation |
-| `roadmapToProject` | `RoadmapToProject!` | implemented | root field used by local GraphQL operation |
-| `roadmapToProjects` | `RoadmapToProjectConnection!` | implemented | root field used by local GraphQL operation |
-| `roadmaps` | `RoadmapConnection!` | implemented | root field used by local GraphQL operation |
-| `searchDocuments` | `DocumentSearchPayload!` | implemented | root field used by local GraphQL operation |
-| `searchIssues` | `IssueSearchPayload!` | implemented | root field used by local GraphQL operation |
-| `searchProjects` | `ProjectSearchPayload!` | implemented | root field used by local GraphQL operation |
-| `semanticSearch` | `SemanticSearchPayload!` | implemented | root field used by local GraphQL operation |
-| `slaConfigurations` | `[SlaConfiguration!]!` | implemented | root field used by local GraphQL operation |
+| `releasePipelines` | `ReleasePipelineConnection!` | generated_operation | root field used by local GraphQL operation |
+| `releaseSearch` | `[Release!]!` | generated_operation | root field used by local GraphQL operation |
+| `releaseStage` | `ReleaseStage!` | generated_operation | root field used by local GraphQL operation |
+| `releaseStages` | `ReleaseStageConnection!` | generated_operation | root field used by local GraphQL operation |
+| `releases` | `ReleaseConnection!` | generated_operation | root field used by local GraphQL operation |
+| `roadmap` | `Roadmap!` | generated_operation | root field used by local GraphQL operation |
+| `roadmapToProject` | `RoadmapToProject!` | generated_operation | root field used by local GraphQL operation |
+| `roadmapToProjects` | `RoadmapToProjectConnection!` | generated_operation | root field used by local GraphQL operation |
+| `roadmaps` | `RoadmapConnection!` | generated_operation | root field used by local GraphQL operation |
+| `searchDocuments` | `DocumentSearchPayload!` | generated_operation | root field used by local GraphQL operation |
+| `searchIssues` | `IssueSearchPayload!` | generated_operation | root field used by local GraphQL operation |
+| `searchProjects` | `ProjectSearchPayload!` | generated_operation | root field used by local GraphQL operation |
+| `semanticSearch` | `SemanticSearchPayload!` | generated_operation | root field used by local GraphQL operation |
+| `slaConfigurations` | `[SlaConfiguration!]!` | generated_operation | root field used by local GraphQL operation |
 | `ssoUrlFromEmail` | `SsoUrlFromEmailResponse!` | intentionally_excluded | SSO discovery from email belongs to auth flow tooling, not the Linear work CLI |
-| `team` | `Team!` | implemented | root field used by local GraphQL operation |
-| `teamMembership` | `TeamMembership!` | implemented | root field used by local GraphQL operation |
-| `teamMemberships` | `TeamMembershipConnection!` | implemented | root field used by local GraphQL operation |
-| `teams` | `TeamConnection!` | implemented | root field used by local GraphQL operation |
-| `template` | `Template!` | implemented | root field used by local GraphQL operation |
-| `templates` | `[Template!]!` | implemented | root field used by local GraphQL operation |
+| `team` | `Team!` | generated_operation | root field used by local GraphQL operation |
+| `teamMembership` | `TeamMembership!` | generated_operation | root field used by local GraphQL operation |
+| `teamMemberships` | `TeamMembershipConnection!` | generated_operation | root field used by local GraphQL operation |
+| `teams` | `TeamConnection!` | generated_operation | root field used by local GraphQL operation |
+| `template` | `Template!` | generated_operation | root field used by local GraphQL operation |
+| `templates` | `[Template!]!` | generated_operation | root field used by local GraphQL operation |
 | `templatesForIntegration` | `[Template!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `timeSchedule` | `TimeSchedule!` | implemented | root field used by local GraphQL operation |
-| `timeSchedules` | `TimeScheduleConnection!` | implemented | root field used by local GraphQL operation |
-| `triageResponsibilities` | `TriageResponsibilityConnection!` | implemented | root field used by local GraphQL operation |
-| `triageResponsibility` | `TriageResponsibility!` | implemented | root field used by local GraphQL operation |
-| `user` | `User!` | implemented | root field used by local GraphQL operation |
+| `timeSchedule` | `TimeSchedule!` | generated_operation | root field used by local GraphQL operation |
+| `timeSchedules` | `TimeScheduleConnection!` | generated_operation | root field used by local GraphQL operation |
+| `triageResponsibilities` | `TriageResponsibilityConnection!` | generated_operation | root field used by local GraphQL operation |
+| `triageResponsibility` | `TriageResponsibility!` | generated_operation | root field used by local GraphQL operation |
+| `user` | `User!` | generated_operation | root field used by local GraphQL operation |
 | `userSessions` | `[AuthenticationSessionResponse!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `userSettings` | `UserSettings!` | implemented | root field used by local GraphQL operation |
-| `users` | `UserConnection!` | implemented | root field used by local GraphQL operation |
+| `userSettings` | `UserSettings!` | generated_operation | root field used by local GraphQL operation |
+| `users` | `UserConnection!` | generated_operation | root field used by local GraphQL operation |
 | `verifyGitHubEnterpriseServerInstallation` | `GitHubEnterpriseServerInstallVerificationPayload!` | intentionally_excluded | GitHub Enterprise installation verification is integration administration outside the CLI surface |
-| `viewer` | `User!` | implemented | root field used by local GraphQL operation |
+| `viewer` | `User!` | generated_operation | root field used by local GraphQL operation |
 | `webhook` | `Webhook!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `webhooks` | `WebhookConnection!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `workflowState` | `WorkflowState!` | implemented | root field used by local GraphQL operation |
-| `workflowStates` | `WorkflowStateConnection!` | implemented | root field used by local GraphQL operation |
+| `workflowState` | `WorkflowState!` | generated_operation | root field used by local GraphQL operation |
+| `workflowStates` | `WorkflowStateConnection!` | generated_operation | root field used by local GraphQL operation |
 
 ## Upstream Mutation Root Fields
 
@@ -666,7 +666,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `agentSkillDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `agentSkillUpdate` | `AgentSkillPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `airbyteIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `attachmentCreate` | `AttachmentPayload!` | implemented | root field used by local GraphQL operation |
+| `attachmentCreate` | `AttachmentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `attachmentDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `attachmentLinkDiscord` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentLinkFront` | `FrontAttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -681,11 +681,11 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `attachmentLinkZendesk` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentSyncToSlack` | `AttachmentPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `attachmentUpdate` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `commentCreate` | `CommentPayload!` | implemented | root field used by local GraphQL operation |
-| `commentDelete` | `DeletePayload!` | implemented | root field used by local GraphQL operation |
+| `commentCreate` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
+| `commentDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `commentResolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
 | `commentUnresolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
-| `commentUpdate` | `CommentPayload!` | implemented | root field used by local GraphQL operation |
+| `commentUpdate` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `contactCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `contactSalesCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createCsvExportReport` | `CreateCsvExportReportPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -713,15 +713,15 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `customerUnsync` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `customerUpdate` | `CustomerPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `customerUpsert` | `CustomerPayload!` | blocked_needs_design | mutation needs product and safety design |
-| `cycleArchive` | `CycleArchivePayload!` | implemented | root field used by local GraphQL operation |
-| `cycleCreate` | `CyclePayload!` | implemented | root field used by local GraphQL operation |
+| `cycleArchive` | `CycleArchivePayload!` | generated_operation | root field used by local GraphQL operation |
+| `cycleCreate` | `CyclePayload!` | generated_operation | root field used by local GraphQL operation |
 | `cycleShiftAll` | `CyclePayload!` | blocked_needs_design | bulk Cycle date shifting is a state-changing organization operation that needs target-pinned guard semantics |
 | `cycleStartUpcomingCycleToday` | `CyclePayload!` | blocked_needs_design | starting an upcoming Cycle changes team planning state and needs target-pinned guard semantics |
-| `cycleUpdate` | `CyclePayload!` | implemented | root field used by local GraphQL operation |
-| `documentCreate` | `DocumentPayload!` | implemented | root field used by local GraphQL operation |
+| `cycleUpdate` | `CyclePayload!` | generated_operation | root field used by local GraphQL operation |
+| `documentCreate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `documentDelete` | `DocumentArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `documentUnarchive` | `DocumentArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `documentUpdate` | `DocumentPayload!` | implemented | root field used by local GraphQL operation |
+| `documentUpdate` | `DocumentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `emailIntakeAddressCreate` | `EmailIntakeAddressPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `emailIntakeAddressDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `emailIntakeAddressRefreshSesDomainStatus` | `EmailIntakeAddressRefreshSesDomainStatusPayload!` | blocked_needs_design | mutation needs product and safety design |
@@ -738,7 +738,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `favoriteCreate` | `FavoritePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `favoriteDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `favoriteUpdate` | `FavoritePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `fileUpload` | `UploadPayload!` | implemented | root field used by local GraphQL operation |
+| `fileUpload` | `UploadPayload!` | generated_operation | root field used by local GraphQL operation |
 | `fileUploadDangerouslyDelete` | `FileUploadDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `gitAutomationStateCreate` | `GitAutomationStatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `gitAutomationStateDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -829,10 +829,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `integrationsSettingsCreate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettingsUpdate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `issueAddLabel` | `IssuePayload!` | blocked_needs_design | issue label mutation needs issue target pinning and target-mismatch tests |
-| `issueArchive` | `IssueArchivePayload!` | implemented | root field used by local GraphQL operation |
+| `issueArchive` | `IssueArchivePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueBatchCreate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueBatchUpdate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `issueCreate` | `IssuePayload!` | implemented | root field used by local GraphQL operation |
+| `issueCreate` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueDelete` | `IssueArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueDescriptionUpdateFromFront` | `IssuePayload!` | blocked_needs_design | Front-origin description updates mutate issue content through integration state; needs explicit integration guard semantics |
 | `issueExternalSyncDisable` | `IssuePayload!` | blocked_needs_design | issue external-sync disable changes integration state and needs explicit integration guard semantics |
@@ -850,8 +850,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueLabelRestore` | `IssueLabelPayload!` | blocked_needs_design | issue label lifecycle restore needs explicit organization/admin safety semantics |
 | `issueLabelRetire` | `IssueLabelPayload!` | blocked_needs_design | issue label lifecycle retire needs explicit organization/admin safety semantics |
 | `issueLabelUpdate` | `IssueLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `issueRelationCreate` | `IssueRelationPayload!` | implemented | root field used by local GraphQL operation |
-| `issueRelationDelete` | `DeletePayload!` | implemented | root field used by local GraphQL operation |
+| `issueRelationCreate` | `IssueRelationPayload!` | generated_operation | root field used by local GraphQL operation |
+| `issueRelationDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueRelationUpdate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueReminder` | `IssuePayload!` | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
 | `issueRemoveLabel` | `IssuePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -863,7 +863,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueUnarchive` | `IssueArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueUnshare` | `IssuePayload!` | blocked_needs_design | issue unsharing changes access state and needs target-pinned guard semantics |
 | `issueUnsubscribe` | `IssuePayload!` | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
-| `issueUpdate` | `IssuePayload!` | implemented | root field used by local GraphQL operation |
+| `issueUpdate` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
 | `jiraIntegrationConnect` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `joinOrganizationFromOnboarding` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `leaveOrganization` | `CreateOrJoinOrganizationResponse!` | blocked_needs_design | mutation needs product and safety design |
@@ -905,8 +905,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `projectAddLabel` | `ProjectPayload!` | blocked_needs_design | project label mutation needs project target pinning and target-mismatch tests |
-| `projectArchive` | `ProjectArchivePayload!` | implemented | root field used by local GraphQL operation |
-| `projectCreate` | `ProjectPayload!` | implemented | root field used by local GraphQL operation |
+| `projectArchive` | `ProjectArchivePayload!` | generated_operation | root field used by local GraphQL operation |
+| `projectCreate` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreateSlackChannel` | `ProjectPayload!` | blocked_needs_design | project Slack channel creation mutates chat integration state and needs explicit integration guard semantics |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectExternalSyncDisable` | `ProjectPayload!` | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
@@ -915,10 +915,10 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectLabelRestore` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle restore needs explicit organization/admin safety semantics |
 | `projectLabelRetire` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle retire needs explicit organization/admin safety semantics |
 | `projectLabelUpdate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `projectMilestoneCreate` | `ProjectMilestonePayload!` | implemented | root field used by local GraphQL operation |
+| `projectMilestoneCreate` | `ProjectMilestonePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectMilestoneDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectMilestoneMove` | `ProjectMilestoneMovePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `projectMilestoneUpdate` | `ProjectMilestonePayload!` | implemented | root field used by local GraphQL operation |
+| `projectMilestoneUpdate` | `ProjectMilestonePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectReassignStatus` | `SuccessPayload!` | blocked_needs_design | project status reassignment mutates project workflow state and needs target-pinned guard semantics |
 | `projectRelationCreate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -929,9 +929,9 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projectStatusUnarchive` | `ProjectStatusArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectStatusUpdate` | `ProjectStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectUnarchive` | `ProjectArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `projectUpdate` | `ProjectPayload!` | implemented | root field used by local GraphQL operation |
+| `projectUpdate` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectUpdateArchive` | `ProjectUpdateArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `projectUpdateCreate` | `ProjectUpdatePayload!` | implemented | root field used by local GraphQL operation |
+| `projectUpdateCreate` | `ProjectUpdatePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectUpdateDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectUpdateUnarchive` | `ProjectUpdateArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectUpdateUpdate` | `ProjectUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1023,360 +1023,360 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 
 | Operation | Kind | Root fields | Status | Evidence |
 | --- | --- | --- | --- | --- |
-| `AttachmentLinkURL` | mutation | `attachmentCreate` | implemented | `internal/client/generated.go` |
-| `CommentDelete` | mutation | `commentDelete` | implemented | `internal/client/generated.go` |
-| `CommentUpdate` | mutation | `commentUpdate` | implemented | `internal/client/generated.go` |
-| `CompletedWorkflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
-| `CycleArchive` | mutation | `cycleArchive` | implemented | `internal/client/generated.go` |
-| `CycleCreate` | mutation | `cycleCreate` | implemented | `internal/client/generated.go` |
-| `CycleReport` | query | `cycle` | implemented | `internal/client/generated.go` |
-| `CycleUpdate` | mutation | `cycleUpdate` | implemented | `internal/client/generated.go` |
-| `DocumentCreate` | mutation | `documentCreate` | implemented | `internal/client/generated.go` |
-| `DocumentUpdate` | mutation | `documentUpdate` | implemented | `internal/client/generated.go` |
-| `Documents` | query | `documents` | implemented | `internal/client/generated.go` |
-| `IssueArchive` | mutation | `issueArchive` | implemented | `internal/client/generated.go` |
-| `IssueBlockedIssues` | query | `issue` | implemented | `internal/client/generated.go` |
-| `IssueClose` | mutation | `issueUpdate` | implemented | `internal/client/generated.go` |
-| `IssueCommentCreate` | mutation | `commentCreate` | implemented | `internal/client/generated.go` |
-| `IssueCreate` | mutation | `issueCreate` | implemented | `internal/client/generated.go` |
-| `IssueDependencies` | query | `issue` | implemented | `internal/client/generated.go` |
-| `IssueLabels` | query | `issueLabels` | implemented | `internal/client/generated.go` |
-| `IssueRelationCreate` | mutation | `issueRelationCreate` | implemented | `internal/client/generated.go` |
-| `IssueRelationDelete` | mutation | `issueRelationDelete` | implemented | `internal/client/generated.go` |
-| `IssueUpdate` | mutation | `issueUpdate` | implemented | `internal/client/generated.go` |
-| `IssuesByTeam` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamAssignee` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamBlocks` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamCreatedAfter` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamCreatedBefore` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamCycle` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamHasBlockers` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamLabel` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamProject` | query | `issues` | implemented | `internal/client/generated.go` |
-| `IssuesByTeamState` | query | `issues` | implemented | `internal/client/generated.go` |
-| `NextIssuesByTeam` | query | `issues` | implemented | `internal/client/generated.go` |
-| `Organization` | query | `organization` | implemented | `internal/client/generated.go` |
-| `ProjectArchive` | mutation | `projectArchive` | implemented | `internal/client/generated.go` |
-| `ProjectCreate` | mutation | `projectCreate` | implemented | `internal/client/generated.go` |
-| `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | implemented | `internal/client/generated.go` |
-| `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | implemented | `internal/client/generated.go` |
-| `ProjectUpdate` | mutation | `projectUpdate` | implemented | `internal/client/generated.go` |
-| `ProjectUpdateCreate` | mutation | `projectUpdateCreate` | implemented | `internal/client/generated.go` |
-| `Projects` | query | `team` | implemented | `internal/client/generated.go` |
-| `StartedWorkflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
-| `TargetProject` | query | `project` | implemented | `internal/client/generated.go` |
-| `Teams` | query | `teams` | implemented | `internal/client/generated.go` |
-| `Viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `WorkflowStatesByType` | query | `workflowStates` | implemented | `internal/client/generated.go` |
-| `agentActivities` | query | `agentActivities` | implemented | `internal/client/generated.go` |
-| `agentActivity` | query | `agentActivity` | implemented | `internal/client/generated.go` |
-| `agentSession` | query | `agentSession` | implemented | `internal/client/generated.go` |
-| `agentSessions` | query | `agentSessions` | implemented | `internal/client/generated.go` |
-| `agentSkill` | query | `agentSkill` | implemented | `internal/client/generated.go` |
-| `agentSkills` | query | `agentSkills` | implemented | `internal/client/generated.go` |
-| `applicationInfo` | query | `applicationInfo` | implemented | `internal/client/generated.go` |
-| `attachment` | query | `attachment` | implemented | `internal/client/generated.go` |
-| `attachmentIssue` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_attachments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_botActor` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_children` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_comments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_documents` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_formerAttachments` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_formerNeeds` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_history` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_inverseRelations` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_labels` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_needs` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_relations` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_releases` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_sharedAccess` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_stateHistory` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachmentIssue_subscribers` | query | `attachmentIssue` | implemented | `internal/client/generated.go` |
-| `attachments` | query | `attachments` | implemented | `internal/client/generated.go` |
-| `attachmentsForURL` | query | `attachmentsForURL` | implemented | `internal/client/generated.go` |
-| `auditEntryTypes` | query | `auditEntryTypes` | implemented | `internal/client/generated.go` |
-| `comment` | query | `comment` | implemented | `internal/client/generated.go` |
-| `comment_botActor` | query | `comment` | implemented | `internal/client/generated.go` |
-| `comment_children` | query | `comment` | implemented | `internal/client/generated.go` |
-| `comment_createdIssues` | query | `comment` | implemented | `internal/client/generated.go` |
-| `comments` | query | `comments` | implemented | `internal/client/generated.go` |
-| `customView` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customViewHasSubscribers` | query | `customViewHasSubscribers` | implemented | `internal/client/generated.go` |
-| `customView_initiatives` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customView_issues` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customView_organizationViewPreferences` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customView_organizationViewPreferences_preferences` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customView_projects` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customView_userViewPreferences` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customView_userViewPreferences_preferences` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customView_viewPreferencesValues` | query | `customView` | implemented | `internal/client/generated.go` |
-| `customViews` | query | `customViews` | implemented | `internal/client/generated.go` |
-| `customer` | query | `customer` | implemented | `internal/client/generated.go` |
-| `customerNeed` | query | `customerNeed` | implemented | `internal/client/generated.go` |
-| `customerNeed_projectAttachment` | query | `customerNeed` | implemented | `internal/client/generated.go` |
-| `customerNeeds` | query | `customerNeeds` | implemented | `internal/client/generated.go` |
-| `customerStatus` | query | `customerStatus` | implemented | `internal/client/generated.go` |
-| `customerStatuses` | query | `customerStatuses` | implemented | `internal/client/generated.go` |
-| `customerTier` | query | `customerTier` | implemented | `internal/client/generated.go` |
-| `customerTiers` | query | `customerTiers` | implemented | `internal/client/generated.go` |
-| `customers` | query | `customers` | implemented | `internal/client/generated.go` |
-| `cycle` | query | `cycle` | implemented | `internal/client/generated.go` |
-| `cycle_issues` | query | `cycle` | implemented | `internal/client/generated.go` |
-| `cycle_uncompletedIssuesUponClose` | query | `cycle` | implemented | `internal/client/generated.go` |
-| `cycles` | query | `cycles` | implemented | `internal/client/generated.go` |
-| `document` | query | `document` | implemented | `internal/client/generated.go` |
-| `document_comments` | query | `document` | implemented | `internal/client/generated.go` |
-| `emoji` | query | `emoji` | implemented | `internal/client/generated.go` |
-| `emojis` | query | `emojis` | implemented | `internal/client/generated.go` |
-| `entityExternalLink` | query | `entityExternalLink` | implemented | `internal/client/generated.go` |
-| `externalUser` | query | `externalUser` | implemented | `internal/client/generated.go` |
-| `externalUsers` | query | `externalUsers` | implemented | `internal/client/generated.go` |
-| `favorite` | query | `favorite` | implemented | `internal/client/generated.go` |
-| `favorite_children` | query | `favorite` | implemented | `internal/client/generated.go` |
-| `favorites` | query | `favorites` | implemented | `internal/client/generated.go` |
-| `fileUpload` | mutation | `fileUpload` | implemented | `internal/client/generated.go` |
-| `initiative` | query | `initiative` | implemented | `internal/client/generated.go` |
-| `initiativeRelation` | query | `initiativeRelation` | implemented | `internal/client/generated.go` |
-| `initiativeRelations` | query | `initiativeRelations` | implemented | `internal/client/generated.go` |
-| `initiativeToProject` | query | `initiativeToProject` | implemented | `internal/client/generated.go` |
-| `initiativeToProjects` | query | `initiativeToProjects` | implemented | `internal/client/generated.go` |
-| `initiativeUpdate` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
-| `initiativeUpdate_comments` | query | `initiativeUpdate` | implemented | `internal/client/generated.go` |
-| `initiativeUpdates` | query | `initiativeUpdates` | implemented | `internal/client/generated.go` |
-| `initiative_documents` | query | `initiative` | implemented | `internal/client/generated.go` |
-| `initiative_history` | query | `initiative` | implemented | `internal/client/generated.go` |
-| `initiative_initiativeUpdates` | query | `initiative` | implemented | `internal/client/generated.go` |
-| `initiative_links` | query | `initiative` | implemented | `internal/client/generated.go` |
-| `initiative_projects` | query | `initiative` | implemented | `internal/client/generated.go` |
-| `initiative_subInitiatives` | query | `initiative` | implemented | `internal/client/generated.go` |
-| `initiatives` | query | `initiatives` | implemented | `internal/client/generated.go` |
-| `issue` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issueFigmaFileKeySearch` | query | `issueFigmaFileKeySearch` | implemented | `internal/client/generated.go` |
-| `issueFilterSuggestion` | query | `issueFilterSuggestion` | implemented | `internal/client/generated.go` |
-| `issueLabel` | query | `issueLabel` | implemented | `internal/client/generated.go` |
-| `issueLabel_children` | query | `issueLabel` | implemented | `internal/client/generated.go` |
-| `issueLabel_issues` | query | `issueLabel` | implemented | `internal/client/generated.go` |
-| `issuePriorityValues` | query | `issuePriorityValues` | implemented | `internal/client/generated.go` |
-| `issueRelation` | query | `issueRelation` | implemented | `internal/client/generated.go` |
-| `issueRelations` | query | `issueRelations` | implemented | `internal/client/generated.go` |
-| `issueSearch` | query | `issueSearch` | implemented | `internal/client/generated.go` |
-| `issueTitleSuggestionFromCustomerRequest` | query | `issueTitleSuggestionFromCustomerRequest` | implemented | `internal/client/generated.go` |
-| `issueToRelease` | query | `issueToRelease` | implemented | `internal/client/generated.go` |
-| `issueToReleases` | query | `issueToReleases` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_attachments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_botActor` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_children` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_comments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_documents` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_formerAttachments` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_formerNeeds` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_history` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_inverseRelations` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_labels` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_needs` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_relations` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_releases` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_sharedAccess` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_stateHistory` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issueVcsBranchSearch_subscribers` | query | `issueVcsBranchSearch` | implemented | `internal/client/generated.go` |
-| `issue_attachments` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_botActor` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_children` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_comments` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_documents` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_formerAttachments` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_formerNeeds` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_history` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_inverseRelations` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_labels` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_needs` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_relations` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_releases` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_sharedAccess` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_stateHistory` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issue_subscribers` | query | `issue` | implemented | `internal/client/generated.go` |
-| `issues` | query | `issues` | implemented | `internal/client/generated.go` |
-| `notification` | query | `notification` | implemented | `internal/client/generated.go` |
-| `notificationSubscription` | query | `notificationSubscription` | implemented | `internal/client/generated.go` |
-| `notificationSubscriptions` | query | `notificationSubscriptions` | implemented | `internal/client/generated.go` |
-| `notifications` | query | `notifications` | implemented | `internal/client/generated.go` |
-| `organizationExists` | query | `organizationExists` | implemented | `internal/client/generated.go` |
-| `organization_labels` | query | `organization` | implemented | `internal/client/generated.go` |
-| `organization_projectLabels` | query | `organization` | implemented | `internal/client/generated.go` |
-| `organization_teams` | query | `organization` | implemented | `internal/client/generated.go` |
-| `organization_templates` | query | `organization` | implemented | `internal/client/generated.go` |
-| `organization_users` | query | `organization` | implemented | `internal/client/generated.go` |
-| `project` | query | `project` | implemented | `internal/client/generated.go` |
-| `projectFilterSuggestion` | query | `projectFilterSuggestion` | implemented | `internal/client/generated.go` |
-| `projectLabel` | query | `projectLabel` | implemented | `internal/client/generated.go` |
-| `projectLabel_children` | query | `projectLabel` | implemented | `internal/client/generated.go` |
-| `projectLabel_projects` | query | `projectLabel` | implemented | `internal/client/generated.go` |
-| `projectLabels` | query | `projectLabels` | implemented | `internal/client/generated.go` |
-| `projectMilestone` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
-| `projectMilestone_issues` | query | `projectMilestone` | implemented | `internal/client/generated.go` |
-| `projectMilestones` | query | `projectMilestones` | implemented | `internal/client/generated.go` |
-| `projectRelation` | query | `projectRelation` | implemented | `internal/client/generated.go` |
-| `projectRelations` | query | `projectRelations` | implemented | `internal/client/generated.go` |
-| `projectStatus` | query | `projectStatus` | implemented | `internal/client/generated.go` |
-| `projectStatusProjectCount` | query | `projectStatusProjectCount` | implemented | `internal/client/generated.go` |
-| `projectStatuses` | query | `projectStatuses` | implemented | `internal/client/generated.go` |
-| `projectUpdate` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
-| `projectUpdate_comments` | query | `projectUpdate` | implemented | `internal/client/generated.go` |
-| `projectUpdates` | query | `projectUpdates` | implemented | `internal/client/generated.go` |
-| `project_attachments` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_comments` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_documents` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_externalLinks` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_history` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_initiativeToProjects` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_initiatives` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_inverseRelations` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_issues` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_labels` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_members` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_needs` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_projectMilestones` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_projectUpdates` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_relations` | query | `project` | implemented | `internal/client/generated.go` |
-| `project_teams` | query | `project` | implemented | `internal/client/generated.go` |
-| `projects` | query | `projects` | implemented | `internal/client/generated.go` |
-| `rateLimitStatus` | query | `rateLimitStatus` | implemented | `internal/client/generated.go` |
-| `release` | query | `release` | implemented | `internal/client/generated.go` |
-| `releaseNote` | query | `releaseNote` | implemented | `internal/client/generated.go` |
-| `releaseNotes` | query | `releaseNotes` | implemented | `internal/client/generated.go` |
-| `releasePipeline` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
-| `releasePipeline_releases` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
-| `releasePipeline_stages` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
-| `releasePipeline_teams` | query | `releasePipeline` | implemented | `internal/client/generated.go` |
-| `releasePipelines` | query | `releasePipelines` | implemented | `internal/client/generated.go` |
-| `releaseSearch` | query | `releaseSearch` | implemented | `internal/client/generated.go` |
-| `releaseStage` | query | `releaseStage` | implemented | `internal/client/generated.go` |
-| `releaseStage_releases` | query | `releaseStage` | implemented | `internal/client/generated.go` |
-| `releaseStages` | query | `releaseStages` | implemented | `internal/client/generated.go` |
-| `release_documents` | query | `release` | implemented | `internal/client/generated.go` |
-| `release_history` | query | `release` | implemented | `internal/client/generated.go` |
-| `release_issues` | query | `release` | implemented | `internal/client/generated.go` |
-| `release_links` | query | `release` | implemented | `internal/client/generated.go` |
-| `releases` | query | `releases` | implemented | `internal/client/generated.go` |
-| `roadmap` | query | `roadmap` | implemented | `internal/client/generated.go` |
-| `roadmapToProject` | query | `roadmapToProject` | implemented | `internal/client/generated.go` |
-| `roadmapToProjects` | query | `roadmapToProjects` | implemented | `internal/client/generated.go` |
-| `roadmap_projects` | query | `roadmap` | implemented | `internal/client/generated.go` |
-| `roadmaps` | query | `roadmaps` | implemented | `internal/client/generated.go` |
-| `searchDocuments` | query | `searchDocuments` | implemented | `internal/client/generated.go` |
-| `searchIssues` | query | `searchIssues` | implemented | `internal/client/generated.go` |
-| `searchProjects` | query | `searchProjects` | implemented | `internal/client/generated.go` |
-| `semanticSearch` | query | `semanticSearch` | implemented | `internal/client/generated.go` |
-| `slaConfigurations` | query | `slaConfigurations` | implemented | `internal/client/generated.go` |
-| `team` | query | `team` | implemented | `internal/client/generated.go` |
-| `teamEstimateConfig` | query | `team` | implemented | `internal/client/generated.go` |
-| `teamMembership` | query | `teamMembership` | implemented | `internal/client/generated.go` |
-| `teamMemberships` | query | `teamMemberships` | implemented | `internal/client/generated.go` |
-| `team_cycles` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_gitAutomationStates` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_issues` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_labels` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_members` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_memberships` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_projects` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_releasePipelines` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_states` | query | `team` | implemented | `internal/client/generated.go` |
-| `team_templates` | query | `team` | implemented | `internal/client/generated.go` |
-| `template` | query | `template` | implemented | `internal/client/generated.go` |
-| `templateContent` | query | `template` | implemented | `internal/client/generated.go` |
-| `templates` | query | `templates` | implemented | `internal/client/generated.go` |
-| `timeSchedule` | query | `timeSchedule` | implemented | `internal/client/generated.go` |
-| `timeSchedules` | query | `timeSchedules` | implemented | `internal/client/generated.go` |
-| `triageResponsibilities` | query | `triageResponsibilities` | implemented | `internal/client/generated.go` |
-| `triageResponsibility` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
-| `triageResponsibility_manualSelection` | query | `triageResponsibility` | implemented | `internal/client/generated.go` |
-| `user` | query | `user` | implemented | `internal/client/generated.go` |
-| `userSettings` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_appsAndIntegrations` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_assignments` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_billing` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_commentsAndReplies` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_customers` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_documentChanges` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_feed` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_mentions` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_postsAndUpdates` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_reactions` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_reminders` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_reviews` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_statusChanges` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_subscriptions` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_system` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_triage` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationChannelPreferences` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_friday` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_monday` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_saturday` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_sunday` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_thursday` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_theme` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_theme_custom` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `userSettings_theme_custom_sidebar` | query | `userSettings` | implemented | `internal/client/generated.go` |
-| `user_assignedIssues` | query | `user` | implemented | `internal/client/generated.go` |
-| `user_createdIssues` | query | `user` | implemented | `internal/client/generated.go` |
-| `user_delegatedIssues` | query | `user` | implemented | `internal/client/generated.go` |
-| `user_teamMemberships` | query | `user` | implemented | `internal/client/generated.go` |
-| `user_teams` | query | `user` | implemented | `internal/client/generated.go` |
-| `users` | query | `users` | implemented | `internal/client/generated.go` |
-| `viewer` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `viewer_assignedIssues` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `viewer_createdIssues` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `viewer_delegatedIssues` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `viewer_drafts` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `viewer_teamMemberships` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `viewer_teams` | query | `viewer` | implemented | `internal/client/generated.go` |
-| `workflowState` | query | `workflowState` | implemented | `internal/client/generated.go` |
-| `workflowState_issues` | query | `workflowState` | implemented | `internal/client/generated.go` |
-| `workflowStates` | query | `workflowStates` | implemented | `internal/client/generated.go` |
+| `AttachmentLinkURL` | mutation | `attachmentCreate` | generated | `internal/client/generated.go` |
+| `CommentDelete` | mutation | `commentDelete` | generated | `internal/client/generated.go` |
+| `CommentUpdate` | mutation | `commentUpdate` | generated | `internal/client/generated.go` |
+| `CompletedWorkflowStates` | query | `workflowStates` | generated | `internal/client/generated.go` |
+| `CycleArchive` | mutation | `cycleArchive` | generated | `internal/client/generated.go` |
+| `CycleCreate` | mutation | `cycleCreate` | generated | `internal/client/generated.go` |
+| `CycleReport` | query | `cycle` | generated | `internal/client/generated.go` |
+| `CycleUpdate` | mutation | `cycleUpdate` | generated | `internal/client/generated.go` |
+| `DocumentCreate` | mutation | `documentCreate` | generated | `internal/client/generated.go` |
+| `DocumentUpdate` | mutation | `documentUpdate` | generated | `internal/client/generated.go` |
+| `Documents` | query | `documents` | generated | `internal/client/generated.go` |
+| `IssueArchive` | mutation | `issueArchive` | generated | `internal/client/generated.go` |
+| `IssueBlockedIssues` | query | `issue` | generated | `internal/client/generated.go` |
+| `IssueClose` | mutation | `issueUpdate` | generated | `internal/client/generated.go` |
+| `IssueCommentCreate` | mutation | `commentCreate` | generated | `internal/client/generated.go` |
+| `IssueCreate` | mutation | `issueCreate` | generated | `internal/client/generated.go` |
+| `IssueDependencies` | query | `issue` | generated | `internal/client/generated.go` |
+| `IssueLabels` | query | `issueLabels` | generated | `internal/client/generated.go` |
+| `IssueRelationCreate` | mutation | `issueRelationCreate` | generated | `internal/client/generated.go` |
+| `IssueRelationDelete` | mutation | `issueRelationDelete` | generated | `internal/client/generated.go` |
+| `IssueUpdate` | mutation | `issueUpdate` | generated | `internal/client/generated.go` |
+| `IssuesByTeam` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamAssignee` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamBlocks` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamCreatedAfter` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamCreatedBefore` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamCycle` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamHasBlockers` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamLabel` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamProject` | query | `issues` | generated | `internal/client/generated.go` |
+| `IssuesByTeamState` | query | `issues` | generated | `internal/client/generated.go` |
+| `NextIssuesByTeam` | query | `issues` | generated | `internal/client/generated.go` |
+| `Organization` | query | `organization` | generated | `internal/client/generated.go` |
+| `ProjectArchive` | mutation | `projectArchive` | generated | `internal/client/generated.go` |
+| `ProjectCreate` | mutation | `projectCreate` | generated | `internal/client/generated.go` |
+| `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | generated | `internal/client/generated.go` |
+| `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | generated | `internal/client/generated.go` |
+| `ProjectUpdate` | mutation | `projectUpdate` | generated | `internal/client/generated.go` |
+| `ProjectUpdateCreate` | mutation | `projectUpdateCreate` | generated | `internal/client/generated.go` |
+| `Projects` | query | `team` | generated | `internal/client/generated.go` |
+| `StartedWorkflowStates` | query | `workflowStates` | generated | `internal/client/generated.go` |
+| `TargetProject` | query | `project` | generated | `internal/client/generated.go` |
+| `Teams` | query | `teams` | generated | `internal/client/generated.go` |
+| `Viewer` | query | `viewer` | generated | `internal/client/generated.go` |
+| `WorkflowStatesByType` | query | `workflowStates` | generated | `internal/client/generated.go` |
+| `agentActivities` | query | `agentActivities` | generated | `internal/client/generated.go` |
+| `agentActivity` | query | `agentActivity` | generated | `internal/client/generated.go` |
+| `agentSession` | query | `agentSession` | generated | `internal/client/generated.go` |
+| `agentSessions` | query | `agentSessions` | generated | `internal/client/generated.go` |
+| `agentSkill` | query | `agentSkill` | generated | `internal/client/generated.go` |
+| `agentSkills` | query | `agentSkills` | generated | `internal/client/generated.go` |
+| `applicationInfo` | query | `applicationInfo` | generated | `internal/client/generated.go` |
+| `attachment` | query | `attachment` | generated | `internal/client/generated.go` |
+| `attachmentIssue` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_attachments` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_botActor` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_children` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_comments` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_documents` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_formerAttachments` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_formerNeeds` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_history` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_inverseRelations` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_labels` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_needs` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_relations` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_releases` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_sharedAccess` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_stateHistory` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachmentIssue_subscribers` | query | `attachmentIssue` | generated | `internal/client/generated.go` |
+| `attachments` | query | `attachments` | generated | `internal/client/generated.go` |
+| `attachmentsForURL` | query | `attachmentsForURL` | generated | `internal/client/generated.go` |
+| `auditEntryTypes` | query | `auditEntryTypes` | generated | `internal/client/generated.go` |
+| `comment` | query | `comment` | generated | `internal/client/generated.go` |
+| `comment_botActor` | query | `comment` | generated | `internal/client/generated.go` |
+| `comment_children` | query | `comment` | generated | `internal/client/generated.go` |
+| `comment_createdIssues` | query | `comment` | generated | `internal/client/generated.go` |
+| `comments` | query | `comments` | generated | `internal/client/generated.go` |
+| `customView` | query | `customView` | generated | `internal/client/generated.go` |
+| `customViewHasSubscribers` | query | `customViewHasSubscribers` | generated | `internal/client/generated.go` |
+| `customView_initiatives` | query | `customView` | generated | `internal/client/generated.go` |
+| `customView_issues` | query | `customView` | generated | `internal/client/generated.go` |
+| `customView_organizationViewPreferences` | query | `customView` | generated | `internal/client/generated.go` |
+| `customView_organizationViewPreferences_preferences` | query | `customView` | generated | `internal/client/generated.go` |
+| `customView_projects` | query | `customView` | generated | `internal/client/generated.go` |
+| `customView_userViewPreferences` | query | `customView` | generated | `internal/client/generated.go` |
+| `customView_userViewPreferences_preferences` | query | `customView` | generated | `internal/client/generated.go` |
+| `customView_viewPreferencesValues` | query | `customView` | generated | `internal/client/generated.go` |
+| `customViews` | query | `customViews` | generated | `internal/client/generated.go` |
+| `customer` | query | `customer` | generated | `internal/client/generated.go` |
+| `customerNeed` | query | `customerNeed` | generated | `internal/client/generated.go` |
+| `customerNeed_projectAttachment` | query | `customerNeed` | generated | `internal/client/generated.go` |
+| `customerNeeds` | query | `customerNeeds` | generated | `internal/client/generated.go` |
+| `customerStatus` | query | `customerStatus` | generated | `internal/client/generated.go` |
+| `customerStatuses` | query | `customerStatuses` | generated | `internal/client/generated.go` |
+| `customerTier` | query | `customerTier` | generated | `internal/client/generated.go` |
+| `customerTiers` | query | `customerTiers` | generated | `internal/client/generated.go` |
+| `customers` | query | `customers` | generated | `internal/client/generated.go` |
+| `cycle` | query | `cycle` | generated | `internal/client/generated.go` |
+| `cycle_issues` | query | `cycle` | generated | `internal/client/generated.go` |
+| `cycle_uncompletedIssuesUponClose` | query | `cycle` | generated | `internal/client/generated.go` |
+| `cycles` | query | `cycles` | generated | `internal/client/generated.go` |
+| `document` | query | `document` | generated | `internal/client/generated.go` |
+| `document_comments` | query | `document` | generated | `internal/client/generated.go` |
+| `emoji` | query | `emoji` | generated | `internal/client/generated.go` |
+| `emojis` | query | `emojis` | generated | `internal/client/generated.go` |
+| `entityExternalLink` | query | `entityExternalLink` | generated | `internal/client/generated.go` |
+| `externalUser` | query | `externalUser` | generated | `internal/client/generated.go` |
+| `externalUsers` | query | `externalUsers` | generated | `internal/client/generated.go` |
+| `favorite` | query | `favorite` | generated | `internal/client/generated.go` |
+| `favorite_children` | query | `favorite` | generated | `internal/client/generated.go` |
+| `favorites` | query | `favorites` | generated | `internal/client/generated.go` |
+| `fileUpload` | mutation | `fileUpload` | generated | `internal/client/generated.go` |
+| `initiative` | query | `initiative` | generated | `internal/client/generated.go` |
+| `initiativeRelation` | query | `initiativeRelation` | generated | `internal/client/generated.go` |
+| `initiativeRelations` | query | `initiativeRelations` | generated | `internal/client/generated.go` |
+| `initiativeToProject` | query | `initiativeToProject` | generated | `internal/client/generated.go` |
+| `initiativeToProjects` | query | `initiativeToProjects` | generated | `internal/client/generated.go` |
+| `initiativeUpdate` | query | `initiativeUpdate` | generated | `internal/client/generated.go` |
+| `initiativeUpdate_comments` | query | `initiativeUpdate` | generated | `internal/client/generated.go` |
+| `initiativeUpdates` | query | `initiativeUpdates` | generated | `internal/client/generated.go` |
+| `initiative_documents` | query | `initiative` | generated | `internal/client/generated.go` |
+| `initiative_history` | query | `initiative` | generated | `internal/client/generated.go` |
+| `initiative_initiativeUpdates` | query | `initiative` | generated | `internal/client/generated.go` |
+| `initiative_links` | query | `initiative` | generated | `internal/client/generated.go` |
+| `initiative_projects` | query | `initiative` | generated | `internal/client/generated.go` |
+| `initiative_subInitiatives` | query | `initiative` | generated | `internal/client/generated.go` |
+| `initiatives` | query | `initiatives` | generated | `internal/client/generated.go` |
+| `issue` | query | `issue` | generated | `internal/client/generated.go` |
+| `issueFigmaFileKeySearch` | query | `issueFigmaFileKeySearch` | generated | `internal/client/generated.go` |
+| `issueFilterSuggestion` | query | `issueFilterSuggestion` | generated | `internal/client/generated.go` |
+| `issueLabel` | query | `issueLabel` | generated | `internal/client/generated.go` |
+| `issueLabel_children` | query | `issueLabel` | generated | `internal/client/generated.go` |
+| `issueLabel_issues` | query | `issueLabel` | generated | `internal/client/generated.go` |
+| `issuePriorityValues` | query | `issuePriorityValues` | generated | `internal/client/generated.go` |
+| `issueRelation` | query | `issueRelation` | generated | `internal/client/generated.go` |
+| `issueRelations` | query | `issueRelations` | generated | `internal/client/generated.go` |
+| `issueSearch` | query | `issueSearch` | generated | `internal/client/generated.go` |
+| `issueTitleSuggestionFromCustomerRequest` | query | `issueTitleSuggestionFromCustomerRequest` | generated | `internal/client/generated.go` |
+| `issueToRelease` | query | `issueToRelease` | generated | `internal/client/generated.go` |
+| `issueToReleases` | query | `issueToReleases` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_attachments` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_botActor` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_children` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_comments` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_documents` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_formerAttachments` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_formerNeeds` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_history` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_inverseRelations` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_labels` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_needs` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_relations` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_releases` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_sharedAccess` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_stateHistory` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issueVcsBranchSearch_subscribers` | query | `issueVcsBranchSearch` | generated | `internal/client/generated.go` |
+| `issue_attachments` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_botActor` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_children` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_comments` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_documents` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_formerAttachments` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_formerNeeds` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_history` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_inverseRelations` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_labels` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_needs` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_relations` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_releases` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_sharedAccess` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_stateHistory` | query | `issue` | generated | `internal/client/generated.go` |
+| `issue_subscribers` | query | `issue` | generated | `internal/client/generated.go` |
+| `issues` | query | `issues` | generated | `internal/client/generated.go` |
+| `notification` | query | `notification` | generated | `internal/client/generated.go` |
+| `notificationSubscription` | query | `notificationSubscription` | generated | `internal/client/generated.go` |
+| `notificationSubscriptions` | query | `notificationSubscriptions` | generated | `internal/client/generated.go` |
+| `notifications` | query | `notifications` | generated | `internal/client/generated.go` |
+| `organizationExists` | query | `organizationExists` | generated | `internal/client/generated.go` |
+| `organization_labels` | query | `organization` | generated | `internal/client/generated.go` |
+| `organization_projectLabels` | query | `organization` | generated | `internal/client/generated.go` |
+| `organization_teams` | query | `organization` | generated | `internal/client/generated.go` |
+| `organization_templates` | query | `organization` | generated | `internal/client/generated.go` |
+| `organization_users` | query | `organization` | generated | `internal/client/generated.go` |
+| `project` | query | `project` | generated | `internal/client/generated.go` |
+| `projectFilterSuggestion` | query | `projectFilterSuggestion` | generated | `internal/client/generated.go` |
+| `projectLabel` | query | `projectLabel` | generated | `internal/client/generated.go` |
+| `projectLabel_children` | query | `projectLabel` | generated | `internal/client/generated.go` |
+| `projectLabel_projects` | query | `projectLabel` | generated | `internal/client/generated.go` |
+| `projectLabels` | query | `projectLabels` | generated | `internal/client/generated.go` |
+| `projectMilestone` | query | `projectMilestone` | generated | `internal/client/generated.go` |
+| `projectMilestone_issues` | query | `projectMilestone` | generated | `internal/client/generated.go` |
+| `projectMilestones` | query | `projectMilestones` | generated | `internal/client/generated.go` |
+| `projectRelation` | query | `projectRelation` | generated | `internal/client/generated.go` |
+| `projectRelations` | query | `projectRelations` | generated | `internal/client/generated.go` |
+| `projectStatus` | query | `projectStatus` | generated | `internal/client/generated.go` |
+| `projectStatusProjectCount` | query | `projectStatusProjectCount` | generated | `internal/client/generated.go` |
+| `projectStatuses` | query | `projectStatuses` | generated | `internal/client/generated.go` |
+| `projectUpdate` | query | `projectUpdate` | generated | `internal/client/generated.go` |
+| `projectUpdate_comments` | query | `projectUpdate` | generated | `internal/client/generated.go` |
+| `projectUpdates` | query | `projectUpdates` | generated | `internal/client/generated.go` |
+| `project_attachments` | query | `project` | generated | `internal/client/generated.go` |
+| `project_comments` | query | `project` | generated | `internal/client/generated.go` |
+| `project_documents` | query | `project` | generated | `internal/client/generated.go` |
+| `project_externalLinks` | query | `project` | generated | `internal/client/generated.go` |
+| `project_history` | query | `project` | generated | `internal/client/generated.go` |
+| `project_initiativeToProjects` | query | `project` | generated | `internal/client/generated.go` |
+| `project_initiatives` | query | `project` | generated | `internal/client/generated.go` |
+| `project_inverseRelations` | query | `project` | generated | `internal/client/generated.go` |
+| `project_issues` | query | `project` | generated | `internal/client/generated.go` |
+| `project_labels` | query | `project` | generated | `internal/client/generated.go` |
+| `project_members` | query | `project` | generated | `internal/client/generated.go` |
+| `project_needs` | query | `project` | generated | `internal/client/generated.go` |
+| `project_projectMilestones` | query | `project` | generated | `internal/client/generated.go` |
+| `project_projectUpdates` | query | `project` | generated | `internal/client/generated.go` |
+| `project_relations` | query | `project` | generated | `internal/client/generated.go` |
+| `project_teams` | query | `project` | generated | `internal/client/generated.go` |
+| `projects` | query | `projects` | generated | `internal/client/generated.go` |
+| `rateLimitStatus` | query | `rateLimitStatus` | generated | `internal/client/generated.go` |
+| `release` | query | `release` | generated | `internal/client/generated.go` |
+| `releaseNote` | query | `releaseNote` | generated | `internal/client/generated.go` |
+| `releaseNotes` | query | `releaseNotes` | generated | `internal/client/generated.go` |
+| `releasePipeline` | query | `releasePipeline` | generated | `internal/client/generated.go` |
+| `releasePipeline_releases` | query | `releasePipeline` | generated | `internal/client/generated.go` |
+| `releasePipeline_stages` | query | `releasePipeline` | generated | `internal/client/generated.go` |
+| `releasePipeline_teams` | query | `releasePipeline` | generated | `internal/client/generated.go` |
+| `releasePipelines` | query | `releasePipelines` | generated | `internal/client/generated.go` |
+| `releaseSearch` | query | `releaseSearch` | generated | `internal/client/generated.go` |
+| `releaseStage` | query | `releaseStage` | generated | `internal/client/generated.go` |
+| `releaseStage_releases` | query | `releaseStage` | generated | `internal/client/generated.go` |
+| `releaseStages` | query | `releaseStages` | generated | `internal/client/generated.go` |
+| `release_documents` | query | `release` | generated | `internal/client/generated.go` |
+| `release_history` | query | `release` | generated | `internal/client/generated.go` |
+| `release_issues` | query | `release` | generated | `internal/client/generated.go` |
+| `release_links` | query | `release` | generated | `internal/client/generated.go` |
+| `releases` | query | `releases` | generated | `internal/client/generated.go` |
+| `roadmap` | query | `roadmap` | generated | `internal/client/generated.go` |
+| `roadmapToProject` | query | `roadmapToProject` | generated | `internal/client/generated.go` |
+| `roadmapToProjects` | query | `roadmapToProjects` | generated | `internal/client/generated.go` |
+| `roadmap_projects` | query | `roadmap` | generated | `internal/client/generated.go` |
+| `roadmaps` | query | `roadmaps` | generated | `internal/client/generated.go` |
+| `searchDocuments` | query | `searchDocuments` | generated | `internal/client/generated.go` |
+| `searchIssues` | query | `searchIssues` | generated | `internal/client/generated.go` |
+| `searchProjects` | query | `searchProjects` | generated | `internal/client/generated.go` |
+| `semanticSearch` | query | `semanticSearch` | generated | `internal/client/generated.go` |
+| `slaConfigurations` | query | `slaConfigurations` | generated | `internal/client/generated.go` |
+| `team` | query | `team` | generated | `internal/client/generated.go` |
+| `teamEstimateConfig` | query | `team` | generated | `internal/client/generated.go` |
+| `teamMembership` | query | `teamMembership` | generated | `internal/client/generated.go` |
+| `teamMemberships` | query | `teamMemberships` | generated | `internal/client/generated.go` |
+| `team_cycles` | query | `team` | generated | `internal/client/generated.go` |
+| `team_gitAutomationStates` | query | `team` | generated | `internal/client/generated.go` |
+| `team_issues` | query | `team` | generated | `internal/client/generated.go` |
+| `team_labels` | query | `team` | generated | `internal/client/generated.go` |
+| `team_members` | query | `team` | generated | `internal/client/generated.go` |
+| `team_memberships` | query | `team` | generated | `internal/client/generated.go` |
+| `team_projects` | query | `team` | generated | `internal/client/generated.go` |
+| `team_releasePipelines` | query | `team` | generated | `internal/client/generated.go` |
+| `team_states` | query | `team` | generated | `internal/client/generated.go` |
+| `team_templates` | query | `team` | generated | `internal/client/generated.go` |
+| `template` | query | `template` | generated | `internal/client/generated.go` |
+| `templateContent` | query | `template` | generated | `internal/client/generated.go` |
+| `templates` | query | `templates` | generated | `internal/client/generated.go` |
+| `timeSchedule` | query | `timeSchedule` | generated | `internal/client/generated.go` |
+| `timeSchedules` | query | `timeSchedules` | generated | `internal/client/generated.go` |
+| `triageResponsibilities` | query | `triageResponsibilities` | generated | `internal/client/generated.go` |
+| `triageResponsibility` | query | `triageResponsibility` | generated | `internal/client/generated.go` |
+| `triageResponsibility_manualSelection` | query | `triageResponsibility` | generated | `internal/client/generated.go` |
+| `user` | query | `user` | generated | `internal/client/generated.go` |
+| `userSettings` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_appsAndIntegrations` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_assignments` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_billing` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_commentsAndReplies` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_customers` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_documentChanges` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_feed` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_mentions` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_postsAndUpdates` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_reactions` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_reminders` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_reviews` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_statusChanges` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_subscriptions` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_system` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationCategoryPreferences_triage` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationChannelPreferences` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_friday` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_monday` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_saturday` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_sunday` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_thursday` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_theme` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_theme_custom` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `userSettings_theme_custom_sidebar` | query | `userSettings` | generated | `internal/client/generated.go` |
+| `user_assignedIssues` | query | `user` | generated | `internal/client/generated.go` |
+| `user_createdIssues` | query | `user` | generated | `internal/client/generated.go` |
+| `user_delegatedIssues` | query | `user` | generated | `internal/client/generated.go` |
+| `user_teamMemberships` | query | `user` | generated | `internal/client/generated.go` |
+| `user_teams` | query | `user` | generated | `internal/client/generated.go` |
+| `users` | query | `users` | generated | `internal/client/generated.go` |
+| `viewer` | query | `viewer` | generated | `internal/client/generated.go` |
+| `viewer_assignedIssues` | query | `viewer` | generated | `internal/client/generated.go` |
+| `viewer_createdIssues` | query | `viewer` | generated | `internal/client/generated.go` |
+| `viewer_delegatedIssues` | query | `viewer` | generated | `internal/client/generated.go` |
+| `viewer_drafts` | query | `viewer` | generated | `internal/client/generated.go` |
+| `viewer_teamMemberships` | query | `viewer` | generated | `internal/client/generated.go` |
+| `viewer_teams` | query | `viewer` | generated | `internal/client/generated.go` |
+| `workflowState` | query | `workflowState` | generated | `internal/client/generated.go` |
+| `workflowState_issues` | query | `workflowState` | generated | `internal/client/generated.go` |
+| `workflowStates` | query | `workflowStates` | generated | `internal/client/generated.go` |
 
 ## Repo Domain-Map Commands
 
 | Domain | Command | Backing | Scope | Status | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active auth credential's organization, team, and optional project. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, OAuth auth readiness, and pinned-target confirmation. Does not print secret values. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only organization-level project labels. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `organization teams` | `Organization.teams` via `Query.organization` | Read-only teams visible to the authenticated user. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only organization-level templates. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `organization users` | `Organization.users` via `Query.organization` | Read-only active users visible to the authenticated user. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active auth credential's organization, team, and optional project. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, OAuth auth readiness, and pinned-target confirmation. Does not print secret values. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization project-labels` | `Organization.projectLabels` via `Query.organization` | Read-only organization-level project labels. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization teams` | `Organization.teams` via `Query.organization` | Read-only teams visible to the authenticated user. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization templates` | `Organization.templates` via `Query.organization` | Read-only organization-level templates. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `organization users` | `Organization.users` via `Query.organization` | Read-only active users visible to the authenticated user. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `rate-limit status` | `Query.rateLimitStatus` | Read-only quota status for the authenticated Linear client. | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentActivity | `agent-activity list` | `Query.agentActivities` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentActivity | `agent-activity get` | `Query.agentActivity` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | AgentActivity | `agent-activity create` | `Mutation.agentActivityCreate` | Blocked: create writes into an agent session and needs explicit session/comment guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentActivity | `agent-activity update` | `Mutation.agentActivityUpdate` | Blocked: update must resolve the agent session and activity scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentActivity | `agent-activity archive` | `Mutation.agentActivityArchive` | Blocked: destructive command needs explicit AgentActivity safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| AgentSkill | `agent-skill get` | `Query.agentSkill` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentSkill | `agent-skill list` | `Query.agentSkills` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentSkill | `agent-skill get` | `Query.agentSkill` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | AgentSkill | `agent-skill create` | `Mutation.agentSkillCreate` | Blocked: create can expose reusable agent instructions and needs explicit team/owner guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill update` | `Mutation.agentSkillUpdate` | Blocked: update must resolve the AgentSkill's team and ownership scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | AgentSkill | `agent-skill archive` | `Mutation.agentSkillArchive` | Blocked: destructive command needs explicit AgentSkill safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| AgentSession | `agent-session list` | `Query.agentSessions` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| AgentSession | `agent-session get` | `Query.agentSession` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ExternalUser | `external-user get` | `Query.externalUser` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentSession | `agent-session list` | `Query.agentSessions` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AgentSession | `agent-session get` | `Query.agentSession` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ExternalUser | `external-user list` | `Query.externalUsers` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ExternalUser | `external-user get` | `Query.externalUser` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| AuditEntry | `audit-entry types` | `Query.auditEntryTypes` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Notification | `notification list` | `Query.notifications` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Notification | `notification get` | `Query.notification` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification list` | `Query.notifications` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification get` | `Query.notification` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Notification | `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification archive all` | `Mutation.notificationArchiveAll` | Blocked: bulk inbox mutation needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification update` | `Mutation.notificationUpdate` | Blocked: direct inbox-state mutation needs an explicit viewer-state safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
@@ -1388,26 +1388,26 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Notification | `notification subscription create` | `Mutation.notificationSubscriptionCreate` | Blocked: subscription writes can target several entity types and need explicit target-resolution semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Release | `release-pipeline list` | `Query.releasePipelines` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-pipeline get` | `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-pipeline releases` | `ReleasePipeline.releases` via `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-pipeline stages` | `ReleasePipeline.stages` via `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-pipeline teams` | `ReleasePipeline.teams` via `Query.releasePipeline` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-stage list` | `Query.releaseStages` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-stage get` | `Query.releaseStage` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-stage releases` | `ReleaseStage.releases` via `Query.releaseStage` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release list` | `Query.releases` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release search` | `Query.releaseSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release get` | `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release history` | `Release.history` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release documents` | `Release.documents` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release issues` | `Release.issues` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release links` | `Release.links` via `Query.release` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `external-link get` | `Query.entityExternalLink` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-note list` | `Query.releaseNotes` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `release-note get` | `Query.releaseNote` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `issue-to-release list` | `Query.issueToReleases` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Release | `issue-to-release get` | `Query.issueToRelease` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline list` | `Query.releasePipelines` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline get` | `Query.releasePipeline` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline releases` | `ReleasePipeline.releases` via `Query.releasePipeline` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline stages` | `ReleasePipeline.stages` via `Query.releasePipeline` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-pipeline teams` | `ReleasePipeline.teams` via `Query.releasePipeline` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-stage list` | `Query.releaseStages` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-stage get` | `Query.releaseStage` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-stage releases` | `ReleaseStage.releases` via `Query.releaseStage` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release list` | `Query.releases` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release search` | `Query.releaseSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release get` | `Query.release` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release history` | `Release.history` via `Query.release` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release documents` | `Release.documents` via `Query.release` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release issues` | `Release.issues` via `Query.release` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release links` | `Release.links` via `Query.release` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `external-link get` | `Query.entityExternalLink` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-note list` | `Query.releaseNotes` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `release-note get` | `Query.releaseNote` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `issue-to-release list` | `Query.issueToReleases` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Release | `issue-to-release get` | `Query.issueToRelease` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Release | `release-pipeline create` | `Mutation.releasePipelineCreate` | Blocked: pipeline configuration is team/admin release surface and needs explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `release-pipeline update` | `Mutation.releasePipelineUpdate` | Blocked: update must resolve and compare associated teams before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `release-pipeline archive` | `Mutation.releasePipelineArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
@@ -1431,294 +1431,294 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Release | `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title plus log id only | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue get` | `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue bot-actor` | `Issue.botActor` via `Query.issue` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue children` | `Issue.children` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue documents` | `Issue.documents` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue former-needs` | `Issue.formerNeeds` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue history` | `Issue.history` via `Query.issue`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue inverse-relations` | `Issue.inverseRelations` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue labels` | `Issue.labels` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue needs` | `Issue.needs` via `Query.issue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue relations` | `Issue.relations` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue releases` | `Issue.releases` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue shared-access` | `Issue.sharedAccess` via `Query.issue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search attachments` | `Issue.attachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search bot-actor` | `Issue.botActor` via `Query.issueVcsBranchSearch` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search comments` | `Issue.comments` via `Query.issueVcsBranchSearch`; returns comment metadata without body | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search former-needs` | `Issue.formerNeeds` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search needs` | `Issue.needs` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search shared-access` | `Issue.sharedAccess` via `Query.issueVcsBranchSearch`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue id` | Current checkout issue identifier from git/jj context | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Issue | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue open` | `Query.issue` resolves `Issue.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue export` | `Query.issue` (`GetIssueDetail`), `Issue.comments`, and `Issue.attachments` are assembled into a single markdown file (`<DIR>/<identifier>.md`) holding the metadata header, description, comments, and attachment URLs; capped at 250 comments/attachments with a stderr note when more pages exist | Read-only, writes only local files | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` renders the normalized rows locally and performs no mutation | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue bulk-export` | `Query.team`/`Team.issues` (`ListIssuesByTeam`) for the resolved team are written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `next` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age. `--dry-run` prints the top candidate and writes nothing; without it the top candidate is started via guarded `Mutation.issueUpdate` (`StartIssue`); `--checkout` runs `git checkout -b <Issue.branchName>` before starting | `--dry-run` read-only; otherwise resource-scoped start of the picked issue | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation; `--template` reads `Template.templateData` via `Query.template` (free read) and fills title/description defaults that explicit flags override; `--section NAME=VALUE` fills a markdown section locally before mutation; `--dry-run` renders the assembled draft locally and performs no mutation; `--state` (alias `--status`) normalizes a human state name to a schema state type and resolves `IssueCreateInput.stateId` via `Query.workflowStates` filtered by team + type; `--priority` normalizes human words (`urgent`/`high`/`medium`/`low`/`none`) or `0-4` to `IssueCreateInput.priority` | Team-scoped unless `projectId` is set; `--dry-run` writes nothing | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description`; `--state` (alias `--status`) and `--priority` are normalized the same way as on `issue create`, with `stateId` resolved via `Query.workflowStates` filtered by the issue's team + type | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| IssueRelation | `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| IssueRelation | `issue unrelate` | `Mutation.issueRelationDelete` | Resolve the relation, then compare the pinned team for both linked issues before deleting | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue filter-suggestion` | `Query.issueFilterSuggestion`; returns the suggested filter JSON plus log id only | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue title-suggestion` | `Query.issueTitleSuggestionFromCustomerRequest`; returns the suggested title plus log id only | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue get` | `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue deps` | `Query.issue`, `Issue.parent`, `Issue.children`, `Issue.relations`, `Issue.inverseRelations`; `IssueRelation.type == "blocks"` separates blocked issues from blockers | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue attachments` | `Issue.attachments` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue bot-actor` | `Issue.botActor` via `Query.issue` | Read-only, bot metadata only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue children` | `Issue.children` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue documents` | `Issue.documents` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue former-attachments` | `Issue.formerAttachments` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue former-needs` | `Issue.formerNeeds` via `Query.issue`; returns customer-need metadata without body/content | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue history` | `Issue.history` via `Query.issue`; returns compact metadata only, not raw change payloads or content fields | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue inverse-relations` | `Issue.inverseRelations` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue labels` | `Issue.labels` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue needs` | `Issue.needs` via `Query.issue`; returns customer-need metadata without body/content | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue relations` | `Issue.relations` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue releases` | `Issue.releases` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue shared-access` | `Issue.sharedAccess` via `Query.issue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue state-history` | `Issue.stateHistory` via `Query.issue` | Read-only, workflow-state span metadata | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue subscribers` | `Issue.subscribers` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search get` | `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search attachments` | `Issue.attachments` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search bot-actor` | `Issue.botActor` via `Query.issueVcsBranchSearch` | Read-only, bot metadata only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search children` | `Issue.children` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search documents` | `Issue.documents` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search former-attachments` | `Issue.formerAttachments` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search comments` | `Issue.comments` via `Query.issueVcsBranchSearch`; returns comment metadata without body | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search former-needs` | `Issue.formerNeeds` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search history` | `Issue.history` via `Query.issueVcsBranchSearch`; returns compact metadata only, not raw change payloads or content fields | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search inverse-relations` | `Issue.inverseRelations` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search labels` | `Issue.labels` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search needs` | `Issue.needs` via `Query.issueVcsBranchSearch`; returns customer-need metadata without body/content | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search relations` | `Issue.relations` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search releases` | `Issue.releases` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search shared-access` | `Issue.sharedAccess` via `Query.issueVcsBranchSearch`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search state-history` | `Issue.stateHistory` via `Query.issueVcsBranchSearch` | Read-only, workflow-state span metadata | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue vcs-branch-search subscribers` | `Issue.subscribers` via `Query.issueVcsBranchSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue id` | Current checkout issue identifier from git/jj context | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Issue | `issue title` | `Query.issue` after current checkout or explicit issue resolution | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue url` | `Query.issue` after current checkout or explicit issue resolution | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue open` | `Query.issue` resolves `Issue.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue export` | `Query.issue` (`GetIssueDetail`), `Issue.comments`, and `Issue.attachments` are assembled into a single markdown file (`<DIR>/<identifier>.md`) holding the metadata header, description, comments, and attachment URLs; capped at 250 comments/attachments with a stderr note when more pages exist | Read-only, writes only local files | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` loads only local config, renders the normalized rows locally, and performs no auth, network, or mutation setup | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue bulk-export` | `Query.team`/`Team.issues` (`ListIssuesByTeam`) for the resolved team are written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `next` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age. `--dry-run` prints the top candidate and writes nothing; without it the top candidate is started via guarded `Mutation.issueUpdate` (`StartIssue`); `--checkout` runs `git checkout -b <Issue.branchName>` before starting | `--dry-run` read-only; otherwise resource-scoped start of the picked issue | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation; `--template` reads `Template.templateData` via `Query.template` (free read) and fills title/description defaults that explicit flags override; `--section NAME=VALUE` fills a markdown section locally before mutation; `--dry-run` renders the assembled draft locally and performs no mutation; `--state` (alias `--status`) normalizes a human state name to a schema state type and resolves `IssueCreateInput.stateId` via `Query.workflowStates` filtered by team + type; `--priority` normalizes human words (`urgent`/`high`/`medium`/`low`/`none`) or `0-4` to `IssueCreateInput.priority` | Team-scoped unless `projectId` is set; `--dry-run` writes nothing | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description`; `--state` (alias `--status`) and `--priority` are normalized the same way as on `issue create`, with `stateId` resolved via `Query.workflowStates` filtered by the issue's team + type | Resource-scoped when a project target is involved | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue unrelate` | `Mutation.issueRelationDelete` | Resolve the relation, then compare the pinned team for both linked issues before deleting | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Comment | `comment list` | `Query.comments` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Comment | `comment get` | `Query.comment` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Comment | `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Comment | `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Comment | `comment update` | `Mutation.commentUpdate` with `CommentUpdateInput` | Resolve the comment, then compare the pinned team through its parent issue; non-issue comments are refused | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Comment | `comment delete` | `Mutation.commentDelete` | Resolve the comment, then compare the pinned team through its parent issue before deleting; non-issue comments are refused | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment list` | `Query.comments` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment get` | `Query.comment` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment bot-actor` | `Comment.botActor` via `Query.comment` | Read-only, bot metadata only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment children` | `Comment.children` via `Query.comment` | Read-only, body-free metadata | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment update` | `Mutation.commentUpdate` with `CommentUpdateInput` | Resolve the comment, then compare the pinned team through its parent issue; non-issue comments are refused | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment delete` | `Mutation.commentDelete` | Resolve the comment, then compare the pinned team through its parent issue before deleting; non-issue comments are refused | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project all` | `Query.projects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project get` | `Query.project` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project open` | `Query.project` resolves `Project.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project attachments` | `Project.attachments` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project documents` | `Project.documents` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project external-links` | `Project.externalLinks` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project history` | `Project.history` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project initiative-links` | `Project.initiativeToProjects` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project initiatives` | `Project.initiatives` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project inverse-relations` | `Project.inverseRelations` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project issues` | `Project.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project comments` | `Project.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project labels` | `Project.labels` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Project | `project needs` | `Project.needs` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project relations` | `Project.relations` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project teams` | `Project.teams` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project updates` | `Project.projectUpdates` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Project | `project filter-suggestion` | `Query.projectFilterSuggestion` | Read-only suggestion payload | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectUpdate | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| ProjectUpdate | `project-update create` | `Mutation.projectUpdateCreate` with `ProjectUpdateCreateInput` | Resource-scoped, compare `project_id` (pinned project) and team ownership | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project all` | `Query.projects` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project get` | `Query.project` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project open` | `Query.project` resolves `Project.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project attachments` | `Project.attachments` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project documents` | `Project.documents` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project external-links` | `Project.externalLinks` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project history` | `Project.history` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project initiative-links` | `Project.initiativeToProjects` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project initiatives` | `Project.initiatives` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project inverse-relations` | `Project.inverseRelations` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project issues` | `Project.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project comments` | `Project.comments` | Read-only, body-free metadata | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project labels` | `Project.labels` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project needs` | `Project.needs` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project relations` | `Project.relations` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project teams` | `Project.teams` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project updates` | `Project.projectUpdates` | Read-only, body-free metadata | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Project | `project filter-suggestion` | `Query.projectFilterSuggestion` | Read-only suggestion payload | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectUpdate | `project-update list` | `Query.projectUpdates` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectUpdate | `project-update get` | `Query.projectUpdate` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectUpdate | `project-update comments` | `ProjectUpdate.comments` | Read-only, body-free metadata | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| ProjectUpdate | `project-update create` | `Mutation.projectUpdateCreate` with `ProjectUpdateCreateInput` | Resource-scoped, compare `project_id` (pinned project) and team ownership | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectUpdate | `project-update update` | `Mutation.projectUpdateUpdate` | Blocked: update must resolve and compare the owning project before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectUpdate | `project-update archive` | `Mutation.projectUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectStatus | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectStatus | `project-status list` | `Query.projectStatuses` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectStatus | `project-status get` | `Query.projectStatus` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectStatus | `project-status project-count` | `Query.projectStatusProjectCount` | Read-only count payload | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectStatus | `project-status create` | `Mutation.projectStatusCreate` | Blocked: organization project status configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status update` | `Mutation.projectStatusUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status archive` | `Mutation.projectStatusArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectStatus | `project-status unarchive` | `Mutation.projectStatusUnarchive` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectLabel | `project-label list` | `Query.projectLabels` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectLabel | `project-label get` | `Query.projectLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectLabel | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectLabel | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label list` | `Query.projectLabels` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label get` | `Query.projectLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectLabel | `project-label create` | `Mutation.projectLabelCreate` | Blocked: organization label configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | ProjectLabel | `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectLabel | `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectRelation | `project-relation list` | `Query.projectRelations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectRelation | `project-relation get` | `Query.projectRelation` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectRelation | `project-relation list` | `Query.projectRelations` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectRelation | `project-relation get` | `Query.projectRelation` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectRelation | `project-relation create` | `Mutation.projectRelationCreate` | Blocked: create must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectRelation | `project-relation update` | `Mutation.projectRelationUpdate` | Blocked: update must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | ProjectRelation | `project-relation delete` | `Mutation.projectRelationDelete` | Blocked: destructive command needs explicit project dependency safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Cycle | `cycle list` | `Query.cycles` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Cycle | `cycle get` | `Query.cycle` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Cycle | `cycle issues` | `Cycle.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Cycle | `cycle uncompleted-issues` | `Cycle.uncompletedIssuesUponClose` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Cycle | `cycle create` | `Mutation.cycleCreate` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Cycle | `cycle update` | `Mutation.cycleUpdate` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Cycle | `cycle archive` | `Mutation.cycleArchive` | Team-scoped | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Sprint | `sprint current` | `Query.cycles` filtered to active/current cycles | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Sprint | `sprint report` | `Query.cycle` plus `Cycle.issues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectMilestone | `project-milestone all` | `Query.projectMilestones` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectMilestone | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectMilestone | `project-milestone get` | `Query.projectMilestone` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectMilestone | `project-milestone issues` | `ProjectMilestone.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| ProjectMilestone | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectMilestone | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle list` | `Query.cycles` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle get` | `Query.cycle` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle issues` | `Cycle.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Cycle | `cycle uncompleted-issues` | `Cycle.uncompletedIssuesUponClose` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Cycle | `cycle create` | `Mutation.cycleCreate` | Team-scoped | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle update` | `Mutation.cycleUpdate` | Team-scoped | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Cycle | `cycle archive` | `Mutation.cycleArchive` | Team-scoped | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Sprint | `sprint current` | `Query.cycles` filtered to active/current cycles | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Sprint | `sprint report` | `Query.cycle` plus `Cycle.issues` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone all` | `Query.projectMilestones` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone list` | `Project.projectMilestones` via `Query.project` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone get` | `Query.projectMilestone` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone issues` | `ProjectMilestone.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| ProjectMilestone | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectMilestone | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectMilestone | `project-milestone delete` | `Mutation.projectMilestoneDelete` | Resource-scoped, compare resolved project | blocked_needs_design | destructive command needs explicit safety semantics |
-| Document | `document list` | `Query.documents` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Document | `document get` | `Query.document` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Document | `document comments` | `Document.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Document | `document create` | `Mutation.documentCreate` with `DocumentCreateInput.teamId` from the resolved team and optional `projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Team-scoped unless a `project_id` is pinned | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Document | `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `team` (and pinned `project`) before mutating | Resource-scoped, compare team and pinned project | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Document | `document list` | `Query.documents` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Document | `document get` | `Query.document` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Document | `document comments` | `Document.comments` | Read-only, body-free metadata | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Document | `document create` | `Mutation.documentCreate` with `DocumentCreateInput.teamId` from the resolved team and optional `projectId` from the pinned project; `--content` (or `--content-file`, or `--content -` for stdin) | Team-scoped unless a `project_id` is pinned | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Document | `document update` | `Mutation.documentUpdate`; resolves the existing document via `Query.document` and compares its `team` (and pinned `project`) before mutating | Resource-scoped, compare team and pinned project | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Document | `document delete` | `Mutation.documentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Label | `label list` | `Query.issueLabels` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Label | `label get` | `Query.issueLabel` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Label | `label children` | `IssueLabel.children` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Label | `label issues` | `IssueLabel.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Label | `label list` | `Query.issueLabels` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label get` | `Query.issueLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label children` | `IssueLabel.children` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Label | `label issues` | `IssueLabel.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Label | `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Label | `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Team | `team list` | `Query.teams` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Team | `team get` | `Query.team` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Team | `team list` | `Query.teams` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Team | `team get` | `Query.team` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Team | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Team | `team cycles` | `Team.cycles` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team issues` | `Team.issues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team labels` | `Team.labels` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team members` | `Team.members` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team memberships` | `Team.memberships` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team projects` | `Team.projects` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team release-pipelines` | `Team.releasePipelines` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team states` | `Team.states` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team git-automation-states` | `Team.gitAutomationStates` | Read-only, rule/state/target-branch metadata only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team templates` | `Team.templates` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Team | `team-membership list` | `Query.teamMemberships` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Team | `team-membership get` | `Query.teamMembership` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Team | `team cycles` | `Team.cycles` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team issues` | `Team.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team labels` | `Team.labels` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team members` | `Team.members` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team memberships` | `Team.memberships` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team projects` | `Team.projects` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team release-pipelines` | `Team.releasePipelines` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team states` | `Team.states` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team git-automation-states` | `Team.gitAutomationStates` | Read-only, rule/state/target-branch metadata only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team templates` | `Team.templates` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Team | `team-membership list` | `Query.teamMemberships` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Team | `team-membership get` | `Query.teamMembership` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Team | `team-membership create` | `Mutation.teamMembershipCreate` | Blocked: organization membership administration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team-membership update` | `Mutation.teamMembershipUpdate` | Blocked: update must resolve and compare the membership's team and organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Team | `team-membership delete` | `Mutation.teamMembershipDelete` | Blocked: destructive membership command needs explicit admin safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| User | `user list` | `Query.users` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user get` | `Query.user` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user me` | `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user drafts` | `User.drafts` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings get` | `Query.userSettings` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings notification-categories` | `Query.userSettings.notificationCategoryPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings notification-category CATEGORY` | `Query.userSettings.notificationCategoryPreferences.<category>` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings notification-channels` | `Query.userSettings.notificationChannelPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings notification-delivery` | `Query.userSettings.notificationDeliveryPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings mobile-delivery` | `Query.userSettings.notificationDeliveryPreferences.mobile` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings mobile-schedule` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings mobile-schedule-day DAY` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule.<day>` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings theme` | `Query.userSettings.theme` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings custom-theme` | `Query.userSettings.theme.custom` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user settings custom-sidebar-theme` | `Query.userSettings.theme.custom.sidebar` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user assigned-issues` | `User.assignedIssues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| User | `user created-issues` | `User.createdIssues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| User | `user delegated-issues` | `User.delegatedIssues` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| User | `user team-memberships` | `User.teamMemberships` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| User | `user teams` | `User.teams` | Read-only | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| User | `user my-assigned-issues` | `User.assignedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user my-created-issues` | `User.createdIssues` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user my-delegated-issues` | `User.delegatedIssues` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user my-team-memberships` | `User.teamMemberships` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| User | `user my-teams` | `User.teams` via `Query.viewer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| WorkflowState | `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user list` | `Query.users` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user get` | `Query.user` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user me` | `Query.viewer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user drafts` | `User.drafts` via `Query.viewer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings get` | `Query.userSettings` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-categories` | `Query.userSettings.notificationCategoryPreferences` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-category CATEGORY` | `Query.userSettings.notificationCategoryPreferences.<category>` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-channels` | `Query.userSettings.notificationChannelPreferences` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings notification-delivery` | `Query.userSettings.notificationDeliveryPreferences` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings mobile-delivery` | `Query.userSettings.notificationDeliveryPreferences.mobile` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings mobile-schedule` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings mobile-schedule-day DAY` | `Query.userSettings.notificationDeliveryPreferences.mobile.schedule.<day>` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings theme` | `Query.userSettings.theme` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings custom-theme` | `Query.userSettings.theme.custom` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user settings custom-sidebar-theme` | `Query.userSettings.theme.custom.sidebar` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user assigned-issues` | `User.assignedIssues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user created-issues` | `User.createdIssues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user delegated-issues` | `User.delegatedIssues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user team-memberships` | `User.teamMemberships` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user teams` | `User.teams` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| User | `user my-assigned-issues` | `User.assignedIssues` via `Query.viewer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-created-issues` | `User.createdIssues` via `Query.viewer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-delegated-issues` | `User.delegatedIssues` via `Query.viewer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-team-memberships` | `User.teamMemberships` via `Query.viewer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| User | `user my-teams` | `User.teams` via `Query.viewer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| WorkflowState | `workflow-state list` | `Query.workflowStates` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| WorkflowState | `workflow-state get` | `Query.workflowState` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| WorkflowState | `workflow-state issues` | `WorkflowState.issues` via `Query.workflowState` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | WorkflowState | `workflow-state create` | `Mutation.workflowStateCreate` | Blocked: team workflow configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | WorkflowState | `workflow-state update` | `Mutation.workflowStateUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | WorkflowState | `workflow-state archive` | `Mutation.workflowStateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| TimeSchedule | `time-schedule list` | `Query.timeSchedules` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| TimeSchedule | `time-schedule get` | `Query.timeSchedule` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TimeSchedule | `time-schedule list` | `Query.timeSchedules` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TimeSchedule | `time-schedule get` | `Query.timeSchedule` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | TimeSchedule | `time-schedule create` | `Mutation.timeScheduleCreate` | Blocked: schedule create needs explicit owner/admin safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TimeSchedule | `time-schedule update` | `Mutation.timeScheduleUpdate` | Blocked: update must resolve schedule scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TimeSchedule | `time-schedule delete` | `Mutation.timeScheduleDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | TimeSchedule | `time-schedule upsert-external` | `Mutation.timeScheduleUpsertExternal` | Blocked: external integration sync surface is not an ordinary agent workflow | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| TriageResponsibility | `triage-responsibility list` | `Query.triageResponsibilities` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| TriageResponsibility | `triage-responsibility get` | `Query.triageResponsibility` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| TriageResponsibility | `triage-responsibility manual-selection` | `TriageResponsibility.manualSelection` via `Query.triageResponsibility` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TriageResponsibility | `triage-responsibility list` | `Query.triageResponsibilities` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TriageResponsibility | `triage-responsibility get` | `Query.triageResponsibility` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| TriageResponsibility | `triage-responsibility manual-selection` | `TriageResponsibility.manualSelection` via `Query.triageResponsibility` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | TriageResponsibility | `triage-responsibility create` | `Mutation.triageResponsibilityCreate` | Blocked: team triage configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TriageResponsibility | `triage-responsibility update` | `Mutation.triageResponsibilityUpdate` | Blocked: update must resolve and compare the owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | TriageResponsibility | `triage-responsibility delete` | `Mutation.triageResponsibilityDelete` | Blocked: destructive team triage configuration command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| SLA Configuration | `sla-configuration list` | `Query.slaConfigurations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| SemanticSearch | `semantic-search` | `Query.semanticSearch` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Search | `search documents` | `Query.searchDocuments` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Search | `search issues` | `Query.searchIssues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Search | `search projects` | `Query.searchProjects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Template | `template list` | `Query.templates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Template | `template get` | `Query.template` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| SLA Configuration | `sla-configuration list` | `Query.slaConfigurations` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| SemanticSearch | `semantic-search` | `Query.semanticSearch` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Search | `search documents` | `Query.searchDocuments` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Search | `search issues` | `Query.searchIssues` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Search | `search projects` | `Query.searchProjects` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Template | `template list` | `Query.templates` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Template | `template get` | `Query.template` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Template | `template create` | `Mutation.templateCreate` | Blocked: create can be organization-, team-, or pipeline-scoped and needs explicit guard semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Template | `template update` | `Mutation.templateUpdate` | Blocked: update must resolve and compare the template's organization, team, or pipeline scope before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Template | `template delete` | `Mutation.templateDelete` | Blocked: destructive command needs explicit template-scope safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Initiative | `initiative list` | `Query.initiatives` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative get` | `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative history` | `Initiative.history` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative links` | `Initiative.links` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative sub-initiatives` | `Initiative.subInitiatives` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Initiative | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative list` | `Query.initiatives` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative get` | `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative history` | `Initiative.history` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative links` | `Initiative.links` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative sub-initiatives` | `Initiative.subInitiatives` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative updates` | `Initiative.initiativeUpdates` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative documents` | `Initiative.documents` via `Query.initiative` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Initiative | `initiative projects` | `Initiative.projects` via `Query.initiative` | Read-only direct projects | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Initiative | `initiative create` | `Mutation.createInitiative` | Blocked: initiative create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Initiative | `initiative update` | `Mutation.updateInitiative` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Initiative | `initiative archive` | `Mutation.archiveInitiative` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| InitiativeRelation | `initiative-relation list` | `Query.initiativeRelations` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| InitiativeRelation | `initiative-relation get` | `Query.initiativeRelation` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeRelation | `initiative-relation list` | `Query.initiativeRelations` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeRelation | `initiative-relation get` | `Query.initiativeRelation` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | InitiativeRelation | `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeRelation | `initiative-relation update` | `Mutation.initiativeRelationUpdate` | Blocked: update must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeRelation | `initiative-relation delete` | `Mutation.initiativeRelationDelete` | Blocked: destructive command needs explicit hierarchy safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| InitiativeToProject | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| InitiativeToProject | `initiative-to-project get` | `Query.initiativeToProject` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeToProject | `initiative-to-project list` | `Query.initiativeToProjects` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeToProject | `initiative-to-project get` | `Query.initiativeToProject` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | InitiativeToProject | `initiative-to-project create` | `Mutation.initiativeToProjectCreate` | Blocked: create must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeToProject | `initiative-to-project update` | `Mutation.initiativeToProjectUpdate` | Blocked: update must resolve and compare both Initiative and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeToProject | `initiative-to-project delete` | `Mutation.initiativeToProjectDelete` | Blocked: destructive command needs explicit association safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| RoadmapToProject | `roadmap-to-project list` | `Query.roadmapToProjects` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| RoadmapToProject | `roadmap-to-project get` | `Query.roadmapToProject` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| RoadmapToProject | `roadmap-to-project list` | `Query.roadmapToProjects` | Legacy read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| RoadmapToProject | `roadmap-to-project get` | `Query.roadmapToProject` | Legacy read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | RoadmapToProject | `roadmap-to-project create` | `Mutation.roadmapToProjectCreate` | Blocked: deprecated create must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | RoadmapToProject | `roadmap-to-project update` | `Mutation.roadmapToProjectUpdate` | Blocked: deprecated update must resolve and compare both Roadmap and Project endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | RoadmapToProject | `roadmap-to-project delete` | `Mutation.roadmapToProjectDelete` | Blocked: destructive deprecated association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| InitiativeUpdate | `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| InitiativeUpdate | `initiative-update list` | `Query.initiativeUpdates` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeUpdate | `initiative-update get` | `Query.initiativeUpdate` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| InitiativeUpdate | `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | InitiativeUpdate | `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeUpdate | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeUpdate | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | InitiativeUpdate | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Roadmap | `roadmap list` | `Query.roadmaps` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Roadmap | `roadmap get` | `Query.roadmap` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Roadmap | `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Legacy read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Roadmap | `roadmap list` | `Query.roadmaps` | Legacy read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Roadmap | `roadmap get` | `Query.roadmap` | Legacy read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Roadmap | `roadmap projects` | `Roadmap.projects` via `Query.roadmap` | Legacy read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Roadmap | `roadmap create` | `Mutation.roadmapCreate` | Blocked: deprecated organization-scoped planning surface needs an explicit safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap update` | `Mutation.roadmapUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap archive` | `Mutation.roadmapArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Roadmap | `roadmap delete` | `Mutation.roadmapDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| CustomView | `custom-view list` | `Query.customViews` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| CustomView | `custom-view get` | `Query.customView` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| CustomView | `custom-view initiatives` | `Query.customView_initiatives` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view issues` | `Query.customView_issues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view projects` | `Query.customView_projects` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
-| CustomView | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view list` | `Query.customViews` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| CustomView | `custom-view subscribers` | `Query.customViewHasSubscribers` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| CustomView | `custom-view get` | `Query.customView` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| CustomView | `custom-view initiatives` | `Query.customView_initiatives` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view issues` | `Query.customView_issues` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view organization-preferences` | `Query.customView_organizationViewPreferences` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view organization-preferences values` | `Query.customView_organizationViewPreferences_preferences` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view projects` | `Query.customView_projects` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view user-preferences` | `Query.customView_userViewPreferences` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view user-preferences values` | `Query.customView_userViewPreferences_preferences` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
+| CustomView | `custom-view preference-values` | `Query.customView_viewPreferencesValues` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root |
 | CustomView | `custom-view create` | `Mutation.createCustomView` | Blocked: custom view create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | CustomView | `custom-view update` | `Mutation.updateCustomView` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | CustomView | `custom-view delete` | `Mutation.deleteCustomView` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Customer | `customer list` | `Query.customers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer get` | `Query.customer` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer-need list` | `Query.customerNeeds` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer-need get` | `Query.customerNeed` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer-need project-attachment` | `CustomerNeed.projectAttachment` via `Query.customerNeed` | Read-only, metadata-only projection | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer-status list` | `Query.customerStatuses` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer-status get` | `Query.customerStatus` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer-tier list` | `Query.customerTiers` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Customer | `customer-tier get` | `Query.customerTier` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer list` | `Query.customers` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer get` | `Query.customer` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-need list` | `Query.customerNeeds` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-need get` | `Query.customerNeed` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-need project-attachment` | `CustomerNeed.projectAttachment` via `Query.customerNeed` | Read-only, metadata-only projection | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-status list` | `Query.customerStatuses` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-status get` | `Query.customerStatus` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-tier list` | `Query.customerTiers` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Customer | `customer-tier get` | `Query.customerTier` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Customer | `customer create` | `Mutation.customerCreate` | Blocked: customer create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer update` | `Mutation.customerUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer archive` | `Mutation.customerArchive` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
@@ -1732,38 +1732,38 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Customer | `customer-tier create` | `Mutation.customerTierCreate` | Blocked: organization tier configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-tier update` | `Mutation.customerTierUpdate` | Blocked: organization tier configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Customer | `customer-tier delete` | `Mutation.customerTierDelete` | Blocked: destructive admin command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Favorite | `favorite list` | `Query.favorites` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Favorite | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Favorite | `favorite get` | `Query.favorite` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Favorite | `favorite list` | `Query.favorites` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Favorite | `favorite children` | `Favorite.children` via `Query.favorite` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Favorite | `favorite get` | `Query.favorite` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Favorite | `favorite create` | `Mutation.createFavorite` | Blocked: favorite create needs an explicit viewer-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Favorite | `favorite update` | `Mutation.updateFavorite` | Blocked: update must resolve and compare the owning viewer before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Favorite | `favorite delete` | `Mutation.deleteFavorite` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Emoji | `emoji list` | `Query.emojis` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Emoji | `emoji get` | `Query.emoji` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Emoji | `emoji list` | `Query.emojis` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Emoji | `emoji get` | `Query.emoji` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Emoji | `emoji create` | `Mutation.createEmoji` | Blocked: emoji create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Emoji | `emoji delete` | `Mutation.deleteEmoji` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| File | `files upload` | `Mutation.fileUpload` then an HTTP PUT of the bytes to the pre-signed URL | Raw Linear asset, not target-pinned; prints the asset URL for a later guarded attachment write | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| File | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token | implemented | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Attachment | `attachment list` | `Query.attachments` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment get` | `Query.attachment` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue get` | `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue comments` | `Issue.comments` via `Query.attachmentIssue`; returns comment metadata without body | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue former-needs` | `Issue.formerNeeds` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue needs` | `Issue.needs` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue shared-access` | `Issue.sharedAccess` via `Query.attachmentIssue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| File | `files upload` | Target resolution, `Mutation.fileUpload`, then an HTTP PUT of the bytes to the pre-signed URL | Guarded by the pinned target before upload preparation; prints the asset URL for a later guarded attachment write | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| File | `files download` | Plain HTTP GET of the asset URL to a local path | Read-only, no API; no auth header is attached so a user-supplied URL never receives the Linear token | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
+| Attachment | `attachment list` | `Query.attachments` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment url` | `Query.attachmentsForURL` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment get` | `Query.attachment` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue get` | `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue attachments` | `Issue.attachments` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue bot-actor` | `Issue.botActor` via `Query.attachmentIssue` | Read-only, bot metadata only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue children` | `Issue.children` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue comments` | `Issue.comments` via `Query.attachmentIssue`; returns comment metadata without body | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue documents` | `Issue.documents` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue former-attachments` | `Issue.formerAttachments` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue former-needs` | `Issue.formerNeeds` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue history` | `Issue.history` via `Query.attachmentIssue` | Read-only, compact metadata only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue inverse-relations` | `Issue.inverseRelations` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue labels` | `Issue.labels` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue needs` | `Issue.needs` via `Query.attachmentIssue`; returns customer-need metadata without body/content | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue relations` | `Issue.relations` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue releases` | `Issue.releases` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue shared-access` | `Issue.sharedAccess` via `Query.attachmentIssue`; omits shared user details and exposes only flags/counts/disallowed fields | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue state-history` | `Issue.stateHistory` via `Query.attachmentIssue` | Read-only, workflow-state span metadata | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Attachment | `attachment issue subscribers` | `Issue.subscribers` via `Query.attachmentIssue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |

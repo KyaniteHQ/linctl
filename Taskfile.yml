@@ -4,6 +4,9 @@ vars:
   BINARY: linctl
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+  GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
+  INFISICAL_ENV: secrets
+  INFISICAL_PATH: /linctl
 
 tasks:
   default:
@@ -14,6 +17,23 @@ tasks:
     cmds:
       - go tool gofumpt -w cmd internal scripts
       - go tool goimports -w -local "$(go list -m)" cmd internal scripts
+
+  fmt-check:
+    desc: Verify Go files are gofumpt formatted without modifying them
+    cmds:
+      - |
+        files="$(go tool gofumpt -l cmd internal scripts)"
+        if [[ -n "$files" ]]; then
+          printf '%s\n' "$files"
+          exit 1
+        fi
+
+  deps-check:
+    desc: Verify module downloads, checksums, and tidy state without modifying source
+    cmds:
+      - go mod download
+      - go mod verify
+      - go mod tidy -diff
 
   lint:
     desc: Run linters
@@ -38,35 +58,90 @@ tasks:
       - task: gen-skill
       - git diff --exit-code -- skills/linctl/references/commands.md
       - go run scripts/linear_api_coverage*.go -h >/dev/null
-      - task: coverage-ledger-check
+      - |
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
+        upstream_root=""
+        if [[ -z "$upstream" ]]; then
+          upstream_root="$(mktemp -d)"
+          upstream="$upstream_root/linear"
+        fi
+        tmp="$(mktemp)"
+        cleanup() {
+          rm -f "$tmp"
+          if [[ -n "$upstream_root" ]]; then
+            rm -rf "$upstream_root"
+          fi
+        }
+        trap cleanup EXIT
+        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
+        go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
+        go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
+        diff -u docs/linear-api-coverage.md "$tmp"
 
-  coverage-ledger-check:
-    desc: Verify the generated Linear API coverage ledger against the upstream SDK checkout
+  linear-sdk-upstream-checkout:
+    desc: Clone or refresh the upstream Linear SDK checkout used by schema and coverage checks
     cmds:
       - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-/tmp/linctl-upstream-linear}"
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:?set LINCTL_LINEAR_SDK_UPSTREAM to a run-local Linear SDK checkout path}"
         remote="https://github.com/linear/linear.git"
-        branch="master"
+        ref="${LINCTL_LINEAR_SDK_REF:-master}"
         if [[ ! -e "$upstream" ]]; then
-          git clone --depth=1 --branch "$branch" "$remote" "$upstream"
+          git clone --depth=1 --branch "$ref" "$remote" "$upstream"
         elif [[ ! -d "$upstream/.git" ]]; then
-          printf 'coverage ledger upstream path exists but is not a git checkout: %s\n' "$upstream" >&2
+          printf 'Linear SDK upstream path exists but is not a git checkout: %s\n' "$upstream" >&2
           printf 'Set LINCTL_LINEAR_SDK_UPSTREAM to a Linear repo checkout or remove the path.\n' >&2
           exit 1
         else
           origin="$(git -C "$upstream" remote get-url origin 2>/dev/null || true)"
           if [[ "$origin" != "$remote" ]]; then
-            printf 'coverage ledger upstream checkout has unexpected origin: %s\n' "$origin" >&2
+            printf 'Linear SDK upstream checkout has unexpected origin: %s\n' "$origin" >&2
             printf 'Expected %s. Set LINCTL_LINEAR_SDK_UPSTREAM to a Linear repo checkout or remove the path.\n' "$remote" >&2
             exit 1
           fi
-          git -C "$upstream" fetch --depth=1 origin "$branch"
+          git -C "$upstream" fetch --depth=1 origin "$ref"
           git -C "$upstream" checkout --detach FETCH_HEAD
         fi
+
+  coverage-ledger-check:
+    desc: Verify the generated Linear API coverage ledger against the upstream SDK checkout
+    cmds:
+      - |
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
+        upstream_root=""
+        if [[ -z "$upstream" ]]; then
+          upstream_root="$(mktemp -d)"
+          upstream="$upstream_root/linear"
+        fi
         tmp="$(mktemp)"
-        trap 'rm -f "$tmp"' EXIT
+        cleanup() {
+          rm -f "$tmp"
+          if [[ -n "$upstream_root" ]]; then
+            rm -rf "$upstream_root"
+          fi
+        }
+        trap cleanup EXIT
+        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
         go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
         diff -u docs/linear-api-coverage.md "$tmp"
+
+  graphql-operation-check:
+    desc: Validate local GraphQL operations against the upstream Linear SDK schema
+    cmds:
+      - |
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
+        upstream_root=""
+        if [[ -z "$upstream" ]]; then
+          upstream_root="$(mktemp -d)"
+          upstream="$upstream_root/linear"
+        fi
+        cleanup() {
+          if [[ -n "$upstream_root" ]]; then
+            rm -rf "$upstream_root"
+          fi
+        }
+        trap cleanup EXIT
+        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
+        go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
 
   domain-language-check:
     desc: Verify user-facing docs and help avoid workspace terminology
@@ -82,6 +157,17 @@ tasks:
     desc: Run statement coverage for hand-written code
     cmds:
       - bash scripts/coverage.sh
+
+  smoke-run:
+    desc: Build and smoke-run the CLI help surface
+    cmds:
+      - |
+        bin="./bin/{{.BINARY}}-smoke$(go env GOEXE)"
+        go build -o "$bin" {{.PKG}}
+        "$bin" --version
+        "$bin" --help
+        "$bin" usage
+        "$bin" issue usage
 
   live-smoke:
     desc: Run opt-in live smoke tests against disposable Linear resources
@@ -99,6 +185,46 @@ tasks:
         fi
         LINCTL_BINARY="$binary" bash "$repo/scripts/live-oauth.sh" "$binary"
 
+  browser-login-smoke:
+    desc: Run manual browser OAuth login smoke in isolated auth state
+    cmds:
+      - bash scripts/browser-login-smoke.sh {{.CLI_ARGS}}
+
+  browser-login-smoke-check:
+    desc: Run deterministic non-live browser login smoke harness checks
+    cmds:
+      - bash scripts/browser-login-smoke.sh --self-test
+
+  browser-login-smoke-infisical:
+    desc: Run browser OAuth login smoke with Infisical secrets from /linctl
+    cmds:
+      - |
+        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+          go tool task \
+            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
+            --dir "{{.TASKFILE_DIR}}" \
+            browser-login-smoke -- {{.CLI_ARGS}}
+
+  live-oauth-infisical:
+    desc: Verify OAuth auth with Infisical secrets from /linctl
+    cmds:
+      - |
+        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+          go tool task \
+            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
+            --dir "{{.TASKFILE_DIR}}" \
+            live-oauth
+
+  live-smoke-infisical:
+    desc: Run live smoke with Infisical secrets from /linctl
+    cmds:
+      - |
+        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+          go tool task \
+            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
+            --dir "{{.TASKFILE_DIR}}" \
+            live-smoke
+
   vet:
     desc: Run go vet
     cmds:
@@ -111,19 +237,46 @@ tasks:
     cmds:
       - go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
 
+  shellcheck:
+    desc: Lint shell scripts
+    cmds:
+      - shellcheck scripts/*.sh
+
   build:
     desc: Build linctl
     cmds:
       - go build -trimpath -ldflags="-s -w" -o bin/{{.BINARY}} {{.PKG}}
 
+  goreleaser-check:
+    desc: Verify the GoReleaser configuration without publishing
+    cmds:
+      - go run {{.GORELEASER}} check
+
+  release-preflight:
+    desc: Run the non-publishing pre-tag release preflight
+    cmds:
+      - task: ci
+      - task: coverage
+      - task: goreleaser-check
+
+  release-snapshot:
+    desc: Optionally build a local GoReleaser snapshot without publishing
+    cmds:
+      - go run {{.GORELEASER}} release --snapshot --clean
+
   ci:
     desc: Run the local CI gate
     cmds:
+      - task: deps-check
+      - task: fmt-check
       - task: generate-check
       - task: domain-language-check
+      - task: browser-login-smoke-check
       - task: vet
       - task: test
       - go build $(bash scripts/go-packages.sh)
+      - task: smoke-run
       - task: lint
+      - task: shellcheck
       - task: actionlint
       - task: vuln

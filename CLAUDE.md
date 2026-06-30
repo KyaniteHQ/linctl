@@ -14,12 +14,13 @@ Guarded writes fail closed on Target Mismatch — a hard stop, never a soft warn
 
 ## Build / test / lint (go-task)
 
-`task` is not installed locally — run it via `go run github.com/go-task/task/v3/cmd/task@latest <task>`, or install go-task.
+Run repository tasks through the pinned Go tool dependency: `go tool task <task>`.
 
-- `task ci` — local gate before any PR: generate-check → vet → test → build → lint → actionlint → vuln.
-- `task coverage` — enforces **100% hand-written statement coverage** for product code (excludes `internal/client/generated.go`, `cmd/linctl/main.go`, and repo maintenance scripts under `scripts/`). Not part of `task ci`; run it separately and keep new product code fully covered.
-- `task fmt` — gofumpt + goimports (NOT plain gofmt); both must be installed.
-- `task lint` — golangci-lint v2.12.2 (pinned; ~30 linters incl. gocognit/gocyclo/funlen/lll-120/gosec). Keep functions small and typed.
+- `go tool task ci` — local gate before any PR: deps-check → fmt-check → generate-check → vet → test → build → smoke-run → lint → shellcheck → actionlint → vuln.
+- `go tool task coverage` — enforces **100% hand-written statement coverage** for product code (excludes `internal/client/generated.go`, `cmd/linctl/main.go`, and repo maintenance scripts under `scripts/`). Not part of `task ci`; run it separately and keep new product code fully covered.
+- `go tool task fmt` — gofumpt + goimports (NOT plain gofmt); this is the mutating formatter.
+- `go tool task fmt-check` — non-mutating formatting parity check used by `task ci`.
+- `go tool task lint` — golangci-lint v2.12.2 (pinned; ~30 linters incl. gocognit/gocyclo/funlen/lll-120/gosec). Keep functions small and typed.
 
 ## Generated GraphQL client
 

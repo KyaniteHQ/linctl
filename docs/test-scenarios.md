@@ -1088,7 +1088,7 @@ Success is pass/fail:
    - Evidence: `go test ./internal/auth ./internal/cli`, `Test_Store_saves_app_config_without_creating_token_state`, `Test_Store_saves_token_state_without_rewriting_app_config`, `Test_AuthConfigure_saves_oauth_app_config_without_token_state`, `Test_AuthApp_obtains_app_actor_token_after_live_readiness`, `Test_AuthApp_does_not_save_token_when_readiness_fails`, `Test_AuthApp_reports_missing_scope_without_saving_token`, `Test_AuthStatus_reacquires_expired_client_credentials_token_and_checks_readiness`, `Test_AuthStatus_refreshes_expired_authorization_code_token_and_checks_readiness`.
 
 203. OAuth browser login with PKCE
-   - Success: `linctl auth login` builds a Linear authorization URL with PKCE S256 and `actor=app` by default, supports `--actor user`, validates callback state before token exchange, accepts a pasted callback URL or raw code through the same exchange path, verifies auth readiness before saving token state, and does not print access tokens, refresh tokens, or client secrets.
+   - Success: `linctl auth login` builds a Linear authorization URL with PKCE S256, Linear re-consent, and `actor=app` by default, supports `--actor user`, validates callback state before token exchange, accepts a pasted callback URL or raw code through the same exchange path, verifies auth readiness before saving token state, and does not print access tokens, refresh tokens, or client secrets.
    - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`.
 
 204. OAuth runtime token recovery
@@ -1107,10 +1107,13 @@ Success is pass/fail:
    - Success: `linctl auth status` and `linctl auth refresh` check target readiness and emit redacted debug diagnostics for readiness mismatch. `linctl auth refresh` rotates authorization-code token state or reacquires client-credentials app token state, persists the new state only after readiness succeeds, and redacts token material. `linctl auth logout` revokes refresh/access tokens when Linear accepts revocation, logs redacted failed-revocation diagnostics under `--debug`, removes local token state even when revocation fails, keeps app config by default, and removes app config only with `--forget-app`.
    - Evidence: `go test ./internal/oauth ./internal/auth ./internal/cli`, `Test_Client_revokes_token_with_token_form_field`, `Test_Client_revoke_error_redacts_secret_values`, `Test_AuthStatus_debug_logs_readiness_mismatch_without_secrets`, `Test_AuthRefresh_rotates_authorization_code_token_and_checks_readiness`, `Test_AuthRefresh_reacquires_client_credentials_token`, `Test_AuthRefresh_debug_logs_readiness_mismatch_without_secrets`, `Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app`, `Test_AuthLogout_forgets_app_and_clears_state_when_revocation_fails`.
 
-208. OAuth browser login manual smoke
-   - Success: a manual browser smoke covers app-actor login, pasted callback fallback, and personal-attribution login:
-     `linctl auth login --callback -` prints a PKCE S256 Linear authorization URL with `actor=app`; after browser authorization, paste the callback URL into stdin and expect `auth set actor app target ready` or equivalent JSON. Repeat with `linctl auth login --actor user --callback -` and expect `actor user`. `linctl auth status --json` must report set token material, scopes, expiry, actor, and ready target without printing access tokens, refresh tokens, client secret, or developer tokens.
-   - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`. Real browser smoke is manual until the OAuth fixture credentials are stored outside chat.
+208. OAuth browser login deterministic non-live harness check
+   - Success: `task browser-login-smoke-check` runs without Linear secrets, a real browser, or network writes; verifies missing fixture env exits 2; proves the localhost callback listener accepts a valid callback path; and checks redaction sentinels are not printed.
+   - Evidence: `bash -n scripts/browser-login-smoke.sh`; `shellcheck scripts/browser-login-smoke.sh`; `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check`.
+
+209. OAuth browser login manual smoke
+   - Success: `task browser-login-smoke` runs repeatable user-actor browser PKCE login in isolated temp auth state, prints the Linear authorization URL, captures the localhost callback through a one-shot listener without printing the callback URL, shows a browser success page, validates redacted login/status JSON, removes local token state, and reports only actor, target readiness, token status, and scope readiness. Running `task browser-login-smoke -- app` covers the app-actor browser install path only when the Linear fixture app is not already installed; repeatable app-actor coverage stays in `task live-oauth`.
+   - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`; `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke`; `go run github.com/go-task/task/v3/cmd/task@latest live-oauth`.
 
 ## Current Outcome
 
@@ -1135,6 +1138,14 @@ Then run the complete live smoke suite with:
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 ```
 
+When using the project Infisical setup, do not rely on the root secret path.
+The live fixture secrets are under `/linctl`; use:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest live-oauth-infisical
+go run github.com/go-task/task/v3/cmd/task@latest live-smoke-infisical
+```
+
 Both commands require the OAuth fixture env: `LINCTL_OAUTH_CLIENT_ID`,
 `LINCTL_OAUTH_CLIENT_SECRET`, `LINCTL_OAUTH_REDIRECT_URI`, `LINCTL_OAUTH_SCOPES`,
 and `LINCTL_OAUTH_EXPECTED_ACTOR=app`. `live-smoke` builds a temporary `linctl`
@@ -1148,19 +1159,55 @@ which must exit 2 with a missing-fixture message and without printing secret val
 
 ## Browser Login Smoke
 
-Manual browser login smoke intentionally stays outside arbitrary commands:
+The deterministic non-live harness check is safe for local CI and does not use
+Linear secrets, browser consent, or network writes:
 
 ```bash
-linctl auth login --callback -
-# Open the printed Linear URL, authorize, paste the redirected callback URL, press Enter.
-linctl auth status --json
-linctl auth logout
-
-linctl auth login --actor user --callback -
-# Open the printed Linear URL, authorize, paste the redirected callback URL, press Enter.
-linctl auth status --json
-linctl auth logout --forget-app
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check
 ```
 
-Expected output reports `actor`, `scopes`, `expires_at`, token status, and target readiness
-only. It must never print access tokens, refresh tokens, client secrets, or developer tokens.
+Manual browser-login smoke is a repeatable task with one human browser step:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke -- app
+```
+
+When using the project Infisical setup, use:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-infisical
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-infisical -- app
+```
+
+The task builds a temp `linctl` binary when `LINCTL_BINARY` is unset, writes an
+isolated `.linctl.toml` from `LINCTL_TEST_*` or `test/integration-config.json`,
+configures OAuth app material from `LINCTL_OAUTH_CLIENT_ID`,
+`LINCTL_OAUTH_REDIRECT_URI`, optional `LINCTL_OAUTH_CLIENT_SECRET`, and
+`LINCTL_OAUTH_SCOPES`, starts a one-shot localhost callback listener from
+`LINCTL_OAUTH_REDIRECT_URI`, then runs `linctl auth login --callback -` in that
+temp auth state. The task defaults to user-actor login because that is the
+repeatable authorization-code callback path for an already-installed fixture.
+The printed authorization URL includes Linear re-consent. The only manual action
+is to open the printed Linear authorization URL and authorize it; the browser
+then lands on a linctl success page and the terminal captures the callback
+without printing the one-time code. Use `-- app` only for the app-actor browser
+install path when the Linear fixture app is not already installed; otherwise
+Linear opens the Manage screen and no callback is produced. Use `task live-oauth`
+for repeatable app-actor fixture coverage.
+
+If the localhost listener cannot be used, set
+`LINCTL_BROWSER_LOGIN_CALLBACK_MODE=manual`. In manual mode, the browser may show
+`This site can't be reached` after authorization; copy the full callback URL
+from the address bar and paste it at the terminal prompt. The prompt hides input
+because the callback URL contains a one-time OAuth code.
+
+Expected output is a final line like:
+
+```text
+browser login smoke ok: actor=user target=ready token=set scopes=set
+```
+
+The script captures the callback through the local listener, validates redacted
+`auth status --json`, and deletes the temp auth state. It must never print access
+tokens, refresh tokens, client secrets, callback URLs, or developer tokens.

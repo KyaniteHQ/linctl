@@ -1,9 +1,24 @@
 # linctl `--json` output shapes
 
-Pass `--json` to any command to get one 2-space-indented, newline-terminated JSON object.
-Add `--compact` for a single-line JSON object. Add `--fields key,nested.key` to project JSON output
-to just the requested keys; for list commands, projection applies to each item in `issues`, `projects`,
-or `members`.
+Pass `--json` to get one 2-space-indented, newline-terminated JSON value.
+Most commands emit an object; a few commands with value-list semantics, such as
+`issue priority-values`, emit an array. Add `--compact` for a single-line JSON value.
+Add `--fields key,nested.key` to project JSON output
+to just the requested keys.
+
+For list-page commands, projection applies to each item in the command's collection array rather than
+to the scalar pagination fields. The current projection collection keys come from
+`internal/cli.CollectionKeys()`:
+
+`issues`, `associations`, `cycles`, `projects`, `members`, `comments`, `updates`, `milestones`,
+`documents`, `labels`, `teams`, `users`, `memberships`, `drafts`, `initiatives`, `notifications`,
+`notification_subscriptions`, `release_pipelines`, `release_stages`, `releases`, `history`,
+`links`, `release_notes`, `customers`, `customer_needs`, `customer_statuses`, `customer_tiers`,
+`relations`, `roadmaps`, `time_schedules`, `triage_responsibilities`, `sla_configurations`,
+`results`, `templates`, `workflow_states`, `agent_activities`, `agent_skills`, `agent_sessions`,
+`external_users`, `audit_entry_types`, `favorites`, `emojis`, `attachments`, `custom_views`,
+`project_labels`, `project_statuses`, `spans`, and `git_automation_states`.
+
 These are the exact keys (from `internal/client/*.go`). Fields marked *optional* are omitted
 when empty.
 
@@ -94,6 +109,29 @@ Two things to know when parsing `target --json`:
   `ProjectID`), not the snake_case used elsewhere — they mirror the config struct. Compare them
   field by field to explain a target mismatch.
 
+## Auth
+
+`auth app` · `auth login --callback ...` · `auth status` · `auth refresh` → **AuthStatus**:
+
+```json
+{
+  "app": { "client_id": "set", "client_secret": "set", "redirect_uri": "...", "scopes": ["read"] },
+  "token": { "status": "set", "type": "Bearer", "expires_at": "...", "scopes": ["read"] },
+  "actor": "app",
+  "scopes": ["read"],
+  "expires_at": "...",
+  "token_type": "Bearer",
+  "target": {
+    "status": "ready",
+    "expected": { "org_id": "...", "team_key": "LIT", "team_id": "...", "project_id": "..." },
+    "resolved": { "org_id": "...", "team_key": "LIT", "team_id": "...", "project_id": "..." }
+  }
+}
+```
+
+Auth readiness succeeds only after linctl proves the token actor, token scopes, and pinned target.
+App config and token material are reported as `set` or `missing`; secret values are never printed.
+
 ## Usage
 
 `usage` · `issue usage` · `project usage` → `{ "topic": string, "text": string }`
@@ -116,6 +154,13 @@ error), so an agent can branch on a stable code instead of parsing prose:
 - `INVALID_WRITE` — the write request was rejected before any API call (missing/!valid input).
 - `GRAPHQL_ERROR` — the GraphQL request itself failed.
 - `NOT_FOUND` — the referenced entity was not found.
+- `AUTH_NOT_CONFIGURED` — required OAuth app or token state is missing.
+- `AUTH_TOKEN_EXPIRED` — the saved OAuth access token is expired and cannot be used directly.
+- `AUTH_REFRESH_FAILED` — Linear rejected or failed an OAuth refresh request.
+- `AUTH_REAUTH_REQUIRED` — the saved OAuth state cannot be refreshed without a new login.
+- `MISSING_SCOPE` — OAuth token state does not include every configured required scope.
+- `AUTH_ACTOR_MISMATCH` — OAuth readiness could not prove the expected actor.
+- `AUTH_TARGET_MISMATCH` — OAuth readiness could not prove the token can access the pinned target.
 - `INTERNAL` — any other error (config, unknown command, decode, etc.).
 
 Read the JSON line from stderr; the human-readable line follows it on stderr too.

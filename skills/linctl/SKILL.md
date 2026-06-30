@@ -145,7 +145,7 @@ linctl --project <created-id> project archive <created-id> --json
 
 ## Smoke & Verify
 
-Three tiers, cheapest first. Pick the one the task needs.
+Four tiers, cheapest first. Pick the one the task needs.
 
 1. **No credentials** — prove the binary runs in a headless checkout:
 
@@ -173,6 +173,22 @@ Three tiers, cheapest first. Pick the one the task needs.
    Requires disposable OAuth auth state. Use `linctl auth app` for headless app-actor
    auth when a client secret is available, or `linctl auth login` for browser auth.
    Do not print secret values.
+
+4. **Browser login smoke** — manually verify PKCE callback login without leaking
+   the callback code:
+
+   ```bash
+   go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke
+   go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke -- app
+   ```
+
+   Requires `LINCTL_OAUTH_CLIENT_ID`, `LINCTL_OAUTH_REDIRECT_URI`, a pinned target
+   from `LINCTL_TEST_*` or `test/integration-config.json`, and optional
+   `LINCTL_OAUTH_CLIENT_SECRET`. The script prints the Linear authorization URL,
+   defaults to repeatable user-actor login, captures the localhost callback with
+   a one-shot listener, shows a browser success page, validates redacted JSON,
+   and cleans up temp auth state. Use `-- app` only for a fresh app-actor browser
+   install; use `live-oauth` for repeatable app-actor fixture coverage.
 
 Completion criterion: the chosen smoke passed with redacted command/status evidence,
 or is explicitly blocked on missing credentials or target.
@@ -225,5 +241,6 @@ Blocked:
 - Keep writes pinned to `.linctl.toml` `[target]`; do not add bypass flags.
 - Name test resources `linctl-it-<runid>` and close or archive them after verification.
 - For live smoke, prefer `go run github.com/go-task/task/v3/cmd/task@latest live-smoke`.
+- For browser auth smoke, use `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke`.
 - If a Linear domain is unsupported by `linctl`, report that limit instead of calling Linear directly.
 ```
