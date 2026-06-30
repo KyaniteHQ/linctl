@@ -241,6 +241,7 @@ func buildAuthLoginAuthorizeURL(
 	values.Set("code_challenge", pkce.CodeChallenge)
 	values.Set("code_challenge_method", pkce.CodeChallengeMethod)
 	values.Set("actor", actor)
+	values.Set("prompt", "consent")
 
 	return linearAuthorizeEndpoint + "?" + values.Encode()
 }

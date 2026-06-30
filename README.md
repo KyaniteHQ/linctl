@@ -39,7 +39,7 @@ also resolves to that org. Team-scoped creates compare org + team (the entity do
 resource-scoped updates and archives resolve the existing entity first, then compare the
 pinned `project_id` when one is configured. There is **no bypass flag** — `--org`,
 `--team`, `--team-id`, and `--project` set the pinned target, they do not relax the guard. See
-[`docs/adr/0001-target-pinned-linear-writes.md`](docs/adr/0001-target-pinned-linear-writes.md).
+[`docs/adr/0001-linctl-architecture-baseline.md`](docs/adr/0001-linctl-architecture-baseline.md).
 
 <details>
 <summary>Mermaid source for the diagram above</summary>
@@ -315,6 +315,7 @@ linctl auth app
 go test -count=1 -tags=integration ./internal/client
 go run github.com/go-task/task/v3/cmd/task@latest live-oauth
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke
 ```
 
 For the project Infisical setup, the fixture secrets live under `/linctl`:
@@ -322,7 +323,17 @@ For the project Infisical setup, the fixture secrets live under `/linctl`:
 ```bash
 go run github.com/go-task/task/v3/cmd/task@latest live-oauth-infisical
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke-infisical
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-infisical
 ```
+
+`browser-login-smoke` runs the PKCE browser login in an isolated temp auth state:
+it starts a one-shot localhost callback listener, prints the Linear authorization
+URL, shows a browser success page after authorization, verifies redacted
+`auth status --json`, and removes the temp token state. The auth URL uses Linear
+re-consent, and the task defaults to user-actor login because an already-installed
+app-actor OAuth fixture opens Linear's Manage screen instead of producing a
+repeatable callback. Use `live-oauth` for repeatable app-actor fixture coverage;
+pass `-- app` only when testing a fresh browser install path.
 
 Contributor workflow and the release process are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md); domain vocabulary is in [`CONTEXT.md`](CONTEXT.md);

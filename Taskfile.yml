@@ -101,6 +101,21 @@ tasks:
         fi
         LINCTL_BINARY="$binary" bash "$repo/scripts/live-oauth.sh" "$binary"
 
+  browser-login-smoke:
+    desc: Run manual browser OAuth login smoke in isolated auth state
+    cmds:
+      - bash scripts/browser-login-smoke.sh {{.CLI_ARGS}}
+
+  browser-login-smoke-infisical:
+    desc: Run browser OAuth login smoke with Infisical secrets from /linctl
+    cmds:
+      - |
+        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+          go run github.com/go-task/task/v3/cmd/task@latest \
+            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
+            --dir "{{.TASKFILE_DIR}}" \
+            browser-login-smoke -- {{.CLI_ARGS}}
+
   live-oauth-infisical:
     desc: Verify OAuth auth with Infisical secrets from /linctl
     cmds:
