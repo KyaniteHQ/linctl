@@ -155,9 +155,7 @@ func addProjectAttachmentsCommand(ctx context.Context, root *cobra.Command, opti
 			list.Attachments = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.AttachmentSummary) error {
-			return writeAttachment(command, options, item)
-		},
+		writeAttachment,
 		func(list client.ProjectAttachmentList) []client.AttachmentSummary {
 			return list.Attachments
 		},
@@ -183,9 +181,7 @@ func addProjectDocumentsCommand(ctx context.Context, root *cobra.Command, option
 			list.Documents = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.DocumentSummary) error {
-			return writeDocument(command, options, item)
-		},
+		writeDocument,
 		func(list client.ProjectDocumentList) []client.DocumentSummary {
 			return list.Documents
 		},
@@ -211,9 +207,7 @@ func addProjectExternalLinksCommand(ctx context.Context, root *cobra.Command, op
 			list.Links = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.EntityExternalLinkSummary) error {
-			return writeEntityExternalLink(command, options, item)
-		},
+		writeEntityExternalLink,
 		func(list client.ProjectExternalLinkList) []client.EntityExternalLinkSummary {
 			return list.Links
 		},
@@ -239,9 +233,7 @@ func addProjectHistoryCommand(ctx context.Context, root *cobra.Command, options 
 			list.History = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.ProjectHistorySummary) error {
-			return writeProjectHistory(command, options, item)
-		},
+		writeProjectHistory,
 		func(list client.ProjectHistoryList) []client.ProjectHistorySummary {
 			return list.History
 		},
@@ -267,9 +259,7 @@ func addProjectInitiativeLinksCommand(ctx context.Context, root *cobra.Command, 
 			list.Associations = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.InitiativeToProjectSummary) error {
-			return writeInitiativeToProject(command, options, item)
-		},
+		writeInitiativeToProject,
 		func(list client.ProjectInitiativeToProjectList) []client.InitiativeToProjectSummary {
 			return list.Associations
 		},
@@ -295,9 +285,7 @@ func addProjectInitiativesCommand(ctx context.Context, root *cobra.Command, opti
 			list.Initiatives = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.InitiativeSummary) error {
-			return writeInitiative(command, options, item)
-		},
+		writeInitiative,
 		func(list client.ProjectInitiativeList) []client.InitiativeSummary {
 			return list.Initiatives
 		},
@@ -335,9 +323,7 @@ func addProjectIssuesCommand(ctx context.Context, root *cobra.Command, options *
 			list.Issues = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.IssueSummary) error {
-			return writeIssue(command, options, item)
-		},
+		writeIssue,
 		func(list client.ProjectIssueList) []client.IssueSummary {
 			return list.Issues
 		},
@@ -363,9 +349,7 @@ func addProjectCommentsCommand(ctx context.Context, root *cobra.Command, options
 			list.Comments = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.CommentMetadataSummary) error {
-			return writeCommentMetadata(command, options, item)
-		},
+		writeCommentMetadata,
 		func(list client.ProjectCommentList) []client.CommentMetadataSummary {
 			return list.Comments
 		},
@@ -391,9 +375,7 @@ func addProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *
 			list.ProjectLabels = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.ProjectLabelSummary) error {
-			return writeProjectLabel(command, options, item)
-		},
+		writeProjectLabel,
 		func(list client.ProjectProjectLabelList) []client.ProjectLabelSummary {
 			return list.ProjectLabels
 		},
@@ -410,6 +392,13 @@ func writeCommentMetadata(command *cobra.Command, options *rootOptions, comment 
 				emptyDash(comment.DisplayName),
 				comment.CreatedAt,
 			)
+		})
+}
+
+func writeProjectMember(command *cobra.Command, options *rootOptions, member client.ProjectMember) error {
+	return writeItem(command, options, member, member.ID,
+		func(command *cobra.Command, _ *rootOptions, member client.ProjectMember) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s", member.ID, member.DisplayName)
 		})
 }
 
@@ -432,9 +421,7 @@ func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options 
 			list.Members = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.ProjectMember) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s", item.ID, item.DisplayName)
-		},
+		writeProjectMember,
 		func(list client.ProjectMemberList) []client.ProjectMember {
 			return list.Members
 		},
@@ -460,9 +447,7 @@ func addProjectNeedsCommand(ctx context.Context, root *cobra.Command, options *r
 			list.Needs = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.CustomerNeedSummary) error {
-			return writeCustomerNeed(command, options, item)
-		},
+		writeCustomerNeed,
 		func(list client.ProjectCustomerNeedList) []client.CustomerNeedSummary {
 			return list.Needs
 		},
@@ -500,9 +485,7 @@ func addProjectTeamsCommand(ctx context.Context, root *cobra.Command, options *r
 			list.Teams = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.TeamSummary) error {
-			return writeTeam(command, options, item)
-		},
+		writeTeam,
 		func(list client.ProjectTeamList) []client.TeamSummary {
 			return list.Teams
 		},
@@ -551,13 +534,18 @@ func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options 
 			list.Updates = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.ProjectUpdateSummary) error {
-			return render.WriteLine(command.OutOrStdout(), "%s %s %s", item.ID, item.Health, item.DisplayName)
-		},
+		writeProjectChildUpdate,
 		func(list client.ProjectUpdateList) []client.ProjectUpdateSummary {
 			return list.Updates
 		},
 	)
+}
+
+func writeProjectChildUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {
+	return writeItem(command, options, update, update.ID,
+		func(command *cobra.Command, _ *rootOptions, update client.ProjectUpdateSummary) error {
+			return render.WriteLine(command.OutOrStdout(), "%s %s %s", update.ID, update.Health, update.DisplayName)
+		})
 }
 
 func writeProjectFilterSuggestion(
@@ -603,9 +591,7 @@ func addProjectRelationChildListCommand(
 			list.Relations = items
 			return list, err
 		},
-		func(command *cobra.Command, item client.ProjectRelationSummary) error {
-			return writeProjectRelation(command, options, item)
-		},
+		writeProjectRelation,
 		func(list client.ProjectProjectRelationList) []client.ProjectRelationSummary {
 			return list.Relations
 		},

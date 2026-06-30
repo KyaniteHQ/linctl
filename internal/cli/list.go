@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 
 	"github.com/spf13/cobra"
 )
@@ -135,7 +136,7 @@ func addChildListCommand[List any, Item any](
 	fetch func(commandRuntime, string, int) (List, error),
 	count func(List) int,
 	sortList func(List) (List, error),
-	writeItem func(*cobra.Command, Item) error,
+	writeItem any,
 	items func(List) []Item,
 ) {
 	limit := 50
@@ -163,7 +164,7 @@ func addChildListCommand[List any, Item any](
 				return writeJSONValue(command, options, list)
 			}
 			for _, item := range items(list) {
-				if err := writeItem(command, item); err != nil {
+				if err := writeChildListItem(command, options, writeItem, item); err != nil {
 					return err
 				}
 			}
@@ -174,4 +175,22 @@ func addChildListCommand[List any, Item any](
 	annotateReadCollectionCommand(command, collectionKeyForPage[List]())
 	command.Flags().IntVar(&limit, "limit", limit, "maximum "+limitHelp+" to return")
 	root.AddCommand(command)
+}
+
+func writeChildListItem[Item any](
+	command *cobra.Command,
+	options *rootOptions,
+	writeItem any,
+	item Item,
+) error {
+	switch writer := writeItem.(type) {
+	case readListItemWriter[Item]:
+		return writer(command, options, item)
+	case func(*cobra.Command, *rootOptions, Item) error:
+		return writer(command, options, item)
+	case func(*cobra.Command, Item) error:
+		return writer(command, item)
+	default:
+		return errors.New("child list writer has unsupported signature")
+	}
 }
