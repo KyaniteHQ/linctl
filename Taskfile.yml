@@ -40,35 +40,51 @@ tasks:
       - task: gen-skill
       - git diff --exit-code -- skills/linctl/references/commands.md
       - go run scripts/linear_api_coverage*.go -h >/dev/null
+      - task: graphql-operation-check
       - task: coverage-ledger-check
 
-  coverage-ledger-check:
-    desc: Verify the generated Linear API coverage ledger against the upstream SDK checkout
+  linear-sdk-upstream-checkout:
+    desc: Clone or refresh the upstream Linear SDK checkout used by schema and coverage checks
     cmds:
       - |
         upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-/tmp/linctl-upstream-linear}"
         remote="https://github.com/linear/linear.git"
-        branch="master"
+        ref="${LINCTL_LINEAR_SDK_REF:-master}"
         if [[ ! -e "$upstream" ]]; then
-          git clone --depth=1 --branch "$branch" "$remote" "$upstream"
+          git clone --depth=1 --branch "$ref" "$remote" "$upstream"
         elif [[ ! -d "$upstream/.git" ]]; then
-          printf 'coverage ledger upstream path exists but is not a git checkout: %s\n' "$upstream" >&2
+          printf 'Linear SDK upstream path exists but is not a git checkout: %s\n' "$upstream" >&2
           printf 'Set LINCTL_LINEAR_SDK_UPSTREAM to a Linear repo checkout or remove the path.\n' >&2
           exit 1
         else
           origin="$(git -C "$upstream" remote get-url origin 2>/dev/null || true)"
           if [[ "$origin" != "$remote" ]]; then
-            printf 'coverage ledger upstream checkout has unexpected origin: %s\n' "$origin" >&2
+            printf 'Linear SDK upstream checkout has unexpected origin: %s\n' "$origin" >&2
             printf 'Expected %s. Set LINCTL_LINEAR_SDK_UPSTREAM to a Linear repo checkout or remove the path.\n' "$remote" >&2
             exit 1
           fi
-          git -C "$upstream" fetch --depth=1 origin "$branch"
+          git -C "$upstream" fetch --depth=1 origin "$ref"
           git -C "$upstream" checkout --detach FETCH_HEAD
         fi
+
+  coverage-ledger-check:
+    desc: Verify the generated Linear API coverage ledger against the upstream SDK checkout
+    cmds:
+      - task: linear-sdk-upstream-checkout
+      - |
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-/tmp/linctl-upstream-linear}"
         tmp="$(mktemp)"
         trap 'rm -f "$tmp"' EXIT
         go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
         diff -u docs/linear-api-coverage.md "$tmp"
+
+  graphql-operation-check:
+    desc: Validate local GraphQL operations against the upstream Linear SDK schema
+    cmds:
+      - task: linear-sdk-upstream-checkout
+      - |
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-/tmp/linctl-upstream-linear}"
+        go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
 
   domain-language-check:
     desc: Verify user-facing docs and help avoid workspace terminology

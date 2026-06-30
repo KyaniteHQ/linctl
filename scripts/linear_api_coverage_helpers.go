@@ -27,7 +27,7 @@ func countImplementedDomain(
 			implementedRoots,
 			operationRoots,
 		)
-		return status == "implemented"
+		return status == "public_command" || status == "guarded_write_command"
 	})
 }
 

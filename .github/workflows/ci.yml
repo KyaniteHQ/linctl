@@ -42,14 +42,10 @@ jobs:
         run: |
           go run scripts/gen-skill.go
           git diff --exit-code -- skills/linctl/references/commands.md
+      - name: Verify GraphQL operations against upstream Linear schema
+        run: go run github.com/go-task/task/v3/cmd/task@latest graphql-operation-check
       - name: Verify Linear API coverage ledger
-        run: |
-          upstream="$RUNNER_TEMP/linear-sdk-source"
-          git clone --depth=1 https://github.com/linear/linear.git "$upstream"
-          tmp="$(mktemp)"
-          trap 'rm -f "$tmp"' EXIT
-          go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
-          diff -u docs/linear-api-coverage.md "$tmp"
+        run: go run github.com/go-task/task/v3/cmd/task@latest coverage-ledger-check
 
   test:
     name: test / ${{ matrix.os }}

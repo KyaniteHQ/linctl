@@ -136,10 +136,13 @@ func classifySDKMethod(
 	rootKinds map[string]string,
 ) (string, string) {
 	if sdkImplemented(name, implementedRoots) {
-		return "implemented", "local operation or command exists"
+		return "generated_operation", "local GraphQL operation uses this root"
 	}
 	if command, ok := commandInventory[commandLookupName(name)]; ok && command.OperationBacking != "" {
-		return "implemented", "local operation or command exists"
+		if command.Safety == cli.CommandSafetyWrite {
+			return "guarded_write_command", "public CLI command exposes this operation with write safety metadata"
+		}
+		return "public_command", "public CLI command exposes this operation"
 	}
 	if kind, ok := sdkRootKind(name, rootKinds); ok {
 		return classifyLoose(name, kind)
@@ -153,7 +156,7 @@ func classifySDKMethod(
 
 func classifyRoot(field rootField, implementedRoots map[string]bool) (string, string) {
 	if implementedRoots[rootKey(field.Kind, field.Name)] {
-		return "implemented", "root field used by local GraphQL operation"
+		return "generated_operation", "root field used by local GraphQL operation"
 	}
 	return classifyLoose(field.Name, field.Kind)
 }
