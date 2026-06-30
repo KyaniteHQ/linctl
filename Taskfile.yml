@@ -4,6 +4,8 @@ vars:
   BINARY: linctl
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+  INFISICAL_ENV: secrets
+  INFISICAL_PATH: /linctl
 
 tasks:
   default:
@@ -98,6 +100,26 @@ tasks:
           (cd "$repo" && go build -trimpath -o "$binary" {{.PKG}})
         fi
         LINCTL_BINARY="$binary" bash "$repo/scripts/live-oauth.sh" "$binary"
+
+  live-oauth-infisical:
+    desc: Verify OAuth auth with Infisical secrets from /linctl
+    cmds:
+      - |
+        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+          go run github.com/go-task/task/v3/cmd/task@latest \
+            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
+            --dir "{{.TASKFILE_DIR}}" \
+            live-oauth
+
+  live-smoke-infisical:
+    desc: Run live smoke with Infisical secrets from /linctl
+    cmds:
+      - |
+        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+          go run github.com/go-task/task/v3/cmd/task@latest \
+            --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
+            --dir "{{.TASKFILE_DIR}}" \
+            live-smoke
 
   vet:
     desc: Run go vet

@@ -1135,6 +1135,14 @@ Then run the complete live smoke suite with:
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 ```
 
+When using the project Infisical setup, do not rely on the root secret path.
+The live fixture secrets are under `/linctl`; use:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest live-oauth-infisical
+go run github.com/go-task/task/v3/cmd/task@latest live-smoke-infisical
+```
+
 Both commands require the OAuth fixture env: `LINCTL_OAUTH_CLIENT_ID`,
 `LINCTL_OAUTH_CLIENT_SECRET`, `LINCTL_OAUTH_REDIRECT_URI`, `LINCTL_OAUTH_SCOPES`,
 and `LINCTL_OAUTH_EXPECTED_ACTOR=app`. `live-smoke` builds a temporary `linctl`

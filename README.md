@@ -93,8 +93,8 @@ every [release](https://github.com/KyaniteHQ/linctl/releases/latest).
 
 ```bash
 git clone https://github.com/KyaniteHQ/linctl.git && cd linctl
-go install ./cmd/linctl
-linctl --version
+GOBIN="$PWD/bin" go install ./cmd/linctl
+./bin/linctl --version
 ```
 
 Use your platform or distro package manager to install Go first. If you install
@@ -108,7 +108,13 @@ platform-specific instructions instead of replacing a managed `/usr/local/go`.
 Pin the repo target in `.linctl.toml`, then configure OAuth app material outside
 repo config.
 
+You need a Linear OAuth app client id before the auth step can continue. Export
+it, or pass the value directly with `--client-id`; use a client secret only when
+your app has one. Keep both values out of `.linctl.toml` and do not print them.
+
 ```bash
+: "${LINCTL_OAUTH_CLIENT_ID:?set this to your Linear OAuth app client id}"
+
 linctl auth configure \
   --client-id "$LINCTL_OAUTH_CLIENT_ID" \
   --redirect-uri "http://127.0.0.1:8765/callback" \
@@ -309,6 +315,13 @@ linctl auth app
 go test -count=1 -tags=integration ./internal/client
 go run github.com/go-task/task/v3/cmd/task@latest live-oauth
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
+```
+
+For the project Infisical setup, the fixture secrets live under `/linctl`:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest live-oauth-infisical
+go run github.com/go-task/task/v3/cmd/task@latest live-smoke-infisical
 ```
 
 Contributor workflow and the release process are in

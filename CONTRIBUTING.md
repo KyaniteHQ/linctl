@@ -42,6 +42,14 @@ The full live smoke harness is:
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 ```
 
+For the project Infisical setup, fixture secrets live under `/linctl`, not the
+root secret path. Use the pinned aliases so the folder is not easy to forget:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest live-oauth-infisical
+go run github.com/go-task/task/v3/cmd/task@latest live-smoke-infisical
+```
+
 Never run write tests against real project data. Test resources must use a `linctl-it-<runid>` prefix and
 be archived during cleanup.
 
