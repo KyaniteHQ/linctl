@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `28d6461`.
+Generated from current local sources and upstream Linear SDK commit `d4b9532`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -17,8 +17,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Surface | Total | Implemented/root-backed | Classified |
 | --- | ---: | ---: | ---: |
 | Upstream SDK root methods | 458 | 133 | 458 |
-| Upstream Query root fields | 158 | 113 | 158 |
-| Upstream Mutation root fields | 364 | 21 | 364 |
+| Upstream Query root fields | 159 | 113 | 159 |
+| Upstream Mutation root fields | 365 | 21 | 365 |
 | Local generated Go operations | 332 | 332 | 332 |
 | Domain-map commands | 421 | 295 | 421 |
 
@@ -542,6 +542,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `favorites` | `FavoriteConnection!` | implemented | root field used by local GraphQL operation |
 | `fetchData` | `FetchDataPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiative` | `Initiative!` | implemented | root field used by local GraphQL operation |
+| `initiativeLeadTeamChangeImpact` | `InitiativeLeadTeamChangeImpact!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeRelation` | `InitiativeRelation!` | implemented | root field used by local GraphQL operation |
 | `initiativeRelations` | `InitiativeRelationConnection!` | implemented | root field used by local GraphQL operation |
 | `initiativeToProject` | `InitiativeToProject!` | implemented | root field used by local GraphQL operation |
@@ -752,6 +753,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `initiativeArchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeCreate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `initiativeLeadTeamUpdate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationCreate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `initiativeRelationUpdate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |

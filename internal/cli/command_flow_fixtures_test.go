@@ -65,7 +65,6 @@ func useCommandRuntimeWithFiles(t *testing.T, graphqlClient graphql.Client, file
 func testCommandRuntime(graphqlClient graphql.Client) commandRuntime {
 	return commandRuntime{
 		config: config.Resolved{
-			Token: "test-token",
 			Target: config.Target{
 				OrgID:     "org-id",
 				TeamKey:   "LIT",

@@ -243,7 +243,7 @@ func Test_AuthLogin_reports_generated_proof_errors(t *testing.T) {
 func Test_AuthLogin_state_mismatch_refuses_exchange_and_save(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"oauth-access-token",
 		"oauth-refresh-token",
 		"Bearer",
@@ -273,7 +273,7 @@ func Test_AuthLogin_state_mismatch_refuses_exchange_and_save(t *testing.T) {
 func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"oauth-access-token",
 		"oauth-refresh-token",
 		"Bearer",
@@ -334,7 +334,7 @@ func Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness(t *testing.
 func Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"oauth-access-token",
 		"oauth-refresh-token",
 		"Bearer",
@@ -367,7 +367,7 @@ func Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange(t *testin
 func Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"oauth-access-token",
 		"oauth-refresh-token",
 		"Bearer",
@@ -492,7 +492,7 @@ func Test_AuthLogin_reports_completion_errors(t *testing.T) {
 		restore := useAuthCommandHooks(
 			t,
 			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+			&fakeOAuthTokenClient{grant: auth.NewTokenState(
 				"oauth-access-token",
 				"oauth-refresh-token",
 				"Bearer",
@@ -513,7 +513,7 @@ func Test_AuthLogin_reports_completion_errors(t *testing.T) {
 		restore := useAuthCommandHooks(
 			t,
 			cliAuthTestPaths(t),
-			&fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+			&fakeOAuthTokenClient{grant: auth.NewTokenState(
 				"oauth-access-token",
 				"oauth-refresh-token",
 				"Bearer",
@@ -538,7 +538,7 @@ func Test_AuthLogin_reports_token_state_save_error_after_callback(t *testing.T) 
 		TokenPath:     filepath.Join(root, "auth-token.json"),
 	}
 	saveAuthLoginApp(t, paths)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"oauth-access-token",
 		"oauth-refresh-token",
 		"Bearer",

@@ -113,11 +113,12 @@ func Test_Client_exchanges_authorization_code_with_pkce_form(t *testing.T) {
 	require.Equal(t, "client-id", request.Form.Get("client_id"))
 	require.Equal(t, "pkce-code-verifier", request.Form.Get("code_verifier"))
 	require.Equal(t, "client-secret", request.Form.Get("client_secret"))
-	require.Equal(t, "oauth-access-token", token.State.AccessToken)
-	require.Equal(t, "rotated-refresh-token", token.State.RefreshToken)
-	require.Equal(t, "Bearer", token.Metadata.TokenType)
-	require.Equal(t, []string{"read", "write"}, token.Metadata.Scopes)
-	require.Equal(t, now.Add(time.Hour), token.Metadata.ExpiresAt)
+	require.Equal(t, "oauth-access-token", token.AccessToken)
+	require.Equal(t, "rotated-refresh-token", token.RefreshToken)
+	require.Equal(t, "Bearer", token.TokenType)
+	require.Equal(t, []string{"read", "write"}, token.Scopes)
+	require.NotNil(t, token.ExpiresAt)
+	require.Equal(t, now.Add(time.Hour), *token.ExpiresAt)
 }
 
 func Test_Client_refreshes_rotated_token_state_with_basic_client_auth(t *testing.T) {
@@ -176,11 +177,12 @@ func Test_Client_refreshes_rotated_token_state_with_basic_client_auth(t *testing
 	require.Equal(t, "old-refresh-token", request.Form.Get("refresh_token"))
 	require.Empty(t, request.Form.Get("client_id"))
 	require.Empty(t, request.Form.Get("client_secret"))
-	require.Equal(t, "new-access-token", token.State.AccessToken)
-	require.Equal(t, "new-refresh-token", token.State.RefreshToken)
-	require.Equal(t, "Bearer", token.Metadata.TokenType)
-	require.Equal(t, []string{"read", "write"}, token.Metadata.Scopes)
-	require.Equal(t, now.Add(30*time.Minute), token.Metadata.ExpiresAt)
+	require.Equal(t, "new-access-token", token.AccessToken)
+	require.Equal(t, "new-refresh-token", token.RefreshToken)
+	require.Equal(t, "Bearer", token.TokenType)
+	require.Equal(t, []string{"read", "write"}, token.Scopes)
+	require.NotNil(t, token.ExpiresAt)
+	require.Equal(t, now.Add(30*time.Minute), *token.ExpiresAt)
 }
 
 func Test_Client_obtains_client_credentials_app_actor_token(t *testing.T) {
@@ -236,11 +238,12 @@ func Test_Client_obtains_client_credentials_app_actor_token(t *testing.T) {
 	require.Equal(t, "read,write", request.Form.Get("scope"))
 	require.Equal(t, "client-id", request.Form.Get("client_id"))
 	require.Equal(t, "client-secret", request.Form.Get("client_secret"))
-	require.Equal(t, "app-actor-access-token", token.State.AccessToken)
-	require.Empty(t, token.State.RefreshToken)
-	require.Equal(t, "Bearer", token.Metadata.TokenType)
-	require.Equal(t, []string{"read", "write"}, token.Metadata.Scopes)
-	require.Equal(t, now.Add(2*time.Hour), token.Metadata.ExpiresAt)
+	require.Equal(t, "app-actor-access-token", token.AccessToken)
+	require.Empty(t, token.RefreshToken)
+	require.Equal(t, "Bearer", token.TokenType)
+	require.Equal(t, []string{"read", "write"}, token.Scopes)
+	require.NotNil(t, token.ExpiresAt)
+	require.Equal(t, now.Add(2*time.Hour), *token.ExpiresAt)
 }
 
 func Test_Client_revokes_token_with_token_form_field(t *testing.T) {

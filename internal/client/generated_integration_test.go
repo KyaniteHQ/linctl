@@ -269,7 +269,7 @@ func newLiveIntegrationTransport(t *testing.T, timeout time.Duration) *Transport
 	require.NoError(t, err)
 
 	return NewTransport(TransportConfig{
-		Token:      OAuthAccessToken(grant.State.AccessToken),
+		Token:      OAuthAccessToken(grant.AccessToken),
 		Timeout:    timeout,
 		MaxRetries: 1,
 	})

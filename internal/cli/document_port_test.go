@@ -112,8 +112,8 @@ func Test_runDocumentUpdate_propagates_port_error(t *testing.T) {
 	require.ErrorContains(t, err, "update failed")
 }
 
-func Test_documentClientAdapter_forwards_to_client(t *testing.T) {
-	adapter := documentAdapterFor(testCommandRuntime(commandFlowFakeClient{}))
+func Test_commandClientAdapter_forwards_document_ports_to_client(t *testing.T) {
+	adapter := commandAdapterFor(testCommandRuntime(commandFlowFakeClient{}))
 	ctx := context.Background()
 
 	created, err := adapter.CreateDocument(ctx, client.DocumentCreateRequest{Title: "Created doc"})

@@ -15,12 +15,16 @@ import (
 	"github.com/vektah/gqlparser/v2/parser"
 )
 
-func mustRootFields(path string, typeName string) []rootField {
+func mustRootFieldSets(path string) ([]rootField, []rootField) {
 	source := mustRead(path)
 	document, err := parser.ParseSchema(&ast.Source{Name: path, Input: string(source)})
 	if err != nil {
 		fail(err)
 	}
+	return rootFields(document, path, "Query"), rootFields(document, path, "Mutation")
+}
+
+func rootFields(document *ast.SchemaDocument, path string, typeName string) []rootField {
 	definition := document.Definitions.ForName(typeName)
 	if definition == nil {
 		fail(fmt.Errorf("%s not found in %s", typeName, path))

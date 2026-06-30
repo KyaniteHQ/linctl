@@ -70,8 +70,7 @@ func main() {
 		upstreamSDKPath,
 		upstreamDocumentsPath,
 	)
-	upstreamQueries := mustRootFields(upstreamSchemaPath, "Query")
-	upstreamMutations := mustRootFields(upstreamSchemaPath, "Mutation")
+	upstreamQueries, upstreamMutations := mustRootFieldSets(upstreamSchemaPath)
 	sdkMethods := mustSDKMethods(upstreamSDKPath)
 	localOperations := mustLocalOperations(localOperationsPattern)
 	localGenerated := mustGeneratedOperations(localGeneratedPath)
@@ -103,8 +102,9 @@ func main() {
 	writeLocalOperationsTable(&output, localOperations, localOperationNames)
 	writeDomainCommandTable(&output, domainCommands, commandInventory, implementedRoots, operationRoots)
 
+	ledger := append(bytes.TrimRight(output.Bytes(), "\n"), '\n')
 	// #nosec G306 -- this generated markdown ledger is intended to be world-readable repo documentation.
-	if err := os.WriteFile(*outputPath, output.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile(*outputPath, ledger, 0o644); err != nil {
 		fail(err)
 	}
 	if *operationAuditPath != "" {

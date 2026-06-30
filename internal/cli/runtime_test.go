@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"os"
@@ -134,7 +135,7 @@ func Test_CommandRuntime_refreshes_expired_authorization_code_token_and_retries_
 		GrantType:    authGrantAuthorizationCode,
 	}
 	require.NoError(t, store.Save(context.Background(), auth.State{App: app, Token: token}))
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"rotated-access-token",
 		"rotated-refresh-token",
 		"Bearer",
@@ -179,7 +180,7 @@ func Test_CommandRuntime_reacquires_expired_client_credentials_token_and_retries
 		GrantType:   authGrantClientCredentials,
 	}
 	require.NoError(t, store.Save(context.Background(), auth.State{App: app, Token: token}))
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
 		"Bearer",
@@ -217,7 +218,7 @@ func Test_CommandRuntime_returns_non_auth_error_after_pre_request_recovery(t *te
 		ExpiresAt:   &expiredAt,
 		GrantType:   authGrantClientCredentials,
 	}
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
 		"Bearer",
@@ -251,7 +252,7 @@ func Test_CommandRuntime_wraps_auth_failure_after_pre_request_recovery(t *testin
 		ExpiresAt:   &expiredAt,
 		GrantType:   authGrantClientCredentials,
 	}
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
 		"Bearer",
@@ -299,7 +300,7 @@ func Test_CommandRuntime_reports_token_persist_error_after_recovery(t *testing.T
 	tokenPath := filepath.Join(root, "auth-token-dir")
 	require.NoError(t, os.Mkdir(tokenPath, 0o700))
 	expiredAt := time.Now().Add(-time.Hour).UTC().Truncate(time.Second)
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
 		"Bearer",
@@ -343,7 +344,7 @@ func Test_CommandRuntime_reacquires_client_credentials_token_after_401_once(t *t
 		Actor:       "app",
 		GrantType:   authGrantClientCredentials,
 	}
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
 		"Bearer",
@@ -368,6 +369,47 @@ func Test_CommandRuntime_reacquires_client_credentials_token_after_401_once(t *t
 	require.Equal(t, 2, factory.requestCalls)
 }
 
+func Test_CommandRuntime_logs_auth_failure_token_recovery_without_secrets(t *testing.T) {
+	store := auth.NewStore(cliAuthTestPaths(t))
+	app := auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret", Scopes: []string{"read"}}
+	token := auth.TokenState{
+		AccessToken: "stale-app-token",
+		Scopes:      []string{"read"},
+		Actor:       "app",
+		GrantType:   authGrantClientCredentials,
+	}
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"fresh-app-token",
+		"",
+		"Bearer",
+		time.Now().Add(time.Hour).UTC().Truncate(time.Second),
+		[]string{"read"},
+	)}
+	factory := &recordingRuntimeClientFactory{errors: []error{client.ErrAuthFailed, nil}}
+	var logs bytes.Buffer
+	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
+		Token:       token,
+		App:         app,
+		Store:       store,
+		Persist:     true,
+		Logger:      newDiagnosticLogger(true, false, &logs),
+		OAuthClient: fakeOAuth,
+		NewClient:   factory.newClient,
+	})
+
+	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
+
+	require.NoError(t, err)
+	output := logs.String()
+	require.Contains(t, output, `msg="auth token recovery started"`)
+	require.Contains(t, output, "reason=auth_failed")
+	require.Contains(t, output, "grant_type=client_credentials")
+	require.Contains(t, output, `msg="auth token recovery succeeded"`)
+	require.NotContains(t, output, "stale-app-token")
+	require.NotContains(t, output, "fresh-app-token")
+	require.NotContains(t, output, "client-secret")
+}
+
 func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_retried_token_is_rejected(t *testing.T) {
 	store := auth.NewStore(cliAuthTestPaths(t))
 	app := auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret", Scopes: []string{"read"}}
@@ -378,7 +420,7 @@ func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_retried_token_is_reje
 		Actor:       "app",
 		GrantType:   authGrantClientCredentials,
 	}
-	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
 		"Bearer",
@@ -428,6 +470,91 @@ func Test_CommandRuntime_returns_AUTH_REFRESH_FAILED_when_refresh_fails_without_
 	require.Equal(t, string(auth.ErrorCodeRefreshFailed), errorCode(err))
 	require.Equal(t, 1, fakeOAuth.refreshTokenCalls)
 	require.Equal(t, 0, factory.requestCalls)
+}
+
+func Test_CommandRuntime_logs_expired_token_recovery_without_secrets(t *testing.T) {
+	expiredAt := time.Now().Add(-time.Hour).UTC().Truncate(time.Second)
+	app := auth.AppConfig{
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+		Scopes:       []string{"read"},
+	}
+	token := auth.TokenState{
+		AccessToken:  "expired-access-token",
+		RefreshToken: "old-refresh-token",
+		Scopes:       []string{"read"},
+		ExpiresAt:    &expiredAt,
+		Actor:        "app",
+		GrantType:    authGrantAuthorizationCode,
+	}
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"rotated-access-token",
+		"rotated-refresh-token",
+		"Bearer",
+		time.Now().Add(time.Hour),
+		[]string{"read"},
+	)}
+	var logs bytes.Buffer
+	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
+		Token:       token,
+		App:         app,
+		Store:       auth.NewStore(cliAuthTestPaths(t)),
+		Profile:     "work",
+		Persist:     false,
+		Logger:      newDiagnosticLogger(true, false, &logs),
+		OAuthClient: fakeOAuth,
+		NewClient:   (&recordingRuntimeClientFactory{}).newClient,
+	})
+
+	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
+
+	require.NoError(t, err)
+	output := logs.String()
+	require.Contains(t, output, `msg="auth token recovery started"`)
+	require.Contains(t, output, "reason=expired")
+	require.Contains(t, output, "grant_type=authorization_code")
+	require.Contains(t, output, "actor=app")
+	require.Contains(t, output, "profile=work")
+	require.Contains(t, output, `msg="auth token recovery succeeded"`)
+	require.NotContains(t, output, "expired-access-token")
+	require.NotContains(t, output, "rotated-access-token")
+	require.NotContains(t, output, "old-refresh-token")
+	require.NotContains(t, output, "rotated-refresh-token")
+	require.NotContains(t, output, "client-secret")
+}
+
+func Test_CommandRuntime_logs_token_recovery_failure_without_error_details(t *testing.T) {
+	expiredAt := time.Now().Add(-time.Hour).UTC().Truncate(time.Second)
+	token := auth.TokenState{
+		AccessToken:  "expired-access-token",
+		RefreshToken: "old-refresh-token",
+		ExpiresAt:    &expiredAt,
+		GrantType:    authGrantAuthorizationCode,
+	}
+	fakeOAuth := &fakeOAuthTokenClient{err: errors.New("token endpoint unavailable")}
+	var logs bytes.Buffer
+	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
+		Token:       token,
+		App:         auth.AppConfig{ClientID: "client-id"},
+		Store:       auth.NewStore(cliAuthTestPaths(t)),
+		Logger:      newDiagnosticLogger(true, false, &logs),
+		OAuthClient: fakeOAuth,
+		NewClient:   (&recordingRuntimeClientFactory{}).newClient,
+	})
+
+	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
+
+	require.Error(t, err)
+	require.Equal(t, string(auth.ErrorCodeRefreshFailed), errorCode(err))
+	output := logs.String()
+	require.Contains(t, output, `msg="auth token recovery started"`)
+	require.Contains(t, output, `msg="auth token recovery failed"`)
+	require.Contains(t, output, "reason=expired")
+	require.Contains(t, output, "phase=exchange")
+	require.Contains(t, output, "error_code=AUTH_REFRESH_FAILED")
+	require.NotContains(t, output, "token endpoint unavailable")
+	require.NotContains(t, output, "expired-access-token")
+	require.NotContains(t, output, "old-refresh-token")
 }
 
 func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_app_reacquire_fails_without_retry_loop(t *testing.T) {
@@ -498,7 +625,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 	})
 
 	t.Run("keeps old refresh token when endpoint omits one", func(t *testing.T) {
-		fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+		fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 			"new-access-token",
 			"",
 			"Bearer",
@@ -526,7 +653,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 	})
 
 	t.Run("missing scope", func(t *testing.T) {
-		fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenGrant(
+		fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 			"new-access-token",
 			"new-refresh-token",
 			"Bearer",

@@ -68,7 +68,7 @@ func runAuthLogin(
 	options *rootOptions,
 	flags authLoginFlags,
 ) error {
-	authContext, err := loadAuthCommandContext(ctx, options)
+	authContext, err := loadAuthCommandContext(ctx, command, options)
 	if err != nil {
 		return err
 	}
@@ -114,8 +114,7 @@ func runAuthLogin(
 }
 
 func authLoginApp(authContext authCommandContext) (auth.AppConfig, error) {
-	profile := authContext.state.Profile(authContext.profile)
-	app := profile.App
+	app := authContext.app
 	if strings.TrimSpace(app.ClientID) == "" {
 		return auth.AppConfig{}, auth.NewError(
 			auth.ErrorCodeNotConfigured,
@@ -197,7 +196,7 @@ func completeAuthLogin(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	grant, err := newAuthOAuthClient().ExchangeAuthorizationCode(ctx, oauth.AuthorizationCodeRequest{
+	token, err := newAuthOAuthClient().ExchangeAuthorizationCode(ctx, oauth.AuthorizationCodeRequest{
 		Code:         code,
 		RedirectURI:  request.App.RedirectURI,
 		ClientID:     request.App.ClientID,
@@ -207,7 +206,6 @@ func completeAuthLogin(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	token := grant.State
 	token.Actor = request.Actor
 	token.GrantType = authGrantAuthorizationCode
 	if err := requireScopes(token.Scopes, request.Scopes); err != nil {

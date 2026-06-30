@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"slices"
 	"sort"
 	"strings"
 
@@ -160,38 +159,50 @@ func sortByJSONField[T any](items []T, field string, order string) ([]T, error) 
 	if order != "asc" && order != "desc" {
 		return nil, fmt.Errorf("invalid sort order %q: use asc or desc", order)
 	}
+	if items == nil {
+		return nil, nil
+	}
 
-	sortedItems := slices.Clone(items)
-	sort.SliceStable(sortedItems, func(leftIndex int, rightIndex int) bool {
-		leftValue, leftErr := jsonFieldValue(sortedItems[leftIndex], field)
-		rightValue, rightErr := jsonFieldValue(sortedItems[rightIndex], field)
-		if leftErr != nil || rightErr != nil {
-			return false
-		}
-		if order == "desc" {
-			return rightValue < leftValue
-		}
-
-		return leftValue < rightValue
-	})
-
-	for _, item := range sortedItems {
-		if _, err := jsonFieldValue(item, field); err != nil {
+	parts := strings.Split(field, ".")
+	type sortableItem struct {
+		item T
+		key  string
+	}
+	sortableItems := make([]sortableItem, 0, len(items))
+	for _, item := range items {
+		key, err := jsonFieldValueByPath(item, field, parts)
+		if err != nil {
 			return nil, err
 		}
+		sortableItems = append(sortableItems, sortableItem{item: item, key: key})
+	}
+	sort.SliceStable(sortableItems, func(leftIndex int, rightIndex int) bool {
+		if order == "desc" {
+			return sortableItems[rightIndex].key < sortableItems[leftIndex].key
+		}
+
+		return sortableItems[leftIndex].key < sortableItems[rightIndex].key
+	})
+	sortedItems := make([]T, 0, len(sortableItems))
+	for _, item := range sortableItems {
+		sortedItems = append(sortedItems, item.item)
 	}
 
 	return sortedItems, nil
 }
 
 func jsonFieldValue(value any, field string) (string, error) {
+	return jsonFieldValueByPath(value, field, strings.Split(field, "."))
+}
+
+func jsonFieldValueByPath(value any, field string, parts []string) (string, error) {
 	raw, err := jsonRoundTrip(value)
 	if err != nil {
 		return "", err
 	}
 
 	current := any(raw)
-	for _, part := range strings.Split(field, ".") {
+	for _, part := range parts {
 		object, ok := current.(map[string]any)
 		if !ok {
 			return "", fmt.Errorf("sort field %q is not an object path", field)

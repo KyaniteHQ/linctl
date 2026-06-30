@@ -3,10 +3,7 @@ package cli
 import (
 	"context"
 
-	"github.com/Khan/genqlient/graphql"
-
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 // documentCreator is the Command Port the document create command depends on.
@@ -19,23 +16,19 @@ type documentUpdater interface {
 	UpdateDocument(ctx context.Context, request client.DocumentUpdateRequest) (client.DocumentSummary, error)
 }
 
-type documentClientAdapter struct {
-	graphqlClient graphql.Client
-	target        config.Target
-}
+var (
+	_ documentCreator = commandClientAdapter{}
+	_ documentUpdater = commandClientAdapter{}
+)
 
-func documentAdapterFor(runtime commandRuntime) documentClientAdapter {
-	return documentClientAdapter{graphqlClient: runtime.graphqlClient, target: runtime.config.Target}
-}
-
-func (adapter documentClientAdapter) CreateDocument(
+func (adapter commandClientAdapter) CreateDocument(
 	ctx context.Context,
 	request client.DocumentCreateRequest,
 ) (client.DocumentSummary, error) {
 	return client.CreateDocument(ctx, adapter.graphqlClient, adapter.target, request)
 }
 
-func (adapter documentClientAdapter) UpdateDocument(
+func (adapter commandClientAdapter) UpdateDocument(
 	ctx context.Context,
 	request client.DocumentUpdateRequest,
 ) (client.DocumentSummary, error) {

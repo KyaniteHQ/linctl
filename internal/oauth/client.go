@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
 )
@@ -91,7 +90,7 @@ func NewClient(config ClientConfig) *Client {
 func (client *Client) ExchangeAuthorizationCode(
 	ctx context.Context,
 	request AuthorizationCodeRequest,
-) (auth.TokenGrant, error) {
+) (auth.TokenState, error) {
 	form := url.Values{}
 	form.Set("grant_type", "authorization_code")
 	form.Set("code", request.Code)
@@ -106,7 +105,7 @@ func (client *Client) ExchangeAuthorizationCode(
 }
 
 // RefreshToken exchanges a refresh token and returns Linear's rotated token state.
-func (client *Client) RefreshToken(ctx context.Context, request RefreshTokenRequest) (auth.TokenGrant, error) {
+func (client *Client) RefreshToken(ctx context.Context, request RefreshTokenRequest) (auth.TokenState, error) {
 	form := url.Values{}
 	form.Set("grant_type", "refresh_token")
 	form.Set("refresh_token", request.RefreshToken)
@@ -131,7 +130,7 @@ func (client *Client) RefreshToken(ctx context.Context, request RefreshTokenRequ
 func (client *Client) ClientCredentials(
 	ctx context.Context,
 	request ClientCredentialsRequest,
-) (auth.TokenGrant, error) {
+) (auth.TokenState, error) {
 	form := url.Values{}
 	form.Set("grant_type", "client_credentials")
 	if len(request.Scopes) > 0 {
@@ -191,7 +190,7 @@ func (client *Client) exchange(
 	ctx context.Context,
 	form url.Values,
 	clientAuth clientAuthentication,
-) (auth.TokenGrant, error) {
+) (auth.TokenState, error) {
 	httpRequest, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
@@ -199,7 +198,7 @@ func (client *Client) exchange(
 		strings.NewReader(form.Encode()),
 	)
 	if err != nil {
-		return auth.TokenGrant{}, fmt.Errorf("create oauth token request: %w", err)
+		return auth.TokenState{}, fmt.Errorf("create oauth token request: %w", err)
 	}
 	httpRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if clientAuth.useBasic {
@@ -208,26 +207,26 @@ func (client *Client) exchange(
 
 	httpResponse, err := client.httpClient.Do(httpRequest)
 	if err != nil {
-		return auth.TokenGrant{}, fmt.Errorf("request oauth token: %w", err)
+		return auth.TokenState{}, fmt.Errorf("request oauth token: %w", err)
 	}
 	body, readErr := io.ReadAll(io.LimitReader(httpResponse.Body, maxTokenResponseBytes))
 	closeErr := httpResponse.Body.Close()
 	if readErr != nil {
-		return auth.TokenGrant{}, fmt.Errorf("read oauth token response: %w", readErr)
+		return auth.TokenState{}, fmt.Errorf("read oauth token response: %w", readErr)
 	}
 	if closeErr != nil {
-		return auth.TokenGrant{}, fmt.Errorf("close oauth token response: %w", closeErr)
+		return auth.TokenState{}, fmt.Errorf("close oauth token response: %w", closeErr)
 	}
 	if httpResponse.StatusCode < http.StatusOK || httpResponse.StatusCode >= http.StatusMultipleChoices {
-		return auth.TokenGrant{}, tokenEndpointError(form.Get("grant_type"), httpResponse.StatusCode, body)
+		return auth.TokenState{}, tokenEndpointError(form.Get("grant_type"), httpResponse.StatusCode, body)
 	}
 
 	var response tokenEndpointResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		return auth.TokenGrant{}, fmt.Errorf("decode oauth token response: %w", err)
+		return auth.TokenState{}, fmt.Errorf("decode oauth token response: %w", err)
 	}
 
-	return response.tokenGrant(client.now()), nil
+	return response.tokenState(client.now()), nil
 }
 
 const maxTokenResponseBytes = 1 << 20
@@ -272,13 +271,13 @@ func tokenEndpointErrorCode(grantType string, oauthError string) auth.ErrorCode 
 	}
 }
 
-func (response tokenEndpointResponse) tokenGrant(now time.Time) auth.TokenGrant {
+func (response tokenEndpointResponse) tokenState(now time.Time) auth.TokenState {
 	var expiresAt time.Time
 	if response.ExpiresIn > 0 {
 		expiresAt = now.Add(time.Duration(response.ExpiresIn) * time.Second)
 	}
 
-	return auth.NewTokenGrant(
+	return auth.NewTokenState(
 		response.AccessToken,
 		response.RefreshToken,
 		response.TokenType,
@@ -297,7 +296,7 @@ func (list *scopeList) UnmarshalJSON(data []byte) error {
 
 	var text string
 	if err := json.Unmarshal(data, &text); err == nil {
-		*list = splitScopeString(text)
+		*list = auth.SplitScopes(text)
 		return nil
 	}
 
@@ -308,12 +307,6 @@ func (list *scopeList) UnmarshalJSON(data []byte) error {
 	}
 
 	return errors.New("scope must be a string or array")
-}
-
-func splitScopeString(value string) []string {
-	return strings.FieldsFunc(value, func(r rune) bool {
-		return r == ',' || unicode.IsSpace(r)
-	})
 }
 
 func firstNonEmpty(primary string, fallback string) string {

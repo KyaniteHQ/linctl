@@ -74,14 +74,8 @@ PY
   export LINCTL_BINARY="${binary}"
 
   cd "$smoke_dir"
-  run_allow_forbidden() {
-    local label="$1"
-    shift
-    local error_path="$smoke_dir/${label}.err"
-    if "$@" >/dev/null 2>"$error_path"; then
-      return 0
-    fi
-
+  is_forbidden_error() {
+    local error_path="$1"
     local denied
     denied="$(python3 - "$error_path" <<'PY'
 import json
@@ -101,7 +95,17 @@ with open(sys.argv[1], "r", encoding="utf-8") as error_file:
 print("yes" if denied else "no")
 PY
 )"
-    if [[ "$denied" == "yes" ]]; then
+    [[ "$denied" == "yes" ]]
+  }
+  run_allow_forbidden() {
+    local label="$1"
+    shift
+    local error_path="$smoke_dir/${label}.err"
+    if "$@" >/dev/null 2>"$error_path"; then
+      return 0
+    fi
+
+    if is_forbidden_error "$error_path"; then
       return 0
     fi
 
@@ -118,32 +122,26 @@ PY
       return 0
     fi
 
-    local denied
-    denied="$(python3 - "$error_path" <<'PY'
-import json
-import sys
-
-denied = False
-with open(sys.argv[1], "r", encoding="utf-8") as error_file:
-    for line in error_file:
-        try:
-            payload = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        message = payload.get("message", "")
-        if "FORBIDDEN" in message or "Access denied" in message:
-            denied = True
-            break
-print("yes" if denied else "no")
-PY
-)"
-    if [[ "$denied" == "yes" ]]; then
+    if is_forbidden_error "$error_path"; then
       printf '{"skipped_forbidden":true}\n'
       return 0
     fi
 
     cat "$error_path" >&2
     return 1
+  }
+  first_item_field() {
+    local collection="$1"
+    local field="${2:-id}"
+    python3 -c 'import json, sys
+collection = sys.argv[1]
+try:
+    data = json.load(sys.stdin)
+except json.JSONDecodeError as error:
+    sys.stderr.write(f"decode {collection} JSON: {error}\n")
+    sys.exit(1)
+items = data.get(collection, [])
+print("" if not items else items[0].get(sys.argv[2], ""))' "$collection" "$field"
   }
 
   "$binary" usage >/dev/null
@@ -189,12 +187,12 @@ PY
     "$binary" application info "$LINCTL_APPLICATION_CLIENT_ID" --json >/dev/null
   fi
   agent_activity_json="$("$binary" agent-activity list --json --limit 5)"
-  agent_activity_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("agent_activities", []); print(items[0]["id"] if items else "")' <<<"$agent_activity_json")"
+  agent_activity_id="$(first_item_field agent_activities <<<"$agent_activity_json")"
   if [[ -n "$agent_activity_id" ]]; then
     "$binary" agent-activity get "$agent_activity_id" --json >/dev/null
   fi
   agent_skill_json="$("$binary" agent-skill list --json --limit 5)"
-  agent_skill_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("agent_skills", []); print(items[0]["id"] if items else "")' <<<"$agent_skill_json")"
+  agent_skill_id="$(first_item_field agent_skills <<<"$agent_skill_json")"
   if [[ -n "$agent_skill_id" ]]; then
     "$binary" agent-skill get "$agent_skill_id" --json >/dev/null
   fi
@@ -235,11 +233,11 @@ PY
   "$binary" issue filter-suggestion "started issues" --json >/dev/null
   "$binary" issue title-suggestion "Customer asks for faster exports" --json >/dev/null
   issue_json="$("$binary" issue list --json --limit 5)"
-  issue_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0]["id"] if items else "")' <<<"$issue_json")"
-  issue_branch_name="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("issues", []); print(items[0].get("branch_name", "") if items else "")' <<<"$issue_json")"
+  issue_id="$(first_item_field issues <<<"$issue_json")"
+  issue_branch_name="$(first_item_field issues branch_name <<<"$issue_json")"
   if [[ -n "$issue_id" ]]; then
     issue_attachment_json="$("$binary" issue attachments "$issue_id" --json --limit 5)"
-    attachment_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("attachments", []); print(items[0]["id"] if items else "")' <<<"$issue_attachment_json")"
+    attachment_id="$(first_item_field attachments <<<"$issue_attachment_json")"
     "$binary" issue bot-actor "$issue_id" --json >/dev/null
     "$binary" issue children "$issue_id" --json --limit 5 >/dev/null
     "$binary" issue documents "$issue_id" --json --limit 5 >/dev/null
@@ -295,7 +293,7 @@ PY
     fi
   fi
   comment_json="$("$binary" comment list --json --limit 5)"
-  comment_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("comments", []); print(items[0]["id"] if items else "")' <<<"$comment_json")"
+  comment_id="$(first_item_field comments <<<"$comment_json")"
   if [[ -n "$comment_id" ]]; then
     "$binary" comment bot-actor "$comment_id" --json >/dev/null
     "$binary" comment children "$comment_id" --json --limit 5 >/dev/null
@@ -312,36 +310,36 @@ PY
     "$binary" project comments "$project_id" --json --limit 5 >/dev/null
     "$binary" project updates "$project_id" --json --limit 5 >/dev/null
     project_milestone_json="$("$binary" project-milestone list "$project_id" --json --limit 5)"
-    project_milestone_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("milestones", []); print(items[0]["id"] if items else "")' <<<"$project_milestone_json")"
+    project_milestone_id="$(first_item_field milestones <<<"$project_milestone_json")"
     if [[ -n "$project_milestone_id" ]]; then
       "$binary" project-milestone issues "$project_milestone_id" --json --limit 5 >/dev/null
     fi
   fi
   project_update_json="$("$binary" project-update list --json --limit 5)"
-  project_update_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("updates", []); print(items[0]["id"] if items else "")' <<<"$project_update_json")"
+  project_update_id="$(first_item_field updates <<<"$project_update_json")"
   if [[ -n "$project_update_id" ]]; then
     "$binary" project-update comments "$project_update_id" --json --limit 5 >/dev/null
   fi
   project_status_json="$("$binary" project-status list --json --limit 5)"
-  project_status_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("project_statuses", []); print(items[0]["id"] if items else "")' <<<"$project_status_json")"
+  project_status_id="$(first_item_field project_statuses <<<"$project_status_json")"
   if [[ -n "$project_status_id" ]]; then
     run_allow_forbidden project-status-count "$binary" project-status project-count "$project_status_id" --json
   fi
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null
   document_json="$("$binary" document list --json --limit 5)"
-  document_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("documents", []); print(items[0]["id"] if items else "")' <<<"$document_json")"
+  document_id="$(first_item_field documents <<<"$document_json")"
   if [[ -n "$document_id" ]]; then
     "$binary" document comments "$document_id" --json --limit 5 >/dev/null
   fi
   label_json="$("$binary" label list --json --limit 5)"
-  label_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("labels", []); print(items[0]["id"] if items else "")' <<<"$label_json")"
+  label_id="$(first_item_field labels <<<"$label_json")"
   if [[ -n "$label_id" ]]; then
     "$binary" label children "$label_id" --json --limit 5 >/dev/null
     "$binary" label issues "$label_id" --json --limit 5 >/dev/null
   fi
   cycle_json="$("$binary" cycle list --json --limit 5)"
-  cycle_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("cycles", []); print(items[0]["id"] if items else "")' <<<"$cycle_json")"
+  cycle_id="$(first_item_field cycles <<<"$cycle_json")"
   if [[ -n "$cycle_id" ]]; then
     "$binary" cycle issues "$cycle_id" --json --limit 5 >/dev/null
     "$binary" cycle uncompleted-issues "$cycle_id" --json --limit 5 >/dev/null
@@ -353,7 +351,7 @@ PY
   "$binary" team projects "$team_id" --json --limit 5 >/dev/null
   "$binary" team release-pipelines "$team_id" --json --limit 5 >/dev/null
   team_states_json="$("$binary" team states "$team_id" --json --limit 5)"
-  workflow_state_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("workflow_states", []); print(items[0]["id"] if items else "")' <<<"$team_states_json")"
+  workflow_state_id="$(first_item_field workflow_states <<<"$team_states_json")"
   "$binary" team git-automation-states "$team_id" --json --limit 5 >/dev/null
   "$binary" team templates "$team_id" --json --limit 5 >/dev/null
   if [[ -n "$workflow_state_id" ]]; then
@@ -363,7 +361,7 @@ PY
   "$binary" notification list --json --limit 5 >/dev/null
   "$binary" notification subscription list --json --limit 5 >/dev/null
   triage_responsibility_json="$("$binary" triage-responsibility list --json --limit 5)"
-  triage_responsibility_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("triage_responsibilities", []); print(items[0]["id"] if items else "")' <<<"$triage_responsibility_json")"
+  triage_responsibility_id="$(first_item_field triage_responsibilities <<<"$triage_responsibility_json")"
   if [[ -n "$triage_responsibility_id" ]]; then
     "$binary" triage-responsibility get "$triage_responsibility_id" --json >/dev/null
     "$binary" triage-responsibility manual-selection "$triage_responsibility_id" --json >/dev/null
@@ -374,32 +372,32 @@ PY
   "$binary" search issues linear --json --limit 1 >/dev/null
   "$binary" search projects linear --json --limit 1 >/dev/null
   release_pipeline_json="$("$binary" release-pipeline list --json --limit 5)"
-  release_pipeline_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("release_pipelines", []); print(items[0]["id"] if items else "")' <<<"$release_pipeline_json")"
+  release_pipeline_id="$(first_item_field release_pipelines <<<"$release_pipeline_json")"
   if [[ -n "$release_pipeline_id" ]]; then
     "$binary" release-pipeline releases "$release_pipeline_id" --json --limit 5 >/dev/null
     "$binary" release-pipeline stages "$release_pipeline_id" --json --limit 5 >/dev/null
     "$binary" release-pipeline teams "$release_pipeline_id" --json --limit 5 >/dev/null
   fi
   release_stage_json="$("$binary" release-stage list --json --limit 5)"
-  release_stage_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("release_stages", []); print(items[0]["id"] if items else "")' <<<"$release_stage_json")"
+  release_stage_id="$(first_item_field release_stages <<<"$release_stage_json")"
   if [[ -n "$release_stage_id" ]]; then
     "$binary" release-stage releases "$release_stage_id" --json --limit 5 >/dev/null
   fi
   release_json="$("$binary" release list --json --limit 5)"
-  release_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("releases", []); print(items[0]["id"] if items else "")' <<<"$release_json")"
+  release_id="$(first_item_field releases <<<"$release_json")"
   if [[ -n "$release_id" ]]; then
     "$binary" release history "$release_id" --json --limit 5 >/dev/null
     "$binary" release documents "$release_id" --json --limit 5 >/dev/null
     "$binary" release issues "$release_id" --json --limit 5 >/dev/null
     release_links_json="$("$binary" release links "$release_id" --json --limit 5)"
-    external_link_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("links", []); print(items[0]["id"] if items else "")' <<<"$release_links_json")"
+    external_link_id="$(first_item_field links <<<"$release_links_json")"
     if [[ -n "$external_link_id" ]]; then
       "$binary" external-link get "$external_link_id" --json >/dev/null
     fi
   fi
   "$binary" release-note list --json --limit 5 >/dev/null
   external_user_json="$("$binary" external-user list --json --limit 5)"
-  external_user_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("external_users", []); print(items[0]["id"] if items else "")' <<<"$external_user_json")"
+  external_user_id="$(first_item_field external_users <<<"$external_user_json")"
   if [[ -n "$external_user_id" ]]; then
     "$binary" external-user get "$external_user_id" --json >/dev/null
   fi
@@ -411,7 +409,7 @@ PY
     "$binary" issue create --template "$template_id" --section "Live smoke=verified" --dry-run --quiet
   fi
   initiative_json="$(capture_allow_forbidden initiative-list "$binary" initiative list --json --limit 5)"
-  initiative_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("initiatives", []); print(items[0]["id"] if items else "")' <<<"$initiative_json")"
+  initiative_id="$(first_item_field initiatives <<<"$initiative_json")"
   if [[ -n "$initiative_id" ]]; then
     "$binary" initiative history "$initiative_id" --json --limit 5 >/dev/null
     "$binary" initiative links "$initiative_id" --json --limit 5 >/dev/null
@@ -423,18 +421,18 @@ PY
   run_allow_forbidden initiative-relation-list "$binary" initiative-relation list --json --limit 5
   run_allow_forbidden initiative-to-project-list "$binary" initiative-to-project list --json --limit 5
   initiative_update_json="$(capture_allow_forbidden initiative-update-list "$binary" initiative-update list --json --limit 5)"
-  initiative_update_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("updates", []); print(items[0]["id"] if items else "")' <<<"$initiative_update_json")"
+  initiative_update_id="$(first_item_field updates <<<"$initiative_update_json")"
   if [[ -n "$initiative_update_id" ]]; then
     "$binary" initiative-update comments "$initiative_update_id" --json --limit 5 >/dev/null
   fi
   roadmap_json="$("$binary" roadmap list --json --limit 5)"
-  roadmap_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("roadmaps", []); print(items[0]["id"] if items else "")' <<<"$roadmap_json")"
+  roadmap_id="$(first_item_field roadmaps <<<"$roadmap_json")"
   if [[ -n "$roadmap_id" ]]; then
     "$binary" roadmap projects "$roadmap_id" --json --limit 5 >/dev/null
   fi
   "$binary" roadmap-to-project list --json --limit 5 >/dev/null
   custom_view_json="$("$binary" custom-view list --json --limit 5)"
-  custom_view_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("custom_views", []); print(items[0]["id"] if items else "")' <<<"$custom_view_json")"
+  custom_view_id="$(first_item_field custom_views <<<"$custom_view_json")"
   if [[ -n "$custom_view_id" ]]; then
     "$binary" custom-view get "$custom_view_id" --json >/dev/null
     "$binary" custom-view subscribers "$custom_view_id" --json >/dev/null
@@ -449,7 +447,7 @@ PY
   fi
   run_allow_forbidden customer-list "$binary" customer list --json --limit 5
   customer_need_json="$(capture_allow_forbidden customer-need-list "$binary" customer-need list --json --limit 5)"
-  customer_need_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("customer_needs", []); print(items[0]["id"] if items else "")' <<<"$customer_need_json")"
+  customer_need_id="$(first_item_field customer_needs <<<"$customer_need_json")"
   if [[ -n "$customer_need_id" ]]; then
     "$binary" customer-need project-attachment "$customer_need_id" --json >/dev/null
   fi

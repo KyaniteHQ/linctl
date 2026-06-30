@@ -174,6 +174,50 @@ jobs:
           go-version-file: go.mod
           go-package: ./cmd/... ./internal/...
 
+  live-oauth:
+    name: live oauth
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      LINCTL_TEST_ORG_ID: ${{ secrets.LINCTL_TEST_ORG_ID }}
+      LINCTL_TEST_TEAM_KEY: ${{ secrets.LINCTL_TEST_TEAM_KEY }}
+      LINCTL_TEST_TEAM_ID: ${{ secrets.LINCTL_TEST_TEAM_ID }}
+      LINCTL_TEST_PROJECT_ID: ${{ secrets.LINCTL_TEST_PROJECT_ID }}
+      LINCTL_OAUTH_CLIENT_ID: ${{ secrets.LINCTL_OAUTH_CLIENT_ID }}
+      LINCTL_OAUTH_CLIENT_SECRET: ${{ secrets.LINCTL_OAUTH_CLIENT_SECRET }}
+      LINCTL_OAUTH_REDIRECT_URI: ${{ secrets.LINCTL_OAUTH_REDIRECT_URI }}
+      LINCTL_OAUTH_SCOPES: ${{ secrets.LINCTL_OAUTH_SCOPES }}
+      LINCTL_OAUTH_EXPECTED_ACTOR: app
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
+      - name: Verify dependencies
+        run: |
+          go mod download
+          go mod verify
+      - name: Skip notice (OAuth fixture absent)
+        if: env.LINCTL_OAUTH_CLIENT_ID == '' || env.LINCTL_OAUTH_CLIENT_SECRET == '' || env.LINCTL_OAUTH_REDIRECT_URI == '' || env.LINCTL_OAUTH_SCOPES == '' || env.LINCTL_TEST_ORG_ID == '' || env.LINCTL_TEST_TEAM_KEY == '' || env.LINCTL_TEST_TEAM_ID == ''
+        run: echo "OAuth fixture env is not configured, skipping live OAuth." >> "$GITHUB_STEP_SUMMARY"
+      - name: Write live target config
+        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        run: |
+          {
+            printf '[target]\n'
+            printf 'org_id = "%s"\n' "$LINCTL_TEST_ORG_ID"
+            printf 'team_key = "%s"\n' "$LINCTL_TEST_TEAM_KEY"
+            printf 'team_id = "%s"\n' "$LINCTL_TEST_TEAM_ID"
+            printf 'project_id = "%s"\n' "$LINCTL_TEST_PROJECT_ID"
+          } > .linctl.toml
+      - name: OAuth live gate
+        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        run: go run github.com/go-task/task/v3/cmd/task@latest live-oauth
+
   dependency-review:
     name: dependency review
     runs-on: ubuntu-latest
@@ -196,6 +240,7 @@ jobs:
       - coverage
       - lint
       - security
+      - live-oauth
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:

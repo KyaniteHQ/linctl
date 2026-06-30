@@ -91,8 +91,8 @@ func Test_runCommentDelete_propagates_port_error(t *testing.T) {
 	require.ErrorContains(t, err, "delete failed")
 }
 
-func Test_commentClientAdapter_forwards_to_client(t *testing.T) {
-	adapter := commentAdapterFor(testCommandRuntime(commandFlowFakeClient{}))
+func Test_commandClientAdapter_forwards_comment_ports_to_client(t *testing.T) {
+	adapter := commandAdapterFor(testCommandRuntime(commandFlowFakeClient{}))
 	ctx := context.Background()
 
 	comment, err := adapter.UpdateComment(ctx, client.CommentUpdateRequest{ID: "comment-id", Body: "updated body"})

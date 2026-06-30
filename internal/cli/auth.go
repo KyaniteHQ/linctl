@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"os"
 	"slices"
 	"strings"
 	"time"
@@ -41,18 +43,20 @@ var (
 )
 
 type authOAuthClient interface {
-	ClientCredentials(context.Context, oauth.ClientCredentialsRequest) (auth.TokenGrant, error)
-	ExchangeAuthorizationCode(context.Context, oauth.AuthorizationCodeRequest) (auth.TokenGrant, error)
-	RefreshToken(context.Context, oauth.RefreshTokenRequest) (auth.TokenGrant, error)
+	ClientCredentials(context.Context, oauth.ClientCredentialsRequest) (auth.TokenState, error)
+	ExchangeAuthorizationCode(context.Context, oauth.AuthorizationCodeRequest) (auth.TokenState, error)
+	RefreshToken(context.Context, oauth.RefreshTokenRequest) (auth.TokenState, error)
 	RevokeToken(context.Context, oauth.RevocationRequest) error
 }
 
 type authCommandContext struct {
 	paths   auth.Paths
 	store   auth.Store
-	state   auth.State
 	profile string
 	target  config.Target
+	app     auth.AppConfig
+	token   auth.TokenState
+	logger  *slog.Logger
 }
 
 type authConfigureFlags struct {
@@ -186,12 +190,11 @@ func addAuthAppCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		Short: "Authorize with OAuth client credentials as the app actor",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			authContext, err := loadAuthCommandContext(ctx, options)
+			authContext, err := loadAuthCommandContext(ctx, command, options)
 			if err != nil {
 				return err
 			}
-			profile := authContext.state.Profile(authContext.profile)
-			app := mergeAppConfig(profile.App, auth.AppConfig{
+			app := auth.MergeAppConfig(authContext.app, auth.AppConfig{
 				ClientID:     strings.TrimSpace(flags.clientID),
 				ClientSecret: flags.clientSecret,
 				Scopes:       normalizedScopes(flags.scopes),
@@ -237,18 +240,17 @@ func addAuthStatusCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Check OAuth token, actor, scopes, and target readiness",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			authContext, err := loadAuthCommandContext(ctx, options)
+			authContext, err := loadAuthCommandContext(ctx, command, options)
 			if err != nil {
 				return err
 			}
-			profile := authContext.state.Profile(authContext.profile)
-			app := profile.App
-			token := profile.Token
+			app := authContext.app
+			token := authContext.token
 			if token.AccessToken == "" || tokenExpired(token, authNow()) {
 				return writeCurrentOrRefreshedAuthStatus(ctx, command, options, authContext, app, token)
 			}
 
-			readiness, err := requireAuthReadiness(ctx, authReadinessRequest{
+			readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
 				AccessToken:    token.AccessToken,
 				ExpectedTarget: authContext.target,
 				ExpectedActor:  firstNonEmptyString(token.Actor, appActor),
@@ -272,13 +274,12 @@ func addAuthRefreshCommand(ctx context.Context, root *cobra.Command, options *ro
 		Short: "Refresh OAuth token state",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			authContext, err := loadAuthCommandContext(ctx, options)
+			authContext, err := loadAuthCommandContext(ctx, command, options)
 			if err != nil {
 				return err
 			}
-			profile := authContext.state.Profile(authContext.profile)
-			app := profile.App
-			token, readiness, err := refreshAuthTokenState(ctx, authContext, app, profile.Token, options.timeout)
+			app := authContext.app
+			token, readiness, err := refreshAuthTokenState(ctx, authContext, app, authContext.token, options.timeout)
 			if err != nil {
 				return err
 			}
@@ -300,12 +301,16 @@ func addAuthLogoutCommand(ctx context.Context, root *cobra.Command, options *roo
 		Short: "Revoke OAuth tokens and remove local token state",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			authContext, err := loadAuthCommandContext(ctx, options)
+			authContext, err := loadAuthCommandContext(ctx, command, options)
 			if err != nil {
 				return err
 			}
-			profile := authContext.state.Profile(authContext.profile)
-			revoked, revocationFailed := revokeTokenState(ctx, newAuthOAuthClient(), profile.Token)
+			revoked, revocationFailed := revokeTokenState(
+				ctx,
+				authContext.log(),
+				newAuthOAuthClient(),
+				authContext.token,
+			)
 			if err := authContext.store.ClearTokenState(ctx, authContext.profile); err != nil {
 				return err
 			}
@@ -322,6 +327,14 @@ func addAuthLogoutCommand(ctx context.Context, root *cobra.Command, options *roo
 				Revoked:          revoked,
 				RevocationFailed: revocationFailed,
 			}
+			authContext.log().DebugContext(
+				ctx,
+				"auth logout completed",
+				"profile", authContext.profile,
+				"app", report.App,
+				"revoked_count", len(report.Revoked),
+				"revocation_failed", report.RevocationFailed,
+			)
 			if options.quiet {
 				return nil
 			}
@@ -344,7 +357,11 @@ func addAuthLogoutCommand(ctx context.Context, root *cobra.Command, options *roo
 	root.AddCommand(command)
 }
 
-func loadAuthCommandContext(ctx context.Context, options *rootOptions) (authCommandContext, error) {
+func loadAuthCommandContext(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+) (authCommandContext, error) {
 	paths, err := authDefaultPaths(nil)
 	if err != nil {
 		return authCommandContext{}, err
@@ -352,7 +369,6 @@ func loadAuthCommandContext(ctx context.Context, options *rootOptions) (authComm
 	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
 		GlobalPath:      defaultGlobalConfigPath(),
 		RepoPath:        ".linctl.toml",
-		AuthStatePaths:  paths,
 		ProfileOverride: options.profile,
 		TargetOverride:  targetOverride(options),
 	})
@@ -362,20 +378,35 @@ func loadAuthCommandContext(ctx context.Context, options *rootOptions) (authComm
 	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
 
 	store := auth.NewStore(paths)
-	state, err := store.Load(ctx)
+	session, err := auth.SelectSession(ctx, auth.SessionRequest{
+		Store:   store,
+		Profile: resolvedConfig.Profile,
+	})
 	if err != nil {
 		return authCommandContext{}, err
 	}
-	profileState := state.Profile(resolvedConfig.Profile)
-	mergeResolvedAuthAppConfig(&state, resolvedConfig.Profile, profileState, resolvedConfig.Auth.App)
 
 	return authCommandContext{
 		paths:   paths,
 		store:   store,
-		state:   state,
 		profile: resolvedConfig.Profile,
 		target:  resolvedConfig.Target,
+		app:     session.App,
+		token:   session.Token,
+		logger:  authDiagnosticLogger(command, options),
 	}, nil
+}
+
+func (authContext authCommandContext) log() *slog.Logger {
+	if authContext.logger == nil {
+		return discardLogger
+	}
+
+	return authContext.logger
+}
+
+func authDiagnosticLogger(command *cobra.Command, options *rootOptions) *slog.Logger {
+	return newDiagnosticLogger(options.debug, os.Getenv("LINCTL_DEBUG_JSON") == "1", command.ErrOrStderr())
 }
 
 func writeCurrentOrRefreshedAuthStatus(
@@ -417,33 +448,6 @@ func currentOrRefreshedAuthToken(
 	return acquireClientCredentialsToken(ctx, authContext, app, timeout)
 }
 
-func mergeResolvedAuthAppConfig(
-	state *auth.State,
-	profileName string,
-	profileState auth.ProfileState,
-	app auth.AppConfig,
-) {
-	if authAppConfigEmpty(app) {
-		return
-	}
-	profileState.App = mergeAppConfig(profileState.App, app)
-	if profileName == "" {
-		state.App = profileState.App
-		return
-	}
-	if state.Profiles == nil {
-		state.Profiles = map[string]auth.ProfileState{}
-	}
-	state.Profiles[profileName] = profileState
-}
-
-func authAppConfigEmpty(app auth.AppConfig) bool {
-	return app.ClientID == "" &&
-		app.ClientSecret == "" &&
-		app.RedirectURI == "" &&
-		len(app.Scopes) == 0
-}
-
 func acquireClientCredentialsToken(
 	ctx context.Context,
 	authContext authCommandContext,
@@ -455,7 +459,7 @@ func acquireClientCredentialsToken(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	readiness, err := requireAuthReadiness(ctx, authReadinessRequest{
+	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
 		AccessToken:    token.AccessToken,
 		ExpectedTarget: authContext.target,
 		ExpectedActor:  appActor,
@@ -510,7 +514,7 @@ func refreshAuthTokenState(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	readiness, err := requireAuthReadiness(ctx, authReadinessRequest{
+	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
 		AccessToken:    refreshed.AccessToken,
 		ExpectedTarget: authContext.target,
 		ExpectedActor:  firstNonEmptyString(token.Actor, appActor),
@@ -531,7 +535,7 @@ func refreshAuthorizationCodeToken(
 	token auth.TokenState,
 	scopes []string,
 ) (auth.TokenState, error) {
-	grant, err := oauthClient.RefreshToken(ctx, oauth.RefreshTokenRequest{
+	refreshed, err := oauthClient.RefreshToken(ctx, oauth.RefreshTokenRequest{
 		RefreshToken: token.RefreshToken,
 		ClientID:     app.ClientID,
 		ClientSecret: app.ClientSecret,
@@ -543,7 +547,6 @@ func refreshAuthorizationCodeToken(
 			err,
 		)
 	}
-	refreshed := grant.State
 	refreshed.Actor = firstNonEmptyString(token.Actor, appActor)
 	refreshed.GrantType = authGrantAuthorizationCode
 	if err := requireScopes(refreshed.Scopes, scopes); err != nil {
@@ -555,9 +558,13 @@ func refreshAuthorizationCodeToken(
 
 func revokeTokenState(
 	ctx context.Context,
+	logger *slog.Logger,
 	oauthClient authOAuthClient,
 	token auth.TokenState,
 ) ([]string, bool) {
+	if logger == nil {
+		logger = discardLogger
+	}
 	revoked := []string{}
 	failed := false
 	for _, request := range []oauth.RevocationRequest{
@@ -567,10 +574,26 @@ func revokeTokenState(
 		if request.Token == "" {
 			continue
 		}
+		logger.DebugContext(
+			ctx,
+			"auth token revoke started",
+			"token_type", request.TokenTypeHint,
+		)
 		if err := oauthClient.RevokeToken(ctx, request); err != nil {
 			failed = true
+			logger.DebugContext(
+				ctx,
+				"auth token revoke failed",
+				"token_type", request.TokenTypeHint,
+				"error_code", errorCode(err),
+			)
 			continue
 		}
+		logger.DebugContext(
+			ctx,
+			"auth token revoke succeeded",
+			"token_type", request.TokenTypeHint,
+		)
 		revoked = append(revoked, request.TokenTypeHint)
 	}
 
@@ -583,7 +606,7 @@ func exchangeClientCredentialsToken(
 	app auth.AppConfig,
 ) (auth.TokenState, error) {
 	scopes := requiredScopes(app)
-	grant, err := oauthClient.ClientCredentials(ctx, oauth.ClientCredentialsRequest{
+	token, err := oauthClient.ClientCredentials(ctx, oauth.ClientCredentialsRequest{
 		ClientID:     app.ClientID,
 		ClientSecret: app.ClientSecret,
 		Scopes:       scopes,
@@ -591,7 +614,6 @@ func exchangeClientCredentialsToken(
 	if err != nil {
 		return auth.TokenState{}, err
 	}
-	token := grant.State
 	token.Actor = appActor
 	token.GrantType = authGrantClientCredentials
 	if err := requireScopes(token.Scopes, scopes); err != nil {
@@ -612,6 +634,55 @@ func requireAuthReadiness(ctx context.Context, request authReadinessRequest) (au
 			fmt.Sprintf("expected actor %q but resolved %q", request.ExpectedActor, readiness.Actor),
 		)
 	}
+
+	return readiness, nil
+}
+
+func requireLoggedAuthReadiness(
+	ctx context.Context,
+	logger *slog.Logger,
+	request authReadinessRequest,
+) (authReadinessReport, error) {
+	if logger == nil {
+		logger = discardLogger
+	}
+	logger.DebugContext(
+		ctx,
+		"auth readiness check started",
+		"expected_actor", request.ExpectedActor,
+		"required_scopes", strings.Join(request.RequiredScopes, ","),
+		"org", request.ExpectedTarget.OrgID,
+		"team_key", request.ExpectedTarget.TeamKey,
+		"team_id", request.ExpectedTarget.TeamID,
+		"project", request.ExpectedTarget.ProjectID,
+	)
+
+	readiness, err := requireAuthReadiness(ctx, request)
+	if err != nil {
+		logger.DebugContext(
+			ctx,
+			"auth readiness check failed",
+			"expected_actor", request.ExpectedActor,
+			"error_code", errorCode(err),
+		)
+
+		return authReadinessReport{}, err
+	}
+
+	projectID := ""
+	if readiness.Target.Project != nil {
+		projectID = readiness.Target.Project.ID
+	}
+	logger.DebugContext(
+		ctx,
+		"auth readiness check succeeded",
+		"actor", readiness.Actor,
+		"org", readiness.Target.Org.ID,
+		"team_key", readiness.Target.Team.Key,
+		"team_id", readiness.Target.Team.ID,
+		"project", projectID,
+		"confirmed", readiness.Target.Confirmed,
+	)
 
 	return readiness, nil
 }
@@ -677,24 +748,6 @@ func missingScopes(actual []string, required []string) []string {
 	return missing
 }
 
-func mergeAppConfig(base auth.AppConfig, override auth.AppConfig) auth.AppConfig {
-	merged := base
-	if override.ClientID != "" {
-		merged.ClientID = override.ClientID
-	}
-	if override.ClientSecret != "" {
-		merged.ClientSecret = override.ClientSecret
-	}
-	if override.RedirectURI != "" {
-		merged.RedirectURI = override.RedirectURI
-	}
-	if len(override.Scopes) > 0 {
-		merged.Scopes = slices.Clone(override.Scopes)
-	}
-
-	return merged
-}
-
 func requiredScopes(app auth.AppConfig) []string {
 	if len(app.Scopes) > 0 {
 		return slices.Clone(app.Scopes)
@@ -709,9 +762,7 @@ func normalizedScopes(scopes []string) []string {
 	}
 	normalized := make([]string, 0, len(scopes))
 	for _, scope := range scopes {
-		for _, part := range strings.FieldsFunc(scope, func(r rune) bool {
-			return r == ',' || r == ' ' || r == '\t' || r == '\n'
-		}) {
+		for _, part := range auth.SplitScopes(scope) {
 			part = strings.TrimSpace(part)
 			if part != "" && !slices.Contains(normalized, part) {
 				normalized = append(normalized, part)

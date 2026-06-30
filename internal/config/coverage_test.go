@@ -9,13 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type mapEnv map[string]string
-
-func (env mapEnv) Lookup(key string) (string, bool) {
-	value, ok := env[key]
-	return value, ok
-}
-
 func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 	t.Run("context cancellation is returned before file reads", func(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
@@ -29,14 +22,13 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 	t.Run("missing files resolve empty config", func(t *testing.T) {
 		config, err := Load(context.Background(), LoadRequest{
-			Env:        mapEnv{"LINCTL_OAUTH_ACCESS_TOKEN": "oauth-token"},
 			GlobalPath: filepath.Join(t.TempDir(), "missing-global.toml"),
 			RepoPath:   filepath.Join(t.TempDir(), "missing-repo.toml"),
 		})
 
 		require.NoError(t, err)
-		require.Equal(t, "oauth-token", config.Token)
-		require.Equal(t, "oauth-token", config.Auth.AccessToken)
+		require.Empty(t, config.Profile)
+		require.Empty(t, config.Target)
 	})
 
 	t.Run("parse errors include the config path", func(t *testing.T) {
@@ -76,16 +68,14 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 		require.NoError(t, os.WriteFile(path, []byte(`token = "file-token"`), 0o600))
 
 		config, err := Load(context.Background(), LoadRequest{
-			Env:      mapEnv{},
 			RepoPath: path,
 		})
 
 		require.NoError(t, err)
-		require.Empty(t, config.Token)
-		require.Empty(t, config.Auth.AccessToken)
+		require.Empty(t, config.Profile)
 	})
 
-	t.Run("OAuth access token env wins while legacy API key sources are ignored", func(t *testing.T) {
+	t.Run("legacy config tokens are ignored by config loading", func(t *testing.T) {
 		path := filepath.Join(t.TempDir(), "config.toml")
 		require.NoError(t, os.WriteFile(path, []byte(`
 profile = "daily"
@@ -95,26 +85,19 @@ token = "profile-token"
 `), 0o600))
 
 		config, err := Load(context.Background(), LoadRequest{
-			Env: mapEnv{
-				"LINCTL_OAUTH_ACCESS_TOKEN": "oauth-token",
-				"LINCTL_TOKEN":              "linctl-token",
-				"LINEAR_API_KEY":            "linear-token",
-			},
 			RepoPath: path,
 		})
 
 		require.NoError(t, err)
-		require.Equal(t, "oauth-token", config.Token)
-		require.Equal(t, "oauth-token", config.Auth.AccessToken)
+		require.Equal(t, "daily", config.Profile)
 	})
 
-	t.Run("nil env uses process environment", func(t *testing.T) {
+	t.Run("process OAuth env is ignored by config loading", func(t *testing.T) {
 		t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "process-token")
 
 		config, err := Load(context.Background(), LoadRequest{})
 
 		require.NoError(t, err)
-		require.Equal(t, "process-token", config.Token)
-		require.Equal(t, "process-token", config.Auth.AccessToken)
+		require.Empty(t, config.Profile)
 	})
 }

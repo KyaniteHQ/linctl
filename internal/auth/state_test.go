@@ -521,21 +521,6 @@ func Test_State_profile_selects_default_named_and_missing_state(t *testing.T) {
 	require.Empty(t, state.Profile("missing"))
 }
 
-func Test_ApplyTokenGrant_updates_default_and_named_profiles(t *testing.T) {
-	t.Parallel()
-	expiresAt := time.Now().Add(time.Hour).UTC().Truncate(time.Second)
-	grant := NewTokenGrant("access-token", "refresh-token", "Bearer", expiresAt, []string{"read"})
-
-	defaultState := ApplyTokenGrant(State{App: AppConfig{ClientID: "client-id"}}, "", grant)
-	require.Equal(t, "access-token", defaultState.Token.AccessToken)
-	require.Equal(t, "client-id", defaultState.App.ClientID)
-
-	namedState := ApplyTokenGrant(State{}, "work", grant)
-	require.Empty(t, namedState.Token)
-	require.Equal(t, "access-token", namedState.Profiles["work"].Token.AccessToken)
-	require.Equal(t, "refresh-token", namedState.Profiles["work"].Token.RefreshToken)
-}
-
 func Test_DefaultPaths_use_os_config_and_state_locations(t *testing.T) {
 	root := t.TempDir()
 	env := staticEnv{}

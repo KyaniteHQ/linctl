@@ -33,8 +33,9 @@ func commandInventoryByName(domainCommands []domainCommand) map[string]cli.Comma
 func domainCommandBacking(commands []domainCommand) map[string]cli.CommandBacking {
 	backingByPath := map[string]cli.CommandBacking{}
 	for _, command := range commands {
-		roots := make([]cli.CommandGraphQLRoot, 0, len(domainCommandReferences(command)))
-		for _, reference := range domainCommandReferences(command) {
+		references := domainCommandReferences(command)
+		roots := make([]cli.CommandGraphQLRoot, 0, len(references))
+		for _, reference := range references {
 			roots = append(roots, cli.CommandGraphQLRoot{
 				Kind:      reference.Kind,
 				Field:     reference.Field,

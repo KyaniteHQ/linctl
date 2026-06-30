@@ -45,7 +45,7 @@ func addDocumentCreateCommand(ctx context.Context, root *cobra.Command, options 
 				return err
 			}
 
-			return runDocumentCreate(ctx, command, options, documentAdapterFor(runtime), request, contentFile)
+			return runDocumentCreate(ctx, command, options, commandAdapterFor(runtime), request, contentFile)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "document title")
@@ -87,7 +87,7 @@ func addDocumentUpdateCommand(ctx context.Context, root *cobra.Command, options 
 			}
 			request.ID = args[0]
 
-			return runDocumentUpdate(ctx, command, options, documentAdapterFor(runtime), request, contentFile)
+			return runDocumentUpdate(ctx, command, options, commandAdapterFor(runtime), request, contentFile)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "new document title")

@@ -48,7 +48,7 @@ func addCommentUpdateCommand(ctx context.Context, root *cobra.Command, options *
 			}
 			request.ID = args[0]
 
-			return runCommentUpdate(ctx, command, options, commentAdapterFor(runtime), request, bodyFile)
+			return runCommentUpdate(ctx, command, options, commandAdapterFor(runtime), request, bodyFile)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "new comment body as markdown; use - to read stdin")
@@ -89,7 +89,7 @@ func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 
-			return runCommentDelete(ctx, command, options, commentAdapterFor(runtime), args[0])
+			return runCommentDelete(ctx, command, options, commandAdapterFor(runtime), args[0])
 		},
 	})
 }
