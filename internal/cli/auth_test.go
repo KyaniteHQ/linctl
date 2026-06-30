@@ -49,6 +49,70 @@ func Test_AuthConfigure_saves_oauth_app_config_without_token_state(t *testing.T)
 	require.ErrorIs(t, err, os.ErrNotExist)
 }
 
+func Test_AuthConfigure_saves_oauth_app_config_under_resolved_profile(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
+profile = "work"
+
+[profiles.work.target]
+org_id = "org-id"
+team_key = "LIT"
+team_id = "team-id"
+`), 0o600))
+	paths := cliAuthTestPaths(t)
+	restore := useAuthPaths(t, paths)
+	defer restore()
+
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+		"auth",
+		"configure",
+		"--client-id", "client-id",
+		"--client-secret", "client-secret",
+	})
+
+	require.NoError(t, err)
+	got, err := auth.NewStore(paths).Load(context.Background())
+	require.NoError(t, err)
+	require.Empty(t, got.App)
+	require.Equal(t, "client-id", got.Profile("work").App.ClientID)
+	require.Equal(t, "client-secret", got.Profile("work").App.ClientSecret)
+}
+
+func Test_AuthConfigure_explicit_profile_override_wins_over_repo_profile(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
+profile = "work"
+
+[profiles.work.target]
+org_id = "org-id"
+team_key = "LIT"
+team_id = "team-id"
+
+[profiles.personal.target]
+org_id = "org-id"
+team_key = "LIT"
+team_id = "team-id"
+`), 0o600))
+	paths := cliAuthTestPaths(t)
+	restore := useAuthPaths(t, paths)
+	defer restore()
+
+	err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, []string{
+		"--profile", "personal",
+		"auth",
+		"configure",
+		"--client-id", "client-id",
+	})
+
+	require.NoError(t, err)
+	got, err := auth.NewStore(paths).Load(context.Background())
+	require.NoError(t, err)
+	require.Empty(t, got.Profile("work").App)
+	require.Equal(t, "client-id", got.Profile("personal").App.ClientID)
+}
+
 func Test_AuthApp_obtains_app_actor_token_after_live_readiness(t *testing.T) {
 	paths := cliAuthTestPaths(t)
 	require.NoError(t, auth.NewStore(paths).SaveAppConfig(context.Background(), "", auth.AppConfig{

@@ -47,7 +47,7 @@ func useAuthCommandHooks(
 	restorePaths := useAuthPaths(t, paths)
 	originalOAuthClient := newAuthOAuthClient
 	originalReadiness := checkAuthReadiness
-	newAuthOAuthClient = func() authOAuthClient {
+	newAuthOAuthClient = func(time.Duration) authOAuthClient {
 		return oauthClient
 	}
 	checkAuthReadiness = readiness.check
@@ -141,6 +141,8 @@ type fakeAuthReadinessChecker struct {
 	report         authReadinessReport
 	err            error
 	accessToken    string
+	tokenActor     string
+	tokenScopes    []string
 	expectedActor  string
 	requiredScopes []string
 	beforeReturn   func()
@@ -151,6 +153,8 @@ func (checker *fakeAuthReadinessChecker) check(
 	request authReadinessRequest,
 ) (authReadinessReport, error) {
 	checker.accessToken = request.AccessToken
+	checker.tokenActor = request.TokenActor
+	checker.tokenScopes = request.TokenScopes
 	checker.expectedActor = request.ExpectedActor
 	checker.requiredScopes = request.RequiredScopes
 	if checker.beforeReturn != nil {

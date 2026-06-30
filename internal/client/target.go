@@ -10,6 +10,8 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
+const targetResolutionPageSize = 250
+
 // ErrTargetMismatch marks a resolved target that does not match the pinned target.
 var ErrTargetMismatch = errors.New("target mismatch")
 
@@ -92,12 +94,10 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 	if err != nil {
 		return ResolvedTarget{}, fmt.Errorf("resolve viewer: %w", err)
 	}
-	teams, err := Teams(ctx, graphqlClient, intPtr(250), nil, boolPtr(true))
+	resolvedTeam, ok, err := resolveTeam(ctx, graphqlClient, expected)
 	if err != nil {
-		return ResolvedTarget{}, fmt.Errorf("resolve teams: %w", err)
+		return ResolvedTarget{}, err
 	}
-
-	resolvedTeam, ok := findResolvedTeam(teams.Teams.Nodes, expected)
 	if !ok {
 		return ResolvedTarget{}, fmt.Errorf(
 			"%w: expected team_id=%s team_key=%s",
@@ -129,6 +129,33 @@ func requireExpectedTarget(expected config.Target) error {
 	}
 
 	return nil
+}
+
+func resolveTeam(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+) (TeamsTeamsTeamConnectionNodesTeam, bool, error) {
+	var after *string
+	for {
+		teams, err := Teams(ctx, graphqlClient, intPtr(targetResolutionPageSize), after, boolPtr(true))
+		if err != nil {
+			return TeamsTeamsTeamConnectionNodesTeam{}, false, fmt.Errorf("resolve teams: %w", err)
+		}
+		resolvedTeam, ok := findResolvedTeam(teams.Teams.Nodes, expected)
+		if ok {
+			return resolvedTeam, true, nil
+		}
+		next, ok, err := nextTargetPageCursor(
+			teams.Teams.PageInfo.HasNextPage,
+			teams.Teams.PageInfo.EndCursor,
+			"teams",
+		)
+		if err != nil || !ok {
+			return TeamsTeamsTeamConnectionNodesTeam{}, false, err
+		}
+		after = next
+	}
 }
 
 func resolvedTargetConfig(
@@ -214,17 +241,52 @@ func resolveProject(
 		return ResolvedProject{}, false, nil
 	}
 
-	project, err := TargetProject(ctx, graphqlClient, expected.ProjectID)
+	project, err := TargetProject(
+		ctx,
+		graphqlClient,
+		expected.ProjectID,
+		intPtr(targetResolutionPageSize),
+		nil,
+	)
 	if err != nil {
 		return ResolvedProject{}, false, fmt.Errorf("resolve project: %w", err)
 	}
-	for _, projectTeam := range project.Project.Teams.Nodes {
-		if projectTeam.Id == team.Id {
-			return ResolvedProject{
-				ID:   project.Project.Id,
-				Name: project.Project.Name,
-			}, true, nil
+	projectID := project.Project.Id
+	projectName := project.Project.Name
+	projectTeamPages := []TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
+	after := project.Project.Teams.PageInfo.EndCursor
+	for {
+		for _, projectTeam := range projectTeamPageNodes(projectTeamPages) {
+			if projectTeam.Id == team.Id {
+				return ResolvedProject{
+					ID:   projectID,
+					Name: projectName,
+				}, true, nil
+			}
 		}
+		next, ok, err := nextTargetPageCursor(
+			projectTeamPages[len(projectTeamPages)-1].PageInfo.HasNextPage,
+			after,
+			"project teams",
+		)
+		if err != nil {
+			return ResolvedProject{}, false, err
+		}
+		if !ok {
+			break
+		}
+		project, err := TargetProject(
+			ctx,
+			graphqlClient,
+			expected.ProjectID,
+			intPtr(targetResolutionPageSize),
+			next,
+		)
+		if err != nil {
+			return ResolvedProject{}, false, fmt.Errorf("resolve project: %w", err)
+		}
+		projectTeamPages = []TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
+		after = project.Project.Teams.PageInfo.EndCursor
 	}
 
 	return ResolvedProject{}, false, fmt.Errorf(
@@ -233,6 +295,32 @@ func resolveProject(
 		expected.ProjectID,
 		team.Id,
 	)
+}
+
+func projectTeamPageNodes(
+	pages []TargetProjectProjectTeamsTeamConnection,
+) []TargetProjectProjectTeamsTeamConnectionNodesTeam {
+	teams := []TargetProjectProjectTeamsTeamConnectionNodesTeam{}
+	for _, page := range pages {
+		teams = append(teams, page.Nodes...)
+	}
+
+	return teams
+}
+
+func nextTargetPageCursor(hasNextPage bool, endCursor *string, collection string) (*string, bool, error) {
+	if !hasNextPage {
+		return nil, false, nil
+	}
+	if endCursor == nil || *endCursor == "" {
+		return nil, false, fmt.Errorf(
+			"%w: %s pageInfo.hasNextPage without endCursor",
+			ErrTargetMismatch,
+			collection,
+		)
+	}
+
+	return stringPtr(*endCursor), true, nil
 }
 
 func optionalProject(project ResolvedProject, ok bool) *ResolvedProject {

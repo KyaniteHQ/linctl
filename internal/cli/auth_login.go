@@ -196,7 +196,7 @@ func completeAuthLogin(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	token, err := newAuthOAuthClient().ExchangeAuthorizationCode(ctx, oauth.AuthorizationCodeRequest{
+	token, err := newAuthOAuthClient(request.Timeout).ExchangeAuthorizationCode(ctx, oauth.AuthorizationCodeRequest{
 		Code:         code,
 		RedirectURI:  request.App.RedirectURI,
 		ClientID:     request.App.ClientID,
@@ -213,6 +213,8 @@ func completeAuthLogin(
 	}
 	readiness, err := requireAuthReadiness(ctx, authReadinessRequest{
 		AccessToken:    token.AccessToken,
+		TokenActor:     token.Actor,
+		TokenScopes:    token.Scopes,
 		ExpectedTarget: authContext.target,
 		ExpectedActor:  request.Actor,
 		RequiredScopes: request.Scopes,
