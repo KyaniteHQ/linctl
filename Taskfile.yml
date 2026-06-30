@@ -106,6 +106,11 @@ tasks:
     cmds:
       - bash scripts/browser-login-smoke.sh {{.CLI_ARGS}}
 
+  browser-login-smoke-check:
+    desc: Run deterministic non-live browser login smoke harness checks
+    cmds:
+      - bash scripts/browser-login-smoke.sh --self-test
+
   browser-login-smoke-infisical:
     desc: Run browser OAuth login smoke with Infisical secrets from /linctl
     cmds:
@@ -158,6 +163,7 @@ tasks:
     cmds:
       - task: generate-check
       - task: domain-language-check
+      - task: browser-login-smoke-check
       - task: vet
       - task: test
       - go build $(bash scripts/go-packages.sh)

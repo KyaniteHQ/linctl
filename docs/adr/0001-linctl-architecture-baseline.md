@@ -132,7 +132,7 @@ The explicit collection-key allowlist remains for ambiguous cases and for detail
 
 OAuth live coverage uses a pre-created Linear OAuth app fixture supplied by environment variables. `task live-oauth` verifies client-credentials auth against the pinned target, requires app actor readiness, and emits only redacted auth status.
 
-`task live-smoke` may bootstrap through the same OAuth harness when fixture env is present. Scheduled and manual integration runs use the same live gate before live integration and smoke checks. Browser authorization-code login remains a manual smoke path because interactive consent is not reliable unattended CI surface.
+`task live-smoke` may bootstrap through the same OAuth harness when fixture env is present. Scheduled and manual integration runs use the same live gate before live integration and smoke checks. `task browser-login-smoke-check` is the deterministic non-live harness check for missing fixture handling, localhost callback listener capture, and redaction sentinels. Browser authorization-code login remains a manual browser-login smoke path because interactive consent is not reliable unattended CI surface.
 
 ## Consequences
 
@@ -168,7 +168,7 @@ OAuth live coverage uses a pre-created Linear OAuth app fixture supplied by envi
 - Output and error envelope policy: `internal/cli/output.go`, `internal/cli/root.go`.
 - Command inventory and collection projection: `internal/cli/command_inventory.go`.
 - Command Port examples: `internal/cli/issue_port.go`, `internal/cli/bulk.go`, `internal/cli/comment_port.go`, `internal/cli/cycle_port.go`, `internal/cli/document_port.go`, `internal/cli/project_update_port.go`.
-- Live OAuth gate: `scripts/live-oauth.sh`, `Taskfile.yml`, `.github/workflows/ci.yml`, `.github/workflows/integration.yml`.
+- Live OAuth gate and browser login smoke checks: `scripts/live-oauth.sh`, `scripts/browser-login-smoke.sh`, `Taskfile.yml`, `.github/workflows/ci.yml`, `.github/workflows/integration.yml`.
 
 ## Fitness Checks
 
@@ -178,7 +178,8 @@ Use these checks when changing the baseline behavior:
 go test -count=1 ./internal/client ./internal/cli ./internal/auth ./internal/oauth ./internal/config
 go run github.com/go-task/task/v3/cmd/task@latest ci
 go run github.com/go-task/task/v3/cmd/task@latest coverage
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check
 go run github.com/go-task/task/v3/cmd/task@latest live-oauth
 ```
 
-`live-oauth` requires fixture env and should be skipped when the fixture is absent. Browser login remains a manual smoke check around `linctl auth login --callback -`.
+`browser-login-smoke-check` is deterministic and non-live. `live-oauth` requires fixture env and should be skipped when the fixture is absent. Browser login remains a manual smoke check around `linctl auth login --callback -`.

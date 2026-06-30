@@ -1107,9 +1107,13 @@ Success is pass/fail:
    - Success: `linctl auth status` and `linctl auth refresh` check target readiness and emit redacted debug diagnostics for readiness mismatch. `linctl auth refresh` rotates authorization-code token state or reacquires client-credentials app token state, persists the new state only after readiness succeeds, and redacts token material. `linctl auth logout` revokes refresh/access tokens when Linear accepts revocation, logs redacted failed-revocation diagnostics under `--debug`, removes local token state even when revocation fails, keeps app config by default, and removes app config only with `--forget-app`.
    - Evidence: `go test ./internal/oauth ./internal/auth ./internal/cli`, `Test_Client_revokes_token_with_token_form_field`, `Test_Client_revoke_error_redacts_secret_values`, `Test_AuthStatus_debug_logs_readiness_mismatch_without_secrets`, `Test_AuthRefresh_rotates_authorization_code_token_and_checks_readiness`, `Test_AuthRefresh_reacquires_client_credentials_token`, `Test_AuthRefresh_debug_logs_readiness_mismatch_without_secrets`, `Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app`, `Test_AuthLogout_forgets_app_and_clears_state_when_revocation_fails`.
 
-208. OAuth browser login manual smoke
+208. OAuth browser login deterministic non-live harness check
+   - Success: `task browser-login-smoke-check` runs without Linear secrets, a real browser, or network writes; verifies missing fixture env exits 2; proves the localhost callback listener accepts a valid callback path; and checks redaction sentinels are not printed.
+   - Evidence: `bash -n scripts/browser-login-smoke.sh`; `shellcheck scripts/browser-login-smoke.sh`; `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check`.
+
+209. OAuth browser login manual smoke
    - Success: `task browser-login-smoke` runs repeatable user-actor browser PKCE login in isolated temp auth state, prints the Linear authorization URL, captures the localhost callback through a one-shot listener without printing the callback URL, shows a browser success page, validates redacted login/status JSON, removes local token state, and reports only actor, target readiness, token status, and scope readiness. Running `task browser-login-smoke -- app` covers the app-actor browser install path only when the Linear fixture app is not already installed; repeatable app-actor coverage stays in `task live-oauth`.
-   - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`; `bash -n scripts/browser-login-smoke.sh`; `shellcheck scripts/browser-login-smoke.sh`; `env -u LINCTL_OAUTH_CLIENT_ID bash scripts/browser-login-smoke.sh` exits 2 with a missing-fixture message and no secret values.
+   - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`; `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke`; `go run github.com/go-task/task/v3/cmd/task@latest live-oauth`.
 
 ## Current Outcome
 
@@ -1155,7 +1159,14 @@ which must exit 2 with a missing-fixture message and without printing secret val
 
 ## Browser Login Smoke
 
-Manual browser login smoke is a repeatable task with one human browser step:
+The deterministic non-live harness check is safe for local CI and does not use
+Linear secrets, browser consent, or network writes:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check
+```
+
+Manual browser-login smoke is a repeatable task with one human browser step:
 
 ```bash
 go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke
