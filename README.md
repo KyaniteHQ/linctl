@@ -313,6 +313,7 @@ disposable Linear org and never run under plain `go test`:
 linctl auth configure --client-id "$LINCTL_OAUTH_CLIENT_ID" --redirect-uri "http://127.0.0.1:8765/callback" --scopes read,write,issues:create,comments:create
 linctl auth app
 go test -count=1 -tags=integration ./internal/client
+go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-check
 go run github.com/go-task/task/v3/cmd/task@latest live-oauth
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke
@@ -326,14 +327,17 @@ go run github.com/go-task/task/v3/cmd/task@latest live-smoke-infisical
 go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke-infisical
 ```
 
-`browser-login-smoke` runs the PKCE browser login in an isolated temp auth state:
-it starts a one-shot localhost callback listener, prints the Linear authorization
-URL, shows a browser success page after authorization, verifies redacted
-`auth status --json`, and removes the temp token state. The auth URL uses Linear
-re-consent, and the task defaults to user-actor login because an already-installed
-app-actor OAuth fixture opens Linear's Manage screen instead of producing a
-repeatable callback. Use `live-oauth` for repeatable app-actor fixture coverage;
-pass `-- app` only when testing a fresh browser install path.
+`browser-login-smoke-check` is the deterministic non-live harness check. It
+requires no Linear secrets, browser, or network write, and proves missing-fixture
+handling, callback listener capture, and redaction sentinels. `browser-login-smoke`
+is the manual browser-login smoke in an isolated temp auth state: it starts a
+one-shot localhost callback listener, prints the Linear authorization URL, shows
+a browser success page after authorization, verifies redacted `auth status --json`,
+and removes the temp token state. The auth URL uses Linear re-consent, and the
+task defaults to user-actor login because an already-installed app-actor OAuth
+fixture opens Linear's Manage screen instead of producing a repeatable callback.
+Use `live-oauth` for the live OAuth app fixture check and repeatable app-actor
+fixture coverage; pass `-- app` only when testing a fresh browser install path.
 
 Contributor workflow and the release process are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md); domain vocabulary is in [`CONTEXT.md`](CONTEXT.md);
