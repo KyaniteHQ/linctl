@@ -8,8 +8,8 @@ Command names below are either implemented CLI surface or intentionally deferred
 | CLI surface | Schema backing | Notes |
 | --- | --- | --- |
 | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. |
-| `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. |
-| `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. |
+| `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active auth credential's organization, team, and optional project. |
+| `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, OAuth auth readiness, and pinned-target confirmation. Does not print secret values. |
 | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. |
 | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. |
 | `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. |

@@ -97,6 +97,7 @@ func validateCommandFlags(command *cobra.Command) error {
 
 func addCommands(ctx context.Context, command *cobra.Command, options *rootOptions) {
 	addUsageCommand(command, options)
+	addAuthCommand(ctx, command, options)
 	addTargetCommand(ctx, command, options)
 	addDoctorCommand(ctx, command, options)
 	addWhoamiCommand(ctx, command, options)
@@ -139,6 +140,10 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addTimeScheduleCommand(ctx, command, options)
 	addTriageResponsibilityCommand(ctx, command, options)
 	addSLAConfigurationCommand(ctx, command, options)
+	addSearchFamilyCommands(ctx, command, options)
+}
+
+func addSearchFamilyCommands(ctx context.Context, command *cobra.Command, options *rootOptions) {
 	addSearchCommand(ctx, command, options)
 	addSemanticSearchCommand(ctx, command, options)
 	addTemplateCommand(ctx, command, options)

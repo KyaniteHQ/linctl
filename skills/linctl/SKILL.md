@@ -6,7 +6,7 @@ description: Use linctl as the Linear control surface for agent-safe issue, proj
 # linctl
 
 `linctl` is the Linear control surface. Reads are broad. Writes are guarded:
-the CLI resolves the active token, compares it to the pinned target, and fails
+the CLI resolves the active OAuth credential, compares it to the pinned target, and fails
 closed on Target Mismatch.
 
 ## Resolve
@@ -86,11 +86,15 @@ Helpers outside target-pinned mutations:
 
 Safety rules:
 
-- Target Mismatch is a hard stop. Do not retry blindly with a different token.
+- Target Mismatch is a hard stop. Do not retry blindly with different auth.
 - Team-scoped writes compare organization and team.
 - Resource-scoped writes resolve the existing resource first and compare pinned `project_id` when configured.
 - `--org`, `--team`, `--team-id`, and `--project` are explicit pinned-target overrides, not bypasses.
-- Never print Linear tokens. Credential precedence is `LINCTL_TOKEN` > `LINEAR_API_KEY` > config `token`.
+- Configure repo targets in `.linctl.toml`; configure auth with `linctl auth configure`,
+  `linctl auth app`, or `linctl auth login`.
+- Use `linctl auth status` for readiness, `linctl auth refresh` for explicit diagnosis,
+  and `linctl auth logout` to revoke/remove local token state.
+- Never print secrets. Report OAuth app material as `set` or `missing`.
 - For tests, create `linctl-it-<runid>` resources and clean them up: close disposable issues, archive disposable projects.
 
 If the requested write is not listed above, report the limit instead of bypassing
@@ -152,7 +156,7 @@ Three tiers, cheapest first. Pick the one the task needs.
    Runs only token-free commands (`--version`, `--help`, `usage`, completion);
    no token, no network. Use this to confirm linctl is wired up before any target work.
 
-2. **Read-only, token** — confirm the token and pinned target resolve:
+2. **Read-only, auth** — confirm the OAuth credential and pinned target resolve:
 
    ```bash
    bash skills/linctl/scripts/linctl-smoke.sh
@@ -166,22 +170,23 @@ Three tiers, cheapest first. Pick the one the task needs.
    go run github.com/go-task/task/v3/cmd/task@latest live-smoke
    ```
 
-   Requires a disposable token in `LINCTL_TEST_TOKEN`.
-   Do not print any value.
+   Requires disposable OAuth auth state. Use `linctl auth app` for headless app-actor
+   auth when a client secret is available, or `linctl auth login` for browser auth.
+   Do not print secret values.
 
 Completion criterion: the chosen smoke passed with redacted command/status evidence,
 or is explicitly blocked on missing credentials or target.
 
 ## Gotchas
 
-- `target`, `doctor`, and `whoami` need a token; they fail closed without one. To prove
+- `target`, `doctor`, and `whoami` need auth; they fail closed without it. To prove
   a checkout runs with no credentials, use the offline smoke (`--version`, `usage`).
 - `target --json` reports `expected` and `resolved` with Go-capitalized keys (`OrgID`,
   `TeamKey`, `TeamID`, `ProjectID`), not the snake_case used elsewhere. Compare them
   field by field to explain a mismatch.
 - Target Mismatch is a hard stop. There is no bypass flag; `--org`, `--team`,
   `--team-id`, and `--project` set the pinned target, they do not relax the guard.
-  Do not retry with a different token.
+  Do not retry with different auth.
 - `--body -` reads a comment body from stdin; `--body-file` reads it from a file. Use
   these instead of inlining multi-line markdown.
 - Keep `$prefix` unquoted when it may be `go run ./cmd/linctl`, so it word-splits into
@@ -203,7 +208,7 @@ Changed:
 - Created `LIT-123` with prefix `linctl-it-<runid>`, then closed it.
 
 Blocked:
-- Live write smoke not run: disposable token missing.
+- Live write smoke not run: disposable OAuth auth missing.
 ```
 
 ## AGENTS.md Snippet
@@ -216,7 +221,7 @@ Blocked:
 - Run `linctl doctor --json` or `linctl target --json` before writes and stop on target mismatch.
 - Use `--json` for agent-readable output.
 - Use `linctl current --json` when the branch carries a Linear issue key.
-- Never print Linear tokens.
+- Never print secrets; report OAuth material as `set` or `missing`.
 - Keep writes pinned to `.linctl.toml` `[target]`; do not add bypass flags.
 - Name test resources `linctl-it-<runid>` and close or archive them after verification.
 - For live smoke, prefer `go run github.com/go-task/task/v3/cmd/task@latest live-smoke`.

@@ -8,11 +8,11 @@ in plain words, with why each is worth taking and what it brings — plus the id
 ## linctl's moat (everything borrowed must preserve this)
 
 linctl's value is **target-pinned writes**: before any mutation it re-resolves the active
-credential's org, team, and optional project and compares them to `.linctl.toml`. On a
+OAuth credential's org, team, and optional project and compares them to `.linctl.toml`. On a
 mismatch the write fails immediately — no prompt, no `--force`, no soft warning. Reads are
 free; writes fail closed. Borrowed features must keep this, keep operations schema-aligned
 (genqlient, no raw query strings on the main surface), prefer archive over hard delete, and
-never print token values.
+never print secret values.
 
 ## Comparable repositories
 
@@ -51,7 +51,7 @@ never print token values.
   `--fail-on-empty`, `--sort`/`--order`, `--format minimal|compact|full`, `--debug`,
   `--profile`, `--org`/`--team`/`--project` overrides, `--timeout`.
 - **Discovery / health**: `usage [overview|issue|project|cycle]`, `target --json`,
-  `doctor` (reports config/token/target without printing the token), `whoami`.
+  `doctor` (reports config/auth/target without printing secrets), `whoami`.
 - **Issue reads**: `issue list` (state, project, assignee, label, cycle, created-after/
   since/before, has-blockers, blocks, blocked-by, all-teams, mine), `search`, `get`,
   `deps`, `pr`, `id`/`title`/`url`/`branch`, `vcs-branch-search`, AI helpers
@@ -122,7 +122,7 @@ being overwritten. Sources: `schpet/linear-cli`, `joa23/linear-cli`.)*
 ### 3. Dynamic shell completions
 *(status: done — `internal/cli/completion.go` adds live flag completion for `--team`,
 `--project`, and `--state`, plus `ValidArgsFunction` for `team get`/`project get`, all via
-existing read paths and degrading silently without a token; static completions documented in
+existing read paths and degrading silently without auth; static completions documented in
 `skills/linctl/references/completions.md`. Sources: `Finesssee/linear-cli`, `aliou/linear-cli`,
 `AdiKsOnDev/linear-cli`.)*
 
@@ -239,7 +239,7 @@ goes through target comparison and `StartIssue` re-runs the write guard. Sources
 `internal/cli/files.go` backed by `PrepareFileUpload` (`internal/client/file.go`): upload calls
 `fileUpload` for a pre-signed target, PUTs the bytes with the returned headers (injectable
 `fileHTTPClient`), and prints the asset URL for a later guarded attachment write; download is a
-plain unauthenticated GET so a user-supplied URL never receives the Linear token. Sources:
+plain unauthenticated GET so a user-supplied URL never receives OAuth material. Sources:
 `linearis`, `choam2426`, `joa23`.)*
 - **What/why/brings**: `files upload PATH` → asset URL; `files download URL --output PATH`.
   Lets agents attach CI artifacts, screenshots, and diagrams to issues without a browser.
@@ -303,8 +303,8 @@ this branch state.
 | Raw GraphQL escape hatch (`--query` for arbitrary mutations) | Bypasses schema-aligned ops and the write guard; an agent could mutate anything regardless of pinned target. Predictable, constrained writes are the whole point. |
 | Implicit workspace switching (auto-pick org from repo) | The pinned target is the guarantee that writes land in the right org/team. Implicit switching silently breaks it and creates hard-to-diagnose mismatches. |
 | Hard delete for issues/projects | Archive is the safe cleanup path. Hard delete is irreversible; it needs a separate explicit design that doesn't exist, and the data-loss risk outweighs the benefit. |
-| Printing/logging token values | `doctor` deliberately reports `set`, not the value. Any path that could leak a token breaks the never-print-tokens rule. |
+| Printing/logging secrets | `doctor` deliberately reports `set`, not the value. Any path that could leak OAuth material breaks the never-print-secrets rule. |
 | Browser or device OAuth flow as the first OAuth cut | linctl's product auth model is OAuth app credentials, but an agent-first CLI should start with non-interactive app credentials before adding browser redirects. |
 | Watch/monitor polling loops | Adds process-lifecycle complexity; agents are better served calling explicit poll commands on their own schedule. Add only on real demand. |
 | Interactive TUI | Incompatible with agent use, which needs deterministic scriptable output; pulls in deps that complicate the output contract. |
-| OS keychain/keyring token storage | Adds platform-specific deps and complicates CI token flow. `LINCTL_TOKEN` env + `.linctl.toml` is simpler and more portable. |
+| OS keychain/keyring token storage | Adds platform-specific deps and complicates automation. linctl keeps repo target config in `.linctl.toml`, machine-local OAuth state outside repo config, and environment OAuth variables as non-persistent automation overrides. |

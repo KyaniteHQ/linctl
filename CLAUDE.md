@@ -28,5 +28,5 @@ Guarded writes fail closed on Target Mismatch — a hard stop, never a soft warn
 ## Live & integration tests
 
 - Integration tests are build-tag gated and do NOT run under plain `go test ./...`: `go test -count=1 -tags=integration ./internal/client`.
-- `task live-smoke` runs the full harness. Both need a disposable token in `LINCTL_TEST_TOKEN` (preferred) > `LINCTL_TOKEN` > `LINEAR_API_KEY`.
-- Never run write tests against real Linear data. Test resources use a `linctl-it-<runid>` prefix and are closed/archived in cleanup. Never print or log token values.
+- `task live-oauth` verifies the OAuth client-credentials fixture against the pinned target. `task live-smoke` runs the full harness and bootstraps auth through `task live-oauth` when the fixture env is present.
+- Never run write tests against real Linear data. Test resources use a `linctl-it-<runid>` prefix and are closed/archived in cleanup. Never print or log secrets; report auth material as `set` or `missing`.

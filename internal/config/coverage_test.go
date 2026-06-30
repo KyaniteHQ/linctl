@@ -29,13 +29,14 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 	t.Run("missing files resolve empty config", func(t *testing.T) {
 		config, err := Load(context.Background(), LoadRequest{
-			Env:        mapEnv{"LINEAR_API_KEY": "linear-token"},
+			Env:        mapEnv{"LINCTL_OAUTH_ACCESS_TOKEN": "oauth-token"},
 			GlobalPath: filepath.Join(t.TempDir(), "missing-global.toml"),
 			RepoPath:   filepath.Join(t.TempDir(), "missing-repo.toml"),
 		})
 
 		require.NoError(t, err)
-		require.Equal(t, "linear-token", config.Token)
+		require.Equal(t, "oauth-token", config.Token)
+		require.Equal(t, "oauth-token", config.Auth.AccessToken)
 	})
 
 	t.Run("parse errors include the config path", func(t *testing.T) {
@@ -80,10 +81,11 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		require.Equal(t, "file-token", config.Token)
+		require.Empty(t, config.Token)
+		require.Empty(t, config.Auth.AccessToken)
 	})
 
-	t.Run("LINCTL_TOKEN wins over LINEAR_API_KEY and profile token", func(t *testing.T) {
+	t.Run("OAuth access token env wins while legacy API key sources are ignored", func(t *testing.T) {
 		path := filepath.Join(t.TempDir(), "config.toml")
 		require.NoError(t, os.WriteFile(path, []byte(`
 profile = "daily"
@@ -93,20 +95,26 @@ token = "profile-token"
 `), 0o600))
 
 		config, err := Load(context.Background(), LoadRequest{
-			Env:      mapEnv{"LINCTL_TOKEN": "linctl-token", "LINEAR_API_KEY": "linear-token"},
+			Env: mapEnv{
+				"LINCTL_OAUTH_ACCESS_TOKEN": "oauth-token",
+				"LINCTL_TOKEN":              "linctl-token",
+				"LINEAR_API_KEY":            "linear-token",
+			},
 			RepoPath: path,
 		})
 
 		require.NoError(t, err)
-		require.Equal(t, "linctl-token", config.Token)
+		require.Equal(t, "oauth-token", config.Token)
+		require.Equal(t, "oauth-token", config.Auth.AccessToken)
 	})
 
 	t.Run("nil env uses process environment", func(t *testing.T) {
-		t.Setenv("LINCTL_TOKEN", "process-token")
+		t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "process-token")
 
 		config, err := Load(context.Background(), LoadRequest{})
 
 		require.NoError(t, err)
 		require.Equal(t, "process-token", config.Token)
+		require.Equal(t, "process-token", config.Auth.AccessToken)
 	})
 }

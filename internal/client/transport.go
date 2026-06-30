@@ -27,6 +27,9 @@ var ErrMutationFailed = errors.New("mutation failed")
 // carrying a RATELIMITED GraphQL error code) that survived all retries.
 var ErrRateLimited = errors.New("rate limited")
 
+// ErrAuthFailed marks an authentication/authorization failure from Linear.
+var ErrAuthFailed = errors.New("auth failed")
+
 // AuthToken formats the Linear Authorization header.
 type AuthToken struct {
 	authorization string
@@ -52,10 +55,14 @@ type Transport struct {
 	maxRetries       int
 }
 
-// PersonalAPIToken sends a raw Linear personal API key.
-func PersonalAPIToken(value string) AuthToken {
+// OAuthAccessToken sends a Linear OAuth access token as a bearer token.
+func OAuthAccessToken(value string) AuthToken {
+	if value == "" {
+		return AuthToken{}
+	}
+
 	return AuthToken{
-		authorization: value,
+		authorization: "Bearer " + value,
 	}
 }
 
@@ -174,6 +181,9 @@ func rateLimitError(statusCode int, body []byte) error {
 }
 
 func decodeGraphQLResponse(body []byte, statusCode int, response *graphql.Response) error {
+	if statusCode == http.StatusUnauthorized {
+		return fmt.Errorf("%w: %s", ErrAuthFailed, responseFailureMessage(statusCode, body))
+	}
 	if statusCode < http.StatusOK || statusCode >= http.StatusMultipleChoices {
 		return errors.New(responseFailureMessage(statusCode, body))
 	}

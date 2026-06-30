@@ -28,7 +28,7 @@ A ~17s deadpan launch/social video for linctl. Companion to the authentic termin
 - Angle + storyboard: see `brag-plan.md` (the creative contract). 4 scenes:
   1) the problem (3.5s), 2) the pin + `target` confirmed (4.5s), 3) same command twice:
   success then wrong-team refusal (5.5s), 4) tagline + install (3.5s).
-- Hook: "An agent with the wrong token writes to the wrong team." / "Usually, nothing stops it."
+- Hook: "An agent with the wrong auth writes to the wrong team." / "Usually, nothing stops it."
 - Outro: "reads everywhere, writes fail closed." + the go install line.
 - Avoid: generic SaaS language, abstract filler, error-buzz/comedic sounds, music swell on the refusal.
 

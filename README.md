@@ -10,11 +10,11 @@
 Your agent's Linear MCP server loads its tool definitions into every session before it does any
 work, on the order of ~13k tokens (measured).[^mcp] `linctl` is one binary with no standing
 context: only a command's output costs tokens, and reads need no pin. Every write re-resolves the
-active token and **fails closed** when the resolved org/team doesn't match the target pinned for
-the repo, so a stale or wrong token can't quietly land issues in the wrong team. There is no
+active OAuth credential and **fails closed** when the resolved org/team doesn't match the target pinned for
+the repo, so stale or wrong auth can't quietly land issues in the wrong team. There is no
 bypass flag.
 
-![linctl: reads are free; the same write to a team the token can't reach fails closed with TARGET_MISMATCH](docs/assets/demo.gif)
+![linctl: reads are free; the same write to a team the active auth can't reach fails closed with TARGET_MISMATCH](docs/assets/demo.gif)
 
 ```bash
 linctl issue list --mine --state started     # read anything
@@ -27,15 +27,15 @@ linctl's vocabulary deliberately separates reads from writes:
 
 - **Pinned Target** — the org/team/(optional project) a repo declares in `.linctl.toml`
   as the *only* allowed destination for writes.
-- **Resolved Target** — the org/team/project proven from the active token at command time.
+- **Resolved Target** — the org/team/project proven from the active OAuth credential at command time.
 - **Target Mismatch** — when the two disagree. For a guarded write this is a **hard stop**,
   never a prompt or a warning.
 
-![Guarded write flow: resolve the target from the active token, compare it to the pinned target, proceed on a match or hard-stop with no mutation on a mismatch](docs/assets/guard-flow.png)
+![Guarded write flow: resolve the target from the active OAuth credential, compare it to the pinned target, proceed on a match or hard-stop with no mutation on a mismatch](docs/assets/guard-flow.png)
 
-The guard checks the **token**, not just the file. An agent that edits `.linctl.toml` to
-point at another org still can't write there unless the token *it holds* also resolves to
-that org. Team-scoped creates compare org + team (the entity does not exist yet);
+The guard checks the active OAuth credential, not just the file. An agent that edits
+`.linctl.toml` to point at another org still can't write there unless its local auth
+also resolves to that org. Team-scoped creates compare org + team (the entity does not exist yet);
 resource-scoped updates and archives resolve the existing entity first, then compare the
 pinned `project_id` when one is configured. There is **no bypass flag** — `--org`,
 `--team`, `--team-id`, and `--project` set the pinned target, they do not relax the guard. See
@@ -46,7 +46,7 @@ pinned `project_id` when one is configured. There is **no bypass flag** — `--o
 
 ```mermaid
 flowchart LR
-    A[linctl write command] --> B[Resolve Target<br/>from active token]
+    A[linctl write command] --> B[Resolve Target<br/>from active auth]
     B --> C{Resolved matches<br/>Pinned Target?}
     C -->|match| D[Guarded write proceeds]
     C -->|mismatch| E[Target Mismatch<br/>hard stop · no mutation]
@@ -67,7 +67,7 @@ and no standing context cost:
 - **Drop-in skill.** [`skills/linctl/SKILL.md`](skills/linctl/SKILL.md) teaches an agent to
   drive linctl and ships an `AGENTS.md` snippet for consuming repos. Verify a checkout with
   no credentials via `bash skills/linctl/scripts/linctl-offline-smoke.sh`, or do a read-only
-  token check via `bash skills/linctl/scripts/linctl-smoke.sh`.
+  auth check via `bash skills/linctl/scripts/linctl-smoke.sh`.
 
 ## ⚡ Quickstart
 
@@ -82,7 +82,7 @@ go install github.com/KyaniteHQ/linctl/cmd/linctl@latest
 ```
 
 ```bash
-linctl --version && linctl usage   # zero-config smoke check — no token required
+linctl --version && linctl usage   # zero-config smoke check — no auth required
 ```
 
 Prebuilt binaries (darwin/linux/windows × amd64/arm64) and checksums are attached to
@@ -105,14 +105,21 @@ platform-specific instructions instead of replacing a managed `/usr/local/go`.
 
 ### Configure
 
-Pin the target in `.linctl.toml` at the repo root, then supply a token by environment.
+Pin the repo target in `.linctl.toml`, then configure OAuth app material outside
+repo config.
 
 ```bash
-export LINCTL_TOKEN="lin_api_..."   # or LINEAR_API_KEY; never commit a token
+linctl auth configure \
+  --client-id "$LINCTL_OAUTH_CLIENT_ID" \
+  --redirect-uri "http://127.0.0.1:8765/callback" \
+  --scopes read,write,issues:create,comments:create
 ```
 
+Use `--client-secret "$LINCTL_OAUTH_CLIENT_SECRET"` when the app has a secret.
+Never print secrets; report them as `set` or `missing`.
+
 <details>
-<summary><code>.linctl.toml</code> example + credential precedence</summary>
+<summary><code>.linctl.toml</code> example + auth setup paths</summary>
 
 ```toml
 [target]
@@ -122,18 +129,27 @@ team_id    = "linear-team-id"
 project_id = "optional-linear-project-id"   # omit for team-scoped writes
 ```
 
-Credential precedence is `LINCTL_TOKEN` → `LINEAR_API_KEY` → a `token` in
-`.linctl.toml` / `~/.config/linctl/config.toml`. A repo `.linctl.toml` overlays the
-global config.
+Local auth state is machine-local and stays outside `.linctl.toml`. Use
+`linctl auth app` for headless app-actor auth when a client secret is available, or
+`linctl auth login` for browser authorization-code auth. Browser login uses the app actor
+by default; pass `--actor user` when you need personal attribution. `linctl auth refresh`
+explicitly refreshes or reacquires token state, and `linctl auth logout` revokes tokens
+when Linear accepts revocation, removes local token state, and keeps app configuration
+unless `--forget-app` is passed.
+
+Environment OAuth variables are non-persistent automation overrides, not repo config.
+A repo `.linctl.toml` overlays global target config.
 
 </details>
 
 ### First commands
 
 ```bash
-linctl usage              # orientation — no token required
-linctl target --json      # confirm the active token's org / team / project
-linctl doctor             # config, token, and target health
+linctl usage              # orientation — no auth required
+linctl auth login         # browser authorization-code auth
+linctl auth status        # actor, scopes, expiry, and target readiness
+linctl target --json      # confirm the active auth org / team / project
+linctl doctor             # config, auth, and target health
 linctl issue list --mine  # your issues in the pinned team
 ```
 
@@ -146,8 +162,8 @@ and `linctl <group> --help` lists every subcommand.
 **Context & health**
 
 ```bash
-linctl target --json          # resolved org/team/project for the active token
-linctl doctor                 # config / token / target health report
+linctl target --json          # resolved org/team/project for the active auth
+linctl doctor                 # config / auth / target health report
 linctl current                # the issue for the current git branch
 linctl next --dry-run         # preview the top-ranked unblocked issue
 ```
@@ -288,7 +304,10 @@ commit it after changing operations. Integration tests and the live smoke harnes
 disposable Linear org and never run under plain `go test`:
 
 ```bash
-LINCTL_TEST_TOKEN=<token> go test -count=1 -tags=integration ./internal/client
+linctl auth configure --client-id "$LINCTL_OAUTH_CLIENT_ID" --redirect-uri "http://127.0.0.1:8765/callback" --scopes read,write,issues:create,comments:create
+linctl auth app
+go test -count=1 -tags=integration ./internal/client
+go run github.com/go-task/task/v3/cmd/task@latest live-oauth
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 ```
 

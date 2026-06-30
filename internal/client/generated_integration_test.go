@@ -6,12 +6,14 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/KyaniteHQ/linctl/internal/config"
+	"github.com/KyaniteHQ/linctl/internal/oauth"
 )
 
 type liveIntegrationConfig struct {
@@ -250,15 +252,32 @@ func liveIntegrationConfigFromEnv() (liveIntegrationConfig, bool) {
 func newLiveIntegrationTransport(t *testing.T, timeout time.Duration) *Transport {
 	t.Helper()
 
-	token := os.Getenv("LINCTL_TEST_TOKEN")
-	if token == "" {
-		t.Skip("LINCTL_TEST_TOKEN is required for integration tests")
+	clientID := os.Getenv("LINCTL_OAUTH_CLIENT_ID")
+	clientSecret := os.Getenv("LINCTL_OAUTH_CLIENT_SECRET")
+	scopes := splitLiveOAuthScopes(os.Getenv("LINCTL_OAUTH_SCOPES"))
+	if clientID == "" || clientSecret == "" || len(scopes) == 0 {
+		t.Skip("OAuth fixture env is required for integration tests")
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	grant, err := oauth.NewClient(oauth.ClientConfig{}).ClientCredentials(ctx, oauth.ClientCredentialsRequest{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		Scopes:       scopes,
+	})
+	require.NoError(t, err)
+
 	return NewTransport(TransportConfig{
-		Token:      PersonalAPIToken(token),
+		Token:      OAuthAccessToken(grant.State.AccessToken),
 		Timeout:    timeout,
 		MaxRetries: 1,
+	})
+}
+
+func splitLiveOAuthScopes(value string) []string {
+	return strings.FieldsFunc(value, func(r rune) bool {
+		return r == ',' || r == ' ' || r == '\t' || r == '\n'
 	})
 }
 

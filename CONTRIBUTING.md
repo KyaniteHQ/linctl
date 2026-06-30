@@ -25,10 +25,15 @@ Clone or refresh that checkout at `/tmp/linear-sdk-source` before running the fu
 git clone https://github.com/linear/linear.git /tmp/linear-sdk-source
 ```
 
-Run live integration tests only with a disposable Linear API token:
+Run live integration tests only with a disposable OAuth app fixture:
 
 ```bash
-LINCTL_TEST_TOKEN=<token> go test -count=1 -tags=integration ./internal/client
+LINCTL_OAUTH_CLIENT_ID=<client-id> \
+LINCTL_OAUTH_CLIENT_SECRET=<client-secret> \
+LINCTL_OAUTH_REDIRECT_URI=http://127.0.0.1:8765/callback \
+LINCTL_OAUTH_SCOPES=read,write,issues:create,comments:create \
+LINCTL_OAUTH_EXPECTED_ACTOR=app \
+go test -count=1 -tags=integration ./internal/client
 ```
 
 The full live smoke harness is:

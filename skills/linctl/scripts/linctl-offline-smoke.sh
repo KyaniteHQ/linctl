@@ -2,7 +2,7 @@
 # Token-free linctl smoke. Proves the binary builds and runs in a headless
 # environment with NO Linear credentials and NO network access.
 #
-# Complements linctl-smoke.sh (read-only, needs a token) and `task live-smoke`
+# Complements linctl-smoke.sh (read-only, needs OAuth auth state) and `task live-smoke`
 # (full harness with disposable writes). Use this first on a clean machine to
 # confirm linctl is wired up before any credential or target work.
 #

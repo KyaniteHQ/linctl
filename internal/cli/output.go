@@ -11,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
@@ -25,7 +26,13 @@ type errorEnvelope struct {
 // errorCode maps a command error to a stable machine error_code, preferring the
 // client sentinels (matched through wrapping) over the not-found heuristic.
 func errorCode(err error) string {
+	var authErr *auth.AuthError
+	var tokenErr *auth.TokenEndpointError
 	switch {
+	case errors.As(err, &authErr):
+		return string(authErr.Code)
+	case errors.As(err, &tokenErr):
+		return string(tokenErr.Code)
 	case errors.Is(err, client.ErrTargetMismatch):
 		return "TARGET_MISMATCH"
 	case errors.Is(err, client.ErrTargetNotConfigured):

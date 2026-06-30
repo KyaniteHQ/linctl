@@ -20,10 +20,64 @@ type testGraphQLData struct {
 	} `json:"viewer"`
 }
 
+func Test_Transport_sends_oauth_access_token_as_bearer_authorization(t *testing.T) {
+	// Given
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if got := request.Header.Get("Authorization"); got != "Bearer test-token" {
+			t.Errorf("authorization header = %q", got)
+		}
+		writer.Header().Set("Content-Type", "application/json")
+		_, err := writer.Write([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))
+		if err != nil {
+			t.Errorf("write response: %v", err)
+		}
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		Endpoint: server.URL,
+		Token:    OAuthAccessToken("test-token"),
+		Timeout:  2 * time.Second,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
+
+	// When
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+
+	// Then
+	require.NoError(t, err)
+}
+
+func Test_Transport_omits_authorization_header_for_empty_oauth_token(t *testing.T) {
+	// Given
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if got := request.Header.Get("Authorization"); got != "" {
+			t.Errorf("authorization header = %q", got)
+		}
+		writer.Header().Set("Content-Type", "application/json")
+		_, err := writer.Write([]byte(`{"data":{"viewer":{"id":"user-id"}}}`))
+		if err != nil {
+			t.Errorf("write response: %v", err)
+		}
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		Endpoint: server.URL,
+		Token:    OAuthAccessToken(""),
+		Timeout:  2 * time.Second,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
+
+	// When
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+
+	// Then
+	require.NoError(t, err)
+}
+
 func Test_Transport_returns_graphql_error_when_response_contains_errors(t *testing.T) {
 	// Given
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.Header.Get("Authorization") != "test-token" {
+		if request.Header.Get("Authorization") != "Bearer test-token" {
 			t.Errorf("authorization header = %q", request.Header.Get("Authorization"))
 		}
 		writer.Header().Set("Content-Type", "application/json")
@@ -35,7 +89,7 @@ func Test_Transport_returns_graphql_error_when_response_contains_errors(t *testi
 	defer server.Close()
 	transport := NewTransport(TransportConfig{
 		Endpoint: server.URL,
-		Token:    PersonalAPIToken("test-token"),
+		Token:    OAuthAccessToken("test-token"),
 		Timeout:  2 * time.Second,
 	})
 	response := graphql.Response{Data: &testGraphQLData{}}
@@ -48,6 +102,34 @@ func Test_Transport_returns_graphql_error_when_response_contains_errors(t *testi
 	require.ErrorIs(t, err, ErrGraphQL)
 	require.Contains(t, err.Error(), "bad query")
 	require.Contains(t, err.Error(), "BAD_USER_INPUT")
+}
+
+func Test_Transport_returns_typed_auth_error_for_401(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if got := request.Header.Get("Authorization"); got != "Bearer expired-token" {
+			t.Errorf("authorization header = %q", got)
+		}
+		writer.WriteHeader(http.StatusUnauthorized)
+		_, err := writer.Write([]byte(`{"errors":[{"message":"secret auth failure","extensions":{"code":"UNAUTHENTICATED"}}]}`))
+		if err != nil {
+			t.Errorf("write response: %v", err)
+		}
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		Endpoint: server.URL,
+		Token:    OAuthAccessToken("expired-token"),
+		Timeout:  2 * time.Second,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
+
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrAuthFailed)
+	require.Contains(t, err.Error(), "graphql http status 401 code=UNAUTHENTICATED")
+	require.NotContains(t, err.Error(), "secret auth failure")
+	require.NotContains(t, err.Error(), "expired-token")
 }
 
 func Test_Transport_retries_429_with_retry_after_when_present(t *testing.T) {
@@ -71,7 +153,7 @@ func Test_Transport_retries_429_with_retry_after_when_present(t *testing.T) {
 	transport := NewTransport(TransportConfig{
 		DiagnosticWriter: &logs,
 		Endpoint:         server.URL,
-		Token:            PersonalAPIToken("test-token"),
+		Token:            OAuthAccessToken("test-token"),
 		Timeout:          2 * time.Second,
 		MaxRetries:       1,
 	})
@@ -118,7 +200,7 @@ func Test_Transport_retries_ratelimited_400_then_succeeds(t *testing.T) {
 	transport := NewTransport(TransportConfig{
 		DiagnosticWriter: &logs,
 		Endpoint:         server.URL,
-		Token:            PersonalAPIToken("test-token"),
+		Token:            OAuthAccessToken("test-token"),
 		Timeout:          2 * time.Second,
 		MaxRetries:       1,
 	})
@@ -154,7 +236,7 @@ func Test_Transport_returns_rate_limited_error_after_exhausting_retries(t *testi
 	transport := NewTransport(TransportConfig{
 		DiagnosticWriter: &logs,
 		Endpoint:         server.URL,
-		Token:            PersonalAPIToken("test-token"),
+		Token:            OAuthAccessToken("test-token"),
 		Timeout:          2 * time.Second,
 		MaxRetries:       1,
 	})
@@ -190,7 +272,7 @@ func Test_Transport_returns_error_when_context_timeout_expires(t *testing.T) {
 	defer close(release)
 	transport := NewTransport(TransportConfig{
 		Endpoint: server.URL,
-		Token:    PersonalAPIToken("test-token"),
+		Token:    OAuthAccessToken("test-token"),
 		Timeout:  time.Nanosecond,
 	})
 	response := graphql.Response{Data: &testGraphQLData{}}
@@ -217,7 +299,7 @@ func Test_Transport_logs_decode_failures_without_response_body(t *testing.T) {
 	transport := NewTransport(TransportConfig{
 		DiagnosticWriter: &logs,
 		Endpoint:         server.URL,
-		Token:            PersonalAPIToken("test-token"),
+		Token:            OAuthAccessToken("test-token"),
 		Timeout:          2 * time.Second,
 	})
 	response := graphql.Response{Data: &testGraphQLData{}}
@@ -244,7 +326,7 @@ func Test_Transport_ignores_diagnostic_writer_failures(t *testing.T) {
 	transport := NewTransport(TransportConfig{
 		DiagnosticWriter: failingDiagnosticWriter{},
 		Endpoint:         server.URL,
-		Token:            PersonalAPIToken("test-token"),
+		Token:            OAuthAccessToken("test-token"),
 		Timeout:          2 * time.Second,
 	})
 	response := graphql.Response{Data: &testGraphQLData{}}
@@ -339,7 +421,7 @@ func Test_Transport_logs_terminal_http_failures_without_response_body(t *testing
 	// Given
 	logs := bytes.Buffer{}
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.Header.Get("Authorization") != "test-token" {
+		if request.Header.Get("Authorization") != "Bearer test-token" {
 			t.Errorf("authorization header = %q", request.Header.Get("Authorization"))
 		}
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -352,7 +434,7 @@ func Test_Transport_logs_terminal_http_failures_without_response_body(t *testing
 	transport := NewTransport(TransportConfig{
 		DiagnosticWriter: &logs,
 		Endpoint:         server.URL,
-		Token:            PersonalAPIToken("test-token"),
+		Token:            OAuthAccessToken("test-token"),
 		Timeout:          2 * time.Second,
 	})
 	response := graphql.Response{Data: &testGraphQLData{}}

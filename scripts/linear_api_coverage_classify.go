@@ -482,7 +482,7 @@ func explicitRiskClassification(lowerName string) (string, string, bool) {
 
 func accessKeyReleaseRationale() string {
 	return "access-key release reads are unauthenticated sharing surfaces " +
-		"outside the token-scoped agent CLI"
+		"outside the auth-scoped agent CLI"
 }
 
 func contentPayloadReadRationale() string {

@@ -28,13 +28,14 @@ var usageTopics = map[string]usagePayload{
 			"For scripts, combine --json with --compact or --fields, use --id-only for chaining, --quiet for " +
 			"successful writes, --fail-on-empty for monitors, --sort/--order for deterministic lists, and " +
 			"--format minimal|compact|full for human output. " +
-			"Write flow: resolve the active token, compare it to the pinned target, perform the mutation only " +
+			"Write flow: resolve the active OAuth auth state, compare it to the pinned target, " +
+			"perform the mutation only " +
 			"on match, " +
 			"then return the created or updated entity. " +
-			"Start every unfamiliar repo with linctl target --json so the active token, org, team, and project " +
+			"Start every unfamiliar repo with linctl target --json so the active auth target, org, team, and project " +
 			"are visible " +
 			"before work starts. " +
-			"Use linctl current when the branch carries an issue key, linctl doctor to check config/token/target " +
+			"Use linctl current when the branch carries an issue key, linctl doctor to check config/auth/target " +
 			"health, and linctl next --dry-run to preview the top-ranked unblocked issue without creating a " +
 			"branch or worktree. " +
 			"Use domain guidance before writes: linctl issue usage or linctl project usage. " +
@@ -98,7 +99,7 @@ var usageTopics = map[string]usagePayload{
 			"or linctl issue search \"text\" --limit 20 to " +
 			"confirm the " +
 			"visible queue, then perform exactly one write command with a concrete title, body, or status change. " +
-			"If a write fails with target mismatch, do not retry with a different token blindly; inspect the " +
+			"If a write fails with target mismatch, do not retry with different auth blindly; inspect the " +
 			"expected and " +
 			"resolved ids and fix the local target configuration first. " +
 			"For temporary QA issues, use a linctl-it-<runid> title prefix, verify via issue get or issue list, " +

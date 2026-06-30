@@ -7,8 +7,9 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"runtime"
+	"strings"
 
+	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -19,6 +20,29 @@ type Env interface {
 
 // ErrProfileNotFound marks an explicitly requested profile that does not exist.
 var ErrProfileNotFound = errors.New("profile not found")
+
+const (
+	oauthAccessTokenEnv  = "LINCTL_OAUTH_ACCESS_TOKEN" //nolint:gosec // Environment variable name, not a secret.
+	oauthClientIDEnv     = "LINCTL_OAUTH_CLIENT_ID"
+	oauthClientSecretEnv = "LINCTL_OAUTH_CLIENT_SECRET" //nolint:gosec // Environment variable name, not a secret.
+	oauthRedirectURIEnv  = "LINCTL_OAUTH_REDIRECT_URI"
+	oauthScopesEnv       = "LINCTL_OAUTH_SCOPES"
+)
+
+// OAuthTokenSource is the resolved OAuth token material used by runtime code.
+type OAuthTokenSource struct {
+	AccessToken string
+	App         auth.AppConfig
+}
+
+// Resolve returns the current OAuth access token from this source boundary.
+func (source OAuthTokenSource) Resolve(ctx context.Context) (string, error) {
+	if err := ctx.Err(); err != nil {
+		return "", fmt.Errorf("resolve oauth token source: %w", err)
+	}
+
+	return source.AccessToken, nil
+}
 
 // Target is the pinned Linear write target.
 type Target struct {
@@ -33,6 +57,7 @@ type LoadRequest struct {
 	Env             Env
 	GlobalPath      string
 	RepoPath        string
+	AuthStatePaths  auth.Paths
 	ProfileOverride string
 	TargetOverride  Target
 }
@@ -40,6 +65,7 @@ type LoadRequest struct {
 // Resolved is the effective linctl configuration.
 type Resolved struct {
 	Profile string
+	Auth    OAuthTokenSource
 	Token   string
 	Target  Target
 }
@@ -81,9 +107,15 @@ func Load(ctx context.Context, request LoadRequest) (Resolved, error) {
 	}
 	target := mergeTarget(mergeTarget(mergedConfig.Target, profile.Target), request.TargetOverride)
 
+	authSource, err := resolveOAuthTokenSource(ctx, request.Env, request.AuthStatePaths, profileName)
+	if err != nil {
+		return Resolved{}, err
+	}
+
 	return Resolved{
 		Profile: profileName,
-		Token:   resolveToken(request.Env, mergedConfig.Token, profile.Token),
+		Auth:    authSource,
+		Token:   authSource.AccessToken,
 		Target:  target,
 	}, nil
 }
@@ -109,7 +141,7 @@ func readConfigFile(path string) (fileConfig, error) {
 		return fileConfig{Profiles: map[string]profileConfig{}}, nil
 	}
 
-	info, err := os.Stat(path)
+	_, err := os.Stat(path)
 	if errors.Is(err, fs.ErrNotExist) {
 		return fileConfig{Profiles: map[string]profileConfig{}}, nil
 	}
@@ -129,32 +161,7 @@ func readConfigFile(path string) (fileConfig, error) {
 	if config.Profiles == nil {
 		config.Profiles = map[string]profileConfig{}
 	}
-	if err := validateConfigPermissions(path, info.Mode(), config); err != nil {
-		return fileConfig{}, err
-	}
-
 	return config, nil
-}
-
-func validateConfigPermissions(path string, mode fs.FileMode, config fileConfig) error {
-	if runtime.GOOS == "windows" || !configHasToken(config) || mode.Perm()&0o077 == 0 {
-		return nil
-	}
-
-	return fmt.Errorf("read config %s: token-bearing config must not be group/world-readable", path)
-}
-
-func configHasToken(config fileConfig) bool {
-	if config.Token != "" {
-		return true
-	}
-	for _, profile := range config.Profiles {
-		if profile.Token != "" {
-			return true
-		}
-	}
-
-	return false
 }
 
 func mergeConfig(base fileConfig, overlay fileConfig) fileConfig {
@@ -187,19 +194,58 @@ func mergeTarget(base Target, overlay Target) Target {
 	}
 }
 
-func resolveToken(env Env, configToken string, profileToken string) string {
+func resolveOAuthTokenSource(
+	ctx context.Context,
+	env Env,
+	authStatePaths auth.Paths,
+	profileName string,
+) (OAuthTokenSource, error) {
 	activeEnv := env
 	if activeEnv == nil {
 		activeEnv = osEnv{}
 	}
-	if token, ok := activeEnv.Lookup("LINCTL_TOKEN"); ok && token != "" {
-		return token
-	}
-	if token, ok := activeEnv.Lookup("LINEAR_API_KEY"); ok && token != "" {
-		return token
+	if token, ok := activeEnv.Lookup(oauthAccessTokenEnv); ok && token != "" {
+		if isPersonalAPIKeyShape(token) {
+			return OAuthTokenSource{}, fmt.Errorf("%s contains personal API key-shaped material", oauthAccessTokenEnv)
+		}
+
+		return OAuthTokenSource{AccessToken: token, App: resolveOAuthAppConfig(activeEnv)}, nil
 	}
 
-	return firstNonEmpty(profileToken, configToken)
+	envApp := resolveOAuthAppConfig(activeEnv)
+	if authStatePaths == (auth.Paths{}) {
+		return OAuthTokenSource{App: envApp}, nil
+	}
+	state, err := auth.NewStore(authStatePaths).Load(ctx)
+	if err != nil {
+		return OAuthTokenSource{}, err
+	}
+	profileState := state.Profile(profileName)
+	if !oauthAppConfigEmpty(envApp) {
+		profileState.App = envApp
+	}
+	if isPersonalAPIKeyShape(profileState.Token.AccessToken) {
+		return OAuthTokenSource{}, errors.New("local auth state contains personal API key-shaped material")
+	}
+
+	return OAuthTokenSource{
+		AccessToken: profileState.Token.AccessToken,
+		App:         profileState.App,
+	}, nil
+}
+
+func resolveOAuthAppConfig(env Env) auth.AppConfig {
+	clientID, _ := env.Lookup(oauthClientIDEnv)
+	clientSecret, _ := env.Lookup(oauthClientSecretEnv)
+	redirectURI, _ := env.Lookup(oauthRedirectURIEnv)
+	scopeText, _ := env.Lookup(oauthScopesEnv)
+
+	return auth.AppConfig{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		RedirectURI:  redirectURI,
+		Scopes:       splitOAuthScopes(scopeText),
+	}
 }
 
 func firstNonEmpty(primary string, fallback string) string {
@@ -208,4 +254,21 @@ func firstNonEmpty(primary string, fallback string) string {
 	}
 
 	return fallback
+}
+
+func isPersonalAPIKeyShape(value string) bool {
+	return strings.HasPrefix(value, "lin_api_")
+}
+
+func splitOAuthScopes(value string) []string {
+	return strings.FieldsFunc(value, func(r rune) bool {
+		return r == ',' || r == ' ' || r == '\t' || r == '\n'
+	})
+}
+
+func oauthAppConfigEmpty(app auth.AppConfig) bool {
+	return app.ClientID == "" &&
+		app.ClientSecret == "" &&
+		app.RedirectURI == "" &&
+		len(app.Scopes) == 0
 }

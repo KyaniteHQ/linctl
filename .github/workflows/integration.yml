@@ -1,7 +1,7 @@
 name: integration
 
-# Live integration + e2e against a disposable Linear target. Token-gated:
-# when LINCTL_TEST_TOKEN is not configured the job runs but skips the live
+# Live integration + e2e against a disposable Linear target. OAuth fixture-gated:
+# when OAuth app material is not configured the job runs but skips the live
 # steps, so forks and unconfigured repos stay green.
 on:
   schedule:
@@ -22,11 +22,15 @@ jobs:
     timeout-minutes: 15
     if: github.repository == 'KyaniteHQ/linctl'
     env:
-      LINCTL_TEST_TOKEN: ${{ secrets.LINCTL_TEST_TOKEN }}
       LINCTL_TEST_ORG_ID: ${{ secrets.LINCTL_TEST_ORG_ID }}
       LINCTL_TEST_TEAM_KEY: ${{ secrets.LINCTL_TEST_TEAM_KEY }}
       LINCTL_TEST_TEAM_ID: ${{ secrets.LINCTL_TEST_TEAM_ID }}
       LINCTL_TEST_PROJECT_ID: ${{ secrets.LINCTL_TEST_PROJECT_ID }}
+      LINCTL_OAUTH_CLIENT_ID: ${{ secrets.LINCTL_OAUTH_CLIENT_ID }}
+      LINCTL_OAUTH_CLIENT_SECRET: ${{ secrets.LINCTL_OAUTH_CLIENT_SECRET }}
+      LINCTL_OAUTH_REDIRECT_URI: ${{ secrets.LINCTL_OAUTH_REDIRECT_URI }}
+      LINCTL_OAUTH_SCOPES: ${{ secrets.LINCTL_OAUTH_SCOPES }}
+      LINCTL_OAUTH_EXPECTED_ACTOR: app
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -40,12 +44,25 @@ jobs:
         run: |
           go mod download
           go mod verify
-      - name: Skip notice (token absent)
-        if: env.LINCTL_TEST_TOKEN == ''
-        run: echo "LINCTL_TEST_TOKEN not configured — skipping live integration + e2e." >> "$GITHUB_STEP_SUMMARY"
+      - name: Skip notice (OAuth fixture absent)
+        if: env.LINCTL_OAUTH_CLIENT_ID == '' || env.LINCTL_OAUTH_CLIENT_SECRET == '' || env.LINCTL_OAUTH_REDIRECT_URI == '' || env.LINCTL_OAUTH_SCOPES == '' || env.LINCTL_TEST_ORG_ID == '' || env.LINCTL_TEST_TEAM_KEY == '' || env.LINCTL_TEST_TEAM_ID == ''
+        run: echo "OAuth fixture env is not configured, skipping live integration + e2e." >> "$GITHUB_STEP_SUMMARY"
+      - name: Write live target config
+        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        run: |
+          {
+            printf '[target]\n'
+            printf 'org_id = "%s"\n' "$LINCTL_TEST_ORG_ID"
+            printf 'team_key = "%s"\n' "$LINCTL_TEST_TEAM_KEY"
+            printf 'team_id = "%s"\n' "$LINCTL_TEST_TEAM_ID"
+            printf 'project_id = "%s"\n' "$LINCTL_TEST_PROJECT_ID"
+          } > .linctl.toml
+      - name: OAuth live gate
+        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        run: go run github.com/go-task/task/v3/cmd/task@latest live-oauth
       - name: Integration tests
-        if: env.LINCTL_TEST_TOKEN != ''
+        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
         run: go test -count=1 -tags=integration -timeout 120s ./internal/client
       - name: Live smoke (e2e)
-        if: env.LINCTL_TEST_TOKEN != ''
+        if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
         run: bash scripts/live-smoke.sh

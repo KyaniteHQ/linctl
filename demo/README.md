@@ -2,7 +2,7 @@
 
 Source for the terminal demo shown in the project README. The tape runs the **real
 `linctl` binary** against a disposable Linear org/team, so the output is genuine — reads are free,
-and the guarded write is refused when the active token does not resolve to the pinned target.
+and the guarded write is refused when the active auth credential does not resolve to the pinned target.
 
 ## Files
 
@@ -18,17 +18,17 @@ Prerequisites: [vhs](https://github.com/charmbracelet/vhs), Go, and a **throwawa
 org/team. Pin that target in `demo/.linctl.toml` (`org_id`, `team_key`, `team_id`), then:
 
 ```bash
-LINEAR_API_KEY=<demo-target-token> ./render.sh
+LINCTL_OAUTH_ACCESS_TOKEN=<demo-oauth-access-token> ./render.sh
 ```
 
-The token is read from the environment and never printed. The successful `issue create`
+The OAuth access token is read from the environment and never printed. The successful `issue create`
 lands a real issue in the demo target, so use a disposable one.
 
 ## Storyboard
 
 1. `issue list` — reads need no pinned target.
-2. `cat .linctl.toml` + `linctl target` — the pin, then the live token re-resolved against it.
+2. `cat .linctl.toml` + `linctl target` — the pin, then the live auth re-resolved against it.
 3. `issue create` — a guarded write into the pinned target succeeds.
-4. `issue create --team STG` — the same write aimed at a team the token does not own is
+4. `issue create --team STG` — the same write aimed at a team the auth cannot reach is
    refused with `{"error_code":"TARGET_MISMATCH"}` and a non-zero exit. The flags set the
    pinned target; they do not relax the guard. There is no bypass flag.

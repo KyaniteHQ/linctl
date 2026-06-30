@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Portable, read-only linctl smoke. Runs a few read commands with --json and reports
-# pass/fail per command without printing tokens or full payloads.
+# pass/fail per command without printing auth material or full payloads.
 #
 # Complements the in-repo `task live-smoke` (full harness with disposable writes); use this
 # when you only have an installed binary, or want a quick read-only confidence check outside
 # the checkout. Read-only by design: it never creates, updates, or archives Linear resources.
 #
-# Credentials: the CLI reads LINCTL_TOKEN, then LINEAR_API_KEY, then a config token. This
-# script never sets, echoes, or logs any token value. On a missing token or target mismatch
-# the underlying command fails closed and this script reports FAIL with the first error line.
+# Credentials: the CLI reads OAuth auth state configured by `linctl auth app`,
+# `linctl auth login`, or non-persistent OAuth env overrides. This script never sets,
+# echoes, or logs any auth value. On missing auth or target mismatch the underlying
+# command fails closed and this script reports FAIL with the first error line.
 set -uo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,6 +34,6 @@ run "issue list"   issue list --limit 5
 run "project list" project list --limit 5
 
 if [ "$status" -ne 0 ]; then
-  printf '\nread-only smoke failed; check token and pinned target (no values printed)\n' >&2
+  printf '\nread-only smoke failed; check OAuth auth state and pinned target (no values printed)\n' >&2
 fi
 exit "$status"

@@ -88,6 +88,17 @@ tasks:
     cmds:
       - bash scripts/live-smoke.sh
 
+  live-oauth:
+    desc: Verify OAuth client-credentials auth against the pinned Linear target
+    cmds:
+      - |
+        repo="{{.TASKFILE_DIR}}"
+        binary="${LINCTL_BINARY:-$repo/bin/{{.BINARY}}}"
+        if [[ -z "${LINCTL_BINARY:-}" ]]; then
+          (cd "$repo" && go build -trimpath -o "$binary" {{.PKG}})
+        fi
+        LINCTL_BINARY="$binary" bash "$repo/scripts/live-oauth.sh" "$binary"
+
   vet:
     desc: Run go vet
     cmds:

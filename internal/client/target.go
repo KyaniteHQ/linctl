@@ -15,10 +15,10 @@ var ErrTargetMismatch = errors.New("target mismatch")
 
 // ErrTargetNotConfigured marks a missing or incomplete pinned target (no
 // org_id/team_key/team_id). It is distinct from ErrTargetMismatch, which is a
-// token that resolves to a target other than the one pinned.
+// auth credential that resolves to a target other than the one pinned.
 var ErrTargetNotConfigured = errors.New("target not configured")
 
-// ResolvedTarget is the token-resolved Linear write target.
+// ResolvedTarget is the auth-resolved Linear write target.
 type ResolvedTarget struct {
 	Viewer    TargetViewer     `json:"viewer"`
 	Org       TargetOrg        `json:"org"`
@@ -82,7 +82,7 @@ func CheckOrganizationExists(
 	}, nil
 }
 
-// ResolveTarget resolves viewer, organization, team, and optional project from the token.
+// ResolveTarget resolves viewer, organization, team, and optional project from auth.
 func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected config.Target) (ResolvedTarget, error) {
 	if err := requireExpectedTarget(expected); err != nil {
 		return ResolvedTarget{}, err

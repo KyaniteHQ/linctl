@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
@@ -25,6 +26,8 @@ func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
 		{name: "invalid write", err: fmt.Errorf("%w: x", client.ErrWriteInvalid), code: "INVALID_WRITE"},
 		{name: "graphql", err: fmt.Errorf("%w: x", client.ErrGraphQL), code: "GRAPHQL_ERROR"},
 		{name: "not found", err: fmt.Errorf("get issue LIT-1: %w", client.ErrNotFound), code: "NOT_FOUND"},
+		{name: "auth readiness", err: auth.NewError(auth.ErrorCodeTargetMismatch, "wrong target"), code: "AUTH_TARGET_MISMATCH"},
+		{name: "token endpoint", err: auth.NewTokenEndpointError(auth.ErrorCodeMissingScope, 400, "invalid_scope"), code: "MISSING_SCOPE"},
 		{name: "fallback", err: errors.New("something unexpected"), code: "INTERNAL"},
 	}
 	for _, tt := range tests {

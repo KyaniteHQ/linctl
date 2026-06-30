@@ -12,10 +12,10 @@ Success is pass/fail:
 
 - The expected behavior is asserted by an automated test.
 - Important failure paths produce actionable errors or diagnostic logs.
-- Logs must not include Linear tokens, request bodies, response bodies, or fixture user data.
+- Logs must not include OAuth tokens, request bodies, response bodies, or fixture user data.
 - The default suite remains fast enough for local iteration.
-- Live smoke uses the same pass/fail rule, but runs only when a disposable
-  Linear token is available.
+- Live smoke uses the same pass/fail rule, but runs only when disposable OAuth
+  fixture auth is available.
 
 ## Scenarios
 
@@ -378,7 +378,7 @@ Success is pass/fail:
      `go test ./internal/client`, `Test_ClientReadScenarios_return_compact_lists_details_and_members`.
 
 72. Doctor health check
-   - Success: `linctl doctor` reports config load, token presence, and target confirmation without printing token values.
+   - Success: `linctl doctor` reports config load, OAuth auth readiness, and target confirmation without printing secret values.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/doctor`;
      `Test_CommandFlows_print_json_for_read_and_comment_commands/--json/doctor`.
 
@@ -1084,6 +1084,35 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_link`;
      `go test ./internal/client`, `Test_LinkIssueAttachment_attaches_url_when_target_matches`.
 
+202. OAuth app auth setup and readiness
+   - Success: `linctl auth configure` stores OAuth app configuration without creating token state; `linctl auth app` exchanges client credentials, verifies app actor readiness and pinned target before saving token state; `linctl auth status` performs a live readiness check, refreshes expired authorization-code tokens, and reacquires expired app tokens without printing tokens or client secrets.
+   - Evidence: `go test ./internal/auth ./internal/cli`, `Test_Store_saves_app_config_without_creating_token_state`, `Test_Store_saves_token_state_without_rewriting_app_config`, `Test_AuthConfigure_saves_oauth_app_config_without_token_state`, `Test_AuthApp_obtains_app_actor_token_after_live_readiness`, `Test_AuthApp_does_not_save_token_when_readiness_fails`, `Test_AuthApp_reports_missing_scope_without_saving_token`, `Test_AuthStatus_reacquires_expired_client_credentials_token_and_checks_readiness`, `Test_AuthStatus_refreshes_expired_authorization_code_token_and_checks_readiness`.
+
+203. OAuth browser login with PKCE
+   - Success: `linctl auth login` builds a Linear authorization URL with PKCE S256 and `actor=app` by default, supports `--actor user`, validates callback state before token exchange, accepts a pasted callback URL or raw code through the same exchange path, verifies auth readiness before saving token state, and does not print access tokens, refresh tokens, or client secrets.
+   - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`.
+
+204. OAuth runtime token recovery
+   - Success: runtime refreshes expired authorization-code tokens once, reacquires expired or rejected client-credentials app tokens once, persists rotated token state only through local auth state, retries the original GraphQL request once, and returns `AUTH_REFRESH_FAILED` or `AUTH_REAUTH_REQUIRED` without retry loops when recovery fails.
+   - Evidence: `go test ./internal/client ./internal/cli`, `Test_Transport_returns_typed_auth_error_for_401`, `Test_CommandRuntime_refreshes_expired_authorization_code_token_and_retries_once`, `Test_CommandRuntime_reacquires_expired_client_credentials_token_and_retries_once`, `Test_CommandRuntime_reacquires_client_credentials_token_after_401_once`, `Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_retried_token_is_rejected`, `Test_CommandRuntime_returns_AUTH_REFRESH_FAILED_when_refresh_fails_without_retry_loop`, `Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_app_reacquire_fails_without_retry_loop`.
+
+205. OAuth-only product auth direction
+   - Success: user-facing setup docs describe OAuth app auth setup, runtime missing-auth errors point to `linctl auth configure` followed by `linctl auth app` or `linctl auth login`, legacy API-key env vars and config token fields remain ignored by product auth, and stale API-key setup guidance is absent from public docs.
+   - Evidence: `go test ./internal/config ./internal/cli`, `Test_Load_ignores_legacy_config_token_without_permission_gate`, `Test_Load_ignores_legacy_api_key_sources_for_product_auth`, `Test_CommandRuntime_loads_config_and_requires_token`; `rg -n "LINEAR_OAUTH|LINCTL_TOKEN|LINEAR_API_KEY|lin_api_|Credential precedence|personal API|API key" README.md CLAUDE.md skills/linctl/SKILL.md docs/prior-art.md`.
+
+206. OAuth live gate
+   - Success: `task live-oauth` requires the dedicated OAuth fixture env, runs `linctl auth configure`, `linctl auth app`, and `linctl auth status` against the pinned target, asserts app actor readiness, and reports only redacted auth status. `task live-smoke` bootstraps temporary OAuth auth state through the same harness before the live smoke commands. GitHub Actions skips live steps when the OAuth fixture env is absent.
+   - Evidence: `env -u LINCTL_OAUTH_CLIENT_ID -u LINCTL_OAUTH_CLIENT_SECRET -u LINCTL_OAUTH_REDIRECT_URI -u LINCTL_OAUTH_SCOPES -u LINCTL_OAUTH_EXPECTED_ACTOR bash scripts/live-oauth.sh`; fake-binary live OAuth harness check; `go test ./internal/client ./internal/cli ./internal/config -count=1`; `go test -tags=integration ./internal/client` skips without OAuth fixture env.
+
+207. OAuth explicit refresh and logout
+   - Success: `linctl auth refresh` rotates authorization-code token state or reacquires client-credentials app token state, persists the new state, checks target readiness, and redacts token material. `linctl auth logout` revokes refresh/access tokens when Linear accepts revocation, removes local token state even when revocation fails, keeps app config by default, and removes app config only with `--forget-app`.
+   - Evidence: `go test ./internal/oauth ./internal/auth ./internal/cli`, `Test_Client_revokes_token_with_token_form_field`, `Test_Client_revoke_error_redacts_secret_values`, `Test_AuthRefresh_rotates_authorization_code_token_and_checks_readiness`, `Test_AuthRefresh_reacquires_client_credentials_token`, `Test_AuthLogout_revokes_tokens_and_clears_token_state_while_keeping_app`, `Test_AuthLogout_forgets_app_and_clears_state_when_revocation_fails`.
+
+208. OAuth browser login manual smoke
+   - Success: a manual browser smoke covers app-actor login, pasted callback fallback, and personal-attribution login:
+     `linctl auth login --callback -` prints a PKCE S256 Linear authorization URL with `actor=app`; after browser authorization, paste the callback URL into stdin and expect `auth set actor app target ready` or equivalent JSON. Repeat with `linctl auth login --actor user --callback -` and expect `actor user`. `linctl auth status --json` must report set token material, scopes, expiry, actor, and ready target without printing access tokens, refresh tokens, client secret, or developer tokens.
+   - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`. Real browser smoke is manual until the OAuth fixture credentials are stored outside chat.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with
@@ -1095,16 +1124,44 @@ The flake check method is five consecutive runs of the same race/shuffle product
 
 ## Live Smoke
 
-Run the complete live smoke suite with:
+Run the focused OAuth live gate with:
+
+```bash
+go run github.com/go-task/task/v3/cmd/task@latest live-oauth
+```
+
+Then run the complete live smoke suite with:
 
 ```bash
 go run github.com/go-task/task/v3/cmd/task@latest live-smoke
 ```
 
-The command requires a disposable Linear token in `LINCTL_TEST_TOKEN`.
-It builds a temporary `linctl` binary, smoke-tests read-only CLI commands, then runs the integration-tagged
-client read checks. Guarded write round trips are opt-in with `LINCTL_TEST_ENABLE_WRITES=1`; each enabled
-run creates namespaced `linctl-it-<runid>` issue and project resources, then archives them during cleanup.
+Both commands require the OAuth fixture env: `LINCTL_OAUTH_CLIENT_ID`,
+`LINCTL_OAUTH_CLIENT_SECRET`, `LINCTL_OAUTH_REDIRECT_URI`, `LINCTL_OAUTH_SCOPES`,
+and `LINCTL_OAUTH_EXPECTED_ACTOR=app`. `live-smoke` builds a temporary `linctl`
+binary, bootstraps temporary OAuth auth state, smoke-tests read-only CLI commands,
+then runs the integration-tagged client read checks. Guarded write round trips are
+opt-in with `LINCTL_TEST_ENABLE_WRITES=1`; each enabled run creates namespaced
+`linctl-it-<runid>` issue and project resources, then archives them during cleanup.
 
-The missing-token readiness check is `env -u LINCTL_TEST_TOKEN bash scripts/live-smoke.sh`,
-which must exit 2 with a missing-token message and without printing secret values.
+The missing-fixture readiness check is `env -u LINCTL_OAUTH_CLIENT_ID bash scripts/live-oauth.sh`,
+which must exit 2 with a missing-fixture message and without printing secret values.
+
+## Browser Login Smoke
+
+Manual browser login smoke intentionally stays outside arbitrary commands:
+
+```bash
+linctl auth login --callback -
+# Open the printed Linear URL, authorize, paste the redirected callback URL, press Enter.
+linctl auth status --json
+linctl auth logout
+
+linctl auth login --actor user --callback -
+# Open the printed Linear URL, authorize, paste the redirected callback URL, press Enter.
+linctl auth status --json
+linctl auth logout --forget-app
+```
+
+Expected output reports `actor`, `scopes`, `expires_at`, token status, and target readiness
+only. It must never print access tokens, refresh tokens, client secrets, or developer tokens.

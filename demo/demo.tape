@@ -1,6 +1,6 @@
 # linctl — guarded-writes terminal demo (the README hero)
-# Render with: LINEAR_API_KEY=<demo-target-token> ./render.sh
-# Reads are free; the guarded write is refused when the token does not
+# Render with: LINCTL_OAUTH_ACCESS_TOKEN=<demo-oauth-access-token> ./render.sh
+# Reads are free; the guarded write is refused when auth does not
 # resolve to the pinned target. See README.md in this directory.
 
 Output ../docs/assets/demo.gif
@@ -28,7 +28,7 @@ Sleep 250ms
 Type "linctl issue list --state started" Enter
 Sleep 1500ms
 
-# --- the pin, then re-resolve the live token against it ---
+# --- the pin, then re-resolve the live auth against it ---
 Type "cat .linctl.toml" Enter
 Sleep 1200ms
 Type "linctl target" Enter
@@ -38,10 +38,10 @@ Sleep 1600ms
 Type 'linctl issue create --title "Add rate-limit backoff to sync"' Enter
 Sleep 1700ms
 
-# --- the money shot: aim the same write at a team this token can't reach ---
+# --- the money shot: aim the same write at a team this auth can't reach ---
 Type "# same write, wrong team:" Sleep 150ms Enter
 Sleep 250ms
 Type 'linctl issue create --title "Add rate-limit backoff to sync" --team STG' Enter
 Sleep 2000ms
-Type "# refused — token re-resolved, no bypass flag" Sleep 150ms Enter
+Type "# refused: auth re-resolved, no bypass flag" Sleep 150ms Enter
 Sleep 2400ms

@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 
+	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
@@ -382,6 +383,7 @@ func Test_CommandRuntime_loads_config_and_requires_token(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	t.Setenv("LINCTL_TOKEN", "")
 	t.Setenv("LINEAR_API_KEY", "")
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "")
 	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
 [target]
 org_id = "org-id"
@@ -392,9 +394,16 @@ project_id = "project-id"
 
 	_, err := newCommandRuntime(context.Background(), &rootOptions{})
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "missing Linear token")
+	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
+	require.Contains(t, err.Error(), "run linctl auth configure")
 
 	t.Setenv("LINCTL_TOKEN", "test-token")
+	_, err = newCommandRuntime(context.Background(), &rootOptions{})
+	require.Error(t, err)
+	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
+	require.Contains(t, err.Error(), "run linctl auth configure")
+
+	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "test-token")
 	runtime, err := newCommandRuntime(context.Background(), &rootOptions{})
 	require.NoError(t, err)
 	require.Equal(t, "project-id", runtime.config.Target.ProjectID)

@@ -1,16 +1,16 @@
 # Brag Plan: linctl
 
 ## What is this app?
-A Go CLI for Linear whose one trick is refusing to write to the wrong place: every guarded write re-resolves the active token's org/team live and fails closed on mismatch, with no bypass flag. Reads are free.
+A Go CLI for Linear whose one trick is refusing to write to the wrong place: every guarded write re-resolves active OAuth auth against the org/team live and fails closed on mismatch, with no bypass flag. Reads are free.
 
 ## The angle
-The whole video is one flat, unbothered demonstration: the same `issue create` command, run twice. Once it lands. Once it is refused, because the token does not resolve to the team the command aimed at. No drama, no music swell at the "fail" — the joke of deadpan is that the guard treats a catastrophe (an agent writing to the wrong team) as a shrug. The refusal IS the product.
+The whole video is one flat, unbothered demonstration: the same `issue create` command, run twice. Once it lands. Once it is refused, because the auth does not resolve to the team the command aimed at. No drama, no music swell at the "fail" — the joke of deadpan is that the guard treats a catastrophe (an agent writing to the wrong team) as a shrug. The refusal IS the product.
 
 ## Hook (first 2-3 seconds)
-A single dry line on black: "An agent with the wrong token writes to the wrong team." Beat. A dim second line: "Usually, nothing stops it." That sets up the only thing linctl does.
+A single dry line on black: "An agent with the wrong auth writes to the wrong team." Beat. A dim second line: "Usually, nothing stops it." That sets up the only thing linctl does.
 
 ## Key moments (the middle)
-- The pin appears (`.linctl.toml` → team LIT) and `linctl target` prints `confirmed true` — the live token re-resolved against the pin.
+- The pin appears (`.linctl.toml` → team LIT) and `linctl target` prints `confirmed true` — the live auth re-resolved against the pin.
 - A guarded `issue create` lands in the pinned target: `LIT-15 ... [Backlog]`, calm green check.
 - The same command aimed at `--team STG` returns `{"error_code":"TARGET_MISMATCH"}` in red, exit 1. The line "the write does not happen" stays on screen, unbothered.
 
@@ -38,7 +38,7 @@ entry `linctl target` (confirmed) → action `linctl issue create` (lands) → s
 - Strongest visual element: the `{"error_code":"TARGET_MISMATCH"}` line in red, and the green `confirmed true` / `LIT-15` lines. The styled terminal card is the recurring frame.
 
 ## Share copy (draft)
-An AI agent with a stale Linear token can quietly create issues in the wrong team. linctl re-resolves your token on every write and fails closed. No bypass flag. `go install github.com/KyaniteHQ/linctl/cmd/linctl@latest`
+An AI agent with stale Linear auth can quietly create issues in the wrong team. linctl re-resolves auth on every write and fails closed. No bypass flag. `go install github.com/KyaniteHQ/linctl/cmd/linctl@latest`
 
 ## Audio direction
 - Role: sparse professional accents over a very low bed
@@ -53,7 +53,7 @@ An AI agent with a stale Linear token can quietly create issues in the wrong tea
 ## Storyboard
 
 ### Scene 1 — The problem — 3.5s
-Black (#0b0e14). Line 1 fades in fast, holds: "An agent with the wrong token writes to the wrong team." After ~1.4s, dim line 2 below: "Usually, nothing stops it." Hold.
+Black (#0b0e14). Line 1 fades in fast, holds: "An agent with the wrong auth writes to the wrong team." After ~1.4s, dim line 2 below: "Usually, nothing stops it." Hold.
 Sequential/interaction: yes — line 2 appears after line 1 settles (single staggered reveal, each held to its reading floor).
 Audio intent: near silence; music barely present; one soft drop as line 2 lands.
 Audio-coupled idea: soft `interface/drop` on line 2.

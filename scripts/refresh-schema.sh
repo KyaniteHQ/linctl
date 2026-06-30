@@ -4,10 +4,10 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 schema_path="$repo_root/internal/client/schema.graphql"
-token="${LINCTL_TEST_TOKEN:-${LINCTL_TOKEN:-${LINEAR_API_KEY:-}}}"
+token="${LINCTL_OAUTH_ACCESS_TOKEN:-}"
 
 if [[ -z "$token" ]]; then
-  printf 'missing Linear API token: set LINCTL_TEST_TOKEN, LINCTL_TOKEN, or LINEAR_API_KEY\n' >&2
+  printf 'missing Linear OAuth access token: set LINCTL_OAUTH_ACCESS_TOKEN\n' >&2
   exit 1
 fi
 
@@ -24,11 +24,11 @@ npx --yes --package graphql@16.14.2 node >"$tmp_schema" <<'NODE'
 const { buildClientSchema, getIntrospectionQuery, printSchema } = require("graphql");
 
 async function main() {
-  const token = process.env.LINCTL_TEST_TOKEN || process.env.LINCTL_TOKEN || process.env.LINEAR_API_KEY;
+  const token = process.env.LINCTL_OAUTH_ACCESS_TOKEN;
   const response = await fetch("https://api.linear.app/graphql", {
     method: "POST",
     headers: {
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ query: getIntrospectionQuery() }),

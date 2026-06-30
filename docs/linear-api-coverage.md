@@ -309,7 +309,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueUnsubscribe` | method | blocked_needs_design | issue unsubscribe changes notification state and needs target-pinned guard semantics |
 | `issueVcsBranchSearch` | method | implemented | local operation or command exists |
 | `issues` | method | implemented | local operation or command exists |
-| `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
+| `latestReleaseByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `logout` | method | blocked_needs_design | mutation needs product and safety design |
 | `logoutAllSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `logoutOtherSessions` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
@@ -350,7 +350,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projects` | method | implemented | local operation or command exists |
 | `pushSubscriptionTest` | method | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
 | `rateLimitStatus` | getter | implemented | local operation or command exists |
-| `recentReleasesByAccessKey` | method | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
+| `recentReleasesByAccessKey` | method | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `refreshGoogleSheetsData` | method | blocked_needs_design | mutation needs product and safety design |
 | `release` | method | implemented | local operation or command exists |
 | `releaseComplete` | method | blocked_needs_design | mutation needs product and safety design |
@@ -358,7 +358,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `releaseNote` | method | implemented | local operation or command exists |
 | `releaseNotes` | method | implemented | local operation or command exists |
 | `releasePipeline` | method | implemented | local operation or command exists |
-| `releasePipelineByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
+| `releasePipelineByAccessKey` | getter | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `releasePipelines` | method | implemented | local operation or command exists |
 | `releaseSearch` | method | implemented | local operation or command exists |
 | `releaseStage` | method | implemented | local operation or command exists |
@@ -573,7 +573,7 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `issueToReleases` | `IssueToReleaseConnection!` | implemented | root field used by local GraphQL operation |
 | `issueVcsBranchSearch` | `Issue` | implemented | root field used by local GraphQL operation |
 | `issues` | `IssueConnection!` | implemented | root field used by local GraphQL operation |
-| `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
+| `latestReleaseByAccessKey` | `Release` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `microsoftTeamsChannels` | `MicrosoftTeamsChannelsPayload!` | intentionally_excluded | Microsoft Teams channel enumeration exposes chat integration metadata outside the default Linear work CLI surface |
 | `notification` | `Notification!` | implemented | root field used by local GraphQL operation |
 | `notificationSubscription` | `NotificationSubscription!` | implemented | root field used by local GraphQL operation |
@@ -605,12 +605,12 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | `projects` | `ProjectConnection!` | implemented | root field used by local GraphQL operation |
 | `pushSubscriptionTest` | `PushSubscriptionTestPayload!` | intentionally_excluded | push subscription diagnostics are notification-device integration plumbing outside the CLI surface |
 | `rateLimitStatus` | `RateLimitPayload!` | implemented | root field used by local GraphQL operation |
-| `recentReleasesByAccessKey` | `[Release!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
+| `recentReleasesByAccessKey` | `[Release!]!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `release` | `Release!` | implemented | root field used by local GraphQL operation |
 | `releaseNote` | `ReleaseNote!` | implemented | root field used by local GraphQL operation |
 | `releaseNotes` | `ReleaseNoteConnection!` | implemented | root field used by local GraphQL operation |
 | `releasePipeline` | `ReleasePipeline!` | implemented | root field used by local GraphQL operation |
-| `releasePipelineByAccessKey` | `ReleasePipeline!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the token-scoped agent CLI |
+| `releasePipelineByAccessKey` | `ReleasePipeline!` | intentionally_excluded | access-key release reads are unauthenticated sharing surfaces outside the auth-scoped agent CLI |
 | `releasePipelines` | `ReleasePipelineConnection!` | implemented | root field used by local GraphQL operation |
 | `releaseSearch` | `[Release!]!` | implemented | root field used by local GraphQL operation |
 | `releaseStage` | `ReleaseStage!` | implemented | root field used by local GraphQL operation |
@@ -1345,8 +1345,8 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Domain | Command | Backing | Scope | Status | Evidence |
 | --- | --- | --- | --- | --- | --- |
 | Core target | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active token's organization, team, and optional project. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Core target | `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, token presence, and pinned-target confirmation. Does not print token values. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active auth credential's organization, team, and optional project. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Core target | `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, OAuth auth readiness, and pinned-target confirmation. Does not print secret values. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Core target | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Core target | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Core target | `organization labels` | `Organization.labels` via `Query.organization` | Read-only organization-level issue labels. | implemented | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
@@ -1765,4 +1765,3 @@ Statuses: `implemented`, `accepted_gap`, `safe_candidate`, `blocked_needs_design
 | Attachment | `attachment create` | `Mutation.attachmentCreate` | Blocked: attachment create must resolve and compare the owning issue's team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment update` | `Mutation.attachmentUpdate` | Blocked: update must resolve and compare the owning issue before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Attachment | `attachment delete` | `Mutation.attachmentDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-

@@ -421,6 +421,92 @@ List Linear audit entry types
 linctl audit-entry types
 ```
 
+### linctl auth
+
+Manage linctl OAuth authentication
+
+```
+linctl auth
+```
+
+### linctl auth app
+
+Authorize with OAuth client credentials as the app actor
+
+```
+linctl auth app [flags]
+```
+
+Flags:
+
+```
+      --client-id string       OAuth app client id
+      --client-secret string   OAuth app client secret
+      --scopes strings         OAuth scopes
+```
+
+### linctl auth configure
+
+Save OAuth app client configuration
+
+```
+linctl auth configure [flags]
+```
+
+Flags:
+
+```
+      --client-id string       OAuth app client id
+      --client-secret string   OAuth app client secret
+      --redirect-uri string    OAuth redirect URI
+      --scopes strings         OAuth scopes
+```
+
+### linctl auth login
+
+Authorize with OAuth browser login
+
+```
+linctl auth login [flags]
+```
+
+Flags:
+
+```
+      --actor string      OAuth actor: app or user (default "app")
+      --callback string   OAuth callback URL, authorization code, or '-' to read from stdin
+```
+
+### linctl auth logout
+
+Revoke OAuth tokens and remove local token state
+
+```
+linctl auth logout [flags]
+```
+
+Flags:
+
+```
+      --forget-app   also remove saved OAuth app configuration
+```
+
+### linctl auth refresh
+
+Refresh OAuth token state
+
+```
+linctl auth refresh
+```
+
+### linctl auth status
+
+Check OAuth token, actor, scopes, and target readiness
+
+```
+linctl auth status
+```
+
 ### linctl comment
 
 Read Linear comments

@@ -2,24 +2,34 @@
 # shellcheck shell=bash
 set -euo pipefail
 
-token="${LINCTL_TEST_TOKEN:-}"
-if [[ -z "$token" ]]; then
-  printf 'missing disposable Linear token: set LINCTL_TEST_TOKEN\n' >&2
-  exit 2
-fi
-
 if ! command -v python3 >/dev/null 2>&1; then
   printf 'python3 is required to run the live smoke harness\n' >&2
   exit 1
 fi
 
-export LINCTL_TEST_TOKEN="$token"
-export LINCTL_TOKEN="$token"
+required_oauth_env=(
+  LINCTL_OAUTH_CLIENT_ID
+  LINCTL_OAUTH_CLIENT_SECRET
+  LINCTL_OAUTH_REDIRECT_URI
+  LINCTL_OAUTH_SCOPES
+  LINCTL_OAUTH_EXPECTED_ACTOR
+)
+missing_oauth_env=()
+for key in "${required_oauth_env[@]}"; do
+  if [[ -z "${!key:-}" ]]; then
+    missing_oauth_env+=("$key")
+  fi
+done
+if ((${#missing_oauth_env[@]} > 0)); then
+  printf 'missing OAuth fixture env for live smoke: set %s\n' "${missing_oauth_env[*]}" >&2
+  exit 2
+fi
 
 binary="$(mktemp -t linctl-live-smoke.XXXXXX)"
 smoke_dir="$(mktemp -d -t linctl-live-smoke.XXXXXX)"
 trap 'rm -f "$binary"; rm -rf "$smoke_dir"' EXIT
 
+repo_root="$(pwd -P)"
 go build -trimpath -o "$binary" ./cmd/linctl
 # Resolve the pinned target from env vars first (the CI path, fed by repo
 # secrets), falling back to a local untracked config file for developer runs.
@@ -59,8 +69,89 @@ with open(output_path, "w", encoding="utf-8") as output:
 PY
 
 (
+  export XDG_CONFIG_HOME="$smoke_dir/config"
+  export XDG_STATE_HOME="$smoke_dir/state"
+  export LINCTL_BINARY="${binary}"
+
   cd "$smoke_dir"
+  run_allow_forbidden() {
+    local label="$1"
+    shift
+    local error_path="$smoke_dir/${label}.err"
+    if "$@" >/dev/null 2>"$error_path"; then
+      return 0
+    fi
+
+    local denied
+    denied="$(python3 - "$error_path" <<'PY'
+import json
+import sys
+
+denied = False
+with open(sys.argv[1], "r", encoding="utf-8") as error_file:
+    for line in error_file:
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        message = payload.get("message", "")
+        if "FORBIDDEN" in message or "Access denied" in message:
+            denied = True
+            break
+print("yes" if denied else "no")
+PY
+)"
+    if [[ "$denied" == "yes" ]]; then
+      return 0
+    fi
+
+    cat "$error_path" >&2
+    return 1
+  }
+  capture_allow_forbidden() {
+    local label="$1"
+    shift
+    local output_path="$smoke_dir/${label}.json"
+    local error_path="$smoke_dir/${label}.err"
+    if "$@" >"$output_path" 2>"$error_path"; then
+      cat "$output_path"
+      return 0
+    fi
+
+    local denied
+    denied="$(python3 - "$error_path" <<'PY'
+import json
+import sys
+
+denied = False
+with open(sys.argv[1], "r", encoding="utf-8") as error_file:
+    for line in error_file:
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        message = payload.get("message", "")
+        if "FORBIDDEN" in message or "Access denied" in message:
+            denied = True
+            break
+print("yes" if denied else "no")
+PY
+)"
+    if [[ "$denied" == "yes" ]]; then
+      printf '{"skipped_forbidden":true}\n'
+      return 0
+    fi
+
+    cat "$error_path" >&2
+    return 1
+  }
+
   "$binary" usage >/dev/null
+  LINCTL_BINARY="${binary}" go run github.com/go-task/task/v3/cmd/task@latest \
+    --taskfile "$repo_root/Taskfile.yml" \
+    --dir "$smoke_dir" \
+    live-oauth >/dev/null
+
   target_output="$smoke_dir/target.json"
   target_error="$smoke_dir/target.err"
   if "$binary" target --json >"$target_output" 2>"$target_error"; then
@@ -84,7 +175,7 @@ with open(sys.argv[1], "r", encoding="utf-8") as error_file:
 print(code)
 PY
 )"
-    printf 'live smoke target preflight failed (%s): LINCTL_TEST_TOKEN must match LINCTL_TEST_ORG_ID, LINCTL_TEST_TEAM_KEY, LINCTL_TEST_TEAM_ID, and optional LINCTL_TEST_PROJECT_ID.\n' "$target_code" >&2
+    printf 'live smoke target preflight failed (%s): OAuth fixture must match LINCTL_TEST_ORG_ID, LINCTL_TEST_TEAM_KEY, LINCTL_TEST_TEAM_ID, and optional LINCTL_TEST_PROJECT_ID.\n' "$target_code" >&2
     exit "$status"
   fi
   org_url_key="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["org"]["url_key"])' <<<"$target_json")"
@@ -107,7 +198,7 @@ PY
   if [[ -n "$agent_skill_id" ]]; then
     "$binary" agent-skill get "$agent_skill_id" --json >/dev/null
   fi
-  "$binary" audit-entry types --json >/dev/null
+  run_allow_forbidden audit-entry "$binary" audit-entry types --json
   "$binary" organization exists "$org_url_key" --json >/dev/null
   "$binary" organization labels --json --limit 5 >/dev/null
   "$binary" organization project-labels --json --limit 5 >/dev/null
@@ -234,7 +325,7 @@ PY
   project_status_json="$("$binary" project-status list --json --limit 5)"
   project_status_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("project_statuses", []); print(items[0]["id"] if items else "")' <<<"$project_status_json")"
   if [[ -n "$project_status_id" ]]; then
-    "$binary" project-status project-count "$project_status_id" --json >/dev/null
+    run_allow_forbidden project-status-count "$binary" project-status project-count "$project_status_id" --json
   fi
   "$binary" project-label list --json --limit 5 >/dev/null
   "$binary" project-relation list --json --limit 5 >/dev/null
@@ -319,7 +410,7 @@ PY
     "$binary" template get "$template_id" --json >/dev/null
     "$binary" issue create --template "$template_id" --section "Live smoke=verified" --dry-run --quiet
   fi
-  initiative_json="$("$binary" initiative list --json --limit 5)"
+  initiative_json="$(capture_allow_forbidden initiative-list "$binary" initiative list --json --limit 5)"
   initiative_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("initiatives", []); print(items[0]["id"] if items else "")' <<<"$initiative_json")"
   if [[ -n "$initiative_id" ]]; then
     "$binary" initiative history "$initiative_id" --json --limit 5 >/dev/null
@@ -329,9 +420,9 @@ PY
     "$binary" initiative documents "$initiative_id" --json --limit 5 >/dev/null
     "$binary" initiative projects "$initiative_id" --json --limit 5 >/dev/null
   fi
-  "$binary" initiative-relation list --json --limit 5 >/dev/null
-  "$binary" initiative-to-project list --json --limit 5 >/dev/null
-  initiative_update_json="$("$binary" initiative-update list --json --limit 5)"
+  run_allow_forbidden initiative-relation-list "$binary" initiative-relation list --json --limit 5
+  run_allow_forbidden initiative-to-project-list "$binary" initiative-to-project list --json --limit 5
+  initiative_update_json="$(capture_allow_forbidden initiative-update-list "$binary" initiative-update list --json --limit 5)"
   initiative_update_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("updates", []); print(items[0]["id"] if items else "")' <<<"$initiative_update_json")"
   if [[ -n "$initiative_update_id" ]]; then
     "$binary" initiative-update comments "$initiative_update_id" --json --limit 5 >/dev/null
@@ -356,14 +447,14 @@ PY
     "$binary" custom-view user-preferences values "$custom_view_id" --json >/dev/null
     "$binary" custom-view preference-values "$custom_view_id" --json >/dev/null
   fi
-  "$binary" customer list --json --limit 5 >/dev/null
-  customer_need_json="$("$binary" customer-need list --json --limit 5)"
+  run_allow_forbidden customer-list "$binary" customer list --json --limit 5
+  customer_need_json="$(capture_allow_forbidden customer-need-list "$binary" customer-need list --json --limit 5)"
   customer_need_id="$(python3 -c 'import json, sys; data=json.load(sys.stdin); items=data.get("customer_needs", []); print(items[0]["id"] if items else "")' <<<"$customer_need_json")"
   if [[ -n "$customer_need_id" ]]; then
     "$binary" customer-need project-attachment "$customer_need_id" --json >/dev/null
   fi
-  "$binary" customer-status list --json --limit 5 >/dev/null
-  "$binary" customer-tier list --json --limit 5 >/dev/null
+  run_allow_forbidden customer-status-list "$binary" customer-status list --json --limit 5
+  run_allow_forbidden customer-tier-list "$binary" customer-tier list --json --limit 5
   import_path="$smoke_dir/issue-import.json"
   python3 - "$import_path" "$team_key" <<'PY'
 import json
