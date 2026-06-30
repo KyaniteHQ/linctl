@@ -103,12 +103,23 @@ publish the GitHub artifacts (archives, SBOMs, `checksums.txt`, and a keyless co
 bundle) and update the `KyaniteHQ/homebrew-linctl` tap cask. The tap token must be provided as
 `HOMEBREW_TAP_GITHUB_TOKEN`.
 
+Before creating or pushing the tag, run the local non-publishing release preflight:
+
 ```bash
-git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z
+go tool task release-preflight
 ```
 
-To dry-run the build locally without publishing anything (no tag, no upload):
+The preflight runs the local CI gate, statement coverage, and `goreleaser check`.
+It does not create a tag, push to Git, publish a release, or require release
+secrets. If you want the heavier local artifact build as a final manual check,
+run the snapshot task. It also does not publish anything:
 
 ```bash
-goreleaser release --snapshot --clean
+go tool task release-snapshot
+```
+
+Only create and push the release tag after the preflight passes:
+
+```bash
+git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z
 ```

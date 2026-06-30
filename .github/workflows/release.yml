@@ -61,47 +61,8 @@ jobs:
           go-version-file: go.mod
           cache: true
           cache-dependency-path: go.sum
-      - name: Verify dependencies
-        run: |
-          go mod download
-          go mod verify
-      - name: Verify generated artifacts
-        run: |
-          go generate ./...
-          git diff --exit-code -- internal/client/generated.go
-          go run scripts/gen-skill.go
-          git diff --exit-code -- skills/linctl/references/commands.md
-          go run github.com/go-task/task/v3/cmd/task@latest graphql-operation-check
-          go run github.com/go-task/task/v3/cmd/task@latest coverage-ledger-check
-      - name: Vet
-        run: go vet $(bash scripts/go-packages.sh)
-      - name: Test
-        run: go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
-      - name: Coverage
-        run: bash scripts/coverage.sh
-      - name: Build
-        run: go build $(bash scripts/go-packages.sh)
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9.2.1
-        with:
-          version: v2.12.2
-          args: ./cmd/... ./internal/...
-      - name: Shellcheck
-        run: shellcheck scripts/*.sh
-      - name: Domain language
-        run: bash scripts/domain-language-check.sh
-      - name: Actionlint
-        env:
-          SHELLCHECK_OPTS: --exclude=SC2046
-        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
-      - name: Vulnerability scan
-        run: go tool govulncheck $(bash scripts/go-packages.sh)
-      - name: Verify GoReleaser config
-        uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
-        with:
-          distribution: goreleaser
-          version: v2.16.0
-          args: check
+      - name: Release preflight
+        run: go tool task release-preflight
 
   publish:
     name: publish
