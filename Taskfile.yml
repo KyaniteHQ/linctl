@@ -4,6 +4,7 @@ vars:
   BINARY: linctl
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+  GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
   INFISICAL_ENV: secrets
   INFISICAL_PATH: /linctl
 
@@ -206,6 +207,23 @@ tasks:
     desc: Build linctl
     cmds:
       - go build -trimpath -ldflags="-s -w" -o bin/{{.BINARY}} {{.PKG}}
+
+  goreleaser-check:
+    desc: Verify the GoReleaser configuration without publishing
+    cmds:
+      - go run {{.GORELEASER}} check
+
+  release-preflight:
+    desc: Run the non-publishing pre-tag release preflight
+    cmds:
+      - task: ci
+      - task: coverage
+      - task: goreleaser-check
+
+  release-snapshot:
+    desc: Optionally build a local GoReleaser snapshot without publishing
+    cmds:
+      - go run {{.GORELEASER}} release --snapshot --clean
 
   ci:
     desc: Run the local CI gate
