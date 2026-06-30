@@ -380,10 +380,7 @@ func Test_CliHelpers_clear_config_team_id_when_org_or_team_override_changes_targ
 func Test_CommandRuntime_loads_config_and_requires_token(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)
-	t.Setenv("HOME", t.TempDir())
-	t.Setenv("LINCTL_TOKEN", "")
-	t.Setenv("LINEAR_API_KEY", "")
-	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "")
+	configureTestAuthEnvironment(t)
 	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
 [target]
 org_id = "org-id"

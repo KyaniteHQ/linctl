@@ -20,7 +20,7 @@ import (
 func Test_CommandRuntime_builds_graphql_client_with_oauth_bearer_token(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)
-	t.Setenv("HOME", t.TempDir())
+	configureTestAuthEnvironment(t)
 	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "test-token")
 	t.Setenv("LINCTL_TOKEN", "legacy-token")
 	t.Setenv("LINEAR_API_KEY", "legacy-token")
@@ -97,16 +97,12 @@ func Test_CommandRuntime_requires_oauth_token(t *testing.T) {
 func Test_CommandRuntime_reports_local_auth_state_load_error_after_env_token(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)
-	root := t.TempDir()
+	paths := configureTestAuthEnvironment(t)
 	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "env-oauth-token")
-	t.Setenv("XDG_CONFIG_HOME", filepath.Join(root, "config"))
-	t.Setenv("XDG_STATE_HOME", filepath.Join(root, "state"))
-	paths, err := auth.DefaultPaths(nil)
-	require.NoError(t, err)
 	require.NoError(t, os.MkdirAll(filepath.Dir(paths.AppConfigPath), 0o700))
 	require.NoError(t, os.Mkdir(paths.AppConfigPath, 0o700))
 
-	_, err = newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
+	_, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
 
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "read auth app config")
