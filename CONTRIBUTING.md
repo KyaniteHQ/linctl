@@ -8,18 +8,27 @@ GraphQL schema.
 ```bash
 go generate ./...
 git diff --exit-code -- internal/client/generated.go
+go mod download
+go mod verify
+go mod tidy -diff
+go tool task fmt-check
 go build $(bash scripts/go-packages.sh)
 go vet $(bash scripts/go-packages.sh)
 go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
+shellcheck scripts/*.sh
 go tool govulncheck $(bash scripts/go-packages.sh)
-go run github.com/go-task/task/v3/cmd/task@latest actionlint
-go run github.com/go-task/task/v3/cmd/task@latest ci
-go run github.com/go-task/task/v3/cmd/task@latest coverage
+go tool task actionlint
+go tool task ci
+go tool task coverage
 ```
 
-`task ci` also validates local GraphQL operations and `docs/linear-api-coverage.md`
-against the upstream Linear SDK checkout. The shared source contract is:
+`go tool task ci` is the local review gate. It verifies module checksums and
+tidy state, formatting, generated artifacts, domain language, vet, tests, build,
+CLI smoke output, golangci-lint, ShellCheck, actionlint, and govulncheck without
+modifying source files. It also validates local GraphQL operations and
+`docs/linear-api-coverage.md` against the upstream Linear SDK checkout. The
+shared source contract is:
 
 - Remote: `https://github.com/linear/linear.git`
 - Default checkout: `/tmp/linctl-upstream-linear`
@@ -30,15 +39,19 @@ against the upstream Linear SDK checkout. The shared source contract is:
 Prepare or refresh the default checkout with:
 
 ```bash
-go run github.com/go-task/task/v3/cmd/task@latest linear-sdk-upstream-checkout
+go tool task linear-sdk-upstream-checkout
 ```
 
 If the default path is unavailable, use an override:
 
 ```bash
 LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear \
-go run github.com/go-task/task/v3/cmd/task@latest coverage-ledger-check
+go tool task coverage-ledger-check
 ```
+
+GitHub-only checks remain separate from `go tool task ci`: dependency review runs only
+on pull requests, coverage stays in `go tool task coverage`, and live OAuth/integration
+checks require disposable fixture credentials.
 
 Run live integration tests only with a disposable OAuth app fixture:
 
@@ -54,15 +67,15 @@ go test -count=1 -tags=integration ./internal/client
 The full live smoke harness is:
 
 ```bash
-go run github.com/go-task/task/v3/cmd/task@latest live-smoke
+go tool task live-smoke
 ```
 
 For the project Infisical setup, fixture secrets live under `/linctl`, not the
 root secret path. Use the pinned aliases so the folder is not easy to forget:
 
 ```bash
-go run github.com/go-task/task/v3/cmd/task@latest live-oauth-infisical
-go run github.com/go-task/task/v3/cmd/task@latest live-smoke-infisical
+go tool task live-oauth-infisical
+go tool task live-smoke-infisical
 ```
 
 Never run write tests against real project data. Test resources must use a `linctl-it-<runid>` prefix and

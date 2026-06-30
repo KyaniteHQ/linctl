@@ -17,6 +17,23 @@ tasks:
       - go tool gofumpt -w cmd internal scripts
       - go tool goimports -w -local "$(go list -m)" cmd internal scripts
 
+  fmt-check:
+    desc: Verify Go files are gofumpt formatted without modifying them
+    cmds:
+      - |
+        files="$(go tool gofumpt -l cmd internal scripts)"
+        if [[ -n "$files" ]]; then
+          printf '%s\n' "$files"
+          exit 1
+        fi
+
+  deps-check:
+    desc: Verify module downloads, checksums, and tidy state without modifying source
+    cmds:
+      - go mod download
+      - go mod verify
+      - go mod tidy -diff
+
   lint:
     desc: Run linters
     cmds:
@@ -101,6 +118,17 @@ tasks:
     cmds:
       - bash scripts/coverage.sh
 
+  smoke-run:
+    desc: Build and smoke-run the CLI help surface
+    cmds:
+      - |
+        bin="./bin/{{.BINARY}}-smoke$(go env GOEXE)"
+        go build -o "$bin" {{.PKG}}
+        "$bin" --version
+        "$bin" --help
+        "$bin" usage
+        "$bin" issue usage
+
   live-smoke:
     desc: Run opt-in live smoke tests against disposable Linear resources
     cmds:
@@ -132,7 +160,7 @@ tasks:
     cmds:
       - |
         infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
-          go run github.com/go-task/task/v3/cmd/task@latest \
+          go tool task \
             --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
             --dir "{{.TASKFILE_DIR}}" \
             browser-login-smoke -- {{.CLI_ARGS}}
@@ -142,7 +170,7 @@ tasks:
     cmds:
       - |
         infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
-          go run github.com/go-task/task/v3/cmd/task@latest \
+          go tool task \
             --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
             --dir "{{.TASKFILE_DIR}}" \
             live-oauth
@@ -152,7 +180,7 @@ tasks:
     cmds:
       - |
         infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
-          go run github.com/go-task/task/v3/cmd/task@latest \
+          go tool task \
             --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
             --dir "{{.TASKFILE_DIR}}" \
             live-smoke
@@ -169,6 +197,11 @@ tasks:
     cmds:
       - go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
 
+  shellcheck:
+    desc: Lint shell scripts
+    cmds:
+      - shellcheck scripts/*.sh
+
   build:
     desc: Build linctl
     cmds:
@@ -177,12 +210,16 @@ tasks:
   ci:
     desc: Run the local CI gate
     cmds:
+      - task: deps-check
+      - task: fmt-check
       - task: generate-check
       - task: domain-language-check
       - task: browser-login-smoke-check
       - task: vet
       - task: test
       - go build $(bash scripts/go-packages.sh)
+      - task: smoke-run
       - task: lint
+      - task: shellcheck
       - task: actionlint
       - task: vuln
