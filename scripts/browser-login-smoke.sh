@@ -228,7 +228,7 @@ run_self_test() {
   local self_path="$1"
   self_test_dir="$(mktemp -d -t linctl-browser-login-smoke-check.XXXXXX)"
   self_test_listener_pid=""
-  # shellcheck disable=SC2329 # Invoked by the EXIT trap below.
+  # shellcheck disable=SC2317,SC2329 # Invoked by the EXIT trap below.
   cleanup_self_test() {
     if [[ -n "${self_test_listener_pid:-}" ]]; then
       kill "$self_test_listener_pid" 2>/dev/null || true
@@ -480,7 +480,7 @@ read_manual_callback() {
   export XDG_STATE_HOME="$smoke_dir/state"
 
   callback_listener_pid=""
-  # shellcheck disable=SC2329 # Invoked by the EXIT trap below.
+  # shellcheck disable=SC2317,SC2329 # Invoked by the EXIT trap below.
   cleanup_listener() {
     if [[ -n "$callback_listener_pid" ]]; then
       kill "$callback_listener_pid" 2>/dev/null || true
