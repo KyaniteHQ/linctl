@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -33,6 +34,27 @@ func writeImportFile(t *testing.T, name string, content string) string {
 	require.NoError(t, os.WriteFile(path, []byte(content), 0o600))
 
 	return path
+}
+
+func writeImportDryRunConfig(t *testing.T, content string) string {
+	t.Helper()
+	dir := t.TempDir()
+	t.Chdir(dir)
+	configureTestAuthEnvironment(t)
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(content), 0o600))
+
+	return dir
+}
+
+func writePinnedImportDryRunConfig(t *testing.T) string {
+	t.Helper()
+
+	return writeImportDryRunConfig(t, `
+[target]
+org_id = "org-id"
+team_key = "LIT"
+team_id = "team-id"
+`)
 }
 
 func Test_dataFormat_resolves_and_rejects(t *testing.T) {
@@ -98,6 +120,7 @@ func Test_CommandFlows_issue_import_quiet_result(t *testing.T) {
 }
 
 func Test_CommandFlows_issue_import_dry_run_previews(t *testing.T) {
+	writePinnedImportDryRunConfig(t)
 	path := writeImportFile(t, "rows.json", `[{"title":"First","priority":"high","state":"started"}]`)
 
 	stdout, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path, "--dry-run"})
@@ -112,6 +135,102 @@ func Test_CommandFlows_issue_import_dry_run_previews(t *testing.T) {
 	quiet, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"--quiet", "issue", "import", path, "--dry-run"})
 	require.NoError(t, err)
 	require.Empty(t, quiet)
+}
+
+func Test_CommandFlows_issue_import_dry_run_does_not_build_auth_runtime(t *testing.T) {
+	writePinnedImportDryRunConfig(t)
+	path := writeImportFile(t, "rows.csv", "title,team\nFirst,LIT\n")
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, errors.New("runtime should not be built")
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	output := bytes.Buffer{}
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"issue", "import", path, "--dry-run"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), `would create "First"`)
+}
+
+func Test_CommandFlows_issue_import_dry_run_rejects_team_mismatch_locally(t *testing.T) {
+	writePinnedImportDryRunConfig(t)
+	path := writeImportFile(t, "rows.json", `[{"team":"OTH","title":"First"}]`)
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, errors.New("runtime should not be built")
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"issue", "import", path, "--dry-run"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "does not match pinned target team")
+}
+
+func Test_CommandFlows_issue_import_dry_run_requires_local_team_key(t *testing.T) {
+	writeImportDryRunConfig(t, `
+[target]
+org_id = "org-id"
+team_id = "team-id"
+`)
+	path := writeImportFile(t, "rows.json", `[{"title":"First"}]`)
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"issue", "import", path, "--dry-run"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.ErrorIs(t, err, client.ErrTargetNotConfigured)
+	require.Contains(t, err.Error(), "set team_key")
+}
+
+func Test_CommandFlows_issue_import_dry_run_surfaces_local_format_and_read_errors(t *testing.T) {
+	writePinnedImportDryRunConfig(t)
+
+	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", "rows.txt", "--dry-run"})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "unsupported data format")
+
+	_, err = runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", "missing.json", "--dry-run"})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "read missing.json")
+}
+
+func Test_CommandFlows_issue_import_dry_run_surfaces_config_load_error(t *testing.T) {
+	writeImportDryRunConfig(t, "[")
+	path := writeImportFile(t, "rows.json", `[{"title":"First"}]`)
+
+	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path, "--dry-run"})
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "parse config")
+}
+
+func Test_CommandFlows_issue_import_non_dry_run_still_uses_runtime(t *testing.T) {
+	path := writeImportFile(t, "rows.json", `[{"title":"First"}]`)
+	original := buildCommandRuntime
+	buildCommandRuntime = func(_ context.Context, _ *rootOptions) (commandRuntime, error) {
+		return commandRuntime{}, errors.New("runtime failed")
+	}
+	defer func() {
+		buildCommandRuntime = original
+	}()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetArgs([]string{"issue", "import", path})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "runtime failed")
 }
 
 func Test_CommandFlows_issue_import_rejects_team_mismatch(t *testing.T) {
@@ -172,6 +291,7 @@ func Test_CommandFlows_issue_import_surfaces_create_errors(t *testing.T) {
 }
 
 func Test_runIssueImport_surfaces_preview_writer_errors(t *testing.T) {
+	writePinnedImportDryRunConfig(t)
 	path := writeImportFile(t, "rows.json", `[{"title":"First"}]`)
 	restore := useCommandRuntime(t, commandFlowFakeClient{})
 	defer restore()
