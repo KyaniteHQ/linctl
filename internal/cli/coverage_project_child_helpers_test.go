@@ -225,13 +225,6 @@ func Test_ProjectHistoryWriter_covers_output_modes(t *testing.T) {
 	}
 }
 
-func Test_ProjectChildListCommand_rejects_unsupported_writer_signature(t *testing.T) {
-	err := writeChildListItem(&cobra.Command{}, &rootOptions{}, "not a writer", struct{}{})
-
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unsupported signature")
-}
-
 func Test_CommandFlows_project_child_lists_route_output_policy(t *testing.T) {
 	tests := []struct {
 		name       string

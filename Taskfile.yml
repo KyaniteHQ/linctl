@@ -58,14 +58,31 @@ tasks:
       - task: gen-skill
       - git diff --exit-code -- skills/linctl/references/commands.md
       - go run scripts/linear_api_coverage*.go -h >/dev/null
-      - task: graphql-operation-check
-      - task: coverage-ledger-check
+      - |
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
+        upstream_root=""
+        if [[ -z "$upstream" ]]; then
+          upstream_root="$(mktemp -d)"
+          upstream="$upstream_root/linear"
+        fi
+        tmp="$(mktemp)"
+        cleanup() {
+          rm -f "$tmp"
+          if [[ -n "$upstream_root" ]]; then
+            rm -rf "$upstream_root"
+          fi
+        }
+        trap cleanup EXIT
+        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
+        go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
+        go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
+        diff -u docs/linear-api-coverage.md "$tmp"
 
   linear-sdk-upstream-checkout:
     desc: Clone or refresh the upstream Linear SDK checkout used by schema and coverage checks
     cmds:
       - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-/tmp/linctl-upstream-linear}"
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:?set LINCTL_LINEAR_SDK_UPSTREAM to a run-local Linear SDK checkout path}"
         remote="https://github.com/linear/linear.git"
         ref="${LINCTL_LINEAR_SDK_REF:-master}"
         if [[ ! -e "$upstream" ]]; then
@@ -88,20 +105,42 @@ tasks:
   coverage-ledger-check:
     desc: Verify the generated Linear API coverage ledger against the upstream SDK checkout
     cmds:
-      - task: linear-sdk-upstream-checkout
       - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-/tmp/linctl-upstream-linear}"
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
+        upstream_root=""
+        if [[ -z "$upstream" ]]; then
+          upstream_root="$(mktemp -d)"
+          upstream="$upstream_root/linear"
+        fi
         tmp="$(mktemp)"
-        trap 'rm -f "$tmp"' EXIT
+        cleanup() {
+          rm -f "$tmp"
+          if [[ -n "$upstream_root" ]]; then
+            rm -rf "$upstream_root"
+          fi
+        }
+        trap cleanup EXIT
+        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
         go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
         diff -u docs/linear-api-coverage.md "$tmp"
 
   graphql-operation-check:
     desc: Validate local GraphQL operations against the upstream Linear SDK schema
     cmds:
-      - task: linear-sdk-upstream-checkout
       - |
-        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-/tmp/linctl-upstream-linear}"
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
+        upstream_root=""
+        if [[ -z "$upstream" ]]; then
+          upstream_root="$(mktemp -d)"
+          upstream="$upstream_root/linear"
+        fi
+        cleanup() {
+          if [[ -n "$upstream_root" ]]; then
+            rm -rf "$upstream_root"
+          fi
+        }
+        trap cleanup EXIT
+        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
         go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
 
   domain-language-check:

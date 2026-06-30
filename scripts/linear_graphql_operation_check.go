@@ -15,12 +15,14 @@ import (
 	"github.com/vektah/gqlparser/v2/validator"
 )
 
-const defaultLinearUpstreamDir = "/tmp/linctl-upstream-linear"
-
 func main() {
-	upstreamDir := flag.String("upstream", defaultLinearUpstreamDir, "upstream Linear repo checkout")
+	upstreamDir := flag.String("upstream", "", "required upstream Linear repo checkout")
 	operationsPattern := flag.String("operations", "internal/client/operations/*.graphql", "local GraphQL operations glob")
 	flag.Parse()
+
+	if *upstreamDir == "" {
+		exitError(fmt.Errorf("missing -upstream: set it to a Linear SDK checkout path"))
+	}
 
 	schemaPath := filepath.Join(*upstreamDir, "packages/sdk/src/schema.graphql")
 	schema, err := validator.LoadSchema(

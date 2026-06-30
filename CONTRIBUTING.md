@@ -31,22 +31,23 @@ modifying source files. It also validates local GraphQL operations and
 shared source contract is:
 
 - Remote: `https://github.com/linear/linear.git`
-- Default checkout: `/tmp/linctl-upstream-linear`
+- Default checkout: run-local temporary checkout managed by Taskfile
 - Default ref: `master`
-- Override path: `LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear`
+- Reusable checkout: `LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear`
 - Override ref: `LINCTL_LINEAR_SDK_REF=<branch-or-tag>`
 
-Prepare or refresh the default checkout with:
-
-```bash
-go tool task linear-sdk-upstream-checkout
-```
-
-If the default path is unavailable, use an override:
+Prepare or refresh an explicit reusable checkout with:
 
 ```bash
 LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear \
-go tool task coverage-ledger-check
+go tool task linear-sdk-upstream-checkout
+```
+
+To skip Taskfile and run the helper scripts directly, pass `-upstream`:
+
+```bash
+go run scripts/linear_graphql_operation_check.go -upstream /path/to/linear
+go run scripts/linear_api_coverage*.go -upstream /path/to/linear
 ```
 
 GitHub-only checks remain separate from `go tool task ci`: dependency review runs only

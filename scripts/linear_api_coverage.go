@@ -49,13 +49,15 @@ type domainReference struct {
 	OperationName string
 }
 
-const defaultUpstreamDir = "/tmp/linctl-upstream-linear"
-
 func main() {
-	upstreamDir := flag.String("upstream", defaultUpstreamDir, "upstream linear repo checkout")
+	upstreamDir := flag.String("upstream", "", "required upstream linear repo checkout")
 	outputPath := flag.String("output", "docs/linear-api-coverage.md", "coverage ledger path")
 	operationAuditPath := flag.String("operation-audit", "", "optional SDK operation audit output path")
 	flag.Parse()
+
+	if *upstreamDir == "" {
+		fail(fmt.Errorf("missing -upstream: set it to a Linear SDK checkout path"))
+	}
 
 	upstreamSchemaPath := filepath.Join(*upstreamDir, "packages/sdk/src/schema.graphql")
 	upstreamSDKPath := filepath.Join(*upstreamDir, "packages/sdk/src/_generated_sdk.ts")
