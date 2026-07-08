@@ -93,9 +93,10 @@ go generate ./...
 ```
 
 `scripts/refresh-schema.sh` uses the repo-managed `graphql` dependency from
-`package-lock.json`. Set `LINCTL_OAUTH_ACCESS_TOKEN` for the command, but never
-print or paste the token value into logs. Generated code must be committed with
-the operation that requires it.
+`package-lock.json` and requires Node 22 or newer. Set
+`LINCTL_OAUTH_ACCESS_TOKEN` for the command, but never print or paste the token
+value into logs. Generated code must be committed with the operation that
+requires it.
 
 ## Releases
 

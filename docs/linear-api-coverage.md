@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `d4b9532`.
+Generated from current local sources and upstream Linear SDK commit `1e4336d`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,9 +16,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 458 | 133 | 458 |
-| Upstream Query root fields used by generated local operations | 159 | 113 | 159 |
-| Upstream Mutation root fields used by generated local operations | 365 | 21 | 365 |
+| Upstream SDK root methods with generated local operations | 466 | 133 | 466 |
+| Upstream Query root fields used by generated local operations | 162 | 113 | 162 |
+| Upstream Mutation root fields used by generated local operations | 370 | 21 | 370 |
 | Local generated Go operations declared in GraphQL files | 332 | 332 | 332 |
 | Public CLI commands from command inventory | 421 | 295 | 421 |
 
@@ -99,6 +99,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `createGitAutomationState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createGitAutomationTargetBranch` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiative` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createInitiativeLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeToProject` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createInitiativeUpdate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -171,6 +172,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `deleteGitAutomationState` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteGitAutomationTargetBranch` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteInitiative` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `deleteInitiativeLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteInitiativeRelation` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteInitiativeToProject` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteIntegration` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -228,6 +230,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `imageUploadFromUrl` | method | blocked_needs_design | mutation needs product and safety design |
 | `importFileUpload` | method | blocked_needs_design | mutation needs product and safety design |
 | `initiative` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeFilterSuggestion` | method | safe_candidate | read operation may fit future CLI coverage |
+| `initiativeLabel` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabelRestore` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabelRetire` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabels` | method | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeRelations` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeToProject` | method | generated_operation | local GraphQL operation uses this root |
@@ -429,6 +436,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `updateGitAutomationState` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateGitAutomationTargetBranch` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateInitiative` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `updateInitiativeLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateInitiativeRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateInitiativeToProject` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateInitiativeUpdate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -542,6 +550,9 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `favorites` | `FavoriteConnection!` | generated_operation | root field used by local GraphQL operation |
 | `fetchData` | `FetchDataPayload!` | safe_candidate | read operation may fit future CLI coverage |
 | `initiative` | `Initiative!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeFilterSuggestion` | `InitiativeFilterSuggestionPayload!` | safe_candidate | read operation may fit future CLI coverage |
+| `initiativeLabel` | `InitiativeLabel!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabels` | `InitiativeLabelConnection!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeLeadTeamChangeImpact` | `InitiativeLeadTeamChangeImpact!` | accepted_gap | repo-planned or likely useful CLI domain |
 | `initiativeRelation` | `InitiativeRelation!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeRelations` | `InitiativeRelationConnection!` | generated_operation | root field used by local GraphQL operation |
@@ -753,7 +764,12 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeArchive` | `InitiativeArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeCreate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `initiativeLeadTeamUpdate` | `InitiativePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeLabelCreate` | `InitiativeLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `initiativeLabelRestore` | `InitiativeLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabelRetire` | `InitiativeLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabelUpdate` | `InitiativeLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `initiativeLeadTeamUpdate` | `InitiativeLeadTeamUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationCreate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `initiativeRelationUpdate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |

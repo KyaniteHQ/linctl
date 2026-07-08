@@ -3,6 +3,9 @@
   "private": true,
   "description": "Maintenance tooling dependencies for linctl.",
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "graphql": "16.14.2"
   }
