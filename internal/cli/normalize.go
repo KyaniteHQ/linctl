@@ -28,7 +28,7 @@ var stateTypeAliases = map[string]string{
 	"unstarted":   "unstarted",
 	"started":     "started",
 	"completed":   "completed",
-	"cancelled":   "cancelled",
+	"canceled":    "canceled",
 	"todo":        "unstarted",
 	"to do":       "unstarted",
 	"in progress": "started",
@@ -36,10 +36,10 @@ var stateTypeAliases = map[string]string{
 	"done":        "completed",
 	"complete":    "completed",
 	"closed":      "completed",
-	"canceled":    "cancelled",
-	"wont do":     "cancelled",
-	"wont-do":     "cancelled",
-	"won't do":    "cancelled",
+	"cancelled":   "canceled",
+	"wont do":     "canceled",
+	"wont-do":     "canceled",
+	"won't do":    "canceled",
 }
 
 var healthAliases = map[string]string{
@@ -85,7 +85,7 @@ func normalizedStateType(raw string) (value string, changed bool, err error) {
 	canonical, ok := stateTypeAliases[key]
 	if !ok {
 		return "", false, fmt.Errorf(
-			"unknown state type %q: use triage/backlog/unstarted/started/completed/cancelled",
+			"unknown state type %q: use triage/backlog/unstarted/started/completed/canceled",
 			raw,
 		)
 	}

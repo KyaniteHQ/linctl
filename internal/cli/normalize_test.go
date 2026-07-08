@@ -60,7 +60,7 @@ func Test_normalizedStateType_maps_all_aliases(t *testing.T) {
 		{raw: "unstarted", expected: "unstarted", changed: false},
 		{raw: "started", expected: "started", changed: false},
 		{raw: "completed", expected: "completed", changed: false},
-		{raw: "cancelled", expected: "cancelled", changed: false},
+		{raw: "canceled", expected: "canceled", changed: false},
 		// aliases
 		{raw: "todo", expected: "unstarted", changed: true},
 		{raw: "to do", expected: "unstarted", changed: true},
@@ -69,10 +69,10 @@ func Test_normalizedStateType_maps_all_aliases(t *testing.T) {
 		{raw: "done", expected: "completed", changed: true},
 		{raw: "complete", expected: "completed", changed: true},
 		{raw: "closed", expected: "completed", changed: true},
-		{raw: "canceled", expected: "cancelled", changed: true},
-		{raw: "wont do", expected: "cancelled", changed: true},
-		{raw: "wont-do", expected: "cancelled", changed: true},
-		{raw: "won't do", expected: "cancelled", changed: true},
+		{raw: "cancelled", expected: "canceled", changed: true},
+		{raw: "wont do", expected: "canceled", changed: true},
+		{raw: "wont-do", expected: "canceled", changed: true},
+		{raw: "won't do", expected: "canceled", changed: true},
 		// case-folding
 		{raw: "TODO", expected: "unstarted", changed: true},
 		{raw: "  Started  ", expected: "started", changed: true},
