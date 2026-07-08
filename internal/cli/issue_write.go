@@ -65,6 +65,7 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
 	command.Flags().IntVar(&flags.estimate, "estimate", 0, "set the estimate (validated against team config)")
 	command.Flags().StringVar(&request.ParentID, "parent", "", "create as a sub-issue of a parent issue id")
+	command.Flags().StringVar(&request.ProjectMilestoneID, "milestone", "", "assign to a project milestone id (requires a pinned project)")
 	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
 }

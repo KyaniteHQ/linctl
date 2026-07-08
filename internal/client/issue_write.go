@@ -15,15 +15,16 @@ import (
 
 // IssueCreateRequest describes a guarded issue create.
 type IssueCreateRequest struct {
-	Title       string
-	Description string
-	StateType   string
-	Priority    string
-	AssigneeID  string
-	LabelIDs    []string
-	DueDate     string
-	Estimate    *int
-	ParentID    string
+	Title              string
+	Description        string
+	StateType          string
+	Priority           string
+	AssigneeID         string
+	LabelIDs           []string
+	DueDate            string
+	Estimate           *int
+	ParentID           string
+	ProjectMilestoneID string
 }
 
 // IssueUpdateRequest describes a guarded issue update.
@@ -59,17 +60,18 @@ type IssueCommentResult struct {
 
 // LinearIssueCreateInput is the sparse Linear issueCreate payload linctl supports.
 type LinearIssueCreateInput struct {
-	Title       *string  `json:"title,omitempty"`
-	Description *string  `json:"description,omitempty"`
-	TeamID      string   `json:"teamId"`
-	ProjectID   *string  `json:"projectId,omitempty"`
-	StateID     *string  `json:"stateId,omitempty"`
-	Priority    *int     `json:"priority,omitempty"`
-	AssigneeID  *string  `json:"assigneeId,omitempty"`
-	LabelIDs    []string `json:"labelIds,omitempty"`
-	DueDate     *string  `json:"dueDate,omitempty"`
-	Estimate    *int     `json:"estimate,omitempty"`
-	ParentID    *string  `json:"parentId,omitempty"`
+	Title              *string  `json:"title,omitempty"`
+	Description        *string  `json:"description,omitempty"`
+	TeamID             string   `json:"teamId"`
+	ProjectID          *string  `json:"projectId,omitempty"`
+	StateID            *string  `json:"stateId,omitempty"`
+	Priority           *int     `json:"priority,omitempty"`
+	AssigneeID         *string  `json:"assigneeId,omitempty"`
+	LabelIDs           []string `json:"labelIds,omitempty"`
+	DueDate            *string  `json:"dueDate,omitempty"`
+	Estimate           *int     `json:"estimate,omitempty"`
+	ParentID           *string  `json:"parentId,omitempty"`
+	ProjectMilestoneID *string  `json:"projectMilestoneId,omitempty"`
 }
 
 // LinearIssueUpdateInput is the sparse Linear issueUpdate payload linctl supports.
@@ -117,17 +119,21 @@ func CreateIssue(
 			}
 		}
 		input := LinearIssueCreateInput{
-			Title:       stringPtr(request.Title),
-			Description: optionalString(request.Description),
-			TeamID:      guard.target.Team.ID,
-			AssigneeID:  optionalString(request.AssigneeID),
-			LabelIDs:    request.LabelIDs,
-			DueDate:     optionalString(request.DueDate),
-			Estimate:    request.Estimate,
-			ParentID:    optionalString(request.ParentID),
+			Title:              stringPtr(request.Title),
+			Description:        optionalString(request.Description),
+			TeamID:             guard.target.Team.ID,
+			AssigneeID:         optionalString(request.AssigneeID),
+			LabelIDs:           request.LabelIDs,
+			DueDate:            optionalString(request.DueDate),
+			Estimate:           request.Estimate,
+			ParentID:           optionalString(request.ParentID),
+			ProjectMilestoneID: optionalString(request.ProjectMilestoneID),
 		}
 		if guard.target.Project != nil {
 			input.ProjectID = stringPtr(guard.target.Project.ID)
+		}
+		if request.ProjectMilestoneID != "" && guard.target.Project == nil {
+			return IssueSummary{}, fmt.Errorf("%w: --milestone requires a pinned project", ErrWriteInvalid)
 		}
 		if request.StateType != "" {
 			stateID, stateErr := firstStateIDOfType(ctx, graphqlClient, guard.target.Team.ID, request.StateType)
