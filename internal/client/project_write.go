@@ -13,6 +13,7 @@ import (
 type ProjectCreateRequest struct {
 	Name        string
 	Description string
+	Content     string
 }
 
 // ProjectUpdateRequest describes a guarded project update.
@@ -20,12 +21,14 @@ type ProjectUpdateRequest struct {
 	ID          string
 	Name        string
 	Description string
+	Content     string
 }
 
 // LinearProjectCreateInput is the sparse Linear projectCreate payload linctl supports.
 type LinearProjectCreateInput struct {
 	Name        string   `json:"name"`
 	Description *string  `json:"description,omitempty"`
+	Content     *string  `json:"content,omitempty"`
 	TeamIDs     []string `json:"teamIds"`
 }
 
@@ -33,6 +36,7 @@ type LinearProjectCreateInput struct {
 type LinearProjectUpdateInput struct {
 	Name        *string  `json:"name,omitempty"`
 	Description *string  `json:"description,omitempty"`
+	Content     *string  `json:"content,omitempty"`
 	TeamIDs     []string `json:"teamIds,omitempty"`
 }
 
@@ -51,6 +55,7 @@ func CreateProject(
 		created, err := ProjectCreate(ctx, graphqlClient, LinearProjectCreateInput{
 			Name:        request.Name,
 			Description: optionalString(request.Description),
+			Content:     optionalString(request.Content),
 			TeamIDs:     []string{guard.target.Team.ID},
 		})
 		if err != nil {
@@ -83,6 +88,7 @@ func UpdateProject(
 		updated, err := ProjectUpdate(ctx, graphqlClient, request.ID, LinearProjectUpdateInput{
 			Name:        optionalString(request.Name),
 			Description: optionalString(request.Description),
+			Content:     optionalString(request.Content),
 		})
 		if err != nil {
 			return ProjectSummary{}, fmt.Errorf("update project %s: %w", request.ID, err)
@@ -123,8 +129,8 @@ func validateProjectUpdateRequest(request ProjectUpdateRequest) error {
 	if request.ID == "" {
 		return fmt.Errorf("%w: project id is required", ErrWriteInvalid)
 	}
-	if request.Name == "" && request.Description == "" {
-		return fmt.Errorf("%w: name or description is required", ErrWriteInvalid)
+	if request.Name == "" && request.Description == "" && request.Content == "" {
+		return fmt.Errorf("%w: name, description, or content is required", ErrWriteInvalid)
 	}
 
 	return nil

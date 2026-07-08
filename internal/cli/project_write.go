@@ -2,14 +2,35 @@ package cli
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
+// resolveProjectContent loads content from contentFile when set, guarding against
+// passing both --content and --content-file.
+func resolveProjectContent(content *string, contentFile string) error {
+	if contentFile == "" {
+		return nil
+	}
+	if *content != "" {
+		return fmt.Errorf("%w: use --content or --content-file, not both", client.ErrWriteInvalid)
+	}
+	data, err := os.ReadFile(contentFile)
+	if err != nil {
+		return fmt.Errorf("read content file %s: %w", contentFile, err)
+	}
+	*content = string(data)
+
+	return nil
+}
+
 func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.ProjectCreateRequest{}
+	var contentFile string
 	command := &cobra.Command{
 		Use:   "create",
 		Short: "Create a project in the pinned team",
@@ -19,17 +40,23 @@ func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
+			if err := resolveProjectContent(&request.Content, contentFile); err != nil {
+				return err
+			}
 
 			return runProjectCreate(ctx, command, options, commandAdapterFor(runtime), request)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "project name")
 	command.Flags().StringVar(&request.Description, "description", "", "project description")
+	command.Flags().StringVar(&request.Content, "content", "", "project content as markdown")
+	command.Flags().StringVar(&contentFile, "content-file", "", "read project content markdown from a file")
 	root.AddCommand(command)
 }
 
 func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.ProjectUpdateRequest{}
+	var contentFile string
 	command := &cobra.Command{
 		Use:   "update PROJECT_ID",
 		Short: "Update a project after pinned-target comparison",
@@ -40,12 +67,17 @@ func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 			request.ID = args[0]
+			if err := resolveProjectContent(&request.Content, contentFile); err != nil {
+				return err
+			}
 
 			return runProjectUpdate(ctx, command, options, commandAdapterFor(runtime), request)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "new project name")
 	command.Flags().StringVar(&request.Description, "description", "", "new project description")
+	command.Flags().StringVar(&request.Content, "content", "", "new project content as markdown")
+	command.Flags().StringVar(&contentFile, "content-file", "", "read new project content markdown from a file")
 	root.AddCommand(command)
 }
 
