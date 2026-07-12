@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -61,12 +60,4 @@ func loadTeamMembership(
 	id string,
 ) (client.TeamMembershipSummary, error) {
 	return client.GetTeamMembershipByID(ctx, runtime.graphqlClient, id)
-}
-
-func teamMembershipPageWithItems(
-	page client.TeamMembershipList,
-	memberships []client.TeamMembershipSummary,
-) client.TeamMembershipList {
-	page.Memberships = memberships
-	return page
 }

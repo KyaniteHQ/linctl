@@ -11,7 +11,15 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
+type renderWriterCase struct {
+	name  string
+	item  any
+	write func(*cobra.Command, *rootOptions) error
+	text  string
+}
+
+//nolint:maintidx // One row per render writer; the table is long but flat.
+func renderWriterCases() []renderWriterCase {
 	issue := client.IssueSummary{
 		Identifier: "LIT-1",
 		Title:      "Ship coverage",
@@ -413,259 +421,560 @@ func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
 		ReleaseCount: 2,
 	}
 
-	textOut := bytes.Buffer{}
-	textCommand := &cobra.Command{}
-	textCommand.SetOut(&textOut)
-	textOptions := rootOptions{}
+	return []renderWriterCase{
+		{
+			name:  "Issue",
+			item:  issue,
+			write: func(command *cobra.Command, options *rootOptions) error { return writeIssue(command, options, issue) },
+			text:  "LIT-1 Ship coverage [Todo]\n",
+		},
+		{
+			name: "IssueBotActor",
+			item: issueBotActor,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeIssueBotActor(command, options, issueBotActor)
+			},
+			text: "issue-id bot bot-actor-id GitHub [github]\n",
+		},
+		{
+			name: "IssueBotActor 2",
+			item: client.IssueBotActor{IssueID: "plain-issue-id"},
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeIssueBotActor(command, options, client.IssueBotActor{IssueID: "plain-issue-id"})
+			},
+			text: "plain-issue-id bot -\n",
+		},
+		{
+			name: "IssueStateSpan",
+			item: issueStateSpan,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeIssueStateSpan(command, options, issueStateSpan)
+			},
+			text: "issue-state-span-id Started started 2026-06-19T12:00:00Z -> -\n",
+		},
+		{
+			name:  "Cycle",
+			item:  cycle,
+			write: func(command *cobra.Command, options *rootOptions) error { return writeCycle(command, options, cycle) },
+			text:  "cycle-id Planning cycle [active]\n",
+		},
+		{
+			name: "Project",
+			item: project,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeProject(command, options, project)
+			},
+			text: "project-id Coverage [Backlog]\n",
+		},
+		{
+			name: "ProjectUpdate",
+			item: projectUpdate,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeProjectUpdate(command, options, projectUpdate)
+			},
+			text: "project-update-id onTrack Omer First update\n",
+		},
+		{
+			name: "ProjectMilestone",
+			item: milestone,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeProjectMilestone(command, options, milestone)
+			},
+			text: "project-milestone-id Launch milestone [next]\n",
+		},
+		{
+			name: "ProjectStatus",
+			item: projectStatus,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeProjectStatus(command, options, projectStatus)
+			},
+			text: "project-status-id Backlog [backlog] #bec2c8\n",
+		},
+		{
+			name: "ProjectStatusProjectCount",
+			item: projectStatusProjectCount,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeProjectStatusProjectCount(command, options, projectStatusProjectCount)
+			},
+			text: "project-status-id count 12 private 2 archived_team 1\n",
+		},
+		{
+			name: "ProjectLabel",
+			item: projectLabel,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeProjectLabel(command, options, projectLabel)
+			},
+			text: "project-label-id Roadmap #f2c94c\n",
+		},
+		{
+			name: "ProjectRelation",
+			item: projectRelation,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeProjectRelation(command, options, projectRelation)
+			},
+			text: "project-relation-id blocks Pinned project -> Related project\n",
+		},
+		{
+			name: "IssueRelation",
+			item: issueRelation,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeIssueRelation(command, options, issueRelation)
+			},
+			text: "issue-relation-id blocks LIT-1 -> LIT-2\n",
+		},
+		{
+			name: "IssueToRelease",
+			item: issueToRelease,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeIssueToRelease(command, options, issueToRelease)
+			},
+			text: "issue-to-release-id issue issue-id -> release release-id\n",
+		},
+		{
+			name: "Document",
+			item: document,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeDocument(command, options, document)
+			},
+			text: "document-id Spec [project]\n",
+		},
+		{
+			name:  "Label",
+			item:  label,
+			write: func(command *cobra.Command, options *rootOptions) error { return writeLabel(command, options, label) },
+			text:  "label-id Bug #ff0000\n",
+		},
+		{
+			name:  "Team",
+			item:  team,
+			write: func(command *cobra.Command, options *rootOptions) error { return writeTeam(command, options, team) },
+			text:  "team-id LIT linctl\n",
+		},
+		{
+			name: "TeamMembership",
+			item: teamMembership,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeTeamMembership(command, options, teamMembership)
+			},
+			text: "team-membership-id LIT Omer owner true order 1.50\n",
+		},
+		{
+			name: "GitAutomationState",
+			item: gitAutomationState,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeGitAutomationState(command, options, gitAutomationState)
+			},
+			text: "git-automation-state-id review state Started target main\n",
+		},
+		{
+			name:  "User",
+			item:  user,
+			write: func(command *cobra.Command, options *rootOptions) error { return writeUser(command, options, user) },
+			text:  "user-id Omer <omer@example.com>\n",
+		},
+		{
+			name:  "Draft",
+			item:  draft,
+			write: func(command *cobra.Command, options *rootOptions) error { return writeDraft(command, options, draft) },
+			text:  "draft-id issue LIT-3 Draft issue\n",
+		},
+		{
+			name: "Comment",
+			item: comment,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeComment(command, options, comment)
+			},
+			text: "comment-id Omer First comment\n",
+		},
+		{
+			name: "CommentMetadata",
+			item: commentMetadata,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCommentMetadata(command, options, commentMetadata)
+			},
+			text: "comment-id Omer 2026-06-19T12:00:00Z\n",
+		},
+		{
+			name: "CommentBotActor",
+			item: commentBotActor,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCommentBotActor(command, options, commentBotActor)
+			},
+			text: "comment-id bot bot-actor-id GitHub [github]\n",
+		},
+		{
+			name: "CommentBotActor 2",
+			item: client.CommentBotActor{CommentID: "plain-comment-id"},
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCommentBotActor(command, options, client.CommentBotActor{CommentID: "plain-comment-id"})
+			},
+			text: "plain-comment-id bot -\n",
+		},
+		{
+			name: "WorkflowState",
+			item: workflowState,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeWorkflowState(command, options, workflowState)
+			},
+			text: "workflow-state-id Started [started]\n",
+		},
+		{
+			name: "TimeSchedule",
+			item: timeSchedule,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeTimeSchedule(command, options, timeSchedule)
+			},
+			text: "time-schedule-id Primary on-call entries 1\n",
+		},
+		{
+			name: "Template",
+			item: template,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeTemplate(command, options, template)
+			},
+			text: "template-id Bug report [issue] team LIT\n",
+		},
+		{
+			name: "Initiative",
+			item: initiative,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeInitiative(command, options, initiative)
+			},
+			text: "initiative-id Platform [Active]\n",
+		},
+		{
+			name: "InitiativeHistory",
+			item: initiativeHistory,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeInitiativeHistory(command, options, initiativeHistory)
+			},
+			text: "initiative-history-id initiative initiative-id entries 1\n",
+		},
+		{
+			name: "InitiativeRelation",
+			item: initiativeRelation,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeInitiativeRelation(command, options, initiativeRelation)
+			},
+			text: "initiative-relation-id Platform -> Child initiative order 1.50\n",
+		},
+		{
+			name: "InitiativeToProject",
+			item: initiativeToProject,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeInitiativeToProject(command, options, initiativeToProject)
+			},
+			text: "initiative-to-project-id Platform -> Pinned project order 1\n",
+		},
+		{
+			name: "RoadmapToProject",
+			item: roadmapToProject,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeRoadmapToProject(command, options, roadmapToProject)
+			},
+			text: "roadmap-to-project-id Platform roadmap -> Pinned project order 1 [legacy]\n",
+		},
+		{
+			name: "InitiativeUpdate",
+			item: initiativeUpdate,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeInitiativeUpdate(command, options, initiativeUpdate)
+			},
+			text: "initiative-update-id onTrack Omer First initiative update\n",
+		},
+		{
+			name: "Roadmap",
+			item: roadmap,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeRoadmap(command, options, roadmap)
+			},
+			text: "roadmap-id Platform roadmap platform-roadmap [legacy]\n",
+		},
+		{
+			name: "CustomView",
+			item: customView,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomView(command, options, customView)
+			},
+			text: "custom-view-id My issues [Issue]\n",
+		},
+		{
+			name: "CustomViewSubscriberStatus",
+			item: customViewSubscriberStatus,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomViewSubscriberStatus(command, options, customViewSubscriberStatus)
+			},
+			text: "custom-view-id has_subscribers true\n",
+		},
+		{
+			name: "CustomViewPreferences",
+			item: customViewPreferences,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomViewPreferences(command, options, customViewPreferences)
+			},
+			text: "custom-view-id organization preferences organization customView layout list\n",
+		},
+		{
+			name: "CustomViewPreferenceValues",
+			item: customViewPreferenceValues,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomViewPreferenceValues(command, options, customViewPreferenceValues)
+			},
+			text: "custom-view-id preference values layout board ordering updatedAt\n",
+		},
+		{
+			name: "CustomViewPreferences 2",
+			item: client.CustomViewPreferences{CustomViewID: "empty-custom-view-id"},
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomViewPreferences(command, options, client.CustomViewPreferences{CustomViewID: "empty-custom-view-id"})
+			},
+			text: "empty-custom-view-id organization preferences -\n",
+		},
+		{
+			name: "SLAConfiguration",
+			item: slaConfiguration,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeSLAConfiguration(command, options, slaConfiguration)
+			},
+			text: "sla-configuration-id First response sla 3600000 type all removes false\n",
+		},
+		{
+			name: "SLAConfiguration 2",
+			item: client.SLAConfigurationSummary{ID: "sla-remove-id", Name: "Remove SLA", RemovesSLA: true},
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeSLAConfiguration(command, options, client.SLAConfigurationSummary{ID: "sla-remove-id", Name: "Remove SLA", RemovesSLA: true})
+			},
+			text: "sla-remove-id Remove SLA sla - type - removes true\n",
+		},
+		{
+			name: "Customer",
+			item: customer,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomer(command, options, customer)
+			},
+			text: "customer-id Acme [Active] needs 3\n",
+		},
+		{
+			name: "CustomerNeed",
+			item: customerNeed,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomerNeed(command, options, customerNeed)
+			},
+			text: "customer-need-id Acme LIT-1 priority 1\n",
+		},
+		{
+			name: "CustomerStatus",
+			item: customerStatus,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomerStatus(command, options, customerStatus)
+			},
+			text: "customer-status-id Active #00ff00 1\n",
+		},
+		{
+			name: "CustomerTier",
+			item: customerTier,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeCustomerTier(command, options, customerTier)
+			},
+			text: "customer-tier-id Enterprise #0000ff 2\n",
+		},
+		{
+			name: "ApplicationInfo",
+			item: application,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeApplicationInfo(command, options, application)
+			},
+			text: "app-id Demo App by Kyanite\n",
+		},
+		{
+			name: "AgentActivity",
+			item: agentActivity,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeAgentActivity(command, options, agentActivity)
+			},
+			text: "agent-activity-id session agent-session-id [action] signal continue\n",
+		},
+		{
+			name: "AgentSkill",
+			item: agentSkill,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeAgentSkill(command, options, agentSkill)
+			},
+			text: "agent-skill-id Triage Helper shared true recent 3\n",
+		},
+		{
+			name: "ExternalUser",
+			item: externalUser,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeExternalUser(command, options, externalUser)
+			},
+			text: "external-user-id External User @external last_seen 2026-06-19T12:00:00Z\n",
+		},
+		{
+			name: "AuditEntryType",
+			item: auditEntryType,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeAuditEntryType(command, options, auditEntryType)
+			},
+			text: "user_login User logged in\n",
+		},
+		{
+			name: "OrganizationExists",
+			item: organizationExistsStatus,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeOrganizationExists(command, options, organizationExistsStatus)
+			},
+			text: "kyanite exists true success true\n",
+		},
+		{
+			name: "RateLimitStatus",
+			item: rateLimitStatus,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeRateLimitStatus(command, options, rateLimitStatus)
+			},
+			text: "api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n",
+		},
+		{
+			name: "Favorite",
+			item: favorite,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeFavorite(command, options, favorite)
+			},
+			text: "favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\n",
+		},
+		{
+			name:  "Emoji",
+			item:  emoji,
+			write: func(command *cobra.Command, options *rootOptions) error { return writeEmoji(command, options, emoji) },
+			text:  "emoji-id party [custom]\n",
+		},
+		{
+			name: "Attachment",
+			item: attachment,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeAttachment(command, options, attachment)
+			},
+			text: "attachment-id Linked PR [github]\n",
+		},
+		{
+			name: "Notification",
+			item: notification,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeNotification(command, options, notification)
+			},
+			text: "notification-id issueMention [mentions] Mentioned you\n",
+		},
+		{
+			name: "NotificationSubscription",
+			item: notificationSubscription,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeNotificationSubscription(command, options, notificationSubscription)
+			},
+			text: "notification-subscription-id project Roadmap active true\n",
+		},
+		{
+			name: "TriageResponsibility",
+			item: triageResponsibility,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeTriageResponsibility(command, options, triageResponsibility)
+			},
+			text: "triage-responsibility-id team LIT action notify current Omer\n",
+		},
+		{
+			name: "TriageResponsibilityManualSelection",
+			item: triageManualSelection,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeTriageResponsibilityManualSelection(command, options, triageManualSelection)
+			},
+			text: "triage-responsibility-id manual users user-id,other-user-id\n",
+		},
+		{
+			name: "ReleasePipeline",
+			item: releasePipeline,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeReleasePipeline(command, options, releasePipeline)
+			},
+			text: "release-pipeline-id Production production releases 4\n",
+		},
+		{
+			name: "ReleaseStage",
+			item: releaseStage,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeReleaseStage(command, options, releaseStage)
+			},
+			text: "release-stage-id Started [started] pipeline Production\n",
+		},
+		{
+			name: "Release",
+			item: release,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeRelease(command, options, release)
+			},
+			text: "release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3\n",
+		},
+		{
+			name: "ReleaseHistory",
+			item: releaseHistory,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeReleaseHistory(command, options, releaseHistory)
+			},
+			text: "release-history-id release release-id entries 1\n",
+		},
+		{
+			name: "IssueHistory",
+			item: issueHistory,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeIssueHistory(command, options, issueHistory)
+			},
+			text: "issue-history-id issue issue-id updated_description true\n",
+		},
+		{
+			name: "EntityExternalLink",
+			item: releaseLink,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeEntityExternalLink(command, options, releaseLink)
+			},
+			text: "release-link-id Runbook https://example.com/runbook order 1.5\n",
+		},
+		{
+			name: "ReleaseNote",
+			item: releaseNote,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeReleaseNote(command, options, releaseNote)
+			},
+			text: "release-note-id Launch notes pipeline Production releases 2\n",
+		},
+		{
+			name: "SemanticSearchResult json only",
+			item: semanticSearchResult,
+			write: func(command *cobra.Command, options *rootOptions) error {
+				return writeSemanticSearchResult(command, options, semanticSearchResult)
+			},
+		},
+	}
+}
 
-	require.NoError(t, writeIssue(textCommand, &textOptions, issue))
-	require.NoError(t, writeIssueBotActor(textCommand, &textOptions, issueBotActor))
-	require.NoError(t, writeIssueBotActor(textCommand, &textOptions, client.IssueBotActor{IssueID: "plain-issue-id"}))
-	require.NoError(t, writeIssueStateSpan(textCommand, &textOptions, issueStateSpan))
-	require.NoError(t, writeCycle(textCommand, &textOptions, cycle))
-	require.NoError(t, writeProject(textCommand, &textOptions, project))
-	require.NoError(t, writeProjectUpdate(textCommand, &textOptions, projectUpdate))
-	require.NoError(t, writeProjectMilestone(textCommand, &textOptions, milestone))
-	require.NoError(t, writeProjectStatus(textCommand, &textOptions, projectStatus))
-	require.NoError(t, writeProjectStatusProjectCount(textCommand, &textOptions, projectStatusProjectCount))
-	require.NoError(t, writeProjectLabel(textCommand, &textOptions, projectLabel))
-	require.NoError(t, writeProjectRelation(textCommand, &textOptions, projectRelation))
-	require.NoError(t, writeIssueRelation(textCommand, &textOptions, issueRelation))
-	require.NoError(t, writeIssueToRelease(textCommand, &textOptions, issueToRelease))
-	require.NoError(t, writeDocument(textCommand, &textOptions, document))
-	require.NoError(t, writeLabel(textCommand, &textOptions, label))
-	require.NoError(t, writeTeam(textCommand, &textOptions, team))
-	require.NoError(t, writeTeamMembership(textCommand, &textOptions, teamMembership))
-	require.NoError(t, writeGitAutomationState(textCommand, &textOptions, gitAutomationState))
-	require.NoError(t, writeUser(textCommand, &textOptions, user))
-	require.NoError(t, writeDraft(textCommand, &textOptions, draft))
-	require.NoError(t, writeComment(textCommand, &textOptions, comment))
-	require.NoError(t, writeCommentMetadata(textCommand, &textOptions, commentMetadata))
-	require.NoError(t, writeCommentBotActor(textCommand, &textOptions, commentBotActor))
-	require.NoError(t, writeCommentBotActor(textCommand, &textOptions, client.CommentBotActor{CommentID: "plain-comment-id"}))
-	require.NoError(t, writeWorkflowState(textCommand, &textOptions, workflowState))
-	require.NoError(t, writeTimeSchedule(textCommand, &textOptions, timeSchedule))
-	require.NoError(t, writeTemplate(textCommand, &textOptions, template))
-	require.NoError(t, writeInitiative(textCommand, &textOptions, initiative))
-	require.NoError(t, writeInitiativeHistory(textCommand, &textOptions, initiativeHistory))
-	require.NoError(t, writeInitiativeRelation(textCommand, &textOptions, initiativeRelation))
-	require.NoError(t, writeInitiativeToProject(textCommand, &textOptions, initiativeToProject))
-	require.NoError(t, writeRoadmapToProject(textCommand, &textOptions, roadmapToProject))
-	require.NoError(t, writeInitiativeUpdate(textCommand, &textOptions, initiativeUpdate))
-	require.NoError(t, writeRoadmap(textCommand, &textOptions, roadmap))
-	require.NoError(t, writeCustomView(textCommand, &textOptions, customView))
-	require.NoError(t, writeCustomViewSubscriberStatus(textCommand, &textOptions, customViewSubscriberStatus))
-	require.NoError(t, writeCustomViewPreferences(textCommand, &textOptions, customViewPreferences))
-	require.NoError(t, writeCustomViewPreferenceValues(textCommand, &textOptions, customViewPreferenceValues))
-	require.NoError(t, writeCustomViewPreferences(textCommand, &textOptions, client.CustomViewPreferences{CustomViewID: "empty-custom-view-id"}))
-	require.NoError(t, writeSLAConfiguration(textCommand, &textOptions, slaConfiguration))
-	require.NoError(t, writeSLAConfiguration(textCommand, &textOptions, client.SLAConfigurationSummary{ID: "sla-remove-id", Name: "Remove SLA", RemovesSLA: true}))
-	require.NoError(t, writeCustomer(textCommand, &textOptions, customer))
-	require.NoError(t, writeCustomerNeed(textCommand, &textOptions, customerNeed))
-	require.NoError(t, writeCustomerStatus(textCommand, &textOptions, customerStatus))
-	require.NoError(t, writeCustomerTier(textCommand, &textOptions, customerTier))
-	require.NoError(t, writeApplicationInfo(textCommand, &textOptions, application))
-	require.NoError(t, writeAgentActivity(textCommand, &textOptions, agentActivity))
-	require.NoError(t, writeAgentSkill(textCommand, &textOptions, agentSkill))
-	require.NoError(t, writeExternalUser(textCommand, &textOptions, externalUser))
-	require.NoError(t, writeAuditEntryType(textCommand, &textOptions, auditEntryType))
-	require.NoError(t, writeOrganizationExists(textCommand, &textOptions, organizationExistsStatus))
-	require.NoError(t, writeRateLimitStatus(textCommand, &textOptions, rateLimitStatus))
-	require.NoError(t, writeFavorite(textCommand, &textOptions, favorite))
-	require.NoError(t, writeEmoji(textCommand, &textOptions, emoji))
-	require.NoError(t, writeAttachment(textCommand, &textOptions, attachment))
-	require.NoError(t, writeNotification(textCommand, &textOptions, notification))
-	require.NoError(t, writeNotificationSubscription(textCommand, &textOptions, notificationSubscription))
-	require.NoError(t, writeTriageResponsibility(textCommand, &textOptions, triageResponsibility))
-	require.NoError(t, writeTriageResponsibilityManualSelection(textCommand, &textOptions, triageManualSelection))
-	require.NoError(t, writeReleasePipeline(textCommand, &textOptions, releasePipeline))
-	require.NoError(t, writeReleaseStage(textCommand, &textOptions, releaseStage))
-	require.NoError(t, writeRelease(textCommand, &textOptions, release))
-	require.NoError(t, writeReleaseHistory(textCommand, &textOptions, releaseHistory))
-	require.NoError(t, writeIssueHistory(textCommand, &textOptions, issueHistory))
-	require.NoError(t, writeEntityExternalLink(textCommand, &textOptions, releaseLink))
-	require.NoError(t, writeReleaseNote(textCommand, &textOptions, releaseNote))
-	require.Equal(
-		t,
-		"LIT-1 Ship coverage [Todo]\nissue-id bot bot-actor-id GitHub [github]\n"+
-			"plain-issue-id bot -\nissue-state-span-id Started started 2026-06-19T12:00:00Z -> -\n"+
-			"cycle-id Planning cycle [active]\n"+
-			"project-id Coverage [Backlog]\nproject-update-id onTrack Omer First update\n"+
-			"project-milestone-id Launch milestone [next]\n"+
-			"project-status-id Backlog [backlog] #bec2c8\n"+
-			"project-status-id count 12 private 2 archived_team 1\n"+
-			"project-label-id Roadmap #f2c94c\n"+
-			"project-relation-id blocks Pinned project -> Related project\n"+
-			"issue-relation-id blocks LIT-1 -> LIT-2\n"+
-			"issue-to-release-id issue issue-id -> release release-id\n"+
-			"document-id Spec [project]\nlabel-id Bug #ff0000\nteam-id LIT linctl\n"+
-			"team-membership-id LIT Omer owner true order 1.50\n"+
-			"git-automation-state-id review state Started target main\n"+
-			"user-id Omer <omer@example.com>\ndraft-id issue LIT-3 Draft issue\n"+
-			"comment-id Omer First comment\ncomment-id Omer 2026-06-19T12:00:00Z\n"+
-			"comment-id bot bot-actor-id GitHub [github]\nplain-comment-id bot -\n"+
-			"workflow-state-id Started [started]\n"+
-			"time-schedule-id Primary on-call entries 1\n"+
-			"template-id Bug report [issue] team LIT\n"+
-			"initiative-id Platform [Active]\ninitiative-history-id initiative initiative-id entries 1\n"+
-			"initiative-relation-id Platform -> Child initiative order 1.50\n"+
-			"initiative-to-project-id Platform -> Pinned project order 1\n"+
-			"roadmap-to-project-id Platform roadmap -> Pinned project order 1 [legacy]\n"+
-			"initiative-update-id onTrack Omer First initiative update\n"+
-			"roadmap-id Platform roadmap platform-roadmap [legacy]\n"+
-			"custom-view-id My issues [Issue]\n"+
-			"custom-view-id has_subscribers true\n"+
-			"custom-view-id organization preferences organization customView layout list\n"+
-			"custom-view-id preference values layout board ordering updatedAt\n"+
-			"empty-custom-view-id organization preferences -\n"+
-			"sla-configuration-id First response sla 3600000 type all removes false\n"+
-			"sla-remove-id Remove SLA sla - type - removes true\n"+
-			"customer-id Acme [Active] needs 3\n"+
-			"customer-need-id Acme LIT-1 priority 1\n"+
-			"customer-status-id Active #00ff00 1\n"+
-			"customer-tier-id Enterprise #0000ff 2\n"+
-			"app-id Demo App by Kyanite\n"+
-			"agent-activity-id session agent-session-id [action] signal continue\n"+
-			"agent-skill-id Triage Helper shared true recent 3\n"+
-			"external-user-id External User @external last_seen 2026-06-19T12:00:00Z\n"+
-			"user_login User logged in\n"+
-			"kyanite exists true success true\n"+
-			"api api-key\ncomplexity remaining 900/1000 reset 1720000000000\n"+
-			"favorite-id [issue] https://linear.app/kyanite/issue/LIT-1\nemoji-id party [custom]\n"+
-			"attachment-id Linked PR [github]\n"+
-			"notification-id issueMention [mentions] Mentioned you\n"+
-			"notification-subscription-id project Roadmap active true\n"+
-			"triage-responsibility-id team LIT action notify current Omer\n"+
-			"triage-responsibility-id manual users user-id,other-user-id\n"+
-			"release-pipeline-id Production production releases 4\n"+
-			"release-stage-id Started [started] pipeline Production\n"+
-			"release-id Mobile 1.2.3 [v1.2.3] pipeline Production stage Started issues 3\n"+
-			"release-history-id release release-id entries 1\n"+
-			"issue-history-id issue issue-id updated_description true\n"+
-			"release-link-id Runbook https://example.com/runbook order 1.5\n"+
-			"release-note-id Launch notes pipeline Production releases 2\n",
-		textOut.String(),
-	)
-
-	jsonOut := bytes.Buffer{}
-	jsonCommand := &cobra.Command{}
-	jsonCommand.SetOut(&jsonOut)
-	jsonOptions := rootOptions{json: true}
-
-	require.NoError(t, writeIssue(jsonCommand, &jsonOptions, issue))
-	require.NoError(t, writeIssueBotActor(jsonCommand, &jsonOptions, issueBotActor))
-	require.NoError(t, writeIssueStateSpan(jsonCommand, &jsonOptions, issueStateSpan))
-	require.NoError(t, writeCycle(jsonCommand, &jsonOptions, cycle))
-	require.NoError(t, writeProject(jsonCommand, &jsonOptions, project))
-	require.NoError(t, writeProjectUpdate(jsonCommand, &jsonOptions, projectUpdate))
-	require.NoError(t, writeProjectMilestone(jsonCommand, &jsonOptions, milestone))
-	require.NoError(t, writeProjectStatus(jsonCommand, &jsonOptions, projectStatus))
-	require.NoError(t, writeProjectStatusProjectCount(jsonCommand, &jsonOptions, projectStatusProjectCount))
-	require.NoError(t, writeProjectLabel(jsonCommand, &jsonOptions, projectLabel))
-	require.NoError(t, writeProjectRelation(jsonCommand, &jsonOptions, projectRelation))
-	require.NoError(t, writeIssueRelation(jsonCommand, &jsonOptions, issueRelation))
-	require.NoError(t, writeIssueToRelease(jsonCommand, &jsonOptions, issueToRelease))
-	require.NoError(t, writeDocument(jsonCommand, &jsonOptions, document))
-	require.NoError(t, writeLabel(jsonCommand, &jsonOptions, label))
-	require.NoError(t, writeTeam(jsonCommand, &jsonOptions, team))
-	require.NoError(t, writeGitAutomationState(jsonCommand, &jsonOptions, gitAutomationState))
-	require.NoError(t, writeUser(jsonCommand, &jsonOptions, user))
-	require.NoError(t, writeDraft(jsonCommand, &jsonOptions, draft))
-	require.NoError(t, writeComment(jsonCommand, &jsonOptions, comment))
-	require.NoError(t, writeCommentMetadata(jsonCommand, &jsonOptions, commentMetadata))
-	require.NoError(t, writeCommentBotActor(jsonCommand, &jsonOptions, commentBotActor))
-	require.NoError(t, writeWorkflowState(jsonCommand, &jsonOptions, workflowState))
-	require.NoError(t, writeTimeSchedule(jsonCommand, &jsonOptions, timeSchedule))
-	require.NoError(t, writeTemplate(jsonCommand, &jsonOptions, template))
-	require.NoError(t, writeInitiative(jsonCommand, &jsonOptions, initiative))
-	require.NoError(t, writeInitiativeHistory(jsonCommand, &jsonOptions, initiativeHistory))
-	require.NoError(t, writeInitiativeRelation(jsonCommand, &jsonOptions, initiativeRelation))
-	require.NoError(t, writeInitiativeToProject(jsonCommand, &jsonOptions, initiativeToProject))
-	require.NoError(t, writeRoadmapToProject(jsonCommand, &jsonOptions, roadmapToProject))
-	require.NoError(t, writeInitiativeUpdate(jsonCommand, &jsonOptions, initiativeUpdate))
-	require.NoError(t, writeRoadmap(jsonCommand, &jsonOptions, roadmap))
-	require.NoError(t, writeCustomView(jsonCommand, &jsonOptions, customView))
-	require.NoError(t, writeCustomViewSubscriberStatus(jsonCommand, &jsonOptions, customViewSubscriberStatus))
-	require.NoError(t, writeCustomViewPreferences(jsonCommand, &jsonOptions, customViewPreferences))
-	require.NoError(t, writeCustomViewPreferenceValues(jsonCommand, &jsonOptions, customViewPreferenceValues))
-	require.NoError(t, writeSLAConfiguration(jsonCommand, &jsonOptions, slaConfiguration))
-	require.NoError(t, writeCustomer(jsonCommand, &jsonOptions, customer))
-	require.NoError(t, writeCustomerNeed(jsonCommand, &jsonOptions, customerNeed))
-	require.NoError(t, writeCustomerStatus(jsonCommand, &jsonOptions, customerStatus))
-	require.NoError(t, writeCustomerTier(jsonCommand, &jsonOptions, customerTier))
-	require.NoError(t, writeApplicationInfo(jsonCommand, &jsonOptions, application))
-	require.NoError(t, writeAgentActivity(jsonCommand, &jsonOptions, agentActivity))
-	require.NoError(t, writeAgentSkill(jsonCommand, &jsonOptions, agentSkill))
-	require.NoError(t, writeExternalUser(jsonCommand, &jsonOptions, externalUser))
-	require.NoError(t, writeAuditEntryType(jsonCommand, &jsonOptions, auditEntryType))
-	require.NoError(t, writeOrganizationExists(jsonCommand, &jsonOptions, organizationExistsStatus))
-	require.NoError(t, writeRateLimitStatus(jsonCommand, &jsonOptions, rateLimitStatus))
-	require.NoError(t, writeFavorite(jsonCommand, &jsonOptions, favorite))
-	require.NoError(t, writeEmoji(jsonCommand, &jsonOptions, emoji))
-	require.NoError(t, writeAttachment(jsonCommand, &jsonOptions, attachment))
-	require.NoError(t, writeNotification(jsonCommand, &jsonOptions, notification))
-	require.NoError(t, writeNotificationSubscription(jsonCommand, &jsonOptions, notificationSubscription))
-	require.NoError(t, writeTriageResponsibility(jsonCommand, &jsonOptions, triageResponsibility))
-	require.NoError(t, writeTriageResponsibilityManualSelection(jsonCommand, &jsonOptions, triageManualSelection))
-	require.NoError(t, writeSemanticSearchResult(jsonCommand, &jsonOptions, semanticSearchResult))
-	require.NoError(t, writeReleasePipeline(jsonCommand, &jsonOptions, releasePipeline))
-	require.NoError(t, writeReleaseStage(jsonCommand, &jsonOptions, releaseStage))
-	require.NoError(t, writeRelease(jsonCommand, &jsonOptions, release))
-	require.NoError(t, writeReleaseHistory(jsonCommand, &jsonOptions, releaseHistory))
-	require.NoError(t, writeIssueHistory(jsonCommand, &jsonOptions, issueHistory))
-	require.NoError(t, writeEntityExternalLink(jsonCommand, &jsonOptions, releaseLink))
-	require.NoError(t, writeReleaseNote(jsonCommand, &jsonOptions, releaseNote))
-	require.Contains(t, jsonOut.String(), `"identifier": "LIT-1"`)
-	require.Contains(t, jsonOut.String(), `"issue_id": "issue-id"`)
-	require.Contains(t, jsonOut.String(), `"state_name": "Started"`)
-	require.Contains(t, jsonOut.String(), `"name": "Planning cycle"`)
-	require.Contains(t, jsonOut.String(), `"name": "Coverage"`)
-	require.Contains(t, jsonOut.String(), `"body": "First update"`)
-	require.Contains(t, jsonOut.String(), `"name": "Launch milestone"`)
-	require.Contains(t, jsonOut.String(), `"id": "project-status-id"`)
-	require.Contains(t, jsonOut.String(), `"id": "project-label-id"`)
-	require.Contains(t, jsonOut.String(), `"key": "LIT-3"`)
-	require.Contains(t, jsonOut.String(), `"title": "Spec"`)
-	require.Contains(t, jsonOut.String(), `"color": "#ff0000"`)
-	require.Contains(t, jsonOut.String(), `"key": "LIT"`)
-	require.Contains(t, jsonOut.String(), `"target_branch_pattern": "main"`)
-	require.Contains(t, jsonOut.String(), `"email": "omer@example.com"`)
-	require.Contains(t, jsonOut.String(), `"parent_key": "LIT-3"`)
-	require.Contains(t, jsonOut.String(), `"body": "First comment"`)
-	require.Contains(t, jsonOut.String(), `"comment_id": "comment-id"`)
-	require.Contains(t, jsonOut.String(), `"type": "started"`)
-	require.Contains(t, jsonOut.String(), `"entry_count": 1`)
-	require.Contains(t, jsonOut.String(), `"team_key": "LIT"`)
-	require.Contains(t, jsonOut.String(), `"status": "Active"`)
-	require.Contains(t, jsonOut.String(), `"related_initiative_name": "Child initiative"`)
-	require.Contains(t, jsonOut.String(), `"project_name": "Pinned project"`)
-	require.Contains(t, jsonOut.String(), `"body": "First initiative update"`)
-	require.Contains(t, jsonOut.String(), `"slug_id": "platform-roadmap"`)
-	require.Contains(t, jsonOut.String(), `"model_name": "Issue"`)
-	require.Contains(t, jsonOut.String(), `"has_subscribers": true`)
-	require.Contains(t, jsonOut.String(), `"view_ordering": "updatedAt"`)
-	require.Contains(t, jsonOut.String(), `"hidden_columns": [`)
-	require.Contains(t, jsonOut.String(), `"sla_type": "all"`)
-	require.Contains(t, jsonOut.String(), `"approximate_need_count": 3`)
-	require.Contains(t, jsonOut.String(), `"customer_name": "Acme"`)
-	require.Contains(t, jsonOut.String(), `"display_name": "Active"`)
-	require.Contains(t, jsonOut.String(), `"display_name": "Enterprise"`)
-	require.Contains(t, jsonOut.String(), `"client_id": "app-client-id"`)
-	require.Contains(t, jsonOut.String(), `"content_type": "action"`)
-	require.Contains(t, jsonOut.String(), `"title": "Triage Helper"`)
-	require.Contains(t, jsonOut.String(), `"display_name": "@external"`)
-	require.Contains(t, jsonOut.String(), `"description": "User logged in"`)
-	require.Contains(t, jsonOut.String(), `"url_key": "kyanite"`)
-	require.Contains(t, jsonOut.String(), `"remaining_amount": 900`)
-	require.Contains(t, jsonOut.String(), `"type": "issue"`)
-	require.Contains(t, jsonOut.String(), `"source": "custom"`)
-	require.Contains(t, jsonOut.String(), `"source_type": "github"`)
-	require.Contains(t, jsonOut.String(), `"category": "mentions"`)
-	require.Contains(t, jsonOut.String(), `"target_type": "project"`)
-	require.Contains(t, jsonOut.String(), `"team_key": "LIT"`)
-	require.Contains(t, jsonOut.String(), `"user_ids": [`)
-	require.Contains(t, jsonOut.String(), `"slug_id": "production"`)
-	require.Contains(t, jsonOut.String(), `"pipeline_name": "Production"`)
-	require.Contains(t, jsonOut.String(), `"version": "v1.2.3"`)
-	require.Contains(t, jsonOut.String(), `"release_count": 2`)
+// Each render writer emits its documented human line in text mode and the
+// item's JSON encoding in JSON mode.
+func Test_CliRenderHelpers_write_text_and_json_output(t *testing.T) {
+	for _, test := range renderWriterCases() {
+		if test.text != "" {
+			t.Run(test.name+" text", func(t *testing.T) {
+				output := bytes.Buffer{}
+				command := &cobra.Command{}
+				command.SetOut(&output)
+				require.NoError(t, test.write(command, &rootOptions{}))
+				require.Equal(t, test.text, output.String())
+			})
+		}
+		t.Run(test.name+" json", func(t *testing.T) {
+			output := bytes.Buffer{}
+			command := &cobra.Command{}
+			command.SetOut(&output)
+			require.NoError(t, test.write(command, &rootOptions{json: true}))
+			expected, err := json.Marshal(test.item)
+			require.NoError(t, err)
+			require.JSONEq(t, string(expected), output.String())
+		})
+	}
 }

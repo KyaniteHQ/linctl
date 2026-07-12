@@ -154,8 +154,7 @@ func Test_IssueCreate_section_rejects_missing_equals(t *testing.T) {
 		"issue", "create", "--dry-run", "--section", "noequals",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "invalid --section")
+	require.ErrorContains(t, err, "invalid --section")
 }
 
 func Test_markdownHeadingTitle_classifies_lines(t *testing.T) {

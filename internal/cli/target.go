@@ -10,7 +10,7 @@ import (
 )
 
 func addTargetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "target",
 		Short: "Print the resolved Linear target",
 		Args:  cobra.NoArgs,
@@ -44,7 +44,7 @@ func addTargetCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 }
 
 func addWhoamiCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "whoami",
 		Short: "Print the authenticated Linear user",
 		Args:  cobra.NoArgs,

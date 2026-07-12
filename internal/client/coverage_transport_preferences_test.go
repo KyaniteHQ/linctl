@@ -31,12 +31,10 @@ func Test_TransportScenarios_return_actionable_errors(t *testing.T) {
 
 	response := graphql.Response{}
 	err := decodeGraphQLResponse([]byte("not json"), http.StatusOK, &response)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "decode graphql response")
+	require.ErrorContains(t, err, "decode graphql response")
 
 	err = decodeGraphQLResponse([]byte("server down"), http.StatusBadGateway, &response)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "graphql http status 502")
+	require.ErrorContains(t, err, "graphql http status 502")
 }
 
 func Test_CustomViewPreferenceReads_return_empty_values_when_organization_defaults_are_absent(t *testing.T) {

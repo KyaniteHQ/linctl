@@ -99,10 +99,9 @@ func ListCyclesByTeam(
 		return CycleList{}, fmt.Errorf("list cycles: %w", err)
 	}
 
-	summaries := make([]CycleSummary, 0, len(cyclePage.Cycles.Nodes))
-	for _, cycle := range cyclePage.Cycles.Nodes {
-		summaries = append(summaries, cycleSummary(cycle.CycleSummaryFields))
-	}
+	summaries := mapNodes(cyclePage.Cycles.Nodes, func(cycle cyclesCyclesCycleConnectionNodesCycle) CycleSummary {
+		return cycleSummary(cycle.CycleSummaryFields)
+	})
 
 	return CycleList{
 		Cycles:      summaries,
@@ -143,10 +142,11 @@ func GetSprintReport(ctx context.Context, graphqlClient graphql.Client, id strin
 		return SprintReport{}, fmt.Errorf("sprint report %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(report.Cycle.Issues.Nodes))
-	for _, issue := range report.Cycle.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(report.Cycle.Issues.Nodes, func(
+		issue CycleReportCycleIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return SprintReport{
 		Cycle:       cycleSummary(report.Cycle.CycleSummaryFields),
@@ -163,10 +163,11 @@ func ListCycleIssues(ctx context.Context, graphqlClient graphql.Client, id strin
 		return CycleIssueList{}, fmt.Errorf("list cycle issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(issuePage.Cycle.Issues.Nodes))
-	for _, issue := range issuePage.Cycle.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(issuePage.Cycle.Issues.Nodes, func(
+		issue cycle_issuesCycleIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return CycleIssueList{
 		Cycle:       cycleSummary(issuePage.Cycle.CycleSummaryFields),
@@ -188,10 +189,11 @@ func ListCycleUncompletedIssuesUponClose(
 		return CycleIssueList{}, fmt.Errorf("list cycle uncompleted issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(issuePage.Cycle.UncompletedIssuesUponClose.Nodes))
-	for _, issue := range issuePage.Cycle.UncompletedIssuesUponClose.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(issuePage.Cycle.UncompletedIssuesUponClose.Nodes, func(
+		issue cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return CycleIssueList{
 		Cycle:       cycleSummary(issuePage.Cycle.CycleSummaryFields),

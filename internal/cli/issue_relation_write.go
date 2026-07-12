@@ -37,7 +37,7 @@ func addIssueRelateCommand(ctx context.Context, root *cobra.Command, options *ro
 		&relationType, "type", relationType,
 		"relation type: blocks, duplicate, related, or similar",
 	)
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func runIssueRelationCreate(
@@ -56,7 +56,7 @@ func runIssueRelationCreate(
 }
 
 func addIssueUnrelateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
 		Use:   "unrelate ISSUE_RELATION_ID",
 		Short: "Delete an issue relation after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),

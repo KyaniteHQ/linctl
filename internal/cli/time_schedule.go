@@ -55,11 +55,3 @@ func loadTimeSchedule(
 ) (client.TimeScheduleSummary, error) {
 	return client.GetTimeScheduleByID(ctx, runtime.graphqlClient, id)
 }
-
-func timeSchedulePageWithItems(
-	page client.TimeScheduleList,
-	schedules []client.TimeScheduleSummary,
-) client.TimeScheduleList {
-	page.TimeSchedules = schedules
-	return page
-}

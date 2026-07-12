@@ -64,10 +64,11 @@ func ListIssueNeeds(
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list issue customer needs %s: %w", id, err)
 	}
 
-	needs := make([]CustomerNeedMetadataSummary, 0, len(result.Issue.Needs.Nodes))
-	for _, need := range result.Issue.Needs.Nodes {
-		needs = append(needs, customerNeedMetadataSummary(need.CustomerNeedMetadataFields))
-	}
+	needs := mapNodes(result.Issue.Needs.Nodes, func(
+		need issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed,
+	) CustomerNeedMetadataSummary {
+		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
+	})
 
 	return IssueCustomerNeedMetadataList{
 		IssueID:     result.Issue.Id,
@@ -90,10 +91,11 @@ func ListIssueFormerNeeds(
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list issue former customer needs %s: %w", id, err)
 	}
 
-	needs := make([]CustomerNeedMetadataSummary, 0, len(result.Issue.FormerNeeds.Nodes))
-	for _, need := range result.Issue.FormerNeeds.Nodes {
-		needs = append(needs, customerNeedMetadataSummary(need.CustomerNeedMetadataFields))
-	}
+	needs := mapNodes(result.Issue.FormerNeeds.Nodes, func(
+		need issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
+	) CustomerNeedMetadataSummary {
+		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
+	})
 
 	return IssueCustomerNeedMetadataList{
 		IssueID:     result.Issue.Id,
@@ -139,10 +141,11 @@ func ListIssueVCSBranchComments(
 		return IssueCommentMetadataList{}, notFoundError("list issue vcs branch comments %s", branchName)
 	}
 
-	comments := make([]CommentMetadataSummary, 0, len(result.IssueVcsBranchSearch.Comments.Nodes))
-	for _, comment := range result.IssueVcsBranchSearch.Comments.Nodes {
-		comments = append(comments, commentMetadataSummary(comment.CommentMetadataFields))
-	}
+	comments := mapNodes(result.IssueVcsBranchSearch.Comments.Nodes, func(
+		comment issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment,
+	) CommentMetadataSummary {
+		return commentMetadataSummary(comment.CommentMetadataFields)
+	})
 
 	return IssueCommentMetadataList{
 		IssueID:     result.IssueVcsBranchSearch.Id,
@@ -174,10 +177,11 @@ func ListIssueVCSBranchNeeds(
 		return IssueCustomerNeedMetadataList{}, notFoundError("list issue vcs branch customer needs %s", branchName)
 	}
 
-	needs := make([]CustomerNeedMetadataSummary, 0, len(result.IssueVcsBranchSearch.Needs.Nodes))
-	for _, need := range result.IssueVcsBranchSearch.Needs.Nodes {
-		needs = append(needs, customerNeedMetadataSummary(need.CustomerNeedMetadataFields))
-	}
+	needs := mapNodes(result.IssueVcsBranchSearch.Needs.Nodes, func(
+		need issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed,
+	) CustomerNeedMetadataSummary {
+		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
+	})
 
 	return IssueCustomerNeedMetadataList{
 		IssueID:     result.IssueVcsBranchSearch.Id,
@@ -289,10 +293,9 @@ func issueSharedAccessSummary(
 }
 
 func issueSharedAccessDisallowedFields(fields []IssueSharedAccessDisallowedField) []string {
-	values := make([]string, 0, len(fields))
-	for _, field := range fields {
-		values = append(values, string(field))
-	}
+	values := mapNodes(fields, func(field IssueSharedAccessDisallowedField) string {
+		return string(field)
+	})
 
 	return values
 }

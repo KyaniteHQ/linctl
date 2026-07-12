@@ -171,8 +171,7 @@ func Test_CommandFlows_issue_import_dry_run_rejects_team_mismatch_locally(t *tes
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "does not match pinned target team")
+	require.ErrorContains(t, err, "does not match pinned target team")
 }
 
 func Test_CommandFlows_issue_import_dry_run_requires_local_team_key(t *testing.T) {
@@ -188,19 +187,17 @@ team_id = "team-id"
 	err := command.ExecuteContext(context.Background())
 
 	require.ErrorIs(t, err, client.ErrTargetNotConfigured)
-	require.Contains(t, err.Error(), "set team_key")
+	require.ErrorContains(t, err, "set team_key")
 }
 
 func Test_CommandFlows_issue_import_dry_run_surfaces_local_format_and_read_errors(t *testing.T) {
 	writePinnedImportDryRunConfig(t)
 
 	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", "rows.txt", "--dry-run"})
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unsupported data format")
+	require.ErrorContains(t, err, "unsupported data format")
 
 	_, err = runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", "missing.json", "--dry-run"})
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read missing.json")
+	require.ErrorContains(t, err, "read missing.json")
 }
 
 func Test_CommandFlows_issue_import_dry_run_surfaces_config_load_error(t *testing.T) {
@@ -209,8 +206,7 @@ func Test_CommandFlows_issue_import_dry_run_surfaces_config_load_error(t *testin
 
 	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path, "--dry-run"})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "parse config")
+	require.ErrorContains(t, err, "parse config")
 }
 
 func Test_CommandFlows_issue_import_non_dry_run_still_uses_runtime(t *testing.T) {
@@ -227,8 +223,7 @@ func Test_CommandFlows_issue_import_non_dry_run_still_uses_runtime(t *testing.T)
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "runtime failed")
+	require.ErrorContains(t, err, "runtime failed")
 }
 
 func Test_CommandFlows_issue_import_rejects_team_mismatch(t *testing.T) {
@@ -236,8 +231,7 @@ func Test_CommandFlows_issue_import_rejects_team_mismatch(t *testing.T) {
 
 	_, err := runBulkFlow(t, commandFlowFakeClient{}, []string{"issue", "import", path})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "does not match pinned target team")
+	require.ErrorContains(t, err, "does not match pinned target team")
 }
 
 func Test_CommandFlows_issue_import_surfaces_input_errors(t *testing.T) {

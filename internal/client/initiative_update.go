@@ -46,10 +46,11 @@ func ListInitiativeUpdates(ctx context.Context, graphqlClient graphql.Client, li
 		return InitiativeUpdateList{}, fmt.Errorf("list initiative updates: %w", err)
 	}
 
-	updates := make([]InitiativeUpdateSummary, 0, len(result.InitiativeUpdates.Nodes))
-	for _, update := range result.InitiativeUpdates.Nodes {
-		updates = append(updates, initiativeUpdateSummary(update.InitiativeUpdateSummaryFields))
-	}
+	updates := mapNodes(result.InitiativeUpdates.Nodes, func(
+		update initiativeUpdatesInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate,
+	) InitiativeUpdateSummary {
+		return initiativeUpdateSummary(update.InitiativeUpdateSummaryFields)
+	})
 
 	return InitiativeUpdateList{
 		Updates:     updates,
@@ -84,10 +85,11 @@ func ListInitiativeUpdateComments(
 		return InitiativeUpdateCommentList{}, fmt.Errorf("list initiative update comments %s: %w", id, err)
 	}
 
-	comments := make([]CommentMetadataSummary, 0, len(result.InitiativeUpdate.Comments.Nodes))
-	for _, node := range result.InitiativeUpdate.Comments.Nodes {
-		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
-	}
+	comments := mapNodes(result.InitiativeUpdate.Comments.Nodes, func(
+		node initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment,
+	) CommentMetadataSummary {
+		return commentMetadataSummary(node.CommentMetadataFields)
+	})
 
 	return InitiativeUpdateCommentList{
 		InitiativeUpdateID: result.InitiativeUpdate.Id,

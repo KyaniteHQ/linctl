@@ -29,10 +29,11 @@ func ListFavorites(ctx context.Context, graphqlClient graphql.Client, limit int)
 		return FavoriteList{}, fmt.Errorf("list favorites: %w", err)
 	}
 
-	summaries := make([]FavoriteSummary, 0, len(result.Favorites.Nodes))
-	for _, node := range result.Favorites.Nodes {
-		summaries = append(summaries, favoriteSummary(node.FavoriteSummaryFields))
-	}
+	summaries := mapNodes(result.Favorites.Nodes, func(
+		node favoritesFavoritesFavoriteConnectionNodesFavorite,
+	) FavoriteSummary {
+		return favoriteSummary(node.FavoriteSummaryFields)
+	})
 
 	return FavoriteList{
 		Favorites:   summaries,
@@ -53,10 +54,11 @@ func ListFavoriteChildren(
 		return FavoriteList{}, fmt.Errorf("list favorite children %s: %w", id, err)
 	}
 
-	summaries := make([]FavoriteSummary, 0, len(result.Favorite.Children.Nodes))
-	for _, node := range result.Favorite.Children.Nodes {
-		summaries = append(summaries, favoriteSummary(node.FavoriteSummaryFields))
-	}
+	summaries := mapNodes(result.Favorite.Children.Nodes, func(
+		node favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite,
+	) FavoriteSummary {
+		return favoriteSummary(node.FavoriteSummaryFields)
+	})
 
 	return FavoriteList{
 		Favorites:   summaries,

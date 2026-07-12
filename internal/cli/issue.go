@@ -1,4 +1,3 @@
-//nolint:dupl // Issue child read commands intentionally share the same list-command shape.
 package cli
 
 import (
@@ -473,29 +472,20 @@ func addIssueGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 }
 
 func addIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"attachments ISSUE_ID",
-		"List issue attachments",
-		"attachments",
-		func(runtime commandRuntime, issueID string, limit int) (client.AttachmentList, error) {
-			return issueAdapterFor(runtime).ListIssueAttachments(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.AttachmentList, client.AttachmentSummary]{
+		Use:       "attachments ISSUE_ID",
+		Short:     "List issue attachments",
+		LimitHelp: "attachments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.AttachmentList, []client.AttachmentSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueAttachments(ctx, args[0], limit)
+			return list, list.Attachments, err
 		},
-		func(list client.AttachmentList) int {
-			return len(list.Attachments)
-		},
-		func(list client.AttachmentList) (client.AttachmentList, error) {
-			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
-			list.Attachments = items
-			return list, err
-		},
-		writeAttachment,
-		func(list client.AttachmentList) []client.AttachmentSummary {
-			return list.Attachments
-		},
-	)
+		PageWithItems: attachmentPageWithItems,
+		WriteItem:     writeAttachment,
+	})
 }
 
 func addIssueBotActorCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -519,81 +509,54 @@ func addIssueBotActorCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func addIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"children ISSUE_ID",
-		"List issue children",
-		"child issues",
-		func(runtime commandRuntime, issueID string, limit int) (client.IssueList, error) {
-			return issueAdapterFor(runtime).ListIssueChildren(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
+		Use:       "children ISSUE_ID",
+		Short:     "List issue children",
+		LimitHelp: "child issues",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueList, []client.IssueSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueChildren(ctx, args[0], limit)
+			return list, list.Issues, err
 		},
-		func(list client.IssueList) int {
-			return len(list.Issues)
-		},
-		func(list client.IssueList) (client.IssueList, error) {
-			items, err := sortByJSONField(list.Issues, options.sortField, options.sortOrder)
-			list.Issues = items
-			return list, err
-		},
-		writeIssue,
-		func(list client.IssueList) []client.IssueSummary {
-			return list.Issues
-		},
-	)
+		PageWithItems: issuePageWithItems,
+		WriteItem:     writeIssue,
+	})
 }
 
 func addIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"documents ISSUE_ID",
-		"List issue documents",
-		"documents",
-		func(runtime commandRuntime, issueID string, limit int) (client.DocumentList, error) {
-			return issueAdapterFor(runtime).ListIssueDocuments(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.DocumentList, client.DocumentSummary]{
+		Use:       "documents ISSUE_ID",
+		Short:     "List issue documents",
+		LimitHelp: "documents",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.DocumentList, []client.DocumentSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueDocuments(ctx, args[0], limit)
+			return list, list.Documents, err
 		},
-		func(list client.DocumentList) int {
-			return len(list.Documents)
-		},
-		func(list client.DocumentList) (client.DocumentList, error) {
-			items, err := sortByJSONField(list.Documents, options.sortField, options.sortOrder)
-			list.Documents = items
-			return list, err
-		},
-		writeDocument,
-		func(list client.DocumentList) []client.DocumentSummary {
-			return list.Documents
-		},
-	)
+		PageWithItems: documentPageWithItems,
+		WriteItem:     writeDocument,
+	})
 }
 
 func addIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"former-attachments ISSUE_ID",
-		"List former issue attachments",
-		"former attachments",
-		func(runtime commandRuntime, issueID string, limit int) (client.AttachmentList, error) {
-			return issueAdapterFor(runtime).ListIssueFormerAttachments(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.AttachmentList, client.AttachmentSummary]{
+		Use:       "former-attachments ISSUE_ID",
+		Short:     "List former issue attachments",
+		LimitHelp: "former attachments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.AttachmentList, []client.AttachmentSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueFormerAttachments(ctx, args[0], limit)
+			return list, list.Attachments, err
 		},
-		func(list client.AttachmentList) int {
-			return len(list.Attachments)
-		},
-		func(list client.AttachmentList) (client.AttachmentList, error) {
-			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
-			list.Attachments = items
-			return list, err
-		},
-		writeAttachment,
-		func(list client.AttachmentList) []client.AttachmentSummary {
-			return list.Attachments
-		},
-	)
+		PageWithItems: attachmentPageWithItems,
+		WriteItem:     writeAttachment,
+	})
 }
 
 func addIssueFormerNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -611,29 +574,20 @@ func addIssueFormerNeedsCommand(ctx context.Context, root *cobra.Command, option
 }
 
 func addIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"history ISSUE_ID",
-		"List issue history metadata",
-		"history entries",
-		func(runtime commandRuntime, issueID string, limit int) (client.IssueHistoryList, error) {
-			return issueAdapterFor(runtime).ListIssueHistory(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueHistoryList, client.IssueHistorySummary]{
+		Use:       "history ISSUE_ID",
+		Short:     "List issue history metadata",
+		LimitHelp: "history entries",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueHistoryList, []client.IssueHistorySummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueHistory(ctx, args[0], limit)
+			return list, list.History, err
 		},
-		func(list client.IssueHistoryList) int {
-			return len(list.History)
-		},
-		func(list client.IssueHistoryList) (client.IssueHistoryList, error) {
-			items, err := sortByJSONField(list.History, options.sortField, options.sortOrder)
-			list.History = items
-			return list, err
-		},
-		writeIssueHistory,
-		func(list client.IssueHistoryList) []client.IssueHistorySummary {
-			return list.History
-		},
-	)
+		PageWithItems: issueHistoryPageWithItems,
+		WriteItem:     writeIssueHistory,
+	})
 }
 
 func addIssueInverseRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -651,29 +605,20 @@ func addIssueInverseRelationsCommand(ctx context.Context, root *cobra.Command, o
 }
 
 func addIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"labels ISSUE_ID",
-		"List issue labels",
-		"labels",
-		func(runtime commandRuntime, issueID string, limit int) (client.LabelList, error) {
-			return issueAdapterFor(runtime).ListIssueLabels(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.LabelList, client.LabelSummary]{
+		Use:       "labels ISSUE_ID",
+		Short:     "List issue labels",
+		LimitHelp: "labels",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.LabelList, []client.LabelSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueLabels(ctx, args[0], limit)
+			return list, list.Labels, err
 		},
-		func(list client.LabelList) int {
-			return len(list.Labels)
-		},
-		func(list client.LabelList) (client.LabelList, error) {
-			items, err := sortByJSONField(list.Labels, options.sortField, options.sortOrder)
-			list.Labels = items
-			return list, err
-		},
-		writeLabel,
-		func(list client.LabelList) []client.LabelSummary {
-			return list.Labels
-		},
-	)
+		PageWithItems: labelPageWithItems,
+		WriteItem:     writeLabel,
+	})
 }
 
 func addIssueNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -705,29 +650,20 @@ func addIssueRelationsCommand(ctx context.Context, root *cobra.Command, options 
 }
 
 func addIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"releases ISSUE_ID",
-		"List issue releases",
-		"releases",
-		func(runtime commandRuntime, issueID string, limit int) (client.ReleaseList, error) {
-			return issueAdapterFor(runtime).ListIssueReleases(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ReleaseList, client.ReleaseSummary]{
+		Use:       "releases ISSUE_ID",
+		Short:     "List issue releases",
+		LimitHelp: "releases",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ReleaseList, []client.ReleaseSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueReleases(ctx, args[0], limit)
+			return list, list.Releases, err
 		},
-		func(list client.ReleaseList) int {
-			return len(list.Releases)
-		},
-		func(list client.ReleaseList) (client.ReleaseList, error) {
-			items, err := sortByJSONField(list.Releases, options.sortField, options.sortOrder)
-			list.Releases = items
-			return list, err
-		},
-		writeRelease,
-		func(list client.ReleaseList) []client.ReleaseSummary {
-			return list.Releases
-		},
-	)
+		PageWithItems: releasePageWithItems,
+		WriteItem:     writeRelease,
+	})
 }
 
 func addIssueSharedAccessCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -751,55 +687,37 @@ func addIssueSharedAccessCommand(ctx context.Context, root *cobra.Command, optio
 }
 
 func addIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"state-history ISSUE_ID",
-		"List issue workflow state history",
-		"state spans",
-		func(runtime commandRuntime, issueID string, limit int) (client.IssueStateHistoryList, error) {
-			return issueAdapterFor(runtime).ListIssueStateHistory(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueStateHistoryList, client.IssueStateSpanSummary]{
+		Use:       "state-history ISSUE_ID",
+		Short:     "List issue workflow state history",
+		LimitHelp: "state spans",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueStateHistoryList, []client.IssueStateSpanSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueStateHistory(ctx, args[0], limit)
+			return list, list.Spans, err
 		},
-		func(list client.IssueStateHistoryList) int {
-			return len(list.Spans)
-		},
-		func(list client.IssueStateHistoryList) (client.IssueStateHistoryList, error) {
-			items, err := sortByJSONField(list.Spans, options.sortField, options.sortOrder)
-			list.Spans = items
-			return list, err
-		},
-		writeIssueStateSpan,
-		func(list client.IssueStateHistoryList) []client.IssueStateSpanSummary {
-			return list.Spans
-		},
-	)
+		PageWithItems: issueStateSpanPageWithItems,
+		WriteItem:     writeIssueStateSpan,
+	})
 }
 
 func addIssueSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"subscribers ISSUE_ID",
-		"List issue subscribers",
-		"subscribers",
-		func(runtime commandRuntime, issueID string, limit int) (client.UserList, error) {
-			return issueAdapterFor(runtime).ListIssueSubscribers(ctx, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.UserList, client.UserSummary]{
+		Use:       "subscribers ISSUE_ID",
+		Short:     "List issue subscribers",
+		LimitHelp: "subscribers",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.UserList, []client.UserSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueSubscribers(ctx, args[0], limit)
+			return list, list.Users, err
 		},
-		func(list client.UserList) int {
-			return len(list.Users)
-		},
-		func(list client.UserList) (client.UserList, error) {
-			items, err := sortByJSONField(list.Users, options.sortField, options.sortOrder)
-			list.Users = items
-			return list, err
-		},
-		writeUser,
-		func(list client.UserList) []client.UserSummary {
-			return list.Users
-		},
-	)
+		PageWithItems: userPageWithItems,
+		WriteItem:     writeUser,
+	})
 }
 
 func addIssueRelationChildListCommand(
@@ -811,29 +729,20 @@ func addIssueRelationChildListCommand(
 	limitHelp string,
 	fetch func(context.Context, commandRuntime, string, int) (client.IssueRelationList, error),
 ) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		use,
-		short,
-		limitHelp,
-		func(runtime commandRuntime, issueID string, limit int) (client.IssueRelationList, error) {
-			return fetch(ctx, runtime, issueID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueRelationList, client.IssueRelationSummary]{
+		Use:       use,
+		Short:     short,
+		LimitHelp: limitHelp,
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueRelationList, []client.IssueRelationSummary, error) {
+			list, err := fetch(ctx, runtime, args[0], limit)
+			return list, list.Relations, err
 		},
-		func(list client.IssueRelationList) int {
-			return len(list.Relations)
-		},
-		func(list client.IssueRelationList) (client.IssueRelationList, error) {
-			items, err := sortByJSONField(list.Relations, options.sortField, options.sortOrder)
-			list.Relations = items
-			return list, err
-		},
-		writeIssueRelation,
-		func(list client.IssueRelationList) []client.IssueRelationSummary {
-			return list.Relations
-		},
-	)
+		PageWithItems: issueRelationPageWithItems,
+		WriteItem:     writeIssueRelation,
+	})
 }
 
 func addIssueCommentMetadataListCommand(
@@ -845,27 +754,20 @@ func addIssueCommentMetadataListCommand(
 	limitHelp string,
 	fetch func(commandRuntime, string, int) (client.IssueCommentMetadataList, error),
 ) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		use,
-		short,
-		limitHelp,
-		fetch,
-		func(list client.IssueCommentMetadataList) int {
-			return len(list.Comments)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueCommentMetadataList, client.CommentMetadataSummary]{
+		Use:       use,
+		Short:     short,
+		LimitHelp: limitHelp,
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			_ context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueCommentMetadataList, []client.CommentMetadataSummary, error) {
+			list, err := fetch(runtime, args[0], limit)
+			return list, list.Comments, err
 		},
-		func(list client.IssueCommentMetadataList) (client.IssueCommentMetadataList, error) {
-			items, err := sortByJSONField(list.Comments, options.sortField, options.sortOrder)
-			list.Comments = items
-			return list, err
-		},
-		writeCommentMetadata,
-		func(list client.IssueCommentMetadataList) []client.CommentMetadataSummary {
-			return list.Comments
-		},
-	)
+		PageWithItems: commentMetadataPageWithItems,
+		WriteItem:     writeCommentMetadata,
+	})
 }
 
 func addIssueCustomerNeedMetadataListCommand(
@@ -877,25 +779,19 @@ func addIssueCustomerNeedMetadataListCommand(
 	limitHelp string,
 	fetch func(commandRuntime, string, int) (client.IssueCustomerNeedMetadataList, error),
 ) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		use,
-		short,
-		limitHelp,
-		fetch,
-		func(list client.IssueCustomerNeedMetadataList) int {
-			return len(list.Needs)
+	spec := listCommandSpec[client.IssueCustomerNeedMetadataList, client.CustomerNeedMetadataSummary]{
+		Use:       use,
+		Short:     short,
+		LimitHelp: limitHelp,
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			_ context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueCustomerNeedMetadataList, []client.CustomerNeedMetadataSummary, error) {
+			list, err := fetch(runtime, args[0], limit)
+			return list, list.Needs, err
 		},
-		func(list client.IssueCustomerNeedMetadataList) (client.IssueCustomerNeedMetadataList, error) {
-			items, err := sortByJSONField(list.Needs, options.sortField, options.sortOrder)
-			list.Needs = items
-			return list, err
-		},
-		writeCustomerNeedMetadata,
-		func(list client.IssueCustomerNeedMetadataList) []client.CustomerNeedMetadataSummary {
-			return list.Needs
-		},
-	)
+		PageWithItems: customerNeedMetadataPageWithItems,
+		WriteItem:     writeCustomerNeedMetadata,
+	}
+	addListCommand(ctx, root, options, spec)
 }

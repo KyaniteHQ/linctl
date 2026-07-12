@@ -132,8 +132,7 @@ func Test_SelectSession_rejects_personal_api_key_shapes(t *testing.T) {
 				Store: NewStore(paths),
 			})
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "personal API key")
+			require.ErrorContains(t, err, "personal API key")
 		})
 	}
 }
@@ -145,8 +144,7 @@ func Test_SelectSession_reports_context_and_store_errors(t *testing.T) {
 
 		_, err := SelectSession(ctx, SessionRequest{})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "select auth session context")
+		require.ErrorContains(t, err, "select auth session context")
 	})
 
 	t.Run("store read error", func(t *testing.T) {
@@ -161,8 +159,7 @@ func Test_SelectSession_reports_context_and_store_errors(t *testing.T) {
 			}),
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read auth app config")
+		require.ErrorContains(t, err, "read auth app config")
 	})
 }
 

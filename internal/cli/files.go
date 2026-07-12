@@ -61,7 +61,7 @@ func addFilesCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	}
 	addFilesUploadCommand(ctx, filesCommand, options)
 	addFilesDownloadCommand(ctx, filesCommand, options)
-	root.AddCommand(filesCommand)
+	addCommandWithSafety(root, CommandSafetyWrite, filesCommand)
 }
 
 func addFilesUploadCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

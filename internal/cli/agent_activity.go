@@ -56,11 +56,3 @@ func loadAgentActivity(
 ) (client.AgentActivitySummary, error) {
 	return client.GetAgentActivityByID(ctx, runtime.graphqlClient, id)
 }
-
-func agentActivityPageWithItems(
-	page client.AgentActivityList,
-	activities []client.AgentActivitySummary,
-) client.AgentActivityList {
-	page.AgentActivities = activities
-	return page
-}

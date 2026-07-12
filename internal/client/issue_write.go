@@ -132,8 +132,8 @@ func CreateIssue(
 		if guard.target.Project != nil {
 			input.ProjectID = stringPtr(guard.target.Project.ID)
 		}
-		if request.ProjectMilestoneID != "" && guard.target.Project == nil {
-			return IssueSummary{}, fmt.Errorf("%w: --milestone requires a pinned project", ErrWriteInvalid)
+		if err := requireCreateMilestone(ctx, graphqlClient, guard, request.ProjectMilestoneID); err != nil {
+			return IssueSummary{}, err
 		}
 		if request.StateType != "" {
 			stateID, stateErr := firstStateIDOfType(ctx, graphqlClient, guard.target.Team.ID, request.StateType)
@@ -157,6 +157,24 @@ func CreateIssue(
 
 		return issueSummaryFromFields(created.IssueCreate.Issue.IssueSummaryFields), nil
 	})
+}
+
+// requireCreateMilestone verifies a requested ProjectMilestone assignment on
+// create: it requires a pinned project and a milestone inside the pinned target.
+func requireCreateMilestone(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	guard writeGuard,
+	projectMilestoneID string,
+) error {
+	if projectMilestoneID == "" {
+		return nil
+	}
+	if guard.target.Project == nil {
+		return fmt.Errorf("%w: --milestone requires a pinned project", ErrWriteInvalid)
+	}
+
+	return guard.requireProjectMilestone(ctx, graphqlClient, projectMilestoneID)
 }
 
 // UpdateIssue updates an issue after resolving and comparing the pinned write target.

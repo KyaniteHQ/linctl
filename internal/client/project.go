@@ -228,10 +228,11 @@ func ListProjectsByTeam(
 		return ProjectList{}, fmt.Errorf("list projects: %w", err)
 	}
 
-	summaries := make([]ProjectSummary, 0, len(projects.Team.Projects.Nodes))
-	for _, project := range projects.Team.Projects.Nodes {
-		summaries = append(summaries, projectSummaryFromFields(project.ProjectSummaryFields))
-	}
+	summaries := mapNodes(projects.Team.Projects.Nodes, func(
+		project ProjectsTeamProjectsProjectConnectionNodesProject,
+	) ProjectSummary {
+		return projectSummaryFromFields(project.ProjectSummaryFields)
+	})
 
 	return ProjectList{
 		Projects:    summaries,
@@ -247,10 +248,11 @@ func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) 
 		return ProjectList{}, fmt.Errorf("list projects: %w", err)
 	}
 
-	summaries := make([]ProjectSummary, 0, len(result.Projects.Nodes))
-	for _, project := range result.Projects.Nodes {
-		summaries = append(summaries, visibleProjectSummary(project))
-	}
+	summaries := mapNodes(result.Projects.Nodes, func(
+		project projectsProjectsProjectConnectionNodesProject,
+	) ProjectSummary {
+		return projectSummaryFromFields(project.ProjectSummaryFields)
+	})
 
 	return ProjectList{
 		Projects:    summaries,
@@ -281,10 +283,11 @@ func ListProjectAttachments(
 		return ProjectAttachmentList{}, fmt.Errorf("list project attachments %s: %w", id, err)
 	}
 
-	attachments := make([]AttachmentSummary, 0, len(result.Project.Attachments.Nodes))
-	for _, node := range result.Project.Attachments.Nodes {
-		attachments = append(attachments, projectAttachmentSummary(node.ProjectAttachmentSummaryFields))
-	}
+	attachments := mapNodes(result.Project.Attachments.Nodes, func(
+		node project_attachmentsProjectAttachmentsProjectAttachmentConnectionNodesProjectAttachment,
+	) AttachmentSummary {
+		return projectAttachmentSummary(node.ProjectAttachmentSummaryFields)
+	})
 
 	return ProjectAttachmentList{
 		ProjectID:   result.Project.Id,
@@ -307,10 +310,11 @@ func ListProjectDocuments(
 		return ProjectDocumentList{}, fmt.Errorf("list project documents %s: %w", id, err)
 	}
 
-	documents := make([]DocumentSummary, 0, len(result.Project.Documents.Nodes))
-	for _, node := range result.Project.Documents.Nodes {
-		documents = append(documents, documentSummary(node.DocumentSummaryFields))
-	}
+	documents := mapNodes(result.Project.Documents.Nodes, func(
+		node project_documentsProjectDocumentsDocumentConnectionNodesDocument,
+	) DocumentSummary {
+		return documentSummary(node.DocumentSummaryFields)
+	})
 
 	return ProjectDocumentList{
 		ProjectID:   result.Project.Id,
@@ -333,10 +337,11 @@ func ListProjectExternalLinks(
 		return ProjectExternalLinkList{}, fmt.Errorf("list project external links %s: %w", id, err)
 	}
 
-	links := make([]EntityExternalLinkSummary, 0, len(result.Project.ExternalLinks.Nodes))
-	for _, node := range result.Project.ExternalLinks.Nodes {
-		links = append(links, entityExternalLinkSummary(node.EntityExternalLinkSummaryFields))
-	}
+	links := mapNodes(result.Project.ExternalLinks.Nodes, func(
+		node project_externalLinksProjectExternalLinksEntityExternalLinkConnectionNodesEntityExternalLink,
+	) EntityExternalLinkSummary {
+		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
+	})
 
 	return ProjectExternalLinkList{
 		ProjectID:   result.Project.Id,
@@ -359,10 +364,11 @@ func ListProjectHistory(
 		return ProjectHistoryList{}, fmt.Errorf("list project history %s: %w", id, err)
 	}
 
-	history := make([]ProjectHistorySummary, 0, len(result.Project.History.Nodes))
-	for _, node := range result.Project.History.Nodes {
-		history = append(history, projectHistorySummary(node.ProjectHistorySummaryFields))
-	}
+	history := mapNodes(result.Project.History.Nodes, func(
+		node project_historyProjectHistoryProjectHistoryConnectionNodesProjectHistory,
+	) ProjectHistorySummary {
+		return projectHistorySummary(node.ProjectHistorySummaryFields)
+	})
 
 	return ProjectHistoryList{
 		ProjectID:   result.Project.Id,
@@ -411,10 +417,11 @@ func ListProjectInitiatives(
 		return ProjectInitiativeList{}, fmt.Errorf("list project initiatives %s: %w", id, err)
 	}
 
-	initiatives := make([]InitiativeSummary, 0, len(result.Project.Initiatives.Nodes))
-	for _, node := range result.Project.Initiatives.Nodes {
-		initiatives = append(initiatives, initiativeSummary(node.InitiativeSummaryFields))
-	}
+	initiatives := mapNodes(result.Project.Initiatives.Nodes, func(
+		node project_initiativesProjectInitiativesInitiativeConnectionNodesInitiative,
+	) InitiativeSummary {
+		return initiativeSummary(node.InitiativeSummaryFields)
+	})
 
 	return ProjectInitiativeList{
 		ProjectID:   result.Project.Id,
@@ -437,10 +444,11 @@ func ListProjectInverseRelations(
 		return ProjectProjectRelationList{}, fmt.Errorf("list project inverse relations %s: %w", id, err)
 	}
 
-	relations := make([]ProjectRelationSummary, 0, len(result.Project.InverseRelations.Nodes))
-	for _, node := range result.Project.InverseRelations.Nodes {
-		relations = append(relations, projectRelationSummary(node.ProjectRelationSummaryFields))
-	}
+	relations := mapNodes(result.Project.InverseRelations.Nodes, func(
+		node project_inverseRelationsProjectInverseRelationsProjectRelationConnectionNodesProjectRelation,
+	) ProjectRelationSummary {
+		return projectRelationSummary(node.ProjectRelationSummaryFields)
+	})
 
 	return ProjectProjectRelationList{
 		ProjectID:   result.Project.Id,
@@ -463,10 +471,11 @@ func ListProjectIssues(
 		return ProjectIssueList{}, fmt.Errorf("list project issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.Project.Issues.Nodes))
-	for _, node := range result.Project.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(node.IssueSummaryFields))
-	}
+	issues := mapNodes(result.Project.Issues.Nodes, func(
+		node project_issuesProjectIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(node.IssueSummaryFields)
+	})
 
 	return ProjectIssueList{
 		ProjectID:   result.Project.Id,
@@ -489,10 +498,11 @@ func ListProjectComments(
 		return ProjectCommentList{}, fmt.Errorf("list project comments %s: %w", id, err)
 	}
 
-	comments := make([]CommentMetadataSummary, 0, len(result.Project.Comments.Nodes))
-	for _, node := range result.Project.Comments.Nodes {
-		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
-	}
+	comments := mapNodes(result.Project.Comments.Nodes, func(
+		node project_commentsProjectCommentsCommentConnectionNodesComment,
+	) CommentMetadataSummary {
+		return commentMetadataSummary(node.CommentMetadataFields)
+	})
 
 	return ProjectCommentList{
 		ProjectID:   result.Project.Id,
@@ -515,10 +525,11 @@ func ListLabelsForProject(
 		return ProjectProjectLabelList{}, fmt.Errorf("list project labels %s: %w", id, err)
 	}
 
-	labels := make([]ProjectLabelSummary, 0, len(result.Project.Labels.Nodes))
-	for _, node := range result.Project.Labels.Nodes {
-		labels = append(labels, projectLabelSummary(node.ProjectLabelSummaryFields))
-	}
+	labels := mapNodes(result.Project.Labels.Nodes, func(
+		node project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
+	) ProjectLabelSummary {
+		return projectLabelSummary(node.ProjectLabelSummaryFields)
+	})
 
 	return ProjectProjectLabelList{
 		ProjectID:     result.Project.Id,
@@ -541,10 +552,11 @@ func ListProjectNeeds(
 		return ProjectCustomerNeedList{}, fmt.Errorf("list project customer needs %s: %w", id, err)
 	}
 
-	needs := make([]CustomerNeedSummary, 0, len(result.Project.Needs.Nodes))
-	for _, node := range result.Project.Needs.Nodes {
-		needs = append(needs, customerNeedSummary(node.CustomerNeedSummaryFields))
-	}
+	needs := mapNodes(result.Project.Needs.Nodes, func(
+		node project_needsProjectNeedsCustomerNeedConnectionNodesCustomerNeed,
+	) CustomerNeedSummary {
+		return customerNeedSummary(node.CustomerNeedSummaryFields)
+	})
 
 	return ProjectCustomerNeedList{
 		ProjectID:   result.Project.Id,
@@ -567,10 +579,11 @@ func ListProjectRelationsForProject(
 		return ProjectProjectRelationList{}, fmt.Errorf("list project relations %s: %w", id, err)
 	}
 
-	relations := make([]ProjectRelationSummary, 0, len(result.Project.Relations.Nodes))
-	for _, node := range result.Project.Relations.Nodes {
-		relations = append(relations, projectRelationSummary(node.ProjectRelationSummaryFields))
-	}
+	relations := mapNodes(result.Project.Relations.Nodes, func(
+		node project_relationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
+	) ProjectRelationSummary {
+		return projectRelationSummary(node.ProjectRelationSummaryFields)
+	})
 
 	return ProjectProjectRelationList{
 		ProjectID:   result.Project.Id,
@@ -593,10 +606,11 @@ func ListProjectTeams(
 		return ProjectTeamList{}, fmt.Errorf("list project teams %s: %w", id, err)
 	}
 
-	teams := make([]TeamSummary, 0, len(result.Project.Teams.Nodes))
-	for _, node := range result.Project.Teams.Nodes {
-		teams = append(teams, teamSummary(node.TeamSummaryFields))
-	}
+	teams := mapNodes(result.Project.Teams.Nodes, func(
+		node project_teamsProjectTeamsTeamConnectionNodesTeam,
+	) TeamSummary {
+		return teamSummary(node.TeamSummaryFields)
+	})
 
 	return ProjectTeamList{
 		ProjectID:   result.Project.Id,
@@ -619,15 +633,16 @@ func ListProjectMembers(
 		return ProjectMemberList{}, fmt.Errorf("list project members %s: %w", id, err)
 	}
 
-	members := make([]ProjectMember, 0, len(project.Project.Members.Nodes))
-	for _, member := range project.Project.Members.Nodes {
-		members = append(members, ProjectMember{
+	members := mapNodes(project.Project.Members.Nodes, func(
+		member project_membersProjectMembersUserConnectionNodesUser,
+	) ProjectMember {
+		return ProjectMember{
 			ID:          member.Id,
 			Name:        member.Name,
 			DisplayName: member.DisplayName,
 			Email:       member.Email,
-		})
-	}
+		}
+	})
 
 	return ProjectMemberList{
 		ProjectID:   project.Project.Id,
@@ -650,10 +665,7 @@ func ListProjectUpdates(
 		return ProjectUpdateList{}, fmt.Errorf("list project updates %s: %w", id, err)
 	}
 
-	updates := make([]ProjectUpdateSummary, 0, len(project.Project.ProjectUpdates.Nodes))
-	for _, update := range project.Project.ProjectUpdates.Nodes {
-		updates = append(updates, projectScopedProjectUpdateSummary(update))
-	}
+	updates := mapNodes(project.Project.ProjectUpdates.Nodes, projectScopedProjectUpdateSummary)
 
 	return ProjectUpdateList{
 		ProjectID:   project.Project.Id,
@@ -694,10 +706,11 @@ func ListAllProjectUpdates(ctx context.Context, graphqlClient graphql.Client, li
 		return ProjectUpdateList{}, fmt.Errorf("list project updates: %w", err)
 	}
 
-	updates := make([]ProjectUpdateSummary, 0, len(updatesResponse.ProjectUpdates.Nodes))
-	for _, update := range updatesResponse.ProjectUpdates.Nodes {
-		updates = append(updates, projectUpdateSummary(update.TopLevelProjectUpdateSummaryFields))
-	}
+	updates := mapNodes(updatesResponse.ProjectUpdates.Nodes, func(
+		update projectUpdatesProjectUpdatesProjectUpdateConnectionNodesProjectUpdate,
+	) ProjectUpdateSummary {
+		return projectUpdateSummary(update.TopLevelProjectUpdateSummaryFields)
+	})
 
 	return ProjectUpdateList{
 		Updates:     updates,
@@ -732,10 +745,11 @@ func ListProjectUpdateComments(
 		return ProjectUpdateCommentList{}, fmt.Errorf("list project update comments %s: %w", id, err)
 	}
 
-	comments := make([]CommentMetadataSummary, 0, len(result.ProjectUpdate.Comments.Nodes))
-	for _, node := range result.ProjectUpdate.Comments.Nodes {
-		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
-	}
+	comments := mapNodes(result.ProjectUpdate.Comments.Nodes, func(
+		node projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment,
+	) CommentMetadataSummary {
+		return commentMetadataSummary(node.CommentMetadataFields)
+	})
 
 	return ProjectUpdateCommentList{
 		ProjectUpdateID: result.ProjectUpdate.Id,
@@ -798,24 +812,19 @@ func projectAttachmentSummary(fields ProjectAttachmentSummaryFields) AttachmentS
 	}
 }
 
-func visibleProjectSummary(project projectsProjectsProjectConnectionNodesProject) ProjectSummary {
-	return projectSummaryFromFields(project.ProjectSummaryFields)
-}
-
 func projectSummaryFromFields(project ProjectSummaryFields) ProjectSummary {
 	lead := ""
 	if project.Lead != nil {
 		lead = project.Lead.DisplayName
 	}
 
-	teams := make([]ProjectTeam, 0, len(project.Teams.Nodes))
-	for _, team := range project.Teams.Nodes {
-		teams = append(teams, ProjectTeam{
+	teams := mapNodes(project.Teams.Nodes, func(team ProjectSummaryFieldsTeamsTeamConnectionNodesTeam) ProjectTeam {
+		return ProjectTeam{
 			ID:   team.Id,
 			Key:  team.Key,
 			Name: team.Name,
-		})
-	}
+		}
+	})
 
 	return ProjectSummary{
 		ID:          project.Id,

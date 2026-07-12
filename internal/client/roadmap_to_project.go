@@ -41,13 +41,11 @@ func ListRoadmapToProjects(
 		return RoadmapToProjectList{}, fmt.Errorf("list roadmap to projects: %w", err)
 	}
 
-	associations := make([]RoadmapToProjectSummary, 0, len(result.RoadmapToProjects.Nodes))
-	for _, association := range result.RoadmapToProjects.Nodes {
-		associations = append(
-			associations,
-			roadmapToProjectSummary(association.RoadmapToProjectSummaryFields),
-		)
-	}
+	associations := mapNodes(result.RoadmapToProjects.Nodes, func(
+		association roadmapToProjectsRoadmapToProjectsRoadmapToProjectConnectionNodesRoadmapToProject,
+	) RoadmapToProjectSummary {
+		return roadmapToProjectSummary(association.RoadmapToProjectSummaryFields)
+	})
 
 	return RoadmapToProjectList{
 		Associations: associations,

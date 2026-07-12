@@ -151,8 +151,7 @@ func Test_GenerateOAuthState_reports_random_reader_error(t *testing.T) {
 
 	_, err := generateOAuthState()
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "generate oauth state")
+	require.ErrorContains(t, err, "generate oauth state")
 }
 
 func Test_AuthLogin_reports_app_configuration_errors(t *testing.T) {
@@ -209,8 +208,7 @@ func Test_AuthLogin_reports_generated_proof_errors(t *testing.T) {
 			"login",
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "pkce failed")
+		require.ErrorContains(t, err, "pkce failed")
 	})
 
 	t.Run("state", func(t *testing.T) {
@@ -236,8 +234,7 @@ func Test_AuthLogin_reports_generated_proof_errors(t *testing.T) {
 			"login",
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "state failed")
+		require.ErrorContains(t, err, "state failed")
 	})
 }
 
@@ -423,8 +420,7 @@ func Test_AuthLogin_reports_callback_read_errors(t *testing.T) {
 		[]string{"auth", "login", "--callback", "-"},
 	)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read oauth callback")
+	require.ErrorContains(t, err, "read oauth callback")
 }
 
 func Test_AuthLogin_reports_empty_callback_from_stdin(t *testing.T) {
@@ -456,8 +452,7 @@ func Test_AuthLogin_callback_writer_error_is_reported(t *testing.T) {
 		AuthorizeURL: "https://linear.app/oauth/authorize",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "stderr closed")
+	require.ErrorContains(t, err, "stderr closed")
 }
 
 func Test_AuthLogin_reports_completion_errors(t *testing.T) {
@@ -485,8 +480,7 @@ func Test_AuthLogin_reports_completion_errors(t *testing.T) {
 
 		_, _, err := completeAuthLogin(context.Background(), authCommandContext{}, baseRequest)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "exchange failed")
+		require.ErrorContains(t, err, "exchange failed")
 	})
 
 	t.Run("missing scope", func(t *testing.T) {
@@ -562,8 +556,7 @@ func Test_AuthLogin_reports_token_state_save_error_after_callback(t *testing.T) 
 		"--callback", "http://127.0.0.1:8484/callback?code=code-123&state=state-123",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read auth token state")
+	require.ErrorContains(t, err, "read auth token state")
 }
 
 func Test_AuthorizationCodeFromCallback_reports_missing_code_shapes(t *testing.T) {
@@ -597,8 +590,7 @@ func Test_AuthorizationCodeFromCallback_reports_missing_code_shapes(t *testing.T
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := authorizationCodeFromCallback(tt.callback, "state-123")
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), tt.want)
+			require.ErrorContains(t, err, tt.want)
 		})
 	}
 }

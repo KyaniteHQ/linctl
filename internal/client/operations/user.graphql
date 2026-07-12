@@ -190,165 +190,21 @@ query userSettings_notificationCategoryPreferences {
   }
 }
 
-query userSettings_notificationCategoryPreferences_appsAndIntegrations {
-  userSettings {
-    notificationCategoryPreferences {
-      appsAndIntegrations {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_assignments {
-  userSettings {
-    notificationCategoryPreferences {
-      assignments {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_billing {
-  userSettings {
-    notificationCategoryPreferences {
-      billing {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_commentsAndReplies {
-  userSettings {
-    notificationCategoryPreferences {
-      commentsAndReplies {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_customers {
-  userSettings {
-    notificationCategoryPreferences {
-      customers {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_documentChanges {
-  userSettings {
-    notificationCategoryPreferences {
-      documentChanges {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_feed {
-  userSettings {
-    notificationCategoryPreferences {
-      feed {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_mentions {
-  userSettings {
-    notificationCategoryPreferences {
-      mentions {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_postsAndUpdates {
-  userSettings {
-    notificationCategoryPreferences {
-      postsAndUpdates {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_reactions {
-  userSettings {
-    notificationCategoryPreferences {
-      reactions {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_reminders {
-  userSettings {
-    notificationCategoryPreferences {
-      reminders {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_reviews {
-  userSettings {
-    notificationCategoryPreferences {
-      reviews {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_statusChanges {
-  userSettings {
-    notificationCategoryPreferences {
-      statusChanges {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_subscriptions {
-  userSettings {
-    notificationCategoryPreferences {
-      subscriptions {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_system {
-  userSettings {
-    notificationCategoryPreferences {
-      system {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
-query userSettings_notificationCategoryPreferences_triage {
-  userSettings {
-    notificationCategoryPreferences {
-      triage {
-        ...NotificationChannelPreferencesFields
-      }
-    }
-  }
-}
 
 query userSettings_notificationChannelPreferences {
   userSettings {

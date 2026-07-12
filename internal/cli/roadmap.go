@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -90,14 +89,6 @@ func loadRoadmap(
 	return client.GetRoadmapByID(ctx, runtime.graphqlClient, id)
 }
 
-func roadmapPageWithItems(
-	page client.RoadmapList,
-	roadmaps []client.RoadmapSummary,
-) client.RoadmapList {
-	page.Roadmaps = roadmaps
-	return page
-}
-
 func loadRoadmapProjects(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -106,12 +97,4 @@ func loadRoadmapProjects(
 ) (client.RoadmapProjectList, []client.ProjectSummary, error) {
 	projects, err := client.ListRoadmapProjects(ctx, runtime.graphqlClient, args[0], limit)
 	return projects, projects.Projects, err
-}
-
-func roadmapProjectPageWithItems(
-	page client.RoadmapProjectList,
-	projects []client.ProjectSummary,
-) client.RoadmapProjectList {
-	page.Projects = projects
-	return page
 }

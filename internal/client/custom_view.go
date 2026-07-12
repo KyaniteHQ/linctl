@@ -77,10 +77,11 @@ func ListCustomViews(ctx context.Context, graphqlClient graphql.Client, limit in
 		return CustomViewList{}, fmt.Errorf("list custom views: %w", err)
 	}
 
-	summaries := make([]CustomViewSummary, 0, len(result.CustomViews.Nodes))
-	for _, node := range result.CustomViews.Nodes {
-		summaries = append(summaries, customViewSummary(node.CustomViewSummaryFields))
-	}
+	summaries := mapNodes(result.CustomViews.Nodes, func(
+		node customViewsCustomViewsCustomViewConnectionNodesCustomView,
+	) CustomViewSummary {
+		return customViewSummary(node.CustomViewSummaryFields)
+	})
 
 	return CustomViewList{
 		CustomViews: summaries,
@@ -132,10 +133,11 @@ func ListCustomViewInitiatives(
 		return InitiativeList{}, fmt.Errorf("list custom view initiatives %s: %w", id, err)
 	}
 
-	initiatives := make([]InitiativeSummary, 0, len(result.CustomView.Initiatives.Nodes))
-	for _, node := range result.CustomView.Initiatives.Nodes {
-		initiatives = append(initiatives, initiativeSummary(node.InitiativeSummaryFields))
-	}
+	initiatives := mapNodes(result.CustomView.Initiatives.Nodes, func(
+		node customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative,
+	) InitiativeSummary {
+		return initiativeSummary(node.InitiativeSummaryFields)
+	})
 
 	return InitiativeList{
 		Initiatives: initiatives,
@@ -156,10 +158,11 @@ func ListCustomViewIssues(
 		return IssueList{}, fmt.Errorf("list custom view issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.CustomView.Issues.Nodes))
-	for _, node := range result.CustomView.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(node.IssueSummaryFields))
-	}
+	issues := mapNodes(result.CustomView.Issues.Nodes, func(
+		node customView_issuesCustomViewIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(node.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -237,10 +240,11 @@ func ListCustomViewProjects(
 		return ProjectList{}, fmt.Errorf("list custom view projects %s: %w", id, err)
 	}
 
-	projects := make([]ProjectSummary, 0, len(result.CustomView.Projects.Nodes))
-	for _, node := range result.CustomView.Projects.Nodes {
-		projects = append(projects, projectSummaryFromFields(node.ProjectSummaryFields))
-	}
+	projects := mapNodes(result.CustomView.Projects.Nodes, func(
+		node customView_projectsCustomViewProjectsProjectConnectionNodesProject,
+	) ProjectSummary {
+		return projectSummaryFromFields(node.ProjectSummaryFields)
+	})
 
 	return ProjectList{
 		Projects:    projects,

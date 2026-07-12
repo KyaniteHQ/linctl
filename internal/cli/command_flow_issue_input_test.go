@@ -164,8 +164,7 @@ func Test_CommandFlows_report_issue_text_file_errors(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.contains)
+			require.ErrorContains(t, err, test.contains)
 		})
 	}
 }

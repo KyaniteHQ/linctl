@@ -218,8 +218,7 @@ func Test_Load_reports_config_read_error(t *testing.T) {
 		RepoPath: configPath,
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read config")
+	require.ErrorContains(t, err, "read config")
 }
 
 func Test_Load_reports_bad_config_path_error(t *testing.T) {
@@ -227,6 +226,5 @@ func Test_Load_reports_bad_config_path_error(t *testing.T) {
 		RepoPath: "bad\x00path",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read config")
+	require.ErrorContains(t, err, "read config")
 }

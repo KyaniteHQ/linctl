@@ -51,10 +51,9 @@ func ListUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (Us
 		return UserList{}, fmt.Errorf("list users: %w", err)
 	}
 
-	summaries := make([]UserSummary, 0, len(userPage.Users.Nodes))
-	for _, user := range userPage.Users.Nodes {
-		summaries = append(summaries, userSummary(user.UserSummaryFields))
-	}
+	summaries := mapNodes(userPage.Users.Nodes, func(user usersUsersUserConnectionNodesUser) UserSummary {
+		return userSummary(user.UserSummaryFields)
+	})
 
 	return UserList{
 		Users:       summaries,
@@ -90,10 +89,11 @@ func ListViewerDrafts(ctx context.Context, graphqlClient graphql.Client, limit i
 		return DraftList{}, fmt.Errorf("list viewer drafts: %w", err)
 	}
 
-	summaries := make([]DraftSummary, 0, len(draftPage.Viewer.Drafts.Nodes))
-	for _, draft := range draftPage.Viewer.Drafts.Nodes {
-		summaries = append(summaries, draftSummary(draft.DraftSummaryFields))
-	}
+	summaries := mapNodes(draftPage.Viewer.Drafts.Nodes, func(
+		draft viewer_draftsViewerUserDraftsDraftConnectionNodesDraft,
+	) DraftSummary {
+		return draftSummary(draft.DraftSummaryFields)
+	})
 
 	return DraftList{
 		Drafts:      summaries,
@@ -114,10 +114,11 @@ func ListUserAssignedIssues(
 		return IssueList{}, fmt.Errorf("list user assigned issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.User.AssignedIssues.Nodes))
-	for _, issue := range result.User.AssignedIssues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.User.AssignedIssues.Nodes, func(
+		issue user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -133,10 +134,11 @@ func ListUserCreatedIssues(ctx context.Context, graphqlClient graphql.Client, id
 		return IssueList{}, fmt.Errorf("list user created issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.User.CreatedIssues.Nodes))
-	for _, issue := range result.User.CreatedIssues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.User.CreatedIssues.Nodes, func(
+		issue user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -157,10 +159,11 @@ func ListUserDelegatedIssues(
 		return IssueList{}, fmt.Errorf("list user delegated issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.User.DelegatedIssues.Nodes))
-	for _, issue := range result.User.DelegatedIssues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.User.DelegatedIssues.Nodes, func(
+		issue user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -181,10 +184,11 @@ func ListUserTeamMemberships(
 		return TeamMembershipList{}, fmt.Errorf("list user team memberships %s: %w", id, err)
 	}
 
-	memberships := make([]TeamMembershipSummary, 0, len(result.User.TeamMemberships.Nodes))
-	for _, membership := range result.User.TeamMemberships.Nodes {
-		memberships = append(memberships, teamMembershipSummary(membership.TeamMembershipSummaryFields))
-	}
+	memberships := mapNodes(result.User.TeamMemberships.Nodes, func(
+		membership user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+	) TeamMembershipSummary {
+		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
+	})
 
 	return TeamMembershipList{
 		Memberships: memberships,
@@ -200,10 +204,9 @@ func ListUserTeams(ctx context.Context, graphqlClient graphql.Client, id string,
 		return TeamList{}, fmt.Errorf("list user teams %s: %w", id, err)
 	}
 
-	teams := make([]TeamSummary, 0, len(result.User.Teams.Nodes))
-	for _, team := range result.User.Teams.Nodes {
-		teams = append(teams, teamSummary(team.TeamSummaryFields))
-	}
+	teams := mapNodes(result.User.Teams.Nodes, func(team user_teamsUserTeamsTeamConnectionNodesTeam) TeamSummary {
+		return teamSummary(team.TeamSummaryFields)
+	})
 
 	return TeamList{
 		Teams:       teams,
@@ -219,10 +222,11 @@ func ListViewerAssignedIssues(ctx context.Context, graphqlClient graphql.Client,
 		return IssueList{}, fmt.Errorf("list viewer assigned issues: %w", err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.Viewer.AssignedIssues.Nodes))
-	for _, issue := range result.Viewer.AssignedIssues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.Viewer.AssignedIssues.Nodes, func(
+		issue viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -238,10 +242,11 @@ func ListViewerCreatedIssues(ctx context.Context, graphqlClient graphql.Client, 
 		return IssueList{}, fmt.Errorf("list viewer created issues: %w", err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.Viewer.CreatedIssues.Nodes))
-	for _, issue := range result.Viewer.CreatedIssues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.Viewer.CreatedIssues.Nodes, func(
+		issue viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -257,10 +262,11 @@ func ListViewerDelegatedIssues(ctx context.Context, graphqlClient graphql.Client
 		return IssueList{}, fmt.Errorf("list viewer delegated issues: %w", err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.Viewer.DelegatedIssues.Nodes))
-	for _, issue := range result.Viewer.DelegatedIssues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.Viewer.DelegatedIssues.Nodes, func(
+		issue viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -280,10 +286,11 @@ func ListViewerTeamMemberships(
 		return TeamMembershipList{}, fmt.Errorf("list viewer team memberships: %w", err)
 	}
 
-	memberships := make([]TeamMembershipSummary, 0, len(result.Viewer.TeamMemberships.Nodes))
-	for _, membership := range result.Viewer.TeamMemberships.Nodes {
-		memberships = append(memberships, teamMembershipSummary(membership.TeamMembershipSummaryFields))
-	}
+	memberships := mapNodes(result.Viewer.TeamMemberships.Nodes, func(
+		membership viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+	) TeamMembershipSummary {
+		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
+	})
 
 	return TeamMembershipList{
 		Memberships: memberships,
@@ -299,10 +306,11 @@ func ListViewerTeams(ctx context.Context, graphqlClient graphql.Client, limit in
 		return TeamList{}, fmt.Errorf("list viewer teams: %w", err)
 	}
 
-	teams := make([]TeamSummary, 0, len(result.Viewer.Teams.Nodes))
-	for _, team := range result.Viewer.Teams.Nodes {
-		teams = append(teams, teamSummary(team.TeamSummaryFields))
-	}
+	teams := mapNodes(result.Viewer.Teams.Nodes, func(
+		team viewer_teamsViewerUserTeamsTeamConnectionNodesTeam,
+	) TeamSummary {
+		return teamSummary(team.TeamSummaryFields)
+	})
 
 	return TeamList{
 		Teams:       teams,

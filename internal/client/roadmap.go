@@ -48,10 +48,11 @@ func ListRoadmaps(ctx context.Context, graphqlClient graphql.Client, limit int) 
 		return RoadmapList{}, fmt.Errorf("list roadmaps: %w", err)
 	}
 
-	summaries := make([]RoadmapSummary, 0, len(result.Roadmaps.Nodes))
-	for _, node := range result.Roadmaps.Nodes {
-		summaries = append(summaries, roadmapSummary(node.RoadmapSummaryFields))
-	}
+	summaries := mapNodes(result.Roadmaps.Nodes, func(
+		node roadmapsRoadmapsRoadmapConnectionNodesRoadmap,
+	) RoadmapSummary {
+		return roadmapSummary(node.RoadmapSummaryFields)
+	})
 
 	return RoadmapList{
 		Roadmaps:    summaries,
@@ -82,10 +83,11 @@ func ListRoadmapProjects(
 		return RoadmapProjectList{}, fmt.Errorf("list roadmap projects %s: %w", id, err)
 	}
 
-	projects := make([]ProjectSummary, 0, len(result.Roadmap.Projects.Nodes))
-	for _, project := range result.Roadmap.Projects.Nodes {
-		projects = append(projects, projectSummaryFromFields(project.ProjectSummaryFields))
-	}
+	projects := mapNodes(result.Roadmap.Projects.Nodes, func(
+		project roadmap_projectsRoadmapProjectsProjectConnectionNodesProject,
+	) ProjectSummary {
+		return projectSummaryFromFields(project.ProjectSummaryFields)
+	})
 
 	return RoadmapProjectList{
 		RoadmapID:   result.Roadmap.Id,

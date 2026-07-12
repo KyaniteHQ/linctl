@@ -57,6 +57,22 @@ func Test_CommandInventory_exposes_stable_public_command_surface(t *testing.T) {
 	require.Equal(t, "document", documentCreate.Entity)
 }
 
+// Every registered public command must classify as read, write, or local so
+// the audit surface never silently degrades when a command lacks annotations.
+func Test_CommandInventory_classifies_every_public_command(t *testing.T) {
+	root := NewRootCommand(context.Background(), BuildInfo{})
+
+	for _, command := range CommandInventory(root) {
+		require.NotEqual(
+			t,
+			CommandSafetyUnknown,
+			command.Safety,
+			"command %q must classify as read, write, or local",
+			command.Path,
+		)
+	}
+}
+
 func Test_CommandInventory_covers_live_smoke_commands(t *testing.T) {
 	script, err := os.ReadFile("../../scripts/live-smoke.sh")
 	require.NoError(t, err)

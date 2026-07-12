@@ -33,10 +33,11 @@ func ListCustomerStatuses(ctx context.Context, graphqlClient graphql.Client, lim
 		return CustomerStatusList{}, fmt.Errorf("list customer statuses: %w", err)
 	}
 
-	summaries := make([]CustomerStatusSummary, 0, len(result.CustomerStatuses.Nodes))
-	for _, node := range result.CustomerStatuses.Nodes {
-		summaries = append(summaries, customerStatusSummary(node.CustomerStatusSummaryFields))
-	}
+	summaries := mapNodes(result.CustomerStatuses.Nodes, func(
+		node customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus,
+	) CustomerStatusSummary {
+		return customerStatusSummary(node.CustomerStatusSummaryFields)
+	})
 
 	return CustomerStatusList{
 		Statuses:    summaries,

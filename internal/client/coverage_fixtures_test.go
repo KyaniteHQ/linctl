@@ -793,10 +793,6 @@ func notificationCategoriesJSON() string {
 	}`
 }
 
-func userSettingsCategoryJSON(category string) string {
-	return `{"userSettings":{"notificationCategoryPreferences":{"` + category + `":` + notificationChannelJSON() + `}}}`
-}
-
 func notificationChannelJSON() string {
 	return `{"desktop":true,"email":false,"mobile":true,"slack":true}`
 }

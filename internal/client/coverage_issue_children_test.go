@@ -85,48 +85,37 @@ func Test_ClientFailureScenarios_wrap_issue_child_metadata_errors(t *testing.T) 
 	errorClient := errorGraphQLClient{err: errors.New("linear unavailable")}
 
 	_, err := ListIssueNeeds(context.Background(), errorClient, "LIT-1", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list issue customer needs LIT-1")
+	require.ErrorContains(t, err, "list issue customer needs LIT-1")
 
 	_, err = ListIssueFormerNeeds(context.Background(), errorClient, "LIT-1", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list issue former customer needs LIT-1")
+	require.ErrorContains(t, err, "list issue former customer needs LIT-1")
 
 	_, err = GetIssueSharedAccess(context.Background(), errorClient, "LIT-1")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "get issue shared access LIT-1")
+	require.ErrorContains(t, err, "get issue shared access LIT-1")
 
 	_, err = ListIssueVCSBranchComments(context.Background(), errorClient, "omer/branch", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list issue vcs branch comments omer/branch")
+	require.ErrorContains(t, err, "list issue vcs branch comments omer/branch")
 
 	_, err = ListIssueVCSBranchNeeds(context.Background(), errorClient, "omer/branch", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list issue vcs branch customer needs omer/branch")
+	require.ErrorContains(t, err, "list issue vcs branch customer needs omer/branch")
 
 	_, err = ListIssueVCSBranchFormerNeeds(context.Background(), errorClient, "omer/branch", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list issue vcs branch former customer needs omer/branch")
+	require.ErrorContains(t, err, "list issue vcs branch former customer needs omer/branch")
 
 	_, err = GetIssueVCSBranchSharedAccess(context.Background(), errorClient, "omer/branch")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "get issue vcs branch shared access omer/branch")
+	require.ErrorContains(t, err, "get issue vcs branch shared access omer/branch")
 
 	_, err = ListAttachmentIssueComments(context.Background(), errorClient, "attachment-id", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list attachment issue comments attachment-id")
+	require.ErrorContains(t, err, "list attachment issue comments attachment-id")
 
 	_, err = ListAttachmentIssueNeeds(context.Background(), errorClient, "attachment-id", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list attachment issue customer needs attachment-id")
+	require.ErrorContains(t, err, "list attachment issue customer needs attachment-id")
 
 	_, err = ListAttachmentIssueFormerNeeds(context.Background(), errorClient, "attachment-id", 1)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list attachment issue former customer needs attachment-id")
+	require.ErrorContains(t, err, "list attachment issue former customer needs attachment-id")
 
 	_, err = GetAttachmentIssueSharedAccess(context.Background(), errorClient, "attachment-id")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "get attachment issue shared access attachment-id")
+	require.ErrorContains(t, err, "get attachment issue shared access attachment-id")
 
 	nilBranchClient := fakeGraphQLClient{
 		"issueVcsBranchSearch_comments":     `{"issueVcsBranchSearch":null}`,
@@ -138,20 +127,20 @@ func Test_ClientFailureScenarios_wrap_issue_child_metadata_errors(t *testing.T) 
 	_, err = ListIssueVCSBranchComments(context.Background(), nilBranchClient, "omer/branch", 1)
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrNotFound)
-	require.Contains(t, err.Error(), "not found")
+	require.ErrorIs(t, err, ErrNotFound)
 
 	_, err = ListIssueVCSBranchNeeds(context.Background(), nilBranchClient, "omer/branch", 1)
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrNotFound)
-	require.Contains(t, err.Error(), "not found")
+	require.ErrorIs(t, err, ErrNotFound)
 
 	_, err = ListIssueVCSBranchFormerNeeds(context.Background(), nilBranchClient, "omer/branch", 1)
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrNotFound)
-	require.Contains(t, err.Error(), "not found")
+	require.ErrorIs(t, err, ErrNotFound)
 
 	_, err = GetIssueVCSBranchSharedAccess(context.Background(), nilBranchClient, "omer/branch")
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrNotFound)
-	require.Contains(t, err.Error(), "not found")
+	require.ErrorIs(t, err, ErrNotFound)
 }

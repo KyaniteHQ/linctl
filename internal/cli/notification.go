@@ -97,14 +97,6 @@ func loadNotification(
 	return client.GetNotificationByID(ctx, runtime.graphqlClient, id)
 }
 
-func notificationPageWithItems(
-	page client.NotificationList,
-	notifications []client.NotificationSummary,
-) client.NotificationList {
-	page.Notifications = notifications
-	return page
-}
-
 func loadNotificationSubscriptionList(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -121,12 +113,4 @@ func loadNotificationSubscription(
 	id string,
 ) (client.NotificationSubscriptionSummary, error) {
 	return client.GetNotificationSubscriptionByID(ctx, runtime.graphqlClient, id)
-}
-
-func notificationSubscriptionPageWithItems(
-	page client.NotificationSubscriptionList,
-	subscriptions []client.NotificationSubscriptionSummary,
-) client.NotificationSubscriptionList {
-	page.Subscriptions = subscriptions
-	return page
 }

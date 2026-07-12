@@ -65,8 +65,7 @@ func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "sort field")
+			require.ErrorContains(t, err, "sort field")
 		})
 	}
 
@@ -103,8 +102,7 @@ func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "empty result")
+			require.ErrorContains(t, err, "empty result")
 		})
 	}
 }
@@ -132,8 +130,7 @@ func Test_CommandFlows_cover_issue_list_filter_validation(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "use only one")
+			require.ErrorContains(t, err, "use only one")
 		})
 	}
 }
@@ -149,8 +146,7 @@ func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "linear issue reference missing")
+		require.ErrorContains(t, err, "linear issue reference missing")
 	})
 
 	t.Run("title missing issue reference", func(t *testing.T) {
@@ -163,8 +159,7 @@ func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "linear issue reference missing")
+		require.ErrorContains(t, err, "linear issue reference missing")
 	})
 
 	t.Run("title runtime error", func(t *testing.T) {
@@ -176,8 +171,7 @@ func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
 			},
 		)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("url lookup error", func(t *testing.T) {
@@ -189,8 +183,7 @@ func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
 			},
 		)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue LIT-1")
+		require.ErrorContains(t, err, "get issue LIT-1")
 	})
 
 	t.Run("branch argument lookup error", func(t *testing.T) {
@@ -201,8 +194,7 @@ func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue LIT-1")
+		require.ErrorContains(t, err, "get issue LIT-1")
 	})
 }
 
@@ -215,8 +207,7 @@ func Test_CommandFlows_cover_issue_comment_stdin_read_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read body from stdin")
+	require.ErrorContains(t, err, "read body from stdin")
 }
 
 func Test_CommandFlows_cover_issue_reply_stdin_read_error(t *testing.T) {
@@ -228,8 +219,7 @@ func Test_CommandFlows_cover_issue_reply_stdin_read_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read body from stdin")
+	require.ErrorContains(t, err, "read body from stdin")
 }
 
 func Test_CommandFlows_cover_document_create_stdin_read_error(t *testing.T) {
@@ -241,8 +231,7 @@ func Test_CommandFlows_cover_document_create_stdin_read_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read body from stdin")
+	require.ErrorContains(t, err, "read body from stdin")
 }
 
 func Test_CommandFlows_cover_document_update_stdin_read_error(t *testing.T) {
@@ -254,8 +243,7 @@ func Test_CommandFlows_cover_document_update_stdin_read_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read body from stdin")
+	require.ErrorContains(t, err, "read body from stdin")
 }
 
 func Test_CommandFlows_cover_comment_update_stdin_read_error(t *testing.T) {
@@ -267,8 +255,7 @@ func Test_CommandFlows_cover_comment_update_stdin_read_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read body from stdin")
+	require.ErrorContains(t, err, "read body from stdin")
 }
 
 func Test_CommandFlows_cover_project_update_create_stdin_read_error(t *testing.T) {
@@ -280,8 +267,7 @@ func Test_CommandFlows_cover_project_update_create_stdin_read_error(t *testing.T
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read body from stdin")
+	require.ErrorContains(t, err, "read body from stdin")
 }
 
 func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
@@ -293,8 +279,7 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "list issue comments LIT-1")
+		require.ErrorContains(t, err, "list issue comments LIT-1")
 	})
 
 	t.Run("writer error", func(t *testing.T) {
@@ -303,8 +288,7 @@ func Test_CommandFlows_cover_issue_comments_error_branches(t *testing.T) {
 
 		err := writeIssueComments(command, []client.IssueCommentSummary{{ID: "comment-id", DisplayName: "Omer", Body: "body"}})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 }
 
@@ -322,8 +306,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("issue vcs branch search runtime error", func(t *testing.T) {
@@ -339,8 +322,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("issue vcs branch search operation error", func(t *testing.T) {
@@ -351,8 +333,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue by vcs branch omer/branch")
+		require.ErrorContains(t, err, "get issue by vcs branch omer/branch")
 	})
 
 	t.Run("issue vcs branch bot actor runtime error", func(t *testing.T) {
@@ -368,8 +349,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("issue vcs branch bot actor operation error", func(t *testing.T) {
@@ -380,8 +360,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue vcs branch bot actor omer/branch")
+		require.ErrorContains(t, err, "get issue vcs branch bot actor omer/branch")
 	})
 
 	t.Run("issue vcs branch shared access operation error", func(t *testing.T) {
@@ -392,8 +371,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue vcs branch shared access omer/branch")
+		require.ErrorContains(t, err, "get issue vcs branch shared access omer/branch")
 	})
 
 	t.Run("issue vcs branch shared access runtime error", func(t *testing.T) {
@@ -409,8 +387,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("attachment issue runtime error", func(t *testing.T) {
@@ -426,8 +403,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("attachment issue operation error", func(t *testing.T) {
@@ -438,8 +414,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get attachment issue attachment-id")
+		require.ErrorContains(t, err, "get attachment issue attachment-id")
 	})
 
 	t.Run("attachment issue bot actor runtime error", func(t *testing.T) {
@@ -455,8 +430,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("attachment issue bot actor operation error", func(t *testing.T) {
@@ -467,8 +441,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get attachment issue bot actor attachment-id")
+		require.ErrorContains(t, err, "get attachment issue bot actor attachment-id")
 	})
 
 	t.Run("attachment issue shared access operation error", func(t *testing.T) {
@@ -479,8 +452,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get attachment issue shared access attachment-id")
+		require.ErrorContains(t, err, "get attachment issue shared access attachment-id")
 	})
 
 	t.Run("attachment issue shared access runtime error", func(t *testing.T) {
@@ -496,8 +468,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("issue bot actor runtime error", func(t *testing.T) {
@@ -513,8 +484,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("issue bot actor operation error", func(t *testing.T) {
@@ -525,8 +495,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue bot actor LIT-1")
+		require.ErrorContains(t, err, "get issue bot actor LIT-1")
 	})
 
 	t.Run("issue shared access operation error", func(t *testing.T) {
@@ -537,8 +506,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue shared access LIT-1")
+		require.ErrorContains(t, err, "get issue shared access LIT-1")
 	})
 
 	t.Run("issue shared access runtime error", func(t *testing.T) {
@@ -554,8 +522,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("comment bot actor runtime error", func(t *testing.T) {
@@ -571,8 +538,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("bot actor operation error", func(t *testing.T) {
@@ -583,8 +549,7 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get comment bot actor comment-id")
+		require.ErrorContains(t, err, "get comment bot actor comment-id")
 	})
 
 	t.Run("child page projection", func(t *testing.T) {
@@ -625,8 +590,7 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "runtime failed")
+			require.ErrorContains(t, err, "runtime failed")
 		})
 	}
 
@@ -637,7 +601,7 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 	}{
 		{args: []string{"user", "settings", "get"}, operation: "userSettings", contains: "get user settings"},
 		{args: []string{"user", "settings", "notification-categories"}, operation: "userSettings_notificationCategoryPreferences", contains: "get user settings notification categories"},
-		{args: []string{"user", "settings", "notification-category", "assignments"}, operation: "userSettings_notificationCategoryPreferences_assignments", contains: "get user settings category assignments"},
+		{args: []string{"user", "settings", "notification-category", "assignments"}, operation: "userSettings_notificationCategoryPreferences", contains: "get user settings category assignments"},
 		{args: []string{"user", "settings", "notification-channels"}, operation: "userSettings_notificationChannelPreferences", contains: "get user settings notification channels"},
 		{args: []string{"user", "settings", "notification-delivery"}, operation: "userSettings_notificationDeliveryPreferences", contains: "get user settings notification delivery"},
 		{args: []string{"user", "settings", "mobile-delivery"}, operation: "userSettings_notificationDeliveryPreferences_mobile", contains: "get user settings mobile delivery"},
@@ -656,8 +620,7 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.contains)
+			require.ErrorContains(t, err, test.contains)
 		})
 	}
 

@@ -42,10 +42,11 @@ func ListWorkflowStates(ctx context.Context, graphqlClient graphql.Client, limit
 		return WorkflowStateList{}, fmt.Errorf("list workflow states: %w", err)
 	}
 
-	summaries := make([]WorkflowStateSummary, 0, len(states.WorkflowStates.Nodes))
-	for _, state := range states.WorkflowStates.Nodes {
-		summaries = append(summaries, workflowStateSummary(state.WorkflowStateSummaryFields))
-	}
+	summaries := mapNodes(states.WorkflowStates.Nodes, func(
+		state workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState,
+	) WorkflowStateSummary {
+		return workflowStateSummary(state.WorkflowStateSummaryFields)
+	})
 
 	return WorkflowStateList{
 		WorkflowStates: summaries,
@@ -80,10 +81,11 @@ func ListWorkflowStateIssues(
 		return WorkflowStateIssueList{}, fmt.Errorf("list workflow state issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(state.WorkflowState.Issues.Nodes))
-	for _, issue := range state.WorkflowState.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(state.WorkflowState.Issues.Nodes, func(
+		issue workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return WorkflowStateIssueList{
 		WorkflowStateID:   state.WorkflowState.Id,

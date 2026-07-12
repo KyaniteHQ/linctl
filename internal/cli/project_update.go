@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -122,14 +121,6 @@ func loadProjectUpdate(
 	return client.GetProjectUpdateByID(ctx, runtime.graphqlClient, id)
 }
 
-func projectUpdatePageWithItems(
-	page client.ProjectUpdateList,
-	updates []client.ProjectUpdateSummary,
-) client.ProjectUpdateList {
-	page.Updates = updates
-	return page
-}
-
 func addProjectUpdateCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	limit := 50
 	command := &cobra.Command{
@@ -161,12 +152,4 @@ func loadProjectUpdateCommentList(
 ) (client.ProjectUpdateCommentList, []client.CommentMetadataSummary, error) {
 	comments, err := client.ListProjectUpdateComments(ctx, runtime.graphqlClient, args[0], limit)
 	return comments, comments.Comments, err
-}
-
-func projectUpdateCommentPageWithItems(
-	page client.ProjectUpdateCommentList,
-	comments []client.CommentMetadataSummary,
-) client.ProjectUpdateCommentList {
-	page.Comments = comments
-	return page
 }

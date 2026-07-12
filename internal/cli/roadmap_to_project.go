@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -64,12 +63,4 @@ func loadRoadmapToProject(
 	id string,
 ) (client.RoadmapToProjectSummary, error) {
 	return client.GetRoadmapToProjectByID(ctx, runtime.graphqlClient, id)
-}
-
-func roadmapToProjectPageWithItems(
-	page client.RoadmapToProjectList,
-	associations []client.RoadmapToProjectSummary,
-) client.RoadmapToProjectList {
-	page.Associations = associations
-	return page
 }

@@ -15,7 +15,7 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 		"IssueCreate": "",
 	}).withError(operationErr), matchingTarget(), IssueCreateRequest{Title: "title"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "create issue")
+	require.ErrorContains(t, err, "create issue")
 
 	_, err = UpdateIssue(context.Background(), issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(issueFixture{
@@ -30,7 +30,7 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 		"IssueUpdate": "",
 	}).withError(operationErr), matchingTarget(), IssueUpdateRequest{ID: "LIT-40", Title: "title"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "update issue LIT-40")
+	require.ErrorContains(t, err, "update issue LIT-40")
 
 	_, err = CommentOnIssue(context.Background(), issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(issueFixture{
@@ -45,7 +45,7 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 		"IssueCommentCreate": "",
 	}).withError(operationErr), matchingTarget(), IssueCommentRequest{ID: "LIT-40", Body: "body"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "comment on issue LIT-40")
+	require.ErrorContains(t, err, "comment on issue LIT-40")
 
 	_, err = StartIssue(context.Background(), issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(issueFixture{
@@ -61,7 +61,7 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 		"IssueUpdate":           "",
 	}).withError(operationErr), matchingTarget(), "LIT-40")
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "start issue LIT-40")
+	require.ErrorContains(t, err, "start issue LIT-40")
 
 	_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(issueFixture{
@@ -77,34 +77,34 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 		"IssueClose":              "",
 	}).withError(operationErr), matchingTarget(), "LIT-40")
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "close issue LIT-40")
+	require.ErrorContains(t, err, "close issue LIT-40")
 
 	_, err = CreateProject(context.Background(), projectWriteFakeClient(map[string]string{
 		"ProjectCreate": "",
 	}).withError(operationErr), matchingTarget(), ProjectCreateRequest{Name: "name"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "create project")
+	require.ErrorContains(t, err, "create project")
 
 	_, err = UpdateProject(context.Background(), projectWriteFakeClient(map[string]string{
 		"project":       `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 		"ProjectUpdate": "",
 	}).withError(operationErr), matchingTarget(), ProjectUpdateRequest{ID: "project-id", Name: "name"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "update project project-id")
+	require.ErrorContains(t, err, "update project project-id")
 
 	_, err = ArchiveProject(context.Background(), projectWriteFakeClient(map[string]string{
 		"project":        `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 		"ProjectArchive": "",
 	}).withError(operationErr), matchingTarget(), "project-id")
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "archive project project-id")
+	require.ErrorContains(t, err, "archive project project-id")
 
 	_, err = CreateProjectMilestone(context.Background(), projectWriteFakeClient(map[string]string{
 		"project":                `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 		"ProjectMilestoneCreate": "",
 	}).withError(operationErr), matchingTarget(), ProjectMilestoneCreateRequest{ProjectID: "project-id", Name: "name"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "create project milestone")
+	require.ErrorContains(t, err, "create project milestone")
 
 	_, err = UpdateProjectMilestone(context.Background(), projectWriteFakeClient(map[string]string{
 		"projectMilestone": `{"projectMilestone":` +
@@ -112,7 +112,7 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 		"ProjectMilestoneUpdate": "",
 	}).withError(operationErr), matchingTarget(), ProjectMilestoneUpdateRequest{ID: "project-milestone-id", Name: "name"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "update project milestone project-milestone-id")
+	require.ErrorContains(t, err, "update project milestone project-milestone-id")
 
 	_, err = CreateCycle(context.Background(), projectWriteFakeClient(map[string]string{
 		"CycleCreate": "",
@@ -121,21 +121,21 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 		EndsAt:   "2026-07-15T00:00:00Z",
 	})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "create cycle")
+	require.ErrorContains(t, err, "create cycle")
 
 	_, err = UpdateCycle(context.Background(), projectWriteFakeClient(map[string]string{
 		"cycle":       `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 		"CycleUpdate": "",
 	}).withError(operationErr), matchingTarget(), CycleUpdateRequest{ID: "cycle-id", Name: "name"})
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "update cycle cycle-id")
+	require.ErrorContains(t, err, "update cycle cycle-id")
 
 	_, err = ArchiveCycle(context.Background(), projectWriteFakeClient(map[string]string{
 		"cycle":        `{"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}`,
 		"CycleArchive": "",
 	}).withError(operationErr), matchingTarget(), "cycle-id")
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "archive cycle cycle-id")
+	require.ErrorContains(t, err, "archive cycle cycle-id")
 }
 
 func Test_ClientWriteFailureScenarios_return_guard_read_errors(t *testing.T) {
@@ -169,7 +169,7 @@ func Test_ClientWriteFailureScenarios_return_guard_read_errors(t *testing.T) {
 		"StartedWorkflowStates": "",
 	}).withError(operationErr), matchingTarget(), "LIT-51")
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "list started workflow states")
+	require.ErrorContains(t, err, "list started workflow states")
 
 	_, err = CloseIssue(context.Background(), issueWriteFakeClient(map[string]string{
 		"issue": "",
@@ -189,7 +189,7 @@ func Test_ClientWriteFailureScenarios_return_guard_read_errors(t *testing.T) {
 		"CompletedWorkflowStates": "",
 	}).withError(operationErr), matchingTarget(), "LIT-51")
 	require.ErrorIs(t, err, operationErr)
-	require.Contains(t, err.Error(), "list completed workflow states")
+	require.ErrorContains(t, err, "list completed workflow states")
 
 	_, err = UpdateProject(context.Background(), projectWriteFakeClient(map[string]string{
 		"project": "",

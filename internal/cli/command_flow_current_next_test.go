@@ -48,8 +48,7 @@ func Test_CommandFlows_report_normalization_note_write_errors(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "write failed")
+			require.ErrorContains(t, err, "write failed")
 		})
 	}
 }
@@ -160,8 +159,7 @@ func Test_CommandFlows_report_next_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "next issue not found")
+		require.ErrorContains(t, err, "next issue not found")
 	})
 
 	t.Run("empty candidate list with fail on empty", func(t *testing.T) {
@@ -172,8 +170,7 @@ func Test_CommandFlows_report_next_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "empty result")
+		require.ErrorContains(t, err, "empty result")
 	})
 }
 
@@ -246,8 +243,7 @@ func Test_CommandFlows_next_checkout_failure_aborts(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "checkout boom")
+	require.ErrorContains(t, err, "checkout boom")
 }
 
 func Test_runNextWithPicker_reads_and_starts_through_the_port(t *testing.T) {
@@ -308,8 +304,7 @@ func Test_runGitCheckoutBranch_creates_and_fails(t *testing.T) {
 
 		err := runGitCheckoutBranch(context.Background(), "linctl-it-next")
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "git checkout -b")
+		require.ErrorContains(t, err, "git checkout -b")
 	})
 }
 
@@ -326,8 +321,7 @@ func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "linear issue reference missing")
+		require.ErrorContains(t, err, "linear issue reference missing")
 	})
 
 	t.Run("done missing issue reference", func(t *testing.T) {
@@ -342,8 +336,7 @@ func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "linear issue reference missing")
+		require.ErrorContains(t, err, "linear issue reference missing")
 	})
 
 	t.Run("runtime failure", func(t *testing.T) {
@@ -351,8 +344,7 @@ func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
 			return commandRuntime{}, errors.New("runtime failed")
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("done runtime failure", func(t *testing.T) {
@@ -360,8 +352,7 @@ func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
 			return commandRuntime{}, errors.New("runtime failed")
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "runtime failed")
+		require.ErrorContains(t, err, "runtime failed")
 	})
 
 	t.Run("issue lookup failure", func(t *testing.T) {
@@ -369,8 +360,7 @@ func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
 			return testCommandRuntime(commandFlowFakeClient{failOperation: "issue"}), nil
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "get issue LIT-1")
+		require.ErrorContains(t, err, "get issue LIT-1")
 	})
 
 	t.Run("done close failure", func(t *testing.T) {
@@ -378,8 +368,7 @@ func Test_CommandFlows_report_current_issue_errors(t *testing.T) {
 			return testCommandRuntime(commandFlowFakeClient{failOperation: "IssueClose"}), nil
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "close issue LIT-1")
+		require.ErrorContains(t, err, "close issue LIT-1")
 	})
 }
 

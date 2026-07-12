@@ -56,11 +56,3 @@ func loadCustomer(
 ) (client.CustomerSummary, error) {
 	return client.GetCustomerByID(ctx, runtime.graphqlClient, id)
 }
-
-func customerPageWithItems(
-	page client.CustomerList,
-	customers []client.CustomerSummary,
-) client.CustomerList {
-	page.Customers = customers
-	return page
-}

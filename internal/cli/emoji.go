@@ -49,11 +49,3 @@ func loadEmoji(
 ) (client.EmojiSummary, error) {
 	return client.GetEmojiByID(ctx, runtime.graphqlClient, id)
 }
-
-func emojiPageWithItems(
-	page client.EmojiList,
-	emojis []client.EmojiSummary,
-) client.EmojiList {
-	page.Emojis = emojis
-	return page
-}

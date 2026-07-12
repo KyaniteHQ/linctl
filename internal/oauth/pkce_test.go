@@ -3,8 +3,9 @@ package oauth_test
 import (
 	"testing"
 
-	"github.com/KyaniteHQ/linctl/internal/oauth"
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/oauth"
 )
 
 func Test_GeneratePKCE_always_returns_s256_challenge(t *testing.T) {

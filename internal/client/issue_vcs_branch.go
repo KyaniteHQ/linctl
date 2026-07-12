@@ -35,10 +35,11 @@ func ListIssueVCSBranchAttachments(
 		return AttachmentList{}, notFoundError("list issue vcs branch attachments %s", branchName)
 	}
 
-	attachments := make([]AttachmentSummary, 0, len(result.IssueVcsBranchSearch.Attachments.Nodes))
-	for _, attachment := range result.IssueVcsBranchSearch.Attachments.Nodes {
-		attachments = append(attachments, attachmentSummary(attachment.AttachmentSummaryFields))
-	}
+	attachments := mapNodes(result.IssueVcsBranchSearch.Attachments.Nodes, func(
+		node issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment,
+	) AttachmentSummary {
+		return attachmentSummary(node.AttachmentSummaryFields)
+	})
 
 	return AttachmentList{
 		Attachments: attachments,
@@ -82,10 +83,11 @@ func ListIssueVCSBranchChildren(
 		return IssueList{}, notFoundError("list issue vcs branch children %s", branchName)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.IssueVcsBranchSearch.Children.Nodes))
-	for _, issue := range result.IssueVcsBranchSearch.Children.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.IssueVcsBranchSearch.Children.Nodes, func(
+		issue issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -109,10 +111,11 @@ func ListIssueVCSBranchDocuments(
 		return DocumentList{}, notFoundError("list issue vcs branch documents %s", branchName)
 	}
 
-	documents := make([]DocumentSummary, 0, len(result.IssueVcsBranchSearch.Documents.Nodes))
-	for _, document := range result.IssueVcsBranchSearch.Documents.Nodes {
-		documents = append(documents, documentSummary(document.DocumentSummaryFields))
-	}
+	documents := mapNodes(result.IssueVcsBranchSearch.Documents.Nodes, func(
+		document issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument,
+	) DocumentSummary {
+		return documentSummary(document.DocumentSummaryFields)
+	})
 
 	return DocumentList{
 		Documents:   documents,
@@ -170,10 +173,7 @@ func ListIssueVCSBranchHistory(
 		return IssueHistoryList{}, notFoundError("list issue vcs branch history %s", branchName)
 	}
 
-	history := make([]IssueHistorySummary, 0, len(result.IssueVcsBranchSearch.History.Nodes))
-	for _, node := range result.IssueVcsBranchSearch.History.Nodes {
-		history = append(history, issueVCSBranchHistorySummary(node))
-	}
+	history := mapNodes(result.IssueVcsBranchSearch.History.Nodes, issueVCSBranchHistorySummary)
 
 	return IssueHistoryList{
 		History:     history,
@@ -231,10 +231,11 @@ func ListIssueVCSBranchLabels(
 		return LabelList{}, notFoundError("list issue vcs branch labels %s", branchName)
 	}
 
-	labels := make([]LabelSummary, 0, len(result.IssueVcsBranchSearch.Labels.Nodes))
-	for _, label := range result.IssueVcsBranchSearch.Labels.Nodes {
-		labels = append(labels, labelSummary(label.IssueLabelSummaryFields))
-	}
+	labels := mapNodes(result.IssueVcsBranchSearch.Labels.Nodes, func(
+		label issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel,
+	) LabelSummary {
+		return labelSummary(label.IssueLabelSummaryFields)
+	})
 
 	return LabelList{
 		Labels:      labels,
@@ -258,10 +259,11 @@ func ListIssueVCSBranchRelations(
 		return IssueRelationList{}, notFoundError("list issue vcs branch relations %s", branchName)
 	}
 
-	relations := make([]IssueRelationSummary, 0, len(result.IssueVcsBranchSearch.Relations.Nodes))
-	for _, relation := range result.IssueVcsBranchSearch.Relations.Nodes {
-		relations = append(relations, issueRelationSummary(relation.IssueRelationSummaryFields))
-	}
+	relations := mapNodes(result.IssueVcsBranchSearch.Relations.Nodes, func(
+		node issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation,
+	) IssueRelationSummary {
+		return issueRelationSummary(node.IssueRelationSummaryFields)
+	})
 
 	return IssueRelationList{
 		Relations:   relations,
@@ -285,10 +287,11 @@ func ListIssueVCSBranchReleases(
 		return ReleaseList{}, notFoundError("list issue vcs branch releases %s", branchName)
 	}
 
-	releases := make([]ReleaseSummary, 0, len(result.IssueVcsBranchSearch.Releases.Nodes))
-	for _, release := range result.IssueVcsBranchSearch.Releases.Nodes {
-		releases = append(releases, releaseSummary(release.ReleaseSummaryFields))
-	}
+	releases := mapNodes(result.IssueVcsBranchSearch.Releases.Nodes, func(
+		release issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease,
+	) ReleaseSummary {
+		return releaseSummary(release.ReleaseSummaryFields)
+	})
 
 	return ReleaseList{
 		Releases:    releases,
@@ -312,10 +315,7 @@ func ListIssueVCSBranchStateHistory(
 		return IssueStateHistoryList{}, notFoundError("list issue vcs branch state history %s", branchName)
 	}
 
-	spans := make([]IssueStateSpanSummary, 0, len(result.IssueVcsBranchSearch.StateHistory.Nodes))
-	for _, node := range result.IssueVcsBranchSearch.StateHistory.Nodes {
-		spans = append(spans, issueVCSBranchStateSpanSummary(node))
-	}
+	spans := mapNodes(result.IssueVcsBranchSearch.StateHistory.Nodes, issueVCSBranchStateSpanSummary)
 
 	return IssueStateHistoryList{
 		IssueID:     result.IssueVcsBranchSearch.Id,
@@ -340,10 +340,11 @@ func ListIssueVCSBranchSubscribers(
 		return UserList{}, notFoundError("list issue vcs branch subscribers %s", branchName)
 	}
 
-	users := make([]UserSummary, 0, len(result.IssueVcsBranchSearch.Subscribers.Nodes))
-	for _, node := range result.IssueVcsBranchSearch.Subscribers.Nodes {
-		users = append(users, userSummary(node.UserSummaryFields))
-	}
+	users := mapNodes(result.IssueVcsBranchSearch.Subscribers.Nodes, func(
+		node issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser,
+	) UserSummary {
+		return userSummary(node.UserSummaryFields)
+	})
 
 	return UserList{
 		Users:       users,

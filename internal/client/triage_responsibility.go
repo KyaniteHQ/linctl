@@ -48,10 +48,11 @@ func ListTriageResponsibilities(
 		return TriageResponsibilityList{}, fmt.Errorf("list triage responsibilities: %w", err)
 	}
 
-	summaries := make([]TriageResponsibilitySummary, 0, len(result.TriageResponsibilities.Nodes))
-	for _, node := range result.TriageResponsibilities.Nodes {
-		summaries = append(summaries, triageResponsibilitySummary(node.TriageResponsibilitySummaryFields))
-	}
+	summaries := mapNodes(result.TriageResponsibilities.Nodes, func(
+		node triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility,
+	) TriageResponsibilitySummary {
+		return triageResponsibilitySummary(node.TriageResponsibilitySummaryFields)
+	})
 
 	return TriageResponsibilityList{
 		TriageResponsibilities: summaries,

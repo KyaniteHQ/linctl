@@ -39,10 +39,11 @@ func ListAgentSessions(ctx context.Context, graphqlClient graphql.Client, limit 
 		return AgentSessionList{}, fmt.Errorf("list agent sessions: %w", err)
 	}
 
-	summaries := make([]AgentSessionSummary, 0, len(result.AgentSessions.Nodes))
-	for _, node := range result.AgentSessions.Nodes {
-		summaries = append(summaries, agentSessionSummary(node.AgentSessionSummaryFields))
-	}
+	summaries := mapNodes(result.AgentSessions.Nodes, func(
+		node agentSessionsAgentSessionsAgentSessionConnectionNodesAgentSession,
+	) AgentSessionSummary {
+		return agentSessionSummary(node.AgentSessionSummaryFields)
+	})
 
 	return AgentSessionList{
 		AgentSessions: summaries,

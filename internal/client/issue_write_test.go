@@ -380,8 +380,7 @@ func Test_firstStateIDOfType_returns_error_on_graphql_failure(t *testing.T) {
 	_, err := firstStateIDOfType(context.Background(), graphqlClient, "team-id", "started")
 
 	// Then
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list started workflow states")
+	require.ErrorContains(t, err, "list started workflow states")
 }
 
 func Test_parsePriority_returns_nil_for_empty_string(t *testing.T) {
@@ -573,4 +572,63 @@ func Test_UpdateIssue_rejects_invalid_due_date(t *testing.T) {
 	// Then
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_CreateIssue_assigns_milestone_after_pinned_target_check(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"projectMilestone": `{"projectMilestone":` +
+			projectMilestoneJSON("Launch milestone", "next", "project-id") + `}`,
+		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-9",
+			Title:      "with milestone",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+		}) + `}}`,
+	})
+
+	// When
+	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+		Title:              "with milestone",
+		ProjectMilestoneID: "project-milestone-id",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "LIT-9", issue.Identifier)
+}
+
+func Test_CreateIssue_rejects_milestone_without_pinned_project(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+	target := matchingTarget()
+	target.ProjectID = ""
+
+	// When
+	_, err := CreateIssue(context.Background(), graphqlClient, target, IssueCreateRequest{
+		Title:              "with milestone",
+		ProjectMilestoneID: "project-milestone-id",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_CreateIssue_refuses_milestone_outside_pinned_project(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"projectMilestone": `{"projectMilestone":` +
+			projectMilestoneJSON("Wrong project milestone", "next", "other-project") + `}`,
+	})
+
+	// When
+	_, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+		Title:              "with milestone",
+		ProjectMilestoneID: "project-milestone-id",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrTargetMismatch)
 }

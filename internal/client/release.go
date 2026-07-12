@@ -123,10 +123,11 @@ func ListReleases(ctx context.Context, graphqlClient graphql.Client, limit int) 
 		return ReleaseList{}, fmt.Errorf("list releases: %w", err)
 	}
 
-	summaries := make([]ReleaseSummary, 0, len(result.Releases.Nodes))
-	for _, node := range result.Releases.Nodes {
-		summaries = append(summaries, releaseSummary(node.ReleaseSummaryFields))
-	}
+	summaries := mapNodes(result.Releases.Nodes, func(
+		node releasesReleasesReleaseConnectionNodesRelease,
+	) ReleaseSummary {
+		return releaseSummary(node.ReleaseSummaryFields)
+	})
 
 	return ReleaseList{
 		Releases:    summaries,
@@ -157,10 +158,11 @@ func ListReleaseHistory(
 		return ReleaseHistoryList{}, fmt.Errorf("list release history %s: %w", id, err)
 	}
 
-	history := make([]ReleaseHistorySummary, 0, len(result.Release.History.Nodes))
-	for _, node := range result.Release.History.Nodes {
-		history = append(history, releaseHistorySummary(node.ReleaseHistorySummaryFields))
-	}
+	history := mapNodes(result.Release.History.Nodes, func(
+		node release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory,
+	) ReleaseHistorySummary {
+		return releaseHistorySummary(node.ReleaseHistorySummaryFields)
+	})
 
 	return ReleaseHistoryList{
 		History:     history,
@@ -181,10 +183,11 @@ func ListReleaseDocuments(
 		return DocumentList{}, fmt.Errorf("list release documents %s: %w", id, err)
 	}
 
-	documents := make([]DocumentSummary, 0, len(result.Release.Documents.Nodes))
-	for _, node := range result.Release.Documents.Nodes {
-		documents = append(documents, documentSummary(node.DocumentSummaryFields))
-	}
+	documents := mapNodes(result.Release.Documents.Nodes, func(
+		node release_documentsReleaseDocumentsDocumentConnectionNodesDocument,
+	) DocumentSummary {
+		return documentSummary(node.DocumentSummaryFields)
+	})
 
 	return DocumentList{
 		Documents:   documents,
@@ -205,10 +208,11 @@ func ListReleaseIssues(
 		return IssueList{}, fmt.Errorf("list release issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.Release.Issues.Nodes))
-	for _, node := range result.Release.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(node.IssueSummaryFields))
-	}
+	issues := mapNodes(result.Release.Issues.Nodes, func(
+		node release_issuesReleaseIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(node.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -229,10 +233,11 @@ func ListReleaseLinks(
 		return EntityExternalLinkList{}, fmt.Errorf("list release links %s: %w", id, err)
 	}
 
-	links := make([]EntityExternalLinkSummary, 0, len(result.Release.Links.Nodes))
-	for _, node := range result.Release.Links.Nodes {
-		links = append(links, entityExternalLinkSummary(node.EntityExternalLinkSummaryFields))
-	}
+	links := mapNodes(result.Release.Links.Nodes, func(
+		node release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink,
+	) EntityExternalLinkSummary {
+		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
+	})
 
 	return EntityExternalLinkList{
 		Links:       links,
@@ -262,10 +267,9 @@ func SearchReleases(ctx context.Context, graphqlClient graphql.Client, term stri
 		return ReleaseList{}, fmt.Errorf("search releases: %w", err)
 	}
 
-	summaries := make([]ReleaseSummary, 0, len(result.ReleaseSearch))
-	for _, node := range result.ReleaseSearch {
-		summaries = append(summaries, releaseSummary(node.ReleaseSummaryFields))
-	}
+	summaries := mapNodes(result.ReleaseSearch, func(node releaseSearchReleaseSearchRelease) ReleaseSummary {
+		return releaseSummary(node.ReleaseSummaryFields)
+	})
 
 	return ReleaseList{Releases: summaries}, nil
 }
@@ -277,10 +281,11 @@ func ListReleaseNotes(ctx context.Context, graphqlClient graphql.Client, limit i
 		return ReleaseNoteList{}, fmt.Errorf("list release notes: %w", err)
 	}
 
-	summaries := make([]ReleaseNoteSummary, 0, len(result.ReleaseNotes.Nodes))
-	for _, node := range result.ReleaseNotes.Nodes {
-		summaries = append(summaries, releaseNoteSummary(node.ReleaseNoteSummaryFields))
-	}
+	summaries := mapNodes(result.ReleaseNotes.Nodes, func(
+		node releaseNotesReleaseNotesReleaseNoteConnectionNodesReleaseNote,
+	) ReleaseNoteSummary {
+		return releaseNoteSummary(node.ReleaseNoteSummaryFields)
+	})
 
 	return ReleaseNoteList{
 		ReleaseNotes: summaries,

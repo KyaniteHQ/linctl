@@ -4,6 +4,18 @@ query team($id: String!) {
   }
 }
 
+query teams_list($first: Int, $after: String, $includeArchived: Boolean) {
+  teams(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...TeamSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
 query teamEstimateConfig($id: String!) {
   team(id: $id) {
     id

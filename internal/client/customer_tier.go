@@ -33,10 +33,11 @@ func ListCustomerTiers(ctx context.Context, graphqlClient graphql.Client, limit 
 		return CustomerTierList{}, fmt.Errorf("list customer tiers: %w", err)
 	}
 
-	summaries := make([]CustomerTierSummary, 0, len(result.CustomerTiers.Nodes))
-	for _, node := range result.CustomerTiers.Nodes {
-		summaries = append(summaries, customerTierSummary(node.CustomerTierSummaryFields))
-	}
+	summaries := mapNodes(result.CustomerTiers.Nodes, func(
+		node customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier,
+	) CustomerTierSummary {
+		return customerTierSummary(node.CustomerTierSummaryFields)
+	})
 
 	return CustomerTierList{
 		Tiers:       summaries,

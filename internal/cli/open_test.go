@@ -59,8 +59,7 @@ func Test_openURL_rejects_unsupported_platform(t *testing.T) {
 
 	err := openURL(context.Background(), "https://linear.app/x")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unsupported platform")
+	require.ErrorContains(t, err, "unsupported platform")
 }
 
 func Test_runOpenExecutable_runs_and_reports(t *testing.T) {
@@ -130,8 +129,7 @@ func Test_CommandFlows_issue_open_surfaces_opener_error(t *testing.T) {
 		return errors.New("opener boom")
 	}, []string{"issue", "open", "LIT-1"})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "opener boom")
+	require.ErrorContains(t, err, "opener boom")
 }
 
 func Test_CommandFlows_issue_open_surfaces_resolve_error(t *testing.T) {

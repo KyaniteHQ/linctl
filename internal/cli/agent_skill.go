@@ -56,11 +56,3 @@ func loadAgentSkill(
 ) (client.AgentSkillSummary, error) {
 	return client.GetAgentSkillByID(ctx, runtime.graphqlClient, id)
 }
-
-func agentSkillPageWithItems(
-	page client.AgentSkillList,
-	skills []client.AgentSkillSummary,
-) client.AgentSkillList {
-	page.AgentSkills = skills
-	return page
-}

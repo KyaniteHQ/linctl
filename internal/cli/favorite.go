@@ -88,11 +88,3 @@ func loadFavoriteChildren(
 	favorites, err := client.ListFavoriteChildren(ctx, runtime.graphqlClient, args[0], limit)
 	return favorites, favorites.Favorites, err
 }
-
-func favoritePageWithItems(
-	page client.FavoriteList,
-	favorites []client.FavoriteSummary,
-) client.FavoriteList {
-	page.Favorites = favorites
-	return page
-}

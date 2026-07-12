@@ -2,9 +2,6 @@ package cli
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"os"
 
 	"github.com/spf13/cobra"
 
@@ -65,7 +62,10 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
 	command.Flags().IntVar(&flags.estimate, "estimate", 0, "set the estimate (validated against team config)")
 	command.Flags().StringVar(&request.ParentID, "parent", "", "create as a sub-issue of a parent issue id")
-	command.Flags().StringVar(&request.ProjectMilestoneID, "milestone", "", "assign to a project milestone id (requires a pinned project)")
+	command.Flags().StringVar(
+		&request.ProjectMilestoneID, "milestone", "",
+		"assign to a project milestone id (requires a pinned project)",
+	)
 	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
 }
@@ -215,7 +215,7 @@ func applyIssueWriteNormalization(
 }
 
 func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
 		Use:   "start ISSUE_ID",
 		Short: "Assign and start an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
@@ -264,7 +264,7 @@ func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *r
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "comment body")
 	command.Flags().StringVar(&bodyFile, "body-file", "", "read comment body from file")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func runIssueBodyWriteCommand(
@@ -312,42 +312,11 @@ func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *roo
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "reply body")
 	command.Flags().StringVar(&bodyFile, "body-file", "", "read reply body from file")
-	root.AddCommand(command)
-}
-
-func resolveBodyFlag(command *cobra.Command, body *string) error {
-	if *body != "-" {
-		return nil
-	}
-	data, err := io.ReadAll(command.InOrStdin())
-	if err != nil {
-		return fmt.Errorf("read body from stdin: %w", err)
-	}
-	*body = string(data)
-
-	return nil
-}
-
-func resolveFileFlag(value *string, path string, label string) error {
-	if path == "" {
-		return nil
-	}
-	if *value != "" {
-		return fmt.Errorf("%s and %s-file are mutually exclusive", label, label)
-	}
-
-	//nolint:gosec // The path is an explicit CLI input for reading issue text.
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return fmt.Errorf("read %s from file %s: %w", label, path, err)
-	}
-	*value = string(data)
-
-	return nil
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func addIssueCloseCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
 		Use:   "close ISSUE_ID",
 		Short: "Move an issue to the completed workflow state",
 		Args:  cobra.ExactArgs(1),
@@ -431,7 +400,7 @@ func addIssueLinkCommand(ctx context.Context, root *cobra.Command, options *root
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "attachment title")
 	command.Flags().StringVar(&request.Subtitle, "subtitle", "", "attachment subtitle")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func runIssueLink(

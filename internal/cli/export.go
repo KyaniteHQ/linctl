@@ -26,7 +26,7 @@ type issueExportResult struct {
 }
 
 func addIssueExportCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "export ISSUE_ID DIR",
 		Short: "Export an issue's description, comments, and attachment URLs to a directory",
 		Args:  cobra.ExactArgs(2),

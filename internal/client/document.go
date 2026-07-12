@@ -40,10 +40,11 @@ func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int)
 		return DocumentList{}, fmt.Errorf("list documents: %w", err)
 	}
 
-	summaries := make([]DocumentSummary, 0, len(documents.Documents.Nodes))
-	for _, document := range documents.Documents.Nodes {
-		summaries = append(summaries, documentSummary(document.DocumentSummaryFields))
-	}
+	summaries := mapNodes(documents.Documents.Nodes, func(
+		document DocumentsDocumentsDocumentConnectionNodesDocument,
+	) DocumentSummary {
+		return documentSummary(document.DocumentSummaryFields)
+	})
 
 	return DocumentList{
 		Documents:   summaries,
@@ -74,10 +75,11 @@ func ListDocumentComments(
 		return DocumentCommentList{}, fmt.Errorf("list document comments %s: %w", id, err)
 	}
 
-	comments := make([]CommentMetadataSummary, 0, len(result.Document.Comments.Nodes))
-	for _, node := range result.Document.Comments.Nodes {
-		comments = append(comments, commentMetadataSummary(node.CommentMetadataFields))
-	}
+	comments := mapNodes(result.Document.Comments.Nodes, func(
+		node document_commentsDocumentCommentsCommentConnectionNodesComment,
+	) CommentMetadataSummary {
+		return commentMetadataSummary(node.CommentMetadataFields)
+	})
 
 	return DocumentCommentList{
 		DocumentID:  result.Document.Id,

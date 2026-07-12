@@ -29,10 +29,9 @@ func ListEmojis(ctx context.Context, graphqlClient graphql.Client, limit int) (E
 		return EmojiList{}, fmt.Errorf("list emojis: %w", err)
 	}
 
-	summaries := make([]EmojiSummary, 0, len(result.Emojis.Nodes))
-	for _, node := range result.Emojis.Nodes {
-		summaries = append(summaries, emojiSummary(node.EmojiSummaryFields))
-	}
+	summaries := mapNodes(result.Emojis.Nodes, func(node emojisEmojisEmojiConnectionNodesEmoji) EmojiSummary {
+		return emojiSummary(node.EmojiSummaryFields)
+	})
 
 	return EmojiList{
 		Emojis:      summaries,

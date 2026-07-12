@@ -204,230 +204,53 @@ func GetUserSettingsNotificationCategoryPreference(
 	graphqlClient graphql.Client,
 	category string,
 ) (NotificationChannelPreference, error) {
-	loader, ok := notificationCategoryPreferenceLoaders[normalizedUserSettingsKey(category)]
+	selectPreference, ok := notificationCategoryPreferenceSelectors[normalizedUserSettingsKey(category)]
 	if !ok {
 		return NotificationChannelPreference{}, fmt.Errorf("unknown user settings notification category %q", category)
 	}
 
-	preference, err := loader(ctx, graphqlClient)
+	result, err := userSettings_notificationCategoryPreferences(ctx, graphqlClient)
 	if err != nil {
 		return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
 	}
+	preferences := notificationCategoryPreferences(
+		result.UserSettings.NotificationCategoryPreferences.NotificationCategoryPreferencesFields,
+	)
 
-	return preference, nil
+	return selectPreference(preferences), nil
 }
 
-type notificationCategoryPreferenceLoader func(context.Context, graphql.Client) (NotificationChannelPreference, error)
-
-var notificationCategoryPreferenceLoaders = map[string]notificationCategoryPreferenceLoader{
-	"apps-and-integrations": loadAppsAndIntegrationsNotificationCategoryPreference,
-	"assignments":           loadAssignmentsNotificationCategoryPreference,
-	"billing":               loadBillingNotificationCategoryPreference,
-	"comments-and-replies":  loadCommentsAndRepliesNotificationCategoryPreference,
-	"customers":             loadCustomersNotificationCategoryPreference,
-	"document-changes":      loadDocumentChangesNotificationCategoryPreference,
-	"feed":                  loadFeedNotificationCategoryPreference,
-	"mentions":              loadMentionsNotificationCategoryPreference,
-	"posts-and-updates":     loadPostsAndUpdatesNotificationCategoryPreference,
-	"reactions":             loadReactionsNotificationCategoryPreference,
-	"reminders":             loadRemindersNotificationCategoryPreference,
-	"reviews":               loadReviewsNotificationCategoryPreference,
-	"status-changes":        loadStatusChangesNotificationCategoryPreference,
-	"subscriptions":         loadSubscriptionsNotificationCategoryPreference,
-	"system":                loadSystemNotificationCategoryPreference,
-	"triage":                loadTriageNotificationCategoryPreference,
-}
-
-func loadAppsAndIntegrationsNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_appsAndIntegrations(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.AppsAndIntegrations), nil
-}
-
-func loadAssignmentsNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_assignments(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Assignments), nil
-}
-
-func loadBillingNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_billing(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Billing), nil
-}
-
-func loadCommentsAndRepliesNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_commentsAndReplies(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.CommentsAndReplies), nil
-}
-
-func loadCustomersNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_customers(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Customers), nil
-}
-
-func loadDocumentChangesNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_documentChanges(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.DocumentChanges), nil
-}
-
-func loadFeedNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_feed(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Feed), nil
-}
-
-func loadMentionsNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_mentions(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Mentions), nil
-}
-
-func loadPostsAndUpdatesNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_postsAndUpdates(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.PostsAndUpdates), nil
-}
-
-func loadReactionsNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_reactions(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reactions), nil
-}
-
-func loadRemindersNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_reminders(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reminders), nil
-}
-
-func loadReviewsNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_reviews(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Reviews), nil
-}
-
-func loadStatusChangesNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_statusChanges(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.StatusChanges), nil
-}
-
-func loadSubscriptionsNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_subscriptions(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Subscriptions), nil
-}
-
-func loadSystemNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_system(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.System), nil
-}
-
-func loadTriageNotificationCategoryPreference(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationCategoryPreferences_triage(ctx, graphqlClient)
-	if err != nil {
-		return NotificationChannelPreference{}, err
-	}
-
-	return notificationChannelPreference(&result.UserSettings.NotificationCategoryPreferences.Triage), nil
+// notificationCategoryPreferenceSelectors picks one category out of the full
+// preference matrix; the per-category read fetches the plural query once.
+var notificationCategoryPreferenceSelectors = map[string]func(
+	NotificationCategoryPreferences,
+) NotificationChannelPreference{
+	"apps-and-integrations": func(p NotificationCategoryPreferences) NotificationChannelPreference {
+		return p.AppsAndIntegrations
+	},
+	"assignments": func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Assignments },
+	"billing":     func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Billing },
+	"comments-and-replies": func(p NotificationCategoryPreferences) NotificationChannelPreference {
+		return p.CommentsAndReplies
+	},
+	"customers": func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Customers },
+	"document-changes": func(p NotificationCategoryPreferences) NotificationChannelPreference {
+		return p.DocumentChanges
+	},
+	"feed":     func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Feed },
+	"mentions": func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Mentions },
+	"posts-and-updates": func(p NotificationCategoryPreferences) NotificationChannelPreference {
+		return p.PostsAndUpdates
+	},
+	"reactions": func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Reactions },
+	"reminders": func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Reminders },
+	"reviews":   func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Reviews },
+	"status-changes": func(p NotificationCategoryPreferences) NotificationChannelPreference {
+		return p.StatusChanges
+	},
+	"subscriptions": func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Subscriptions },
+	"system":        func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.System },
+	"triage":        func(p NotificationCategoryPreferences) NotificationChannelPreference { return p.Triage },
 }
 
 // GetUserSettingsNotificationChannelPreferences returns the top-level notification channel preferences.

@@ -16,8 +16,7 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 		_, err := Load(ctx, LoadRequest{})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "load config context")
+		require.ErrorContains(t, err, "load config context")
 	})
 
 	t.Run("missing files resolve empty config", func(t *testing.T) {
@@ -37,8 +36,7 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 		_, err := Load(context.Background(), LoadRequest{RepoPath: path})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), path)
+		require.ErrorContains(t, err, path)
 	})
 
 	t.Run("read errors include the config path", func(t *testing.T) {
@@ -47,9 +45,8 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 		_, err := Load(context.Background(), LoadRequest{RepoPath: path})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read config")
-		require.Contains(t, err.Error(), path)
+		require.ErrorContains(t, err, "read config")
+		require.ErrorContains(t, err, path)
 	})
 
 	t.Run("global config read errors stop loading", func(t *testing.T) {
@@ -58,9 +55,8 @@ func Test_LoadScenarios_resolve_sources_and_report_config_errors(t *testing.T) {
 
 		_, err := Load(context.Background(), LoadRequest{GlobalPath: path})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read config")
-		require.Contains(t, err.Error(), path)
+		require.ErrorContains(t, err, "read config")
+		require.ErrorContains(t, err, path)
 	})
 
 	t.Run("config without profile table initializes empty profiles", func(t *testing.T) {

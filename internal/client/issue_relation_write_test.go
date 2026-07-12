@@ -123,7 +123,7 @@ func Test_CreateIssueRelation_refuses_blocks_that_close_a_cycle(t *testing.T) {
 	})
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
-	require.Contains(t, err.Error(), "create a cycle")
+	require.ErrorContains(t, err, "create a cycle")
 }
 
 func Test_CreateIssueRelation_wraps_dependency_read_error(t *testing.T) {

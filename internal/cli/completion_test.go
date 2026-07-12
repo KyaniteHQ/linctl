@@ -39,7 +39,7 @@ func Test_completionValues_returns_nothing_when_runtime_fails(t *testing.T) {
 }
 
 func Test_completionValues_returns_nothing_when_load_fails(t *testing.T) {
-	restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "Teams"})
+	restore := useCommandRuntime(t, commandFlowFakeClient{failOperation: "teams_list"})
 	defer restore()
 
 	values, directive := completionValues(context.Background(), &rootOptions{}, teamKeyCandidates)
@@ -68,7 +68,7 @@ func Test_projectIDCandidates_returns_id_and_name(t *testing.T) {
 
 func Test_teamKeyCandidates_returns_error_when_list_fails(t *testing.T) {
 	_, err := teamKeyCandidates(
-		context.Background(), testCommandRuntime(commandFlowFakeClient{failOperation: "Teams"}),
+		context.Background(), testCommandRuntime(commandFlowFakeClient{failOperation: "teams_list"}),
 	)
 
 	require.Error(t, err)

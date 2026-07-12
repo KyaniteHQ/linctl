@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `1e4336d`.
+Generated from current local sources and upstream Linear SDK commit `202a5e0`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -19,7 +19,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Upstream SDK root methods with generated local operations | 466 | 133 | 466 |
 | Upstream Query root fields used by generated local operations | 162 | 113 | 162 |
 | Upstream Mutation root fields used by generated local operations | 370 | 21 | 370 |
-| Local generated Go operations declared in GraphQL files | 332 | 332 | 332 |
+| Local generated Go operations declared in GraphQL files | 317 | 317 | 317 |
 | Public CLI commands from command inventory | 421 | 295 | 421 |
 
 ## Upstream SDK Root Methods
@@ -1300,6 +1300,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `team_releasePipelines` | query | `team` | generated | `internal/client/generated.go` |
 | `team_states` | query | `team` | generated | `internal/client/generated.go` |
 | `team_templates` | query | `team` | generated | `internal/client/generated.go` |
+| `teams_list` | query | `teams` | generated | `internal/client/generated.go` |
 | `template` | query | `template` | generated | `internal/client/generated.go` |
 | `templateContent` | query | `template` | generated | `internal/client/generated.go` |
 | `templates` | query | `templates` | generated | `internal/client/generated.go` |
@@ -1311,22 +1312,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `user` | query | `user` | generated | `internal/client/generated.go` |
 | `userSettings` | query | `userSettings` | generated | `internal/client/generated.go` |
 | `userSettings_notificationCategoryPreferences` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_appsAndIntegrations` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_assignments` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_billing` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_commentsAndReplies` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_customers` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_documentChanges` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_feed` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_mentions` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_postsAndUpdates` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_reactions` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_reminders` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_reviews` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_statusChanges` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_subscriptions` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_system` | query | `userSettings` | generated | `internal/client/generated.go` |
-| `userSettings_notificationCategoryPreferences_triage` | query | `userSettings` | generated | `internal/client/generated.go` |
 | `userSettings_notificationChannelPreferences` | query | `userSettings` | generated | `internal/client/generated.go` |
 | `userSettings_notificationDeliveryPreferences` | query | `userSettings` | generated | `internal/client/generated.go` |
 | `userSettings_notificationDeliveryPreferences_mobile` | query | `userSettings` | generated | `internal/client/generated.go` |
@@ -1500,16 +1485,16 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Issue | `done` | Current checkout issue identifier, then `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue create` | `Mutation.issueCreate` with `IssueCreateInput.teamId`, optional `projectId`; `--description-file` is resolved locally before mutation; `--template` reads `Template.templateData` via `Query.template` (free read) and fills title/description defaults that explicit flags override; `--section NAME=VALUE` fills a markdown section locally before mutation; `--dry-run` renders the assembled draft locally and performs no mutation; `--state` (alias `--status`) normalizes a human state name to a schema state type and resolves `IssueCreateInput.stateId` via `Query.workflowStates` filtered by team + type; `--priority` normalizes human words (`urgent`/`high`/`medium`/`low`/`none`) or `0-4` to `IssueCreateInput.priority` | Team-scoped unless `projectId` is set; `--dry-run` writes nothing | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue update` | `Mutation.issueUpdate` with `IssueUpdateInput`; `--description-file` replaces description, while `--append` or `--append-file` first reads `Issue.description` and appends text before sending `description`; `--state` (alias `--status`) and `--priority` are normalized the same way as on `issue create`, with `stateId` resolved via `Query.workflowStates` filtered by the issue's team + type | Resource-scoped when a project target is involved | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Issue | `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue start` | `Query.viewer`, `Query.workflowStates` filtered to `started`, then `Mutation.issueUpdate` with `IssueUpdateInput.assigneeId` and `stateId` | Resource-scoped when a project target is involved | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue comment` | `Mutation.commentCreate`; `--body -` reads stdin and `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue reply` | `Mutation.commentCreate` with `CommentCreateInput.parentId`; `--body-file` reads a local file before mutation | Resource-scoped to the issue's resolved team/project | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| IssueRelation | `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| IssueRelation | `issue unrelate` | `Mutation.issueRelationDelete` | Resolve the relation, then compare the pinned team for both linked issues before deleting | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| IssueRelation | `issue unrelate` | `Mutation.issueRelationDelete` | Resolve the relation, then compare the pinned team for both linked issues before deleting | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation update` | `Mutation.issueRelationUpdate` | Blocked: update must resolve and compare both issue endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Comment | `comment list` | `Query.comments` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Comment | `comment get` | `Query.comment` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |

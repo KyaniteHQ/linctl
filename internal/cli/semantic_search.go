@@ -1,4 +1,3 @@
-//nolint:dupl // Search command glue is intentionally uniform across search surfaces.
 package cli
 
 import (
@@ -59,12 +58,4 @@ func loadSemanticSearch(
 ) (client.SemanticSearchList, []client.SemanticSearchResultSummary, error) {
 	page, err := client.SearchSemantic(ctx, runtime.graphqlClient, args[0], limit)
 	return page, page.Results, err
-}
-
-func semanticSearchPageWithItems(
-	page client.SemanticSearchList,
-	results []client.SemanticSearchResultSummary,
-) client.SemanticSearchList {
-	page.Results = results
-	return page
 }

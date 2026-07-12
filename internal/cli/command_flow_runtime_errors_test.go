@@ -195,8 +195,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 				err := command.ExecuteContext(context.Background())
 
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "runtime failed")
+				require.ErrorContains(t, err, "runtime failed")
 			})
 		}
 	})
@@ -207,8 +206,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := writeIssues(command, &rootOptions{}, []client.IssueSummary{{Identifier: "LIT-1", Title: "Broken", State: "Todo"}})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("doctor returns writer errors", func(t *testing.T) {
@@ -220,8 +218,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("project list returns writer errors", func(t *testing.T) {
@@ -233,8 +230,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("project all returns writer errors", func(t *testing.T) {
@@ -246,8 +242,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("project all reports sort errors", func(t *testing.T) {
@@ -258,8 +253,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+		require.ErrorContains(t, err, `sort field "missing" is not present`)
 	})
 
 	t.Run("issue figma file key search reports sort errors", func(t *testing.T) {
@@ -270,8 +264,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+		require.ErrorContains(t, err, `sort field "missing" is not present`)
 	})
 
 	t.Run("issue filter suggestion rejects conflicting scope flags", func(t *testing.T) {
@@ -290,8 +283,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "use only one of --team-id or --project-id")
+		require.ErrorContains(t, err, "use only one of --team-id or --project-id")
 	})
 
 	t.Run("project members returns writer errors", func(t *testing.T) {
@@ -303,8 +295,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("project updates returns writer errors", func(t *testing.T) {
@@ -316,8 +307,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("project milestone list returns writer errors", func(t *testing.T) {
@@ -329,8 +319,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("release search returns writer errors", func(t *testing.T) {
@@ -342,8 +331,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("release search reports sort errors", func(t *testing.T) {
@@ -354,8 +342,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+		require.ErrorContains(t, err, `sort field "missing" is not present`)
 	})
 
 	t.Run("SLA configuration list returns writer errors", func(t *testing.T) {
@@ -367,8 +354,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("SLA configuration list reports sort errors", func(t *testing.T) {
@@ -379,8 +365,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+		require.ErrorContains(t, err, `sort field "missing" is not present`)
 	})
 
 	t.Run("semantic search returns writer errors", func(t *testing.T) {
@@ -392,8 +377,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("semantic search reports sort errors", func(t *testing.T) {
@@ -404,8 +388,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+		require.ErrorContains(t, err, `sort field "missing" is not present`)
 	})
 
 	t.Run("typed search returns writer errors", func(t *testing.T) {
@@ -424,8 +407,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 				err := command.ExecuteContext(context.Background())
 
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "write line")
+				require.ErrorContains(t, err, "write line")
 			})
 		}
 	})
@@ -445,8 +427,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 				err := command.ExecuteContext(context.Background())
 
-				require.Error(t, err)
-				require.Contains(t, err.Error(), `sort field "missing" is not present`)
+				require.ErrorContains(t, err, `sort field "missing" is not present`)
 			})
 		}
 	})
@@ -460,8 +441,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("issue child list reports sort errors", func(t *testing.T) {
@@ -472,8 +452,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+		require.ErrorContains(t, err, `sort field "missing" is not present`)
 	})
 
 	t.Run("document list returns writer errors", func(t *testing.T) {
@@ -485,8 +464,7 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("usage returns writer errors", func(t *testing.T) {
@@ -496,7 +474,6 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 }

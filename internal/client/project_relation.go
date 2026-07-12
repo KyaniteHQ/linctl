@@ -47,10 +47,11 @@ func ListProjectRelations(
 		return ProjectRelationList{}, fmt.Errorf("list project relations: %w", err)
 	}
 
-	relations := make([]ProjectRelationSummary, 0, len(result.ProjectRelations.Nodes))
-	for _, relation := range result.ProjectRelations.Nodes {
-		relations = append(relations, projectRelationSummary(relation.ProjectRelationSummaryFields))
-	}
+	relations := mapNodes(result.ProjectRelations.Nodes, func(
+		relation projectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
+	) ProjectRelationSummary {
+		return projectRelationSummary(relation.ProjectRelationSummaryFields)
+	})
 
 	return ProjectRelationList{
 		Relations:   relations,

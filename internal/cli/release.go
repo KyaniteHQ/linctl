@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -264,11 +263,6 @@ func loadRelease(
 	return client.GetReleaseByID(ctx, runtime.graphqlClient, id)
 }
 
-func releasePageWithItems(page client.ReleaseList, releases []client.ReleaseSummary) client.ReleaseList {
-	page.Releases = releases
-	return page
-}
-
 func loadReleaseHistory(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -277,14 +271,6 @@ func loadReleaseHistory(
 ) (client.ReleaseHistoryList, []client.ReleaseHistorySummary, error) {
 	history, err := client.ListReleaseHistory(ctx, runtime.graphqlClient, args[0], limit)
 	return history, history.History, err
-}
-
-func releaseHistoryPageWithItems(
-	page client.ReleaseHistoryList,
-	history []client.ReleaseHistorySummary,
-) client.ReleaseHistoryList {
-	page.History = history
-	return page
 }
 
 func loadReleaseDocuments(
@@ -317,14 +303,6 @@ func loadReleaseLinks(
 	return links, links.Links, err
 }
 
-func releaseLinksPageWithItems(
-	page client.EntityExternalLinkList,
-	links []client.EntityExternalLinkSummary,
-) client.EntityExternalLinkList {
-	page.Links = links
-	return page
-}
-
 func loadReleaseNoteList(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -341,12 +319,4 @@ func loadReleaseNote(
 	id string,
 ) (client.ReleaseNoteSummary, error) {
 	return client.GetReleaseNoteByID(ctx, runtime.graphqlClient, id)
-}
-
-func releaseNotePageWithItems(
-	page client.ReleaseNoteList,
-	notes []client.ReleaseNoteSummary,
-) client.ReleaseNoteList {
-	page.ReleaseNotes = notes
-	return page
 }

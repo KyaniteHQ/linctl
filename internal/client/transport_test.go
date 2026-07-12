@@ -100,8 +100,8 @@ func Test_Transport_returns_graphql_error_when_response_contains_errors(t *testi
 	// Then
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrGraphQL)
-	require.Contains(t, err.Error(), "bad query")
-	require.Contains(t, err.Error(), "BAD_USER_INPUT")
+	require.ErrorContains(t, err, "bad query")
+	require.ErrorContains(t, err, "BAD_USER_INPUT")
 }
 
 func Test_Transport_returns_typed_auth_error_for_401(t *testing.T) {
@@ -127,7 +127,7 @@ func Test_Transport_returns_typed_auth_error_for_401(t *testing.T) {
 
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrAuthFailed)
-	require.Contains(t, err.Error(), "graphql http status 401 code=UNAUTHENTICATED")
+	require.ErrorContains(t, err, "graphql http status 401 code=UNAUTHENTICATED")
 	require.NotContains(t, err.Error(), "secret auth failure")
 	require.NotContains(t, err.Error(), "expired-token")
 }
@@ -248,7 +248,7 @@ func Test_Transport_returns_rate_limited_error_after_exhausting_retries(t *testi
 	// Then
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrRateLimited)
-	require.Contains(t, err.Error(), "graphql http status 400 code=RATELIMITED")
+	require.ErrorContains(t, err, "graphql http status 400 code=RATELIMITED")
 	require.NotContains(t, err.Error(), "rate limit exceeded")
 	require.Equal(t, 2, requests)
 	require.Contains(t, logs.String(), "graphql_rate_limited attempt=2 status=400")
@@ -281,8 +281,7 @@ func Test_Transport_returns_error_when_context_timeout_expires(t *testing.T) {
 	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
 
 	// Then
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "request failed")
+	require.ErrorContains(t, err, "request failed")
 }
 
 func Test_Transport_logs_decode_failures_without_response_body(t *testing.T) {
@@ -350,8 +349,7 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 			Variables: map[string]any{"bad": make(chan int)},
 		}, &response)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "encode graphql request")
+		require.ErrorContains(t, err, "encode graphql request")
 		require.Contains(t, logs.String(), "graphql_encode_failed")
 		require.NotContains(t, logs.String(), "query Test")
 	})
@@ -365,8 +363,7 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 
 		err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "create graphql request")
+		require.ErrorContains(t, err, "create graphql request")
 	})
 
 	t.Run("body read error", func(t *testing.T) {
@@ -380,8 +377,7 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 
 		err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read response body")
+		require.ErrorContains(t, err, "read response body")
 	})
 
 	t.Run("body close error", func(t *testing.T) {
@@ -395,8 +391,7 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 
 		err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "close response body")
+		require.ErrorContains(t, err, "close response body")
 	})
 
 	t.Run("http error body is redacted", func(t *testing.T) {
@@ -411,8 +406,7 @@ func Test_Transport_returns_errors_for_request_and_body_failures(t *testing.T) {
 
 		err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "graphql http status 502")
+		require.ErrorContains(t, err, "graphql http status 502")
 		require.NotContains(t, err.Error(), "sensitive upstream body")
 	})
 }
@@ -492,8 +486,7 @@ func Test_Transport_returns_error_when_retry_wait_is_canceled(t *testing.T) {
 
 	err := transport.MakeRequest(ctx, &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "wait for retry")
+	require.ErrorContains(t, err, "wait for retry")
 	require.Contains(t, logs.String(), "graphql_retry_failed attempt=1")
 }
 

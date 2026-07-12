@@ -152,7 +152,7 @@ func Test_ResolveTarget_refuses_next_page_without_cursor(t *testing.T) {
 
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrTargetMismatch)
-	require.Contains(t, err.Error(), "without endCursor")
+	require.ErrorContains(t, err, "without endCursor")
 }
 
 func Test_ResolveTarget_finds_project_team_on_later_page(t *testing.T) {

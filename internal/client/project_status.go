@@ -42,10 +42,11 @@ func ListProjectStatuses(ctx context.Context, graphqlClient graphql.Client, limi
 		return ProjectStatusList{}, fmt.Errorf("list project statuses: %w", err)
 	}
 
-	statuses := make([]ProjectStatusSummary, 0, len(result.ProjectStatuses.Nodes))
-	for _, status := range result.ProjectStatuses.Nodes {
-		statuses = append(statuses, projectStatusSummary(status.ProjectStatusSummaryFields))
-	}
+	statuses := mapNodes(result.ProjectStatuses.Nodes, func(
+		status projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus,
+	) ProjectStatusSummary {
+		return projectStatusSummary(status.ProjectStatusSummaryFields)
+	})
 
 	return ProjectStatusList{
 		ProjectStatuses: statuses,

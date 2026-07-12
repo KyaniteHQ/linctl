@@ -61,11 +61,3 @@ func loadIssueRelation(
 ) (client.IssueRelationSummary, error) {
 	return client.GetIssueRelationByID(ctx, runtime.graphqlClient, id)
 }
-
-func issueRelationPageWithItems(
-	page client.IssueRelationList,
-	relations []client.IssueRelationSummary,
-) client.IssueRelationList {
-	page.Relations = relations
-	return page
-}

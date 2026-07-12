@@ -107,10 +107,11 @@ func ListComments(ctx context.Context, graphqlClient graphql.Client, limit int) 
 		return CommentList{}, fmt.Errorf("list comments: %w", err)
 	}
 
-	summaries := make([]CommentSummary, 0, len(commentsPage.Comments.Nodes))
-	for _, node := range commentsPage.Comments.Nodes {
-		summaries = append(summaries, topLevelCommentSummary(node.TopLevelCommentSummaryFields))
-	}
+	summaries := mapNodes(commentsPage.Comments.Nodes, func(
+		node commentsCommentsCommentConnectionNodesComment,
+	) CommentSummary {
+		return topLevelCommentSummary(node.TopLevelCommentSummaryFields)
+	})
 
 	return CommentList{
 		Comments:    summaries,
@@ -154,10 +155,11 @@ func ListCommentChildren(
 		return CommentChildList{}, fmt.Errorf("list comment children %s: %w", id, err)
 	}
 
-	comments := make([]CommentMetadataSummary, 0, len(result.Comment.Children.Nodes))
-	for _, comment := range result.Comment.Children.Nodes {
-		comments = append(comments, commentMetadataSummary(comment.CommentMetadataFields))
-	}
+	comments := mapNodes(result.Comment.Children.Nodes, func(
+		comment comment_childrenCommentChildrenCommentConnectionNodesComment,
+	) CommentMetadataSummary {
+		return commentMetadataSummary(comment.CommentMetadataFields)
+	})
 
 	return CommentChildList{
 		CommentID:   result.Comment.Id,
@@ -179,10 +181,11 @@ func ListCommentCreatedIssues(
 		return IssueList{}, fmt.Errorf("list comment created issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.Comment.CreatedIssues.Nodes))
-	for _, issue := range result.Comment.CreatedIssues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.Comment.CreatedIssues.Nodes, func(
+		issue comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -203,10 +206,7 @@ func ListIssueComments(
 		return IssueCommentList{}, fmt.Errorf("list issue comments %s: %w", id, err)
 	}
 
-	summaries := make([]IssueCommentSummary, 0, len(comments.Issue.Comments.Nodes))
-	for _, comment := range comments.Issue.Comments.Nodes {
-		summaries = append(summaries, issueCommentSummary(comment))
-	}
+	summaries := mapNodes(comments.Issue.Comments.Nodes, issueCommentSummary)
 
 	return IssueCommentList{
 		IssueID:     comments.Issue.Id,
@@ -325,12 +325,4 @@ func commentActorBotSummary(bot *comment_botActorCommentBotActorActorBot) *Actor
 	}
 
 	return actorBotSummary(&bot.ActorBotSummaryFields)
-}
-
-func stringValue(value *string) string {
-	if value == nil {
-		return ""
-	}
-
-	return *value
 }

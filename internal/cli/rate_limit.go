@@ -14,7 +14,7 @@ func addRateLimitCommand(ctx context.Context, root *cobra.Command, options *root
 		Use:   "rate-limit",
 		Short: "Read Linear rate-limit status",
 	}
-	command.AddCommand(&cobra.Command{
+	addCommandWithSafety(command, CommandSafetyRead, &cobra.Command{
 		Use:   "status",
 		Short: "Print the authenticated Linear rate-limit status",
 		Args:  cobra.NoArgs,

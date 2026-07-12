@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -106,12 +105,4 @@ func loadTriageResponsibility(
 	id string,
 ) (client.TriageResponsibilitySummary, error) {
 	return client.GetTriageResponsibilityByID(ctx, runtime.graphqlClient, id)
-}
-
-func triageResponsibilityPageWithItems(
-	page client.TriageResponsibilityList,
-	responsibilities []client.TriageResponsibilitySummary,
-) client.TriageResponsibilityList {
-	page.TriageResponsibilities = responsibilities
-	return page
 }

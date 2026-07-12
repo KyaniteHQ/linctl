@@ -56,11 +56,3 @@ func loadCustomerStatus(
 ) (client.CustomerStatusSummary, error) {
 	return client.GetCustomerStatusByID(ctx, runtime.graphqlClient, id)
 }
-
-func customerStatusPageWithItems(
-	page client.CustomerStatusList,
-	statuses []client.CustomerStatusSummary,
-) client.CustomerStatusList {
-	page.Statuses = statuses
-	return page
-}

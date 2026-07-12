@@ -56,10 +56,11 @@ func ListProjectLabels(ctx context.Context, graphqlClient graphql.Client, limit 
 		return ProjectLabelList{}, fmt.Errorf("list project labels: %w", err)
 	}
 
-	labels := make([]ProjectLabelSummary, 0, len(result.ProjectLabels.Nodes))
-	for _, label := range result.ProjectLabels.Nodes {
-		labels = append(labels, projectLabelSummary(label.ProjectLabelSummaryFields))
-	}
+	labels := mapNodes(result.ProjectLabels.Nodes, func(
+		label projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
+	) ProjectLabelSummary {
+		return projectLabelSummary(label.ProjectLabelSummaryFields)
+	})
 
 	return ProjectLabelList{
 		ProjectLabels: labels,
@@ -90,10 +91,11 @@ func ListProjectLabelChildren(
 		return ProjectLabelChildrenList{}, fmt.Errorf("list project label children %s: %w", id, err)
 	}
 
-	labels := make([]ProjectLabelSummary, 0, len(result.ProjectLabel.Children.Nodes))
-	for _, label := range result.ProjectLabel.Children.Nodes {
-		labels = append(labels, projectLabelSummary(label.ProjectLabelSummaryFields))
-	}
+	labels := mapNodes(result.ProjectLabel.Children.Nodes, func(
+		label projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel,
+	) ProjectLabelSummary {
+		return projectLabelSummary(label.ProjectLabelSummaryFields)
+	})
 
 	return ProjectLabelChildrenList{
 		ProjectLabelID:   result.ProjectLabel.Id,
@@ -116,10 +118,11 @@ func ListProjectLabelProjects(
 		return ProjectLabelProjectsList{}, fmt.Errorf("list project label projects %s: %w", id, err)
 	}
 
-	projects := make([]ProjectSummary, 0, len(result.ProjectLabel.Projects.Nodes))
-	for _, project := range result.ProjectLabel.Projects.Nodes {
-		projects = append(projects, projectSummaryFromFields(project.ProjectSummaryFields))
-	}
+	projects := mapNodes(result.ProjectLabel.Projects.Nodes, func(
+		project projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject,
+	) ProjectSummary {
+		return projectSummaryFromFields(project.ProjectSummaryFields)
+	})
 
 	return ProjectLabelProjectsList{
 		ProjectLabelID:   result.ProjectLabel.Id,

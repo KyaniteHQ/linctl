@@ -11,9 +11,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/oauth"
-	"github.com/stretchr/testify/require"
 )
 
 type tokenRequestSnapshot struct {
@@ -399,7 +400,6 @@ func Test_Client_exchange_request_creation_error(t *testing.T) {
 
 	_, err := client.ExchangeAuthorizationCode(context.Background(), oauth.AuthorizationCodeRequest{})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "create oauth token request")
 }
 
@@ -476,7 +476,6 @@ func Test_Client_exchange_rejects_malformed_token_json(t *testing.T) {
 
 	_, err := client.ClientCredentials(context.Background(), oauth.ClientCredentialsRequest{})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "decode oauth token response")
 }
 
@@ -510,7 +509,6 @@ func Test_Client_revoke_request_creation_error(t *testing.T) {
 
 	err := client.RevokeToken(context.Background(), oauth.RevocationRequest{Token: "refresh-token"})
 
-	require.Error(t, err)
 	require.ErrorContains(t, err, "create oauth revoke request")
 }
 

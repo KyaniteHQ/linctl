@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -57,12 +56,4 @@ func loadIssueToRelease(
 	id string,
 ) (client.IssueToReleaseSummary, error) {
 	return client.GetIssueToReleaseByID(ctx, runtime.graphqlClient, id)
-}
-
-func issueToReleasePageWithItems(
-	page client.IssueToReleaseList,
-	associations []client.IssueToReleaseSummary,
-) client.IssueToReleaseList {
-	page.Associations = associations
-	return page
 }

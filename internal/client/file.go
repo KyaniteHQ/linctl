@@ -50,10 +50,11 @@ func PrepareFileUpload(
 	}
 
 	file := result.FileUpload.UploadFile
-	headers := make([]FileUploadHeader, 0, len(file.Headers))
-	for _, header := range file.Headers {
-		headers = append(headers, FileUploadHeader(header))
-	}
+	headers := mapNodes(file.Headers, func(
+		header fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader,
+	) FileUploadHeader {
+		return FileUploadHeader(header)
+	})
 
 	return FileUpload{
 		Filename:    file.Filename,

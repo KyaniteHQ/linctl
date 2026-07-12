@@ -20,8 +20,7 @@ func Test_TargetFailureScenarios_refuse_unpinned_or_mismatched_targets(t *testin
 		"Viewer": `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
 		"Teams":  "",
 	}, matchingTarget())
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "resolve teams")
+	require.ErrorContains(t, err, "resolve teams")
 
 	_, err = ResolveTarget(context.Background(), fakeGraphQLClient{
 		"Viewer":        `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"other-org","name":"Other","urlKey":"other"}}}`,
@@ -35,8 +34,7 @@ func Test_TargetFailureScenarios_refuse_unpinned_or_mismatched_targets(t *testin
 		"Teams":         `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
 		"TargetProject": "",
 	}, matchingTarget())
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "resolve project")
+	require.ErrorContains(t, err, "resolve project")
 
 	graphqlClient := fakeGraphQLClient{
 		"Viewer":        `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`,
@@ -93,16 +91,13 @@ func Test_WriteGuardScenarios_refuse_mismatched_resources(t *testing.T) {
 	require.ErrorIs(t, err, ErrTargetMismatch)
 
 	_, err = newWriteGuard(context.Background(), errorGraphQLClient{err: errors.New("resolve failed")}, matchingTarget())
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "resolve failed")
+	require.ErrorContains(t, err, "resolve failed")
 
 	_, err = guard.requireIssue(context.Background(), errorGraphQLClient{err: errors.New("read issue failed")}, "LIT-1")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read issue failed")
+	require.ErrorContains(t, err, "read issue failed")
 
 	err = guard.requireProject(context.Background(), errorGraphQLClient{err: errors.New("read project failed")}, "project-id")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read project failed")
+	require.ErrorContains(t, err, "read project failed")
 }
 
 func Test_FakeGraphQLClient_respects_context_and_missing_operations(t *testing.T) {
@@ -113,8 +108,7 @@ func Test_FakeGraphQLClient_respects_context_and_missing_operations(t *testing.T
 	require.Error(t, err)
 
 	err = fakeGraphQLClient{}.MakeRequest(context.Background(), &graphql.Request{OpName: "Viewer"}, &graphql.Response{})
-	require.Error(t, err)
-	require.True(t, errors.Is(err, errors.New("missing fake response for Viewer")) || strings.Contains(err.Error(), "missing fake response"))
+	require.ErrorContains(t, err, "missing fake response")
 }
 
 func Test_TargetScenarios_allow_unpinned_project_and_matching_team(t *testing.T) {

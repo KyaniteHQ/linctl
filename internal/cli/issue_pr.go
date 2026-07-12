@@ -17,7 +17,7 @@ type pullRequestPlan struct {
 }
 
 func addIssuePRCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "pr [ISSUE_ID]",
 		Short: "Print a gh pr create command for an issue",
 		Args:  cobra.MaximumNArgs(1),

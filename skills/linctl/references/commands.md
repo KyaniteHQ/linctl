@@ -1549,6 +1549,7 @@ Flags:
       --due-date string           set the due date (YYYY-MM-DD)
       --estimate int              set the estimate (validated against team config)
       --label stringArray         attach a label by id (repeatable)
+      --milestone string          assign to a project milestone id (requires a pinned project)
       --parent string             create as a sub-issue of a parent issue id
       --priority string           set priority (urgent/high/medium/low/none or 0-4)
       --section stringArray       fill a markdown section: NAME=VALUE (repeatable)
@@ -2563,8 +2564,10 @@ linctl project create [flags]
 Flags:
 
 ```
-      --description string   project description
-      --name string          project name
+      --content string        project content as markdown
+      --content-file string   read project content markdown from a file
+      --description string    project description
+      --name string           project name
 ```
 
 ### linctl project documents
@@ -2790,8 +2793,10 @@ linctl project update PROJECT_ID [flags]
 Flags:
 
 ```
-      --description string   new project description
-      --name string          new project name
+      --content string        new project content as markdown
+      --content-file string   read new project content markdown from a file
+      --description string    new project description
+      --name string           new project name
 ```
 
 ### linctl project updates

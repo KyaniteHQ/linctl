@@ -155,8 +155,7 @@ func Test_Files_upload_reports_read_error(t *testing.T) {
 		"files", "upload", missing,
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read")
+	require.ErrorContains(t, err, "read")
 }
 
 func Test_Files_upload_reports_non_regular_file(t *testing.T) {
@@ -164,8 +163,7 @@ func Test_Files_upload_reports_non_regular_file(t *testing.T) {
 		"files", "upload", t.TempDir(),
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "not a regular file")
+	require.ErrorContains(t, err, "not a regular file")
 }
 
 func Test_Files_upload_reports_open_error(t *testing.T) {
@@ -182,8 +180,7 @@ func Test_Files_upload_reports_open_error(t *testing.T) {
 		"files", "upload", path,
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read")
+	require.ErrorContains(t, err, "read")
 }
 
 func Test_Files_upload_reports_mutation_error(t *testing.T) {
@@ -198,8 +195,7 @@ func Test_Files_upload_reports_mutation_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "prepare file upload")
+	require.ErrorContains(t, err, "prepare file upload")
 }
 
 func Test_Files_upload_target_mismatch_stops_before_file_upload_and_put(t *testing.T) {
@@ -230,8 +226,7 @@ func Test_Files_upload_reports_put_failure(t *testing.T) {
 		"files", "upload", writeUploadFile(t),
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unexpected status")
+	require.ErrorContains(t, err, "unexpected status")
 }
 
 func Test_Files_upload_reports_transport_error(t *testing.T) {
@@ -239,8 +234,7 @@ func Test_Files_upload_reports_transport_error(t *testing.T) {
 		"files", "upload", writeUploadFile(t),
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "upload to storage")
+	require.ErrorContains(t, err, "upload to storage")
 }
 
 func Test_putFileContents_reports_request_build_error(t *testing.T) {
@@ -290,8 +284,7 @@ func Test_Files_download_requires_output(t *testing.T) {
 		"files", "download", "https://assets.example/file.txt",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "--output is required")
+	require.ErrorContains(t, err, "--output is required")
 }
 
 func Test_Files_download_reports_bad_url(t *testing.T) {
@@ -307,8 +300,7 @@ func Test_Files_download_reports_http_status(t *testing.T) {
 		"files", "download", "https://assets.example/file.txt", "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unexpected status")
+	require.ErrorContains(t, err, "unexpected status")
 }
 
 func Test_Files_download_reports_transport_error(t *testing.T) {
@@ -316,8 +308,7 @@ func Test_Files_download_reports_transport_error(t *testing.T) {
 		"files", "download", "https://assets.example/file.txt", "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "download")
+	require.ErrorContains(t, err, "download")
 }
 
 func Test_Files_download_does_not_build_command_runtime(t *testing.T) {
@@ -352,8 +343,7 @@ func Test_Files_download_reports_body_read_error(t *testing.T) {
 		"files", "download", "https://assets.example/file.txt", "--output", filepath.Join(t.TempDir(), "x"),
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read")
+	require.ErrorContains(t, err, "read")
 }
 
 func Test_Files_download_reports_write_error(t *testing.T) {
@@ -363,8 +353,7 @@ func Test_Files_download_reports_write_error(t *testing.T) {
 		"files", "download", "https://assets.example/file.txt", "--output", unwritable,
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write")
+	require.ErrorContains(t, err, "write")
 }
 
 func Test_writeDownloadedFile_removes_temp_file_on_copy_error(t *testing.T) {
@@ -390,8 +379,7 @@ func Test_writeDownloadedFile_reports_close_error(t *testing.T) {
 
 	_, err := writeDownloadedFile(strings.NewReader("data"), filepath.Join(t.TempDir(), "got.txt"))
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "close boom")
+	require.ErrorContains(t, err, "close boom")
 }
 
 func Test_writeDownloadedFile_removes_temp_file_on_rename_error(t *testing.T) {

@@ -33,10 +33,11 @@ func SearchSemantic(
 		return SemanticSearchList{}, fmt.Errorf("semantic search: %w", err)
 	}
 
-	results := make([]SemanticSearchResultSummary, 0, len(result.SemanticSearch.Results))
-	for _, searchResult := range result.SemanticSearch.Results {
-		results = append(results, semanticSearchResultSummary(searchResult.SemanticSearchResultSummaryFields))
-	}
+	results := mapNodes(result.SemanticSearch.Results, func(
+		searchResult semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult,
+	) SemanticSearchResultSummary {
+		return semanticSearchResultSummary(searchResult.SemanticSearchResultSummaryFields)
+	})
 
 	return SemanticSearchList{Results: results}, nil
 }

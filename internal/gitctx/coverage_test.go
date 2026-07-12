@@ -18,8 +18,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 	t.Run("non git directory returns current branch error", func(t *testing.T) {
 		_, err := CurrentIssueIdentifier(context.Background(), t.TempDir())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "git branch --show-current")
+		require.ErrorContains(t, err, "git branch --show-current")
 	})
 
 	t.Run("jj description parse is used when git branch lacks issue", func(t *testing.T) {
@@ -46,9 +45,8 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 
 		_, err := CurrentIssueIdentifier(context.Background(), dir)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `git branch "master"`)
-		require.Contains(t, err.Error(), "jj description empty")
+		require.ErrorContains(t, err, `git branch "master"`)
+		require.ErrorContains(t, err, "jj description empty")
 	})
 
 	t.Run("jj description without identifier is reported", func(t *testing.T) {
@@ -61,8 +59,7 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 
 		_, err := CurrentIssueIdentifier(context.Background(), dir)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "jj description has no identifier")
+		require.ErrorContains(t, err, "jj description has no identifier")
 	})
 
 	t.Run("empty git branch is reported", func(t *testing.T) {
@@ -75,7 +72,6 @@ func Test_GitContextScenarios_resolve_or_report_issue_references(t *testing.T) {
 
 		_, err := CurrentIssueIdentifier(context.Background(), dir)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "git branch empty")
+		require.ErrorContains(t, err, "git branch empty")
 	})
 }

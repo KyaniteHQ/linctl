@@ -243,16 +243,3 @@ func loadCommentCreatedIssues(
 	issues, err := client.ListCommentCreatedIssues(ctx, runtime.graphqlClient, args[0], limit)
 	return issues, issues.Issues, err
 }
-
-func commentPageWithItems(page client.CommentList, comments []client.CommentSummary) client.CommentList {
-	page.Comments = comments
-	return page
-}
-
-func commentChildPageWithItems(
-	page client.CommentChildList,
-	comments []client.CommentMetadataSummary,
-) client.CommentChildList {
-	page.Comments = comments
-	return page
-}

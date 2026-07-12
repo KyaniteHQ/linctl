@@ -44,10 +44,11 @@ func ListOrganizationTemplates(ctx context.Context, graphqlClient graphql.Client
 		return TemplateList{}, fmt.Errorf("list organization templates: %w", err)
 	}
 
-	summaries := make([]TemplateSummary, 0, len(result.Organization.Templates.Nodes))
-	for _, node := range result.Organization.Templates.Nodes {
-		summaries = append(summaries, templateSummary(node.TemplateSummaryFields))
-	}
+	summaries := mapNodes(result.Organization.Templates.Nodes, func(
+		node organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate,
+	) TemplateSummary {
+		return templateSummary(node.TemplateSummaryFields)
+	})
 
 	return TemplateList{
 		Templates:   summaries,

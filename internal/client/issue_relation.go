@@ -40,10 +40,11 @@ func ListIssueRelations(
 		return IssueRelationList{}, fmt.Errorf("list issue relations: %w", err)
 	}
 
-	relations := make([]IssueRelationSummary, 0, len(result.IssueRelations.Nodes))
-	for _, relation := range result.IssueRelations.Nodes {
-		relations = append(relations, issueRelationSummary(relation.IssueRelationSummaryFields))
-	}
+	relations := mapNodes(result.IssueRelations.Nodes, func(
+		relation issueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation,
+	) IssueRelationSummary {
+		return issueRelationSummary(relation.IssueRelationSummaryFields)
+	})
 
 	return IssueRelationList{
 		Relations:   relations,

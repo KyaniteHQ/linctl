@@ -137,38 +137,6 @@ func commandFlowUserSettingsPayload(operation string) (string, bool) {
 		return `{"userSettings":` + commandUserSettingsJSON() + `}`, true
 	case "userSettings_notificationCategoryPreferences":
 		return `{"userSettings":{"notificationCategoryPreferences":` + commandNotificationCategoriesJSON() + `}}`, true
-	case "userSettings_notificationCategoryPreferences_appsAndIntegrations":
-		return commandUserSettingsCategoryPayload("appsAndIntegrations"), true
-	case "userSettings_notificationCategoryPreferences_assignments":
-		return commandUserSettingsCategoryPayload("assignments"), true
-	case "userSettings_notificationCategoryPreferences_billing":
-		return commandUserSettingsCategoryPayload("billing"), true
-	case "userSettings_notificationCategoryPreferences_commentsAndReplies":
-		return commandUserSettingsCategoryPayload("commentsAndReplies"), true
-	case "userSettings_notificationCategoryPreferences_customers":
-		return commandUserSettingsCategoryPayload("customers"), true
-	case "userSettings_notificationCategoryPreferences_documentChanges":
-		return commandUserSettingsCategoryPayload("documentChanges"), true
-	case "userSettings_notificationCategoryPreferences_feed":
-		return commandUserSettingsCategoryPayload("feed"), true
-	case "userSettings_notificationCategoryPreferences_mentions":
-		return commandUserSettingsCategoryPayload("mentions"), true
-	case "userSettings_notificationCategoryPreferences_postsAndUpdates":
-		return commandUserSettingsCategoryPayload("postsAndUpdates"), true
-	case "userSettings_notificationCategoryPreferences_reactions":
-		return commandUserSettingsCategoryPayload("reactions"), true
-	case "userSettings_notificationCategoryPreferences_reminders":
-		return commandUserSettingsCategoryPayload("reminders"), true
-	case "userSettings_notificationCategoryPreferences_reviews":
-		return commandUserSettingsCategoryPayload("reviews"), true
-	case "userSettings_notificationCategoryPreferences_statusChanges":
-		return commandUserSettingsCategoryPayload("statusChanges"), true
-	case "userSettings_notificationCategoryPreferences_subscriptions":
-		return commandUserSettingsCategoryPayload("subscriptions"), true
-	case "userSettings_notificationCategoryPreferences_system":
-		return commandUserSettingsCategoryPayload("system"), true
-	case "userSettings_notificationCategoryPreferences_triage":
-		return commandUserSettingsCategoryPayload("triage"), true
 	case "userSettings_notificationChannelPreferences":
 		return `{"userSettings":{"notificationChannelPreferences":` + commandNotificationChannelJSON() + `}}`, true
 	case "userSettings_notificationDeliveryPreferences":
@@ -200,10 +168,6 @@ func commandFlowUserSettingsPayload(operation string) (string, bool) {
 	default:
 		return "", false
 	}
-}
-
-func commandUserSettingsCategoryPayload(category string) string {
-	return `{"userSettings":{"notificationCategoryPreferences":{"` + category + `":` + commandNotificationChannelJSON() + `}}}`
 }
 
 func commandUserSettingsScheduleDayPayload(day string) string {

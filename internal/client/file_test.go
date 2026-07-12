@@ -57,8 +57,7 @@ func Test_PrepareFileUpload_requires_positive_size(t *testing.T) {
 func Test_PrepareFileUpload_wraps_mutation_error(t *testing.T) {
 	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), "a.png", "image/png", 12)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "prepare file upload")
+	require.ErrorContains(t, err, "prepare file upload")
 }
 
 func Test_PrepareFileUpload_fails_when_no_upload_target(t *testing.T) {

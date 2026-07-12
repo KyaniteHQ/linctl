@@ -9,7 +9,7 @@ import (
 )
 
 func addCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	command := &cobra.Command{
 		Use:   "current",
 		Short: "Resolve the Linear issue for the current checkout",
 		Args:  cobra.NoArgs,
@@ -24,7 +24,8 @@ func addCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 			}
 			return runCurrentIssueRead(ctx, command, options, issueAdapterFor(runtime), issueID)
 		},
-	})
+	}
+	addCommandWithSafety(root, CommandSafetyRead, command)
 }
 
 func runCurrentIssueRead(

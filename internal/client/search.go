@@ -81,10 +81,11 @@ func SearchDocuments(
 		return SearchDocumentList{}, fmt.Errorf("search documents: %w", err)
 	}
 
-	documents := make([]SearchDocumentSummary, 0, len(result.SearchDocuments.Nodes))
-	for _, node := range result.SearchDocuments.Nodes {
-		documents = append(documents, searchDocumentSummary(node.SearchDocumentSummaryFields))
-	}
+	documents := mapNodes(result.SearchDocuments.Nodes, func(
+		node searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult,
+	) SearchDocumentSummary {
+		return searchDocumentSummary(node.SearchDocumentSummaryFields)
+	})
 
 	return SearchDocumentList{
 		Documents:   documents,
@@ -106,10 +107,11 @@ func SearchIssues(
 		return SearchIssueList{}, fmt.Errorf("search issues: %w", err)
 	}
 
-	issues := make([]SearchIssueSummary, 0, len(result.SearchIssues.Nodes))
-	for _, node := range result.SearchIssues.Nodes {
-		issues = append(issues, typedSearchIssueSummary(node.SearchIssueSummaryFields))
-	}
+	issues := mapNodes(result.SearchIssues.Nodes, func(
+		node searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult,
+	) SearchIssueSummary {
+		return typedSearchIssueSummary(node.SearchIssueSummaryFields)
+	})
 
 	return SearchIssueList{
 		Issues:      issues,
@@ -131,10 +133,11 @@ func SearchProjects(
 		return SearchProjectList{}, fmt.Errorf("search projects: %w", err)
 	}
 
-	projects := make([]SearchProjectSummary, 0, len(result.SearchProjects.Nodes))
-	for _, node := range result.SearchProjects.Nodes {
-		projects = append(projects, searchProjectSummary(node.SearchProjectSummaryFields))
-	}
+	projects := mapNodes(result.SearchProjects.Nodes, func(
+		node searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult,
+	) SearchProjectSummary {
+		return searchProjectSummary(node.SearchProjectSummaryFields)
+	})
 
 	return SearchProjectList{
 		Projects:    projects,
@@ -210,14 +213,15 @@ func typedSearchIssueSummary(fields SearchIssueSummaryFields) SearchIssueSummary
 }
 
 func searchProjectSummary(fields SearchProjectSummaryFields) SearchProjectSummary {
-	teams := make([]ProjectTeam, 0, len(fields.Teams.Nodes))
-	for _, team := range fields.Teams.Nodes {
-		teams = append(teams, ProjectTeam{
+	teams := mapNodes(fields.Teams.Nodes, func(
+		team SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam,
+	) ProjectTeam {
+		return ProjectTeam{
 			ID:   team.Id,
 			Key:  team.Key,
 			Name: team.Name,
-		})
-	}
+		}
+	})
 
 	summary := SearchProjectSummary{
 		ID:     fields.Id,

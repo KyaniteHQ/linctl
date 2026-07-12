@@ -42,10 +42,11 @@ func ListAgentSkills(ctx context.Context, graphqlClient graphql.Client, limit in
 		return AgentSkillList{}, fmt.Errorf("list agent skills: %w", err)
 	}
 
-	summaries := make([]AgentSkillSummary, 0, len(result.AgentSkills.Nodes))
-	for _, node := range result.AgentSkills.Nodes {
-		summaries = append(summaries, agentSkillSummary(node.AgentSkillSummaryFields))
-	}
+	summaries := mapNodes(result.AgentSkills.Nodes, func(
+		node agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill,
+	) AgentSkillSummary {
+		return agentSkillSummary(node.AgentSkillSummaryFields)
+	})
 
 	return AgentSkillList{
 		AgentSkills: summaries,

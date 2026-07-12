@@ -12,9 +12,10 @@ import (
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/stretchr/testify/require"
+
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_CommandRuntime_builds_graphql_client_with_oauth_bearer_token(t *testing.T) {
@@ -67,8 +68,7 @@ func Test_CommandRuntime_reports_auth_default_paths_error(t *testing.T) {
 
 	_, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "paths unavailable")
+	require.ErrorContains(t, err, "paths unavailable")
 }
 
 func Test_CommandRuntime_reports_config_load_error(t *testing.T) {
@@ -79,8 +79,7 @@ func Test_CommandRuntime_reports_config_load_error(t *testing.T) {
 
 	_, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "parse config")
+	require.ErrorContains(t, err, "parse config")
 }
 
 func Test_CommandRuntime_requires_oauth_token(t *testing.T) {
@@ -104,8 +103,7 @@ func Test_CommandRuntime_reports_local_auth_state_load_error_after_env_token(t *
 
 	_, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read auth app config")
+	require.ErrorContains(t, err, "read auth app config")
 }
 
 func Test_NewRecoveringGraphQLClient_uses_defaults_and_empty_authorization(t *testing.T) {
@@ -326,8 +324,7 @@ func Test_CommandRuntime_reports_token_persist_error_after_recovery(t *testing.T
 
 	err := runtimeClient.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &graphql.Response{})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read auth token state")
+	require.ErrorContains(t, err, "read auth token state")
 }
 
 func Test_CommandRuntime_reacquires_client_credentials_token_after_401_once(t *testing.T) {

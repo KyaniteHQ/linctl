@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -55,7 +54,7 @@ func addCustomViewSubscribersCommand(ctx context.Context, root *cobra.Command, o
 			return writeCustomViewSubscriberStatus(command, options, status)
 		},
 	}
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyRead, command)
 }
 
 func addCustomViewInitiativesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -348,12 +347,4 @@ func loadCustomViewProjects(
 ) (client.ProjectList, []client.ProjectSummary, error) {
 	projects, err := client.ListCustomViewProjects(ctx, runtime.graphqlClient, args[0], limit)
 	return projects, projects.Projects, err
-}
-
-func customViewPageWithItems(
-	page client.CustomViewList,
-	views []client.CustomViewSummary,
-) client.CustomViewList {
-	page.CustomViews = views
-	return page
 }

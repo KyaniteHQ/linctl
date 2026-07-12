@@ -56,11 +56,3 @@ func loadAgentSession(
 ) (client.AgentSessionSummary, error) {
 	return client.GetAgentSessionByID(ctx, runtime.graphqlClient, id)
 }
-
-func agentSessionPageWithItems(
-	page client.AgentSessionList,
-	sessions []client.AgentSessionSummary,
-) client.AgentSessionList {
-	page.AgentSessions = sessions
-	return page
-}

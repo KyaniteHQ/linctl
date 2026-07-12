@@ -41,13 +41,11 @@ func ListInitiativeToProjects(
 		return InitiativeToProjectList{}, fmt.Errorf("list initiative to projects: %w", err)
 	}
 
-	associations := make([]InitiativeToProjectSummary, 0, len(result.InitiativeToProjects.Nodes))
-	for _, association := range result.InitiativeToProjects.Nodes {
-		associations = append(
-			associations,
-			initiativeToProjectSummary(association.InitiativeToProjectSummaryFields),
-		)
-	}
+	associations := mapNodes(result.InitiativeToProjects.Nodes, func(
+		association initiativeToProjectsInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject,
+	) InitiativeToProjectSummary {
+		return initiativeToProjectSummary(association.InitiativeToProjectSummaryFields)
+	})
 
 	return InitiativeToProjectList{
 		Associations: associations,

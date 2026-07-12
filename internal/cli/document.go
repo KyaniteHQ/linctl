@@ -171,11 +171,6 @@ func loadDocumentList(
 	return documents, documents.Documents, err
 }
 
-func documentPageWithItems(page client.DocumentList, documents []client.DocumentSummary) client.DocumentList {
-	page.Documents = documents
-	return page
-}
-
 func loadDocument(ctx context.Context, runtime commandRuntime, id string) (client.DocumentSummary, error) {
 	return client.GetDocumentByID(ctx, runtime.graphqlClient, id)
 }
@@ -188,12 +183,4 @@ func loadDocumentCommentList(
 ) (client.DocumentCommentList, []client.CommentMetadataSummary, error) {
 	comments, err := client.ListDocumentComments(ctx, runtime.graphqlClient, args[0], limit)
 	return comments, comments.Comments, err
-}
-
-func documentCommentPageWithItems(
-	page client.DocumentCommentList,
-	comments []client.CommentMetadataSummary,
-) client.DocumentCommentList {
-	page.Comments = comments
-	return page
 }

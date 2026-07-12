@@ -56,11 +56,3 @@ func loadCustomerTier(
 ) (client.CustomerTierSummary, error) {
 	return client.GetCustomerTierByID(ctx, runtime.graphqlClient, id)
 }
-
-func customerTierPageWithItems(
-	page client.CustomerTierList,
-	tiers []client.CustomerTierSummary,
-) client.CustomerTierList {
-	page.Tiers = tiers
-	return page
-}

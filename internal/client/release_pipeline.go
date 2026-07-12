@@ -63,10 +63,11 @@ func ListReleasePipelines(ctx context.Context, graphqlClient graphql.Client, lim
 		return ReleasePipelineList{}, fmt.Errorf("list release pipelines: %w", err)
 	}
 
-	summaries := make([]ReleasePipelineSummary, 0, len(result.ReleasePipelines.Nodes))
-	for _, node := range result.ReleasePipelines.Nodes {
-		summaries = append(summaries, releasePipelineSummary(node.ReleasePipelineSummaryFields))
-	}
+	summaries := mapNodes(result.ReleasePipelines.Nodes, func(
+		node releasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
+	) ReleasePipelineSummary {
+		return releasePipelineSummary(node.ReleasePipelineSummaryFields)
+	})
 
 	return ReleasePipelineList{
 		ReleasePipelines: summaries,
@@ -101,10 +102,11 @@ func ListReleasePipelineReleases(
 		return ReleaseList{}, fmt.Errorf("list release pipeline releases %s: %w", id, err)
 	}
 
-	summaries := make([]ReleaseSummary, 0, len(result.ReleasePipeline.Releases.Nodes))
-	for _, node := range result.ReleasePipeline.Releases.Nodes {
-		summaries = append(summaries, releaseSummary(node.ReleaseSummaryFields))
-	}
+	summaries := mapNodes(result.ReleasePipeline.Releases.Nodes, func(
+		node releasePipeline_releasesReleasePipelineReleasesReleaseConnectionNodesRelease,
+	) ReleaseSummary {
+		return releaseSummary(node.ReleaseSummaryFields)
+	})
 
 	return ReleaseList{
 		Releases:    summaries,
@@ -125,10 +127,11 @@ func ListReleasePipelineStages(
 		return ReleaseStageList{}, fmt.Errorf("list release pipeline stages %s: %w", id, err)
 	}
 
-	summaries := make([]ReleaseStageSummary, 0, len(result.ReleasePipeline.Stages.Nodes))
-	for _, node := range result.ReleasePipeline.Stages.Nodes {
-		summaries = append(summaries, releaseStageSummary(node.ReleaseStageSummaryFields))
-	}
+	summaries := mapNodes(result.ReleasePipeline.Stages.Nodes, func(
+		node releasePipeline_stagesReleasePipelineStagesReleaseStageConnectionNodesReleaseStage,
+	) ReleaseStageSummary {
+		return releaseStageSummary(node.ReleaseStageSummaryFields)
+	})
 
 	return ReleaseStageList{
 		ReleaseStages: summaries,
@@ -149,10 +152,11 @@ func ListReleasePipelineTeams(
 		return TeamList{}, fmt.Errorf("list release pipeline teams %s: %w", id, err)
 	}
 
-	teams := make([]TeamSummary, 0, len(result.ReleasePipeline.Teams.Nodes))
-	for _, node := range result.ReleasePipeline.Teams.Nodes {
-		teams = append(teams, teamSummary(node.TeamSummaryFields))
-	}
+	teams := mapNodes(result.ReleasePipeline.Teams.Nodes, func(
+		node releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam,
+	) TeamSummary {
+		return teamSummary(node.TeamSummaryFields)
+	})
 
 	return TeamList{
 		Teams:       teams,
@@ -168,10 +172,11 @@ func ListReleaseStages(ctx context.Context, graphqlClient graphql.Client, limit 
 		return ReleaseStageList{}, fmt.Errorf("list release stages: %w", err)
 	}
 
-	summaries := make([]ReleaseStageSummary, 0, len(result.ReleaseStages.Nodes))
-	for _, node := range result.ReleaseStages.Nodes {
-		summaries = append(summaries, releaseStageSummary(node.ReleaseStageSummaryFields))
-	}
+	summaries := mapNodes(result.ReleaseStages.Nodes, func(
+		node releaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage,
+	) ReleaseStageSummary {
+		return releaseStageSummary(node.ReleaseStageSummaryFields)
+	})
 
 	return ReleaseStageList{
 		ReleaseStages: summaries,
@@ -202,10 +207,11 @@ func ListReleaseStageReleases(
 		return ReleaseList{}, fmt.Errorf("list release stage releases %s: %w", id, err)
 	}
 
-	summaries := make([]ReleaseSummary, 0, len(result.ReleaseStage.Releases.Nodes))
-	for _, node := range result.ReleaseStage.Releases.Nodes {
-		summaries = append(summaries, releaseSummary(node.ReleaseSummaryFields))
-	}
+	summaries := mapNodes(result.ReleaseStage.Releases.Nodes, func(
+		node releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease,
+	) ReleaseSummary {
+		return releaseSummary(node.ReleaseSummaryFields)
+	})
 
 	return ReleaseList{
 		Releases:    summaries,

@@ -311,7 +311,7 @@ func Test_Store_reports_canceled_context(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.run()
 			require.ErrorIs(t, err, context.Canceled)
-			require.Contains(t, err.Error(), tt.want)
+			require.ErrorContains(t, err, tt.want)
 		})
 	}
 }
@@ -331,9 +331,8 @@ func Test_Store_reports_read_parse_and_write_errors(t *testing.T) {
 
 		_, err := store.Load(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read auth app config")
-		require.Contains(t, err.Error(), appConfigPath)
+		require.ErrorContains(t, err, "read auth app config")
+		require.ErrorContains(t, err, appConfigPath)
 	})
 
 	t.Run("read token state directory", func(t *testing.T) {
@@ -348,9 +347,8 @@ func Test_Store_reports_read_parse_and_write_errors(t *testing.T) {
 
 		_, err := store.Load(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read auth token state")
-		require.Contains(t, err.Error(), tokenPath)
+		require.ErrorContains(t, err, "read auth token state")
+		require.ErrorContains(t, err, tokenPath)
 	})
 
 	t.Run("parse app config", func(t *testing.T) {
@@ -362,9 +360,8 @@ func Test_Store_reports_read_parse_and_write_errors(t *testing.T) {
 
 		_, err := store.Load(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "parse auth app config")
-		require.Contains(t, err.Error(), paths.AppConfigPath)
+		require.ErrorContains(t, err, "parse auth app config")
+		require.ErrorContains(t, err, paths.AppConfigPath)
 	})
 
 	t.Run("create app config directory", func(t *testing.T) {
@@ -379,8 +376,7 @@ func Test_Store_reports_read_parse_and_write_errors(t *testing.T) {
 
 		err := store.Save(context.Background(), State{})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "create auth app config directory")
+		require.ErrorContains(t, err, "create auth app config directory")
 	})
 
 	t.Run("write app config file", func(t *testing.T) {
@@ -395,9 +391,8 @@ func Test_Store_reports_read_parse_and_write_errors(t *testing.T) {
 
 		err := store.Save(context.Background(), State{})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write auth app config")
-		require.Contains(t, err.Error(), appConfigPath)
+		require.ErrorContains(t, err, "write auth app config")
+		require.ErrorContains(t, err, appConfigPath)
 	})
 }
 
@@ -413,8 +408,7 @@ func Test_Store_reports_operation_read_errors(t *testing.T) {
 
 		err := store.SaveAppConfig(context.Background(), "", AppConfig{})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "parse auth app config")
+		require.ErrorContains(t, err, "parse auth app config")
 	})
 
 	t.Run("save token state parse error", func(t *testing.T) {
@@ -426,8 +420,7 @@ func Test_Store_reports_operation_read_errors(t *testing.T) {
 
 		err := store.SaveTokenState(context.Background(), "", TokenState{})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "parse auth token state")
+		require.ErrorContains(t, err, "parse auth token state")
 	})
 
 	t.Run("clear token state parse error", func(t *testing.T) {
@@ -439,8 +432,7 @@ func Test_Store_reports_operation_read_errors(t *testing.T) {
 
 		err := store.ClearTokenState(context.Background(), "")
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "parse auth token state")
+		require.ErrorContains(t, err, "parse auth token state")
 	})
 
 	t.Run("clear app config parse error", func(t *testing.T) {
@@ -452,8 +444,7 @@ func Test_Store_reports_operation_read_errors(t *testing.T) {
 
 		err := store.ClearAppConfig(context.Background(), "")
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "parse auth app config")
+		require.ErrorContains(t, err, "parse auth app config")
 	})
 }
 
@@ -461,8 +452,7 @@ func Test_writeJSON_reports_encode_and_permission_errors(t *testing.T) {
 	t.Run("encode error", func(t *testing.T) {
 		err := writeJSON(filepath.Join(t.TempDir(), "auth.json"), func() {}, "auth app config")
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "encode auth app config")
+		require.ErrorContains(t, err, "encode auth app config")
 	})
 
 	t.Run("secure directory error", func(t *testing.T) {
@@ -473,8 +463,7 @@ func Test_writeJSON_reports_encode_and_permission_errors(t *testing.T) {
 
 		err := writeJSON(filepath.Join(t.TempDir(), "dir", "auth.json"), struct{}{}, "auth app config")
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "secure auth app config directory")
+		require.ErrorContains(t, err, "secure auth app config directory")
 	})
 
 	t.Run("secure file error", func(t *testing.T) {
@@ -491,8 +480,7 @@ func Test_writeJSON_reports_encode_and_permission_errors(t *testing.T) {
 
 		err := writeJSON(filepath.Join(t.TempDir(), "dir", "auth.json"), struct{}{}, "auth app config")
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "secure auth app config")
+		require.ErrorContains(t, err, "secure auth app config")
 		require.Equal(t, 2, calls)
 	})
 }
@@ -681,8 +669,7 @@ func Test_DefaultPaths_reports_supported_os_environment_errors(t *testing.T) {
 
 			_, err := DefaultPaths(tt.env)
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), tt.want)
+			require.ErrorContains(t, err, tt.want)
 		})
 	}
 }
@@ -787,8 +774,7 @@ func Test_DefaultPaths_reports_environment_errors(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := DefaultPaths(tt.env)
-			require.Error(t, err)
-			require.Contains(t, err.Error(), tt.want)
+			require.ErrorContains(t, err, tt.want)
 		})
 	}
 }

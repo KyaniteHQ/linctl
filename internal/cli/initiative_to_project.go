@@ -65,11 +65,3 @@ func loadInitiativeToProject(
 ) (client.InitiativeToProjectSummary, error) {
 	return client.GetInitiativeToProjectByID(ctx, runtime.graphqlClient, id)
 }
-
-func initiativeToProjectPageWithItems(
-	page client.InitiativeToProjectList,
-	associations []client.InitiativeToProjectSummary,
-) client.InitiativeToProjectList {
-	page.Associations = associations
-	return page
-}

@@ -30,10 +30,11 @@ func GetRateLimitStatus(ctx context.Context, graphqlClient graphql.Client) (Rate
 		return RateLimitStatus{}, err
 	}
 
-	limits := make([]RateLimit, 0, len(result.RateLimitStatus.Limits))
-	for _, limit := range result.RateLimitStatus.Limits {
-		limits = append(limits, RateLimit(limit))
-	}
+	limits := mapNodes(result.RateLimitStatus.Limits, func(
+		limit rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload,
+	) RateLimit {
+		return RateLimit(limit)
+	})
 
 	return RateLimitStatus{
 		Identifier: stringValue(result.RateLimitStatus.Identifier),

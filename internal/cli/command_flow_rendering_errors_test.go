@@ -227,7 +227,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "label get", args: []string{"label", "get", "label-id"}, operation: "issueLabel", contains: "get label label-id"},
 		{name: "label children", args: []string{"label", "children", "label-id"}, operation: "issueLabel_children", contains: "list label children label-id"},
 		{name: "label issues", args: []string{"label", "issues", "label-id"}, operation: "issueLabel_issues", contains: "list label issues label-id"},
-		{name: "team list", args: []string{"team", "list"}, operation: "Teams", contains: "list teams"},
+		{name: "team list", args: []string{"team", "list"}, operation: "teams_list", contains: "list teams"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, operation: "team", contains: "get team team-id"},
 		{name: "team cycles", args: []string{"team", "cycles", "team-id"}, operation: "team_cycles", contains: "list team cycles team-id"},
 		{name: "team issues", args: []string{"team", "issues", "team-id"}, operation: "team_issues", contains: "list team issues team-id"},
@@ -319,8 +319,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.contains)
+			require.ErrorContains(t, err, test.contains)
 		})
 	}
 }

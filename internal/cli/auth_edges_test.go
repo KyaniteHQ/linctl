@@ -54,8 +54,7 @@ func Test_AuthCommands_report_default_path_errors(t *testing.T) {
 
 			err := execute(context.Background(), BuildInfo{}, nil, &bytes.Buffer{}, &bytes.Buffer{}, tt.args)
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "paths unavailable")
+			require.ErrorContains(t, err, "paths unavailable")
 		})
 	}
 }
@@ -130,8 +129,7 @@ func Test_AuthConfigure_reports_save_error(t *testing.T) {
 		"--client-id", "client-id",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "auth app config")
+	require.ErrorContains(t, err, "auth app config")
 }
 
 func Test_AuthCommandContext_reports_config_and_state_load_errors(t *testing.T) {
@@ -148,8 +146,7 @@ func Test_AuthCommandContext_reports_config_and_state_load_errors(t *testing.T) 
 			"status",
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "parse config")
+		require.ErrorContains(t, err, "parse config")
 	})
 
 	t.Run("state", func(t *testing.T) {
@@ -168,8 +165,7 @@ func Test_AuthCommandContext_reports_config_and_state_load_errors(t *testing.T) 
 			"status",
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read auth app config")
+		require.ErrorContains(t, err, "read auth app config")
 	})
 }
 
@@ -290,8 +286,7 @@ func Test_AuthApp_reports_token_state_save_error(t *testing.T) {
 		"app",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "auth token state")
+	require.ErrorContains(t, err, "auth token state")
 }
 
 func Test_AuthStatus_checks_current_token_readiness(t *testing.T) {
@@ -454,8 +449,7 @@ func Test_AuthStatus_reports_save_error_after_refresh_or_acquire(t *testing.T) {
 		"status",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "auth token state")
+	require.ErrorContains(t, err, "auth token state")
 }
 
 func Test_AuthStatus_reports_missing_app_for_implicit_token_acquire(t *testing.T) {
@@ -576,8 +570,7 @@ func Test_AuthRefresh_reports_save_error(t *testing.T) {
 		"refresh",
 	})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "auth token state")
+	require.ErrorContains(t, err, "auth token state")
 }
 
 func Test_AuthRefresh_debug_logs_readiness_mismatch_without_secrets(t *testing.T) {
@@ -702,8 +695,7 @@ func Test_AuthLogout_reports_clear_state_errors(t *testing.T) {
 			"logout",
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read auth token state")
+		require.ErrorContains(t, err, "read auth token state")
 	})
 
 	t.Run("app config", func(t *testing.T) {
@@ -730,8 +722,7 @@ func Test_AuthLogout_reports_clear_state_errors(t *testing.T) {
 			"--forget-app",
 		})
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "read auth app config")
+		require.ErrorContains(t, err, "read auth app config")
 	})
 }
 
@@ -826,8 +817,7 @@ func Test_ValidateCommandFlags_reports_limit_parse_error(t *testing.T) {
 
 	err := validateCommandFlags(command)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "read --limit")
+	require.ErrorContains(t, err, "read --limit")
 }
 
 func cliAuthTestPaths(t *testing.T) auth.Paths {

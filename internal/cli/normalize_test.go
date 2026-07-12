@@ -44,8 +44,7 @@ func Test_normalizedPriorityValue_maps_all_aliases(t *testing.T) {
 func Test_normalizedPriorityValue_returns_error_for_unknown(t *testing.T) {
 	_, _, err := normalizedPriorityValue("critical")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unknown priority")
+	require.ErrorContains(t, err, "unknown priority")
 }
 
 func Test_normalizedStateType_maps_all_aliases(t *testing.T) {
@@ -90,8 +89,7 @@ func Test_normalizedStateType_maps_all_aliases(t *testing.T) {
 func Test_normalizedStateType_returns_error_for_unknown(t *testing.T) {
 	_, _, err := normalizedStateType("sprinting")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unknown state type")
+	require.ErrorContains(t, err, "unknown state type")
 }
 
 func Test_mergedStateFlag_returns_state_when_non_empty(t *testing.T) {
@@ -129,8 +127,7 @@ func Test_writeNote_returns_error_on_write_failure(t *testing.T) {
 
 	err := writeNote(command, "hello")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_normalizeAndNote_returns_empty_for_empty_raw(t *testing.T) {
@@ -175,8 +172,7 @@ func Test_normalizeAndNote_returns_normalize_error(t *testing.T) {
 
 	_, err := normalizeAndNote(command, "state", "sprinting", normalizedStateType)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "unknown state type")
+	require.ErrorContains(t, err, "unknown state type")
 }
 
 func Test_normalizeAndNote_returns_note_write_error(t *testing.T) {
@@ -185,6 +181,5 @@ func Test_normalizeAndNote_returns_note_write_error(t *testing.T) {
 
 	_, err := normalizeAndNote(command, "priority", "urgent", normalizedPriorityValue)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }

@@ -25,10 +25,11 @@ func ListAuditEntryTypes(ctx context.Context, graphqlClient graphql.Client) (Aud
 		return AuditEntryTypeList{}, fmt.Errorf("list audit entry types: %w", err)
 	}
 
-	types := make([]AuditEntryTypeSummary, 0, len(result.AuditEntryTypes))
-	for _, entryType := range result.AuditEntryTypes {
-		types = append(types, AuditEntryTypeSummary(entryType))
-	}
+	types := mapNodes(result.AuditEntryTypes, func(
+		entryType auditEntryTypesAuditEntryTypesAuditEntryType,
+	) AuditEntryTypeSummary {
+		return AuditEntryTypeSummary(entryType)
+	})
 
 	return AuditEntryTypeList{AuditEntryTypes: types}, nil
 }

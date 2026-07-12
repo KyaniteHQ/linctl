@@ -79,8 +79,7 @@ func Test_GetIssueTemplateContent_requires_template_id(t *testing.T) {
 func Test_GetIssueTemplateContent_wraps_read_error(t *testing.T) {
 	_, err := GetIssueTemplateContent(context.Background(), fakeGraphQLClient(map[string]string{}), "template-id")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "get template content")
+	require.ErrorContains(t, err, "get template content")
 }
 
 func Test_GetIssueTemplateContent_errors_on_non_object_template_data(t *testing.T) {
@@ -90,8 +89,7 @@ func Test_GetIssueTemplateContent_errors_on_non_object_template_data(t *testing.
 
 	_, err := GetIssueTemplateContent(context.Background(), graphqlClient, "template-id")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "decode template")
+	require.ErrorContains(t, err, "decode template")
 }
 
 func Test_GetIssueTemplateContent_errors_on_unparsable_encoded_string(t *testing.T) {
@@ -101,6 +99,5 @@ func Test_GetIssueTemplateContent_errors_on_unparsable_encoded_string(t *testing
 
 	_, err := GetIssueTemplateContent(context.Background(), graphqlClient, "template-id")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "decode template")
+	require.ErrorContains(t, err, "decode template")
 }

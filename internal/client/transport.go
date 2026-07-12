@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -152,9 +153,9 @@ func isRateLimited(statusCode int, body []byte) bool {
 	return false
 }
 
-// bodyHasErrorCode reports whether a GraphQL response body carries an error
-// with the given extensions.code value.
-func bodyHasErrorCode(body []byte, code string) bool {
+// bodyErrorCodes returns every extensions.code value carried by a GraphQL
+// response body, in order.
+func bodyErrorCodes(body []byte) []string {
 	var payload struct {
 		Errors []struct {
 			Extensions struct {
@@ -163,15 +164,20 @@ func bodyHasErrorCode(body []byte, code string) bool {
 		} `json:"errors"`
 	}
 	if err := json.Unmarshal(body, &payload); err != nil {
-		return false
+		return nil
 	}
+	codes := make([]string, 0, len(payload.Errors))
 	for _, graphqlError := range payload.Errors {
-		if graphqlError.Extensions.Code == code {
-			return true
-		}
+		codes = append(codes, graphqlError.Extensions.Code)
 	}
 
-	return false
+	return codes
+}
+
+// bodyHasErrorCode reports whether a GraphQL response body carries an error
+// with the given extensions.code value.
+func bodyHasErrorCode(body []byte, code string) bool {
+	return slices.Contains(bodyErrorCodes(body), code)
 }
 
 // rateLimitError wraps ErrRateLimited with the terminal status and GraphQL code
@@ -206,19 +212,9 @@ func responseFailureMessage(statusCode int, body []byte) string {
 }
 
 func firstGraphQLErrorCode(body []byte) string {
-	var payload struct {
-		Errors []struct {
-			Extensions struct {
-				Code string `json:"code"`
-			} `json:"extensions"`
-		} `json:"errors"`
-	}
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return ""
-	}
-	for _, graphqlError := range payload.Errors {
-		if graphqlError.Extensions.Code != "" {
-			return graphqlError.Extensions.Code
+	for _, code := range bodyErrorCodes(body) {
+		if code != "" {
+			return code
 		}
 	}
 

@@ -79,14 +79,6 @@ func loadWorkflowState(
 	return client.GetWorkflowStateByID(ctx, runtime.graphqlClient, id)
 }
 
-func workflowStatePageWithItems(
-	page client.WorkflowStateList,
-	states []client.WorkflowStateSummary,
-) client.WorkflowStateList {
-	page.WorkflowStates = states
-	return page
-}
-
 func loadWorkflowStateIssues(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -95,12 +87,4 @@ func loadWorkflowStateIssues(
 ) (client.WorkflowStateIssueList, []client.IssueSummary, error) {
 	issues, err := client.ListWorkflowStateIssues(ctx, runtime.graphqlClient, args[0], limit)
 	return issues, issues.Issues, err
-}
-
-func workflowStateIssuePageWithItems(
-	page client.WorkflowStateIssueList,
-	issues []client.IssueSummary,
-) client.WorkflowStateIssueList {
-	page.Issues = issues
-	return page
 }

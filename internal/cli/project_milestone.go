@@ -162,14 +162,6 @@ func loadProjectMilestoneList(
 	return milestones, milestones.Milestones, err
 }
 
-func projectMilestonePageWithItems(
-	page client.ProjectMilestoneList,
-	milestones []client.ProjectMilestoneSummary,
-) client.ProjectMilestoneList {
-	page.Milestones = milestones
-	return page
-}
-
 func loadProjectMilestoneIssueList(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -178,12 +170,4 @@ func loadProjectMilestoneIssueList(
 ) (client.ProjectMilestoneIssueList, []client.IssueSummary, error) {
 	issues, err := client.ListProjectMilestoneIssues(ctx, runtime.graphqlClient, args[0], limit)
 	return issues, issues.Issues, err
-}
-
-func projectMilestoneIssuePageWithItems(
-	page client.ProjectMilestoneIssueList,
-	issues []client.IssueSummary,
-) client.ProjectMilestoneIssueList {
-	page.Issues = issues
-	return page
 }

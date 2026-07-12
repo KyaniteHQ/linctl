@@ -230,28 +230,22 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.Equal(t, map[string]any{"identifier": "LIT-1"}, projected)
 
 	_, err = projectJSONFields(map[string]any{"bad": func() {}}, "bad")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "marshal output")
+	require.ErrorContains(t, err, "marshal output")
 
 	_, err = projectJSONFields([]string{"not-an-object"}, "id")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "decode output")
+	require.ErrorContains(t, err, "decode output")
 
 	_, err = projectJSONFields(map[string]any{"issues": []any{"bad-item"}}, "identifier")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "item is not an object")
+	require.ErrorContains(t, err, "item is not an object")
 
 	_, err = projectJSONFields(map[string]any{"issues": []any{map[string]any{"title": "Missing id"}}}, "identifier")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "field \"identifier\" is not present")
+	require.ErrorContains(t, err, "field \"identifier\" is not present")
 
 	_, err = projectJSONFields(map[string]any{"identifier": "LIT-1"}, "missing")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "field \"missing\" is not present")
+	require.ErrorContains(t, err, "field \"missing\" is not present")
 
 	_, err = projectJSONFields(map[string]any{"state": "Todo"}, "state.name")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "field \"state\" is not an object")
+	require.ErrorContains(t, err, "field \"state\" is not an object")
 
 	items := []client.IssueSummary{
 		{Identifier: "LIT-2", Title: "Zebra"},
@@ -266,20 +260,16 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	require.Equal(t, "Alpha", sortedItems[0].Title)
 
 	_, err = sortByJSONField(items, "title", "sideways")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "invalid sort order")
+	require.ErrorContains(t, err, "invalid sort order")
 
 	_, err = sortByJSONField(items, "missing", "asc")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "sort field \"missing\" is not present")
+	require.ErrorContains(t, err, "sort field \"missing\" is not present")
 
 	_, err = sortByJSONField([]map[string]any{{"state": "Todo"}}, "state.name", "asc")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "not an object path")
+	require.ErrorContains(t, err, "not an object path")
 
 	_, err = jsonFieldValue(map[string]any{"bad": func() {}}, "bad")
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "marshal output")
+	require.ErrorContains(t, err, "marshal output")
 
 	destination := map[string]any{}
 	require.NoError(t, copyJSONPath(map[string]any{"id": "issue-id"}, destination, nil))

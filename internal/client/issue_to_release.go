@@ -36,13 +36,11 @@ func ListIssueToReleases(
 		return IssueToReleaseList{}, fmt.Errorf("list issue to releases: %w", err)
 	}
 
-	associations := make([]IssueToReleaseSummary, 0, len(result.IssueToReleases.Nodes))
-	for _, association := range result.IssueToReleases.Nodes {
-		associations = append(
-			associations,
-			issueToReleaseSummary(association.IssueToReleaseSummaryFields),
-		)
-	}
+	associations := mapNodes(result.IssueToReleases.Nodes, func(
+		association issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease,
+	) IssueToReleaseSummary {
+		return issueToReleaseSummary(association.IssueToReleaseSummaryFields)
+	})
 
 	return IssueToReleaseList{
 		Associations: associations,

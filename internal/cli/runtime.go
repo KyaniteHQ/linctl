@@ -14,7 +14,6 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/config"
-	"github.com/KyaniteHQ/linctl/internal/oauth"
 )
 
 type commandRuntime struct {
@@ -265,28 +264,14 @@ func (recovering *recoveringGraphQLClient) refreshAuthorizationCode(ctx context.
 	if recovering.token.RefreshToken == "" || recovering.app.ClientID == "" {
 		return auth.TokenState{}, auth.NewError(auth.ErrorCodeReauthRequired, "run linctl auth login")
 	}
-	token, err := recovering.oauthClient.RefreshToken(ctx, oauth.RefreshTokenRequest{
-		RefreshToken: recovering.token.RefreshToken,
-		ClientID:     recovering.app.ClientID,
-		ClientSecret: recovering.app.ClientSecret,
-	})
-	if err != nil {
-		return auth.TokenState{}, auth.WrapError(
-			auth.ErrorCodeRefreshFailed,
-			"refresh OAuth token: run linctl auth login",
-			err,
-		)
-	}
-	if token.RefreshToken == "" {
-		token.RefreshToken = recovering.token.RefreshToken
-	}
-	token.Actor = recovering.token.Actor
-	token.GrantType = authGrantAuthorizationCode
-	if err := requireScopes(token.Scopes, requiredScopes(recovering.app)); err != nil {
-		return auth.TokenState{}, err
-	}
 
-	return token, nil
+	return refreshAuthorizationCodeToken(
+		ctx,
+		recovering.oauthClient,
+		recovering.app,
+		recovering.token,
+		requiredScopes(recovering.app),
+	)
 }
 
 func (recovering *recoveringGraphQLClient) reacquireClientCredentials(ctx context.Context) (auth.TokenState, error) {

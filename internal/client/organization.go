@@ -14,10 +14,11 @@ func ListOrganizationLabels(ctx context.Context, graphqlClient graphql.Client, l
 		return LabelList{}, fmt.Errorf("list organization labels: %w", err)
 	}
 
-	labels := make([]LabelSummary, 0, len(result.Organization.Labels.Nodes))
-	for _, label := range result.Organization.Labels.Nodes {
-		labels = append(labels, labelSummary(label.IssueLabelSummaryFields))
-	}
+	labels := mapNodes(result.Organization.Labels.Nodes, func(
+		label organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel,
+	) LabelSummary {
+		return labelSummary(label.IssueLabelSummaryFields)
+	})
 
 	return LabelList{
 		Labels:      labels,
@@ -37,10 +38,11 @@ func ListOrganizationProjectLabels(
 		return ProjectLabelList{}, fmt.Errorf("list organization project labels: %w", err)
 	}
 
-	labels := make([]ProjectLabelSummary, 0, len(result.Organization.ProjectLabels.Nodes))
-	for _, label := range result.Organization.ProjectLabels.Nodes {
-		labels = append(labels, projectLabelSummary(label.ProjectLabelSummaryFields))
-	}
+	labels := mapNodes(result.Organization.ProjectLabels.Nodes, func(
+		label organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel,
+	) ProjectLabelSummary {
+		return projectLabelSummary(label.ProjectLabelSummaryFields)
+	})
 
 	return ProjectLabelList{
 		ProjectLabels: labels,
@@ -56,10 +58,11 @@ func ListOrganizationTeams(ctx context.Context, graphqlClient graphql.Client, li
 		return TeamList{}, fmt.Errorf("list organization teams: %w", err)
 	}
 
-	teams := make([]TeamSummary, 0, len(result.Organization.Teams.Nodes))
-	for _, team := range result.Organization.Teams.Nodes {
-		teams = append(teams, teamSummary(team.TeamSummaryFields))
-	}
+	teams := mapNodes(result.Organization.Teams.Nodes, func(
+		team organization_teamsOrganizationTeamsTeamConnectionNodesTeam,
+	) TeamSummary {
+		return teamSummary(team.TeamSummaryFields)
+	})
 
 	return TeamList{
 		Teams:       teams,
@@ -75,10 +78,11 @@ func ListOrganizationUsers(ctx context.Context, graphqlClient graphql.Client, li
 		return UserList{}, fmt.Errorf("list organization users: %w", err)
 	}
 
-	users := make([]UserSummary, 0, len(result.Organization.Users.Nodes))
-	for _, user := range result.Organization.Users.Nodes {
-		users = append(users, userSummary(user.UserSummaryFields))
-	}
+	users := mapNodes(result.Organization.Users.Nodes, func(
+		user organization_usersOrganizationUsersUserConnectionNodesUser,
+	) UserSummary {
+		return userSummary(user.UserSummaryFields)
+	})
 
 	return UserList{
 		Users:       users,

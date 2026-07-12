@@ -45,13 +45,11 @@ func ListTeamMemberships(
 		return TeamMembershipList{}, fmt.Errorf("list team memberships: %w", err)
 	}
 
-	memberships := make([]TeamMembershipSummary, 0, len(result.TeamMemberships.Nodes))
-	for _, membership := range result.TeamMemberships.Nodes {
-		memberships = append(
-			memberships,
-			teamMembershipSummary(membership.TeamMembershipSummaryFields),
-		)
-	}
+	memberships := mapNodes(result.TeamMemberships.Nodes, func(
+		membership teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+	) TeamMembershipSummary {
+		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
+	})
 
 	return TeamMembershipList{
 		Memberships: memberships,

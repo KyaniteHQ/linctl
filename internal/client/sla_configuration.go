@@ -35,10 +35,11 @@ func ListSLAConfigurations(
 		return SLAConfigurationList{}, fmt.Errorf("list SLA configurations %s: %w", teamIDOrKey, err)
 	}
 
-	configurations := make([]SLAConfigurationSummary, 0, len(result.SlaConfigurations))
-	for _, configuration := range result.SlaConfigurations {
-		configurations = append(configurations, slaConfigurationSummary(configuration.SlaConfigurationSummaryFields))
-	}
+	configurations := mapNodes(result.SlaConfigurations, func(
+		configuration slaConfigurationsSlaConfigurationsSlaConfiguration,
+	) SLAConfigurationSummary {
+		return slaConfigurationSummary(configuration.SlaConfigurationSummaryFields)
+	})
 
 	return SLAConfigurationList{
 		TeamIDOrKey:       teamIDOrKey,

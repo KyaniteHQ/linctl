@@ -330,23 +330,3 @@ func optionalProject(project ResolvedProject, ok bool) *ResolvedProject {
 
 	return &project
 }
-
-func intPtr(value int) *int {
-	return &value
-}
-
-func boolPtr(value bool) *bool {
-	return &value
-}
-
-func optionalString(value string) *string {
-	if value == "" {
-		return nil
-	}
-
-	return &value
-}
-
-func stringPtr(value string) *string {
-	return &value
-}

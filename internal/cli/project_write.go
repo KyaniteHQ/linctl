@@ -2,31 +2,11 @@ package cli
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
-
-// resolveProjectContent loads content from contentFile when set, guarding against
-// passing both --content and --content-file.
-func resolveProjectContent(content *string, contentFile string) error {
-	if contentFile == "" {
-		return nil
-	}
-	if *content != "" {
-		return fmt.Errorf("%w: use --content or --content-file, not both", client.ErrWriteInvalid)
-	}
-	data, err := os.ReadFile(contentFile)
-	if err != nil {
-		return fmt.Errorf("read content file %s: %w", contentFile, err)
-	}
-	*content = string(data)
-
-	return nil
-}
 
 func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.ProjectCreateRequest{}
@@ -40,7 +20,7 @@ func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			if err := resolveProjectContent(&request.Content, contentFile); err != nil {
+			if err := resolveFileFlag(&request.Content, contentFile, "content"); err != nil {
 				return err
 			}
 
@@ -67,7 +47,7 @@ func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 			request.ID = args[0]
-			if err := resolveProjectContent(&request.Content, contentFile); err != nil {
+			if err := resolveFileFlag(&request.Content, contentFile, "content"); err != nil {
 				return err
 			}
 

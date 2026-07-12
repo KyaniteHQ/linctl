@@ -68,6 +68,5 @@ func Test_guardedMutation_returns_guard_resolution_error(t *testing.T) {
 		},
 	)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "resolve failed")
+	require.ErrorContains(t, err, "resolve failed")
 }

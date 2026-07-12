@@ -67,10 +67,11 @@ func ListNotifications(ctx context.Context, graphqlClient graphql.Client, limit 
 		return NotificationList{}, fmt.Errorf("list notifications: %w", err)
 	}
 
-	summaries := make([]NotificationSummary, 0, len(result.Notifications.Nodes))
-	for _, node := range result.Notifications.Nodes {
-		summaries = append(summaries, notificationSummary(node))
-	}
+	summaries := mapNodes(result.Notifications.Nodes, func(
+		node notificationsNotificationsNotificationConnectionNodesNotification,
+	) NotificationSummary {
+		return notificationSummary(node)
+	})
 
 	return NotificationList{
 		Notifications: summaries,

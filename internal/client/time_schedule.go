@@ -43,10 +43,11 @@ func ListTimeSchedules(ctx context.Context, graphqlClient graphql.Client, limit 
 		return TimeScheduleList{}, fmt.Errorf("list time schedules: %w", err)
 	}
 
-	summaries := make([]TimeScheduleSummary, 0, len(result.TimeSchedules.Nodes))
-	for _, node := range result.TimeSchedules.Nodes {
-		summaries = append(summaries, timeScheduleSummary(node.TimeScheduleSummaryFields))
-	}
+	summaries := mapNodes(result.TimeSchedules.Nodes, func(
+		node timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule,
+	) TimeScheduleSummary {
+		return timeScheduleSummary(node.TimeScheduleSummaryFields)
+	})
 
 	return TimeScheduleList{
 		TimeSchedules: summaries,
@@ -66,15 +67,16 @@ func GetTimeScheduleByID(ctx context.Context, graphqlClient graphql.Client, id s
 }
 
 func timeScheduleSummary(fields TimeScheduleSummaryFields) TimeScheduleSummary {
-	entries := make([]TimeScheduleEntrySummary, 0, len(fields.Entries))
-	for _, entry := range fields.Entries {
-		entries = append(entries, TimeScheduleEntrySummary{
+	entries := mapNodes(fields.Entries, func(
+		entry TimeScheduleSummaryFieldsEntriesTimeScheduleEntry,
+	) TimeScheduleEntrySummary {
+		return TimeScheduleEntrySummary{
 			StartsAt:  entry.StartsAt,
 			EndsAt:    entry.EndsAt,
 			UserID:    stringValue(entry.UserId),
 			UserEmail: stringValue(entry.UserEmail),
-		})
-	}
+		}
+	})
 
 	summary := TimeScheduleSummary{
 		ID:          fields.Id,

@@ -52,10 +52,11 @@ func ListInitiatives(ctx context.Context, graphqlClient graphql.Client, limit in
 		return InitiativeList{}, fmt.Errorf("list initiatives: %w", err)
 	}
 
-	summaries := make([]InitiativeSummary, 0, len(result.Initiatives.Nodes))
-	for _, node := range result.Initiatives.Nodes {
-		summaries = append(summaries, initiativeSummary(node.InitiativeSummaryFields))
-	}
+	summaries := mapNodes(result.Initiatives.Nodes, func(
+		node initiativesInitiativesInitiativeConnectionNodesInitiative,
+	) InitiativeSummary {
+		return initiativeSummary(node.InitiativeSummaryFields)
+	})
 
 	return InitiativeList{
 		Initiatives: summaries,
@@ -90,10 +91,11 @@ func ListInitiativeHistory(
 		return InitiativeHistoryList{}, fmt.Errorf("list initiative history %s: %w", id, err)
 	}
 
-	history := make([]InitiativeHistorySummary, 0, len(result.Initiative.History.Nodes))
-	for _, node := range result.Initiative.History.Nodes {
-		history = append(history, initiativeHistorySummary(node.InitiativeHistorySummaryFields))
-	}
+	history := mapNodes(result.Initiative.History.Nodes, func(
+		node initiative_historyInitiativeHistoryInitiativeHistoryConnectionNodesInitiativeHistory,
+	) InitiativeHistorySummary {
+		return initiativeHistorySummary(node.InitiativeHistorySummaryFields)
+	})
 
 	return InitiativeHistoryList{
 		History:     history,
@@ -114,10 +116,11 @@ func ListInitiativeLinks(
 		return EntityExternalLinkList{}, fmt.Errorf("list initiative links %s: %w", id, err)
 	}
 
-	links := make([]EntityExternalLinkSummary, 0, len(result.Initiative.Links.Nodes))
-	for _, node := range result.Initiative.Links.Nodes {
-		links = append(links, entityExternalLinkSummary(node.EntityExternalLinkSummaryFields))
-	}
+	links := mapNodes(result.Initiative.Links.Nodes, func(
+		node initiative_linksInitiativeLinksEntityExternalLinkConnectionNodesEntityExternalLink,
+	) EntityExternalLinkSummary {
+		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
+	})
 
 	return EntityExternalLinkList{
 		Links:       links,
@@ -138,10 +141,11 @@ func ListSubInitiatives(
 		return InitiativeList{}, fmt.Errorf("list initiative sub-initiatives %s: %w", id, err)
 	}
 
-	initiatives := make([]InitiativeSummary, 0, len(result.Initiative.SubInitiatives.Nodes))
-	for _, node := range result.Initiative.SubInitiatives.Nodes {
-		initiatives = append(initiatives, initiativeSummary(node.InitiativeSummaryFields))
-	}
+	initiatives := mapNodes(result.Initiative.SubInitiatives.Nodes, func(
+		node initiative_subInitiativesInitiativeSubInitiativesInitiativeConnectionNodesInitiative,
+	) InitiativeSummary {
+		return initiativeSummary(node.InitiativeSummaryFields)
+	})
 
 	return InitiativeList{
 		Initiatives: initiatives,
@@ -162,10 +166,11 @@ func ListInitiativeUpdatesForInitiative(
 		return InitiativeUpdateList{}, fmt.Errorf("list initiative updates %s: %w", id, err)
 	}
 
-	updates := make([]InitiativeUpdateSummary, 0, len(result.Initiative.InitiativeUpdates.Nodes))
-	for _, node := range result.Initiative.InitiativeUpdates.Nodes {
-		updates = append(updates, initiativeUpdateSummary(node.InitiativeUpdateSummaryFields))
-	}
+	updates := mapNodes(result.Initiative.InitiativeUpdates.Nodes, func(
+		node initiative_initiativeUpdatesInitiativeInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate,
+	) InitiativeUpdateSummary {
+		return initiativeUpdateSummary(node.InitiativeUpdateSummaryFields)
+	})
 
 	return InitiativeUpdateList{
 		Updates:     updates,
@@ -186,10 +191,11 @@ func ListInitiativeDocuments(
 		return DocumentList{}, fmt.Errorf("list initiative documents %s: %w", id, err)
 	}
 
-	documents := make([]DocumentSummary, 0, len(result.Initiative.Documents.Nodes))
-	for _, node := range result.Initiative.Documents.Nodes {
-		documents = append(documents, documentSummary(node.DocumentSummaryFields))
-	}
+	documents := mapNodes(result.Initiative.Documents.Nodes, func(
+		node initiative_documentsInitiativeDocumentsDocumentConnectionNodesDocument,
+	) DocumentSummary {
+		return documentSummary(node.DocumentSummaryFields)
+	})
 
 	return DocumentList{
 		Documents:   documents,
@@ -210,10 +216,11 @@ func ListInitiativeProjects(
 		return ProjectList{}, fmt.Errorf("list initiative projects %s: %w", id, err)
 	}
 
-	projects := make([]ProjectSummary, 0, len(result.Initiative.Projects.Nodes))
-	for _, node := range result.Initiative.Projects.Nodes {
-		projects = append(projects, projectSummaryFromFields(node.ProjectSummaryFields))
-	}
+	projects := mapNodes(result.Initiative.Projects.Nodes, func(
+		node initiative_projectsInitiativeProjectsProjectConnectionNodesProject,
+	) ProjectSummary {
+		return projectSummaryFromFields(node.ProjectSummaryFields)
+	})
 
 	return ProjectList{
 		Projects:    projects,

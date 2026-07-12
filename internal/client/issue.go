@@ -135,10 +135,9 @@ func ListIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (I
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issuePage.Issues.Nodes))
-	for _, issue := range issuePage.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issuePage.Issues.Nodes, func(issue issuesIssuesIssueConnectionNodesIssue) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -190,10 +189,9 @@ func ListIssuesByTeam(
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(issue IssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -214,10 +212,11 @@ func listIssuesByTeamState(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamStateIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -238,10 +237,11 @@ func listIssuesByTeamProject(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamProjectIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -262,10 +262,11 @@ func listIssuesByTeamAssignee(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamAssigneeIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -286,10 +287,11 @@ func listIssuesByTeamLabel(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamLabelIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -310,10 +312,11 @@ func listIssuesByTeamCycle(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamCycleIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -334,10 +337,11 @@ func listIssuesByTeamCreatedAfter(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamCreatedAfterIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -358,10 +362,11 @@ func listIssuesByTeamCreatedBefore(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamCreatedBeforeIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -381,10 +386,11 @@ func listIssuesByTeamHasBlockers(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamHasBlockersIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -404,10 +410,11 @@ func listIssuesByTeamBlocks(
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue IssuesByTeamBlocksIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      summaries,
@@ -428,10 +435,7 @@ func ListNextIssuesByTeam(
 		return IssueList{}, fmt.Errorf("list next issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.Issues.Nodes))
-	for _, issue := range issues.Issues.Nodes {
-		summaries = append(summaries, nextIssueSummary(issue))
-	}
+	summaries := mapNodes(issues.Issues.Nodes, nextIssueSummary)
 	sortNextIssueCandidates(summaries)
 
 	return IssueList{
@@ -504,10 +508,7 @@ func SearchIssuesByTeam(
 		return IssueList{}, fmt.Errorf("search issues: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.IssueSearch.Nodes))
-	for _, issue := range issues.IssueSearch.Nodes {
-		summaries = append(summaries, searchIssueSummary(issue))
-	}
+	summaries := mapNodes(issues.IssueSearch.Nodes, searchIssueSummary)
 
 	return IssueList{
 		Issues:      summaries,
@@ -528,10 +529,7 @@ func SearchIssuesByFigmaFileKey(
 		return IssueList{}, fmt.Errorf("search issues by Figma file key: %w", err)
 	}
 
-	summaries := make([]IssueSummary, 0, len(issues.IssueFigmaFileKeySearch.Nodes))
-	for _, issue := range issues.IssueFigmaFileKeySearch.Nodes {
-		summaries = append(summaries, figmaFileKeyIssueSummary(issue))
-	}
+	summaries := mapNodes(issues.IssueFigmaFileKeySearch.Nodes, figmaFileKeyIssueSummary)
 
 	return IssueList{
 		Issues:      summaries,
@@ -547,10 +545,11 @@ func ListIssuePriorityValues(ctx context.Context, graphqlClient graphql.Client) 
 		return nil, fmt.Errorf("list issue priority values: %w", err)
 	}
 
-	values := make([]IssuePriorityValue, 0, len(result.IssuePriorityValues))
-	for _, value := range result.IssuePriorityValues {
-		values = append(values, IssuePriorityValue(value))
-	}
+	values := mapNodes(result.IssuePriorityValues, func(
+		value issuePriorityValuesIssuePriorityValuesIssuePriorityValue,
+	) IssuePriorityValue {
+		return IssuePriorityValue(value)
+	})
 
 	return values, nil
 }
@@ -681,10 +680,9 @@ func issueDependencyParent(issue *IssueDependenciesIssueParentIssue) *IssueSumma
 }
 
 func issueDependencyChildren(issues []IssueDependenciesIssueChildrenIssueConnectionNodesIssue) []IssueSummary {
-	summaries := make([]IssueSummary, 0, len(issues))
-	for _, issue := range issues {
-		summaries = append(summaries, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	summaries := mapNodes(issues, func(issue IssueDependenciesIssueChildrenIssueConnectionNodesIssue) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return summaries
 }

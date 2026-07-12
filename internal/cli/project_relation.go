@@ -61,11 +61,3 @@ func loadProjectRelation(
 ) (client.ProjectRelationSummary, error) {
 	return client.GetProjectRelationByID(ctx, runtime.graphqlClient, id)
 }
-
-func projectRelationPageWithItems(
-	page client.ProjectRelationList,
-	relations []client.ProjectRelationSummary,
-) client.ProjectRelationList {
-	page.Relations = relations
-	return page
-}

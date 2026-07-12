@@ -99,10 +99,11 @@ func ListProjectMilestones(
 		return ProjectMilestoneList{}, fmt.Errorf("list project milestones %s: %w", id, err)
 	}
 
-	milestones := make([]ProjectMilestoneSummary, 0, len(project.Project.ProjectMilestones.Nodes))
-	for _, milestone := range project.Project.ProjectMilestones.Nodes {
-		milestones = append(milestones, projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields))
-	}
+	milestones := mapNodes(project.Project.ProjectMilestones.Nodes, func(
+		milestone project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
+	) ProjectMilestoneSummary {
+		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
+	})
 
 	return ProjectMilestoneList{
 		ProjectID:   project.Project.Id,
@@ -124,10 +125,11 @@ func ListAllProjectMilestones(
 		return ProjectMilestoneList{}, fmt.Errorf("list project milestones: %w", err)
 	}
 
-	milestones := make([]ProjectMilestoneSummary, 0, len(result.ProjectMilestones.Nodes))
-	for _, milestone := range result.ProjectMilestones.Nodes {
-		milestones = append(milestones, projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields))
-	}
+	milestones := mapNodes(result.ProjectMilestones.Nodes, func(
+		milestone projectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
+	) ProjectMilestoneSummary {
+		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
+	})
 
 	return ProjectMilestoneList{
 		Milestones:  milestones,
@@ -148,10 +150,11 @@ func ListProjectMilestoneIssues(
 		return ProjectMilestoneIssueList{}, fmt.Errorf("list project milestone issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.ProjectMilestone.Issues.Nodes))
-	for _, node := range result.ProjectMilestone.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(node.IssueSummaryFields))
-	}
+	issues := mapNodes(result.ProjectMilestone.Issues.Nodes, func(
+		node projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(node.IssueSummaryFields)
+	})
 
 	return ProjectMilestoneIssueList{
 		ProjectMilestoneID:   result.ProjectMilestone.Id,
@@ -243,7 +246,7 @@ func UpdateProjectMilestone(
 	}
 
 	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectMilestoneSummary, error) {
-		if _, err := guard.requireProjectMilestone(ctx, graphqlClient, request.ID); err != nil {
+		if err := guard.requireProjectMilestone(ctx, graphqlClient, request.ID); err != nil {
 			return ProjectMilestoneSummary{}, err
 		}
 

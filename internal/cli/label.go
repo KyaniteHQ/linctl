@@ -118,11 +118,6 @@ func loadLabelList(
 	return labels, labels.Labels, err
 }
 
-func labelPageWithItems(page client.LabelList, labels []client.LabelSummary) client.LabelList {
-	page.Labels = labels
-	return page
-}
-
 func loadLabelChildren(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -133,11 +128,6 @@ func loadLabelChildren(
 	return labels, labels.Labels, err
 }
 
-func labelChildrenPageWithItems(page client.LabelChildList, labels []client.LabelSummary) client.LabelChildList {
-	page.Labels = labels
-	return page
-}
-
 func loadLabelIssues(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -146,9 +136,4 @@ func loadLabelIssues(
 ) (client.LabelIssueList, []client.IssueSummary, error) {
 	issues, err := client.ListLabelIssues(ctx, runtime.graphqlClient, args[0], limit)
 	return issues, issues.Issues, err
-}
-
-func labelIssuesPageWithItems(page client.LabelIssueList, issues []client.IssueSummary) client.LabelIssueList {
-	page.Issues = issues
-	return page
 }

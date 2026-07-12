@@ -51,10 +51,11 @@ func ListLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (L
 		return LabelList{}, fmt.Errorf("list labels: %w", err)
 	}
 
-	summaries := make([]LabelSummary, 0, len(labels.IssueLabels.Nodes))
-	for _, label := range labels.IssueLabels.Nodes {
-		summaries = append(summaries, labelSummary(label.IssueLabelSummaryFields))
-	}
+	summaries := mapNodes(labels.IssueLabels.Nodes, func(
+		label IssueLabelsIssueLabelsIssueLabelConnectionNodesIssueLabel,
+	) LabelSummary {
+		return labelSummary(label.IssueLabelSummaryFields)
+	})
 
 	return LabelList{
 		Labels:      summaries,
@@ -85,10 +86,11 @@ func ListLabelChildren(
 		return LabelChildList{}, fmt.Errorf("list label children %s: %w", id, err)
 	}
 
-	labels := make([]LabelSummary, 0, len(childPage.IssueLabel.Children.Nodes))
-	for _, label := range childPage.IssueLabel.Children.Nodes {
-		labels = append(labels, labelSummary(label.IssueLabelSummaryFields))
-	}
+	labels := mapNodes(childPage.IssueLabel.Children.Nodes, func(
+		label issueLabel_childrenIssueLabelChildrenIssueLabelConnectionNodesIssueLabel,
+	) LabelSummary {
+		return labelSummary(label.IssueLabelSummaryFields)
+	})
 
 	return LabelChildList{
 		LabelID:     childPage.IssueLabel.Id,
@@ -106,10 +108,11 @@ func ListLabelIssues(ctx context.Context, graphqlClient graphql.Client, id strin
 		return LabelIssueList{}, fmt.Errorf("list label issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(issuePage.IssueLabel.Issues.Nodes))
-	for _, issue := range issuePage.IssueLabel.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(issuePage.IssueLabel.Issues.Nodes, func(
+		issue issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return LabelIssueList{
 		LabelID:     issuePage.IssueLabel.Id,

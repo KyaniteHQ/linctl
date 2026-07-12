@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
 // Test_ProjectCommandFlows_report_project_write_writer_errors covers the render
@@ -31,8 +33,38 @@ func Test_ProjectCommandFlows_report_project_write_writer_errors(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "write failed")
+			require.ErrorContains(t, err, "write failed")
+		})
+	}
+}
+
+// Test_ProjectWriteCommands_reject_content_and_content_file_together covers the
+// --content/--content-file mutual exclusion on both project write commands.
+func Test_ProjectWriteCommands_reject_content_and_content_file_together(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{name: "create", args: []string{
+			"project", "create", "--name", "Created project",
+			"--content", "inline", "--content-file", "body.md",
+		}},
+		{name: "update", args: []string{
+			"project", "update", "project-id",
+			"--content", "inline", "--content-file", "body.md",
+		}},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetArgs(test.args)
+
+			err := command.ExecuteContext(context.Background())
+
+			require.ErrorIs(t, err, client.ErrWriteInvalid)
 		})
 	}
 }

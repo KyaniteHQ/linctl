@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -112,29 +111,20 @@ func addAttachmentIssueCommentsCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addAttachmentIssueAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"attachments ATTACHMENT_ID",
-		"List attachments for the issue associated with an attachment",
-		"attachments",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.AttachmentList, error) {
-			return client.ListAttachmentIssueAttachments(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.AttachmentList, client.AttachmentSummary]{
+		Use:       "attachments ATTACHMENT_ID",
+		Short:     "List attachments for the issue associated with an attachment",
+		LimitHelp: "attachments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.AttachmentList, []client.AttachmentSummary, error) {
+			list, err := client.ListAttachmentIssueAttachments(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Attachments, err
 		},
-		func(list client.AttachmentList) int {
-			return len(list.Attachments)
-		},
-		func(list client.AttachmentList) (client.AttachmentList, error) {
-			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
-			list.Attachments = items
-			return list, err
-		},
-		writeAttachment,
-		func(list client.AttachmentList) []client.AttachmentSummary {
-			return list.Attachments
-		},
-	)
+		PageWithItems: attachmentPageWithItems,
+		WriteItem:     writeAttachment,
+	})
 }
 
 func addAttachmentIssueBotActorCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -158,81 +148,54 @@ func addAttachmentIssueBotActorCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addAttachmentIssueChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"children ATTACHMENT_ID",
-		"List child issues for the issue associated with an attachment",
-		"child issues",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.IssueList, error) {
-			return client.ListAttachmentIssueChildren(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
+		Use:       "children ATTACHMENT_ID",
+		Short:     "List child issues for the issue associated with an attachment",
+		LimitHelp: "child issues",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueList, []client.IssueSummary, error) {
+			list, err := client.ListAttachmentIssueChildren(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Issues, err
 		},
-		func(list client.IssueList) int {
-			return len(list.Issues)
-		},
-		func(list client.IssueList) (client.IssueList, error) {
-			items, err := sortByJSONField(list.Issues, options.sortField, options.sortOrder)
-			list.Issues = items
-			return list, err
-		},
-		writeIssue,
-		func(list client.IssueList) []client.IssueSummary {
-			return list.Issues
-		},
-	)
+		PageWithItems: issuePageWithItems,
+		WriteItem:     writeIssue,
+	})
 }
 
 func addAttachmentIssueDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"documents ATTACHMENT_ID",
-		"List documents for the issue associated with an attachment",
-		"documents",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.DocumentList, error) {
-			return client.ListAttachmentIssueDocuments(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.DocumentList, client.DocumentSummary]{
+		Use:       "documents ATTACHMENT_ID",
+		Short:     "List documents for the issue associated with an attachment",
+		LimitHelp: "documents",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.DocumentList, []client.DocumentSummary, error) {
+			list, err := client.ListAttachmentIssueDocuments(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Documents, err
 		},
-		func(list client.DocumentList) int {
-			return len(list.Documents)
-		},
-		func(list client.DocumentList) (client.DocumentList, error) {
-			items, err := sortByJSONField(list.Documents, options.sortField, options.sortOrder)
-			list.Documents = items
-			return list, err
-		},
-		writeDocument,
-		func(list client.DocumentList) []client.DocumentSummary {
-			return list.Documents
-		},
-	)
+		PageWithItems: documentPageWithItems,
+		WriteItem:     writeDocument,
+	})
 }
 
 func addAttachmentIssueFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"former-attachments ATTACHMENT_ID",
-		"List former attachments for the issue associated with an attachment",
-		"former attachments",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.AttachmentList, error) {
-			return client.ListAttachmentIssueFormerAttachments(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.AttachmentList, client.AttachmentSummary]{
+		Use:       "former-attachments ATTACHMENT_ID",
+		Short:     "List former attachments for the issue associated with an attachment",
+		LimitHelp: "former attachments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.AttachmentList, []client.AttachmentSummary, error) {
+			list, err := client.ListAttachmentIssueFormerAttachments(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Attachments, err
 		},
-		func(list client.AttachmentList) int {
-			return len(list.Attachments)
-		},
-		func(list client.AttachmentList) (client.AttachmentList, error) {
-			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
-			list.Attachments = items
-			return list, err
-		},
-		writeAttachment,
-		func(list client.AttachmentList) []client.AttachmentSummary {
-			return list.Attachments
-		},
-	)
+		PageWithItems: attachmentPageWithItems,
+		WriteItem:     writeAttachment,
+	})
 }
 
 func addAttachmentIssueFormerNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -250,29 +213,20 @@ func addAttachmentIssueFormerNeedsCommand(ctx context.Context, root *cobra.Comma
 }
 
 func addAttachmentIssueHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"history ATTACHMENT_ID",
-		"List history metadata for the issue associated with an attachment",
-		"history entries",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.IssueHistoryList, error) {
-			return client.ListAttachmentIssueHistory(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueHistoryList, client.IssueHistorySummary]{
+		Use:       "history ATTACHMENT_ID",
+		Short:     "List history metadata for the issue associated with an attachment",
+		LimitHelp: "history entries",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueHistoryList, []client.IssueHistorySummary, error) {
+			list, err := client.ListAttachmentIssueHistory(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.History, err
 		},
-		func(list client.IssueHistoryList) int {
-			return len(list.History)
-		},
-		func(list client.IssueHistoryList) (client.IssueHistoryList, error) {
-			items, err := sortByJSONField(list.History, options.sortField, options.sortOrder)
-			list.History = items
-			return list, err
-		},
-		writeIssueHistory,
-		func(list client.IssueHistoryList) []client.IssueHistorySummary {
-			return list.History
-		},
-	)
+		PageWithItems: issueHistoryPageWithItems,
+		WriteItem:     writeIssueHistory,
+	})
 }
 
 func addAttachmentIssueInverseRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -295,29 +249,20 @@ func addAttachmentIssueInverseRelationsCommand(ctx context.Context, root *cobra.
 }
 
 func addAttachmentIssueLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"labels ATTACHMENT_ID",
-		"List labels for the issue associated with an attachment",
-		"labels",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.LabelList, error) {
-			return client.ListAttachmentIssueLabels(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.LabelList, client.LabelSummary]{
+		Use:       "labels ATTACHMENT_ID",
+		Short:     "List labels for the issue associated with an attachment",
+		LimitHelp: "labels",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.LabelList, []client.LabelSummary, error) {
+			list, err := client.ListAttachmentIssueLabels(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Labels, err
 		},
-		func(list client.LabelList) int {
-			return len(list.Labels)
-		},
-		func(list client.LabelList) (client.LabelList, error) {
-			items, err := sortByJSONField(list.Labels, options.sortField, options.sortOrder)
-			list.Labels = items
-			return list, err
-		},
-		writeLabel,
-		func(list client.LabelList) []client.LabelSummary {
-			return list.Labels
-		},
-	)
+		PageWithItems: labelPageWithItems,
+		WriteItem:     writeLabel,
+	})
 }
 
 func addAttachmentIssueNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -354,29 +299,20 @@ func addAttachmentIssueRelationsCommand(ctx context.Context, root *cobra.Command
 }
 
 func addAttachmentIssueReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"releases ATTACHMENT_ID",
-		"List releases for the issue associated with an attachment",
-		"releases",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.ReleaseList, error) {
-			return client.ListAttachmentIssueReleases(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ReleaseList, client.ReleaseSummary]{
+		Use:       "releases ATTACHMENT_ID",
+		Short:     "List releases for the issue associated with an attachment",
+		LimitHelp: "releases",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ReleaseList, []client.ReleaseSummary, error) {
+			list, err := client.ListAttachmentIssueReleases(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Releases, err
 		},
-		func(list client.ReleaseList) int {
-			return len(list.Releases)
-		},
-		func(list client.ReleaseList) (client.ReleaseList, error) {
-			items, err := sortByJSONField(list.Releases, options.sortField, options.sortOrder)
-			list.Releases = items
-			return list, err
-		},
-		writeRelease,
-		func(list client.ReleaseList) []client.ReleaseSummary {
-			return list.Releases
-		},
-	)
+		PageWithItems: releasePageWithItems,
+		WriteItem:     writeRelease,
+	})
 }
 
 func addAttachmentIssueSharedAccessCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -400,55 +336,37 @@ func addAttachmentIssueSharedAccessCommand(ctx context.Context, root *cobra.Comm
 }
 
 func addAttachmentIssueStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"state-history ATTACHMENT_ID",
-		"List workflow state history for the issue associated with an attachment",
-		"state spans",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.IssueStateHistoryList, error) {
-			return client.ListAttachmentIssueStateHistory(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueStateHistoryList, client.IssueStateSpanSummary]{
+		Use:       "state-history ATTACHMENT_ID",
+		Short:     "List workflow state history for the issue associated with an attachment",
+		LimitHelp: "state spans",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueStateHistoryList, []client.IssueStateSpanSummary, error) {
+			list, err := client.ListAttachmentIssueStateHistory(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Spans, err
 		},
-		func(list client.IssueStateHistoryList) int {
-			return len(list.Spans)
-		},
-		func(list client.IssueStateHistoryList) (client.IssueStateHistoryList, error) {
-			items, err := sortByJSONField(list.Spans, options.sortField, options.sortOrder)
-			list.Spans = items
-			return list, err
-		},
-		writeIssueStateSpan,
-		func(list client.IssueStateHistoryList) []client.IssueStateSpanSummary {
-			return list.Spans
-		},
-	)
+		PageWithItems: issueStateSpanPageWithItems,
+		WriteItem:     writeIssueStateSpan,
+	})
 }
 
 func addAttachmentIssueSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"subscribers ATTACHMENT_ID",
-		"List subscribers for the issue associated with an attachment",
-		"subscribers",
-		func(runtime commandRuntime, attachmentID string, limit int) (client.UserList, error) {
-			return client.ListAttachmentIssueSubscribers(ctx, runtime.graphqlClient, attachmentID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.UserList, client.UserSummary]{
+		Use:       "subscribers ATTACHMENT_ID",
+		Short:     "List subscribers for the issue associated with an attachment",
+		LimitHelp: "subscribers",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.UserList, []client.UserSummary, error) {
+			list, err := client.ListAttachmentIssueSubscribers(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Users, err
 		},
-		func(list client.UserList) int {
-			return len(list.Users)
-		},
-		func(list client.UserList) (client.UserList, error) {
-			items, err := sortByJSONField(list.Users, options.sortField, options.sortOrder)
-			list.Users = items
-			return list, err
-		},
-		writeUser,
-		func(list client.UserList) []client.UserSummary {
-			return list.Users
-		},
-	)
+		PageWithItems: userPageWithItems,
+		WriteItem:     writeUser,
+	})
 }
 
 func writeAttachment(command *cobra.Command, options *rootOptions, attachment client.AttachmentSummary) error {
@@ -490,12 +408,4 @@ func loadAttachmentURLList(
 ) (client.AttachmentList, []client.AttachmentSummary, error) {
 	attachments, err := client.ListAttachmentsForURL(ctx, runtime.graphqlClient, args[0], limit)
 	return attachments, attachments.Attachments, err
-}
-
-func attachmentPageWithItems(
-	page client.AttachmentList,
-	attachments []client.AttachmentSummary,
-) client.AttachmentList {
-	page.Attachments = attachments
-	return page
 }

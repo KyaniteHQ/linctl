@@ -147,6 +147,13 @@ func commandUseAlias(command *cobra.Command) string {
 	return strings.TrimSpace(use)
 }
 
+// addCommandWithSafety registers a command with an explicit safety class so
+// the static inventory never falls back to the prose heuristic for it.
+func addCommandWithSafety(root *cobra.Command, safety CommandSafety, command *cobra.Command) {
+	annotateCommand(command, commandSafetyAnnotation, string(safety))
+	root.AddCommand(command)
+}
+
 func annotateReadCollectionCommand(command *cobra.Command, collectionKey string) {
 	annotateCommand(command, commandCollectionKeyAnnotation, collectionKey)
 	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyRead))

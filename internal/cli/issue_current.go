@@ -11,7 +11,7 @@ import (
 )
 
 func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyLocal, &cobra.Command{
 		Use:   "id",
 		Short: "Print the Current Issue identifier",
 		Args:  cobra.NoArgs,
@@ -24,7 +24,7 @@ func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *
 			return writeScalar(command, options, "identifier", identifier)
 		},
 	})
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "title [ISSUE_ID]",
 		Short: "Print an issue title",
 		Args:  cobra.MaximumNArgs(1),
@@ -37,7 +37,7 @@ func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *
 			return writeScalar(command, options, "title", issue.Title)
 		},
 	})
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "url [ISSUE_ID]",
 		Short: "Print an issue URL",
 		Args:  cobra.MaximumNArgs(1),
@@ -50,7 +50,7 @@ func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *
 			return writeScalar(command, options, "url", issue.URL)
 		},
 	})
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "branch ISSUE_ID",
 		Short: "Print the issue branch name",
 		Args:  cobra.ExactArgs(1),

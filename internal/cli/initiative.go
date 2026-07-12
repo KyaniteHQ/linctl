@@ -1,4 +1,3 @@
-//nolint:dupl // Minimal read-command glue is intentionally uniform across domains via addReadListGetCommand.
 package cli
 
 import (
@@ -222,14 +221,6 @@ func loadInitiative(
 	return client.GetInitiativeByID(ctx, runtime.graphqlClient, id)
 }
 
-func initiativePageWithItems(
-	page client.InitiativeList,
-	initiatives []client.InitiativeSummary,
-) client.InitiativeList {
-	page.Initiatives = initiatives
-	return page
-}
-
 func loadInitiativeHistory(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -238,14 +229,6 @@ func loadInitiativeHistory(
 ) (client.InitiativeHistoryList, []client.InitiativeHistorySummary, error) {
 	history, err := client.ListInitiativeHistory(ctx, runtime.graphqlClient, args[0], limit)
 	return history, history.History, err
-}
-
-func initiativeHistoryPageWithItems(
-	page client.InitiativeHistoryList,
-	history []client.InitiativeHistorySummary,
-) client.InitiativeHistoryList {
-	page.History = history
-	return page
 }
 
 func loadInitiativeLinks(

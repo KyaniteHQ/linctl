@@ -161,8 +161,7 @@ func Test_CycleCommandFlows_report_current_sprint_runtime_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "runtime failed")
+	require.ErrorContains(t, err, "runtime failed")
 }
 
 func Test_CycleCommandFlows_report_current_sprint_edges(t *testing.T) {
@@ -197,8 +196,7 @@ func Test_CycleCommandFlows_report_current_sprint_edges(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.wantMessage)
+			require.ErrorContains(t, err, test.wantMessage)
 		})
 	}
 }
@@ -212,8 +210,7 @@ func Test_CycleCommandFlows_report_current_sprint_writer_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_CycleCommandFlows_report_sprint(t *testing.T) {
@@ -297,8 +294,7 @@ func Test_CycleCommandFlows_report_sprint_edges(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.wantMessage)
+			require.ErrorContains(t, err, test.wantMessage)
 		})
 	}
 }
@@ -312,8 +308,7 @@ func Test_CycleCommandFlows_report_sprint_writer_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_CycleCommandFlows_report_sprint_issue_writer_error(t *testing.T) {
@@ -325,8 +320,7 @@ func Test_CycleCommandFlows_report_sprint_issue_writer_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "second write failed")
+	require.ErrorContains(t, err, "second write failed")
 }
 
 func Test_CycleCommandFlows_list_cycle_issues(t *testing.T) {
@@ -429,8 +423,7 @@ func Test_CycleCommandFlows_list_cycle_issue_edges(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.wantMessage)
+			require.ErrorContains(t, err, test.wantMessage)
 		})
 	}
 }
@@ -444,8 +437,7 @@ func Test_CycleCommandFlows_list_cycle_issue_writer_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_CycleCommandFlows_report_cycle_get_runtime_error(t *testing.T) {
@@ -461,8 +453,7 @@ func Test_CycleCommandFlows_report_cycle_get_runtime_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "runtime failed")
+	require.ErrorContains(t, err, "runtime failed")
 }
 
 func Test_CycleCommandFlows_report_cycle_get_operation_error(t *testing.T) {
@@ -473,8 +464,7 @@ func Test_CycleCommandFlows_report_cycle_get_operation_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "cycle failed")
+	require.ErrorContains(t, err, "cycle failed")
 }
 
 func Test_CycleCommandFlows_report_cycle_get_writer_error(t *testing.T) {
@@ -486,8 +476,7 @@ func Test_CycleCommandFlows_report_cycle_get_writer_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_CycleCommandFlows_report_cycle_write_edges(t *testing.T) {
@@ -551,8 +540,7 @@ func Test_CycleCommandFlows_report_cycle_write_edges(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.wantMessage)
+			require.ErrorContains(t, err, test.wantMessage)
 		})
 	}
 }
@@ -580,8 +568,7 @@ func Test_CycleCommandFlows_report_cycle_write_writer_errors(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "write failed")
+			require.ErrorContains(t, err, "write failed")
 		})
 	}
 }
@@ -627,8 +614,7 @@ func Test_CycleCommandFlows_report_cycle_list_edges(t *testing.T) {
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.wantMessage)
+			require.ErrorContains(t, err, test.wantMessage)
 		})
 	}
 }
@@ -646,8 +632,7 @@ func Test_CycleCommandFlows_report_cycle_list_runtime_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "runtime failed")
+	require.ErrorContains(t, err, "runtime failed")
 }
 
 func Test_CycleCommandFlows_report_cycle_list_writer_error(t *testing.T) {
@@ -659,8 +644,7 @@ func Test_CycleCommandFlows_report_cycle_list_writer_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }
 
 type cycleCommandFlowFakeClient struct {

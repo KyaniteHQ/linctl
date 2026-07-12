@@ -15,7 +15,7 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
-func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
+func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 	type item struct {
 		ID string `json:"id"`
 	}
@@ -26,84 +26,81 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 	tests := []struct {
 		name        string
 		options     rootOptions
-		fetch       func(commandRuntime, string, int) (list, error)
-		sortList    func(list) (list, error)
+		load        readListLoader[list, item]
 		writeItem   readListItemWriter[item]
 		requirement func(*testing.T, string, error)
 	}{
 		{
 			name: "runtime error",
-			fetch: func(commandRuntime, string, int) (list, error) {
-				return list{}, nil
-			},
-			sortList: func(value list) (list, error) {
-				return value, nil
+			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+				return list{}, nil, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "runtime failed")
+				require.ErrorContains(t, err, "runtime failed")
 			},
 		},
 		{
-			name: "fetch error",
-			fetch: func(commandRuntime, string, int) (list, error) {
-				return list{}, errors.New("fetch failed")
-			},
-			sortList: func(value list) (list, error) {
-				return value, nil
+			name: "load error",
+			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+				return list{}, nil, errors.New("fetch failed")
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "fetch failed")
+				require.ErrorContains(t, err, "fetch failed")
 			},
 		},
 		{
 			name:    "empty error",
 			options: rootOptions{failOnEmpty: true},
-			fetch: func(commandRuntime, string, int) (list, error) {
-				return list{}, nil
-			},
-			sortList: func(value list) (list, error) {
-				return value, nil
+			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+				return list{}, nil, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "empty result")
+				require.ErrorContains(t, err, "empty result")
 			},
 		},
 		{
-			name: "sort error",
-			fetch: func(commandRuntime, string, int) (list, error) {
-				return list{Items: []item{{ID: "item-id"}}}, nil
-			},
-			sortList: func(list) (list, error) {
-				return list{}, errors.New("sort failed")
+			name:    "sort error",
+			options: rootOptions{sortField: "missing"},
+			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+				items := []item{{ID: "item-id"}}
+				return list{Items: items}, items, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
 			},
 			requirement: func(t *testing.T, _ string, err error) {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "sort failed")
+				require.ErrorContains(t, err, `sort field "missing" is not present`)
+			},
+		},
+		{
+			name:    "sorting nil items keeps them empty",
+			options: rootOptions{json: true, sortField: "id"},
+			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+				return list{}, nil, nil
+			},
+			writeItem: func(*cobra.Command, *rootOptions, item) error {
+				return nil
+			},
+			requirement: func(t *testing.T, output string, err error) {
+				require.NoError(t, err)
+				require.JSONEq(t, `{"items":null}`, output)
 			},
 		},
 		{
 			name:    "json output",
 			options: rootOptions{json: true},
-			fetch: func(commandRuntime, string, int) (list, error) {
-				return list{Items: []item{{ID: "item-id"}}}, nil
-			},
-			sortList: func(value list) (list, error) {
-				return value, nil
+			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+				items := []item{{ID: "item-id"}}
+				return list{Items: items}, items, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return nil
@@ -115,18 +112,15 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 		},
 		{
 			name: "write error",
-			fetch: func(commandRuntime, string, int) (list, error) {
-				return list{Items: []item{{ID: "item-id"}}}, nil
-			},
-			sortList: func(value list) (list, error) {
-				return value, nil
+			load: func(context.Context, commandRuntime, []string, int) (list, []item, error) {
+				items := []item{{ID: "item-id"}}
+				return list{Items: items}, items, nil
 			},
 			writeItem: func(*cobra.Command, *rootOptions, item) error {
 				return errors.New("write failed")
 			},
 			requirement: func(t *testing.T, _ string, err error) {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "write failed")
+				require.ErrorContains(t, err, "write failed")
 			},
 		},
 	}
@@ -152,23 +146,18 @@ func Test_ProjectChildListCommand_covers_helper_branches(t *testing.T) {
 			t.Cleanup(func() {
 				buildCommandRuntime = originalBuildCommandRuntime
 			})
-			addChildListCommand(
-				context.Background(),
-				root,
-				&options,
-				"children PROJECT_ID",
-				"List children",
-				"children",
-				test.fetch,
-				func(value list) int {
-					return len(value.Items)
+			addListCommand(context.Background(), root, &options, listCommandSpec[list, item]{
+				Use:       "children PROJECT_ID",
+				Short:     "List children",
+				LimitHelp: "children",
+				Args:      cobra.ExactArgs(1),
+				Load:      test.load,
+				PageWithItems: func(page list, items []item) list {
+					page.Items = items
+					return page
 				},
-				test.sortList,
-				test.writeItem,
-				func(value list) []item {
-					return value.Items
-				},
-			)
+				WriteItem: test.writeItem,
+			})
 			root.SetOut(&output)
 			root.SetArgs([]string{"children", "project-id"})
 
@@ -297,6 +286,103 @@ func Test_CommandFlows_project_child_lists_route_output_policy(t *testing.T) {
 	}
 }
 
+func Test_CommandFlows_child_lists_emit_page_envelopes_in_json(t *testing.T) {
+	tests := []struct {
+		name     string
+		args     []string
+		contains []string
+	}{
+		{
+			name:     "attachment issue comments",
+			args:     []string{"attachment", "issue", "comments", "attachment-id", "--limit", "1"},
+			contains: []string{`"comments"`, "comment-id"},
+		},
+		{
+			name:     "issue needs",
+			args:     []string{"issue", "needs", "LIT-1", "--limit", "1"},
+			contains: []string{`"customer_needs"`, "customer-need-id"},
+		},
+		{
+			name:     "issue state history",
+			args:     []string{"issue", "state-history", "LIT-1", "--limit", "1"},
+			contains: []string{`"spans"`, "issue-state-span-id"},
+		},
+		{
+			name:     "project attachments",
+			args:     []string{"project", "attachments", "project-id", "--limit", "1"},
+			contains: []string{`"attachments"`, "attachment-id"},
+		},
+		{
+			name:     "project documents",
+			args:     []string{"project", "documents", "project-id", "--limit", "1"},
+			contains: []string{`"documents"`, "document-id"},
+		},
+		{
+			name:     "project external links",
+			args:     []string{"project", "external-links", "project-id", "--limit", "1"},
+			contains: []string{`"links"`, "release-link-id"},
+		},
+		{
+			name:     "project history",
+			args:     []string{"project", "history", "project-id", "--limit", "1"},
+			contains: []string{`"history"`, "project-history-id"},
+		},
+		{
+			name:     "project initiative links",
+			args:     []string{"project", "initiative-links", "project-id", "--limit", "1"},
+			contains: []string{`"associations"`, "initiative-to-project-id"},
+		},
+		{
+			name:     "project initiatives",
+			args:     []string{"project", "initiatives", "project-id", "--limit", "1"},
+			contains: []string{`"initiatives"`, "initiative-id"},
+		},
+		{
+			name:     "project issues",
+			args:     []string{"project", "issues", "project-id", "--limit", "1"},
+			contains: []string{`"issues"`, "LIT-1"},
+		},
+		{
+			name:     "project labels",
+			args:     []string{"project", "labels", "project-id", "--limit", "1"},
+			contains: []string{`"project_labels"`, "project-label-id"},
+		},
+		{
+			name:     "project needs",
+			args:     []string{"project", "needs", "project-id", "--limit", "1"},
+			contains: []string{`"customer_needs"`, "customer-need-id"},
+		},
+		{
+			name:     "project relations",
+			args:     []string{"project", "relations", "project-id", "--limit", "1"},
+			contains: []string{`"relations"`, "project-relation-id"},
+		},
+		{
+			name:     "project teams",
+			args:     []string{"project", "teams", "project-id", "--limit", "1"},
+			contains: []string{`"teams"`, "team-id"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := bytes.Buffer{}
+			restore := useCommandRuntime(t, commandFlowFakeClient{})
+			defer restore()
+			command := NewRootCommand(context.Background(), BuildInfo{})
+			command.SetOut(&output)
+			command.SetArgs(append([]string{"--json"}, test.args...))
+
+			err := command.ExecuteContext(context.Background())
+
+			require.NoError(t, err)
+			for _, fragment := range test.contains {
+				require.Contains(t, output.String(), fragment)
+			}
+		})
+	}
+}
+
 func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 	t.Run("issue header", func(t *testing.T) {
 		command := &cobra.Command{}
@@ -305,8 +391,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 
 		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("section header", func(t *testing.T) {
@@ -315,8 +400,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 
 		err := writeIssueDependencySection(command, &rootOptions{}, "children", nil)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("parent issue", func(t *testing.T) {
@@ -327,8 +411,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 
 		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("children section", func(t *testing.T) {
@@ -338,8 +421,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 
 		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("blocks section", func(t *testing.T) {
@@ -349,8 +431,7 @@ func Test_CommandFlows_cover_issue_deps_writer_error(t *testing.T) {
 
 		err := writeIssueDependencies(command, &rootOptions{}, dependencies)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 }
 
@@ -369,8 +450,7 @@ func Test_CommandFlows_cover_rate_limit_writer_errors(t *testing.T) {
 
 		err := writeRateLimitStatus(command, &rootOptions{}, status)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 
 	t.Run("limit", func(t *testing.T) {
@@ -379,8 +459,7 @@ func Test_CommandFlows_cover_rate_limit_writer_errors(t *testing.T) {
 
 		err := writeRateLimitStatus(command, &rootOptions{}, status)
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "write line")
+		require.ErrorContains(t, err, "write line")
 	})
 }
 
@@ -395,8 +474,7 @@ func Test_CommandFlows_cover_audit_entry_type_writer_errors(t *testing.T) {
 
 	err := writeAuditEntryTypes(command, &rootOptions{}, types)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write line")
+	require.ErrorContains(t, err, "write line")
 }
 
 type countFailingWriter struct {
@@ -464,13 +542,13 @@ project_id = "project-id"
 	_, err := newCommandRuntime(context.Background(), &rootOptions{})
 	require.Error(t, err)
 	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
-	require.Contains(t, err.Error(), "run linctl auth configure")
+	require.ErrorContains(t, err, "run linctl auth configure")
 
 	t.Setenv("LINCTL_TOKEN", "test-token")
 	_, err = newCommandRuntime(context.Background(), &rootOptions{})
 	require.Error(t, err)
 	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
-	require.Contains(t, err.Error(), "run linctl auth configure")
+	require.ErrorContains(t, err, "run linctl auth configure")
 
 	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "test-token")
 	runtime, err := newCommandRuntime(context.Background(), &rootOptions{})
@@ -487,8 +565,7 @@ func Test_CommandRuntime_reports_config_load_errors(t *testing.T) {
 
 	_, err := newCommandRuntime(context.Background(), &rootOptions{})
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "parse config")
+	require.ErrorContains(t, err, "parse config")
 }
 
 func Test_DefaultGlobalConfigPath_returns_empty_when_home_is_unset(t *testing.T) {
@@ -503,6 +580,5 @@ func Test_WriteUsage_reports_unknown_topics(t *testing.T) {
 
 	err := writeUsage(command, &rootOptions{}, "missing")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), `unknown usage topic "missing"`)
+	require.ErrorContains(t, err, `unknown usage topic "missing"`)
 }

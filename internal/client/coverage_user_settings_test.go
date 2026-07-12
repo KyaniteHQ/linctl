@@ -13,22 +13,6 @@ func Test_ClientReadScenarios_return_user_settings(t *testing.T) {
 		"userSettings": `{"userSettings":` + userSettingsJSON() + `}`,
 		"userSettings_notificationCategoryPreferences": `{"userSettings":{"notificationCategoryPreferences":` +
 			notificationCategoriesJSON() + `}}`,
-		"userSettings_notificationCategoryPreferences_appsAndIntegrations": userSettingsCategoryJSON("appsAndIntegrations"),
-		"userSettings_notificationCategoryPreferences_assignments":         userSettingsCategoryJSON("assignments"),
-		"userSettings_notificationCategoryPreferences_billing":             userSettingsCategoryJSON("billing"),
-		"userSettings_notificationCategoryPreferences_commentsAndReplies":  userSettingsCategoryJSON("commentsAndReplies"),
-		"userSettings_notificationCategoryPreferences_customers":           userSettingsCategoryJSON("customers"),
-		"userSettings_notificationCategoryPreferences_documentChanges":     userSettingsCategoryJSON("documentChanges"),
-		"userSettings_notificationCategoryPreferences_feed":                userSettingsCategoryJSON("feed"),
-		"userSettings_notificationCategoryPreferences_mentions":            userSettingsCategoryJSON("mentions"),
-		"userSettings_notificationCategoryPreferences_postsAndUpdates":     userSettingsCategoryJSON("postsAndUpdates"),
-		"userSettings_notificationCategoryPreferences_reactions":           userSettingsCategoryJSON("reactions"),
-		"userSettings_notificationCategoryPreferences_reminders":           userSettingsCategoryJSON("reminders"),
-		"userSettings_notificationCategoryPreferences_reviews":             userSettingsCategoryJSON("reviews"),
-		"userSettings_notificationCategoryPreferences_statusChanges":       userSettingsCategoryJSON("statusChanges"),
-		"userSettings_notificationCategoryPreferences_subscriptions":       userSettingsCategoryJSON("subscriptions"),
-		"userSettings_notificationCategoryPreferences_system":              userSettingsCategoryJSON("system"),
-		"userSettings_notificationCategoryPreferences_triage":              userSettingsCategoryJSON("triage"),
 		"userSettings_notificationChannelPreferences": `{"userSettings":{"notificationChannelPreferences":` +
 			notificationChannelJSON() + `}}`,
 		"userSettings_notificationDeliveryPreferences": `{"userSettings":{"notificationDeliveryPreferences":` +

@@ -46,10 +46,11 @@ func ListAgentActivities(ctx context.Context, graphqlClient graphql.Client, limi
 		return AgentActivityList{}, fmt.Errorf("list agent activities: %w", err)
 	}
 
-	summaries := make([]AgentActivitySummary, 0, len(result.AgentActivities.Nodes))
-	for _, node := range result.AgentActivities.Nodes {
-		summaries = append(summaries, agentActivitySummary(node.AgentActivitySummaryFields))
-	}
+	summaries := mapNodes(result.AgentActivities.Nodes, func(
+		node agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity,
+	) AgentActivitySummary {
+		return agentActivitySummary(node.AgentActivitySummaryFields)
+	})
 
 	return AgentActivityList{
 		AgentActivities: summaries,

@@ -117,7 +117,7 @@ A guarded write against an existing Linear entity. It resolves the entity first 
 _Avoid_: Direct update, blind write
 
 **Command Port**:
-The narrow, domain-typed interface a Read Command or Guarded Write depends on to reach Linear, decoupled from the GraphQL transport. A command port is defined by its consumer, returns domain summaries rather than GraphQL responses, and is satisfied in production by a thin adapter over the client and in tests by an in-memory fake. It makes the command's interface the test surface.
+The narrow, domain-typed interface a Read Command or Guarded Write depends on to reach Linear, decoupled from the GraphQL transport. A command port is defined by its consumer, returns domain summaries rather than GraphQL responses, and is satisfied in production by a thin adapter over the client and in tests by an in-memory fake. It makes the command's interface the test surface. Guarded writes go through a port by design; read commands may call the client package directly, and the issue domain routing reads through its port is accepted variance for testability, not a rule.
 _Avoid_: client, gateway, service, mock
 
 **Current Issue**:

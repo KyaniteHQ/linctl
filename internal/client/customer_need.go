@@ -46,10 +46,11 @@ func ListCustomerNeeds(ctx context.Context, graphqlClient graphql.Client, limit 
 		return CustomerNeedList{}, fmt.Errorf("list customer needs: %w", err)
 	}
 
-	summaries := make([]CustomerNeedSummary, 0, len(result.CustomerNeeds.Nodes))
-	for _, node := range result.CustomerNeeds.Nodes {
-		summaries = append(summaries, customerNeedSummary(node.CustomerNeedSummaryFields))
-	}
+	summaries := mapNodes(result.CustomerNeeds.Nodes, func(
+		node customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed,
+	) CustomerNeedSummary {
+		return customerNeedSummary(node.CustomerNeedSummaryFields)
+	})
 
 	return CustomerNeedList{
 		Needs:       summaries,

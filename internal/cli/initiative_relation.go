@@ -65,11 +65,3 @@ func loadInitiativeRelation(
 ) (client.InitiativeRelationSummary, error) {
 	return client.GetInitiativeRelationByID(ctx, runtime.graphqlClient, id)
 }
-
-func initiativeRelationPageWithItems(
-	page client.InitiativeRelationList,
-	relations []client.InitiativeRelationSummary,
-) client.InitiativeRelationList {
-	page.Relations = relations
-	return page
-}

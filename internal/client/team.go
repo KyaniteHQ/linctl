@@ -63,15 +63,14 @@ type GitAutomationStateList struct {
 
 // ListTeams returns visible teams.
 func ListTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
-	teams, err := Teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	teams, err := teams_list(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TeamList{}, fmt.Errorf("list teams: %w", err)
 	}
 
-	summaries := make([]TeamSummary, 0, len(teams.Teams.Nodes))
-	for _, team := range teams.Teams.Nodes {
-		summaries = append(summaries, teamSummaryFromConnection(team))
-	}
+	summaries := mapNodes(teams.Teams.Nodes, func(team teams_listTeamsTeamConnectionNodesTeam) TeamSummary {
+		return teamSummary(team.TeamSummaryFields)
+	})
 
 	return TeamList{
 		Teams:       summaries,
@@ -97,10 +96,11 @@ func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id strin
 		return TeamMemberList{}, fmt.Errorf("list team members %s: %w", id, err)
 	}
 
-	members := make([]UserSummary, 0, len(team.Team.Members.Nodes))
-	for _, member := range team.Team.Members.Nodes {
-		members = append(members, userSummary(member.UserSummaryFields))
-	}
+	members := mapNodes(team.Team.Members.Nodes, func(
+		member team_membersTeamMembersUserConnectionNodesUser,
+	) UserSummary {
+		return userSummary(member.UserSummaryFields)
+	})
 
 	return TeamMemberList{
 		TeamID:      team.Team.Id,
@@ -119,10 +119,9 @@ func ListTeamCycles(ctx context.Context, graphqlClient graphql.Client, id string
 		return CycleList{}, fmt.Errorf("list team cycles %s: %w", id, err)
 	}
 
-	cycles := make([]CycleSummary, 0, len(team.Team.Cycles.Nodes))
-	for _, cycle := range team.Team.Cycles.Nodes {
-		cycles = append(cycles, cycleSummary(cycle.CycleSummaryFields))
-	}
+	cycles := mapNodes(team.Team.Cycles.Nodes, func(cycle team_cyclesTeamCyclesCycleConnectionNodesCycle) CycleSummary {
+		return cycleSummary(cycle.CycleSummaryFields)
+	})
 
 	return CycleList{
 		Cycles:      cycles,
@@ -138,10 +137,9 @@ func ListTeamIssues(ctx context.Context, graphqlClient graphql.Client, id string
 		return IssueList{}, fmt.Errorf("list team issues %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(team.Team.Issues.Nodes))
-	for _, issue := range team.Team.Issues.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(team.Team.Issues.Nodes, func(issue team_issuesTeamIssuesIssueConnectionNodesIssue) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -157,10 +155,11 @@ func ListTeamLabels(ctx context.Context, graphqlClient graphql.Client, id string
 		return LabelList{}, fmt.Errorf("list team labels %s: %w", id, err)
 	}
 
-	labels := make([]LabelSummary, 0, len(team.Team.Labels.Nodes))
-	for _, label := range team.Team.Labels.Nodes {
-		labels = append(labels, labelSummary(label.IssueLabelSummaryFields))
-	}
+	labels := mapNodes(team.Team.Labels.Nodes, func(
+		label team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel,
+	) LabelSummary {
+		return labelSummary(label.IssueLabelSummaryFields)
+	})
 
 	return LabelList{
 		Labels:      labels,
@@ -181,10 +180,11 @@ func ListTeamMembershipsForTeam(
 		return TeamMembershipList{}, fmt.Errorf("list team memberships %s: %w", id, err)
 	}
 
-	memberships := make([]TeamMembershipSummary, 0, len(team.Team.Memberships.Nodes))
-	for _, membership := range team.Team.Memberships.Nodes {
-		memberships = append(memberships, teamMembershipSummary(membership.TeamMembershipSummaryFields))
-	}
+	memberships := mapNodes(team.Team.Memberships.Nodes, func(
+		membership team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+	) TeamMembershipSummary {
+		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
+	})
 
 	return TeamMembershipList{
 		Memberships: memberships,
@@ -200,10 +200,11 @@ func ListTeamProjects(ctx context.Context, graphqlClient graphql.Client, id stri
 		return ProjectList{}, fmt.Errorf("list team projects %s: %w", id, err)
 	}
 
-	projects := make([]ProjectSummary, 0, len(team.Team.Projects.Nodes))
-	for _, project := range team.Team.Projects.Nodes {
-		projects = append(projects, projectSummaryFromFields(project.ProjectSummaryFields))
-	}
+	projects := mapNodes(team.Team.Projects.Nodes, func(
+		project team_projectsTeamProjectsProjectConnectionNodesProject,
+	) ProjectSummary {
+		return projectSummaryFromFields(project.ProjectSummaryFields)
+	})
 
 	return ProjectList{
 		Projects:    projects,
@@ -224,10 +225,11 @@ func ListTeamReleasePipelines(
 		return ReleasePipelineList{}, fmt.Errorf("list team release pipelines %s: %w", id, err)
 	}
 
-	pipelines := make([]ReleasePipelineSummary, 0, len(team.Team.ReleasePipelines.Nodes))
-	for _, pipeline := range team.Team.ReleasePipelines.Nodes {
-		pipelines = append(pipelines, releasePipelineSummary(pipeline.ReleasePipelineSummaryFields))
-	}
+	pipelines := mapNodes(team.Team.ReleasePipelines.Nodes, func(
+		pipeline team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
+	) ReleasePipelineSummary {
+		return releasePipelineSummary(pipeline.ReleasePipelineSummaryFields)
+	})
 
 	return ReleasePipelineList{
 		ReleasePipelines: pipelines,
@@ -248,10 +250,11 @@ func ListTeamWorkflowStates(
 		return WorkflowStateList{}, fmt.Errorf("list team states %s: %w", id, err)
 	}
 
-	states := make([]WorkflowStateSummary, 0, len(team.Team.States.Nodes))
-	for _, state := range team.Team.States.Nodes {
-		states = append(states, workflowStateSummary(state.WorkflowStateSummaryFields))
-	}
+	states := mapNodes(team.Team.States.Nodes, func(
+		state team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState,
+	) WorkflowStateSummary {
+		return workflowStateSummary(state.WorkflowStateSummaryFields)
+	})
 
 	return WorkflowStateList{
 		WorkflowStates: states,
@@ -272,10 +275,11 @@ func ListTeamGitAutomationStates(
 		return GitAutomationStateList{}, fmt.Errorf("list team git automation states %s: %w", id, err)
 	}
 
-	states := make([]GitAutomationStateSummary, 0, len(team.Team.GitAutomationStates.Nodes))
-	for _, state := range team.Team.GitAutomationStates.Nodes {
-		states = append(states, gitAutomationStateSummary(state.GitAutomationStateSummaryFields))
-	}
+	states := mapNodes(team.Team.GitAutomationStates.Nodes, func(
+		state team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState,
+	) GitAutomationStateSummary {
+		return gitAutomationStateSummary(state.GitAutomationStateSummaryFields)
+	})
 
 	return GitAutomationStateList{
 		TeamID:      team.Team.Id,
@@ -294,10 +298,11 @@ func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id str
 		return TemplateList{}, fmt.Errorf("list team templates %s: %w", id, err)
 	}
 
-	templates := make([]TemplateSummary, 0, len(team.Team.Templates.Nodes))
-	for _, template := range team.Team.Templates.Nodes {
-		templates = append(templates, templateSummary(template.TemplateSummaryFields))
-	}
+	templates := mapNodes(team.Team.Templates.Nodes, func(
+		template team_templatesTeamTemplatesTemplateConnectionNodesTemplate,
+	) TemplateSummary {
+		return templateSummary(template.TemplateSummaryFields)
+	})
 
 	return TemplateList{
 		Templates:   templates,
@@ -340,15 +345,4 @@ func gitAutomationStateSummary(fields GitAutomationStateSummaryFields) GitAutoma
 	}
 
 	return summary
-}
-
-func teamSummaryFromConnection(team TeamsTeamsTeamConnectionNodesTeam) TeamSummary {
-	return TeamSummary{
-		ID:        team.Id,
-		Key:       team.Key,
-		Name:      team.Name,
-		OrgID:     team.Organization.Id,
-		OrgName:   team.Organization.Name,
-		OrgURLKey: team.Organization.UrlKey,
-	}
 }

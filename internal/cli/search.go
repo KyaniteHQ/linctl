@@ -1,4 +1,3 @@
-//nolint:dupl // Typed search command glue is intentionally uniform across result kinds.
 package cli
 
 import (
@@ -127,14 +126,6 @@ func loadSearchDocuments(
 	return page, page.Documents, err
 }
 
-func searchDocumentPageWithItems(
-	page client.SearchDocumentList,
-	documents []client.SearchDocumentSummary,
-) client.SearchDocumentList {
-	page.Documents = documents
-	return page
-}
-
 func loadSearchIssues(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -145,14 +136,6 @@ func loadSearchIssues(
 	return page, page.Issues, err
 }
 
-func searchIssuePageWithItems(
-	page client.SearchIssueList,
-	issues []client.SearchIssueSummary,
-) client.SearchIssueList {
-	page.Issues = issues
-	return page
-}
-
 func loadSearchProjects(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -161,12 +144,4 @@ func loadSearchProjects(
 ) (client.SearchProjectList, []client.SearchProjectSummary, error) {
 	page, err := client.SearchProjects(ctx, runtime.graphqlClient, args[0], limit)
 	return page, page.Projects, err
-}
-
-func searchProjectPageWithItems(
-	page client.SearchProjectList,
-	projects []client.SearchProjectSummary,
-) client.SearchProjectList {
-	page.Projects = projects
-	return page
 }

@@ -125,53 +125,47 @@ func runReadListCommand[Page any, Item any](
 	return nil
 }
 
-func addChildListCommand[List any, Item any](
+// listCommandSpec describes one read-only list command in the single list
+// pipeline: a loader produces the page and its items, PageWithItems puts the
+// sorted items back for JSON output, WriteItem renders one human line.
+type listCommandSpec[Page any, Item any] struct {
+	Use           string
+	Short         string
+	LimitHelp     string
+	Args          cobra.PositionalArgs
+	Load          readListLoader[Page, Item]
+	PageWithItems readListPage[Page, Item]
+	WriteItem     readListItemWriter[Item]
+}
+
+// addListCommand registers a list command from its spec. The collection-key
+// and read-safety annotations are applied at registration time so the static
+// command inventory sees them without executing the command.
+func addListCommand[Page any, Item any](
 	ctx context.Context,
 	root *cobra.Command,
 	options *rootOptions,
-	use string,
-	short string,
-	limitHelp string,
-	fetch func(commandRuntime, string, int) (List, error),
-	count func(List) int,
-	sortList func(List) (List, error),
-	writeItem readListItemWriter[Item],
-	items func(List) []Item,
+	spec listCommandSpec[Page, Item],
 ) {
 	limit := 50
 	command := &cobra.Command{
-		Use:   use,
-		Short: short,
-		Args:  cobra.ExactArgs(1),
+		Use:   spec.Use,
+		Short: spec.Short,
+		Args:  spec.Args,
 		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			list, err := fetch(runtime, args[0], limit)
-			if err != nil {
-				return err
-			}
-			if err := ensureNonEmpty(options, count(list)); err != nil {
-				return err
-			}
-			list, err = sortList(list)
-			if err != nil {
-				return err
-			}
-			if options.json {
-				return writeJSONValue(command, options, list)
-			}
-			for _, item := range items(list) {
-				if err := writeItem(command, options, item); err != nil {
-					return err
-				}
-			}
-
-			return nil
+			return runReadListCommand(
+				ctx,
+				command,
+				args,
+				options,
+				limit,
+				spec.Load,
+				spec.PageWithItems,
+				spec.WriteItem,
+			)
 		},
 	}
-	annotateReadCollectionCommand(command, collectionKeyForPage[List]())
-	command.Flags().IntVar(&limit, "limit", limit, "maximum "+limitHelp+" to return")
+	annotateReadCollectionCommand(command, collectionKeyForPage[Page]())
+	command.Flags().IntVar(&limit, "limit", limit, "maximum "+spec.LimitHelp+" to return")
 	root.AddCommand(command)
 }

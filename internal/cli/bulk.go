@@ -402,7 +402,7 @@ func runIssueBulkExport(
 	if err != nil {
 		return err
 	}
-	issues, err := client.ListIssuesByTeam(ctx, runtime.graphqlClient, target.Team.ID, limit, client.IssueListFilters{})
+	issues, err := issueAdapterFor(runtime).ListIssuesByTeam(ctx, target.Team.ID, limit, client.IssueListFilters{})
 	if err != nil {
 		return err
 	}

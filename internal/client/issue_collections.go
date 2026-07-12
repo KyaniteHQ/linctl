@@ -19,10 +19,11 @@ func ListIssueAttachments(
 		return AttachmentList{}, fmt.Errorf("list issue attachments %s: %w", id, err)
 	}
 
-	attachments := make([]AttachmentSummary, 0, len(result.Issue.Attachments.Nodes))
-	for _, attachment := range result.Issue.Attachments.Nodes {
-		attachments = append(attachments, attachmentSummary(attachment.AttachmentSummaryFields))
-	}
+	attachments := mapNodes(result.Issue.Attachments.Nodes, func(
+		attachment issue_attachmentsIssueAttachmentsAttachmentConnectionNodesAttachment,
+	) AttachmentSummary {
+		return attachmentSummary(attachment.AttachmentSummaryFields)
+	})
 
 	return AttachmentList{
 		Attachments: attachments,
@@ -56,10 +57,11 @@ func ListIssueChildren(
 		return IssueList{}, fmt.Errorf("list issue children %s: %w", id, err)
 	}
 
-	issues := make([]IssueSummary, 0, len(result.Issue.Children.Nodes))
-	for _, issue := range result.Issue.Children.Nodes {
-		issues = append(issues, issueSummaryFromFields(issue.IssueSummaryFields))
-	}
+	issues := mapNodes(result.Issue.Children.Nodes, func(
+		issue issue_childrenIssueChildrenIssueConnectionNodesIssue,
+	) IssueSummary {
+		return issueSummaryFromFields(issue.IssueSummaryFields)
+	})
 
 	return IssueList{
 		Issues:      issues,
@@ -80,10 +82,11 @@ func ListIssueDocuments(
 		return DocumentList{}, fmt.Errorf("list issue documents %s: %w", id, err)
 	}
 
-	documents := make([]DocumentSummary, 0, len(result.Issue.Documents.Nodes))
-	for _, document := range result.Issue.Documents.Nodes {
-		documents = append(documents, documentSummary(document.DocumentSummaryFields))
-	}
+	documents := mapNodes(result.Issue.Documents.Nodes, func(
+		document issue_documentsIssueDocumentsDocumentConnectionNodesDocument,
+	) DocumentSummary {
+		return documentSummary(document.DocumentSummaryFields)
+	})
 
 	return DocumentList{
 		Documents:   documents,
@@ -104,10 +107,11 @@ func ListIssueFormerAttachments(
 		return AttachmentList{}, fmt.Errorf("list issue former attachments %s: %w", id, err)
 	}
 
-	attachments := make([]AttachmentSummary, 0, len(result.Issue.FormerAttachments.Nodes))
-	for _, attachment := range result.Issue.FormerAttachments.Nodes {
-		attachments = append(attachments, attachmentSummary(attachment.AttachmentSummaryFields))
-	}
+	attachments := mapNodes(result.Issue.FormerAttachments.Nodes, func(
+		attachment issue_formerAttachmentsIssueFormerAttachmentsAttachmentConnectionNodesAttachment,
+	) AttachmentSummary {
+		return attachmentSummary(attachment.AttachmentSummaryFields)
+	})
 
 	return AttachmentList{
 		Attachments: attachments,
@@ -128,10 +132,7 @@ func ListIssueHistory(
 		return IssueHistoryList{}, fmt.Errorf("list issue history %s: %w", id, err)
 	}
 
-	history := make([]IssueHistorySummary, 0, len(result.Issue.History.Nodes))
-	for _, node := range result.Issue.History.Nodes {
-		history = append(history, issueHistorySummary(node))
-	}
+	history := mapNodes(result.Issue.History.Nodes, issueHistorySummary)
 
 	return IssueHistoryList{
 		History:     history,
@@ -152,10 +153,11 @@ func ListIssueInverseRelations(
 		return IssueRelationList{}, fmt.Errorf("list issue inverse relations %s: %w", id, err)
 	}
 
-	relations := make([]IssueRelationSummary, 0, len(result.Issue.InverseRelations.Nodes))
-	for _, relation := range result.Issue.InverseRelations.Nodes {
-		relations = append(relations, issueRelationSummary(relation.IssueRelationSummaryFields))
-	}
+	relations := mapNodes(result.Issue.InverseRelations.Nodes, func(
+		relation issue_inverseRelationsIssueInverseRelationsIssueRelationConnectionNodesIssueRelation,
+	) IssueRelationSummary {
+		return issueRelationSummary(relation.IssueRelationSummaryFields)
+	})
 
 	return IssueRelationList{
 		Relations:   relations,
@@ -176,10 +178,11 @@ func ListIssueLabels(
 		return LabelList{}, fmt.Errorf("list issue labels %s: %w", id, err)
 	}
 
-	labels := make([]LabelSummary, 0, len(result.Issue.Labels.Nodes))
-	for _, label := range result.Issue.Labels.Nodes {
-		labels = append(labels, labelSummary(label.IssueLabelSummaryFields))
-	}
+	labels := mapNodes(result.Issue.Labels.Nodes, func(
+		label issue_labelsIssueLabelsIssueLabelConnectionNodesIssueLabel,
+	) LabelSummary {
+		return labelSummary(label.IssueLabelSummaryFields)
+	})
 
 	return LabelList{
 		Labels:      labels,
@@ -200,10 +203,11 @@ func ListIssueRelationsForIssue(
 		return IssueRelationList{}, fmt.Errorf("list issue relations %s: %w", id, err)
 	}
 
-	relations := make([]IssueRelationSummary, 0, len(result.Issue.Relations.Nodes))
-	for _, relation := range result.Issue.Relations.Nodes {
-		relations = append(relations, issueRelationSummary(relation.IssueRelationSummaryFields))
-	}
+	relations := mapNodes(result.Issue.Relations.Nodes, func(
+		relation issue_relationsIssueRelationsIssueRelationConnectionNodesIssueRelation,
+	) IssueRelationSummary {
+		return issueRelationSummary(relation.IssueRelationSummaryFields)
+	})
 
 	return IssueRelationList{
 		Relations:   relations,
@@ -224,10 +228,11 @@ func ListIssueReleases(
 		return ReleaseList{}, fmt.Errorf("list issue releases %s: %w", id, err)
 	}
 
-	releases := make([]ReleaseSummary, 0, len(result.Issue.Releases.Nodes))
-	for _, release := range result.Issue.Releases.Nodes {
-		releases = append(releases, releaseSummary(release.ReleaseSummaryFields))
-	}
+	releases := mapNodes(result.Issue.Releases.Nodes, func(
+		release issue_releasesIssueReleasesReleaseConnectionNodesRelease,
+	) ReleaseSummary {
+		return releaseSummary(release.ReleaseSummaryFields)
+	})
 
 	return ReleaseList{
 		Releases:    releases,
@@ -248,10 +253,7 @@ func ListIssueStateHistory(
 		return IssueStateHistoryList{}, fmt.Errorf("list issue state history %s: %w", id, err)
 	}
 
-	spans := make([]IssueStateSpanSummary, 0, len(result.Issue.StateHistory.Nodes))
-	for _, node := range result.Issue.StateHistory.Nodes {
-		spans = append(spans, issueStateSpanSummary(node))
-	}
+	spans := mapNodes(result.Issue.StateHistory.Nodes, issueStateSpanSummary)
 
 	return IssueStateHistoryList{
 		IssueID:     result.Issue.Id,
@@ -273,10 +275,11 @@ func ListIssueSubscribers(
 		return UserList{}, fmt.Errorf("list issue subscribers %s: %w", id, err)
 	}
 
-	users := make([]UserSummary, 0, len(result.Issue.Subscribers.Nodes))
-	for _, node := range result.Issue.Subscribers.Nodes {
-		users = append(users, userSummary(node.UserSummaryFields))
-	}
+	users := mapNodes(result.Issue.Subscribers.Nodes, func(
+		node issue_subscribersIssueSubscribersUserConnectionNodesUser,
+	) UserSummary {
+		return userSummary(node.UserSummaryFields)
+	})
 
 	return UserList{
 		Users:       users,

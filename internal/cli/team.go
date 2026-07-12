@@ -30,17 +30,15 @@ func addTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 }
 
 func addTeamListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "list",
-		Short: "List visible teams",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(ctx, command, nil, options, limit, loadTeamList, teamPageWithItems, writeTeam)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum teams to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.TeamList, client.TeamSummary]{
+		Use:           "list",
+		Short:         "List visible teams",
+		LimitHelp:     "teams",
+		Args:          cobra.NoArgs,
+		Load:          loadTeamList,
+		PageWithItems: teamPageWithItems,
+		WriteItem:     writeTeam,
+	})
 }
 
 func addTeamGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -65,203 +63,123 @@ func addTeamGetCommand(ctx context.Context, root *cobra.Command, options *rootOp
 }
 
 func addTeamMembersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "members TEAM_ID",
-		Short: "List team members",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadTeamMemberList,
-				teamMemberPageWithItems,
-				writeUser,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum members to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.TeamMemberList, client.UserSummary]{
+		Use:           "members TEAM_ID",
+		Short:         "List team members",
+		LimitHelp:     "members",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamMemberList,
+		PageWithItems: teamMemberPageWithItems,
+		WriteItem:     writeUser,
+	})
 }
 
 func addTeamCyclesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "cycles TEAM_ID",
-		Short: "List team Cycles",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx, command, args, options, limit,
-				loadTeamCycles, cyclePageWithItems, writeCycle,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum Cycles to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.CycleList, client.CycleSummary]{
+		Use:           "cycles TEAM_ID",
+		Short:         "List team Cycles",
+		LimitHelp:     "Cycles",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamCycles,
+		PageWithItems: cyclePageWithItems,
+		WriteItem:     writeCycle,
+	})
 }
 
 func addTeamIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "issues TEAM_ID",
-		Short: "List team issues",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx, command, args, options, limit,
-				loadTeamIssues, issuePageWithItems, writeIssue,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
+		Use:           "issues TEAM_ID",
+		Short:         "List team issues",
+		LimitHelp:     "issues",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamIssues,
+		PageWithItems: issuePageWithItems,
+		WriteItem:     writeIssue,
+	})
 }
 
 func addTeamLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "labels TEAM_ID",
-		Short: "List team labels",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx, command, args, options, limit,
-				loadTeamLabels, labelPageWithItems, writeLabel,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.LabelList, client.LabelSummary]{
+		Use:           "labels TEAM_ID",
+		Short:         "List team labels",
+		LimitHelp:     "labels",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamLabels,
+		PageWithItems: labelPageWithItems,
+		WriteItem:     writeLabel,
+	})
 }
 
 func addTeamMembershipsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "memberships TEAM_ID",
-		Short: "List team memberships",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadTeamMemberships,
-				teamMembershipPageWithItems,
-				writeTeamMembership,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum memberships to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
+		Use:           "memberships TEAM_ID",
+		Short:         "List team memberships",
+		LimitHelp:     "memberships",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamMemberships,
+		PageWithItems: teamMembershipPageWithItems,
+		WriteItem:     writeTeamMembership,
+	})
 }
 
 func addTeamProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "projects TEAM_ID",
-		Short: "List team projects",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx, command, args, options, limit,
-				loadTeamProjects, projectPageWithItems, writeProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectList, client.ProjectSummary]{
+		Use:           "projects TEAM_ID",
+		Short:         "List team projects",
+		LimitHelp:     "projects",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamProjects,
+		PageWithItems: projectPageWithItems,
+		WriteItem:     writeProject,
+	})
 }
 
 func addTeamReleasePipelinesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "release-pipelines TEAM_ID",
-		Short: "List team release pipelines",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadTeamReleasePipelines,
-				releasePipelinePageWithItems,
-				writeReleasePipeline,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum release pipelines to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.ReleasePipelineList, client.ReleasePipelineSummary]{
+		Use:           "release-pipelines TEAM_ID",
+		Short:         "List team release pipelines",
+		LimitHelp:     "release pipelines",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamReleasePipelines,
+		PageWithItems: releasePipelinePageWithItems,
+		WriteItem:     writeReleasePipeline,
+	})
 }
 
 func addTeamStatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "states TEAM_ID",
-		Short: "List team workflow states",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadTeamStates,
-				workflowStatePageWithItems,
-				writeWorkflowState,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum workflow states to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.WorkflowStateList, client.WorkflowStateSummary]{
+		Use:           "states TEAM_ID",
+		Short:         "List team workflow states",
+		LimitHelp:     "workflow states",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamStates,
+		PageWithItems: workflowStatePageWithItems,
+		WriteItem:     writeWorkflowState,
+	})
 }
 
 func addTeamGitAutomationStatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "git-automation-states TEAM_ID",
-		Short: "List team Git automation states",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				args,
-				options,
-				limit,
-				loadTeamGitAutomationStates,
-				gitAutomationStatePageWithItems,
-				writeGitAutomationState,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum Git automation states to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.GitAutomationStateList, client.GitAutomationStateSummary]{
+		Use:           "git-automation-states TEAM_ID",
+		Short:         "List team Git automation states",
+		LimitHelp:     "Git automation states",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamGitAutomationStates,
+		PageWithItems: gitAutomationStatePageWithItems,
+		WriteItem:     writeGitAutomationState,
+	})
 }
 
 func addTeamTemplatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "templates TEAM_ID",
-		Short: "List team templates",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			return runReadListCommand(
-				ctx, command, args, options, limit,
-				loadTeamTemplates, templatePageWithItems, writeTemplate,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum templates to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.TemplateList, client.TemplateSummary]{
+		Use:           "templates TEAM_ID",
+		Short:         "List team templates",
+		LimitHelp:     "templates",
+		Args:          cobra.ExactArgs(1),
+		Load:          loadTeamTemplates,
+		PageWithItems: templatePageWithItems,
+		WriteItem:     writeTemplate,
+	})
 }
 
 func writeTeam(command *cobra.Command, options *rootOptions, team client.TeamSummary) error {
@@ -299,11 +217,6 @@ func loadTeamList(
 	return teams, teams.Teams, err
 }
 
-func teamPageWithItems(page client.TeamList, teams []client.TeamSummary) client.TeamList {
-	page.Teams = teams
-	return page
-}
-
 func loadTeamMemberList(
 	ctx context.Context,
 	runtime commandRuntime,
@@ -312,11 +225,6 @@ func loadTeamMemberList(
 ) (client.TeamMemberList, []client.UserSummary, error) {
 	members, err := client.ListTeamMembers(ctx, runtime.graphqlClient, args[0], limit)
 	return members, members.Members, err
-}
-
-func teamMemberPageWithItems(page client.TeamMemberList, members []client.UserSummary) client.TeamMemberList {
-	page.Members = members
-	return page
 }
 
 func loadTeamCycles(
@@ -407,22 +315,4 @@ func loadTeamTemplates(
 ) (client.TemplateList, []client.TemplateSummary, error) {
 	templates, err := client.ListTeamTemplates(ctx, runtime.graphqlClient, args[0], limit)
 	return templates, templates.Templates, err
-}
-
-func cyclePageWithItems(page client.CycleList, cycles []client.CycleSummary) client.CycleList {
-	page.Cycles = cycles
-	return page
-}
-
-func issuePageWithItems(page client.IssueList, issues []client.IssueSummary) client.IssueList {
-	page.Issues = issues
-	return page
-}
-
-func gitAutomationStatePageWithItems(
-	page client.GitAutomationStateList,
-	states []client.GitAutomationStateSummary,
-) client.GitAutomationStateList {
-	page.States = states
-	return page
 }

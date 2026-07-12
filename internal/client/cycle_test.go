@@ -33,8 +33,7 @@ func Test_ListCyclesByTeam_returns_cycle_page(t *testing.T) {
 func Test_ListCyclesByTeam_wraps_graphql_errors(t *testing.T) {
 	_, err := ListCyclesByTeam(context.Background(), errorGraphQLClient{err: errors.New("network down")}, "team-id", 1)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list cycles")
+	require.ErrorContains(t, err, "list cycles")
 }
 
 func Test_GetCycleByID_returns_cycle(t *testing.T) {
@@ -55,8 +54,7 @@ func Test_GetCycleByID_returns_cycle(t *testing.T) {
 func Test_GetCycleByID_wraps_graphql_errors(t *testing.T) {
 	_, err := GetCycleByID(context.Background(), errorGraphQLClient{err: errors.New("network down")}, "cycle-id")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "get cycle cycle-id")
+	require.ErrorContains(t, err, "get cycle cycle-id")
 }
 
 func Test_CurrentCycleByTeam_returns_active_cycle(t *testing.T) {
@@ -79,15 +77,13 @@ func Test_CurrentCycleByTeam_reports_empty_active_cycle(t *testing.T) {
 
 	_, err := CurrentCycleByTeam(context.Background(), graphqlClient, "team-id")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "current sprint: no active Cycle")
+	require.ErrorContains(t, err, "current sprint: no active Cycle")
 }
 
 func Test_CurrentCycleByTeam_wraps_graphql_errors(t *testing.T) {
 	_, err := CurrentCycleByTeam(context.Background(), errorGraphQLClient{err: errors.New("network down")}, "team-id")
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "current sprint: list cycles")
+	require.ErrorContains(t, err, "current sprint: list cycles")
 }
 
 func Test_GetSprintReport_returns_cycle_and_issues(t *testing.T) {
@@ -116,8 +112,7 @@ func Test_GetSprintReport_returns_cycle_and_issues(t *testing.T) {
 func Test_GetSprintReport_wraps_graphql_errors(t *testing.T) {
 	_, err := GetSprintReport(context.Background(), errorGraphQLClient{err: errors.New("network down")}, "cycle-id", 1)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "sprint report cycle-id")
+	require.ErrorContains(t, err, "sprint report cycle-id")
 }
 
 func Test_ListCycleIssues_returns_issue_page(t *testing.T) {
@@ -146,8 +141,7 @@ func Test_ListCycleIssues_returns_issue_page(t *testing.T) {
 func Test_ListCycleIssues_wraps_graphql_errors(t *testing.T) {
 	_, err := ListCycleIssues(context.Background(), errorGraphQLClient{err: errors.New("network down")}, "cycle-id", 1)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list cycle issues cycle-id")
+	require.ErrorContains(t, err, "list cycle issues cycle-id")
 }
 
 func Test_ListCycleUncompletedIssuesUponClose_returns_issue_page(t *testing.T) {
@@ -181,8 +175,7 @@ func Test_ListCycleUncompletedIssuesUponClose_wraps_graphql_errors(t *testing.T)
 		1,
 	)
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "list cycle uncompleted issues cycle-id")
+	require.ErrorContains(t, err, "list cycle uncompleted issues cycle-id")
 }
 
 func Test_CycleStatus_describes_completion_and_date_edges(t *testing.T) {

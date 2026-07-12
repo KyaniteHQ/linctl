@@ -34,8 +34,7 @@ func Test_CommandFlows_fail_on_empty_list_when_fail_on_empty_flag_is_set(t *test
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "empty result")
+	require.ErrorContains(t, err, "empty result")
 }
 
 func Test_CommandFlows_fail_on_empty_issue_child_list_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -46,8 +45,7 @@ func Test_CommandFlows_fail_on_empty_issue_child_list_when_fail_on_empty_flag_is
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "empty result")
+	require.ErrorContains(t, err, "empty result")
 }
 
 func Test_CommandFlows_issue_child_list_reports_runtime_errors(t *testing.T) {
@@ -63,8 +61,7 @@ func Test_CommandFlows_issue_child_list_reports_runtime_errors(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "runtime failed")
+	require.ErrorContains(t, err, "runtime failed")
 }
 
 func Test_CommandFlows_fail_on_empty_project_updates_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -75,8 +72,7 @@ func Test_CommandFlows_fail_on_empty_project_updates_when_fail_on_empty_flag_is_
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "empty result")
+	require.ErrorContains(t, err, "empty result")
 }
 
 func Test_CommandFlows_allow_empty_project_updates_without_fail_on_empty(t *testing.T) {
@@ -101,8 +97,7 @@ func Test_CommandFlows_report_project_updates_sort_errors(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	require.ErrorContains(t, err, `sort field "missing" is not present`)
 }
 
 func Test_CommandFlows_project_comment_children_omit_body_from_json(t *testing.T) {
@@ -155,8 +150,7 @@ func Test_CommandFlows_project_child_reads_cover_json_and_sort_branches(t *testi
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), `sort field "missing" is not present`)
+		require.ErrorContains(t, err, `sort field "missing" is not present`)
 	})
 
 	t.Run("project comments text output", func(t *testing.T) {
@@ -195,8 +189,7 @@ func Test_CommandFlows_project_child_reads_cover_json_and_sort_branches(t *testi
 
 		err := command.ExecuteContext(context.Background())
 
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "empty result")
+		require.ErrorContains(t, err, "empty result")
 	})
 }
 
@@ -243,8 +236,7 @@ func Test_CommandFlows_fail_on_empty_project_milestones_when_fail_on_empty_flag_
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "empty result")
+	require.ErrorContains(t, err, "empty result")
 }
 
 func Test_CommandFlows_allow_empty_project_milestones_without_fail_on_empty(t *testing.T) {
@@ -269,8 +261,7 @@ func Test_CommandFlows_report_project_milestone_sort_errors(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), `sort field "missing" is not present`)
+	require.ErrorContains(t, err, `sort field "missing" is not present`)
 }
 
 func Test_CommandFlows_fail_on_empty_sla_configurations_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -281,8 +272,7 @@ func Test_CommandFlows_fail_on_empty_sla_configurations_when_fail_on_empty_flag_
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "empty result")
+	require.ErrorContains(t, err, "empty result")
 }
 
 func Test_CommandFlows_fail_on_empty_semantic_search_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -293,8 +283,7 @@ func Test_CommandFlows_fail_on_empty_semantic_search_when_fail_on_empty_flag_is_
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "empty result")
+	require.ErrorContains(t, err, "empty result")
 }
 
 func Test_CommandFlows_fail_on_empty_typed_search_when_fail_on_empty_flag_is_set(t *testing.T) {
@@ -328,8 +317,7 @@ func Test_CommandFlows_fail_on_empty_typed_search_when_fail_on_empty_flag_is_set
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "empty result")
+			require.ErrorContains(t, err, "empty result")
 		})
 	}
 }
@@ -474,8 +462,7 @@ func Test_CommandFlows_user_drafts_honor_list_controls(t *testing.T) {
 			err := command.ExecuteContext(context.Background())
 
 			if test.name == "empty" {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), "empty result")
+				require.ErrorContains(t, err, "empty result")
 				return
 			}
 			require.NoError(t, err)
@@ -541,8 +528,7 @@ func Test_CommandFlows_report_project_milestone_get_runtime_error(t *testing.T) 
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "runtime failed")
+	require.ErrorContains(t, err, "runtime failed")
 }
 
 func Test_CommandFlows_report_project_milestone_write_runtime_errors(t *testing.T) {
@@ -568,8 +554,7 @@ func Test_CommandFlows_report_project_milestone_write_runtime_errors(t *testing.
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "runtime failed")
+			require.ErrorContains(t, err, "runtime failed")
 		})
 	}
 }
@@ -583,8 +568,7 @@ func Test_CommandFlows_report_project_milestone_get_writer_error(t *testing.T) {
 
 	err := command.ExecuteContext(context.Background())
 
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "write failed")
+	require.ErrorContains(t, err, "write failed")
 }
 
 func Test_CommandFlows_report_project_milestone_write_writer_errors(t *testing.T) {
@@ -606,8 +590,7 @@ func Test_CommandFlows_report_project_milestone_write_writer_errors(t *testing.T
 
 			err := command.ExecuteContext(context.Background())
 
-			require.Error(t, err)
-			require.Contains(t, err.Error(), "write failed")
+			require.ErrorContains(t, err, "write failed")
 		})
 	}
 }

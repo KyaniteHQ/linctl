@@ -112,7 +112,7 @@ func resolveProjectURL(ctx context.Context) func(commandRuntime, string) (string
 }
 
 func addIssueOpenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "open ISSUE_ID",
 		Short: "Open an issue in the default browser",
 		Args:  cobra.ExactArgs(1),
@@ -123,7 +123,7 @@ func addIssueOpenCommand(ctx context.Context, root *cobra.Command, options *root
 }
 
 func addProjectOpenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addCommandWithSafety(root, CommandSafetyRead, &cobra.Command{
 		Use:   "open PROJECT_ID",
 		Short: "Open a project in the default browser",
 		Args:  cobra.ExactArgs(1),

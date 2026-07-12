@@ -41,10 +41,11 @@ func ListInitiativeRelations(
 		return InitiativeRelationList{}, fmt.Errorf("list initiative relations: %w", err)
 	}
 
-	relations := make([]InitiativeRelationSummary, 0, len(result.InitiativeRelations.Nodes))
-	for _, relation := range result.InitiativeRelations.Nodes {
-		relations = append(relations, initiativeRelationSummary(relation.InitiativeRelationSummaryFields))
-	}
+	relations := mapNodes(result.InitiativeRelations.Nodes, func(
+		relation initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation,
+	) InitiativeRelationSummary {
+		return initiativeRelationSummary(relation.InitiativeRelationSummaryFields)
+	})
 
 	return InitiativeRelationList{
 		Relations:   relations,

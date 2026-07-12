@@ -56,11 +56,3 @@ func loadExternalUser(
 ) (client.ExternalUserSummary, error) {
 	return client.GetExternalUserByID(ctx, runtime.graphqlClient, id)
 }
-
-func externalUserPageWithItems(
-	page client.ExternalUserList,
-	users []client.ExternalUserSummary,
-) client.ExternalUserList {
-	page.ExternalUsers = users
-	return page
-}

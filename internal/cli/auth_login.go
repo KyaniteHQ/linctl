@@ -206,9 +206,8 @@ func completeAuthLogin(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	token.Actor = request.Actor
-	token.GrantType = authGrantAuthorizationCode
-	if err := requireScopes(token.Scopes, request.Scopes); err != nil {
+	token, err = stampAndRequireScopes(token, request.Actor, authGrantAuthorizationCode, request.Scopes)
+	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
 	readiness, err := requireAuthReadiness(ctx, authReadinessRequest{

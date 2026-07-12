@@ -1,4 +1,3 @@
-//nolint:dupl // Project child read commands intentionally share the same list-command shape.
 package cli
 
 import (
@@ -44,26 +43,15 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 }
 
 func addProjectListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "list",
-		Short: "List projects for the resolved team",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadProjectsByTeam,
-				projectPageWithItems,
-				writeProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectList, client.ProjectSummary]{
+		Use:           "list",
+		Short:         "List projects for the resolved team",
+		LimitHelp:     "projects",
+		Args:          cobra.NoArgs,
+		Load:          loadProjectsByTeam,
+		PageWithItems: projectPageWithItems,
+		WriteItem:     writeProject,
+	})
 }
 
 func loadProjectsByTeam(
@@ -82,26 +70,15 @@ func loadProjectsByTeam(
 }
 
 func addProjectAllCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	limit := 50
-	command := &cobra.Command{
-		Use:   "all",
-		Short: "List visible Linear projects across the organization",
-		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(
-				ctx,
-				command,
-				nil,
-				options,
-				limit,
-				loadProjectsAll,
-				projectPageWithItems,
-				writeProject,
-			)
-		},
-	}
-	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(command)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectList, client.ProjectSummary]{
+		Use:           "all",
+		Short:         "List visible Linear projects across the organization",
+		LimitHelp:     "projects",
+		Args:          cobra.NoArgs,
+		Load:          loadProjectsAll,
+		PageWithItems: projectPageWithItems,
+		WriteItem:     writeProject,
+	})
 }
 
 func loadProjectsAll(
@@ -137,159 +114,107 @@ func addProjectGetCommand(ctx context.Context, root *cobra.Command, options *roo
 }
 
 func addProjectAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"attachments PROJECT_ID",
-		"List project attachments",
-		"attachments",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectAttachmentList, error) {
-			return client.ListProjectAttachments(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectAttachmentList, client.AttachmentSummary]{
+		Use:       "attachments PROJECT_ID",
+		Short:     "List project attachments",
+		LimitHelp: "attachments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectAttachmentList, []client.AttachmentSummary, error) {
+			list, err := client.ListProjectAttachments(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Attachments, err
 		},
-		func(list client.ProjectAttachmentList) int {
-			return len(list.Attachments)
-		},
-		func(list client.ProjectAttachmentList) (client.ProjectAttachmentList, error) {
-			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
-			list.Attachments = items
-			return list, err
-		},
-		writeAttachment,
-		func(list client.ProjectAttachmentList) []client.AttachmentSummary {
-			return list.Attachments
-		},
-	)
+		PageWithItems: projectAttachmentPageWithItems,
+		WriteItem:     writeAttachment,
+	})
 }
 
 func addProjectDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"documents PROJECT_ID",
-		"List project documents",
-		"documents",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectDocumentList, error) {
-			return client.ListProjectDocuments(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectDocumentList, client.DocumentSummary]{
+		Use:       "documents PROJECT_ID",
+		Short:     "List project documents",
+		LimitHelp: "documents",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectDocumentList, []client.DocumentSummary, error) {
+			list, err := client.ListProjectDocuments(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Documents, err
 		},
-		func(list client.ProjectDocumentList) int {
-			return len(list.Documents)
-		},
-		func(list client.ProjectDocumentList) (client.ProjectDocumentList, error) {
-			items, err := sortByJSONField(list.Documents, options.sortField, options.sortOrder)
-			list.Documents = items
-			return list, err
-		},
-		writeDocument,
-		func(list client.ProjectDocumentList) []client.DocumentSummary {
-			return list.Documents
-		},
-	)
+		PageWithItems: projectDocumentPageWithItems,
+		WriteItem:     writeDocument,
+	})
 }
 
 func addProjectExternalLinksCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"external-links PROJECT_ID",
-		"List project external links",
-		"external links",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectExternalLinkList, error) {
-			return client.ListProjectExternalLinks(ctx, runtime.graphqlClient, projectID, limit)
+	spec := listCommandSpec[client.ProjectExternalLinkList, client.EntityExternalLinkSummary]{
+		Use:       "external-links PROJECT_ID",
+		Short:     "List project external links",
+		LimitHelp: "external links",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectExternalLinkList, []client.EntityExternalLinkSummary, error) {
+			list, err := client.ListProjectExternalLinks(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Links, err
 		},
-		func(list client.ProjectExternalLinkList) int {
-			return len(list.Links)
-		},
-		func(list client.ProjectExternalLinkList) (client.ProjectExternalLinkList, error) {
-			items, err := sortByJSONField(list.Links, options.sortField, options.sortOrder)
-			list.Links = items
-			return list, err
-		},
-		writeEntityExternalLink,
-		func(list client.ProjectExternalLinkList) []client.EntityExternalLinkSummary {
-			return list.Links
-		},
-	)
+		PageWithItems: projectExternalLinkPageWithItems,
+		WriteItem:     writeEntityExternalLink,
+	}
+	addListCommand(ctx, root, options, spec)
 }
 
 func addProjectHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"history PROJECT_ID",
-		"List project history",
-		"history entries",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectHistoryList, error) {
-			return client.ListProjectHistory(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectHistoryList, client.ProjectHistorySummary]{
+		Use:       "history PROJECT_ID",
+		Short:     "List project history",
+		LimitHelp: "history entries",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectHistoryList, []client.ProjectHistorySummary, error) {
+			list, err := client.ListProjectHistory(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.History, err
 		},
-		func(list client.ProjectHistoryList) int {
-			return len(list.History)
-		},
-		func(list client.ProjectHistoryList) (client.ProjectHistoryList, error) {
-			items, err := sortByJSONField(list.History, options.sortField, options.sortOrder)
-			list.History = items
-			return list, err
-		},
-		writeProjectHistory,
-		func(list client.ProjectHistoryList) []client.ProjectHistorySummary {
-			return list.History
-		},
-	)
+		PageWithItems: projectHistoryPageWithItems,
+		WriteItem:     writeProjectHistory,
+	})
 }
 
 func addProjectInitiativeLinksCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"initiative-links PROJECT_ID",
-		"List project initiative associations",
-		"initiative associations",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectInitiativeToProjectList, error) {
-			return client.ListProjectInitiativeToProjects(ctx, runtime.graphqlClient, projectID, limit)
+	spec := listCommandSpec[client.ProjectInitiativeToProjectList, client.InitiativeToProjectSummary]{
+		Use:       "initiative-links PROJECT_ID",
+		Short:     "List project initiative associations",
+		LimitHelp: "initiative associations",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectInitiativeToProjectList, []client.InitiativeToProjectSummary, error) {
+			list, err := client.ListProjectInitiativeToProjects(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Associations, err
 		},
-		func(list client.ProjectInitiativeToProjectList) int {
-			return len(list.Associations)
-		},
-		func(list client.ProjectInitiativeToProjectList) (client.ProjectInitiativeToProjectList, error) {
-			items, err := sortByJSONField(list.Associations, options.sortField, options.sortOrder)
-			list.Associations = items
-			return list, err
-		},
-		writeInitiativeToProject,
-		func(list client.ProjectInitiativeToProjectList) []client.InitiativeToProjectSummary {
-			return list.Associations
-		},
-	)
+		PageWithItems: projectInitiativeToProjectPageWithItems,
+		WriteItem:     writeInitiativeToProject,
+	}
+	addListCommand(ctx, root, options, spec)
 }
 
 func addProjectInitiativesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"initiatives PROJECT_ID",
-		"List project initiatives",
-		"initiatives",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectInitiativeList, error) {
-			return client.ListProjectInitiatives(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectInitiativeList, client.InitiativeSummary]{
+		Use:       "initiatives PROJECT_ID",
+		Short:     "List project initiatives",
+		LimitHelp: "initiatives",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectInitiativeList, []client.InitiativeSummary, error) {
+			list, err := client.ListProjectInitiatives(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Initiatives, err
 		},
-		func(list client.ProjectInitiativeList) int {
-			return len(list.Initiatives)
-		},
-		func(list client.ProjectInitiativeList) (client.ProjectInitiativeList, error) {
-			items, err := sortByJSONField(list.Initiatives, options.sortField, options.sortOrder)
-			list.Initiatives = items
-			return list, err
-		},
-		writeInitiative,
-		func(list client.ProjectInitiativeList) []client.InitiativeSummary {
-			return list.Initiatives
-		},
-	)
+		PageWithItems: projectInitiativePageWithItems,
+		WriteItem:     writeInitiative,
+	})
 }
 
 func addProjectInverseRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -305,81 +230,54 @@ func addProjectInverseRelationsCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addProjectIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"issues PROJECT_ID",
-		"List project issues",
-		"issues",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectIssueList, error) {
-			return client.ListProjectIssues(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectIssueList, client.IssueSummary]{
+		Use:       "issues PROJECT_ID",
+		Short:     "List project issues",
+		LimitHelp: "issues",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectIssueList, []client.IssueSummary, error) {
+			list, err := client.ListProjectIssues(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Issues, err
 		},
-		func(list client.ProjectIssueList) int {
-			return len(list.Issues)
-		},
-		func(list client.ProjectIssueList) (client.ProjectIssueList, error) {
-			items, err := sortByJSONField(list.Issues, options.sortField, options.sortOrder)
-			list.Issues = items
-			return list, err
-		},
-		writeIssue,
-		func(list client.ProjectIssueList) []client.IssueSummary {
-			return list.Issues
-		},
-	)
+		PageWithItems: projectIssuePageWithItems,
+		WriteItem:     writeIssue,
+	})
 }
 
 func addProjectCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"comments PROJECT_ID",
-		"List project comments without body content",
-		"comments",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectCommentList, error) {
-			return client.ListProjectComments(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectCommentList, client.CommentMetadataSummary]{
+		Use:       "comments PROJECT_ID",
+		Short:     "List project comments without body content",
+		LimitHelp: "comments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectCommentList, []client.CommentMetadataSummary, error) {
+			list, err := client.ListProjectComments(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Comments, err
 		},
-		func(list client.ProjectCommentList) int {
-			return len(list.Comments)
-		},
-		func(list client.ProjectCommentList) (client.ProjectCommentList, error) {
-			items, err := sortByJSONField(list.Comments, options.sortField, options.sortOrder)
-			list.Comments = items
-			return list, err
-		},
-		writeCommentMetadata,
-		func(list client.ProjectCommentList) []client.CommentMetadataSummary {
-			return list.Comments
-		},
-	)
+		PageWithItems: projectCommentPageWithItems,
+		WriteItem:     writeCommentMetadata,
+	})
 }
 
 func addProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"labels PROJECT_ID",
-		"List project labels",
-		"labels",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectProjectLabelList, error) {
-			return client.ListLabelsForProject(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectProjectLabelList, client.ProjectLabelSummary]{
+		Use:       "labels PROJECT_ID",
+		Short:     "List project labels",
+		LimitHelp: "labels",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectProjectLabelList, []client.ProjectLabelSummary, error) {
+			list, err := client.ListLabelsForProject(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.ProjectLabels, err
 		},
-		func(list client.ProjectProjectLabelList) int {
-			return len(list.ProjectLabels)
-		},
-		func(list client.ProjectProjectLabelList) (client.ProjectProjectLabelList, error) {
-			items, err := sortByJSONField(list.ProjectLabels, options.sortField, options.sortOrder)
-			list.ProjectLabels = items
-			return list, err
-		},
-		writeProjectLabel,
-		func(list client.ProjectProjectLabelList) []client.ProjectLabelSummary {
-			return list.ProjectLabels
-		},
-	)
+		PageWithItems: projectProjectLabelPageWithItems,
+		WriteItem:     writeProjectLabel,
+	})
 }
 
 func writeCommentMetadata(command *cobra.Command, options *rootOptions, comment client.CommentMetadataSummary) error {
@@ -403,55 +301,37 @@ func writeProjectMember(command *cobra.Command, options *rootOptions, member cli
 }
 
 func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"members PROJECT_ID",
-		"List project members",
-		"members",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectMemberList, error) {
-			return client.ListProjectMembers(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectMemberList, client.ProjectMember]{
+		Use:       "members PROJECT_ID",
+		Short:     "List project members",
+		LimitHelp: "members",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectMemberList, []client.ProjectMember, error) {
+			list, err := client.ListProjectMembers(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Members, err
 		},
-		func(list client.ProjectMemberList) int {
-			return len(list.Members)
-		},
-		func(list client.ProjectMemberList) (client.ProjectMemberList, error) {
-			items, err := sortByJSONField(list.Members, options.sortField, options.sortOrder)
-			list.Members = items
-			return list, err
-		},
-		writeProjectMember,
-		func(list client.ProjectMemberList) []client.ProjectMember {
-			return list.Members
-		},
-	)
+		PageWithItems: projectMemberPageWithItems,
+		WriteItem:     writeProjectMember,
+	})
 }
 
 func addProjectNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"needs PROJECT_ID",
-		"List project customer needs",
-		"customer needs",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectCustomerNeedList, error) {
-			return client.ListProjectNeeds(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectCustomerNeedList, client.CustomerNeedSummary]{
+		Use:       "needs PROJECT_ID",
+		Short:     "List project customer needs",
+		LimitHelp: "customer needs",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectCustomerNeedList, []client.CustomerNeedSummary, error) {
+			list, err := client.ListProjectNeeds(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Needs, err
 		},
-		func(list client.ProjectCustomerNeedList) int {
-			return len(list.Needs)
-		},
-		func(list client.ProjectCustomerNeedList) (client.ProjectCustomerNeedList, error) {
-			items, err := sortByJSONField(list.Needs, options.sortField, options.sortOrder)
-			list.Needs = items
-			return list, err
-		},
-		writeCustomerNeed,
-		func(list client.ProjectCustomerNeedList) []client.CustomerNeedSummary {
-			return list.Needs
-		},
-	)
+		PageWithItems: projectCustomerNeedPageWithItems,
+		WriteItem:     writeCustomerNeed,
+	})
 }
 
 func addProjectRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -467,29 +347,20 @@ func addProjectRelationsCommand(ctx context.Context, root *cobra.Command, option
 }
 
 func addProjectTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"teams PROJECT_ID",
-		"List project teams",
-		"teams",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectTeamList, error) {
-			return client.ListProjectTeams(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectTeamList, client.TeamSummary]{
+		Use:       "teams PROJECT_ID",
+		Short:     "List project teams",
+		LimitHelp: "teams",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectTeamList, []client.TeamSummary, error) {
+			list, err := client.ListProjectTeams(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Teams, err
 		},
-		func(list client.ProjectTeamList) int {
-			return len(list.Teams)
-		},
-		func(list client.ProjectTeamList) (client.ProjectTeamList, error) {
-			items, err := sortByJSONField(list.Teams, options.sortField, options.sortOrder)
-			list.Teams = items
-			return list, err
-		},
-		writeTeam,
-		func(list client.ProjectTeamList) []client.TeamSummary {
-			return list.Teams
-		},
-	)
+		PageWithItems: projectTeamPageWithItems,
+		WriteItem:     writeTeam,
+	})
 }
 
 func addProjectFilterSuggestionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -516,29 +387,20 @@ func addProjectFilterSuggestionCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"updates PROJECT_ID",
-		"List project status updates",
-		"project updates",
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectUpdateList, error) {
-			return client.ListProjectUpdates(ctx, runtime.graphqlClient, projectID, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ProjectUpdateList, client.ProjectUpdateSummary]{
+		Use:       "updates PROJECT_ID",
+		Short:     "List project status updates",
+		LimitHelp: "project updates",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectUpdateList, []client.ProjectUpdateSummary, error) {
+			list, err := client.ListProjectUpdates(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Updates, err
 		},
-		func(list client.ProjectUpdateList) int {
-			return len(list.Updates)
-		},
-		func(list client.ProjectUpdateList) (client.ProjectUpdateList, error) {
-			items, err := sortByJSONField(list.Updates, options.sortField, options.sortOrder)
-			list.Updates = items
-			return list, err
-		},
-		writeProjectChildUpdate,
-		func(list client.ProjectUpdateList) []client.ProjectUpdateSummary {
-			return list.Updates
-		},
-	)
+		PageWithItems: projectUpdatePageWithItems,
+		WriteItem:     writeProjectChildUpdate,
+	})
 }
 
 func writeProjectChildUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {
@@ -573,29 +435,21 @@ func addProjectRelationChildListCommand(
 	limitHelp string,
 	fetch func(context.Context, graphql.Client, string, int) (client.ProjectProjectRelationList, error),
 ) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		use,
-		short,
-		limitHelp,
-		func(runtime commandRuntime, projectID string, limit int) (client.ProjectProjectRelationList, error) {
-			return fetch(ctx, runtime.graphqlClient, projectID, limit)
+	spec := listCommandSpec[client.ProjectProjectRelationList, client.ProjectRelationSummary]{
+		Use:       use,
+		Short:     short,
+		LimitHelp: limitHelp,
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ProjectProjectRelationList, []client.ProjectRelationSummary, error) {
+			list, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
+			return list, list.Relations, err
 		},
-		func(list client.ProjectProjectRelationList) int {
-			return len(list.Relations)
-		},
-		func(list client.ProjectProjectRelationList) (client.ProjectProjectRelationList, error) {
-			items, err := sortByJSONField(list.Relations, options.sortField, options.sortOrder)
-			list.Relations = items
-			return list, err
-		},
-		writeProjectRelation,
-		func(list client.ProjectProjectRelationList) []client.ProjectRelationSummary {
-			return list.Relations
-		},
-	)
+		PageWithItems: projectProjectRelationPageWithItems,
+		WriteItem:     writeProjectRelation,
+	}
+	addListCommand(ctx, root, options, spec)
 }
 
 func writeProjectHistory(command *cobra.Command, options *rootOptions, history client.ProjectHistorySummary) error {
@@ -634,9 +488,4 @@ func writeProject(command *cobra.Command, options *rootOptions, project client.P
 
 			return render.WriteLine(command.OutOrStdout(), "%s %s [%s]", project.ID, project.Name, project.Status.Name)
 		})
-}
-
-func projectPageWithItems(page client.ProjectList, projects []client.ProjectSummary) client.ProjectList {
-	page.Projects = projects
-	return page
 }

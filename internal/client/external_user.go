@@ -33,10 +33,11 @@ func ListExternalUsers(ctx context.Context, graphqlClient graphql.Client, limit 
 		return ExternalUserList{}, fmt.Errorf("list external users: %w", err)
 	}
 
-	summaries := make([]ExternalUserSummary, 0, len(result.ExternalUsers.Nodes))
-	for _, node := range result.ExternalUsers.Nodes {
-		summaries = append(summaries, externalUserSummary(node.ExternalUserSummaryFields))
-	}
+	summaries := mapNodes(result.ExternalUsers.Nodes, func(
+		node externalUsersExternalUsersExternalUserConnectionNodesExternalUser,
+	) ExternalUserSummary {
+		return externalUserSummary(node.ExternalUserSummaryFields)
+	})
 
 	return ExternalUserList{
 		ExternalUsers: summaries,

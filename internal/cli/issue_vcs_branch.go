@@ -1,4 +1,3 @@
-//nolint:dupl // Issue child read commands intentionally share the same list-command shape.
 package cli
 
 import (
@@ -80,29 +79,20 @@ func addIssueVCSBranchFormerNeedsCommand(ctx context.Context, root *cobra.Comman
 }
 
 func addIssueVCSBranchAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"attachments BRANCH_NAME",
-		"List attachments for the issue matched by a VCS branch",
-		"attachments",
-		func(runtime commandRuntime, branchName string, limit int) (client.AttachmentList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchAttachments(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.AttachmentList, client.AttachmentSummary]{
+		Use:       "attachments BRANCH_NAME",
+		Short:     "List attachments for the issue matched by a VCS branch",
+		LimitHelp: "attachments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.AttachmentList, []client.AttachmentSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchAttachments(ctx, args[0], limit)
+			return list, list.Attachments, err
 		},
-		func(list client.AttachmentList) int {
-			return len(list.Attachments)
-		},
-		func(list client.AttachmentList) (client.AttachmentList, error) {
-			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
-			list.Attachments = items
-			return list, err
-		},
-		writeAttachment,
-		func(list client.AttachmentList) []client.AttachmentSummary {
-			return list.Attachments
-		},
-	)
+		PageWithItems: attachmentPageWithItems,
+		WriteItem:     writeAttachment,
+	})
 }
 
 func addIssueVCSBranchBotActorCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -126,107 +116,71 @@ func addIssueVCSBranchBotActorCommand(ctx context.Context, root *cobra.Command, 
 }
 
 func addIssueVCSBranchChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"children BRANCH_NAME",
-		"List child issues for the issue matched by a VCS branch",
-		"child issues",
-		func(runtime commandRuntime, branchName string, limit int) (client.IssueList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchChildren(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
+		Use:       "children BRANCH_NAME",
+		Short:     "List child issues for the issue matched by a VCS branch",
+		LimitHelp: "child issues",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueList, []client.IssueSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchChildren(ctx, args[0], limit)
+			return list, list.Issues, err
 		},
-		func(list client.IssueList) int {
-			return len(list.Issues)
-		},
-		func(list client.IssueList) (client.IssueList, error) {
-			items, err := sortByJSONField(list.Issues, options.sortField, options.sortOrder)
-			list.Issues = items
-			return list, err
-		},
-		writeIssue,
-		func(list client.IssueList) []client.IssueSummary {
-			return list.Issues
-		},
-	)
+		PageWithItems: issuePageWithItems,
+		WriteItem:     writeIssue,
+	})
 }
 
 func addIssueVCSBranchDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"documents BRANCH_NAME",
-		"List documents for the issue matched by a VCS branch",
-		"documents",
-		func(runtime commandRuntime, branchName string, limit int) (client.DocumentList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchDocuments(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.DocumentList, client.DocumentSummary]{
+		Use:       "documents BRANCH_NAME",
+		Short:     "List documents for the issue matched by a VCS branch",
+		LimitHelp: "documents",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.DocumentList, []client.DocumentSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchDocuments(ctx, args[0], limit)
+			return list, list.Documents, err
 		},
-		func(list client.DocumentList) int {
-			return len(list.Documents)
-		},
-		func(list client.DocumentList) (client.DocumentList, error) {
-			items, err := sortByJSONField(list.Documents, options.sortField, options.sortOrder)
-			list.Documents = items
-			return list, err
-		},
-		writeDocument,
-		func(list client.DocumentList) []client.DocumentSummary {
-			return list.Documents
-		},
-	)
+		PageWithItems: documentPageWithItems,
+		WriteItem:     writeDocument,
+	})
 }
 
 func addIssueVCSBranchFormerAttachmentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"former-attachments BRANCH_NAME",
-		"List former attachments for the issue matched by a VCS branch",
-		"former attachments",
-		func(runtime commandRuntime, branchName string, limit int) (client.AttachmentList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchFormerAttachments(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.AttachmentList, client.AttachmentSummary]{
+		Use:       "former-attachments BRANCH_NAME",
+		Short:     "List former attachments for the issue matched by a VCS branch",
+		LimitHelp: "former attachments",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.AttachmentList, []client.AttachmentSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchFormerAttachments(ctx, args[0], limit)
+			return list, list.Attachments, err
 		},
-		func(list client.AttachmentList) int {
-			return len(list.Attachments)
-		},
-		func(list client.AttachmentList) (client.AttachmentList, error) {
-			items, err := sortByJSONField(list.Attachments, options.sortField, options.sortOrder)
-			list.Attachments = items
-			return list, err
-		},
-		writeAttachment,
-		func(list client.AttachmentList) []client.AttachmentSummary {
-			return list.Attachments
-		},
-	)
+		PageWithItems: attachmentPageWithItems,
+		WriteItem:     writeAttachment,
+	})
 }
 
 func addIssueVCSBranchHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"history BRANCH_NAME",
-		"List history metadata for the issue matched by a VCS branch",
-		"history entries",
-		func(runtime commandRuntime, branchName string, limit int) (client.IssueHistoryList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchHistory(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueHistoryList, client.IssueHistorySummary]{
+		Use:       "history BRANCH_NAME",
+		Short:     "List history metadata for the issue matched by a VCS branch",
+		LimitHelp: "history entries",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueHistoryList, []client.IssueHistorySummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchHistory(ctx, args[0], limit)
+			return list, list.History, err
 		},
-		func(list client.IssueHistoryList) int {
-			return len(list.History)
-		},
-		func(list client.IssueHistoryList) (client.IssueHistoryList, error) {
-			items, err := sortByJSONField(list.History, options.sortField, options.sortOrder)
-			list.History = items
-			return list, err
-		},
-		writeIssueHistory,
-		func(list client.IssueHistoryList) []client.IssueHistorySummary {
-			return list.History
-		},
-	)
+		PageWithItems: issueHistoryPageWithItems,
+		WriteItem:     writeIssueHistory,
+	})
 }
 
 func addIssueVCSBranchInverseRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -249,29 +203,20 @@ func addIssueVCSBranchInverseRelationsCommand(ctx context.Context, root *cobra.C
 }
 
 func addIssueVCSBranchLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"labels BRANCH_NAME",
-		"List labels for the issue matched by a VCS branch",
-		"labels",
-		func(runtime commandRuntime, branchName string, limit int) (client.LabelList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchLabels(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.LabelList, client.LabelSummary]{
+		Use:       "labels BRANCH_NAME",
+		Short:     "List labels for the issue matched by a VCS branch",
+		LimitHelp: "labels",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.LabelList, []client.LabelSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchLabels(ctx, args[0], limit)
+			return list, list.Labels, err
 		},
-		func(list client.LabelList) int {
-			return len(list.Labels)
-		},
-		func(list client.LabelList) (client.LabelList, error) {
-			items, err := sortByJSONField(list.Labels, options.sortField, options.sortOrder)
-			list.Labels = items
-			return list, err
-		},
-		writeLabel,
-		func(list client.LabelList) []client.LabelSummary {
-			return list.Labels
-		},
-	)
+		PageWithItems: labelPageWithItems,
+		WriteItem:     writeLabel,
+	})
 }
 
 func addIssueVCSBranchNeedsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -308,29 +253,20 @@ func addIssueVCSBranchRelationsCommand(ctx context.Context, root *cobra.Command,
 }
 
 func addIssueVCSBranchReleasesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"releases BRANCH_NAME",
-		"List releases for the issue matched by a VCS branch",
-		"releases",
-		func(runtime commandRuntime, branchName string, limit int) (client.ReleaseList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchReleases(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.ReleaseList, client.ReleaseSummary]{
+		Use:       "releases BRANCH_NAME",
+		Short:     "List releases for the issue matched by a VCS branch",
+		LimitHelp: "releases",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.ReleaseList, []client.ReleaseSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchReleases(ctx, args[0], limit)
+			return list, list.Releases, err
 		},
-		func(list client.ReleaseList) int {
-			return len(list.Releases)
-		},
-		func(list client.ReleaseList) (client.ReleaseList, error) {
-			items, err := sortByJSONField(list.Releases, options.sortField, options.sortOrder)
-			list.Releases = items
-			return list, err
-		},
-		writeRelease,
-		func(list client.ReleaseList) []client.ReleaseSummary {
-			return list.Releases
-		},
-	)
+		PageWithItems: releasePageWithItems,
+		WriteItem:     writeRelease,
+	})
 }
 
 func addIssueVCSBranchSharedAccessCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -354,53 +290,35 @@ func addIssueVCSBranchSharedAccessCommand(ctx context.Context, root *cobra.Comma
 }
 
 func addIssueVCSBranchStateHistoryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"state-history BRANCH_NAME",
-		"List workflow state history for the issue matched by a VCS branch",
-		"state spans",
-		func(runtime commandRuntime, branchName string, limit int) (client.IssueStateHistoryList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchStateHistory(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.IssueStateHistoryList, client.IssueStateSpanSummary]{
+		Use:       "state-history BRANCH_NAME",
+		Short:     "List workflow state history for the issue matched by a VCS branch",
+		LimitHelp: "state spans",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.IssueStateHistoryList, []client.IssueStateSpanSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchStateHistory(ctx, args[0], limit)
+			return list, list.Spans, err
 		},
-		func(list client.IssueStateHistoryList) int {
-			return len(list.Spans)
-		},
-		func(list client.IssueStateHistoryList) (client.IssueStateHistoryList, error) {
-			items, err := sortByJSONField(list.Spans, options.sortField, options.sortOrder)
-			list.Spans = items
-			return list, err
-		},
-		writeIssueStateSpan,
-		func(list client.IssueStateHistoryList) []client.IssueStateSpanSummary {
-			return list.Spans
-		},
-	)
+		PageWithItems: issueStateSpanPageWithItems,
+		WriteItem:     writeIssueStateSpan,
+	})
 }
 
 func addIssueVCSBranchSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addChildListCommand(
-		ctx,
-		root,
-		options,
-		"subscribers BRANCH_NAME",
-		"List subscribers for the issue matched by a VCS branch",
-		"subscribers",
-		func(runtime commandRuntime, branchName string, limit int) (client.UserList, error) {
-			return issueAdapterFor(runtime).ListIssueVCSBranchSubscribers(ctx, branchName, limit)
+	addListCommand(ctx, root, options, listCommandSpec[client.UserList, client.UserSummary]{
+		Use:       "subscribers BRANCH_NAME",
+		Short:     "List subscribers for the issue matched by a VCS branch",
+		LimitHelp: "subscribers",
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (client.UserList, []client.UserSummary, error) {
+			list, err := issueAdapterFor(runtime).ListIssueVCSBranchSubscribers(ctx, args[0], limit)
+			return list, list.Users, err
 		},
-		func(list client.UserList) int {
-			return len(list.Users)
-		},
-		func(list client.UserList) (client.UserList, error) {
-			items, err := sortByJSONField(list.Users, options.sortField, options.sortOrder)
-			list.Users = items
-			return list, err
-		},
-		writeUser,
-		func(list client.UserList) []client.UserSummary {
-			return list.Users
-		},
-	)
+		PageWithItems: userPageWithItems,
+		WriteItem:     writeUser,
+	})
 }
