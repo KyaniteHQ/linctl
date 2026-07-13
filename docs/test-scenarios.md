@@ -1165,6 +1165,11 @@ binary, bootstraps temporary OAuth auth state, smoke-tests read-only CLI command
 then runs the integration-tagged client read checks. Guarded write round trips are
 opt-in with `LINCTL_TEST_ENABLE_WRITES=1`; each enabled run creates namespaced
 `linctl-it-<runid>` issue and project resources, then archives them during cleanup.
+The scheduled/manual `integration.yml` workflow sets `LINCTL_TEST_ENABLE_WRITES: "1"`
+at job level, so the guarded-write round trips run nightly against the OAuth
+fixture target and their cleanup runs as part of the test. A final
+`scripts/live-sweep.sh` step runs with `if: always()` to close or archive any
+`linctl-it-*` issues and projects left behind by a hard-killed run.
 
 The missing-fixture readiness check is `env -u LINCTL_OAUTH_CLIENT_ID bash scripts/live-oauth.sh`,
 which must exit 2 with a missing-fixture message and without printing secret values.
