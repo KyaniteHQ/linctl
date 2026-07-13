@@ -266,7 +266,7 @@ Output controls are global flags — combine them with any command.
 | `--sort FIELD --order asc\|desc` | deterministic list ordering |
 | `--format minimal\|compact\|full` | human (non-JSON) output detail |
 | `--profile` / `--org` / `--team` / `--team-id` / `--project` | config profile and target overrides |
-| `--timeout 30s` | per-request timeout |
+| `--timeout 30s` | total per-command deadline across retries |
 | `--debug` | structured diagnostics to **stderr** (`LINCTL_DEBUG_JSON=1` for JSON) |
 
 ```bash

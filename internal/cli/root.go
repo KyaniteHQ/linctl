@@ -70,7 +70,7 @@ func NewRootCommand(ctx context.Context, build BuildInfo) *cobra.Command {
 	flags.StringVar(&options.team, "team", "", "pinned Linear team key")
 	flags.StringVar(&options.teamID, "team-id", "", "pinned Linear team id")
 	flags.StringVar(&options.project, "project", "", "pinned Linear project id")
-	flags.DurationVar(&options.timeout, "timeout", options.timeout, "request timeout")
+	flags.DurationVar(&options.timeout, "timeout", options.timeout, "total per-command deadline across retries")
 	flags.BoolVar(&options.debug, "debug", false, "emit debug diagnostics to stderr")
 
 	addCommands(ctx, command, &options)

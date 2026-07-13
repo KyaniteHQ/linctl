@@ -97,9 +97,12 @@ func (transport *Transport) MakeRequest(
 		return fmt.Errorf("encode graphql request: %w", err)
 	}
 
+	requestCtx, cancel := context.WithTimeout(ctx, transport.timeout)
+	defer cancel()
+
 	for attempt := 0; ; attempt++ {
 		transport.log("graphql_request attempt=%d", attempt+1)
-		body, statusCode, header, err := transport.send(ctx, payload)
+		body, statusCode, header, err := transport.send(requestCtx, payload)
 		if err != nil {
 			transport.log("graphql_request_failed attempt=%d error=%q", attempt+1, err.Error())
 			return err
@@ -110,7 +113,7 @@ func (transport *Transport) MakeRequest(
 				transport.log("graphql_rate_limited attempt=%d status=%d", attempt+1, statusCode)
 				return rateLimitError(statusCode, body)
 			}
-			if err := waitForRetry(ctx, retryDelay(header, attempt)); err != nil {
+			if err := waitForRetry(requestCtx, retryDelay(header, attempt)); err != nil {
 				transport.log("graphql_retry_failed attempt=%d error=%q", attempt+1, err.Error())
 				return err
 			}
@@ -241,11 +244,8 @@ func defaultHTTPClient(timeout time.Duration) *http.Client {
 }
 
 func (transport *Transport) send(ctx context.Context, payload []byte) ([]byte, int, http.Header, error) {
-	requestCtx, cancel := context.WithTimeout(ctx, transport.timeout)
-	defer cancel()
-
 	httpRequest, err := http.NewRequestWithContext(
-		requestCtx,
+		ctx,
 		http.MethodPost,
 		transport.endpoint,
 		bytes.NewReader(payload),

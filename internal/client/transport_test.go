@@ -471,6 +471,33 @@ func Test_firstGraphQLErrorCode_returns_empty_when_errors_have_no_code(t *testin
 	require.Empty(t, code)
 }
 
+func Test_Transport_timeout_bounds_total_time_across_retries(t *testing.T) {
+	// Given a server that always rate-limits with a 2s Retry-After. Each
+	// individual response arrives instantly, so a per-attempt timeout never
+	// fires; only a deadline spanning the whole retry ladder (attempts plus
+	// waits) can bound the total time below the configured timeout.
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		writer.Header().Set("Retry-After", "2")
+		writer.WriteHeader(http.StatusTooManyRequests)
+	}))
+	defer server.Close()
+	transport := NewTransport(TransportConfig{
+		Endpoint: server.URL,
+		Token:    OAuthAccessToken("test-token"),
+		Timeout:  300 * time.Millisecond,
+	})
+	response := graphql.Response{Data: &testGraphQLData{}}
+
+	// When
+	start := time.Now()
+	err := transport.MakeRequest(context.Background(), &graphql.Request{Query: "query Test { viewer { id } }"}, &response)
+	elapsed := time.Since(start)
+
+	// Then
+	require.Error(t, err)
+	require.Less(t, elapsed, time.Second)
+}
+
 func Test_Transport_returns_error_when_retry_wait_is_canceled(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	logs := bytes.Buffer{}
