@@ -159,17 +159,14 @@ jobs:
           go mod download
           go mod verify
       - name: Vulnerability scan
-        # Official reachability-aware scan, scoped to the product packages; the
-        # scripts/ build-ignored generator and gitignored skill examples break a
-        # bare ./... so the patterns mirror scripts/go-packages.sh. Local parity
-        # stays via `task ci` (go tool govulncheck).
-        uses: golang/govulncheck-action@032d45514ae346b1db93c04b0c90b841c370344f # v1.1.0
-        with:
-          go-version-file: go.mod
-          go-package: ./cmd/... ./internal/...
-          # v1.1.0 defaults cache: true inside its own setup-go, which collides
-          # with the module cache this job already restored (tar: File exists).
-          cache: false
+        # Same pinned reachability-aware scan as the local gate (`task vuln`):
+        # go.mod pins govulncheck, and scripts/go-packages.sh scopes the scan to
+        # product packages (the scripts/ build-ignored generator and gitignored
+        # skill examples break a bare ./...). govulncheck-action was dropped: it
+        # installs govulncheck@latest unpinned and its v1.1.0 both collides with
+        # this job's module cache and passes multi-pattern go-package as one
+        # quoted argument ("no packages matched").
+        run: go tool task vuln
 
   live-oauth:
     name: live oauth
