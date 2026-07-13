@@ -26,13 +26,24 @@ func resolveBodyFlag(command *cobra.Command, body *string) error {
 }
 
 // resolveFileFlag loads value from path when set, guarding against passing
-// both the inline flag and its -file companion.
-func resolveFileFlag(value *string, path string, label string) error {
+// both the inline flag and its -file companion. A path of "-" reads stdin
+// instead of a literal file named "-", matching the inline flag's own "-"
+// convention.
+func resolveFileFlag(command *cobra.Command, value *string, path string, label string) error {
 	if path == "" {
 		return nil
 	}
 	if *value != "" {
 		return fmt.Errorf("%w: %s and %s-file are mutually exclusive", client.ErrWriteInvalid, label, label)
+	}
+	if path == "-" {
+		data, err := io.ReadAll(command.InOrStdin())
+		if err != nil {
+			return fmt.Errorf("read %s from stdin: %w", label, err)
+		}
+		*value = string(data)
+
+		return nil
 	}
 
 	//nolint:gosec // The path is an explicit CLI input for reading issue text.

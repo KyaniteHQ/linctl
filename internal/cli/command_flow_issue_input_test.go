@@ -25,6 +25,21 @@ func Test_CommandFlows_read_issue_comment_body_from_stdin(t *testing.T) {
 	require.Contains(t, output.String(), "comment comment-id on LIT-1")
 }
 
+func Test_CommandFlows_read_issue_comment_body_file_dash_from_stdin(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, commandFlowFakeClient{expectedCommentBody: "stdin body via body-file"})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetIn(strings.NewReader("stdin body via body-file"))
+	command.SetOut(&output)
+	command.SetArgs([]string{"issue", "comment", "LIT-1", "--body-file", "-"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), "comment comment-id on LIT-1")
+}
+
 func Test_CommandFlows_read_issue_text_from_files(t *testing.T) {
 	descriptionFile := writeTempTextFile(t, "description from file")
 	appendFile := writeTempTextFile(t, "append from file")

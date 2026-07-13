@@ -67,7 +67,7 @@ func runCommentUpdate(
 	if err := resolveBodyFlag(command, &request.Body); err != nil {
 		return err
 	}
-	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+	if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
 		return err
 	}
 	comment, err := updater.UpdateComment(ctx, request)

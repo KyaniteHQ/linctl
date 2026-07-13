@@ -20,7 +20,7 @@ func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			if err := resolveFileFlag(&request.Content, contentFile, "content"); err != nil {
+			if err := resolveFileFlag(command, &request.Content, contentFile, "content"); err != nil {
 				return err
 			}
 
@@ -47,7 +47,7 @@ func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 			request.ID = args[0]
-			if err := resolveFileFlag(&request.Content, contentFile, "content"); err != nil {
+			if err := resolveFileFlag(command, &request.Content, contentFile, "content"); err != nil {
 				return err
 			}
 

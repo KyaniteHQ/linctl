@@ -122,7 +122,7 @@ func resolveDocumentContent(command *cobra.Command, content *string, contentFile
 		return err
 	}
 
-	return resolveFileFlag(content, contentFile, "content")
+	return resolveFileFlag(command, content, contentFile, "content")
 }
 
 func addDocumentCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

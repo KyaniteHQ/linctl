@@ -83,7 +83,7 @@ func runIssueCreate(
 	flags issueCreateFlags,
 	estimate *int,
 ) error {
-	if err := resolveFileFlag(&request.Description, flags.descriptionFile, "description"); err != nil {
+	if err := resolveFileFlag(command, &request.Description, flags.descriptionFile, "description"); err != nil {
 		return err
 	}
 	if err := applyIssueTemplate(ctx, creator, &request, flags.templateID); err != nil {
@@ -170,10 +170,10 @@ func runIssueUpdate(
 	flags issueUpdateFlags,
 	estimate *int,
 ) error {
-	if err := resolveFileFlag(&request.Description, flags.descriptionFile, "description"); err != nil {
+	if err := resolveFileFlag(command, &request.Description, flags.descriptionFile, "description"); err != nil {
 		return err
 	}
-	if err := resolveFileFlag(&request.Append, flags.appendFile, "append"); err != nil {
+	if err := resolveFileFlag(command, &request.Append, flags.appendFile, "append"); err != nil {
 		return err
 	}
 	stateType, normalizedPriority, normErr := applyIssueWriteNormalization(
@@ -275,7 +275,7 @@ func runIssueBodyWriteCommand(
 	request client.IssueCommentRequest,
 	bodyFile string,
 ) error {
-	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+	if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
 		return err
 	}
 	if err := resolveBodyFlag(command, &request.Body); err != nil {

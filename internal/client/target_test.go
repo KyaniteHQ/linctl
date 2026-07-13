@@ -215,6 +215,97 @@ func Test_ResolveTarget_finds_project_team_on_later_page(t *testing.T) {
 	require.Equal(t, "project-id", target.Project.ID)
 }
 
+func Test_ResolveTarget_refuses_project_next_page_without_cursor(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"Viewer": `{
+			"viewer": {
+				"id": "user-id",
+				"name": "Omer",
+				"displayName": "Omer",
+				"email": "omer@example.com",
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}
+		}`,
+		"Teams": `{
+			"teams": {
+				"nodes": [{
+					"id": "team-id",
+					"key": "LIT",
+					"name": "linctl-it",
+					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+				}],
+				"pageInfo": {"hasNextPage": false, "endCursor": null}
+			}
+		}`,
+		"TargetProject": `{
+			"project": {
+				"id": "project-id",
+				"name": "fixture",
+				"teams": {
+					"nodes": [],
+					"pageInfo": {"hasNextPage": true, "endCursor": null}
+				}
+			}
+		}`,
+	}
+
+	_, err := ResolveTarget(context.Background(), graphqlClient, config.Target{
+		OrgID:     "org-id",
+		TeamKey:   "LIT",
+		TeamID:    "team-id",
+		ProjectID: "project-id",
+	})
+
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.ErrorContains(t, err, "without endCursor")
+}
+
+func Test_ResolveTarget_refuses_when_project_next_page_fetch_fails(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"Viewer": `{
+			"viewer": {
+				"id": "user-id",
+				"name": "Omer",
+				"displayName": "Omer",
+				"email": "omer@example.com",
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}
+		}`,
+		"Teams": `{
+			"teams": {
+				"nodes": [{
+					"id": "team-id",
+					"key": "LIT",
+					"name": "linctl-it",
+					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+				}],
+				"pageInfo": {"hasNextPage": false, "endCursor": null}
+			}
+		}`,
+		"TargetProject": `{
+			"project": {
+				"id": "project-id",
+				"name": "fixture",
+				"teams": {
+					"nodes": [],
+					"pageInfo": {"hasNextPage": true, "endCursor": "project-cursor-1"}
+				}
+			}
+		}`,
+		"TargetProject:project-cursor-1": "",
+	}
+
+	_, err := ResolveTarget(context.Background(), graphqlClient, config.Target{
+		OrgID:     "org-id",
+		TeamKey:   "LIT",
+		TeamID:    "team-id",
+		ProjectID: "project-id",
+	})
+
+	require.ErrorContains(t, err, "resolve project")
+}
+
 type fakeGraphQLClient map[string]string
 
 func (client fakeGraphQLClient) MakeRequest(

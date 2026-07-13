@@ -70,7 +70,7 @@ func runProjectUpdateCreate(
 	health string,
 	bodyFile string,
 ) error {
-	if err := resolveFileFlag(&request.Body, bodyFile, "body"); err != nil {
+	if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
 		return err
 	}
 	if err := resolveBodyFlag(command, &request.Body); err != nil {
