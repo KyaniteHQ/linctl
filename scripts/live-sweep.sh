@@ -77,7 +77,7 @@ for item in data.get(collection, []):
   export LINCTL_BINARY="$binary"
 
   cd "$sweep_dir"
-  (cd "$repo_root" && go tool task --dir "$sweep_dir" live-oauth) >/dev/null
+  (cd "$repo_root" && go tool task --taskfile "$repo_root/Taskfile.yml" --dir "$sweep_dir" live-oauth) >/dev/null
 
   swept=0
 
