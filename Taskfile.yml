@@ -7,6 +7,13 @@ vars:
   GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
   INFISICAL_ENV: secrets
   INFISICAL_PATH: /linctl
+  # Infisical needs a project id. Export INFISICAL_PROJECT_ID to supply one without
+  # committing it to this public repo; leave it unset to fall back to a local .infisical.json.
+  INFISICAL_PROJECT_FLAG:
+    sh: |
+      if [ -n "${INFISICAL_PROJECT_ID:-}" ]; then
+        printf '%s %s' --projectId "$INFISICAL_PROJECT_ID"
+      fi
 
 tasks:
   default:
@@ -199,7 +206,7 @@ tasks:
     desc: Run browser OAuth login smoke with Infisical secrets from /linctl
     cmds:
       - |
-        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+        infisical run {{.INFISICAL_PROJECT_FLAG}} --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
           go tool task \
             --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
             --dir "{{.TASKFILE_DIR}}" \
@@ -209,7 +216,7 @@ tasks:
     desc: Verify OAuth auth with Infisical secrets from /linctl
     cmds:
       - |
-        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+        infisical run {{.INFISICAL_PROJECT_FLAG}} --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
           go tool task \
             --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
             --dir "{{.TASKFILE_DIR}}" \
@@ -219,7 +226,7 @@ tasks:
     desc: Run live smoke with Infisical secrets from /linctl
     cmds:
       - |
-        infisical run --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
+        infisical run {{.INFISICAL_PROJECT_FLAG}} --env {{.INFISICAL_ENV}} --path {{.INFISICAL_PATH}} -- \
           go tool task \
             --taskfile "{{.TASKFILE_DIR}}/Taskfile.yml" \
             --dir "{{.TASKFILE_DIR}}" \
