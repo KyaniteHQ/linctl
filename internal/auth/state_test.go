@@ -552,7 +552,11 @@ func Test_writeJSON_reports_encode_and_permission_errors(t *testing.T) {
 	})
 
 	t.Run("close temp file error", func(t *testing.T) {
-		withCloseTempFile(t, func(*os.File) error {
+		withCloseTempFile(t, func(file *os.File) error {
+			// Release the real handle before injecting the failure: a real
+			// Close deallocates the handle even when it errors, and Windows
+			// cannot remove the temp file while a handle stays open.
+			_ = file.Close() //nolint:errcheck // the injected error below is the one under test.
 			return errors.New("close failed")
 		})
 
