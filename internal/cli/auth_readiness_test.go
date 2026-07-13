@@ -91,7 +91,10 @@ func Test_AuthReadiness_and_status_helpers(t *testing.T) {
 		tokenErr := auth.NewTokenEndpointError(auth.ErrorCodeRefreshFailed, 401, "invalid_grant")
 		require.Same(t, tokenErr, mapAuthReadinessError(tokenErr))
 
-		targetErr := mapAuthReadinessError(client.ErrTargetNotConfigured)
+		notConfiguredErr := mapAuthReadinessError(client.ErrTargetNotConfigured)
+		require.Equal(t, string(auth.ErrorCodeTargetNotConfigured), errorCode(notConfiguredErr))
+
+		targetErr := mapAuthReadinessError(client.ErrTargetMismatch)
 		require.Equal(t, string(auth.ErrorCodeTargetMismatch), errorCode(targetErr))
 
 		plainErr := errors.New("network down")

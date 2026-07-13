@@ -93,9 +93,10 @@ AUTH_REAUTH_REQUIRED
 MISSING_SCOPE
 AUTH_ACTOR_MISMATCH
 AUTH_TARGET_MISMATCH
+AUTH_TARGET_NOT_CONFIGURED
 ```
 
-Guarded write failures keep the write-guard code `TARGET_MISMATCH`. Auth readiness mismatch uses `AUTH_TARGET_MISMATCH` so agents can tell readiness failure from a guarded mutation refusal.
+Guarded write failures keep the write-guard code `TARGET_MISMATCH`. Auth readiness mismatch uses `AUTH_TARGET_MISMATCH` so agents can tell readiness failure from a guarded mutation refusal, and `AUTH_TARGET_NOT_CONFIGURED` when no pinned target exists at all so the recovery path is configuring `.linctl.toml` rather than reauthorizing.
 
 ### 8. Output Is For Agents First
 

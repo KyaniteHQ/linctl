@@ -161,6 +161,7 @@ error), so an agent can branch on a stable code instead of parsing prose:
 - `MISSING_SCOPE` — OAuth token state does not include every configured required scope.
 - `AUTH_ACTOR_MISMATCH` — OAuth readiness could not prove the expected actor.
 - `AUTH_TARGET_MISMATCH` — OAuth readiness could not prove the token can access the pinned target.
+- `AUTH_TARGET_NOT_CONFIGURED` — no pinned target exists; set `org_id`, `team_key`, and `team_id` in `.linctl.toml`.
 - `INTERNAL` — any other error (config, unknown command, decode, etc.).
 
 Read the JSON line from stderr; the human-readable line follows it on stderr too.

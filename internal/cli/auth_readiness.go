@@ -117,7 +117,13 @@ func mapAuthReadinessError(err error) error {
 		return err
 	case errors.As(err, &tokenErr):
 		return err
-	case errors.Is(err, client.ErrTargetMismatch), errors.Is(err, client.ErrTargetNotConfigured):
+	case errors.Is(err, client.ErrTargetNotConfigured):
+		return auth.WrapError(
+			auth.ErrorCodeTargetNotConfigured,
+			"no pinned target is configured: set org_id, team_key, and team_id in .linctl.toml",
+			err,
+		)
+	case errors.Is(err, client.ErrTargetMismatch):
 		return auth.WrapError(
 			auth.ErrorCodeTargetMismatch,
 			"OAuth authorization does not match the pinned target",

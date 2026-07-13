@@ -14,6 +14,9 @@ const (
 	ErrorCodeMissingScope   ErrorCode = "MISSING_SCOPE"
 	ErrorCodeActorMismatch  ErrorCode = "AUTH_ACTOR_MISMATCH"
 	ErrorCodeTargetMismatch ErrorCode = "AUTH_TARGET_MISMATCH"
+	// ErrorCodeTargetNotConfigured separates "no pinned target exists" from a genuine mismatch so
+	// agents recover by configuring .linctl.toml instead of reauthorizing.
+	ErrorCodeTargetNotConfigured ErrorCode = "AUTH_TARGET_NOT_CONFIGURED"
 )
 
 // TokenEndpointError reports a token endpoint failure without secret values.
