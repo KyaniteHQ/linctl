@@ -696,3 +696,94 @@ func Test_CreateIssue_refuses_milestone_outside_pinned_project(t *testing.T) {
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
+
+func Test_CreateIssues_resolves_target_once(t *testing.T) {
+	// Given
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+	})}
+	requests := []IssueCreateRequest{{Title: "First"}, {Title: "Second"}, {Title: "Third"}}
+
+	// When
+	outcomes, err := CreateIssues(context.Background(), recorder, matchingTarget(), requests, 3)
+
+	// Then
+	require.NoError(t, err)
+	require.Len(t, outcomes, 3)
+	for _, outcome := range outcomes {
+		require.NoError(t, outcome.Err)
+		require.Equal(t, "LIT-1", outcome.Issue.Identifier)
+	}
+	require.Equal(t, 1, recorder.countOf("Viewer"), "viewer should resolve once, not per row")
+	require.Equal(t, 1, recorder.countOf("Teams"), "the team scan should run once, not per row")
+}
+
+func Test_CreateIssues_reports_row_outcomes_in_order(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-9")) + `}}`,
+	})
+	requests := []IssueCreateRequest{{Title: "First"}, {Title: ""}, {Title: "Third"}}
+
+	// When
+	outcomes, err := CreateIssues(context.Background(), graphqlClient, matchingTarget(), requests, 3)
+
+	// Then
+	require.NoError(t, err)
+	require.Len(t, outcomes, 3)
+	require.Equal(t, 0, outcomes[0].Index)
+	require.NoError(t, outcomes[0].Err)
+	require.Equal(t, "LIT-9", outcomes[0].Issue.Identifier)
+	require.Equal(t, 1, outcomes[1].Index)
+	require.ErrorIs(t, outcomes[1].Err, ErrWriteInvalid)
+	require.Equal(t, 2, outcomes[2].Index)
+	require.NoError(t, outcomes[2].Err)
+	require.Equal(t, "LIT-9", outcomes[2].Issue.Identifier)
+}
+
+func Test_CreateIssues_reports_row_error_for_invalid_due_date(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+	requests := []IssueCreateRequest{{Title: "First", DueDate: "not-a-date"}}
+
+	// When
+	outcomes, err := CreateIssues(context.Background(), graphqlClient, matchingTarget(), requests, 1)
+
+	// Then
+	require.NoError(t, err)
+	require.Len(t, outcomes, 1)
+	require.ErrorIs(t, outcomes[0].Err, ErrWriteInvalid)
+}
+
+func Test_CreateIssues_defaults_and_clamps_concurrency(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+	})
+	requests := []IssueCreateRequest{{Title: "First"}}
+
+	// When / Then
+	for _, concurrency := range []int{0, -1, 100} {
+		outcomes, err := CreateIssues(context.Background(), graphqlClient, matchingTarget(), requests, concurrency)
+
+		require.NoError(t, err)
+		require.Len(t, outcomes, 1)
+		require.NoError(t, outcomes[0].Err)
+	}
+}
+
+func Test_CreateIssues_returns_error_when_target_resolution_fails(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{})
+	mismatchedTarget := config.Target{OrgID: "org-id", TeamKey: "OTHER", TeamID: "other-team-id"}
+
+	// When
+	outcomes, err := CreateIssues(
+		context.Background(), graphqlClient, mismatchedTarget, []IssueCreateRequest{{Title: "First"}}, 1,
+	)
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.Nil(t, outcomes)
+}

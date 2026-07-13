@@ -62,6 +62,16 @@ when empty.
 `issue pr` → **PullRequestPlan**:
 `{ "title": string, "body": string, "command": ["gh", "pr", "create", "--title", title, "--body", body] }`
 
+`issue import FILE` → **issueImportResult**:
+`{ "count": number, "issues": [IssueSummary], "failures": [{ "row": number, "title": string, "error": string }]|absent }`
+
+`count` and `issues` cover only the rows that created successfully. `failures` is present only
+when at least one row failed — a fully successful import omits it, so the success-path shape is
+unchanged from an import with no failures. Each failure names the 1-based row, the row's title,
+and the error that row hit; rows before and after a failing row still create normally, so a
+partial import is never silently discarded. The command still exits non-zero and writes the error
+envelope when any row fails.
+
 ## Project
 
 `project get` · `project create` · `project update` · `project archive` → **ProjectSummary**

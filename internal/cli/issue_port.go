@@ -131,6 +131,14 @@ func (adapter issueClientAdapter) CreateIssue(
 	return client.CreateIssue(ctx, adapter.graphqlClient, adapter.target, request)
 }
 
+func (adapter issueClientAdapter) CreateIssues(
+	ctx context.Context,
+	requests []client.IssueCreateRequest,
+	concurrency int,
+) ([]client.IssueCreateOutcome, error) {
+	return client.CreateIssues(ctx, adapter.graphqlClient, adapter.target, requests, concurrency)
+}
+
 func (adapter issueClientAdapter) CloseIssue(ctx context.Context, issueID string) (client.IssueSummary, error) {
 	return client.CloseIssue(ctx, adapter.graphqlClient, adapter.target, issueID)
 }

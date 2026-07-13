@@ -6,11 +6,17 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/config"
+)
+
+const (
+	defaultIssueCreateBatchConcurrency = 4
+	maxIssueCreateBatchConcurrency     = 8
 )
 
 // IssueCreateRequest describes a guarded issue create.
@@ -110,53 +116,139 @@ func CreateIssue(
 	}
 
 	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
-		if err := validateEstimate(ctx, graphqlClient, guard.target.Team.ID, request.Estimate); err != nil {
-			return IssueSummary{}, err
-		}
-		if request.ParentID != "" {
-			if _, err := guard.requireIssue(ctx, graphqlClient, request.ParentID); err != nil {
-				return IssueSummary{}, err
-			}
-		}
-		input := LinearIssueCreateInput{
-			Title:              stringPtr(request.Title),
-			Description:        optionalString(request.Description),
-			TeamID:             guard.target.Team.ID,
-			AssigneeID:         optionalString(request.AssigneeID),
-			LabelIDs:           request.LabelIDs,
-			DueDate:            optionalString(request.DueDate),
-			Estimate:           request.Estimate,
-			ParentID:           optionalString(request.ParentID),
-			ProjectMilestoneID: optionalString(request.ProjectMilestoneID),
-		}
-		if guard.target.Project != nil {
-			input.ProjectID = stringPtr(guard.target.Project.ID)
-		}
-		if err := requireCreateMilestone(ctx, graphqlClient, guard, request.ProjectMilestoneID); err != nil {
-			return IssueSummary{}, err
-		}
-		if request.StateType != "" {
-			stateID, stateErr := firstStateIDOfType(ctx, graphqlClient, guard.target.Team.ID, request.StateType)
-			if stateErr != nil {
-				return IssueSummary{}, stateErr
-			}
-			input.StateID = stringPtr(stateID)
-		}
-		priority, err := parsePriority(request.Priority)
-		if err != nil {
-			return IssueSummary{}, err
-		}
-		input.Priority = priority
-		created, err := IssueCreate(ctx, graphqlClient, input)
-		if err != nil {
-			return IssueSummary{}, fmt.Errorf("create issue: %w", err)
-		}
-		if !created.IssueCreate.Success || created.IssueCreate.Issue == nil {
-			return IssueSummary{}, fmt.Errorf("%w: issueCreate returned no issue", ErrMutationFailed)
-		}
-
-		return issueSummaryFromFields(created.IssueCreate.Issue.IssueSummaryFields), nil
+		return createIssueWithGuard(ctx, graphqlClient, guard, request)
 	})
+}
+
+// createIssueWithGuard runs one issue create against an already-resolved write
+// guard. CreateIssue and CreateIssues both call it, so a single-row create and
+// a batch row go through identical input assembly and guard validation.
+func createIssueWithGuard(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	guard writeGuard,
+	request IssueCreateRequest,
+) (IssueSummary, error) {
+	if err := validateEstimate(ctx, graphqlClient, guard.target.Team.ID, request.Estimate); err != nil {
+		return IssueSummary{}, err
+	}
+	if request.ParentID != "" {
+		if _, err := guard.requireIssue(ctx, graphqlClient, request.ParentID); err != nil {
+			return IssueSummary{}, err
+		}
+	}
+	input := LinearIssueCreateInput{
+		Title:              stringPtr(request.Title),
+		Description:        optionalString(request.Description),
+		TeamID:             guard.target.Team.ID,
+		AssigneeID:         optionalString(request.AssigneeID),
+		LabelIDs:           request.LabelIDs,
+		DueDate:            optionalString(request.DueDate),
+		Estimate:           request.Estimate,
+		ParentID:           optionalString(request.ParentID),
+		ProjectMilestoneID: optionalString(request.ProjectMilestoneID),
+	}
+	if guard.target.Project != nil {
+		input.ProjectID = stringPtr(guard.target.Project.ID)
+	}
+	if err := requireCreateMilestone(ctx, graphqlClient, guard, request.ProjectMilestoneID); err != nil {
+		return IssueSummary{}, err
+	}
+	if request.StateType != "" {
+		stateID, stateErr := firstStateIDOfType(ctx, graphqlClient, guard.target.Team.ID, request.StateType)
+		if stateErr != nil {
+			return IssueSummary{}, stateErr
+		}
+		input.StateID = stringPtr(stateID)
+	}
+	priority, err := parsePriority(request.Priority)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	input.Priority = priority
+	created, err := IssueCreate(ctx, graphqlClient, input)
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("create issue: %w", err)
+	}
+	if !created.IssueCreate.Success || created.IssueCreate.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issueCreate returned no issue", ErrMutationFailed)
+	}
+
+	return issueSummaryFromFields(created.IssueCreate.Issue.IssueSummaryFields), nil
+}
+
+// IssueCreateOutcome is one row's result from a CreateIssues batch call,
+// indexed to match its position in the request slice so a caller can report
+// row order and per-row failures without losing that order under concurrency.
+type IssueCreateOutcome struct {
+	Index int
+	Issue IssueSummary
+	Err   error
+}
+
+// CreateIssues creates each request against ONE resolved target, preserving
+// per-request guard validation (estimate, parent, milestone) for every row.
+// concurrency is clamped to [defaultIssueCreateBatchConcurrency,
+// maxIssueCreateBatchConcurrency]; a value <= 0 uses the default.
+func CreateIssues(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+	requests []IssueCreateRequest,
+	concurrency int,
+) ([]IssueCreateOutcome, error) {
+	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	if err != nil {
+		return nil, err
+	}
+
+	outcomes := make([]IssueCreateOutcome, len(requests))
+	tokens := make(chan struct{}, clampIssueCreateBatchConcurrency(concurrency))
+	var waitGroup sync.WaitGroup
+	for index, request := range requests {
+		waitGroup.Add(1)
+		tokens <- struct{}{}
+		go func(index int, request IssueCreateRequest) {
+			defer waitGroup.Done()
+			defer func() { <-tokens }()
+			issue, rowErr := createIssueForBatchRow(ctx, graphqlClient, guard, request)
+			outcomes[index] = IssueCreateOutcome{Index: index, Issue: issue, Err: rowErr}
+		}(index, request)
+	}
+	waitGroup.Wait()
+
+	return outcomes, nil
+}
+
+// createIssueForBatchRow applies CreateIssue's pre-guard input validation
+// (title required, due date well-formed) to one batch row before running it
+// through the shared guard-scoped create, so a malformed row fails as a row
+// error instead of aborting the whole batch.
+func createIssueForBatchRow(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	guard writeGuard,
+	request IssueCreateRequest,
+) (IssueSummary, error) {
+	if request.Title == "" {
+		return IssueSummary{}, fmt.Errorf("%w: title is required", ErrWriteInvalid)
+	}
+	if err := validateDueDate(request.DueDate); err != nil {
+		return IssueSummary{}, err
+	}
+
+	return createIssueWithGuard(ctx, graphqlClient, guard, request)
+}
+
+func clampIssueCreateBatchConcurrency(concurrency int) int {
+	if concurrency <= 0 {
+		return defaultIssueCreateBatchConcurrency
+	}
+	if concurrency > maxIssueCreateBatchConcurrency {
+		return maxIssueCreateBatchConcurrency
+	}
+
+	return concurrency
 }
 
 // requireCreateMilestone verifies a requested ProjectMilestone assignment on

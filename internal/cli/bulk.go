@@ -50,9 +50,21 @@ type issueImportPreview struct {
 }
 
 // issueImportResult is the structured confirmation of a completed import.
+// Failures is omitted from JSON when empty, so a fully successful import's
+// output shape is unchanged from before partial-failure reporting existed.
 type issueImportResult struct {
-	Count  int                   `json:"count"`
-	Issues []client.IssueSummary `json:"issues"`
+	Count    int                     `json:"count"`
+	Issues   []client.IssueSummary   `json:"issues"`
+	Failures []issueImportRowFailure `json:"failures,omitempty"`
+}
+
+// issueImportRowFailure names one import row that failed to create, so a
+// partially failed import reports what landed and what didn't instead of
+// discarding the rows already created in Linear.
+type issueImportRowFailure struct {
+	Row   int    `json:"row"`
+	Title string `json:"title"`
+	Error string `json:"error"`
 }
 
 // bulkExportResult is the structured confirmation of a completed bulk export.
@@ -163,17 +175,25 @@ func importDryRunTeamKey(ctx context.Context, options *rootOptions) (string, err
 }
 
 // bulkIssueCreator is the narrow Command Port the import create loop depends on.
-// Defined by its consumer (it needs only CreateIssue, not the wider issue port)
-// and satisfied in production by issueClientAdapter, so the per-row error
-// wrapping is tested against an in-memory fake rather than canned GraphQL JSON.
+// Defined by its consumer (it needs only the batch create) and satisfied in
+// production by issueClientAdapter, so the row accumulation and per-row error
+// wrapping are tested against an in-memory fake rather than canned GraphQL JSON.
 type bulkIssueCreator interface {
-	CreateIssue(ctx context.Context, request client.IssueCreateRequest) (client.IssueSummary, error)
+	CreateIssues(
+		ctx context.Context,
+		requests []client.IssueCreateRequest,
+		concurrency int,
+	) ([]client.IssueCreateOutcome, error)
 }
 
 // The shared production adapter satisfies the narrow bulk port; this assertion
-// fails the build if CreateIssue's shape drifts, keeping the write-guard
+// fails the build if CreateIssues's shape drifts, keeping the write-guard
 // forwarding intact rather than letting an adapter quietly stop satisfying it.
 var _ bulkIssueCreator = issueClientAdapter{}
+
+// importBatchConcurrency is 0 so the port's production adapter defers to
+// client.CreateIssues's own default and cap.
+const importBatchConcurrency = 0
 
 func createImportedIssues(
 	ctx context.Context,
@@ -182,23 +202,45 @@ func createImportedIssues(
 	creator bulkIssueCreator,
 	requests []client.IssueCreateRequest,
 ) error {
+	outcomes, err := creator.CreateIssues(ctx, requests, importBatchConcurrency)
+	if err != nil {
+		return err
+	}
+
 	// --quiet renders nothing, so skip accumulating the created summaries; the
 	// default, --json, and --id-only modes still consume them downstream.
 	var created []client.IssueSummary
 	if !options.quiet {
 		created = make([]client.IssueSummary, 0, len(requests))
 	}
-	for index, request := range requests {
-		issue, err := creator.CreateIssue(ctx, request)
-		if err != nil {
-			return fmt.Errorf("import row %d %q: %w", index+1, request.Title, err)
+	var failures []issueImportRowFailure
+	var firstErr error
+	for _, outcome := range outcomes {
+		request := requests[outcome.Index]
+		if outcome.Err != nil {
+			failures = append(failures, issueImportRowFailure{
+				Row:   outcome.Index + 1,
+				Title: request.Title,
+				Error: outcome.Err.Error(),
+			})
+			if firstErr == nil {
+				firstErr = fmt.Errorf("import row %d %q: %w", outcome.Index+1, request.Title, outcome.Err)
+			}
+			continue
 		}
 		if !options.quiet {
-			created = append(created, issue)
+			created = append(created, outcome.Issue)
 		}
 	}
 
-	return writeImportResult(command, options, created)
+	if err := writeImportResult(command, options, created, failures); err != nil {
+		return err
+	}
+	if firstErr != nil {
+		return fmt.Errorf("import completed with %d failed rows: %w", len(failures), firstErr)
+	}
+
+	return nil
 }
 
 func parseImportFile(format string, path string) ([]issueImportRow, error) {
@@ -361,12 +403,41 @@ func importPlans(requests []client.IssueCreateRequest) []issueImportPlan {
 	return plans
 }
 
-func writeImportResult(command *cobra.Command, options *rootOptions, created []client.IssueSummary) error {
+func writeImportResult(
+	command *cobra.Command,
+	options *rootOptions,
+	created []client.IssueSummary,
+	failures []issueImportRowFailure,
+) error {
 	if options.json {
-		return writeJSONValue(command, options, issueImportResult{Count: len(created), Issues: created})
+		return writeJSONValue(command, options, issueImportResult{
+			Count:    len(created),
+			Issues:   created,
+			Failures: failures,
+		})
+	}
+	if err := writeIssues(command, options, created); err != nil {
+		return err
 	}
 
-	return writeIssues(command, options, created)
+	return writeImportFailures(command, failures)
+}
+
+// writeImportFailures reports each failed import row to stderr in human mode.
+// Unlike the created-issues output, this is never suppressed by --quiet: a
+// quiet import still must not hide which rows failed.
+func writeImportFailures(command *cobra.Command, failures []issueImportRowFailure) error {
+	for _, failure := range failures {
+		if err := render.WriteLine(
+			command.ErrOrStderr(),
+			"row %d %q failed: %s",
+			failure.Row, failure.Title, failure.Error,
+		); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func addIssueBulkExportCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
