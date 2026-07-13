@@ -13,8 +13,9 @@ start_callback_listener() {
   local ready_path="$3"
   local error_path="$4"
   local timeout_seconds="$5"
+  local expected_state_path="$6"
 
-  python3 - "$redirect_uri" "$callback_path" "$ready_path" "$error_path" "$timeout_seconds" <<'PY' &
+  python3 - "$redirect_uri" "$callback_path" "$ready_path" "$error_path" "$timeout_seconds" "$expected_state_path" <<'PY' &
 import html
 import http.server
 import os
@@ -28,6 +29,7 @@ callback_path = sys.argv[2]
 ready_path = sys.argv[3]
 error_path = sys.argv[4]
 timeout_seconds = int(sys.argv[5])
+expected_state_path = sys.argv[6]
 
 
 def fail(message):
@@ -69,6 +71,20 @@ class CallbackHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/plain; charset=utf-8")
             self.end_headers()
             self.wfile.write(b"Linear did not send an OAuth code and state.\n")
+            return
+
+        try:
+            with open(expected_state_path, "r", encoding="utf-8") as input_file:
+                expected_state = input_file.read().strip()
+        except OSError:
+            expected_state = ""
+        if not expected_state or query["state"][0] != expected_state:
+            self.send_response(400)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(
+                b"state mismatch; still waiting for the Linear callback\n"
+            )
             return
 
         callback_url = urllib.parse.urlunparse(
@@ -254,14 +270,73 @@ run_self_test() {
   local callback_file="$self_test_dir/callback.url"
   local ready_file="$self_test_dir/callback.ready"
   local error_file="$self_test_dir/callback.err"
+  local expected_state_file="$self_test_dir/callback.state"
   local callback_code="linctl-self-test-code-sentinel"
   local callback_state="linctl-self-test-state-sentinel"
-  start_callback_listener "http://127.0.0.1:0/callback" "$callback_file" "$ready_file" "$error_file" 5
+  start_callback_listener \
+    "http://127.0.0.1:0/callback" \
+    "$callback_file" \
+    "$ready_file" \
+    "$error_file" \
+    5 \
+    "$expected_state_file"
   self_test_listener_pid="$!"
   wait_for_callback_listener "$ready_file" "$error_file" "$self_test_listener_pid"
 
   local callback_base
   callback_base="$(sed -n '1p' "$ready_file")"
+  python3 - "$callback_base" "$callback_code" "$callback_state" >"$self_test_dir/callback-client.out" 2>"$self_test_dir/callback-client.err" <<'PY'
+import sys
+import urllib.parse
+import urllib.error
+import urllib.request
+
+base = sys.argv[1]
+code = sys.argv[2]
+state = sys.argv[3]
+url = base + "?" + urllib.parse.urlencode({"code": code, "state": state})
+try:
+    with urllib.request.urlopen(url, timeout=5) as response:
+        status = response.status
+        body = response.read().decode("utf-8")
+except urllib.error.HTTPError as error:
+    status = error.code
+    body = error.read().decode("utf-8")
+if status != 400 or body != "state mismatch; still waiting for the Linear callback\n":
+    raise SystemExit(f"callback returned unexpected HTTP {status}")
+PY
+  if [[ -e "$callback_file" ]]; then
+    printf 'browser login self-test fail-closed listener captured before state was ready\n' >&2
+    exit 1
+  fi
+
+  printf '%s\n' "$callback_state" >"$expected_state_file"
+  local wrong_callback_state="linctl-self-test-wrong-state-sentinel"
+  python3 - "$callback_base" "$callback_code" "$wrong_callback_state" "$callback_file" >"$self_test_dir/wrong-state-client.out" 2>"$self_test_dir/wrong-state-client.err" <<'PY'
+import os
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+base = sys.argv[1]
+code = sys.argv[2]
+state = sys.argv[3]
+callback_file = sys.argv[4]
+url = base + "?" + urllib.parse.urlencode({"code": code, "state": state})
+try:
+    with urllib.request.urlopen(url, timeout=5) as response:
+        status = response.status
+        body = response.read().decode("utf-8")
+except urllib.error.HTTPError as error:
+    status = error.code
+    body = error.read().decode("utf-8")
+if status != 400 or body != "state mismatch; still waiting for the Linear callback\n":
+    raise SystemExit(f"callback returned unexpected HTTP {status}")
+if os.path.exists(callback_file):
+    raise SystemExit("wrong-state callback was captured")
+PY
+
   python3 - "$callback_base" "$callback_code" "$callback_state" >"$self_test_dir/callback-client.out" 2>"$self_test_dir/callback-client.err" <<'PY'
 import sys
 import urllib.parse
@@ -284,8 +359,9 @@ PY
 
   assert_not_printed "$callback_code" "$missing_stdout" "$missing_stderr" "$self_test_dir/callback-client.out" "$self_test_dir/callback-client.err"
   assert_not_printed "$callback_state" "$missing_stdout" "$missing_stderr" "$self_test_dir/callback-client.out" "$self_test_dir/callback-client.err"
+  assert_not_printed "$wrong_callback_state" "$missing_stdout" "$missing_stderr" "$self_test_dir/wrong-state-client.out" "$self_test_dir/wrong-state-client.err"
 
-  printf 'browser login smoke self-test ok: missing-fixture=exit2 callback-listener=ok redaction=ok\n'
+  printf 'browser login smoke self-test ok: missing-fixture=exit2 callback-listener=ok callback-state=ok redaction=ok\n'
 }
 
 mode="smoke"
@@ -511,6 +587,7 @@ read_manual_callback() {
   callback_file="$smoke_dir/callback.url"
   listener_ready="$smoke_dir/callback.ready"
   listener_error="$smoke_dir/callback.err"
+  expected_state_path="$smoke_dir/callback.state"
   callback_mode="${LINCTL_BROWSER_LOGIN_CALLBACK_MODE:-auto}"
   case "$callback_mode" in
     auto | manual) ;;
@@ -526,7 +603,8 @@ read_manual_callback() {
       "$callback_file" \
       "$listener_ready" \
       "$listener_error" \
-      "$callback_timeout"
+      "$callback_timeout" \
+      "$expected_state_path"
     callback_listener_pid="$!"
     if ! wait_for_callback_listener "$listener_ready" "$listener_error" "$callback_listener_pid"; then
       exit 1
@@ -543,6 +621,9 @@ read_manual_callback() {
     cat "$login_error" >&2
     exit 1
   fi
+
+  expected_state="$(python3 -c 'import sys, urllib.parse; state = urllib.parse.parse_qs(urllib.parse.urlparse(sys.argv[1]).query).get("state", [""])[0]; sys.exit("authorization URL did not include OAuth state") if not state else print(state)' "$authorize_url")"
+  printf '%s\n' "$expected_state" >"$expected_state_path"
 
   printf 'Open this Linear OAuth URL:\n%s\n\n' "$authorize_url" >&2
   if [[ "$callback_mode" == "auto" ]]; then
