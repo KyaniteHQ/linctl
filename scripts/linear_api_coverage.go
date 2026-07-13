@@ -51,7 +51,7 @@ type domainReference struct {
 
 func main() {
 	upstreamDir := flag.String("upstream", "", "required upstream linear repo checkout")
-	outputPath := flag.String("output", "docs/linear-api-coverage.md", "coverage ledger path")
+	outputPath := flag.String("output", "docs/internal/linear-api-coverage.md", "coverage ledger path")
 	operationAuditPath := flag.String("operation-audit", "", "optional SDK operation audit output path")
 	flag.Parse()
 
@@ -64,7 +64,7 @@ func main() {
 	upstreamDocumentsPath := filepath.Join(*upstreamDir, "packages/sdk/src/_generated_documents.graphql")
 	localOperationsPattern := "internal/client/operations/*.graphql"
 	localGeneratedPath := "internal/client/generated.go"
-	domainMapPath := "docs/domain-map.md"
+	domainMapPath := "docs/internal/domain-map.md"
 
 	mustValidateUpstreamCheckout(
 		*upstreamDir,
@@ -136,7 +136,7 @@ func writeHeader(output *bytes.Buffer, upstreamDir string, upstreamSchemaPath st
 	fmt.Fprintf(output, "- Upstream schema roots: `%s`\n", schemaRel)
 	fmt.Fprintf(output, "- Local generated operations: `internal/client/generated.go`\n")
 	fmt.Fprintf(output, "- Local GraphQL operations: `internal/client/operations/*.graphql`\n")
-	fmt.Fprintf(output, "- Public CLI commands: Cobra command inventory enriched by `docs/domain-map.md`\n\n")
+	fmt.Fprintf(output, "- Public CLI commands: Cobra command inventory enriched by `docs/internal/domain-map.md`\n\n")
 	fmt.Fprintf(
 		output,
 		"Status vocabulary is surface-specific: upstream SDK/root tables use `generated_operation` "+
@@ -292,7 +292,7 @@ func classifyDomainLedgerCommand(
 	operationRoots map[string][]string,
 ) (string, string) {
 	status := "accepted_gap"
-	evidence := "planned in `docs/domain-map.md`"
+	evidence := "planned in `docs/internal/domain-map.md`"
 	if commandInfo, ok := commandInventory[command.Command]; ok {
 		status, evidence = classifyDomainCommand(commandInfo, implementedRoots, operationRoots)
 	}
@@ -305,7 +305,7 @@ func classifyDomainLedgerCommand(
 	}
 	if strings.HasPrefix(command.Scope, "Blocked:") {
 		status = "blocked_needs_design"
-		evidence = "blocked in `docs/domain-map.md` pending explicit safety semantics"
+		evidence = "blocked in `docs/internal/domain-map.md` pending explicit safety semantics"
 	}
 	if strings.Contains(command.Command, "delete") {
 		status = "blocked_needs_design"
@@ -333,11 +333,11 @@ func classifyDomainCommand(
 	}
 	for _, reference := range references {
 		if implementedRoots[reference.RootKey] {
-			return commandCoverageStatus(command), "`linctl --help`, `docs/domain-map.md`, and local GraphQL root"
+			return commandCoverageStatus(command), "`linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root"
 		}
 		for _, key := range operationRoots[reference.OperationName] {
 			if implementedRoots[key] {
-				return commandCoverageStatus(command), "`linctl --help`, `docs/domain-map.md`, and local GraphQL operation/root"
+				return commandCoverageStatus(command), "`linctl --help`, `docs/internal/domain-map.md`, and local GraphQL operation/root"
 			}
 		}
 	}

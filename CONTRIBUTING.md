@@ -27,7 +27,7 @@ go tool task coverage
 ### Network & offline
 
 `go tool task ci` validates local GraphQL operations and
-`docs/linear-api-coverage.md` against the upstream `linear/linear` schema. The
+`docs/internal/linear-api-coverage.md` against the upstream `linear/linear` schema. The
 shared source contract is:
 
 - Remote: `https://github.com/linear/linear.git`

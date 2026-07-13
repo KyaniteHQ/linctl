@@ -7,8 +7,8 @@ if rg -n -i '\bworkspace(-level)?\b' \
   internal/cli \
   docs \
   skills/linctl/references/commands.md \
-  -g '!docs/domain-map.md' \
-  -g '!docs/linear-api-coverage.md' \
+  -g '!docs/internal/domain-map.md' \
+  -g '!docs/internal/linear-api-coverage.md' \
   -g '!docs/prior-art.md' \
   -g '!docs/setup-gap-log.md'; then
   cat <<'MSG'

@@ -83,7 +83,7 @@ tasks:
         LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
         go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
         go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
-        diff -u docs/linear-api-coverage.md "$tmp"
+        diff -u docs/internal/linear-api-coverage.md "$tmp"
 
   linear-sdk-upstream-checkout:
     desc: Clone or refresh the upstream Linear SDK checkout used by schema and coverage checks
@@ -140,7 +140,7 @@ tasks:
         LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
         go run scripts/linear_graphql_operation_check.go --upstream "$upstream"
         go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
-        diff -u docs/linear-api-coverage.md "$tmp"
+        diff -u docs/internal/linear-api-coverage.md "$tmp"
 
   coverage-ledger-check:
     desc: Verify the generated Linear API coverage ledger against the upstream SDK checkout
@@ -162,7 +162,7 @@ tasks:
         trap cleanup EXIT
         LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
         go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
-        diff -u docs/linear-api-coverage.md "$tmp"
+        diff -u docs/internal/linear-api-coverage.md "$tmp"
 
   schema-drift-check:
     desc: Report semantic drift between the vendored Linear schema and the upstream Linear SDK schema (nightly-only, not part of ci)

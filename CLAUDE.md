@@ -8,7 +8,7 @@ linctl is a schema-aligned Go CLI (cobra, Go 1.26, module `github.com/KyaniteHQ/
 
 @CONTEXT.md
 
-Use these exact terms. Never say "workspace" (it is a Pinned/Resolved Target), never treat a Cycle as a "Sprint" mutation (Sprint is a read-only alias), always write `ProjectMilestone` in full. Each command's GraphQL backing is mapped in `docs/domain-map.md`; named test flows are in `docs/test-scenarios.md`.
+Use these exact terms. Never say "workspace" (it is a Pinned/Resolved Target), never treat a Cycle as a "Sprint" mutation (Sprint is a read-only alias), always write `ProjectMilestone` in full. Each command's GraphQL backing is mapped in `docs/internal/domain-map.md`; named test flows are in `docs/internal/test-scenarios.md`.
 
 Guarded writes fail closed on Target Mismatch — a hard stop, never a soft warning. Do not add bypass flags or relax the write guard (`internal/client/write_guard.go`).
 
