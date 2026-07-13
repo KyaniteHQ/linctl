@@ -32,6 +32,8 @@ func addCommentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addCommentCreatedIssuesCommand(ctx, commentCommand, options)
 	addCommentUpdateCommand(ctx, commentCommand, options)
 	addCommentDeleteCommand(ctx, commentCommand, options)
+	addCommentResolveCommand(ctx, commentCommand, options)
+	addCommentUnresolveCommand(ctx, commentCommand, options)
 }
 
 func addCommentUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -107,6 +109,68 @@ func runCommentDelete(
 	}
 
 	return writeDeletion(command, options, deletedID)
+}
+
+func addCommentResolveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "resolve COMMENT_ID",
+		Short: "Resolve a comment thread after pinned-target comparison",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+
+			return runCommentResolve(ctx, command, options, commandAdapterFor(runtime), args[0])
+		},
+	})
+}
+
+func runCommentResolve(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	resolver commentResolver,
+	commentID string,
+) error {
+	comment, err := resolver.ResolveComment(ctx, commentID)
+	if err != nil {
+		return err
+	}
+
+	return writeComment(command, options, comment)
+}
+
+func addCommentUnresolveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "unresolve COMMENT_ID",
+		Short: "Reopen a comment thread after pinned-target comparison",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+
+			return runCommentUnresolve(ctx, command, options, commandAdapterFor(runtime), args[0])
+		},
+	})
+}
+
+func runCommentUnresolve(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	unresolver commentUnresolver,
+	commentID string,
+) error {
+	comment, err := unresolver.UnresolveComment(ctx, commentID)
+	if err != nil {
+		return err
+	}
+
+	return writeComment(command, options, comment)
 }
 
 func writeComment(command *cobra.Command, options *rootOptions, comment client.CommentSummary) error {

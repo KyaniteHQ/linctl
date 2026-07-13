@@ -1252,6 +1252,412 @@ func (v *CommentMetadataFieldsUser) GetName() string { return v.Name }
 // GetDisplayName returns CommentMetadataFieldsUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *CommentMetadataFieldsUser) GetDisplayName() string { return v.DisplayName }
 
+// CommentResolveCommentResolveCommentPayload includes the requested fields of the GraphQL type CommentPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a comment mutation.
+type CommentResolveCommentResolveCommentPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The comment that was created or updated.
+	Comment CommentResolveCommentResolveCommentPayloadComment `json:"comment"`
+}
+
+// GetSuccess returns CommentResolveCommentResolveCommentPayload.Success, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayload) GetSuccess() bool { return v.Success }
+
+// GetComment returns CommentResolveCommentResolveCommentPayload.Comment, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayload) GetComment() CommentResolveCommentResolveCommentPayloadComment {
+	return v.Comment
+}
+
+// CommentResolveCommentResolveCommentPayloadComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type CommentResolveCommentResolveCommentPayloadComment struct {
+	TopLevelCommentSummaryFields `json:"-"`
+}
+
+// GetId returns CommentResolveCommentResolveCommentPayloadComment.Id, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetId() string {
+	return v.TopLevelCommentSummaryFields.Id
+}
+
+// GetBody returns CommentResolveCommentResolveCommentPayloadComment.Body, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetBody() string {
+	return v.TopLevelCommentSummaryFields.Body
+}
+
+// GetUrl returns CommentResolveCommentResolveCommentPayloadComment.Url, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetUrl() string {
+	return v.TopLevelCommentSummaryFields.Url
+}
+
+// GetCreatedAt returns CommentResolveCommentResolveCommentPayloadComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetCreatedAt() string {
+	return v.TopLevelCommentSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns CommentResolveCommentResolveCommentPayloadComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetUpdatedAt() string {
+	return v.TopLevelCommentSummaryFields.UpdatedAt
+}
+
+// GetEditedAt returns CommentResolveCommentResolveCommentPayloadComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetEditedAt() *string {
+	return v.TopLevelCommentSummaryFields.EditedAt
+}
+
+// GetResolvedAt returns CommentResolveCommentResolveCommentPayloadComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetResolvedAt() *string {
+	return v.TopLevelCommentSummaryFields.ResolvedAt
+}
+
+// GetParentId returns CommentResolveCommentResolveCommentPayloadComment.ParentId, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetParentId() *string {
+	return v.TopLevelCommentSummaryFields.ParentId
+}
+
+// GetIssueId returns CommentResolveCommentResolveCommentPayloadComment.IssueId, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetIssueId() *string {
+	return v.TopLevelCommentSummaryFields.IssueId
+}
+
+// GetProjectId returns CommentResolveCommentResolveCommentPayloadComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetProjectId() *string {
+	return v.TopLevelCommentSummaryFields.ProjectId
+}
+
+// GetProjectUpdateId returns CommentResolveCommentResolveCommentPayloadComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetProjectUpdateId() *string {
+	return v.TopLevelCommentSummaryFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns CommentResolveCommentResolveCommentPayloadComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetInitiativeId() *string {
+	return v.TopLevelCommentSummaryFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns CommentResolveCommentResolveCommentPayloadComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetInitiativeUpdateId() *string {
+	return v.TopLevelCommentSummaryFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns CommentResolveCommentResolveCommentPayloadComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetDocumentContentId() *string {
+	return v.TopLevelCommentSummaryFields.DocumentContentId
+}
+
+// GetUser returns CommentResolveCommentResolveCommentPayloadComment.User, and is useful for accessing the field via an interface.
+func (v *CommentResolveCommentResolveCommentPayloadComment) GetUser() *TopLevelCommentSummaryFieldsUser {
+	return v.TopLevelCommentSummaryFields.User
+}
+
+func (v *CommentResolveCommentResolveCommentPayloadComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*CommentResolveCommentResolveCommentPayloadComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.CommentResolveCommentResolveCommentPayloadComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TopLevelCommentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalCommentResolveCommentResolveCommentPayloadComment struct {
+	Id string `json:"id"`
+
+	Body string `json:"body"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *TopLevelCommentSummaryFieldsUser `json:"user"`
+}
+
+func (v *CommentResolveCommentResolveCommentPayloadComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *CommentResolveCommentResolveCommentPayloadComment) __premarshalJSON() (*__premarshalCommentResolveCommentResolveCommentPayloadComment, error) {
+	var retval __premarshalCommentResolveCommentResolveCommentPayloadComment
+
+	retval.Id = v.TopLevelCommentSummaryFields.Id
+	retval.Body = v.TopLevelCommentSummaryFields.Body
+	retval.Url = v.TopLevelCommentSummaryFields.Url
+	retval.CreatedAt = v.TopLevelCommentSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TopLevelCommentSummaryFields.UpdatedAt
+	retval.EditedAt = v.TopLevelCommentSummaryFields.EditedAt
+	retval.ResolvedAt = v.TopLevelCommentSummaryFields.ResolvedAt
+	retval.ParentId = v.TopLevelCommentSummaryFields.ParentId
+	retval.IssueId = v.TopLevelCommentSummaryFields.IssueId
+	retval.ProjectId = v.TopLevelCommentSummaryFields.ProjectId
+	retval.ProjectUpdateId = v.TopLevelCommentSummaryFields.ProjectUpdateId
+	retval.InitiativeId = v.TopLevelCommentSummaryFields.InitiativeId
+	retval.InitiativeUpdateId = v.TopLevelCommentSummaryFields.InitiativeUpdateId
+	retval.DocumentContentId = v.TopLevelCommentSummaryFields.DocumentContentId
+	retval.User = v.TopLevelCommentSummaryFields.User
+	return &retval, nil
+}
+
+// CommentResolveResponse is returned by CommentResolve on success.
+type CommentResolveResponse struct {
+	// Resolves a comment thread. Marks the root comment as resolved by the current user.
+	CommentResolve CommentResolveCommentResolveCommentPayload `json:"commentResolve"`
+}
+
+// GetCommentResolve returns CommentResolveResponse.CommentResolve, and is useful for accessing the field via an interface.
+func (v *CommentResolveResponse) GetCommentResolve() CommentResolveCommentResolveCommentPayload {
+	return v.CommentResolve
+}
+
+// CommentUnresolveCommentUnresolveCommentPayload includes the requested fields of the GraphQL type CommentPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a comment mutation.
+type CommentUnresolveCommentUnresolveCommentPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The comment that was created or updated.
+	Comment CommentUnresolveCommentUnresolveCommentPayloadComment `json:"comment"`
+}
+
+// GetSuccess returns CommentUnresolveCommentUnresolveCommentPayload.Success, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayload) GetSuccess() bool { return v.Success }
+
+// GetComment returns CommentUnresolveCommentUnresolveCommentPayload.Comment, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayload) GetComment() CommentUnresolveCommentUnresolveCommentPayloadComment {
+	return v.Comment
+}
+
+// CommentUnresolveCommentUnresolveCommentPayloadComment includes the requested fields of the GraphQL type Comment.
+// The GraphQL type's documentation follows.
+//
+// A comment associated with an issue, project update, initiative update, document
+// content, post, project, or initiative. Comments support rich text (ProseMirror),
+// emoji reactions, and threaded replies via parentId. Comments can be created by
+// workspace users or by external users through integrations (e.g., Slack,
+// Intercom). Each comment belongs to exactly one parent entity.
+type CommentUnresolveCommentUnresolveCommentPayloadComment struct {
+	TopLevelCommentSummaryFields `json:"-"`
+}
+
+// GetId returns CommentUnresolveCommentUnresolveCommentPayloadComment.Id, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetId() string {
+	return v.TopLevelCommentSummaryFields.Id
+}
+
+// GetBody returns CommentUnresolveCommentUnresolveCommentPayloadComment.Body, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetBody() string {
+	return v.TopLevelCommentSummaryFields.Body
+}
+
+// GetUrl returns CommentUnresolveCommentUnresolveCommentPayloadComment.Url, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetUrl() string {
+	return v.TopLevelCommentSummaryFields.Url
+}
+
+// GetCreatedAt returns CommentUnresolveCommentUnresolveCommentPayloadComment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetCreatedAt() string {
+	return v.TopLevelCommentSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns CommentUnresolveCommentUnresolveCommentPayloadComment.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetUpdatedAt() string {
+	return v.TopLevelCommentSummaryFields.UpdatedAt
+}
+
+// GetEditedAt returns CommentUnresolveCommentUnresolveCommentPayloadComment.EditedAt, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetEditedAt() *string {
+	return v.TopLevelCommentSummaryFields.EditedAt
+}
+
+// GetResolvedAt returns CommentUnresolveCommentUnresolveCommentPayloadComment.ResolvedAt, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetResolvedAt() *string {
+	return v.TopLevelCommentSummaryFields.ResolvedAt
+}
+
+// GetParentId returns CommentUnresolveCommentUnresolveCommentPayloadComment.ParentId, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetParentId() *string {
+	return v.TopLevelCommentSummaryFields.ParentId
+}
+
+// GetIssueId returns CommentUnresolveCommentUnresolveCommentPayloadComment.IssueId, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetIssueId() *string {
+	return v.TopLevelCommentSummaryFields.IssueId
+}
+
+// GetProjectId returns CommentUnresolveCommentUnresolveCommentPayloadComment.ProjectId, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetProjectId() *string {
+	return v.TopLevelCommentSummaryFields.ProjectId
+}
+
+// GetProjectUpdateId returns CommentUnresolveCommentUnresolveCommentPayloadComment.ProjectUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetProjectUpdateId() *string {
+	return v.TopLevelCommentSummaryFields.ProjectUpdateId
+}
+
+// GetInitiativeId returns CommentUnresolveCommentUnresolveCommentPayloadComment.InitiativeId, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetInitiativeId() *string {
+	return v.TopLevelCommentSummaryFields.InitiativeId
+}
+
+// GetInitiativeUpdateId returns CommentUnresolveCommentUnresolveCommentPayloadComment.InitiativeUpdateId, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetInitiativeUpdateId() *string {
+	return v.TopLevelCommentSummaryFields.InitiativeUpdateId
+}
+
+// GetDocumentContentId returns CommentUnresolveCommentUnresolveCommentPayloadComment.DocumentContentId, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetDocumentContentId() *string {
+	return v.TopLevelCommentSummaryFields.DocumentContentId
+}
+
+// GetUser returns CommentUnresolveCommentUnresolveCommentPayloadComment.User, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) GetUser() *TopLevelCommentSummaryFieldsUser {
+	return v.TopLevelCommentSummaryFields.User
+}
+
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*CommentUnresolveCommentUnresolveCommentPayloadComment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.CommentUnresolveCommentUnresolveCommentPayloadComment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TopLevelCommentSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalCommentUnresolveCommentUnresolveCommentPayloadComment struct {
+	Id string `json:"id"`
+
+	Body string `json:"body"`
+
+	Url string `json:"url"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	EditedAt *string `json:"editedAt"`
+
+	ResolvedAt *string `json:"resolvedAt"`
+
+	ParentId *string `json:"parentId"`
+
+	IssueId *string `json:"issueId"`
+
+	ProjectId *string `json:"projectId"`
+
+	ProjectUpdateId *string `json:"projectUpdateId"`
+
+	InitiativeId *string `json:"initiativeId"`
+
+	InitiativeUpdateId *string `json:"initiativeUpdateId"`
+
+	DocumentContentId *string `json:"documentContentId"`
+
+	User *TopLevelCommentSummaryFieldsUser `json:"user"`
+}
+
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *CommentUnresolveCommentUnresolveCommentPayloadComment) __premarshalJSON() (*__premarshalCommentUnresolveCommentUnresolveCommentPayloadComment, error) {
+	var retval __premarshalCommentUnresolveCommentUnresolveCommentPayloadComment
+
+	retval.Id = v.TopLevelCommentSummaryFields.Id
+	retval.Body = v.TopLevelCommentSummaryFields.Body
+	retval.Url = v.TopLevelCommentSummaryFields.Url
+	retval.CreatedAt = v.TopLevelCommentSummaryFields.CreatedAt
+	retval.UpdatedAt = v.TopLevelCommentSummaryFields.UpdatedAt
+	retval.EditedAt = v.TopLevelCommentSummaryFields.EditedAt
+	retval.ResolvedAt = v.TopLevelCommentSummaryFields.ResolvedAt
+	retval.ParentId = v.TopLevelCommentSummaryFields.ParentId
+	retval.IssueId = v.TopLevelCommentSummaryFields.IssueId
+	retval.ProjectId = v.TopLevelCommentSummaryFields.ProjectId
+	retval.ProjectUpdateId = v.TopLevelCommentSummaryFields.ProjectUpdateId
+	retval.InitiativeId = v.TopLevelCommentSummaryFields.InitiativeId
+	retval.InitiativeUpdateId = v.TopLevelCommentSummaryFields.InitiativeUpdateId
+	retval.DocumentContentId = v.TopLevelCommentSummaryFields.DocumentContentId
+	retval.User = v.TopLevelCommentSummaryFields.User
+	return &retval, nil
+}
+
+// CommentUnresolveResponse is returned by CommentUnresolve on success.
+type CommentUnresolveResponse struct {
+	// Unresolves a previously resolved comment thread. Clears the resolved state on the root comment.
+	CommentUnresolve CommentUnresolveCommentUnresolveCommentPayload `json:"commentUnresolve"`
+}
+
+// GetCommentUnresolve returns CommentUnresolveResponse.CommentUnresolve, and is useful for accessing the field via an interface.
+func (v *CommentUnresolveResponse) GetCommentUnresolve() CommentUnresolveCommentUnresolveCommentPayload {
+	return v.CommentUnresolve
+}
+
 // CommentUpdateCommentUpdateCommentPayload includes the requested fields of the GraphQL type CommentPayload.
 // The GraphQL type's documentation follows.
 //
@@ -23154,6 +23560,22 @@ type __CommentDeleteInput struct {
 
 // GetId returns __CommentDeleteInput.Id, and is useful for accessing the field via an interface.
 func (v *__CommentDeleteInput) GetId() string { return v.Id }
+
+// __CommentResolveInput is used internally by genqlient
+type __CommentResolveInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __CommentResolveInput.Id, and is useful for accessing the field via an interface.
+func (v *__CommentResolveInput) GetId() string { return v.Id }
+
+// __CommentUnresolveInput is used internally by genqlient
+type __CommentUnresolveInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __CommentUnresolveInput.Id, and is useful for accessing the field via an interface.
+func (v *__CommentUnresolveInput) GetId() string { return v.Id }
 
 // __CommentUpdateInput is used internally by genqlient
 type __CommentUpdateInput struct {
@@ -78435,6 +78857,122 @@ func CommentDelete(
 	}
 
 	data_ = &CommentDeleteResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CommentResolve.
+const CommentResolve_Operation = `
+mutation CommentResolve ($id: String!) {
+	commentResolve(id: $id) {
+		success
+		comment {
+			... TopLevelCommentSummaryFields
+		}
+	}
+}
+fragment TopLevelCommentSummaryFields on Comment {
+	id
+	body
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func CommentResolve(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *CommentResolveResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CommentResolve",
+		Query:  CommentResolve_Operation,
+		Variables: &__CommentResolveInput{
+			Id: id,
+		},
+	}
+
+	data_ = &CommentResolveResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CommentUnresolve.
+const CommentUnresolve_Operation = `
+mutation CommentUnresolve ($id: String!) {
+	commentUnresolve(id: $id) {
+		success
+		comment {
+			... TopLevelCommentSummaryFields
+		}
+	}
+}
+fragment TopLevelCommentSummaryFields on Comment {
+	id
+	body
+	url
+	createdAt
+	updatedAt
+	editedAt
+	resolvedAt
+	parentId
+	issueId
+	projectId
+	projectUpdateId
+	initiativeId
+	initiativeUpdateId
+	documentContentId
+	user {
+		id
+		name
+		displayName
+	}
+}
+`
+
+func CommentUnresolve(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *CommentUnresolveResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CommentUnresolve",
+		Query:  CommentUnresolve_Operation,
+		Variables: &__CommentUnresolveInput{
+			Id: id,
+		},
+	}
+
+	data_ = &CommentUnresolveResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

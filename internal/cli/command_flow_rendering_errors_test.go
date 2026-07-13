@@ -180,6 +180,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "comment get", args: []string{"comment", "get", "comment-id"}, operation: "comment", contains: "get comment comment-id"},
 		{name: "comment update", args: []string{"comment", "update", "comment-id", "--body", "New body"}, operation: "CommentUpdate", contains: "update comment comment-id"},
 		{name: "comment delete", args: []string{"comment", "delete", "comment-id"}, operation: "CommentDelete", contains: "delete comment comment-id"},
+		{name: "comment resolve", args: []string{"comment", "resolve", "comment-id"}, operation: "CommentResolve", contains: "resolve comment comment-id"},
+		{name: "comment unresolve", args: []string{"comment", "unresolve", "comment-id"}, operation: "CommentUnresolve", contains: "unresolve comment comment-id"},
 		{name: "issue close", args: []string{"issue", "close", "LIT-1"}, operation: "IssueClose", contains: "close issue LIT-1"},
 		{name: "issue relate", args: []string{"issue", "relate", "LIT-1", "LIT-2", "--type", "related"}, operation: "IssueRelationCreate", contains: "create issue relation"},
 		{name: "issue unrelate", args: []string{"issue", "unrelate", "issue-relation-id"}, operation: "IssueRelationDelete", contains: "delete issue relation issue-relation-id"},

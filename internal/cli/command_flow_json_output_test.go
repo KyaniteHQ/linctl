@@ -93,6 +93,8 @@ func Test_CommandFlows_print_json_for_read_and_comment_commands(t *testing.T) {
 		{args: []string{"--json", "comment", "get", "comment-id"}, keys: []string{"id"}},
 		{args: []string{"--json", "comment", "update", "comment-id", "--body", "New body"}, keys: []string{"id", "body"}},
 		{args: []string{"--json", "comment", "delete", "comment-id"}, keys: []string{"id", "status"}},
+		{args: []string{"--json", "comment", "resolve", "comment-id"}, keys: []string{"id", "body"}},
+		{args: []string{"--json", "comment", "unresolve", "comment-id"}, keys: []string{"id", "body"}},
 		{args: []string{"--json", "--fields", "id,display_name", "initiative-update", "comments", "initiative-update-id", "--limit", "1"}, keys: []string{"comments"}},
 		{args: []string{"--json", "project", "list", "--limit", "1"}, keys: []string{"projects", "has_next_page"}},
 		{args: []string{"--json", "project", "all", "--limit", "1"}, keys: []string{"projects", "has_next_page"}},

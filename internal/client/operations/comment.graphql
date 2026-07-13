@@ -32,6 +32,24 @@ mutation CommentDelete($id: String!) {
   }
 }
 
+mutation CommentResolve($id: String!) {
+  commentResolve(id: $id) {
+    success
+    comment {
+      ...TopLevelCommentSummaryFields
+    }
+  }
+}
+
+mutation CommentUnresolve($id: String!) {
+  commentUnresolve(id: $id) {
+    success
+    comment {
+      ...TopLevelCommentSummaryFields
+    }
+  }
+}
+
 query comment_botActor($id: String, $hash: String) {
   comment(id: $id, hash: $hash) {
     id

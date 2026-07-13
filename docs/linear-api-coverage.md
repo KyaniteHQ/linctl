@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 466 | 146 | 466 |
+| Upstream SDK root methods with generated local operations | 466 | 148 | 466 |
 | Upstream Query root fields used by generated local operations | 162 | 113 | 162 |
-| Upstream Mutation root fields used by generated local operations | 370 | 34 | 370 |
-| Local generated Go operations declared in GraphQL files | 331 | 331 | 331 |
-| Public CLI commands from command inventory | 427 | 308 | 427 |
+| Upstream Mutation root fields used by generated local operations | 370 | 36 | 370 |
+| Local generated Go operations declared in GraphQL files | 333 | 333 | 333 |
+| Public CLI commands from command inventory | 427 | 310 | 427 |
 
 ## Upstream SDK Root Methods
 
@@ -75,8 +75,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `authenticationSessions` | getter | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `availableUsers` | getter | intentionally_excluded | available-user picker enumeration is a specialized product resolver; `user list` is the supported user read surface |
 | `comment` | method | generated_operation | local GraphQL operation uses this root |
-| `commentResolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
-| `commentUnresolve` | method | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
+| `commentResolve` | method | generated_operation | local GraphQL operation uses this root |
+| `commentUnresolve` | method | generated_operation | local GraphQL operation uses this root |
 | `comments` | method | generated_operation | local GraphQL operation uses this root |
 | `constructor` | method | blocked_needs_design | SDK method is not matched to a GraphQL root field; explicit classification required |
 | `createAgentActivity` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -694,8 +694,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `attachmentUpdate` | `AttachmentPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `commentCreate` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `commentDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
-| `commentResolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
-| `commentUnresolve` | `CommentPayload!` | blocked_needs_design | state-changing operation needs guarded target semantics before exposure |
+| `commentResolve` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
+| `commentUnresolve` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `commentUpdate` | `CommentPayload!` | generated_operation | root field used by local GraphQL operation |
 | `contactCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `contactSalesCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1041,6 +1041,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | --- | --- | --- | --- | --- |
 | `AttachmentLinkURL` | mutation | `attachmentCreate` | generated | `internal/client/generated.go` |
 | `CommentDelete` | mutation | `commentDelete` | generated | `internal/client/generated.go` |
+| `CommentResolve` | mutation | `commentResolve` | generated | `internal/client/generated.go` |
+| `CommentUnresolve` | mutation | `commentUnresolve` | generated | `internal/client/generated.go` |
 | `CommentUpdate` | mutation | `commentUpdate` | generated | `internal/client/generated.go` |
 | `CompletedWorkflowStates` | query | `workflowStates` | generated | `internal/client/generated.go` |
 | `CycleArchive` | mutation | `cycleArchive` | generated | `internal/client/generated.go` |
@@ -1519,8 +1521,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Comment | `comment created-issues` | `Comment.createdIssues` via `Query.comment` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Comment | `comment update` | `Mutation.commentUpdate` with `CommentUpdateInput` | Resolve the comment, then compare the pinned team through its parent issue; non-issue comments are refused | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Comment | `comment delete` | `Mutation.commentDelete` | Resolve the comment, then compare the pinned team through its parent issue before deleting; non-issue comments are refused | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| Comment | `comment resolve` | `Mutation.commentResolve` | Blocked: resolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Comment | `comment unresolve` | `Mutation.commentUnresolve` | Blocked: unresolving must first identify and compare the parent issue/project/update/document scope | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| Comment | `comment resolve` | `Mutation.commentResolve` | Resolve the comment, then compare the pinned team through its parent issue before resolving the thread; non-issue comments are refused | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Comment | `comment unresolve` | `Mutation.commentUnresolve` | Resolve the comment, then compare the pinned team through its parent issue before reopening the thread; non-issue comments are refused | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Project | `project list` | `Query.team`, `Team.projects` | Read-only, resolved-team scoped | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Project | `project all` | `Query.projects` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Project | `project get` | `Query.project` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |

@@ -85,6 +85,64 @@ func DeleteComment(
 	})
 }
 
+// ResolveComment resolves a comment thread after comparing the pinned target
+// through the comment's parent issue.
+func ResolveComment(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+	commentID string,
+) (CommentSummary, error) {
+	if commentID == "" {
+		return CommentSummary{}, fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
+	}
+
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CommentSummary, error) {
+		if err := guardCommentTarget(ctx, graphqlClient, guard, commentID); err != nil {
+			return CommentSummary{}, err
+		}
+
+		resolved, err := CommentResolve(ctx, graphqlClient, commentID)
+		if err != nil {
+			return CommentSummary{}, fmt.Errorf("resolve comment %s: %w", commentID, err)
+		}
+		if !resolved.CommentResolve.Success {
+			return CommentSummary{}, fmt.Errorf("%w: commentResolve reported no success", ErrMutationFailed)
+		}
+
+		return topLevelCommentSummary(resolved.CommentResolve.Comment.TopLevelCommentSummaryFields), nil
+	})
+}
+
+// UnresolveComment reopens a comment thread after comparing the pinned target
+// through the comment's parent issue.
+func UnresolveComment(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+	commentID string,
+) (CommentSummary, error) {
+	if commentID == "" {
+		return CommentSummary{}, fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
+	}
+
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CommentSummary, error) {
+		if err := guardCommentTarget(ctx, graphqlClient, guard, commentID); err != nil {
+			return CommentSummary{}, err
+		}
+
+		unresolved, err := CommentUnresolve(ctx, graphqlClient, commentID)
+		if err != nil {
+			return CommentSummary{}, fmt.Errorf("unresolve comment %s: %w", commentID, err)
+		}
+		if !unresolved.CommentUnresolve.Success {
+			return CommentSummary{}, fmt.Errorf("%w: commentUnresolve reported no success", ErrMutationFailed)
+		}
+
+		return topLevelCommentSummary(unresolved.CommentUnresolve.Comment.TopLevelCommentSummaryFields), nil
+	})
+}
+
 // guardCommentTarget resolves a comment and confirms its parent issue belongs to
 // the resolved team. Comments not attached to an issue are refused because the
 // issue guard cannot prove their target.

@@ -147,6 +147,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "comment get", args: []string{"comment", "get", "comment-id"}, contains: "comment-id Omer First comment"},
 		{name: "comment update", args: []string{"comment", "update", "comment-id", "--body", "New body"}, contains: "comment-id Omer First comment"},
 		{name: "comment delete", args: []string{"comment", "delete", "comment-id"}, contains: "comment-id deleted"},
+		{name: "comment resolve", args: []string{"comment", "resolve", "comment-id"}, contains: "comment-id Omer First comment"},
+		{name: "comment unresolve", args: []string{"comment", "unresolve", "comment-id"}, contains: "comment-id Omer First comment"},
 		{name: "comment bot actor", args: []string{"comment", "bot-actor", "comment-id"}, contains: "comment-id bot bot-actor-id GitHub [github]"},
 		{name: "comment children", args: []string{"comment", "children", "comment-id", "--limit", "1"}, contains: "child-comment-id Omer 2026-06-19T12:00:00Z"},
 		{name: "comment created issues", args: []string{"comment", "created-issues", "comment-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},

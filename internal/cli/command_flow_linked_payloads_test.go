@@ -46,6 +46,10 @@ func commandFlowCommentPayload(operation string) (string, bool) {
 		return `{"commentUpdate":{"success":true,"comment":` + commandTopLevelCommentJSON() + `}}`, true
 	case "CommentDelete":
 		return `{"commentDelete":{"success":true,"entityId":"comment-id"}}`, true
+	case "CommentResolve":
+		return `{"commentResolve":{"success":true,"comment":` + commandTopLevelCommentJSON() + `}}`, true
+	case "CommentUnresolve":
+		return `{"commentUnresolve":{"success":true,"comment":` + commandTopLevelCommentJSON() + `}}`, true
 	default:
 		return "", false
 	}

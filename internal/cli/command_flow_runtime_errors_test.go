@@ -151,6 +151,8 @@ func Test_CommandFlows_report_runtime_and_writer_errors(t *testing.T) {
 			{"document", "update", "document-id", "--title", "Updated doc"},
 			{"comment", "update", "comment-id", "--body", "New body"},
 			{"comment", "delete", "comment-id"},
+			{"comment", "resolve", "comment-id"},
+			{"comment", "unresolve", "comment-id"},
 			{"label", "list"},
 			{"label", "get", "label-id"},
 			{"team", "list"},

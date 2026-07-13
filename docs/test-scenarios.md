@@ -1127,6 +1127,10 @@ Success is pass/fail:
    - Success: `project-label create`/`update`/`retire`/`restore` are Org-Scoped Writes; ProjectLabel has no team scope, so `--org-wide` is required and every command refuses to run without it, naming the flag in the error. `update`/`retire`/`restore` resolve the existing ProjectLabel through `requireProjectLabel` and compare its organization, failing closed as Target Mismatch when the resolved label belongs to a different organization. A pinned `project_id` does not block these writes. No command exposes `--force` or `--confirm`.
    - Evidence: `go test ./internal/client`, `Test_CreateProjectLabel_refuses_without_org_wide`, `Test_CreateProjectLabel_proceeds_when_pinned_project_present`, `Test_UpdateProjectLabel_refuses_when_organization_differs`, `Test_RetireProjectLabel_refuses_without_org_wide`, `Test_RestoreProjectLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_ProjectLabelFamilyCommands_require_org_wide`, `Test_ProjectLabelUpdate_emits_stable_target_mismatch_output`, `Test_ProjectLabelFamilyCommands_have_no_bypass_flags`.
 
+213. Comment thread resolve and unresolve
+   - Success: `linctl comment resolve COMMENT_ID` and `linctl comment unresolve COMMENT_ID` resolve the comment, compare the pinned team through its parent issue, refuse non-issue or mismatched comments without sending a mutation, and render the returned Comment summary through standard human and machine output controls.
+   - Evidence: `go test ./internal/client`, `Test_ResolveComment_resolves_comment_when_target_matches`, `Test_ResolveComment_refuses_comment_without_an_issue_without_mutating`, `Test_UnresolveComment_unresolves_comment_when_target_matches`, `Test_UnresolveComment_refuses_when_issue_team_differs_without_mutating`; `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/comment_resolve`, `Test_CommandFlows_execute_read_and_write_commands/comment_unresolve`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

@@ -581,6 +581,22 @@ Flags:
       --limit int   maximum comments to return (default 50)
 ```
 
+### linctl comment resolve
+
+Resolve a comment thread after pinned-target comparison
+
+```
+linctl comment resolve COMMENT_ID
+```
+
+### linctl comment unresolve
+
+Reopen a comment thread after pinned-target comparison
+
+```
+linctl comment unresolve COMMENT_ID
+```
+
 ### linctl comment update
 
 Edit a comment after pinned-target comparison
