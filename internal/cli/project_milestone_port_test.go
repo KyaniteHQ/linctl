@@ -17,6 +17,9 @@ type fakeProjectMilestonePort struct {
 	updated   client.ProjectMilestoneSummary
 	updateReq client.ProjectMilestoneUpdateRequest
 	updateErr error
+	deletedID string
+	deleteID  string
+	deleteErr error
 }
 
 func (port *fakeProjectMilestonePort) CreateProjectMilestone(
@@ -35,6 +38,15 @@ func (port *fakeProjectMilestonePort) UpdateProjectMilestone(
 	port.updateReq = request
 
 	return port.updated, port.updateErr
+}
+
+func (port *fakeProjectMilestonePort) DeleteProjectMilestone(
+	_ context.Context,
+	projectMilestoneID string,
+) (string, error) {
+	port.deleteID = projectMilestoneID
+
+	return port.deletedID, port.deleteErr
 }
 
 func Test_runProjectMilestoneCreate_calls_the_port_and_renders(t *testing.T) {
@@ -121,6 +133,26 @@ func Test_runProjectMilestoneUpdate_propagates_port_error(t *testing.T) {
 	require.ErrorContains(t, err, "update failed")
 }
 
+func Test_runProjectMilestoneDelete_calls_the_port_and_renders(t *testing.T) {
+	command, stdout, _ := bufferedCommand()
+	port := &fakeProjectMilestonePort{deletedID: "project-milestone-id"}
+
+	err := runProjectMilestoneDelete(context.Background(), command, &rootOptions{}, port, "project-milestone-id")
+
+	require.NoError(t, err)
+	require.Equal(t, "project-milestone-id", port.deleteID)
+	require.Contains(t, stdout.String(), "hard deleted ProjectMilestone project-milestone-id: cannot be undone via linctl")
+}
+
+func Test_runProjectMilestoneDelete_propagates_port_error(t *testing.T) {
+	command, _, _ := bufferedCommand()
+	port := &fakeProjectMilestonePort{deleteErr: errors.New("delete failed")}
+
+	err := runProjectMilestoneDelete(context.Background(), command, &rootOptions{}, port, "project-milestone-id")
+
+	require.ErrorContains(t, err, "delete failed")
+}
+
 func Test_projectMilestoneClientAdapter_forwards_to_client(t *testing.T) {
 	adapter := commandAdapterFor(testCommandRuntime(commandFlowFakeClient{}))
 	ctx := context.Background()
@@ -138,4 +170,8 @@ func Test_projectMilestoneClientAdapter_forwards_to_client(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, updated.ID)
+
+	deletedID, err := adapter.DeleteProjectMilestone(ctx, "project-milestone-id")
+	require.NoError(t, err)
+	require.NotEmpty(t, deletedID)
 }

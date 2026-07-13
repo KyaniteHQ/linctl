@@ -538,6 +538,7 @@ func Test_CommandFlows_report_project_milestone_write_runtime_errors(t *testing.
 	}{
 		{name: "create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}},
 		{name: "update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}},
+		{name: "delete", args: []string{"project-milestone", "delete", "project-milestone-id"}},
 	}
 
 	for _, test := range tests {
@@ -578,6 +579,7 @@ func Test_CommandFlows_report_project_milestone_write_writer_errors(t *testing.T
 	}{
 		{name: "create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}},
 		{name: "update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}},
+		{name: "delete", args: []string{"project-milestone", "delete", "project-milestone-id"}},
 	}
 
 	for _, test := range tests {

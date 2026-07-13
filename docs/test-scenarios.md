@@ -1115,6 +1115,11 @@ Success is pass/fail:
    - Success: `task browser-login-smoke` runs repeatable user-actor browser PKCE login in isolated temp auth state, prints the Linear authorization URL, captures the localhost callback through a one-shot listener without printing the callback URL, shows a browser success page, validates redacted login/status JSON, removes local token state, and reports only actor, target readiness, token status, and scope readiness. Running `task browser-login-smoke -- app` covers the app-actor browser install path only when the Linear fixture app is not already installed; repeatable app-actor coverage stays in `task live-oauth`.
    - Evidence: `go test ./internal/cli`, `Test_AuthLogin_builds_authorization_url_with_app_actor_by_default`, `Test_AuthLogin_builds_authorization_url_with_user_actor`, `Test_AuthLogin_state_mismatch_refuses_exchange_and_save`, `Test_AuthLogin_callback_url_exchanges_and_saves_after_readiness`, `Test_AuthLogin_raw_code_fallback_uses_authorization_code_exchange`, `Test_AuthLogin_reads_manual_callback_from_stdin_with_same_state`; `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke`; `go run github.com/go-task/task/v3/cmd/task@latest live-oauth`.
 
+210. ProjectMilestone delete
+   - Success: `linctl project-milestone delete PROJECT_MILESTONE_ID` hard deletes a ProjectMilestone only after resolving the ProjectMilestone's project and comparing the pinned target; the command takes exactly one ProjectMilestone id with no bulk form, `--force`, or confirmation prompt, and human output states the deletion cannot be undone via linctl.
+   - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/project_milestone_delete`, `Test_runProjectMilestoneDelete_calls_the_port_and_renders`, `Test_runProjectMilestoneDelete_propagates_port_error`, `Test_projectMilestoneClientAdapter_forwards_to_client`;
+     `go test ./internal/client`, `Test_DeleteProjectMilestone_removes_milestone_when_target_matches`, `Test_DeleteProjectMilestone_refuses_when_pinned_project_differs`, `Test_DeleteProjectMilestone_refuses_when_project_team_differs`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

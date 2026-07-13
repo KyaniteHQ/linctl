@@ -16197,6 +16197,38 @@ func (v *ProjectMilestoneCreateResponse) GetProjectMilestoneCreate() ProjectMile
 	return v.ProjectMilestoneCreate
 }
 
+// ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload includes the requested fields of the GraphQL type DeletePayload.
+// The GraphQL type's documentation follows.
+//
+// A generic payload return from entity deletion mutations.
+type ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The identifier of the deleted entity.
+	EntityId string `json:"entityId"`
+}
+
+// GetSuccess returns ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetEntityId returns ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload.EntityId, and is useful for accessing the field via an interface.
+func (v *ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload) GetEntityId() string {
+	return v.EntityId
+}
+
+// ProjectMilestoneDeleteResponse is returned by ProjectMilestoneDelete on success.
+type ProjectMilestoneDeleteResponse struct {
+	// Deletes a project milestone.
+	ProjectMilestoneDelete ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload `json:"projectMilestoneDelete"`
+}
+
+// GetProjectMilestoneDelete returns ProjectMilestoneDeleteResponse.ProjectMilestoneDelete, and is useful for accessing the field via an interface.
+func (v *ProjectMilestoneDeleteResponse) GetProjectMilestoneDelete() ProjectMilestoneDeleteProjectMilestoneDeleteDeletePayload {
+	return v.ProjectMilestoneDelete
+}
+
 // The status of a project milestone.
 type ProjectMilestoneStatus string
 
@@ -21710,6 +21742,14 @@ type __ProjectMilestoneCreateInput struct {
 
 // GetInput returns __ProjectMilestoneCreateInput.Input, and is useful for accessing the field via an interface.
 func (v *__ProjectMilestoneCreateInput) GetInput() LinearProjectMilestoneCreateInput { return v.Input }
+
+// __ProjectMilestoneDeleteInput is used internally by genqlient
+type __ProjectMilestoneDeleteInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __ProjectMilestoneDeleteInput.Id, and is useful for accessing the field via an interface.
+func (v *__ProjectMilestoneDeleteInput) GetId() string { return v.Id }
 
 // __ProjectMilestoneUpdateInput is used internally by genqlient
 type __ProjectMilestoneUpdateInput struct {
@@ -78441,6 +78481,41 @@ func ProjectMilestoneCreate(
 	}
 
 	data_ = &ProjectMilestoneCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by ProjectMilestoneDelete.
+const ProjectMilestoneDelete_Operation = `
+mutation ProjectMilestoneDelete ($id: String!) {
+	projectMilestoneDelete(id: $id) {
+		success
+		entityId
+	}
+}
+`
+
+func ProjectMilestoneDelete(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *ProjectMilestoneDeleteResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectMilestoneDelete",
+		Query:  ProjectMilestoneDelete_Operation,
+		Variables: &__ProjectMilestoneDeleteInput{
+			Id: id,
+		},
+	}
+
+	data_ = &ProjectMilestoneDeleteResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

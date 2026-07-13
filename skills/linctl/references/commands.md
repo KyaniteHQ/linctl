@@ -2917,6 +2917,14 @@ Flags:
       --target-date string   ProjectMilestone target date
 ```
 
+### linctl project-milestone delete
+
+Hard delete a ProjectMilestone after pinned-target comparison; cannot be undone via linctl
+
+```
+linctl project-milestone delete PROJECT_MILESTONE_ID
+```
+
 ### linctl project-milestone get
 
 Get one ProjectMilestone by id

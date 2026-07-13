@@ -179,6 +179,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "project milestone list", args: []string{"project-milestone", "list", "project-id", "--limit", "1"}, contains: "project-milestone-id Launch milestone [next]"},
 		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, contains: "project-milestone-id Created milestone [next]", fake: commandFlowFakeClient{expectedMilestoneCreateName: "Created milestone"}},
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, contains: "project-milestone-id Updated milestone [done]", fake: commandFlowFakeClient{expectedMilestoneUpdateName: "Updated milestone"}},
+		{name: "project milestone delete", args: []string{"project-milestone", "delete", "project-milestone-id"}, contains: "hard deleted ProjectMilestone project-milestone-id: cannot be undone via linctl"},
 		{name: "project status list", args: []string{"project-status", "list", "--limit", "1"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
 		{name: "project status get", args: []string{"project-status", "get", "project-status-id"}, contains: "project-status-id Backlog [backlog] #bec2c8"},
 		{name: "project status project count", args: []string{"project-status", "project-count", "project-status-id"}, contains: "project-status-id count 12 private 2 archived_team 1"},

@@ -188,6 +188,8 @@ func commandFlowProjectWritePayload(operation string) (string, bool) {
 		return `{"projectMilestoneCreate":{"success":true,"projectMilestone":` + commandProjectMilestoneJSON("Created milestone", "next") + `}}`, true
 	case "ProjectMilestoneUpdate":
 		return `{"projectMilestoneUpdate":{"success":true,"projectMilestone":` + commandProjectMilestoneJSON("Updated milestone", "done") + `}}`, true
+	case "ProjectMilestoneDelete":
+		return `{"projectMilestoneDelete":{"success":true,"entityId":"project-milestone-id"}}`, true
 	case "ProjectCreate":
 		return `{"projectCreate":{"success":true,"project":` + commandProjectJSON("Created project", "Backlog", "backlog") + `}}`, true
 	case "ProjectUpdate":

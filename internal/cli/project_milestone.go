@@ -20,6 +20,7 @@ func addProjectMilestoneCommand(ctx context.Context, root *cobra.Command, option
 	addProjectMilestoneIssuesCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneCreateCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneUpdateCommand(ctx, projectMilestoneCommand, options)
+	addProjectMilestoneDeleteCommand(ctx, projectMilestoneCommand, options)
 	root.AddCommand(projectMilestoneCommand)
 }
 

@@ -21,3 +21,8 @@ type projectMilestoneUpdater interface {
 		request client.ProjectMilestoneUpdateRequest,
 	) (client.ProjectMilestoneSummary, error)
 }
+
+// projectMilestoneDeleter is the Command Port the ProjectMilestone delete command depends on.
+type projectMilestoneDeleter interface {
+	DeleteProjectMilestone(ctx context.Context, projectMilestoneID string) (string, error)
+}

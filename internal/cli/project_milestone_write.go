@@ -6,7 +6,61 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/render"
 )
+
+func addProjectMilestoneDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	root.AddCommand(&cobra.Command{
+		Use:   "delete PROJECT_MILESTONE_ID",
+		Short: "Hard delete a ProjectMilestone after pinned-target comparison; cannot be undone via linctl",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(command *cobra.Command, args []string) error {
+			runtime, err := buildCommandRuntime(ctx, options)
+			if err != nil {
+				return err
+			}
+
+			return runProjectMilestoneDelete(ctx, command, options, commandAdapterFor(runtime), args[0])
+		},
+	})
+}
+
+func runProjectMilestoneDelete(
+	ctx context.Context,
+	command *cobra.Command,
+	options *rootOptions,
+	deleter projectMilestoneDeleter,
+	projectMilestoneID string,
+) error {
+	deletedID, err := deleter.DeleteProjectMilestone(ctx, projectMilestoneID)
+	if err != nil {
+		return err
+	}
+
+	return writeProjectMilestoneDeletion(command, options, deletedID)
+}
+
+// writeProjectMilestoneDeletion renders the ProjectMilestone delete confirmation.
+// It reuses the standard deletionResult JSON shape but overrides the human line
+// with an explicit irreversibility warning: ProjectMilestone delete is linctl's
+// one approved hard delete, and there is no restore path via linctl.
+func writeProjectMilestoneDeletion(command *cobra.Command, options *rootOptions, id string) error {
+	if wrote, err := writeIDOnly(command, options, id); wrote || err != nil {
+		return err
+	}
+	if options.quiet {
+		return nil
+	}
+	if options.json {
+		return writeJSONValue(command, options, deletionResult{ID: id, Status: "deleted"})
+	}
+
+	return render.WriteLine(
+		command.OutOrStdout(),
+		"hard deleted ProjectMilestone %s: cannot be undone via linctl",
+		id,
+	)
+}
 
 func addProjectMilestoneCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addProjectMilestoneWriteCommand(ctx, root, options, projectMilestoneWriteSpec{

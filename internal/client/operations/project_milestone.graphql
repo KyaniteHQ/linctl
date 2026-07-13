@@ -59,6 +59,13 @@ mutation ProjectMilestoneUpdate($id: String!, $input: ProjectMilestoneUpdateInpu
   }
 }
 
+mutation ProjectMilestoneDelete($id: String!) {
+  projectMilestoneDelete(id: $id) {
+    success
+    entityId
+  }
+}
+
 fragment ProjectMilestoneSummaryFields on ProjectMilestone {
   id
   name

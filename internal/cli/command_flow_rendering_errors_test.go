@@ -215,6 +215,7 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "project milestone issues", args: []string{"project-milestone", "issues", "project-milestone-id"}, operation: "projectMilestone_issues", contains: "list project milestone issues project-milestone-id"},
 		{name: "project milestone create", args: []string{"project-milestone", "create", "project-id", "--name", "Created milestone"}, operation: "ProjectMilestoneCreate", contains: "create project milestone"},
 		{name: "project milestone update", args: []string{"project-milestone", "update", "project-milestone-id", "--name", "Updated milestone"}, operation: "ProjectMilestoneUpdate", contains: "update project milestone project-milestone-id"},
+		{name: "project milestone delete", args: []string{"project-milestone", "delete", "project-milestone-id"}, operation: "ProjectMilestoneDelete", contains: "delete project milestone project-milestone-id"},
 		{name: "project create", args: []string{"project", "create", "--name", "Created project"}, operation: "ProjectCreate", contains: "create project"},
 		{name: "project update", args: []string{"project", "update", "project-id", "--name", "Updated project"}, operation: "ProjectUpdate", contains: "update project project-id"},
 		{name: "project archive", args: []string{"project", "archive", "project-id"}, operation: "ProjectArchive", contains: "archive project project-id"},

@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 466 | 133 | 466 |
+| Upstream SDK root methods with generated local operations | 466 | 134 | 466 |
 | Upstream Query root fields used by generated local operations | 162 | 113 | 162 |
-| Upstream Mutation root fields used by generated local operations | 370 | 21 | 370 |
-| Local generated Go operations declared in GraphQL files | 317 | 317 | 317 |
-| Public CLI commands from command inventory | 421 | 295 | 421 |
+| Upstream Mutation root fields used by generated local operations | 370 | 22 | 370 |
+| Local generated Go operations declared in GraphQL files | 318 | 318 | 318 |
+| Public CLI commands from command inventory | 421 | 296 | 421 |
 
 ## Upstream SDK Root Methods
 
@@ -190,7 +190,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `deleteOrganizationInvite` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteProject` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteProjectLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `deleteProjectMilestone` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `deleteProjectMilestone` | method | generated_operation | local GraphQL operation uses this root |
 | `deleteProjectRelation` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deleteProjectUpdate` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `deletePushSubscription` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -932,7 +932,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectLabelRetire` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle retire needs explicit organization/admin safety semantics |
 | `projectLabelUpdate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestoneCreate` | `ProjectMilestonePayload!` | generated_operation | root field used by local GraphQL operation |
-| `projectMilestoneDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `projectMilestoneDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectMilestoneMove` | `ProjectMilestoneMovePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectMilestoneUpdate` | `ProjectMilestonePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectReassignStatus` | `SuccessPayload!` | blocked_needs_design | project status reassignment mutates project workflow state and needs target-pinned guard semantics |
@@ -1075,6 +1075,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `ProjectArchive` | mutation | `projectArchive` | generated | `internal/client/generated.go` |
 | `ProjectCreate` | mutation | `projectCreate` | generated | `internal/client/generated.go` |
 | `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | generated | `internal/client/generated.go` |
+| `ProjectMilestoneDelete` | mutation | `projectMilestoneDelete` | generated | `internal/client/generated.go` |
 | `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | generated | `internal/client/generated.go` |
 | `ProjectUpdate` | mutation | `projectUpdate` | generated | `internal/client/generated.go` |
 | `ProjectUpdateCreate` | mutation | `projectUpdateCreate` | generated | `internal/client/generated.go` |
@@ -1570,7 +1571,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | ProjectMilestone | `project-milestone issues` | `ProjectMilestone.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | ProjectMilestone | `project-milestone create` | `Mutation.projectMilestoneCreate` with `projectId` | Resource-scoped, compare `project_id` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectMilestone | `project-milestone update` | `Mutation.projectMilestoneUpdate` | Resource-scoped, compare resolved project | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectMilestone | `project-milestone delete` | `Mutation.projectMilestoneDelete` | Resource-scoped, compare resolved project | blocked_needs_design | destructive command needs explicit safety semantics |
+| ProjectMilestone | `project-milestone delete` | `Mutation.projectMilestoneDelete` | Resource-scoped, compare resolved project | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Document | `document list` | `Query.documents` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Document | `document get` | `Query.document` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Document | `document comments` | `Document.comments` | Read-only, body-free metadata | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |

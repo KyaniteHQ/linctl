@@ -268,6 +268,36 @@ func UpdateProjectMilestone(
 	})
 }
 
+// DeleteProjectMilestone hard deletes a ProjectMilestone after resolving and
+// comparing its project. This is linctl's one approved irreversible write:
+// there is no restore path via linctl.
+func DeleteProjectMilestone(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+	projectMilestoneID string,
+) (string, error) {
+	if projectMilestoneID == "" {
+		return "", fmt.Errorf("%w: project milestone id is required", ErrWriteInvalid)
+	}
+
+	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (string, error) {
+		if err := guard.requireProjectMilestone(ctx, graphqlClient, projectMilestoneID); err != nil {
+			return "", err
+		}
+
+		deleted, err := ProjectMilestoneDelete(ctx, graphqlClient, projectMilestoneID)
+		if err != nil {
+			return "", fmt.Errorf("delete project milestone %s: %w", projectMilestoneID, err)
+		}
+		if !deleted.ProjectMilestoneDelete.Success {
+			return "", fmt.Errorf("%w: projectMilestoneDelete failed", ErrMutationFailed)
+		}
+
+		return deleted.ProjectMilestoneDelete.EntityId, nil
+	})
+}
+
 func validateProjectMilestoneUpdateRequest(request ProjectMilestoneUpdateRequest) error {
 	if request.ID == "" {
 		return fmt.Errorf("%w: project milestone id is required", ErrWriteInvalid)

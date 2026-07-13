@@ -70,3 +70,10 @@ func (adapter commandClientAdapter) UpdateProjectMilestone(
 ) (client.ProjectMilestoneSummary, error) {
 	return client.UpdateProjectMilestone(ctx, adapter.graphqlClient, adapter.target, request)
 }
+
+func (adapter commandClientAdapter) DeleteProjectMilestone(
+	ctx context.Context,
+	projectMilestoneID string,
+) (string, error) {
+	return client.DeleteProjectMilestone(ctx, adapter.graphqlClient, adapter.target, projectMilestoneID)
+}
