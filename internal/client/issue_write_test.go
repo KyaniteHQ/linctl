@@ -715,6 +715,10 @@ func Test_CreateIssues_resolves_target_once(t *testing.T) {
 		require.Equal(t, "LIT-1", outcome.Issue.Identifier)
 	}
 	require.Equal(t, 1, recorder.countOf("Viewer"), "viewer should resolve once, not per row")
+	// The fixture serves no "team" fixture, so the direct-lookup fast path errors
+	// and falls through to the "Teams" scan; both run exactly once per
+	// resolveTarget call, not once per row.
+	require.Equal(t, 1, recorder.countOf("team"), "the direct team lookup should run once, not per row")
 	require.Equal(t, 1, recorder.countOf("Teams"), "the team scan should run once, not per row")
 }
 
