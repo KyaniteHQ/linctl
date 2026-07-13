@@ -27,7 +27,7 @@ func Test_CommandFlows_emit_guarded_write_target_error_codes(t *testing.T) {
 			target:      config.Target{},
 			wantErr:     client.ErrTargetNotConfigured,
 			wantCode:    `"error_code":"TARGET_NOT_CONFIGURED"`,
-			wantMessage: "set org_id, team_key, and team_id in .linctl.toml",
+			wantMessage: "set org_id and team_key in .linctl.toml",
 		},
 		{
 			name: "resolved target mismatch",
@@ -39,7 +39,17 @@ func Test_CommandFlows_emit_guarded_write_target_error_codes(t *testing.T) {
 			},
 			wantErr:     client.ErrTargetMismatch,
 			wantCode:    `"error_code":"TARGET_MISMATCH"`,
-			wantMessage: "expected team_id=team-id team_key=LIT",
+			wantMessage: "cannot reach team_key=LIT team_id=team-id",
+		},
+		{
+			name: "team key override without a team id still fails closed",
+			target: config.Target{
+				OrgID:   "other-org",
+				TeamKey: "STG",
+			},
+			wantErr:     client.ErrTargetMismatch,
+			wantCode:    `"error_code":"TARGET_MISMATCH"`,
+			wantMessage: "cannot reach team_key=STG",
 		},
 	}
 	for _, test := range tests {

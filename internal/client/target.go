@@ -100,10 +100,9 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 	}
 	if !ok {
 		return ResolvedTarget{}, fmt.Errorf(
-			"%w: expected team_id=%s team_key=%s",
+			"%w: the active credential cannot reach %s",
 			ErrTargetMismatch,
-			expected.TeamID,
-			expected.TeamKey,
+			describeExpectedTeam(expected),
 		)
 	}
 
@@ -120,10 +119,15 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 	return newResolvedTarget(viewer.Viewer, resolvedTeam, project, hasProject, expected, resolved), nil
 }
 
+// requireExpectedTarget rejects a target that names no team at all. team_id is
+// optional: a team key is unique inside an organization, so org_id plus team_key
+// already identifies the team, and the id is resolved from the active credential.
+// Leaving it optional is what lets `--team KEY` retarget a write on its own and
+// still fail closed when the credential cannot reach KEY.
 func requireExpectedTarget(expected config.Target) error {
-	if expected.OrgID == "" || expected.TeamID == "" || expected.TeamKey == "" {
+	if expected.OrgID == "" || expected.TeamKey == "" {
 		return fmt.Errorf(
-			"%w: set org_id, team_key, and team_id in .linctl.toml",
+			"%w: set org_id and team_key in .linctl.toml",
 			ErrTargetNotConfigured,
 		)
 	}
@@ -186,8 +190,24 @@ func resolvedTargetConfig(
 	return resolved
 }
 
+// describeExpectedTeam names the pinned team for an error message, omitting the
+// team id when the target identifies the team by key alone.
+func describeExpectedTeam(expected config.Target) string {
+	if expected.TeamID == "" {
+		return "team_key=" + expected.TeamKey
+	}
+
+	return fmt.Sprintf("team_key=%s team_id=%s", expected.TeamKey, expected.TeamID)
+}
+
 func requireTargetMatch(expected config.Target, resolved config.Target) error {
-	if resolved.OrgID == expected.OrgID && resolved.TeamID == expected.TeamID && resolved.TeamKey == expected.TeamKey {
+	orgMatches := resolved.OrgID == expected.OrgID
+	keyMatches := resolved.TeamKey == expected.TeamKey
+	// An empty pinned team id means the target named the team by key alone, so the
+	// id resolved from the credential is the answer rather than something to check.
+	idMatches := expected.TeamID == "" || resolved.TeamID == expected.TeamID
+
+	if orgMatches && keyMatches && idMatches {
 		return nil
 	}
 
@@ -231,6 +251,12 @@ func resolveTeamDirect(
 	graphqlClient graphql.Client,
 	expected config.Target,
 ) (TeamsTeamsTeamConnectionNodesTeam, bool) {
+	// Without a pinned team id there is nothing to look up directly; the scan
+	// below resolves the team from its key instead.
+	if expected.TeamID == "" {
+		return TeamsTeamsTeamConnectionNodesTeam{}, false
+	}
+
 	result, err := team(ctx, graphqlClient, expected.TeamID)
 	if err != nil {
 		return TeamsTeamsTeamConnectionNodesTeam{}, false
@@ -258,9 +284,16 @@ func findResolvedTeam(
 	expected config.Target,
 ) (TeamsTeamsTeamConnectionNodesTeam, bool) {
 	for _, team := range teams {
-		if team.Id == expected.TeamID && team.Key == expected.TeamKey && team.Organization.Id == expected.OrgID {
-			return team, true
+		if team.Key != expected.TeamKey || team.Organization.Id != expected.OrgID {
+			continue
 		}
+		// A pinned team id is still compared exactly. It is only skipped when the
+		// target names the team by key alone.
+		if expected.TeamID != "" && team.Id != expected.TeamID {
+			continue
+		}
+
+		return team, true
 	}
 
 	return TeamsTeamsTeamConnectionNodesTeam{}, false
