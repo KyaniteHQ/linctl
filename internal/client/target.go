@@ -136,6 +136,14 @@ func resolveTeam(
 	graphqlClient graphql.Client,
 	expected config.Target,
 ) (TeamsTeamsTeamConnectionNodesTeam, bool, error) {
+	// Fast path: the pinned target already names the exact team id, so try a
+	// direct lookup before paging the org's full team list. Any error or
+	// mismatch falls through to the scan below, which remains the semantic
+	// authority for failures (including ErrTargetMismatch).
+	if resolvedTeam, ok := resolveTeamDirect(ctx, graphqlClient, expected); ok {
+		return resolvedTeam, true, nil
+	}
+
 	var after *string
 	for {
 		teams, err := Teams(ctx, graphqlClient, intPtr(targetResolutionPageSize), after, boolPtr(true))
@@ -216,6 +224,33 @@ func newResolvedTarget(
 		Resolved:  resolved,
 		Confirmed: true,
 	}
+}
+
+func resolveTeamDirect(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expected config.Target,
+) (TeamsTeamsTeamConnectionNodesTeam, bool) {
+	result, err := team(ctx, graphqlClient, expected.TeamID)
+	if err != nil {
+		return TeamsTeamsTeamConnectionNodesTeam{}, false
+	}
+
+	found := result.Team
+	if found.Id != expected.TeamID || found.Key != expected.TeamKey || found.Organization.Id != expected.OrgID {
+		return TeamsTeamsTeamConnectionNodesTeam{}, false
+	}
+
+	return TeamsTeamsTeamConnectionNodesTeam{
+		Id:   found.Id,
+		Key:  found.Key,
+		Name: found.Name,
+		Organization: TeamsTeamsTeamConnectionNodesTeamOrganization{
+			Id:     found.Organization.Id,
+			Name:   found.Organization.Name,
+			UrlKey: found.Organization.UrlKey,
+		},
+	}, true
 }
 
 func findResolvedTeam(

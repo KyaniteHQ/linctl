@@ -155,6 +155,12 @@ func (client commandFlowFakeClient) MakeRequest(
 	if request.OpName == client.failOperation {
 		return errors.New("operation failed")
 	}
+	// "team" is the direct-lookup fast path for the same team resolution that
+	// "Teams" performs by scanning, so a test forcing "Teams" to fail must also
+	// fail the fast path, or resolution would silently succeed through it.
+	if client.failOperation == "Teams" && request.OpName == "team" {
+		return errors.New("operation failed")
+	}
 	if err := client.requireExpectedVariables(request); err != nil {
 		return err
 	}

@@ -215,6 +215,83 @@ func Test_ResolveTarget_finds_project_team_on_later_page(t *testing.T) {
 	require.Equal(t, "project-id", target.Project.ID)
 }
 
+func Test_ResolveTarget_uses_direct_team_lookup_when_available(t *testing.T) {
+	// Given: no "Teams" fixture entry, so a fallback scan would fail with a
+	// missing-fixture error and fail the test.
+	graphqlClient := fakeGraphQLClient{
+		"Viewer": `{
+			"viewer": {
+				"id": "user-id",
+				"name": "Omer",
+				"displayName": "Omer",
+				"email": "omer@example.com",
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}
+		}`,
+		"team": `{
+			"team": {
+				"id": "team-id",
+				"key": "LIT",
+				"name": "linctl-it",
+				"description": null,
+				"archivedAt": null,
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}
+		}`,
+	}
+
+	// When
+	target, err := ResolveTarget(context.Background(), graphqlClient, config.Target{
+		OrgID:   "org-id",
+		TeamKey: "LIT",
+		TeamID:  "team-id",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.True(t, target.Confirmed)
+	require.Equal(t, "team-id", target.Team.ID)
+	require.Equal(t, "LIT", target.Team.Key)
+}
+
+func Test_ResolveTarget_falls_back_to_team_scan_when_direct_lookup_fails(t *testing.T) {
+	// Given: no "team" fixture entry, so the direct lookup errors and
+	// resolution must fall back to the paged "Teams" scan.
+	graphqlClient := fakeGraphQLClient{
+		"Viewer": `{
+			"viewer": {
+				"id": "user-id",
+				"name": "Omer",
+				"displayName": "Omer",
+				"email": "omer@example.com",
+				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+			}
+		}`,
+		"Teams": `{
+			"teams": {
+				"nodes": [{
+					"id": "team-id",
+					"key": "LIT",
+					"name": "linctl-it",
+					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+				}],
+				"pageInfo": {"hasNextPage": false, "endCursor": null}
+			}
+		}`,
+	}
+
+	// When
+	target, err := ResolveTarget(context.Background(), graphqlClient, config.Target{
+		OrgID:   "org-id",
+		TeamKey: "LIT",
+		TeamID:  "team-id",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "team-id", target.Team.ID)
+}
+
 func Test_ResolveTarget_refuses_project_next_page_without_cursor(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
 		"Viewer": `{
