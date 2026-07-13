@@ -145,10 +145,7 @@ print("" if not items else items[0].get(sys.argv[2], ""))' "$collection" "$field
   }
 
   "$binary" usage >/dev/null
-  LINCTL_BINARY="${binary}" go run github.com/go-task/task/v3/cmd/task@latest \
-    --taskfile "$repo_root/Taskfile.yml" \
-    --dir "$smoke_dir" \
-    live-oauth >/dev/null
+  (cd "$repo_root" && go tool task --dir "$smoke_dir" live-oauth) >/dev/null
 
   target_output="$smoke_dir/target.json"
   target_error="$smoke_dir/target.err"

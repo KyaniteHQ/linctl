@@ -5,29 +5,29 @@ GraphQL schema.
 
 ## Local Checks
 
+`go tool task ci` is the single local review gate. Run it before opening a PR:
+
 ```bash
-go generate ./...
-git diff --exit-code -- internal/client/generated.go
-go mod download
-go mod verify
-go mod tidy -diff
-go tool task fmt-check
-go build $(bash scripts/go-packages.sh)
-go vet $(bash scripts/go-packages.sh)
-go test -race -shuffle=on -count=1 $(bash scripts/go-packages.sh)
-go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout 5m $(bash scripts/go-packages.sh)
-shellcheck scripts/*.sh
-go tool govulncheck $(bash scripts/go-packages.sh)
-go tool task actionlint
 go tool task ci
+```
+
+It runs, in order: `deps-check` (module checksums and tidy state), `fmt-check`,
+`generate-check` (generated GraphQL client, command reference, and the
+upstream schema/coverage-ledger checks), `domain-language-check`,
+`browser-login-smoke-check`, `vet`, `test`, a build, `smoke-run`, `lint`,
+`shellcheck`, `actionlint`, and `vuln`. None of these modify source files.
+
+`go tool task coverage` is separate from `ci` and enforces 100% hand-written
+statement coverage. Run it on its own for product code changes:
+
+```bash
 go tool task coverage
 ```
 
-`go tool task ci` is the local review gate. It verifies module checksums and
-tidy state, formatting, generated artifacts, domain language, vet, tests, build,
-CLI smoke output, golangci-lint, ShellCheck, actionlint, and govulncheck without
-modifying source files. It also validates local GraphQL operations and
-`docs/linear-api-coverage.md` against the upstream Linear SDK checkout. The
+### Network & offline
+
+`go tool task ci` validates local GraphQL operations and
+`docs/linear-api-coverage.md` against the upstream `linear/linear` schema. The
 shared source contract is:
 
 - Remote: `https://github.com/linear/linear.git`
@@ -35,12 +35,22 @@ shared source contract is:
 - Default ref: `master`
 - Reusable checkout: `LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear`
 - Override ref: `LINCTL_LINEAR_SDK_REF=<branch-or-tag>`
+- Skip the refresh fetch against an existing reusable checkout: `LINCTL_LINEAR_SDK_OFFLINE=1`
+  (requires `LINCTL_LINEAR_SDK_UPSTREAM` to already point at a checkout; fails loud otherwise)
 
 Prepare or refresh an explicit reusable checkout with:
 
 ```bash
 LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear \
 go tool task linear-sdk-upstream-checkout
+```
+
+Run the gate offline once that checkout exists:
+
+```bash
+LINCTL_LINEAR_SDK_UPSTREAM=/path/to/linear \
+LINCTL_LINEAR_SDK_OFFLINE=1 \
+go tool task ci
 ```
 
 To skip Taskfile and run the helper scripts directly, pass `-upstream`:
