@@ -1340,6 +1340,36 @@ Flags:
       --limit int   maximum initiative updates to return (default 50)
 ```
 
+### linctl initiative-label
+
+Read Linear initiative labels
+
+```
+linctl initiative-label
+```
+
+### linctl initiative-label get
+
+Get one initiative label by id
+
+```
+linctl initiative-label get INITIATIVE_LABEL_ID
+```
+
+### linctl initiative-label list
+
+List visible Linear initiative labels
+
+```
+linctl initiative-label list [flags]
+```
+
+Flags:
+
+```
+      --limit int   maximum initiative labels to return (default 50)
+```
+
 ### linctl initiative-relation
 
 Read Linear initiative relations

@@ -1,0 +1,35 @@
+fragment InitiativeLabelSummaryFields on InitiativeLabel {
+  id
+  name
+  description
+  color
+  isGroup
+  lastAppliedAt
+  retiredAt
+  archivedAt
+  createdAt
+  updatedAt
+  parent {
+    id
+    name
+    color
+  }
+}
+
+query initiativeLabels($first: Int, $after: String, $includeArchived: Boolean) {
+  initiativeLabels(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...InitiativeLabelSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query initiativeLabel($id: String!) {
+  initiativeLabel(id: $id) {
+    ...InitiativeLabelSummaryFields
+  }
+}

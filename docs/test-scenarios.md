@@ -1131,6 +1131,10 @@ Success is pass/fail:
    - Success: `linctl comment resolve COMMENT_ID` and `linctl comment unresolve COMMENT_ID` resolve the comment, compare the pinned team through its parent issue, refuse non-issue or mismatched comments without sending a mutation, and render the returned Comment summary through standard human and machine output controls.
    - Evidence: `go test ./internal/client`, `Test_ResolveComment_resolves_comment_when_target_matches`, `Test_ResolveComment_refuses_comment_without_an_issue_without_mutating`, `Test_UnresolveComment_unresolves_comment_when_target_matches`, `Test_UnresolveComment_refuses_when_issue_team_differs_without_mutating`; `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/comment_resolve`, `Test_CommandFlows_execute_read_and_write_commands/comment_unresolve`.
 
+214. Initiative label reads
+   - Success: `linctl initiative-label list --limit N` and `linctl initiative-label get INITIATIVE_LABEL_ID` map organization-level InitiativeLabel responses into compact models, preserve parent-group metadata, and support standard human and machine output controls.
+   - Evidence: `go test ./internal/client ./internal/cli`, `Test_InitiativeLabelReads_return_compact_models`, `Test_InitiativeLabelReads_wrap_errors`, `Test_InitiativeLabelCommandFlows_list_get_and_project_fields`, `Test_WriteInitiativeLabel_covers_human_and_machine_modes`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

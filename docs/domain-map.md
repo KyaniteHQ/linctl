@@ -860,6 +860,31 @@ Planned commands:
 
 Initiative writes are deferred as organization-scoped planning surface.
 
+## InitiativeLabel
+
+Use `InitiativeLabel` for organization-level labels that categorize Initiatives and may be organized into parent groups.
+
+Schema backing:
+
+- Types: `InitiativeLabel`, `InitiativeLabelConnection`
+- Reads: `Query.initiativeLabels`, `Query.initiativeLabel`
+- Writes: `Mutation.initiativeLabelCreate`, `Mutation.initiativeLabelUpdate`, `Mutation.initiativeLabelDelete`, `Mutation.initiativeLabelRestore`, `Mutation.initiativeLabelRetire`
+- Relevant fields: `InitiativeLabel.id`, `InitiativeLabel.name`, `InitiativeLabel.description`, `InitiativeLabel.color`, `InitiativeLabel.isGroup`, `InitiativeLabel.parent`, `InitiativeLabel.lastAppliedAt`, `InitiativeLabel.retiredAt`, `InitiativeLabel.archivedAt`, `InitiativeLabel.createdAt`, `InitiativeLabel.updatedAt`
+
+Command status:
+
+| Command | Operation backing | Write scope |
+| --- | --- | --- |
+| `initiative-label list` | `Query.initiativeLabels` | Read-only |
+| `initiative-label get` | `Query.initiativeLabel` | Read-only |
+| `initiative-label create` | `Mutation.initiativeLabelCreate` | Blocked: create needs an explicit organization-scoped safety model |
+| `initiative-label update` | `Mutation.initiativeLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
+| `initiative-label delete` | `Mutation.initiativeLabelDelete` | Blocked: destructive command needs explicit InitiativeLabel safety semantics |
+| `initiative-label restore` | `Mutation.initiativeLabelRestore` | Deferred: no approved write semantics |
+| `initiative-label retire` | `Mutation.initiativeLabelRetire` | Deferred: no approved write semantics |
+
+Only `initiative-label list` and `initiative-label get` are implemented. InitiativeLabel writes remain deferred until their organization guard and lifecycle semantics are explicit.
+
 ## InitiativeRelation
 
 Use `InitiativeRelation` for Linear parent-child Initiative hierarchy edges.

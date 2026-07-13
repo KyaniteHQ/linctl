@@ -148,6 +148,7 @@ func addSearchFamilyCommands(ctx context.Context, command *cobra.Command, option
 	addSemanticSearchCommand(ctx, command, options)
 	addTemplateCommand(ctx, command, options)
 	addInitiativeCommand(ctx, command, options)
+	addInitiativeLabelCommand(ctx, command, options)
 	addInitiativeRelationCommand(ctx, command, options)
 	addInitiativeToProjectCommand(ctx, command, options)
 	addInitiativeUpdateCommand(ctx, command, options)

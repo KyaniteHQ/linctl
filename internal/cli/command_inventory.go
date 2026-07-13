@@ -365,6 +365,7 @@ var collectionKeys = []string{
 	"attachments",
 	"custom_views",
 	"project_labels",
+	"initiative_labels",
 	"project_statuses",
 	"spans",
 	"git_automation_states",
