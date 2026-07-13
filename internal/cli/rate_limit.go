@@ -10,10 +10,7 @@ import (
 )
 
 func addRateLimitCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
-		Use:   "rate-limit",
-		Short: "Read Linear rate-limit status",
-	}
+	command := newGroupCommand("rate-limit", "Read Linear rate-limit status")
 	addCommandWithSafety(command, CommandSafetyRead, &cobra.Command{
 		Use:   "status",
 		Short: "Print the authenticated Linear rate-limit status",

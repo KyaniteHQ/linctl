@@ -10,10 +10,7 @@ import (
 )
 
 func addUserCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	userCommand := &cobra.Command{
-		Use:   "user",
-		Short: "Read Linear users",
-	}
+	userCommand := newGroupCommand("user", "Read Linear users")
 	addUserListCommand(ctx, userCommand, options)
 	addUserGetCommand(ctx, userCommand, options)
 	addUserMeCommand(ctx, userCommand, options)

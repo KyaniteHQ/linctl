@@ -10,10 +10,7 @@ import (
 )
 
 func addApplicationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
-		Use:   "application",
-		Short: "Read Linear OAuth application metadata",
-	}
+	command := newGroupCommand("application", "Read Linear OAuth application metadata")
 	command.AddCommand(&cobra.Command{
 		Use:   "info CLIENT_ID",
 		Short: "Get public OAuth application metadata",

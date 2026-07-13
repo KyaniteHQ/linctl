@@ -10,10 +10,7 @@ import (
 )
 
 func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	issueCommand := &cobra.Command{
-		Use:   "issue",
-		Short: "Read and write Linear issues",
-	}
+	issueCommand := newGroupCommand("issue", "Read and write Linear issues")
 	addIssueListCommand(ctx, issueCommand, options)
 	addIssueSearchCommand(ctx, issueCommand, options)
 	addIssueFigmaFileKeySearchCommand(ctx, issueCommand, options)

@@ -10,10 +10,7 @@ import (
 )
 
 func addProjectMilestoneCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	projectMilestoneCommand := &cobra.Command{
-		Use:   "project-milestone",
-		Short: "Read and write Linear project milestones",
-	}
+	projectMilestoneCommand := newGroupCommand("project-milestone", "Read and write Linear project milestones")
 	addProjectMilestoneAllCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneListCommand(ctx, projectMilestoneCommand, options)
 	addProjectMilestoneGetCommand(ctx, projectMilestoneCommand, options)

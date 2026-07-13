@@ -11,10 +11,7 @@ import (
 )
 
 func addCycleCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	cycleCommand := &cobra.Command{
-		Use:   "cycle",
-		Short: "Read and write Linear Cycles",
-	}
+	cycleCommand := newGroupCommand("cycle", "Read and write Linear Cycles")
 	addCycleListCommand(ctx, cycleCommand, options)
 	addCycleGetCommand(ctx, cycleCommand, options)
 	addCycleIssuesCommand(ctx, cycleCommand, options)

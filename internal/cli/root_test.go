@@ -124,6 +124,51 @@ func Test_execute_emits_error_envelope_on_failure(t *testing.T) {
 	require.NotEmpty(t, envelope.Message)
 }
 
+func Test_GroupCommand_unknown_subcommand_returns_error(t *testing.T) {
+	// Given
+	stdout := bytes.Buffer{}
+	stderr := bytes.Buffer{}
+
+	// When
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr, []string{"issue", "bogus"})
+
+	// Then
+	require.ErrorContains(t, err, `unknown command "bogus"`)
+	lines := strings.Split(strings.TrimRight(stderr.String(), "\n"), "\n")
+	require.Len(t, lines, 1)
+	var envelope errorEnvelope
+	require.NoError(t, json.Unmarshal([]byte(lines[0]), &envelope))
+	require.NotEmpty(t, envelope.Message)
+	require.NotContains(t, stdout.String(), "Usage:")
+}
+
+func Test_GroupCommand_bare_group_prints_help(t *testing.T) {
+	// Given
+	stdout := bytes.Buffer{}
+	stderr := bytes.Buffer{}
+
+	// When
+	err := execute(context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, &stderr, []string{"issue"})
+
+	// Then
+	require.NoError(t, err)
+	require.Contains(t, stdout.String(), "Usage:")
+	require.Empty(t, stderr.String())
+}
+
+func Test_execute_falls_back_to_plain_error_when_envelope_write_fails(t *testing.T) {
+	// Given
+	stdout := bytes.Buffer{}
+
+	// When
+	err := execute(
+		context.Background(), BuildInfo{}, strings.NewReader(""), &stdout, commandFailingWriter{}, []string{"not-a-real-command"},
+	)
+
+	// Then
+	require.Error(t, err)
+}
+
 func Test_Usage_prints_overview_when_called(t *testing.T) {
 	// Given
 	stdout := bytes.Buffer{}

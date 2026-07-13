@@ -74,10 +74,7 @@ type authLogoutFlags struct {
 }
 
 func addAuthCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	authCommand := &cobra.Command{
-		Use:   "auth",
-		Short: "Manage linctl OAuth authentication",
-	}
+	authCommand := newGroupCommand("auth", "Manage linctl OAuth authentication")
 	annotateCommand(authCommand, commandSafetyAnnotation, string(CommandSafetyLocal))
 	addAuthConfigureCommand(ctx, authCommand, options)
 	addAuthLoginCommand(ctx, authCommand, options)

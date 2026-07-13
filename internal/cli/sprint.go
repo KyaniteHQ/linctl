@@ -10,10 +10,7 @@ import (
 )
 
 func addSprintCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	sprintCommand := &cobra.Command{
-		Use:   "sprint",
-		Short: "Read Linear Cycle sprint reports",
-	}
+	sprintCommand := newGroupCommand("sprint", "Read Linear Cycle sprint reports")
 	addSprintCurrentCommand(ctx, sprintCommand, options)
 	addSprintReportCommand(ctx, sprintCommand, options)
 	root.AddCommand(sprintCommand)

@@ -11,10 +11,7 @@ import (
 )
 
 func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	projectCommand := &cobra.Command{
-		Use:   "project",
-		Short: "Read and write Linear projects",
-	}
+	projectCommand := newGroupCommand("project", "Read and write Linear projects")
 	addProjectListCommand(ctx, projectCommand, options)
 	addProjectAllCommand(ctx, projectCommand, options)
 	addProjectGetCommand(ctx, projectCommand, options)

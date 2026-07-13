@@ -55,10 +55,7 @@ func addAttachmentURLCommand(ctx context.Context, root *cobra.Command, options *
 }
 
 func addAttachmentIssueCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	issueCommand := &cobra.Command{
-		Use:   "issue",
-		Short: "Read the issue associated with an attachment",
-	}
+	issueCommand := newGroupCommand("issue", "Read the issue associated with an attachment")
 	root.AddCommand(issueCommand)
 
 	issueCommand.AddCommand(&cobra.Command{

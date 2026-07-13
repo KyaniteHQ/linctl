@@ -10,10 +10,7 @@ import (
 )
 
 func addAuditEntryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
-		Use:   "audit-entry",
-		Short: "Read Linear audit entry catalogs",
-	}
+	command := newGroupCommand("audit-entry", "Read Linear audit entry catalogs")
 	command.AddCommand(&cobra.Command{
 		Use:   "types",
 		Short: "List Linear audit entry types",

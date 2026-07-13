@@ -39,10 +39,7 @@ func addReadListGetCommand[Page any, Item any](
 	spec readListGetSpec[Page, Item],
 ) *cobra.Command {
 	limit := 50
-	parentCommand := &cobra.Command{
-		Use:   spec.Use,
-		Short: spec.Short,
-	}
+	parentCommand := newGroupCommand(spec.Use, spec.Short)
 
 	listCommand := &cobra.Command{
 		Use:   "list",

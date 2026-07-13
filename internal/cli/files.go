@@ -55,10 +55,7 @@ var newFileTransferHTTPClient = func(options *rootOptions) httpDoer {
 var openUploadFile = os.Open
 
 func addFilesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	filesCommand := &cobra.Command{
-		Use:   "files",
-		Short: "Upload and download Linear file assets",
-	}
+	filesCommand := newGroupCommand("files", "Upload and download Linear file assets")
 	addFilesUploadCommand(ctx, filesCommand, options)
 	addFilesDownloadCommand(ctx, filesCommand, options)
 	addCommandWithSafety(root, CommandSafetyWrite, filesCommand)

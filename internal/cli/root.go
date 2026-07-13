@@ -169,9 +169,10 @@ func Execute(ctx context.Context, build BuildInfo) error {
 }
 
 // execute runs linctl with injectable streams and args so the failure path
-// (the structured error envelope) is testable. On any error it emits a single
-// JSON error envelope to stderr for machine consumers and still returns the
-// error so main can print the human-readable line and set the exit code.
+// (the structured error envelope) is testable. On any error it emits exactly
+// one error representation to stderr for machine consumers: the JSON error
+// envelope, or a plain-text fallback line if the envelope itself fails to
+// write. main only sets the exit code from the returned error.
 func execute(
 	ctx context.Context,
 	build BuildInfo,
@@ -190,8 +191,10 @@ func execute(
 
 	err := command.ExecuteContext(ctx)
 	if err != nil {
-		//nolint:errcheck // best-effort structured error on stderr; the error is still returned
-		_ = writeErrorEnvelope(command.ErrOrStderr(), err)
+		if envelopeErr := writeErrorEnvelope(command.ErrOrStderr(), err); envelopeErr != nil {
+			//nolint:errcheck // fallback path; the original error is still returned
+			fmt.Fprintln(command.ErrOrStderr(), err)
+		}
 	}
 
 	return err

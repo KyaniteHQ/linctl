@@ -9,10 +9,7 @@ import (
 )
 
 func addExternalLinkCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	parentCommand := &cobra.Command{
-		Use:   "external-link",
-		Short: "Read Linear external links",
-	}
+	parentCommand := newGroupCommand("external-link", "Read Linear external links")
 
 	getCommand := &cobra.Command{
 		Use:   "get EXTERNAL_LINK_ID",

@@ -10,10 +10,7 @@ import (
 )
 
 func addLabelCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	labelCommand := &cobra.Command{
-		Use:   "label",
-		Short: "Read and write Linear issue labels",
-	}
+	labelCommand := newGroupCommand("label", "Read and write Linear issue labels")
 	addLabelListCommand(ctx, labelCommand, options)
 	addLabelGetCommand(ctx, labelCommand, options)
 	addLabelChildrenCommand(ctx, labelCommand, options)

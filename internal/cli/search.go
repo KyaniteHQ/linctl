@@ -10,10 +10,7 @@ import (
 )
 
 func addSearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
-		Use:   "search",
-		Short: "Search Linear issues, projects, and documents",
-	}
+	command := newGroupCommand("search", "Search Linear issues, projects, and documents")
 	addSearchDocumentsCommand(ctx, command, options)
 	addSearchIssuesCommand(ctx, command, options)
 	addSearchProjectsCommand(ctx, command, options)

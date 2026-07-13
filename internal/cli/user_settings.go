@@ -11,10 +11,7 @@ import (
 )
 
 func addUserSettingsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	settingsCommand := &cobra.Command{
-		Use:   "settings",
-		Short: "Read authenticated User settings",
-	}
+	settingsCommand := newGroupCommand("settings", "Read authenticated User settings")
 	addUserSettingsGetCommand(ctx, settingsCommand, options)
 	addUserSettingsNotificationCategoriesCommand(ctx, settingsCommand, options)
 	addUserSettingsNotificationCategoryCommand(ctx, settingsCommand, options)

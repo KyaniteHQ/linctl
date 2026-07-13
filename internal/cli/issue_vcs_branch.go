@@ -9,10 +9,7 @@ import (
 )
 
 func addIssueVCSBranchSearchCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	branchCommand := &cobra.Command{
-		Use:   "vcs-branch-search",
-		Short: "Read the issue matched by a VCS branch",
-	}
+	branchCommand := newGroupCommand("vcs-branch-search", "Read the issue matched by a VCS branch")
 	root.AddCommand(branchCommand)
 
 	branchCommand.AddCommand(&cobra.Command{

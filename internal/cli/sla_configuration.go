@@ -11,10 +11,7 @@ import (
 )
 
 func addSLAConfigurationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
-		Use:   "sla-configuration",
-		Short: "Read Linear SLA configurations",
-	}
+	command := newGroupCommand("sla-configuration", "Read Linear SLA configurations")
 
 	listCommand := &cobra.Command{
 		Use:   "list TEAM_ID_OR_KEY",

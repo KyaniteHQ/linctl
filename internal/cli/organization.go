@@ -11,10 +11,7 @@ import (
 
 func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	limit := 50
-	command := &cobra.Command{
-		Use:   "organization",
-		Short: "Read Linear organization metadata",
-	}
+	command := newGroupCommand("organization", "Read Linear organization metadata")
 	addOrganizationLabelsCommand(ctx, command, options)
 	addOrganizationProjectLabelsCommand(ctx, command, options)
 	addOrganizationTeamsCommand(ctx, command, options)

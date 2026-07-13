@@ -3,7 +3,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,10 +26,6 @@ func main() {
 		Date:    date,
 	})
 	if err != nil {
-		_, printErr := fmt.Fprintln(os.Stderr, err)
-		if printErr != nil {
-			os.Exit(2)
-		}
 		os.Exit(1)
 	}
 }
