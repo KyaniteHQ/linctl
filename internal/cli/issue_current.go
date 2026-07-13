@@ -16,7 +16,7 @@ func addIssueCurrentCommands(ctx context.Context, root *cobra.Command, options *
 		Short: "Print the Current Issue identifier",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			identifier, err := gitctx.CurrentIssueIdentifier(ctx, ".")
+			identifier, err := gitctx.CurrentIssueIdentifierForTeam(ctx, ".", pinnedTeamKeyHint(ctx, options))
 			if err != nil {
 				return err
 			}
@@ -77,7 +77,7 @@ func writeScalar(command *cobra.Command, options *rootOptions, key string, value
 }
 
 func resolveIssueArgument(ctx context.Context, options *rootOptions, args []string) (client.IssueSummary, error) {
-	issueID, err := issueArgumentOrCurrent(ctx, args)
+	issueID, err := issueArgumentOrCurrent(ctx, options, args)
 	if err != nil {
 		return client.IssueSummary{}, err
 	}
@@ -97,10 +97,10 @@ func resolveIssueArgumentWithReader(
 	return reader.GetIssueByID(ctx, issueID)
 }
 
-func issueArgumentOrCurrent(ctx context.Context, args []string) (string, error) {
+func issueArgumentOrCurrent(ctx context.Context, options *rootOptions, args []string) (string, error) {
 	if len(args) == 1 {
 		return args[0], nil
 	}
 
-	return gitctx.CurrentIssueIdentifier(ctx, ".")
+	return gitctx.CurrentIssueIdentifierForTeam(ctx, ".", pinnedTeamKeyHint(ctx, options))
 }

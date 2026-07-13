@@ -16,21 +16,63 @@ var ErrIssueReferenceMissing = errors.New("linear issue reference missing")
 
 var issueIdentifierPattern = regexp.MustCompile(`\b[A-Z][A-Z0-9]+-[0-9]+\b`)
 
+var issueIdentifierPatternAnyCase = regexp.MustCompile(`(?i)\b[a-z][a-z0-9]+-[0-9]+\b`)
+
 // ParseIssueIdentifier extracts the first Linear issue identifier from text.
+// An explicit uppercase identifier anywhere in the text always wins; failing
+// that, the first case-insensitive match is normalized to uppercase. This
+// tolerates Linear's own generated branch names (the `branchName` field and
+// the "copy branch name" UI action), which are lowercase.
 func ParseIssueIdentifier(text string) (string, bool) {
 	identifier := issueIdentifierPattern.FindString(text)
+	if identifier != "" {
+		return identifier, true
+	}
+
+	identifier = issueIdentifierPatternAnyCase.FindString(text)
 	if identifier == "" {
 		return "", false
 	}
 
-	return identifier, true
+	return strings.ToUpper(identifier), true
 }
 
-// CurrentIssueIdentifier derives the active Linear issue from git or jj checkout context.
+// ParseIssueIdentifierForTeam extracts the first Linear issue identifier from
+// text, restricted to the given team key. An empty team key keeps the
+// unfiltered behavior of ParseIssueIdentifier, so reads without a Pinned
+// Target are unaffected. A non-empty team key rejects any match whose
+// team-key portion does not equal teamKey, bounding the false-positive risk
+// that case-insensitive matching introduces (e.g. "fix-123", "bug-42").
+func ParseIssueIdentifierForTeam(text string, teamKey string) (string, bool) {
+	if teamKey == "" {
+		return ParseIssueIdentifier(text)
+	}
+
+	wantTeamKey := strings.ToUpper(teamKey)
+	for _, match := range issueIdentifierPatternAnyCase.FindAllString(text, -1) {
+		identifier := strings.ToUpper(match)
+		matchTeamKey, _, found := strings.Cut(identifier, "-")
+		if found && matchTeamKey == wantTeamKey {
+			return identifier, true
+		}
+	}
+
+	return "", false
+}
+
+// CurrentIssueIdentifier derives the active Linear issue from git or jj
+// checkout context, without restricting to a specific team key.
 func CurrentIssueIdentifier(ctx context.Context, dir string) (string, error) {
+	return CurrentIssueIdentifierForTeam(ctx, dir, "")
+}
+
+// CurrentIssueIdentifierForTeam derives the active Linear issue from git or jj
+// checkout context, restricted to the given team key. An empty team key keeps
+// the unfiltered behavior, so callers without a Pinned Target are unaffected.
+func CurrentIssueIdentifierForTeam(ctx context.Context, dir string, teamKey string) (string, error) {
 	branch, branchErr := currentGitBranch(ctx, dir)
 	if branchErr == nil {
-		identifier, ok := ParseIssueIdentifier(branch)
+		identifier, ok := ParseIssueIdentifierForTeam(branch, teamKey)
 		if ok {
 			return identifier, nil
 		}
@@ -39,7 +81,7 @@ func CurrentIssueIdentifier(ctx context.Context, dir string) (string, error) {
 
 	description, descriptionErr := currentJJDescription(ctx, dir)
 	if descriptionErr == nil {
-		identifier, ok := ParseIssueIdentifier(description)
+		identifier, ok := ParseIssueIdentifierForTeam(description, teamKey)
 		if ok {
 			return identifier, nil
 		}

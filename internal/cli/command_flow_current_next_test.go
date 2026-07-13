@@ -60,6 +60,34 @@ func Test_CommandFlows_resolve_current_issue_from_branch(t *testing.T) {
 	require.Contains(t, output, "LIT-1 Detail issue [Todo]")
 }
 
+func Test_CommandFlows_resolve_current_issue_from_lowercase_branch(t *testing.T) {
+	dir := t.TempDir()
+	runGitCommand(t, dir, "init")
+	runGitCommand(t, dir, "checkout", "-b", "omer/lit-12-thing")
+	t.Chdir(dir)
+	output := bytes.Buffer{}
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"issue", "id"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Equal(t, "LIT-12\n", output.String())
+}
+
+func Test_pinnedTeamKeyHint_returns_the_pinned_team_key(t *testing.T) {
+	teamKey := pinnedTeamKeyHint(context.Background(), &rootOptions{team: "LIT"})
+
+	require.Equal(t, "LIT", teamKey)
+}
+
+func Test_pinnedTeamKeyHint_returns_empty_when_config_is_unresolvable(t *testing.T) {
+	teamKey := pinnedTeamKeyHint(context.Background(), &rootOptions{profile: "does-not-exist"})
+
+	require.Empty(t, teamKey)
+}
+
 func Test_CommandFlows_print_current_issue_as_json(t *testing.T) {
 	output, err := runCurrentCommandInGitBranch(t, []string{"--json", "current"})
 

@@ -2,14 +2,16 @@ package gitctx
 
 import (
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 // FuzzParseIssueIdentifier asserts the parser never panics and that any
-// identifier it returns is a real, well-formed substring of the input that
-// re-parses to itself.
+// identifier it returns is a real, well-formed substring of the input
+// (case-insensitively, since lowercase matches are normalized to uppercase)
+// that re-parses to itself.
 func FuzzParseIssueIdentifier(f *testing.F) {
 	seeds := []string{
 		"",
@@ -40,7 +42,7 @@ func FuzzParseIssueIdentifier(f *testing.F) {
 		}
 
 		require.NotEmpty(t, identifier)
-		require.Contains(t, text, identifier)
+		require.Contains(t, strings.ToUpper(text), identifier)
 		require.Regexp(t, wellFormed, identifier)
 
 		again, againOK := ParseIssueIdentifier(identifier)

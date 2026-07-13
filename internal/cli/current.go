@@ -2,9 +2,11 @@ package cli
 
 import (
 	"context"
+	"strings"
 
 	"github.com/spf13/cobra"
 
+	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/KyaniteHQ/linctl/internal/gitctx"
 )
 
@@ -14,7 +16,7 @@ func addCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		Short: "Resolve the Linear issue for the current checkout",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			issueID, err := gitctx.CurrentIssueIdentifier(ctx, ".")
+			issueID, err := gitctx.CurrentIssueIdentifierForTeam(ctx, ".", pinnedTeamKeyHint(ctx, options))
 			if err != nil {
 				return err
 			}
@@ -26,6 +28,26 @@ func addCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		},
 	}
 	addCommandWithSafety(root, CommandSafetyRead, command)
+}
+
+// pinnedTeamKeyHint returns the Pinned Target's team key as a best-effort
+// parse filter for Current Issue resolution. It never errors: when config is
+// absent, unreadable, or has no team key configured, it returns "", which
+// keeps Current Issue resolution unfiltered. Any real config problem still
+// surfaces moments later from buildCommandRuntime for commands that need it.
+func pinnedTeamKeyHint(ctx context.Context, options *rootOptions) string {
+	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
+		GlobalPath:      defaultGlobalConfigPath(),
+		RepoPath:        ".linctl.toml",
+		ProfileOverride: options.profile,
+		TargetOverride:  targetOverride(options),
+	})
+	if err != nil {
+		return ""
+	}
+	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
+
+	return strings.TrimSpace(resolvedConfig.Target.TeamKey)
 }
 
 func runCurrentIssueRead(
@@ -49,7 +71,7 @@ func addDoneCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 		Short: "Close the current checkout issue",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			issueID, err := gitctx.CurrentIssueIdentifier(ctx, ".")
+			issueID, err := gitctx.CurrentIssueIdentifierForTeam(ctx, ".", pinnedTeamKeyHint(ctx, options))
 			if err != nil {
 				return err
 			}
