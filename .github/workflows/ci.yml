@@ -167,6 +167,9 @@ jobs:
         with:
           go-version-file: go.mod
           go-package: ./cmd/... ./internal/...
+          # v1.1.0 defaults cache: true inside its own setup-go, which collides
+          # with the module cache this job already restored (tar: File exists).
+          cache: false
 
   live-oauth:
     name: live oauth
