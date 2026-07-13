@@ -13,22 +13,17 @@ import (
 // ActorBotSummaryFields includes the GraphQL fields of ActorBot requested by the fragment ActorBotSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A bot actor representing a non-human entity that performed an action, such as an
-// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
-// Bot actors are displayed in activity feeds and history to indicate when changes
-// were made by applications rather than users.
+// A bot actor representing a non-human entity that performed an action, such as an integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow. Bot actors are displayed in activity feeds and history to indicate when changes were made by applications rather than users.
 type ActorBotSummaryFields struct {
 	// A unique identifier for the bot actor.
 	Id *string `json:"id"`
 	// The source type of the bot, identifying the application or integration (e.g., 'github', 'slack', 'workflow', 'ai').
 	Type string `json:"type"`
-	// A more specific classification within the bot type, providing additional
-	// context about the integration or application variant.
+	// A more specific classification within the bot type, providing additional context about the integration or application variant.
 	SubType *string `json:"subType"`
 	// The display name of the bot.
 	Name *string `json:"name"`
-	// The display name of the external user on behalf of whom the bot acted. Shown
-	// when an integration action was triggered by a specific person in the external system.
+	// The display name of the external user on behalf of whom the bot acted. Shown when an integration action was triggered by a specific person in the external system.
 	UserDisplayName *string `json:"userDisplayName"`
 	// A URL pointing to the avatar image representing this bot, typically the integration's logo or icon.
 	AvatarUrl *string `json:"avatarUrl"`
@@ -56,27 +51,23 @@ func (v *ActorBotSummaryFields) GetAvatarUrl() *string { return v.AvatarUrl }
 type AgentActivitySignal string
 
 const (
-	AgentActivitySignalStop     AgentActivitySignal = "stop"
-	AgentActivitySignalContinue AgentActivitySignal = "continue"
 	AgentActivitySignalAuth     AgentActivitySignal = "auth"
+	AgentActivitySignalContinue AgentActivitySignal = "continue"
 	AgentActivitySignalSelect   AgentActivitySignal = "select"
+	AgentActivitySignalStop     AgentActivitySignal = "stop"
 )
 
 var AllAgentActivitySignal = []AgentActivitySignal{
-	AgentActivitySignalStop,
-	AgentActivitySignalContinue,
 	AgentActivitySignalAuth,
+	AgentActivitySignalContinue,
 	AgentActivitySignalSelect,
+	AgentActivitySignalStop,
 }
 
 // AgentActivitySummaryFields includes the GraphQL fields of AgentActivity requested by the fragment AgentActivitySummaryFields.
 // The GraphQL type's documentation follows.
 //
-// An activity performed by or directed at an AI coding agent during a session.
-// Activities represent the observable steps of an agent's work, including
-// thoughts, actions (tool calls), responses, prompts from users, errors, and
-// elicitation requests. Each activity belongs to an agent session and is
-// associated with the user who initiated it.
+// An activity performed by or directed at an AI coding agent during a session. Activities represent the observable steps of an agent's work, including thoughts, actions (tool calls), responses, prompts from users, errors, and elicitation requests. Each activity belongs to an agent session and is associated with the user who initiated it.
 type AgentActivitySummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -230,12 +221,7 @@ func (v *AgentActivitySummaryFields) __premarshalJSON() (*__premarshalAgentActiv
 // AgentActivitySummaryFieldsAgentSession includes the requested fields of the GraphQL type AgentSession.
 // The GraphQL type's documentation follows.
 //
-// A session representing an AI coding agent's work on an issue or conversation.
-// Agent sessions track the lifecycle of an agent's engagement, from creation
-// through active work to completion or dismissal. Each session is associated with
-// an agent user (the bot), optionally a human creator, an issue, and a comment
-// thread where the agent posts updates. Sessions contain activities that record
-// the agent's observable steps and can be linked to pull requests created during the work.
+// A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.
 type AgentActivitySummaryFieldsAgentSession struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -558,11 +544,7 @@ func (v *AgentActivitySummaryFieldsContentAgentActivityThoughtContent) GetBody()
 // AgentActivitySummaryFieldsSourceComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type AgentActivitySummaryFieldsSourceComment struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -574,10 +556,7 @@ func (v *AgentActivitySummaryFieldsSourceComment) GetId() string { return v.Id }
 // AgentActivitySummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type AgentActivitySummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -590,53 +569,48 @@ func (v *AgentActivitySummaryFieldsUser) GetId() string { return v.Id }
 type AgentActivityType string
 
 const (
-	AgentActivityTypeThought     AgentActivityType = "thought"
 	AgentActivityTypeAction      AgentActivityType = "action"
-	AgentActivityTypeResponse    AgentActivityType = "response"
 	AgentActivityTypeElicitation AgentActivityType = "elicitation"
 	AgentActivityTypeError       AgentActivityType = "error"
 	AgentActivityTypePrompt      AgentActivityType = "prompt"
+	AgentActivityTypeResponse    AgentActivityType = "response"
+	AgentActivityTypeThought     AgentActivityType = "thought"
 )
 
 var AllAgentActivityType = []AgentActivityType{
-	AgentActivityTypeThought,
 	AgentActivityTypeAction,
-	AgentActivityTypeResponse,
 	AgentActivityTypeElicitation,
 	AgentActivityTypeError,
 	AgentActivityTypePrompt,
+	AgentActivityTypeResponse,
+	AgentActivityTypeThought,
 }
 
 // The status of an agent session.
 type AgentSessionStatus string
 
 const (
-	AgentSessionStatusPending       AgentSessionStatus = "pending"
 	AgentSessionStatusActive        AgentSessionStatus = "active"
-	AgentSessionStatusComplete      AgentSessionStatus = "complete"
 	AgentSessionStatusAwaitinginput AgentSessionStatus = "awaitingInput"
+	AgentSessionStatusComplete      AgentSessionStatus = "complete"
 	AgentSessionStatusError         AgentSessionStatus = "error"
+	AgentSessionStatusPending       AgentSessionStatus = "pending"
 	AgentSessionStatusStale         AgentSessionStatus = "stale"
 )
 
 var AllAgentSessionStatus = []AgentSessionStatus{
-	AgentSessionStatusPending,
 	AgentSessionStatusActive,
-	AgentSessionStatusComplete,
 	AgentSessionStatusAwaitinginput,
+	AgentSessionStatusComplete,
 	AgentSessionStatusError,
+	AgentSessionStatusPending,
 	AgentSessionStatusStale,
 }
 
 // AgentSessionSummaryFields includes the GraphQL fields of AgentSession requested by the fragment AgentSessionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A session representing an AI coding agent's work on an issue or conversation.
-// Agent sessions track the lifecycle of an agent's engagement, from creation
-// through active work to completion or dismissal. Each session is associated with
-// an agent user (the bot), optionally a human creator, an issue, and a comment
-// thread where the agent posts updates. Sessions contain activities that record
-// the agent's observable steps and can be linked to pull requests created during the work.
+// A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.
 type AgentSessionSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -659,8 +633,7 @@ type AgentSessionSummaryFields struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The human user responsible for the agent session. Null if the session was
-	// initiated via automation or by an agent user, with no responsible human user.
+	// The human user responsible for the agent session. Null if the session was initiated via automation or by an agent user, with no responsible human user.
 	Creator *AgentSessionSummaryFieldsCreatorUser `json:"creator"`
 	// The agent user that is associated with this agent session.
 	AppUser AgentSessionSummaryFieldsAppUser `json:"appUser"`
@@ -712,10 +685,7 @@ func (v *AgentSessionSummaryFields) GetIssue() *AgentSessionSummaryFieldsIssue {
 // AgentSessionSummaryFieldsAppUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type AgentSessionSummaryFieldsAppUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -727,10 +697,7 @@ func (v *AgentSessionSummaryFieldsAppUser) GetId() string { return v.Id }
 // AgentSessionSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type AgentSessionSummaryFieldsCreatorUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -742,12 +709,7 @@ func (v *AgentSessionSummaryFieldsCreatorUser) GetId() string { return v.Id }
 // AgentSessionSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type AgentSessionSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -764,8 +726,7 @@ func (v *AgentSessionSummaryFieldsIssue) GetIdentifier() string { return v.Ident
 // AgentSkillSummaryFields includes the GraphQL fields of AgentSkill requested by the fragment AgentSkillSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A user-defined skill that can be saved and reused in conversations with the
-// Linear Agent. Skills can be private to a user or shared with a team.
+// A user-defined skill that can be saved and reused in conversations with the Linear Agent. Skills can be private to a user or shared with a team.
 type AgentSkillSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -860,10 +821,7 @@ func (v *AgentSkillSummaryFields) GetLastUpdatedBy() *AgentSkillSummaryFieldsLas
 // AgentSkillSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type AgentSkillSummaryFieldsCreatorUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -875,10 +833,7 @@ func (v *AgentSkillSummaryFieldsCreatorUser) GetId() string { return v.Id }
 // AgentSkillSummaryFieldsLastUpdatedByUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type AgentSkillSummaryFieldsLastUpdatedByUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -890,10 +845,7 @@ func (v *AgentSkillSummaryFieldsLastUpdatedByUser) GetId() string { return v.Id 
 // AgentSkillSummaryFieldsOwnerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type AgentSkillSummaryFieldsOwnerUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -905,9 +857,7 @@ func (v *AgentSkillSummaryFieldsOwnerUser) GetId() string { return v.Id }
 // ApplicationInfoFields includes the GraphQL fields of Application requested by the fragment ApplicationInfoFields.
 // The GraphQL type's documentation follows.
 //
-// Public-facing information about an OAuth application. Contains only the fields
-// that are safe to display to users during the authorization flow, excluding
-// sensitive data like client secrets and internal configuration.
+// Public-facing information about an OAuth application. Contains only the fields that are safe to display to users during the authorization flow, excluding sensitive data like client secrets and internal configuration.
 type ApplicationInfoFields struct {
 	// OAuth application's ID.
 	Id string `json:"id"`
@@ -968,12 +918,7 @@ func (v *AttachmentLinkURLAttachmentCreateAttachmentPayload) GetAttachment() Att
 // AttachmentLinkURLAttachmentCreateAttachmentPayloadAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type AttachmentLinkURLAttachmentCreateAttachmentPayloadAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -1061,10 +1006,7 @@ func (v *AttachmentLinkURLAttachmentCreateAttachmentPayloadAttachment) __premars
 
 // AttachmentLinkURLResponse is returned by AttachmentLinkURL on success.
 type AttachmentLinkURLResponse struct {
-	// Creates a new attachment, or updates existing if the same `url` and `issueId`
-	// is used. To create an integration-aware attachment, use the
-	// integration-specific mutations such as `attachmentLinkZendesk`,
-	// `attachmentLinkSlack`, or `attachmentLinkURL` instead.
+	// Creates a new attachment, or updates existing if the same `url` and `issueId` is used. To create an integration-aware attachment, use the integration-specific mutations such as `attachmentLinkZendesk`, `attachmentLinkSlack`, or `attachmentLinkURL` instead.
 	AttachmentCreate AttachmentLinkURLAttachmentCreateAttachmentPayload `json:"attachmentCreate"`
 }
 
@@ -1076,12 +1018,7 @@ func (v *AttachmentLinkURLResponse) GetAttachmentCreate() AttachmentLinkURLAttac
 // AttachmentSummaryFields includes the GraphQL fields of Attachment requested by the fragment AttachmentSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type AttachmentSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -1089,12 +1026,9 @@ type AttachmentSummaryFields struct {
 	Title string `json:"title"`
 	// Content for the subtitle line in the Linear attachment widget.
 	Subtitle *string `json:"subtitle"`
-	// The URL of the external resource this attachment links to. Also serves as a
-	// unique identifier for the attachment within an issue; no two attachments on
-	// the same issue can share the same URL.
+	// The URL of the external resource this attachment links to. Also serves as a unique identifier for the attachment within an issue; no two attachments on the same issue can share the same URL.
 	Url string `json:"url"`
-	// The source type of the attachment, derived from the source metadata. Returns
-	// the integration type (e.g., 'github', 'slack', 'zendesk') or 'unknown' if no source is set.
+	// The source type of the attachment, derived from the source metadata. Returns the integration type (e.g., 'github', 'slack', 'zendesk') or 'unknown' if no source is set.
 	SourceType *string `json:"sourceType"`
 }
 
@@ -1144,11 +1078,7 @@ func (v *CommentDeleteResponse) GetCommentDelete() CommentDeleteCommentDeleteDel
 // CommentMetadataFields includes the GraphQL fields of Comment requested by the fragment CommentMetadataFields.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type CommentMetadataFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -1169,17 +1099,13 @@ type CommentMetadataFields struct {
 	IssueId *string `json:"issueId"`
 	// The ID of the project that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	ProjectId *string `json:"projectId"`
-	// The ID of the project update that the comment is associated with. Null if the
-	// comment belongs to a different parent entity type.
+	// The ID of the project update that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	ProjectUpdateId *string `json:"projectUpdateId"`
-	// The ID of the initiative that the comment is associated with. Null if the
-	// comment belongs to a different parent entity type.
+	// The ID of the initiative that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	InitiativeId *string `json:"initiativeId"`
-	// The ID of the initiative update that the comment is associated with. Null if
-	// the comment belongs to a different parent entity type.
+	// The ID of the initiative update that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	InitiativeUpdateId *string `json:"initiativeUpdateId"`
-	// The ID of the document content that the comment is associated with. Null if
-	// the comment belongs to a different parent entity type.
+	// The ID of the document content that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	DocumentContentId *string `json:"documentContentId"`
 	// The user who wrote the comment. Null for comments created by integrations or bots without a user association.
 	User *CommentMetadataFieldsUser `json:"user"`
@@ -1230,10 +1156,7 @@ func (v *CommentMetadataFields) GetUser() *CommentMetadataFieldsUser { return v.
 // CommentMetadataFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type CommentMetadataFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -1274,11 +1197,7 @@ func (v *CommentResolveCommentResolveCommentPayload) GetComment() CommentResolve
 // CommentResolveCommentResolveCommentPayloadComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type CommentResolveCommentResolveCommentPayloadComment struct {
 	TopLevelCommentSummaryFields `json:"-"`
 }
@@ -1477,11 +1396,7 @@ func (v *CommentUnresolveCommentUnresolveCommentPayload) GetComment() CommentUnr
 // CommentUnresolveCommentUnresolveCommentPayloadComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type CommentUnresolveCommentUnresolveCommentPayloadComment struct {
 	TopLevelCommentSummaryFields `json:"-"`
 }
@@ -1680,11 +1595,7 @@ func (v *CommentUpdateCommentUpdateCommentPayload) GetComment() CommentUpdateCom
 // CommentUpdateCommentUpdateCommentPayloadComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type CommentUpdateCommentUpdateCommentPayloadComment struct {
 	TopLevelCommentSummaryFields `json:"-"`
 }
@@ -1863,8 +1774,7 @@ func (v *CommentUpdateResponse) GetCommentUpdate() CommentUpdateCommentUpdateCom
 
 // CompletedWorkflowStatesResponse is returned by CompletedWorkflowStates on success.
 type CompletedWorkflowStatesResponse struct {
-	// All issue workflow states (issue statuses). Returns a paginated list of
-	// workflow states visible to the authenticated user, across all teams they have access to.
+	// All issue workflow states (issue statuses). Returns a paginated list of workflow states visible to the authenticated user, across all teams they have access to.
 	WorkflowStates CompletedWorkflowStatesWorkflowStatesWorkflowStateConnection `json:"workflowStates"`
 }
 
@@ -1886,13 +1796,7 @@ func (v *CompletedWorkflowStatesWorkflowStatesWorkflowStateConnection) GetNodes(
 // CompletedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type CompletedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -1900,8 +1804,7 @@ type CompletedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowSt
 	Name string `json:"name"`
 	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
 	Type string `json:"type"`
-	// The position of the state in the team's workflow. States are displayed in
-	// ascending order of position within their type group.
+	// The position of the state in the team's workflow. States are displayed in ascending order of position within their type group.
 	Position float64 `json:"position"`
 }
 
@@ -1928,29 +1831,25 @@ func (v *CompletedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkfl
 type ContextViewType string
 
 const (
-	ContextViewTypeActiveissues  ContextViewType = "activeIssues"
 	ContextViewTypeActivecycle   ContextViewType = "activeCycle"
-	ContextViewTypeUpcomingcycle ContextViewType = "upcomingCycle"
+	ContextViewTypeActiveissues  ContextViewType = "activeIssues"
 	ContextViewTypeBacklog       ContextViewType = "backlog"
 	ContextViewTypeTriage        ContextViewType = "triage"
+	ContextViewTypeUpcomingcycle ContextViewType = "upcomingCycle"
 )
 
 var AllContextViewType = []ContextViewType{
-	ContextViewTypeActiveissues,
 	ContextViewTypeActivecycle,
-	ContextViewTypeUpcomingcycle,
+	ContextViewTypeActiveissues,
 	ContextViewTypeBacklog,
 	ContextViewTypeTriage,
+	ContextViewTypeUpcomingcycle,
 }
 
 // CustomViewPreferencesFields includes the GraphQL fields of ViewPreferences requested by the fragment CustomViewPreferencesFields.
 // The GraphQL type's documentation follows.
 //
-// The display preferences for a view, controlling layout mode (list, board,
-// spreadsheet), grouping, sorting, column visibility, and other visual settings.
-// View preferences exist at two levels: organization-wide defaults and per-user
-// overrides. The effective preferences are computed by merging both layers, with
-// user preferences taking priority.
+// The display preferences for a view, controlling layout mode (list, board, spreadsheet), grouping, sorting, column visibility, and other visual settings. View preferences exist at two levels: organization-wide defaults and per-user overrides. The effective preferences are computed by merging both layers, with user preferences taking priority.
 type CustomViewPreferencesFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -1995,10 +1894,7 @@ func (v *CustomViewPreferencesFields) GetPreferences() CustomViewPreferencesFiel
 // CustomViewPreferencesFieldsPreferencesViewPreferencesValues includes the requested fields of the GraphQL type ViewPreferencesValues.
 // The GraphQL type's documentation follows.
 //
-// The computed view preferences values for a view, containing all display settings
-// such as layout mode, grouping, sorting, field visibility, and other visual
-// configuration. These values represent the merged result of organization defaults
-// and user overrides.
+// The computed view preferences values for a view, containing all display settings such as layout mode, grouping, sorting, field visibility, and other visual configuration. These values represent the merged result of organization defaults and user overrides.
 type CustomViewPreferencesFieldsPreferencesViewPreferencesValues struct {
 	CustomViewPreferencesValueFields `json:"-"`
 }
@@ -2199,10 +2095,7 @@ func (v *CustomViewPreferencesFieldsPreferencesViewPreferencesValues) __premarsh
 // CustomViewPreferencesValueFields includes the GraphQL fields of ViewPreferencesValues requested by the fragment CustomViewPreferencesValueFields.
 // The GraphQL type's documentation follows.
 //
-// The computed view preferences values for a view, containing all display settings
-// such as layout mode, grouping, sorting, field visibility, and other visual
-// configuration. These values represent the merged result of organization defaults
-// and user overrides.
+// The computed view preferences values for a view, containing all display settings such as layout mode, grouping, sorting, field visibility, and other visual configuration. These values represent the merged result of organization defaults and user overrides.
 type CustomViewPreferencesValueFields struct {
 	// The issue layout type.
 	Layout *string `json:"layout"`
@@ -2316,10 +2209,7 @@ func (v *CustomViewPreferencesValueFields) GetProjectShowEmptySubGroups() *strin
 // CustomViewSummaryFields includes the GraphQL fields of CustomView requested by the fragment CustomViewSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type CustomViewSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2327,13 +2217,9 @@ type CustomViewSummaryFields struct {
 	Name string `json:"name"`
 	// The description of the custom view.
 	Description *string `json:"description"`
-	// The entity type this view displays. Determined by which filter is set:
-	// "Project" if projectFilterData is set, "Initiative" if initiativeFilterData is
-	// set, "FeedItem" if feedItemFilterData is set, or "Issue" by default.
+	// The entity type this view displays. Determined by which filter is set: "Project" if projectFilterData is set, "Initiative" if initiativeFilterData is set, "FeedItem" if feedItemFilterData is set, or "Issue" by default.
 	ModelName string `json:"modelName"`
-	// Whether the custom view is shared with everyone in the organization. Shared
-	// views appear in the workspace sidebar for all members. Personal (non-shared)
-	// views are only visible to their owner.
+	// Whether the custom view is shared with everyone in the organization. Shared views appear in the workspace sidebar for all members. Personal (non-shared) views are only visible to their owner.
 	Shared bool `json:"shared"`
 	// The hex color code of the custom view icon.
 	Color *string `json:"color"`
@@ -2365,11 +2251,7 @@ func (v *CustomViewSummaryFields) GetSlugId() string { return v.SlugId }
 // CustomerNeedMetadataFields includes the GraphQL fields of CustomerNeed requested by the fragment CustomerNeedMetadataFields.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type CustomerNeedMetadataFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2382,17 +2264,13 @@ type CustomerNeedMetadataFields struct {
 	ArchivedAt *string `json:"archivedAt"`
 	// Whether the customer need is important or not. 0 = Not important, 1 = Important.
 	Priority float64 `json:"priority"`
-	// The URL of the source attachment linked to this need, if any. Returns the URL
-	// from either the issue attachment or project attachment. Null if the need has
-	// no attached source.
+	// The URL of the source attachment linked to this need, if any. Returns the URL from either the issue attachment or project attachment. Null if the need has no attached source.
 	Url *string `json:"url"`
 	// The customer organization this need belongs to. Null if the need has not yet been associated with a customer.
 	Customer *CustomerNeedMetadataFieldsCustomer `json:"customer"`
-	// The issue this need is linked to. Either issueId or projectId must be set.
-	// When set, the need's projectId is denormalized from the issue's project.
+	// The issue this need is linked to. Either issueId or projectId must be set. When set, the need's projectId is denormalized from the issue's project.
 	Issue *CustomerNeedMetadataFieldsIssue `json:"issue"`
-	// The project this need is linked to. For issue-based needs, this is
-	// denormalized from the issue's project. For project-only needs, this is set directly.
+	// The project this need is linked to. For issue-based needs, this is denormalized from the issue's project. For project-only needs, this is set directly.
 	Project *CustomerNeedMetadataFieldsProject `json:"project"`
 }
 
@@ -2430,11 +2308,7 @@ func (v *CustomerNeedMetadataFields) GetProject() *CustomerNeedMetadataFieldsPro
 // CustomerNeedMetadataFieldsCustomer includes the requested fields of the GraphQL type Customer.
 // The GraphQL type's documentation follows.
 //
-// A customer organization tracked in Linear's customer management system.
-// Customers represent external companies or organizations whose product requests
-// and feedback are captured as customer needs, which can be linked to issues and
-// projects. Customers can be associated with domains, external system IDs, Slack
-// channels, and managed by integrations such as Intercom or Salesforce.
+// A customer organization tracked in Linear's customer management system. Customers represent external companies or organizations whose product requests and feedback are captured as customer needs, which can be linked to issues and projects. Customers can be associated with domains, external system IDs, Slack channels, and managed by integrations such as Intercom or Salesforce.
 type CustomerNeedMetadataFieldsCustomer struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2451,12 +2325,7 @@ func (v *CustomerNeedMetadataFieldsCustomer) GetName() string { return v.Name }
 // CustomerNeedMetadataFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type CustomerNeedMetadataFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2478,9 +2347,7 @@ func (v *CustomerNeedMetadataFieldsIssue) GetTitle() string { return v.Title }
 // CustomerNeedMetadataFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type CustomerNeedMetadataFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2497,11 +2364,7 @@ func (v *CustomerNeedMetadataFieldsProject) GetName() string { return v.Name }
 // CustomerNeedSummaryFields includes the GraphQL fields of CustomerNeed requested by the fragment CustomerNeedSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type CustomerNeedSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2514,25 +2377,17 @@ type CustomerNeedSummaryFields struct {
 	ArchivedAt *string `json:"archivedAt"`
 	// Whether the customer need is important or not. 0 = Not important, 1 = Important.
 	Priority float64 `json:"priority"`
-	// The body content of the need in Markdown format. Used to capture manual input
-	// about needs that cannot be directly tied to an attachment. Null if the need's
-	// content comes from an attached source.
+	// The body content of the need in Markdown format. Used to capture manual input about needs that cannot be directly tied to an attachment. Null if the need's content comes from an attached source.
 	Body *string `json:"body"`
-	// The effective Markdown content shown for this customer need. Returns the
-	// manually stored body when present, otherwise falls back to content extracted
-	// from the source attachment. Null if no content is available.
+	// The effective Markdown content shown for this customer need. Returns the manually stored body when present, otherwise falls back to content extracted from the source attachment. Null if no content is available.
 	Content *string `json:"content"`
-	// The URL of the source attachment linked to this need, if any. Returns the URL
-	// from either the issue attachment or project attachment. Null if the need has
-	// no attached source.
+	// The URL of the source attachment linked to this need, if any. Returns the URL from either the issue attachment or project attachment. Null if the need has no attached source.
 	Url *string `json:"url"`
 	// The customer organization this need belongs to. Null if the need has not yet been associated with a customer.
 	Customer *CustomerNeedSummaryFieldsCustomer `json:"customer"`
-	// The issue this need is linked to. Either issueId or projectId must be set.
-	// When set, the need's projectId is denormalized from the issue's project.
+	// The issue this need is linked to. Either issueId or projectId must be set. When set, the need's projectId is denormalized from the issue's project.
 	Issue *CustomerNeedSummaryFieldsIssue `json:"issue"`
-	// The project this need is linked to. For issue-based needs, this is
-	// denormalized from the issue's project. For project-only needs, this is set directly.
+	// The project this need is linked to. For issue-based needs, this is denormalized from the issue's project. For project-only needs, this is set directly.
 	Project *CustomerNeedSummaryFieldsProject `json:"project"`
 }
 
@@ -2574,11 +2429,7 @@ func (v *CustomerNeedSummaryFields) GetProject() *CustomerNeedSummaryFieldsProje
 // CustomerNeedSummaryFieldsCustomer includes the requested fields of the GraphQL type Customer.
 // The GraphQL type's documentation follows.
 //
-// A customer organization tracked in Linear's customer management system.
-// Customers represent external companies or organizations whose product requests
-// and feedback are captured as customer needs, which can be linked to issues and
-// projects. Customers can be associated with domains, external system IDs, Slack
-// channels, and managed by integrations such as Intercom or Salesforce.
+// A customer organization tracked in Linear's customer management system. Customers represent external companies or organizations whose product requests and feedback are captured as customer needs, which can be linked to issues and projects. Customers can be associated with domains, external system IDs, Slack channels, and managed by integrations such as Intercom or Salesforce.
 type CustomerNeedSummaryFieldsCustomer struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2595,12 +2446,7 @@ func (v *CustomerNeedSummaryFieldsCustomer) GetName() string { return v.Name }
 // CustomerNeedSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type CustomerNeedSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2622,9 +2468,7 @@ func (v *CustomerNeedSummaryFieldsIssue) GetTitle() string { return v.Title }
 // CustomerNeedSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type CustomerNeedSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2641,10 +2485,7 @@ func (v *CustomerNeedSummaryFieldsProject) GetName() string { return v.Name }
 // CustomerStatusSummaryFields includes the GraphQL fields of CustomerStatus requested by the fragment CustomerStatusSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined lifecycle status for customers (e.g., Active, Churned,
-// Trial). Customer statuses are ordered by position and displayed with a color in
-// the UI. Every workspace has at least one status, and a default status is
-// assigned to new customers when none is specified.
+// A workspace-defined lifecycle status for customers (e.g., Active, Churned, Trial). Customer statuses are ordered by position and displayed with a color in the UI. Every workspace has at least one status, and a default status is assigned to new customers when none is specified.
 type CustomerStatusSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2656,9 +2497,7 @@ type CustomerStatusSummaryFields struct {
 	Color string `json:"color"`
 	// An optional description explaining what this status represents in the customer lifecycle.
 	Description *string `json:"description"`
-	// The sort position of the status in the workspace's customer lifecycle flow.
-	// Lower values appear first. Collisions are automatically resolved by
-	// redistributing positions.
+	// The sort position of the status in the workspace's customer lifecycle flow. Lower values appear first. Collisions are automatically resolved by redistributing positions.
 	Position float64 `json:"position"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
@@ -2688,47 +2527,29 @@ func (v *CustomerStatusSummaryFields) GetArchivedAt() *string { return v.Archive
 // CustomerSummaryFields includes the GraphQL fields of Customer requested by the fragment CustomerSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A customer organization tracked in Linear's customer management system.
-// Customers represent external companies or organizations whose product requests
-// and feedback are captured as customer needs, which can be linked to issues and
-// projects. Customers can be associated with domains, external system IDs, Slack
-// channels, and managed by integrations such as Intercom or Salesforce.
+// A customer organization tracked in Linear's customer management system. Customers represent external companies or organizations whose product requests and feedback are captured as customer needs, which can be linked to issues and projects. Customers can be associated with domains, external system IDs, Slack channels, and managed by integrations such as Intercom or Salesforce.
 type CustomerSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The display name of the customer organization.
 	Name string `json:"name"`
-	// The email domains associated with this customer (e.g., 'acme.com'). Used to
-	// automatically match incoming requests to this customer. Public email domains
-	// (e.g., gmail.com) are not allowed. Domains must be unique across all customers
-	// in the workspace.
+	// The email domains associated with this customer (e.g., 'acme.com'). Used to automatically match incoming requests to this customer. Public email domains (e.g., gmail.com) are not allowed. Domains must be unique across all customers in the workspace.
 	Domains []string `json:"domains"`
-	// Identifiers for this customer in external systems (e.g., CRM IDs from
-	// Intercom, Salesforce, or HubSpot). Used for matching customers during
-	// integration syncs and upsert operations. External IDs must be unique across
-	// customers in the workspace.
+	// Identifiers for this customer in external systems (e.g., CRM IDs from Intercom, Salesforce, or HubSpot). Used for matching customers during integration syncs and upsert operations. External IDs must be unique across customers in the workspace.
 	ExternalIds []string `json:"externalIds"`
-	// The ID of the Slack channel linked to this customer for communication. Null if
-	// no Slack channel has been associated. Must be unique across all customers in the workspace.
+	// The ID of the Slack channel linked to this customer for communication. Null if no Slack channel has been associated. Must be unique across all customers in the workspace.
 	SlackChannelId *string `json:"slackChannelId"`
-	// The current lifecycle status of the customer. Defaults to the first status by
-	// position when a customer is created without an explicit status.
+	// The current lifecycle status of the customer. Defaults to the first status by position when a customer is created without an explicit status.
 	Status CustomerSummaryFieldsStatusCustomerStatus `json:"status"`
-	// The tier or segment assigned to this customer for prioritization (e.g.,
-	// Enterprise, Pro, Free). Null if no tier has been assigned.
+	// The tier or segment assigned to this customer for prioritization (e.g., Enterprise, Pro, Free). Null if no tier has been assigned.
 	Tier *CustomerSummaryFieldsTierCustomerTier `json:"tier"`
-	// The workspace member assigned as the owner of this customer. Null if no owner
-	// has been assigned. App users cannot be set as customer owners.
+	// The workspace member assigned as the owner of this customer. Null if no owner has been assigned. App users cannot be set as customer owners.
 	Owner *CustomerSummaryFieldsOwnerUser `json:"owner"`
-	// The annual revenue generated by this customer. Null if revenue data has not
-	// been provided. May be synced from an external data source such as a CRM integration.
+	// The annual revenue generated by this customer. Null if revenue data has not been provided. May be synced from an external data source such as a CRM integration.
 	Revenue *int `json:"revenue"`
-	// The number of employees or seats at the customer organization. Null if size
-	// data has not been provided. May be synced from an external data source such as
-	// a CRM integration.
+	// The number of employees or seats at the customer organization. Null if size data has not been provided. May be synced from an external data source such as a CRM integration.
 	Size *float64 `json:"size"`
-	// The approximate count of customer needs (requests) associated with this
-	// customer. This is a denormalized counter and may not reflect the exact count at all times.
+	// The approximate count of customer needs (requests) associated with this customer. This is a denormalized counter and may not reflect the exact count at all times.
 	ApproximateNeedCount float64 `json:"approximateNeedCount"`
 	// A unique, human-readable URL slug for the customer. Automatically generated and used in customer page URLs.
 	SlugId string `json:"slugId"`
@@ -2780,10 +2601,7 @@ func (v *CustomerSummaryFields) GetUrl() string { return v.Url }
 // CustomerSummaryFieldsOwnerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type CustomerSummaryFieldsOwnerUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2800,10 +2618,7 @@ func (v *CustomerSummaryFieldsOwnerUser) GetDisplayName() string { return v.Disp
 // CustomerSummaryFieldsStatusCustomerStatus includes the requested fields of the GraphQL type CustomerStatus.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined lifecycle status for customers (e.g., Active, Churned,
-// Trial). Customer statuses are ordered by position and displayed with a color in
-// the UI. Every workspace has at least one status, and a default status is
-// assigned to new customers when none is specified.
+// A workspace-defined lifecycle status for customers (e.g., Active, Churned, Trial). Customer statuses are ordered by position and displayed with a color in the UI. Every workspace has at least one status, and a default status is assigned to new customers when none is specified.
 type CustomerSummaryFieldsStatusCustomerStatus struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -2820,15 +2635,11 @@ func (v *CustomerSummaryFieldsStatusCustomerStatus) GetName() string { return v.
 // CustomerSummaryFieldsTierCustomerTier includes the requested fields of the GraphQL type CustomerTier.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined tier or segment for categorizing customers (e.g.,
-// Enterprise, Pro, Free). Customer tiers are used for prioritization and
-// filtering, are ordered by position, and displayed with a color in the UI. Tier
-// names are unique within a workspace.
+// A workspace-defined tier or segment for categorizing customers (e.g., Enterprise, Pro, Free). Customer tiers are used for prioritization and filtering, are ordered by position, and displayed with a color in the UI. Tier names are unique within a workspace.
 type CustomerSummaryFieldsTierCustomerTier struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The internal name of the tier. Must be unique within the workspace. Used as
-	// the default display name if no displayName is explicitly set.
+	// The internal name of the tier. Must be unique within the workspace. Used as the default display name if no displayName is explicitly set.
 	Name string `json:"name"`
 }
 
@@ -2841,15 +2652,11 @@ func (v *CustomerSummaryFieldsTierCustomerTier) GetName() string { return v.Name
 // CustomerTierSummaryFields includes the GraphQL fields of CustomerTier requested by the fragment CustomerTierSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined tier or segment for categorizing customers (e.g.,
-// Enterprise, Pro, Free). Customer tiers are used for prioritization and
-// filtering, are ordered by position, and displayed with a color in the UI. Tier
-// names are unique within a workspace.
+// A workspace-defined tier or segment for categorizing customers (e.g., Enterprise, Pro, Free). Customer tiers are used for prioritization and filtering, are ordered by position, and displayed with a color in the UI. Tier names are unique within a workspace.
 type CustomerTierSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The internal name of the tier. Must be unique within the workspace. Used as
-	// the default display name if no displayName is explicitly set.
+	// The internal name of the tier. Must be unique within the workspace. Used as the default display name if no displayName is explicitly set.
 	Name string `json:"name"`
 	// The user-facing display name of the tier shown in the UI. Defaults to the internal name if not explicitly set.
 	DisplayName string `json:"displayName"`
@@ -2857,8 +2664,7 @@ type CustomerTierSummaryFields struct {
 	Color string `json:"color"`
 	// An optional description explaining what this tier represents and its intended use for customer segmentation.
 	Description *string `json:"description"`
-	// The sort position of the tier in the workspace's customer tier ordering. Lower
-	// values appear first. Collisions are automatically resolved by redistributing positions.
+	// The sort position of the tier in the workspace's customer tier ordering. Lower values appear first. Collisions are automatically resolved by redistributing positions.
 	Position float64 `json:"position"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
@@ -2907,11 +2713,7 @@ func (v *CycleArchiveCycleArchiveCycleArchivePayload) GetEntity() *CycleArchiveC
 // CycleArchiveCycleArchiveCycleArchivePayloadEntityCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type CycleArchiveCycleArchiveCycleArchivePayloadEntityCycle struct {
 	CycleSummaryFields `json:"-"`
 }
@@ -3062,11 +2864,7 @@ func (v *CycleCreateCycleCreateCyclePayload) GetCycle() *CycleCreateCycleCreateC
 // CycleCreateCycleCreateCyclePayloadCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type CycleCreateCycleCreateCyclePayloadCycle struct {
 	CycleSummaryFields `json:"-"`
 }
@@ -3194,11 +2992,7 @@ func (v *CycleCreateResponse) GetCycleCreate() CycleCreateCycleCreateCyclePayloa
 // CycleReportCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type CycleReportCycle struct {
 	CycleSummaryFields `json:"-"`
 	// Issues that are currently assigned to this cycle.
@@ -3325,12 +3119,7 @@ func (v *CycleReportCycleIssuesIssueConnection) GetPageInfo() CycleReportCycleIs
 // CycleReportCycleIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type CycleReportCycleIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -3490,16 +3279,11 @@ func (v *CycleReportResponse) GetCycle() CycleReportCycle { return v.Cycle }
 // CycleSummaryFields includes the GraphQL fields of Cycle requested by the fragment CycleSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type CycleSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The auto-incrementing number of the cycle, unique within its team. This value
-	// is assigned automatically by the database and cannot be set on creation.
+	// The auto-incrementing number of the cycle, unique within its team. This value is assigned automatically by the database and cannot be set on creation.
 	Number float64 `json:"number"`
 	// The custom name of the cycle. If not set, the cycle is displayed using its number (e.g., "Cycle 5").
 	Name *string `json:"name"`
@@ -3507,17 +3291,11 @@ type CycleSummaryFields struct {
 	Description *string `json:"description"`
 	// The start date and time of the cycle.
 	StartsAt string `json:"startsAt"`
-	// The end date and time of the cycle. When a cycle is completed prematurely,
-	// this is updated to match the completion time. When cycles are disabled, both
-	// endsAt and completedAt are set to the current time.
+	// The end date and time of the cycle. When a cycle is completed prematurely, this is updated to match the completion time. When cycles are disabled, both endsAt and completedAt are set to the current time.
 	EndsAt string `json:"endsAt"`
-	// The completion time of the cycle. If null, the cycle has not been completed
-	// yet. A cycle is completed either when its end date passes or when it is
-	// manually completed early.
+	// The completion time of the cycle. If null, the cycle has not been completed yet. A cycle is completed either when its end date passes or when it is manually completed early.
 	CompletedAt *string `json:"completedAt"`
-	// The overall progress of the cycle as a number between 0 and 1. Calculated as
-	// (completed estimate points + 0.25 * in-progress estimate points) / total
-	// estimate points. Returns 0 if no estimate points exist.
+	// The overall progress of the cycle as a number between 0 and 1. Calculated as (completed estimate points + 0.25 * in-progress estimate points) / total estimate points. Returns 0 if no estimate points exist.
 	Progress float64 `json:"progress"`
 	// The team that the cycle belongs to. Each cycle is scoped to exactly one team.
 	Team CycleSummaryFieldsTeam `json:"team"`
@@ -3553,11 +3331,7 @@ func (v *CycleSummaryFields) GetTeam() CycleSummaryFieldsTeam { return v.Team }
 // CycleSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type CycleSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -3598,11 +3372,7 @@ func (v *CycleUpdateCycleUpdateCyclePayload) GetCycle() *CycleUpdateCycleUpdateC
 // CycleUpdateCycleUpdateCyclePayloadCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type CycleUpdateCycleUpdateCyclePayloadCycle struct {
 	CycleSummaryFields `json:"-"`
 }
@@ -3749,10 +3519,7 @@ func (v *DocumentCreateDocumentCreateDocumentPayload) GetDocument() DocumentCrea
 // DocumentCreateDocumentCreateDocumentPayloadDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type DocumentCreateDocumentCreateDocumentPayloadDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -3876,10 +3643,7 @@ func (v *DocumentCreateResponse) GetDocumentCreate() DocumentCreateDocumentCreat
 // DocumentSummaryFields includes the GraphQL fields of Document requested by the fragment DocumentSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type DocumentSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -3926,16 +3690,11 @@ func (v *DocumentSummaryFields) GetCycle() *DocumentSummaryFieldsCycle { return 
 // DocumentSummaryFieldsCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type DocumentSummaryFieldsCycle struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The auto-incrementing number of the cycle, unique within its team. This value
-	// is assigned automatically by the database and cannot be set on creation.
+	// The auto-incrementing number of the cycle, unique within its team. This value is assigned automatically by the database and cannot be set on creation.
 	Number float64 `json:"number"`
 	// The custom name of the cycle. If not set, the cycle is displayed using its number (e.g., "Cycle 5").
 	Name *string `json:"name"`
@@ -3953,12 +3712,7 @@ func (v *DocumentSummaryFieldsCycle) GetName() *string { return v.Name }
 // DocumentSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type DocumentSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -3980,9 +3734,7 @@ func (v *DocumentSummaryFieldsIssue) GetTitle() string { return v.Title }
 // DocumentSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type DocumentSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -3999,11 +3751,7 @@ func (v *DocumentSummaryFieldsProject) GetName() string { return v.Name }
 // DocumentSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type DocumentSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4044,10 +3792,7 @@ func (v *DocumentUpdateDocumentUpdateDocumentPayload) GetDocument() DocumentUpda
 // DocumentUpdateDocumentUpdateDocumentPayloadDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type DocumentUpdateDocumentUpdateDocumentPayloadDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -4187,10 +3932,7 @@ func (v *DocumentsDocumentsDocumentConnection) GetPageInfo() DocumentsDocumentsD
 // DocumentsDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type DocumentsDocumentsDocumentConnectionNodesDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -4326,11 +4068,7 @@ func (v *DocumentsResponse) GetDocuments() DocumentsDocumentsDocumentConnection 
 // DraftSummaryFields includes the GraphQL fields of Draft requested by the fragment DraftSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A general-purpose draft for unsaved content. Drafts store in-progress text for
-// comments, project updates, initiative updates, posts, pull request comments, and
-// customer needs. Each draft belongs to a user and is associated with exactly one
-// parent entity. Drafts are automatically deleted when the user publishes the
-// corresponding comment or update.
+// A general-purpose draft for unsaved content. Drafts store in-progress text for comments, project updates, initiative updates, posts, pull request comments, and customer needs. Each draft belongs to a user and is associated with exactly one parent entity. Drafts are automatically deleted when the user publishes the corresponding comment or update.
 type DraftSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4343,18 +4081,15 @@ type DraftSummaryFields struct {
 	ArchivedAt *string `json:"archivedAt"`
 	// The issue for which this is a draft comment. Null if the draft belongs to a different parent entity type.
 	Issue *DraftSummaryFieldsIssue `json:"issue"`
-	// The project for which this is a draft comment or project update. Null if the
-	// draft belongs to a different parent entity type.
+	// The project for which this is a draft comment or project update. Null if the draft belongs to a different parent entity type.
 	Project *DraftSummaryFieldsProject `json:"project"`
 	// The project update for which this is a draft comment. Null if the draft belongs to a different parent entity type.
 	ProjectUpdate *DraftSummaryFieldsProjectUpdate `json:"projectUpdate"`
-	// The initiative for which this is a draft comment or initiative update. Null if
-	// the draft belongs to a different parent entity type.
+	// The initiative for which this is a draft comment or initiative update. Null if the draft belongs to a different parent entity type.
 	Initiative *DraftSummaryFieldsInitiative `json:"initiative"`
 	// The initiative update for which this is a draft comment. Null if the draft belongs to a different parent entity type.
 	InitiativeUpdate *DraftSummaryFieldsInitiativeUpdate `json:"initiativeUpdate"`
-	// The parent comment for which this is a draft reply. Null if the draft is a
-	// top-level comment or belongs to a different parent entity type.
+	// The parent comment for which this is a draft reply. Null if the draft is a top-level comment or belongs to a different parent entity type.
 	ParentComment *DraftSummaryFieldsParentComment `json:"parentComment"`
 	// The customer need that this draft is referencing. Null if the draft belongs to a different parent entity type.
 	CustomerNeed *DraftSummaryFieldsCustomerNeed `json:"customerNeed"`
@@ -4407,11 +4142,7 @@ func (v *DraftSummaryFields) GetTeam() *DraftSummaryFieldsTeam { return v.Team }
 // DraftSummaryFieldsCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type DraftSummaryFieldsCustomerNeed struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4423,9 +4154,7 @@ func (v *DraftSummaryFieldsCustomerNeed) GetId() string { return v.Id }
 // DraftSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type DraftSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4442,10 +4171,7 @@ func (v *DraftSummaryFieldsInitiative) GetName() string { return v.Name }
 // DraftSummaryFieldsInitiativeUpdate includes the requested fields of the GraphQL type InitiativeUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to an initiative. Initiative updates communicate
-// progress, health, and blockers to stakeholders. Each update captures the
-// initiative's health at the time of writing and includes a rich-text body with
-// the update content.
+// A status update posted to an initiative. Initiative updates communicate progress, health, and blockers to stakeholders. Each update captures the initiative's health at the time of writing and includes a rich-text body with the update content.
 type DraftSummaryFieldsInitiativeUpdate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4457,12 +4183,7 @@ func (v *DraftSummaryFieldsInitiativeUpdate) GetId() string { return v.Id }
 // DraftSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type DraftSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4484,11 +4205,7 @@ func (v *DraftSummaryFieldsIssue) GetTitle() string { return v.Title }
 // DraftSummaryFieldsParentComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type DraftSummaryFieldsParentComment struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4500,9 +4217,7 @@ func (v *DraftSummaryFieldsParentComment) GetId() string { return v.Id }
 // DraftSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type DraftSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4519,9 +4234,7 @@ func (v *DraftSummaryFieldsProject) GetName() string { return v.Name }
 // DraftSummaryFieldsProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to a project. Project updates communicate progress,
-// health, and blockers to stakeholders. Each update captures the project's health
-// at the time of writing and includes a rich-text body with the update content.
+// A status update posted to a project. Project updates communicate progress, health, and blockers to stakeholders. Each update captures the project's health at the time of writing and includes a rich-text body with the update content.
 type DraftSummaryFieldsProjectUpdate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4533,11 +4246,7 @@ func (v *DraftSummaryFieldsProjectUpdate) GetId() string { return v.Id }
 // DraftSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type DraftSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4559,9 +4268,7 @@ func (v *DraftSummaryFieldsTeam) GetName() string { return v.Name }
 // EmojiSummaryFields includes the GraphQL fields of Emoji requested by the fragment EmojiSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A custom emoji defined in the workspace. Custom emojis are uploaded by users and
-// can be used in reactions and other places where standard emojis are supported.
-// Each emoji has a unique name within the workspace.
+// A custom emoji defined in the workspace. Custom emojis are uploaded by users and can be used in reactions and other places where standard emojis are supported. Each emoji has a unique name within the workspace.
 type EmojiSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4588,11 +4295,7 @@ func (v *EmojiSummaryFields) GetSource() string { return v.Source }
 // EntityExternalLinkSummaryFields includes the GraphQL fields of EntityExternalLink requested by the fragment EntityExternalLinkSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// An external link attached to a Linear entity such as an initiative, project,
-// team, release, or cycle. External links provide a way to reference related
-// resources outside of Linear (e.g., documentation, design files, dashboards)
-// directly from the entity's resources section. Each link has a URL, display
-// label, and sort order within its parent entity.
+// An external link attached to a Linear entity such as an initiative, project, team, release, or cycle. External links provide a way to reference related resources outside of Linear (e.g., documentation, design files, dashboards) directly from the entity's resources section. Each link has a URL, display label, and sort order within its parent entity.
 type EntityExternalLinkSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4607,8 +4310,7 @@ type EntityExternalLinkSummaryFields struct {
 	Url string `json:"url"`
 	// The link's label.
 	Label string `json:"label"`
-	// The sort order of this link within the parent entity's resources list. Links
-	// are sorted together with documents and other resources attached to the entity.
+	// The sort order of this link within the parent entity's resources list. Links are sorted together with documents and other resources attached to the entity.
 	SortOrder float64 `json:"sortOrder"`
 	// The user who created the link.
 	Creator *EntityExternalLinkSummaryFieldsCreatorUser `json:"creator"`
@@ -4657,10 +4359,7 @@ func (v *EntityExternalLinkSummaryFields) GetProject() *EntityExternalLinkSummar
 // EntityExternalLinkSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type EntityExternalLinkSummaryFieldsCreatorUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4677,9 +4376,7 @@ func (v *EntityExternalLinkSummaryFieldsCreatorUser) GetDisplayName() string { r
 // EntityExternalLinkSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type EntityExternalLinkSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4696,9 +4393,7 @@ func (v *EntityExternalLinkSummaryFieldsInitiative) GetName() string { return v.
 // EntityExternalLinkSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type EntityExternalLinkSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4715,12 +4410,7 @@ func (v *EntityExternalLinkSummaryFieldsProject) GetName() string { return v.Nam
 // ExternalUserSummaryFields includes the GraphQL fields of ExternalUser requested by the fragment ExternalUserSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// An external user who interacts with Linear through an integrated external
-// service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams)
-// but does not have a Linear account. External users can create issues, post
-// comments, and add reactions from their respective platforms. They are identified
-// by service-specific user IDs and may optionally have an email address. External
-// users are scoped to a single workspace.
+// An external user who interacts with Linear through an integrated external service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams) but does not have a Linear account. External users can create issues, post comments, and add reactions from their respective platforms. They are identified by service-specific user IDs and may optionally have an email address. External users are scoped to a single workspace.
 type ExternalUserSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4730,8 +4420,7 @@ type ExternalUserSummaryFields struct {
 	DisplayName string `json:"displayName"`
 	// A URL to the external user's avatar image. Null if no avatar is available from the external service.
 	AvatarUrl *string `json:"avatarUrl"`
-	// The last time the external user was seen interacting with Linear through their
-	// external service. Defaults to the creation time and is updated on subsequent interactions.
+	// The last time the external user was seen interacting with Linear through their external service. Defaults to the creation time and is updated on subsequent interactions.
 	LastSeen *string `json:"lastSeen"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -4769,18 +4458,11 @@ func (v *ExternalUserSummaryFields) GetArchivedAt() *string { return v.ArchivedA
 // FavoriteSummaryFields includes the GraphQL fields of Favorite requested by the fragment FavoriteSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access.
-// Favorites can reference various entity types including issues, projects, cycles,
-// views, documents, initiatives, labels, users, customers, dashboards, and pull
-// requests. Favorites can be organized into folders and ordered by the user. Each
-// favorite is owned by a single user and links to exactly one target entity (or is
-// a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type FavoriteSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The type of entity this favorite references, such as 'issue', 'project',
-	// 'cycle', 'customView', 'document', 'folder', etc. Determines which associated
-	// entity field is populated.
+	// The type of entity this favorite references, such as 'issue', 'project', 'cycle', 'customView', 'document', 'folder', etc. Determines which associated entity field is populated.
 	Type string `json:"type"`
 	// The name of the folder. Only applies to favorites of type folder.
 	FolderName *string `json:"folderName"`
@@ -4805,24 +4487,20 @@ type FeedSummarySchedule string
 
 const (
 	FeedSummaryScheduleDaily  FeedSummarySchedule = "daily"
-	FeedSummaryScheduleWeekly FeedSummarySchedule = "weekly"
 	FeedSummaryScheduleNever  FeedSummarySchedule = "never"
+	FeedSummaryScheduleWeekly FeedSummarySchedule = "weekly"
 )
 
 var AllFeedSummarySchedule = []FeedSummarySchedule{
 	FeedSummaryScheduleDaily,
-	FeedSummaryScheduleWeekly,
 	FeedSummaryScheduleNever,
+	FeedSummaryScheduleWeekly,
 }
 
 // GitAutomationStateSummaryFields includes the GraphQL fields of GitAutomationState requested by the fragment GitAutomationStateSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A Git automation rule that automatically transitions issues to a specified
-// workflow state when a Git event occurs (e.g., when a PR is opened, move the
-// linked issue to 'In Review'). Each rule is scoped to a team and optionally to a
-// specific target branch. When no target branch is specified, the rule acts as the
-// default for all branches. Target-branch-specific rules override the defaults.
+// A Git automation rule that automatically transitions issues to a specified workflow state when a Git event occurs (e.g., when a PR is opened, move the linked issue to 'In Review'). Each rule is scoped to a team and optionally to a specific target branch. When no target branch is specified, the rule acts as the default for all branches. Target-branch-specific rules override the defaults.
 type GitAutomationStateSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4835,14 +4513,9 @@ type GitAutomationStateSummaryFields struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The workflow state that linked issues will be transitioned to when the Git
-	// event fires. Null if this rule is configured to take no action, overriding any
-	// default rule for the same event.
+	// The workflow state that linked issues will be transitioned to when the Git event fires. Null if this rule is configured to take no action, overriding any default rule for the same event.
 	State *GitAutomationStateSummaryFieldsStateWorkflowState `json:"state"`
-	// The target branch that this automation rule applies to. When set, this rule
-	// only fires for pull requests targeting the specified branch pattern,
-	// overriding any default rule for the same event. Null if this is a default rule
-	// that applies to all branches.
+	// The target branch that this automation rule applies to. When set, this rule only fires for pull requests targeting the specified branch pattern, overriding any default rule for the same event. Null if this is a default rule that applies to all branches.
 	TargetBranch *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch `json:"targetBranch"`
 }
 
@@ -4874,13 +4547,7 @@ func (v *GitAutomationStateSummaryFields) GetTargetBranch() *GitAutomationStateS
 // GitAutomationStateSummaryFieldsStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type GitAutomationStateSummaryFieldsStateWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4902,20 +4569,13 @@ func (v *GitAutomationStateSummaryFieldsStateWorkflowState) GetType() string { r
 // GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch includes the requested fields of the GraphQL type GitAutomationTargetBranch.
 // The GraphQL type's documentation follows.
 //
-// A target branch definition used by Git automation rules to scope automations to
-// specific branches. The branch can be specified as an exact name (e.g., 'main')
-// or as a regular expression pattern (e.g., 'release/.*'). Each target branch
-// belongs to a team and can have multiple automation rules associated with it,
-// which override the team's default automation rules when a PR targets a matching branch.
+// A target branch definition used by Git automation rules to scope automations to specific branches. The branch can be specified as an exact name (e.g., 'main') or as a regular expression pattern (e.g., 'release/.*'). Each target branch belongs to a team and can have multiple automation rules associated with it, which override the team's default automation rules when a PR targets a matching branch.
 type GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The branch name or pattern to match against pull request target branches.
-	// Interpreted as a literal branch name unless isRegex is true, in which case it
-	// is treated as a regular expression.
+	// The branch name or pattern to match against pull request target branches. Interpreted as a literal branch name unless isRegex is true, in which case it is treated as a regular expression.
 	BranchPattern string `json:"branchPattern"`
-	// Whether the branch pattern should be interpreted as a regular expression. When
-	// false, the pattern is matched as an exact branch name.
+	// Whether the branch pattern should be interpreted as a regular expression. When false, the pattern is matched as an exact branch name.
 	IsRegex bool `json:"isRegex"`
 }
 
@@ -4934,32 +4594,29 @@ func (v *GitAutomationStateSummaryFieldsTargetBranchGitAutomationTargetBranch) G
 	return v.IsRegex
 }
 
-// The Git events that can trigger an automation rule. Each value corresponds to a
-// pull/merge request lifecycle event (e.g., branch created, PR opened for review, PR merged).
+// The Git events that can trigger an automation rule. Each value corresponds to a pull/merge request lifecycle event (e.g., branch created, PR opened for review, PR merged).
 type GitAutomationStates string
 
 const (
 	GitAutomationStatesDraft     GitAutomationStates = "draft"
-	GitAutomationStatesStart     GitAutomationStates = "start"
-	GitAutomationStatesReview    GitAutomationStates = "review"
-	GitAutomationStatesMergeable GitAutomationStates = "mergeable"
 	GitAutomationStatesMerge     GitAutomationStates = "merge"
+	GitAutomationStatesMergeable GitAutomationStates = "mergeable"
+	GitAutomationStatesReview    GitAutomationStates = "review"
+	GitAutomationStatesStart     GitAutomationStates = "start"
 )
 
 var AllGitAutomationStates = []GitAutomationStates{
 	GitAutomationStatesDraft,
-	GitAutomationStatesStart,
-	GitAutomationStatesReview,
-	GitAutomationStatesMergeable,
 	GitAutomationStatesMerge,
+	GitAutomationStatesMergeable,
+	GitAutomationStatesReview,
+	GitAutomationStatesStart,
 }
 
 // InitiativeHistorySummaryFields includes the GraphQL fields of InitiativeHistory requested by the fragment InitiativeHistorySummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A history record associated with an initiative. Tracks changes to initiative
-// properties such as name, status, owner, target date, icon, color, and
-// parent-child relationships over time.
+// A history record associated with an initiative. Tracks changes to initiative properties such as name, status, owner, target date, icon, color, and parent-child relationships over time.
 type InitiativeHistorySummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -4999,9 +4656,7 @@ func (v *InitiativeHistorySummaryFields) GetInitiative() InitiativeHistorySummar
 // InitiativeHistorySummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type InitiativeHistorySummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5013,9 +4668,7 @@ func (v *InitiativeHistorySummaryFieldsInitiative) GetId() string { return v.Id 
 // InitiativeRelationSummaryFields includes the GraphQL fields of InitiativeRelation requested by the fragment InitiativeRelationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A parent-child relation between two initiatives, forming a hierarchy. The
-// initiative field is the parent and relatedInitiative is the child. Cycles and
-// excessive nesting depth are prevented.
+// A parent-child relation between two initiatives, forming a hierarchy. The initiative field is the parent and relatedInitiative is the child. Cycles and excessive nesting depth are prevented.
 type InitiativeRelationSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5069,9 +4722,7 @@ func (v *InitiativeRelationSummaryFields) GetUser() *InitiativeRelationSummaryFi
 // InitiativeRelationSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type InitiativeRelationSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5088,9 +4739,7 @@ func (v *InitiativeRelationSummaryFieldsInitiative) GetName() string { return v.
 // InitiativeRelationSummaryFieldsRelatedInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type InitiativeRelationSummaryFieldsRelatedInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5107,10 +4756,7 @@ func (v *InitiativeRelationSummaryFieldsRelatedInitiative) GetName() string { re
 // InitiativeRelationSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type InitiativeRelationSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5132,27 +4778,25 @@ func (v *InitiativeRelationSummaryFieldsUser) GetDisplayName() string { return v
 type InitiativeStatus string
 
 const (
-	InitiativeStatusProposed  InitiativeStatus = "Proposed"
-	InitiativeStatusPlanned   InitiativeStatus = "Planned"
 	InitiativeStatusActive    InitiativeStatus = "Active"
-	InitiativeStatusCompleted InitiativeStatus = "Completed"
 	InitiativeStatusCanceled  InitiativeStatus = "Canceled"
+	InitiativeStatusCompleted InitiativeStatus = "Completed"
+	InitiativeStatusPlanned   InitiativeStatus = "Planned"
+	InitiativeStatusProposed  InitiativeStatus = "Proposed"
 )
 
 var AllInitiativeStatus = []InitiativeStatus{
-	InitiativeStatusProposed,
-	InitiativeStatusPlanned,
 	InitiativeStatusActive,
-	InitiativeStatusCompleted,
 	InitiativeStatusCanceled,
+	InitiativeStatusCompleted,
+	InitiativeStatusPlanned,
+	InitiativeStatusProposed,
 }
 
 // InitiativeSummaryFields includes the GraphQL fields of Initiative requested by the fragment InitiativeSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type InitiativeSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5199,9 +4843,7 @@ func (v *InitiativeSummaryFields) GetUrl() string { return v.Url }
 // InitiativeToProjectSummaryFields includes the GraphQL fields of InitiativeToProject requested by the fragment InitiativeToProjectSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// The join entity linking a project to an initiative. A project can only appear
-// once in an initiative hierarchy -- it cannot be on both an initiative and one of
-// its ancestor or descendant initiatives.
+// The join entity linking a project to an initiative. A project can only appear once in an initiative hierarchy -- it cannot be on both an initiative and one of its ancestor or descendant initiatives.
 type InitiativeToProjectSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5248,9 +4890,7 @@ func (v *InitiativeToProjectSummaryFields) GetProject() InitiativeToProjectSumma
 // InitiativeToProjectSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type InitiativeToProjectSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5267,9 +4907,7 @@ func (v *InitiativeToProjectSummaryFieldsInitiative) GetName() string { return v
 // InitiativeToProjectSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type InitiativeToProjectSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5297,24 +4935,21 @@ func (v *InitiativeToProjectSummaryFieldsProject) GetUrl() string { return v.Url
 type InitiativeUpdateHealthType string
 
 const (
-	InitiativeUpdateHealthTypeOntrack  InitiativeUpdateHealthType = "onTrack"
 	InitiativeUpdateHealthTypeAtrisk   InitiativeUpdateHealthType = "atRisk"
 	InitiativeUpdateHealthTypeOfftrack InitiativeUpdateHealthType = "offTrack"
+	InitiativeUpdateHealthTypeOntrack  InitiativeUpdateHealthType = "onTrack"
 )
 
 var AllInitiativeUpdateHealthType = []InitiativeUpdateHealthType{
-	InitiativeUpdateHealthTypeOntrack,
 	InitiativeUpdateHealthTypeAtrisk,
 	InitiativeUpdateHealthTypeOfftrack,
+	InitiativeUpdateHealthTypeOntrack,
 }
 
 // InitiativeUpdateSummaryFields includes the GraphQL fields of InitiativeUpdate requested by the fragment InitiativeUpdateSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to an initiative. Initiative updates communicate
-// progress, health, and blockers to stakeholders. Each update captures the
-// initiative's health at the time of writing and includes a rich-text body with
-// the update content.
+// A status update posted to an initiative. Initiative updates communicate progress, health, and blockers to stakeholders. Each update captures the initiative's health at the time of writing and includes a rich-text body with the update content.
 type InitiativeUpdateSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5374,9 +5009,7 @@ func (v *InitiativeUpdateSummaryFields) GetUser() InitiativeUpdateSummaryFieldsU
 // InitiativeUpdateSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type InitiativeUpdateSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5393,10 +5026,7 @@ func (v *InitiativeUpdateSummaryFieldsInitiative) GetName() string { return v.Na
 // InitiativeUpdateSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type InitiativeUpdateSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5437,12 +5067,7 @@ func (v *IssueAddLabelIssueAddLabelIssuePayload) GetIssue() *IssueAddLabelIssueA
 // IssueAddLabelIssueAddLabelIssuePayloadIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueAddLabelIssueAddLabelIssuePayloadIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -5607,12 +5232,7 @@ func (v *IssueArchiveIssueArchiveIssueArchivePayload) GetEntity() *IssueArchiveI
 // IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueArchiveIssueArchiveIssueArchivePayloadEntityIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -5760,12 +5380,7 @@ func (v *IssueArchiveResponse) GetIssueArchive() IssueArchiveIssueArchiveIssueAr
 // IssueBlockedIssuesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueBlockedIssuesIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -5805,18 +5420,13 @@ func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnection) GetPageInfo() 
 // IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The type of relationship between the source issue and the related issue.
-	// Possible values include blocks, duplicate, and related.
+	// The type of relationship between the source issue and the related issue. Possible values include blocks, duplicate, and related.
 	Type string `json:"type"`
-	// The target issue that the source issue is related to. The relation type
-	// describes how the source issue relates to this issue.
+	// The target issue that the source issue is related to. The relation type describes how the source issue relates to this issue.
 	RelatedIssue IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue `json:"relatedIssue"`
 }
 
@@ -5838,12 +5448,7 @@ func (v *IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelati
 // IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueBlockedIssuesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -6026,12 +5631,7 @@ func (v *IssueCloseIssueUpdateIssuePayload) GetIssue() *IssueCloseIssueUpdateIss
 // IssueCloseIssueUpdateIssuePayloadIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueCloseIssueUpdateIssuePayloadIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -6190,11 +5790,7 @@ func (v *IssueCommentCreateCommentCreateCommentPayload) GetComment() IssueCommen
 // IssueCommentCreateCommentCreateCommentPayloadComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type IssueCommentCreateCommentCreateCommentPayloadComment struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -6223,12 +5819,7 @@ func (v *IssueCommentCreateCommentCreateCommentPayloadComment) GetIssue() *Issue
 // IssueCommentCreateCommentCreateCommentPayloadCommentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueCommentCreateCommentCreateCommentPayloadCommentIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -6395,12 +5986,7 @@ func (v *IssueCreateIssueCreateIssuePayload) GetIssue() *IssueCreateIssueCreateI
 // IssueCreateIssueCreateIssuePayloadIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueCreateIssueCreateIssuePayloadIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -6544,12 +6130,7 @@ func (v *IssueCreateResponse) GetIssueCreate() IssueCreateIssueCreateIssuePayloa
 // IssueDependenciesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueDependenciesIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -6608,12 +6189,7 @@ func (v *IssueDependenciesIssueChildrenIssueConnection) GetPageInfo() IssueDepen
 // IssueDependenciesIssueChildrenIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueDependenciesIssueChildrenIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -6784,15 +6360,11 @@ func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnection) GetPageI
 // IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The type of relationship between the source issue and the related issue.
-	// Possible values include blocks, duplicate, and related.
+	// The type of relationship between the source issue and the related issue. Possible values include blocks, duplicate, and related.
 	Type string `json:"type"`
 	// The source issue whose relationship is being described. This is the issue from which the relation originates.
 	Issue IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue `json:"issue"`
@@ -6816,12 +6388,7 @@ func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssue
 // IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelationIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -6976,12 +6543,7 @@ func (v *IssueDependenciesIssueInverseRelationsIssueRelationConnectionPageInfo) 
 // IssueDependenciesIssueParentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueDependenciesIssueParentIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -7128,18 +6690,13 @@ func (v *IssueDependenciesIssueRelationsIssueRelationConnection) GetPageInfo() I
 // IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The type of relationship between the source issue and the related issue.
-	// Possible values include blocks, duplicate, and related.
+	// The type of relationship between the source issue and the related issue. Possible values include blocks, duplicate, and related.
 	Type string `json:"type"`
-	// The target issue that the source issue is related to. The relation type
-	// describes how the source issue relates to this issue.
+	// The target issue that the source issue is related to. The relation type describes how the source issue relates to this issue.
 	RelatedIssue IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue `json:"relatedIssue"`
 }
 
@@ -7161,12 +6718,7 @@ func (v *IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelatio
 // IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -7349,11 +6901,7 @@ func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayload) GetIssueLabel() Issu
 // IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -7480,11 +7028,7 @@ func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayload) GetIssueLabel() Is
 // IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -7611,11 +7155,7 @@ func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayload) GetIssueLabel() Issu
 // IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -7711,8 +7251,7 @@ func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) __premarsh
 
 // IssueLabelRetireResponse is returned by IssueLabelRetire on success.
 type IssueLabelRetireResponse struct {
-	// Retires a label. Retired labels are still visible but cannot be applied to new
-	// issues. Existing issues with the label are not affected.
+	// Retires a label. Retired labels are still visible but cannot be applied to new issues. Existing issues with the label are not affected.
 	IssueLabelRetire IssueLabelRetireIssueLabelRetireIssueLabelPayload `json:"issueLabelRetire"`
 }
 
@@ -7724,11 +7263,7 @@ func (v *IssueLabelRetireResponse) GetIssueLabelRetire() IssueLabelRetireIssueLa
 // IssueLabelSummaryFields includes the GraphQL fields of IssueLabel requested by the fragment IssueLabelSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type IssueLabelSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -7738,12 +7273,9 @@ type IssueLabelSummaryFields struct {
 	Description *string `json:"description"`
 	// The label's color as a HEX string (e.g., '#EB5757'). Used for visual identification of the label in the UI.
 	Color string `json:"color"`
-	// Whether the label is a group. When true, this label acts as a container for
-	// child labels and cannot be directly applied to issues or projects. When false,
-	// the label can be directly applied.
+	// Whether the label is a group. When true, this label acts as a container for child labels and cannot be directly applied to issues or projects. When false, the label can be directly applied.
 	IsGroup bool `json:"isGroup"`
-	// The team that the label is scoped to. If null, the label is a workspace-level
-	// label available to all teams in the workspace.
+	// The team that the label is scoped to. If null, the label is a workspace-level label available to all teams in the workspace.
 	Team *IssueLabelSummaryFieldsTeam `json:"team"`
 }
 
@@ -7768,11 +7300,7 @@ func (v *IssueLabelSummaryFields) GetTeam() *IssueLabelSummaryFieldsTeam { retur
 // IssueLabelSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type IssueLabelSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -7813,11 +7341,7 @@ func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayload) GetIssueLabel() Issu
 // IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -7941,11 +7465,7 @@ func (v *IssueLabelsIssueLabelsIssueLabelConnection) GetPageInfo() IssueLabelsIs
 // IssueLabelsIssueLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type IssueLabelsIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -8059,8 +7579,7 @@ func (v *IssueLabelsIssueLabelsIssueLabelConnectionPageInfo) GetEndCursor() *str
 
 // IssueLabelsResponse is returned by IssueLabels on success.
 type IssueLabelsResponse struct {
-	// All issue labels. Returns a paginated list of labels visible to the
-	// authenticated user, including both workspace-level and team-scoped labels.
+	// All issue labels. Returns a paginated list of labels visible to the authenticated user, including both workspace-level and team-scoped labels.
 	IssueLabels IssueLabelsIssueLabelsIssueLabelConnection `json:"issueLabels"`
 }
 
@@ -8093,10 +7612,7 @@ func (v *IssueRelationCreateIssueRelationCreateIssueRelationPayload) GetIssueRel
 // IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type IssueRelationCreateIssueRelationCreateIssueRelationPayloadIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -8240,15 +7756,11 @@ func (v *IssueRelationDeleteResponse) GetIssueRelationDelete() IssueRelationDele
 // IssueRelationSummaryFields includes the GraphQL fields of IssueRelation requested by the fragment IssueRelationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type IssueRelationSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The type of relationship between the source issue and the related issue.
-	// Possible values include blocks, duplicate, and related.
+	// The type of relationship between the source issue and the related issue. Possible values include blocks, duplicate, and related.
 	Type string `json:"type"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -8259,8 +7771,7 @@ type IssueRelationSummaryFields struct {
 	ArchivedAt *string `json:"archivedAt"`
 	// The source issue whose relationship is being described. This is the issue from which the relation originates.
 	Issue IssueRelationSummaryFieldsIssue `json:"issue"`
-	// The target issue that the source issue is related to. The relation type
-	// describes how the source issue relates to this issue.
+	// The target issue that the source issue is related to. The relation type describes how the source issue relates to this issue.
 	RelatedIssue IssueRelationSummaryFieldsRelatedIssue `json:"relatedIssue"`
 }
 
@@ -8290,12 +7801,7 @@ func (v *IssueRelationSummaryFields) GetRelatedIssue() IssueRelationSummaryField
 // IssueRelationSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueRelationSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8317,12 +7823,7 @@ func (v *IssueRelationSummaryFieldsIssue) GetTitle() string { return v.Title }
 // IssueRelationSummaryFieldsRelatedIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueRelationSummaryFieldsRelatedIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8363,12 +7864,7 @@ func (v *IssueRemoveLabelIssueRemoveLabelIssuePayload) GetIssue() *IssueRemoveLa
 // IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -8517,24 +8013,23 @@ func (v *IssueRemoveLabelResponse) GetIssueRemoveLabel() IssueRemoveLabelIssueRe
 type IssueSharedAccessDisallowedField string
 
 const (
-	IssueSharedAccessDisallowedFieldProjectid          IssueSharedAccessDisallowedField = "projectId"
-	IssueSharedAccessDisallowedFieldTeamid             IssueSharedAccessDisallowedField = "teamId"
 	IssueSharedAccessDisallowedFieldCycleid            IssueSharedAccessDisallowedField = "cycleId"
+	IssueSharedAccessDisallowedFieldProjectid          IssueSharedAccessDisallowedField = "projectId"
 	IssueSharedAccessDisallowedFieldProjectmilestoneid IssueSharedAccessDisallowedField = "projectMilestoneId"
+	IssueSharedAccessDisallowedFieldTeamid             IssueSharedAccessDisallowedField = "teamId"
 )
 
 var AllIssueSharedAccessDisallowedField = []IssueSharedAccessDisallowedField{
-	IssueSharedAccessDisallowedFieldProjectid,
-	IssueSharedAccessDisallowedFieldTeamid,
 	IssueSharedAccessDisallowedFieldCycleid,
+	IssueSharedAccessDisallowedFieldProjectid,
 	IssueSharedAccessDisallowedFieldProjectmilestoneid,
+	IssueSharedAccessDisallowedFieldTeamid,
 }
 
 // IssueSharedAccessFields includes the GraphQL fields of IssueSharedAccess requested by the fragment IssueSharedAccessFields.
 // The GraphQL type's documentation follows.
 //
-// Metadata about an issue's shared access state, including which users the issue
-// is shared with and any field restrictions for shared-only viewers.
+// Metadata about an issue's shared access state, including which users the issue is shared with and any field restrictions for shared-only viewers.
 type IssueSharedAccessFields struct {
 	// Whether this issue has been shared with users outside the team.
 	IsShared bool `json:"isShared"`
@@ -8565,12 +8060,7 @@ func (v *IssueSharedAccessFields) GetDisallowedIssueFields() []IssueSharedAccess
 // IssueSummaryFields includes the GraphQL fields of Issue requested by the fragment IssueSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8586,13 +8076,9 @@ type IssueSummaryFields struct {
 	Priority float64 `json:"priority"`
 	// Label for the priority.
 	PriorityLabel string `json:"priorityLabel"`
-	// The team that the issue belongs to. Every issue must belong to exactly one
-	// team, which determines the available workflow states, labels, and other
-	// team-specific configuration.
+	// The team that the issue belongs to. Every issue must belong to exactly one team, which determines the available workflow states, labels, and other team-specific configuration.
 	Team IssueSummaryFieldsTeam `json:"team"`
-	// The workflow state (issue status) that the issue is currently in. Workflow
-	// states represent the issue's progress through the team's workflow, such as
-	// Triage, Todo, In Progress, Done, or Canceled.
+	// The workflow state (issue status) that the issue is currently in. Workflow states represent the issue's progress through the team's workflow, such as Triage, Todo, In Progress, Done, or Canceled.
 	State IssueSummaryFieldsStateWorkflowState `json:"state"`
 	// The user to whom the issue is assigned. Null if the issue is unassigned.
 	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
@@ -8636,10 +8122,7 @@ func (v *IssueSummaryFields) GetProject() *IssueSummaryFieldsProject { return v.
 // IssueSummaryFieldsAssigneeUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type IssueSummaryFieldsAssigneeUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8661,9 +8144,7 @@ func (v *IssueSummaryFieldsAssigneeUser) GetDisplayName() string { return v.Disp
 // IssueSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type IssueSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8680,13 +8161,7 @@ func (v *IssueSummaryFieldsProject) GetName() string { return v.Name }
 // IssueSummaryFieldsStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type IssueSummaryFieldsStateWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8708,11 +8183,7 @@ func (v *IssueSummaryFieldsStateWorkflowState) GetType() string { return v.Type 
 // IssueSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type IssueSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8734,11 +8205,7 @@ func (v *IssueSummaryFieldsTeam) GetName() string { return v.Name }
 // IssueToReleaseSummaryFields includes the GraphQL fields of IssueToRelease requested by the fragment IssueToReleaseSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A join entity linking an issue to a release for release tracking. Each record
-// represents an association between a single issue and a single release, along
-// with metadata about the source of the link (e.g., which pull requests connected
-// the issue to the release). Creating or deleting these associations automatically
-// records the change in issue history.
+// A join entity linking an issue to a release for release tracking. Each record represents an association between a single issue and a single release, along with metadata about the source of the link (e.g., which pull requests connected the issue to the release). Creating or deleting these associations automatically records the change in issue history.
 type IssueToReleaseSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8778,12 +8245,7 @@ func (v *IssueToReleaseSummaryFields) GetRelease() IssueToReleaseSummaryFieldsRe
 // IssueToReleaseSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueToReleaseSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8795,11 +8257,7 @@ func (v *IssueToReleaseSummaryFieldsIssue) GetId() string { return v.Id }
 // IssueToReleaseSummaryFieldsRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type IssueToReleaseSummaryFieldsRelease struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -8830,12 +8288,7 @@ func (v *IssueUpdateIssueUpdateIssuePayload) GetIssue() *IssueUpdateIssueUpdateI
 // IssueUpdateIssueUpdateIssuePayloadIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssueUpdateIssueUpdateIssuePayloadIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -8995,12 +8448,7 @@ func (v *IssuesByTeamAssigneeIssuesIssueConnection) GetPageInfo() IssuesByTeamAs
 // IssuesByTeamAssigneeIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamAssigneeIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -9154,9 +8602,7 @@ func (v *IssuesByTeamAssigneeIssuesIssueConnectionPageInfo) GetEndCursor() *stri
 
 // IssuesByTeamAssigneeResponse is returned by IssuesByTeamAssignee on success.
 type IssuesByTeamAssigneeResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamAssigneeIssuesIssueConnection `json:"issues"`
 }
 
@@ -9184,12 +8630,7 @@ func (v *IssuesByTeamBlocksIssuesIssueConnection) GetPageInfo() IssuesByTeamBloc
 // IssuesByTeamBlocksIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamBlocksIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -9339,9 +8780,7 @@ func (v *IssuesByTeamBlocksIssuesIssueConnectionPageInfo) GetEndCursor() *string
 
 // IssuesByTeamBlocksResponse is returned by IssuesByTeamBlocks on success.
 type IssuesByTeamBlocksResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamBlocksIssuesIssueConnection `json:"issues"`
 }
 
@@ -9369,12 +8808,7 @@ func (v *IssuesByTeamCreatedAfterIssuesIssueConnection) GetPageInfo() IssuesByTe
 // IssuesByTeamCreatedAfterIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamCreatedAfterIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -9528,9 +8962,7 @@ func (v *IssuesByTeamCreatedAfterIssuesIssueConnectionPageInfo) GetEndCursor() *
 
 // IssuesByTeamCreatedAfterResponse is returned by IssuesByTeamCreatedAfter on success.
 type IssuesByTeamCreatedAfterResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamCreatedAfterIssuesIssueConnection `json:"issues"`
 }
 
@@ -9558,12 +8990,7 @@ func (v *IssuesByTeamCreatedBeforeIssuesIssueConnection) GetPageInfo() IssuesByT
 // IssuesByTeamCreatedBeforeIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamCreatedBeforeIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -9717,9 +9144,7 @@ func (v *IssuesByTeamCreatedBeforeIssuesIssueConnectionPageInfo) GetEndCursor() 
 
 // IssuesByTeamCreatedBeforeResponse is returned by IssuesByTeamCreatedBefore on success.
 type IssuesByTeamCreatedBeforeResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamCreatedBeforeIssuesIssueConnection `json:"issues"`
 }
 
@@ -9747,12 +9172,7 @@ func (v *IssuesByTeamCycleIssuesIssueConnection) GetPageInfo() IssuesByTeamCycle
 // IssuesByTeamCycleIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamCycleIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -9902,9 +9322,7 @@ func (v *IssuesByTeamCycleIssuesIssueConnectionPageInfo) GetEndCursor() *string 
 
 // IssuesByTeamCycleResponse is returned by IssuesByTeamCycle on success.
 type IssuesByTeamCycleResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamCycleIssuesIssueConnection `json:"issues"`
 }
 
@@ -9932,12 +9350,7 @@ func (v *IssuesByTeamHasBlockersIssuesIssueConnection) GetPageInfo() IssuesByTea
 // IssuesByTeamHasBlockersIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamHasBlockersIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -10091,9 +9504,7 @@ func (v *IssuesByTeamHasBlockersIssuesIssueConnectionPageInfo) GetEndCursor() *s
 
 // IssuesByTeamHasBlockersResponse is returned by IssuesByTeamHasBlockers on success.
 type IssuesByTeamHasBlockersResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamHasBlockersIssuesIssueConnection `json:"issues"`
 }
 
@@ -10121,12 +9532,7 @@ func (v *IssuesByTeamIssuesIssueConnection) GetPageInfo() IssuesByTeamIssuesIssu
 // IssuesByTeamIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -10291,12 +9697,7 @@ func (v *IssuesByTeamLabelIssuesIssueConnection) GetPageInfo() IssuesByTeamLabel
 // IssuesByTeamLabelIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamLabelIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -10446,9 +9847,7 @@ func (v *IssuesByTeamLabelIssuesIssueConnectionPageInfo) GetEndCursor() *string 
 
 // IssuesByTeamLabelResponse is returned by IssuesByTeamLabel on success.
 type IssuesByTeamLabelResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamLabelIssuesIssueConnection `json:"issues"`
 }
 
@@ -10476,12 +9875,7 @@ func (v *IssuesByTeamProjectIssuesIssueConnection) GetPageInfo() IssuesByTeamPro
 // IssuesByTeamProjectIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamProjectIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -10633,9 +10027,7 @@ func (v *IssuesByTeamProjectIssuesIssueConnectionPageInfo) GetEndCursor() *strin
 
 // IssuesByTeamProjectResponse is returned by IssuesByTeamProject on success.
 type IssuesByTeamProjectResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamProjectIssuesIssueConnection `json:"issues"`
 }
 
@@ -10646,9 +10038,7 @@ func (v *IssuesByTeamProjectResponse) GetIssues() IssuesByTeamProjectIssuesIssue
 
 // IssuesByTeamResponse is returned by IssuesByTeam on success.
 type IssuesByTeamResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamIssuesIssueConnection `json:"issues"`
 }
 
@@ -10674,12 +10064,7 @@ func (v *IssuesByTeamStateIssuesIssueConnection) GetPageInfo() IssuesByTeamState
 // IssuesByTeamStateIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type IssuesByTeamStateIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -10829,9 +10214,7 @@ func (v *IssuesByTeamStateIssuesIssueConnectionPageInfo) GetEndCursor() *string 
 
 // IssuesByTeamStateResponse is returned by IssuesByTeamState on success.
 type IssuesByTeamStateResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues IssuesByTeamStateIssuesIssueConnection `json:"issues"`
 }
 
@@ -10859,12 +10242,7 @@ func (v *NextIssuesByTeamIssuesIssueConnection) GetPageInfo() NextIssuesByTeamIs
 // NextIssuesByTeamIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type NextIssuesByTeamIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 	// The time at which the entity was created.
@@ -11029,16 +10407,11 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationCo
 // NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
-	// The type of relationship between the source issue and the related issue.
-	// Possible values include blocks, duplicate, and related.
+	// The type of relationship between the source issue and the related issue. Possible values include blocks, duplicate, and related.
 	Type string `json:"type"`
-	// The target issue that the source issue is related to. The relation type
-	// describes how the source issue relates to this issue.
+	// The target issue that the source issue is related to. The relation type describes how the source issue relates to this issue.
 	RelatedIssue NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue `json:"relatedIssue"`
 }
 
@@ -11055,18 +10428,11 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationCo
 // NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The workflow state (issue status) that the issue is currently in. Workflow
-	// states represent the issue's progress through the team's workflow, such as
-	// Triage, Todo, In Progress, Done, or Canceled.
+	// The workflow state (issue status) that the issue is currently in. Workflow states represent the issue's progress through the team's workflow, such as Triage, Todo, In Progress, Done, or Canceled.
 	State NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState `json:"state"`
 }
 
@@ -11083,13 +10449,7 @@ func (v *NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationCo
 // NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelationRelatedIssueStateWorkflowState struct {
 	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
 	Type string `json:"type"`
@@ -11116,9 +10476,7 @@ func (v *NextIssuesByTeamIssuesIssueConnectionPageInfo) GetEndCursor() *string {
 
 // NextIssuesByTeamResponse is returned by NextIssuesByTeam on success.
 type NextIssuesByTeamResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues NextIssuesByTeamIssuesIssueConnection `json:"issues"`
 }
 
@@ -11129,49 +10487,47 @@ func (v *NextIssuesByTeamResponse) GetIssues() NextIssuesByTeamIssuesIssueConnec
 type NotificationCategory string
 
 const (
+	NotificationCategoryAppsandintegrations NotificationCategory = "appsAndIntegrations"
 	NotificationCategoryAssignments         NotificationCategory = "assignments"
-	NotificationCategoryStatuschanges       NotificationCategory = "statusChanges"
+	NotificationCategoryBilling             NotificationCategory = "billing"
 	NotificationCategoryCommentsandreplies  NotificationCategory = "commentsAndReplies"
-	NotificationCategoryMentions            NotificationCategory = "mentions"
-	NotificationCategoryReactions           NotificationCategory = "reactions"
-	NotificationCategorySubscriptions       NotificationCategory = "subscriptions"
+	NotificationCategoryCustomers           NotificationCategory = "customers"
 	NotificationCategoryDocumentchanges     NotificationCategory = "documentChanges"
+	NotificationCategoryFeed                NotificationCategory = "feed"
+	NotificationCategoryMentions            NotificationCategory = "mentions"
 	NotificationCategoryPostsandupdates     NotificationCategory = "postsAndUpdates"
+	NotificationCategoryReactions           NotificationCategory = "reactions"
 	NotificationCategoryReminders           NotificationCategory = "reminders"
 	NotificationCategoryReviews             NotificationCategory = "reviews"
-	NotificationCategoryAppsandintegrations NotificationCategory = "appsAndIntegrations"
-	NotificationCategoryTriage              NotificationCategory = "triage"
-	NotificationCategoryCustomers           NotificationCategory = "customers"
-	NotificationCategoryFeed                NotificationCategory = "feed"
-	NotificationCategoryBilling             NotificationCategory = "billing"
+	NotificationCategoryStatuschanges       NotificationCategory = "statusChanges"
+	NotificationCategorySubscriptions       NotificationCategory = "subscriptions"
 	NotificationCategorySystem              NotificationCategory = "system"
+	NotificationCategoryTriage              NotificationCategory = "triage"
 )
 
 var AllNotificationCategory = []NotificationCategory{
+	NotificationCategoryAppsandintegrations,
 	NotificationCategoryAssignments,
-	NotificationCategoryStatuschanges,
+	NotificationCategoryBilling,
 	NotificationCategoryCommentsandreplies,
-	NotificationCategoryMentions,
-	NotificationCategoryReactions,
-	NotificationCategorySubscriptions,
+	NotificationCategoryCustomers,
 	NotificationCategoryDocumentchanges,
+	NotificationCategoryFeed,
+	NotificationCategoryMentions,
 	NotificationCategoryPostsandupdates,
+	NotificationCategoryReactions,
 	NotificationCategoryReminders,
 	NotificationCategoryReviews,
-	NotificationCategoryAppsandintegrations,
-	NotificationCategoryTriage,
-	NotificationCategoryCustomers,
-	NotificationCategoryFeed,
-	NotificationCategoryBilling,
+	NotificationCategoryStatuschanges,
+	NotificationCategorySubscriptions,
 	NotificationCategorySystem,
+	NotificationCategoryTriage,
 }
 
 // NotificationCategoryPreferencesFields includes the GraphQL fields of NotificationCategoryPreferences requested by the fragment NotificationCategoryPreferencesFields.
 // The GraphQL type's documentation follows.
 //
-// A user's fully resolved notification category preferences. Each category maps to
-// channel preferences indicating whether mobile, desktop, email, and Slack
-// delivery are enabled.
+// A user's fully resolved notification category preferences. Each category maps to channel preferences indicating whether mobile, desktop, email, and Slack delivery are enabled.
 type NotificationCategoryPreferencesFields struct {
 	// The preferences for notifications about apps and integrations.
 	AppsAndIntegrations NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences `json:"appsAndIntegrations"`
@@ -11290,8 +10646,7 @@ func (v *NotificationCategoryPreferencesFields) GetTriage() NotificationCategory
 // NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11372,8 +10727,7 @@ func (v *NotificationCategoryPreferencesFieldsAppsAndIntegrationsNotificationCha
 // NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11454,8 +10808,7 @@ func (v *NotificationCategoryPreferencesFieldsAssignmentsNotificationChannelPref
 // NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11536,8 +10889,7 @@ func (v *NotificationCategoryPreferencesFieldsBillingNotificationChannelPreferen
 // NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11618,8 +10970,7 @@ func (v *NotificationCategoryPreferencesFieldsCommentsAndRepliesNotificationChan
 // NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsCustomersNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11700,8 +11051,7 @@ func (v *NotificationCategoryPreferencesFieldsCustomersNotificationChannelPrefer
 // NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11782,8 +11132,7 @@ func (v *NotificationCategoryPreferencesFieldsDocumentChangesNotificationChannel
 // NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11864,8 +11213,7 @@ func (v *NotificationCategoryPreferencesFieldsFeedNotificationChannelPreferences
 // NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsMentionsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -11946,8 +11294,7 @@ func (v *NotificationCategoryPreferencesFieldsMentionsNotificationChannelPrefere
 // NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12028,8 +11375,7 @@ func (v *NotificationCategoryPreferencesFieldsPostsAndUpdatesNotificationChannel
 // NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsReactionsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12110,8 +11456,7 @@ func (v *NotificationCategoryPreferencesFieldsReactionsNotificationChannelPrefer
 // NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsRemindersNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12192,8 +11537,7 @@ func (v *NotificationCategoryPreferencesFieldsRemindersNotificationChannelPrefer
 // NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12274,8 +11618,7 @@ func (v *NotificationCategoryPreferencesFieldsReviewsNotificationChannelPreferen
 // NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12356,8 +11699,7 @@ func (v *NotificationCategoryPreferencesFieldsStatusChangesNotificationChannelPr
 // NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12438,8 +11780,7 @@ func (v *NotificationCategoryPreferencesFieldsSubscriptionsNotificationChannelPr
 // NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12520,8 +11861,7 @@ func (v *NotificationCategoryPreferencesFieldsSystemNotificationChannelPreferenc
 // NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -12602,8 +11942,7 @@ func (v *NotificationCategoryPreferencesFieldsTriageNotificationChannelPreferenc
 // NotificationChannelPreferencesFields includes the GraphQL fields of NotificationChannelPreferences requested by the fragment NotificationChannelPreferencesFields.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type NotificationChannelPreferencesFields struct {
 	// Whether notifications are currently enabled for desktop.
 	Desktop bool `json:"desktop"`
@@ -12630,8 +11969,7 @@ func (v *NotificationChannelPreferencesFields) GetSlack() bool { return v.Slack 
 // NotificationDeliveryPreferencesChannelFields includes the GraphQL fields of NotificationDeliveryPreferencesChannel requested by the fragment NotificationDeliveryPreferencesChannelFields.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type NotificationDeliveryPreferencesChannelFields struct {
 	// [DEPRECATED] Whether notifications are enabled for this channel. Use notificationChannelPreferences instead.
 	NotificationsDisabled *bool `json:"notificationsDisabled"`
@@ -12652,9 +11990,7 @@ func (v *NotificationDeliveryPreferencesChannelFields) GetSchedule() *Notificati
 // NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule struct {
 	NotificationDeliveryPreferencesScheduleFields `json:"-"`
 }
@@ -12767,14 +12103,11 @@ func (v *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliver
 // NotificationDeliveryPreferencesDayFields includes the GraphQL fields of NotificationDeliveryPreferencesDay requested by the fragment NotificationDeliveryPreferencesDayFields.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesDayFields struct {
-	// The start time of the notification delivery window in HH:MM military time
-	// format (e.g., '09:00'). Must be earlier than 'end'.
+	// The start time of the notification delivery window in HH:MM military time format (e.g., '09:00'). Must be earlier than 'end'.
 	Start *string `json:"start"`
-	// The end time of the notification delivery window in HH:MM military time format
-	// (e.g., '18:00'). Must be later than 'start'.
+	// The end time of the notification delivery window in HH:MM military time format (e.g., '18:00'). Must be later than 'start'.
 	End *string `json:"end"`
 }
 
@@ -12801,8 +12134,7 @@ func (v *NotificationDeliveryPreferencesFields) GetMobile() *NotificationDeliver
 // NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferencesChannel struct {
 	NotificationDeliveryPreferencesChannelFields `json:"-"`
 }
@@ -12867,12 +12199,9 @@ func (v *NotificationDeliveryPreferencesFieldsMobileNotificationDeliveryPreferen
 // NotificationDeliveryPreferencesScheduleFields includes the GraphQL fields of NotificationDeliveryPreferencesSchedule requested by the fragment NotificationDeliveryPreferencesScheduleFields.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type NotificationDeliveryPreferencesScheduleFields struct {
-	// Whether the entire delivery schedule is disabled. When true, notifications are
-	// delivered at any time regardless of the per-day settings.
+	// Whether the entire delivery schedule is disabled. When true, notifications are delivered at any time regardless of the per-day settings.
 	Disabled *bool `json:"disabled"`
 	// Delivery preferences for Friday.
 	Friday NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay `json:"friday"`
@@ -12931,8 +12260,7 @@ func (v *NotificationDeliveryPreferencesScheduleFields) GetWednesday() Notificat
 // NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -12997,8 +12325,7 @@ func (v *NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDelivery
 // NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -13063,8 +12390,7 @@ func (v *NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDelivery
 // NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -13129,8 +12455,7 @@ func (v *NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDelive
 // NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -13195,8 +12520,7 @@ func (v *NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDelivery
 // NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -13261,8 +12585,7 @@ func (v *NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDelive
 // NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -13327,8 +12650,7 @@ func (v *NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliver
 // NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -13393,12 +12715,7 @@ func (v *NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliv
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of NotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 //
 // NotificationSubscriptionSummaryFields is implemented by the following types:
 // NotificationSubscriptionSummaryFieldsCustomViewNotificationSubscription
@@ -13419,8 +12736,7 @@ type NotificationSubscriptionSummaryFields interface {
 	// GetActive returns the interface-field "active" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	GetActive() bool
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
@@ -13441,15 +12757,12 @@ type NotificationSubscriptionSummaryFields interface {
 	// GetContextViewType returns the interface-field "contextViewType" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	GetContextViewType() *ContextViewType
 	// GetUserContextViewType returns the interface-field "userContextViewType" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	GetUserContextViewType() *UserContextViewType
 	// GetSubscriber returns the interface-field "subscriber" from its implementation.
 	// The GraphQL interface field's documentation follows.
@@ -13464,8 +12777,7 @@ type NotificationSubscriptionSummaryFields interface {
 	// GetCustomView returns the interface-field "customView" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	GetCustomView() *NotificationSubscriptionSummaryFieldsCustomView
 	// GetCycle returns the interface-field "cycle" from its implementation.
 	// The GraphQL interface field's documentation follows.
@@ -13480,8 +12792,7 @@ type NotificationSubscriptionSummaryFields interface {
 	// GetLabel returns the interface-field "label" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	GetLabel() *NotificationSubscriptionSummaryFieldsLabelIssueLabel
 	// GetProject returns the interface-field "project" from its implementation.
 	// The GraphQL interface field's documentation follows.
@@ -13496,8 +12807,7 @@ type NotificationSubscriptionSummaryFields interface {
 	// GetUser returns the interface-field "user" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	GetUser() *NotificationSubscriptionSummaryFieldsUser
 }
 
@@ -13644,10 +12954,7 @@ func __marshalNotificationSubscriptionSummaryFields(v *NotificationSubscriptionS
 // NotificationSubscriptionSummaryFieldsCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type NotificationSubscriptionSummaryFieldsCustomView struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -13664,17 +12971,11 @@ func (v *NotificationSubscriptionSummaryFieldsCustomView) GetName() string { ret
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of CustomViewNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsCustomViewNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -13683,33 +12984,27 @@ type NotificationSubscriptionSummaryFieldsCustomViewNotificationSubscription str
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -13796,11 +13091,7 @@ func (v *NotificationSubscriptionSummaryFieldsCustomViewNotificationSubscription
 // NotificationSubscriptionSummaryFieldsCustomer includes the requested fields of the GraphQL type Customer.
 // The GraphQL type's documentation follows.
 //
-// A customer organization tracked in Linear's customer management system.
-// Customers represent external companies or organizations whose product requests
-// and feedback are captured as customer needs, which can be linked to issues and
-// projects. Customers can be associated with domains, external system IDs, Slack
-// channels, and managed by integrations such as Intercom or Salesforce.
+// A customer organization tracked in Linear's customer management system. Customers represent external companies or organizations whose product requests and feedback are captured as customer needs, which can be linked to issues and projects. Customers can be associated with domains, external system IDs, Slack channels, and managed by integrations such as Intercom or Salesforce.
 type NotificationSubscriptionSummaryFieldsCustomer struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -13817,17 +13108,11 @@ func (v *NotificationSubscriptionSummaryFieldsCustomer) GetName() string { retur
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of CustomerNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsCustomerNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -13836,33 +13121,27 @@ type NotificationSubscriptionSummaryFieldsCustomerNotificationSubscription struc
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -13949,11 +13228,7 @@ func (v *NotificationSubscriptionSummaryFieldsCustomerNotificationSubscription) 
 // NotificationSubscriptionSummaryFieldsCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type NotificationSubscriptionSummaryFieldsCycle struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -13970,17 +13245,11 @@ func (v *NotificationSubscriptionSummaryFieldsCycle) GetName() *string { return 
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of CycleNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsCycleNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -13989,33 +13258,27 @@ type NotificationSubscriptionSummaryFieldsCycleNotificationSubscription struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -14102,9 +13365,7 @@ func (v *NotificationSubscriptionSummaryFieldsCycleNotificationSubscription) Get
 // NotificationSubscriptionSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type NotificationSubscriptionSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -14121,17 +13382,11 @@ func (v *NotificationSubscriptionSummaryFieldsInitiative) GetName() string { ret
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of InitiativeNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsInitiativeNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -14140,33 +13395,27 @@ type NotificationSubscriptionSummaryFieldsInitiativeNotificationSubscription str
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -14253,11 +13502,7 @@ func (v *NotificationSubscriptionSummaryFieldsInitiativeNotificationSubscription
 // NotificationSubscriptionSummaryFieldsLabelIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type NotificationSubscriptionSummaryFieldsLabelIssueLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -14274,17 +13519,11 @@ func (v *NotificationSubscriptionSummaryFieldsLabelIssueLabel) GetName() string 
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of LabelNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsLabelNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -14293,33 +13532,27 @@ type NotificationSubscriptionSummaryFieldsLabelNotificationSubscription struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -14406,9 +13639,7 @@ func (v *NotificationSubscriptionSummaryFieldsLabelNotificationSubscription) Get
 // NotificationSubscriptionSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type NotificationSubscriptionSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -14425,17 +13656,11 @@ func (v *NotificationSubscriptionSummaryFieldsProject) GetName() string { return
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of ProjectNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsProjectNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -14444,33 +13669,27 @@ type NotificationSubscriptionSummaryFieldsProjectNotificationSubscription struct
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -14557,10 +13776,7 @@ func (v *NotificationSubscriptionSummaryFieldsProjectNotificationSubscription) G
 // NotificationSubscriptionSummaryFieldsSubscriberUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type NotificationSubscriptionSummaryFieldsSubscriberUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -14579,11 +13795,7 @@ func (v *NotificationSubscriptionSummaryFieldsSubscriberUser) GetDisplayName() s
 // NotificationSubscriptionSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type NotificationSubscriptionSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -14605,17 +13817,11 @@ func (v *NotificationSubscriptionSummaryFieldsTeam) GetName() string { return v.
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of TeamNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsTeamNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -14624,33 +13830,27 @@ type NotificationSubscriptionSummaryFieldsTeamNotificationSubscription struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -14737,10 +13937,7 @@ func (v *NotificationSubscriptionSummaryFieldsTeamNotificationSubscription) GetU
 // NotificationSubscriptionSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type NotificationSubscriptionSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -14757,17 +13954,11 @@ func (v *NotificationSubscriptionSummaryFieldsUser) GetDisplayName() string { re
 // NotificationSubscriptionSummaryFields includes the GraphQL fields of UserNotificationSubscription requested by the fragment NotificationSubscriptionSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type NotificationSubscriptionSummaryFieldsUserNotificationSubscription struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Whether the subscription is active. When inactive, no notifications are
-	// generated from this subscription even though it still exists.
+	// Whether the subscription is active. When inactive, no notifications are generated from this subscription even though it still exists.
 	Active bool `json:"active"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -14776,33 +13967,27 @@ type NotificationSubscriptionSummaryFieldsUserNotificationSubscription struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// The type of contextual view (e.g., active issues, backlog) that further scopes
-	// a team notification subscription. Null if the subscription is not associated
-	// with a specific view type.
+	// The type of contextual view (e.g., active issues, backlog) that further scopes a team notification subscription. Null if the subscription is not associated with a specific view type.
 	ContextViewType *ContextViewType `json:"contextViewType"`
-	// The type of user-specific view that further scopes a user notification
-	// subscription. Null if the subscription is not associated with a user view type.
+	// The type of user-specific view that further scopes a user notification subscription. Null if the subscription is not associated with a user view type.
 	UserContextViewType *UserContextViewType `json:"userContextViewType"`
 	// The user who will receive notifications from this subscription.
 	Subscriber NotificationSubscriptionSummaryFieldsSubscriberUser `json:"subscriber"`
 	// The customer that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Customer *NotificationSubscriptionSummaryFieldsCustomer `json:"customer"`
-	// The custom view that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The custom view that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	CustomView *NotificationSubscriptionSummaryFieldsCustomView `json:"customView"`
 	// The cycle that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Cycle *NotificationSubscriptionSummaryFieldsCycle `json:"cycle"`
 	// The initiative that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Initiative *NotificationSubscriptionSummaryFieldsInitiative `json:"initiative"`
-	// The issue label that this notification subscription is scoped to. Null if the
-	// subscription targets a different entity type.
+	// The issue label that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Label *NotificationSubscriptionSummaryFieldsLabelIssueLabel `json:"label"`
 	// The project that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Project *NotificationSubscriptionSummaryFieldsProject `json:"project"`
 	// The team that this notification subscription is scoped to. Null if the subscription targets a different entity type.
 	Team *NotificationSubscriptionSummaryFieldsTeam `json:"team"`
-	// The user that this notification subscription is scoped to, for user-specific
-	// view subscriptions. Null if the subscription targets a different entity type.
+	// The user that this notification subscription is scoped to, for user-specific view subscriptions. Null if the subscription targets a different entity type.
 	User *NotificationSubscriptionSummaryFieldsUser `json:"user"`
 }
 
@@ -14889,11 +14074,7 @@ func (v *NotificationSubscriptionSummaryFieldsUserNotificationSubscription) GetU
 // NotificationSummaryFields includes the GraphQL fields of Notification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 //
 // NotificationSummaryFields is implemented by the following types:
 // NotificationSummaryFieldsCustomerNeedNotification
@@ -14918,8 +14099,7 @@ type NotificationSummaryFields interface {
 	// GetType returns the interface-field "type" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	GetType() string
 	// GetCategory returns the interface-field "category" from its implementation.
 	// The GraphQL interface field's documentation follows.
@@ -14975,9 +14155,7 @@ type NotificationSummaryFields interface {
 	// GetSnoozedUntilAt returns the interface-field "snoozedUntilAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	GetSnoozedUntilAt() *string
 	// GetUnsnoozedAt returns the interface-field "unsnoozedAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
@@ -14992,15 +14170,12 @@ type NotificationSummaryFields interface {
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	GetActor() *NotificationSummaryFieldsActorUser
 	// GetExternalUserActor returns the interface-field "externalUserActor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser
 }
 
@@ -15199,10 +14374,7 @@ func __marshalNotificationSummaryFields(v *NotificationSummaryFields) ([]byte, e
 // NotificationSummaryFieldsActorUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type NotificationSummaryFieldsActorUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -15219,16 +14391,11 @@ func (v *NotificationSummaryFieldsActorUser) GetDisplayName() string { return v.
 // NotificationSummaryFields includes the GraphQL fields of CustomerNeedNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsCustomerNeedNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -15251,20 +14418,15 @@ type NotificationSummaryFieldsCustomerNeedNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -15338,16 +14500,11 @@ func (v *NotificationSummaryFieldsCustomerNeedNotification) GetExternalUserActor
 // NotificationSummaryFields includes the GraphQL fields of CustomerNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsCustomerNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -15370,20 +14527,15 @@ type NotificationSummaryFieldsCustomerNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -15453,16 +14605,11 @@ func (v *NotificationSummaryFieldsCustomerNotification) GetExternalUserActor() *
 // NotificationSummaryFields includes the GraphQL fields of DocumentNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsDocumentNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -15485,20 +14632,15 @@ type NotificationSummaryFieldsDocumentNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -15568,12 +14710,7 @@ func (v *NotificationSummaryFieldsDocumentNotification) GetExternalUserActor() *
 // NotificationSummaryFieldsExternalUserActorExternalUser includes the requested fields of the GraphQL type ExternalUser.
 // The GraphQL type's documentation follows.
 //
-// An external user who interacts with Linear through an integrated external
-// service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams)
-// but does not have a Linear account. External users can create issues, post
-// comments, and add reactions from their respective platforms. They are identified
-// by service-specific user IDs and may optionally have an email address. External
-// users are scoped to a single workspace.
+// An external user who interacts with Linear through an integrated external service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams) but does not have a Linear account. External users can create issues, post comments, and add reactions from their respective platforms. They are identified by service-specific user IDs and may optionally have an email address. External users are scoped to a single workspace.
 type NotificationSummaryFieldsExternalUserActorExternalUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -15585,16 +14722,11 @@ func (v *NotificationSummaryFieldsExternalUserActorExternalUser) GetId() string 
 // NotificationSummaryFields includes the GraphQL fields of InitiativeNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsInitiativeNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -15617,20 +14749,15 @@ type NotificationSummaryFieldsInitiativeNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -15702,16 +14829,11 @@ func (v *NotificationSummaryFieldsInitiativeNotification) GetExternalUserActor()
 // NotificationSummaryFields includes the GraphQL fields of IssueNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsIssueNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -15734,20 +14856,15 @@ type NotificationSummaryFieldsIssueNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -15815,16 +14932,11 @@ func (v *NotificationSummaryFieldsIssueNotification) GetExternalUserActor() *Not
 // NotificationSummaryFields includes the GraphQL fields of OauthClientApprovalNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsOauthClientApprovalNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -15847,20 +14959,15 @@ type NotificationSummaryFieldsOauthClientApprovalNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -15944,16 +15051,11 @@ func (v *NotificationSummaryFieldsOauthClientApprovalNotification) GetExternalUs
 // NotificationSummaryFields includes the GraphQL fields of PostNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsPostNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -15976,20 +15078,15 @@ type NotificationSummaryFieldsPostNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -16057,16 +15154,11 @@ func (v *NotificationSummaryFieldsPostNotification) GetExternalUserActor() *Noti
 // NotificationSummaryFields includes the GraphQL fields of ProductAnnouncementNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsProductAnnouncementNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -16089,20 +15181,15 @@ type NotificationSummaryFieldsProductAnnouncementNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -16186,16 +15273,11 @@ func (v *NotificationSummaryFieldsProductAnnouncementNotification) GetExternalUs
 // NotificationSummaryFields includes the GraphQL fields of ProjectNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsProjectNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -16218,20 +15300,15 @@ type NotificationSummaryFieldsProjectNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -16299,16 +15376,11 @@ func (v *NotificationSummaryFieldsProjectNotification) GetExternalUserActor() *N
 // NotificationSummaryFields includes the GraphQL fields of PullRequestNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsPullRequestNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -16331,20 +15403,15 @@ type NotificationSummaryFieldsPullRequestNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -16416,16 +15483,11 @@ func (v *NotificationSummaryFieldsPullRequestNotification) GetExternalUserActor(
 // NotificationSummaryFields includes the GraphQL fields of UsageAlertNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsUsageAlertNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -16448,20 +15510,15 @@ type NotificationSummaryFieldsUsageAlertNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -16533,10 +15590,7 @@ func (v *NotificationSummaryFieldsUsageAlertNotification) GetExternalUserActor()
 // NotificationSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type NotificationSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -16553,16 +15607,11 @@ func (v *NotificationSummaryFieldsUser) GetDisplayName() string { return v.Displ
 // NotificationSummaryFields includes the GraphQL fields of WelcomeMessageNotification requested by the fragment NotificationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type NotificationSummaryFieldsWelcomeMessageNotification struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Notification type. Determines the kind of event that triggered this
-	// notification and which associated entity fields will be populated.
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
 	Type string `json:"type"`
 	// The category of the notification.
 	Category NotificationCategory `json:"category"`
@@ -16585,20 +15634,15 @@ type NotificationSummaryFieldsWelcomeMessageNotification struct {
 	ReadAt *string `json:"readAt"`
 	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
 	EmailedAt *string `json:"emailedAt"`
-	// The time until which a notification is snoozed. After this time, the
-	// notification reappears in the user's inbox. Null if the notification is not
-	// currently snoozed.
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
 	SnoozedUntilAt *string `json:"snoozedUntilAt"`
 	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
 	UnsnoozedAt *string `json:"unsnoozedAt"`
 	// The recipient user of this notification.
 	User NotificationSummaryFieldsUser `json:"user"`
-	// The user that caused the notification. Null if the notification was triggered
-	// by a non-user actor such as an integration, external user, or system event.
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
 	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
-	// The external user that caused the notification. Populated when the
-	// notification was triggered by an external user (e.g., a commenter from a
-	// connected integration like Slack or GitHub) rather than a Linear workspace member.
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
 	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
 }
 
@@ -16676,10 +15720,7 @@ func (v *NotificationSummaryFieldsWelcomeMessageNotification) GetExternalUserAct
 // OrganizationOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type OrganizationOrganization struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -16729,9 +15770,7 @@ func (v *ProjectAddLabelProjectAddLabelProjectPayload) GetProject() *ProjectAddL
 // ProjectAddLabelProjectAddLabelProjectPayloadProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectAddLabelProjectAddLabelProjectPayloadProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -16882,9 +15921,7 @@ func (v *ProjectArchiveProjectArchiveProjectArchivePayload) GetEntity() *Project
 // ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -17016,9 +16053,7 @@ func (v *ProjectArchiveResponse) GetProjectArchive() ProjectArchiveProjectArchiv
 // ProjectAttachmentSummaryFields includes the GraphQL fields of ProjectAttachment requested by the fragment ProjectAttachmentSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// An attachment (link, reference, or integration data) associated with a project.
-// Attachments are typically created by integrations and contain metadata for
-// rendering in the client.
+// An attachment (link, reference, or integration data) associated with a project. Attachments are typically created by integrations and contain metadata for rendering in the client.
 type ProjectAttachmentSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -17028,9 +16063,7 @@ type ProjectAttachmentSummaryFields struct {
 	Subtitle *string `json:"subtitle"`
 	// URL of the attachment.
 	Url string `json:"url"`
-	// The source type of the attachment, derived from the source metadata. Returns
-	// the integration type that created the attachment (e.g., 'slack', 'github'), or
-	// null if not set.
+	// The source type of the attachment, derived from the source metadata. Returns the integration type that created the attachment (e.g., 'slack', 'github'), or null if not set.
 	SourceType *string `json:"sourceType"`
 }
 
@@ -17071,9 +16104,7 @@ func (v *ProjectCreateProjectCreateProjectPayload) GetProject() *ProjectCreatePr
 // ProjectCreateProjectCreateProjectPayloadProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectCreateProjectCreateProjectPayloadProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -17205,8 +16236,7 @@ func (v *ProjectCreateResponse) GetProjectCreate() ProjectCreateProjectCreatePro
 // ProjectHistorySummaryFields includes the GraphQL fields of ProjectHistory requested by the fragment ProjectHistorySummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A history record associated with a project. Tracks changes to project
-// properties, status, members, teams, milestones, labels, and relationships over time.
+// A history record associated with a project. Tracks changes to project properties, status, members, teams, milestones, labels, and relationships over time.
 type ProjectHistorySummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -17246,9 +16276,7 @@ func (v *ProjectHistorySummaryFields) GetProject() ProjectHistorySummaryFieldsPr
 // ProjectHistorySummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectHistorySummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -17279,9 +16307,7 @@ func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayload) GetProjectLabe
 // ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -17458,9 +16484,7 @@ func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload) GetProjectLa
 // ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -17635,9 +16659,7 @@ func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayload) GetProjectLabe
 // ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -17793,9 +16815,7 @@ func (v *ProjectLabelRetireResponse) GetProjectLabelRetire() ProjectLabelRetireP
 // ProjectLabelSummaryFields includes the GraphQL fields of ProjectLabel requested by the fragment ProjectLabelSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type ProjectLabelSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -17805,9 +16825,7 @@ type ProjectLabelSummaryFields struct {
 	Description *string `json:"description"`
 	// The label's color as a HEX string (e.g., '#EB5757'). Used for visual identification of the label in the UI.
 	Color string `json:"color"`
-	// Whether the label is a group. When true, this label acts as a container for
-	// child labels and cannot be directly applied to issues or projects. When false,
-	// the label can be directly applied.
+	// Whether the label is a group. When true, this label acts as a container for child labels and cannot be directly applied to issues or projects. When false, the label can be directly applied.
 	IsGroup bool `json:"isGroup"`
 	// The date when the label was last applied to an issue, project, or initiative. Null if the label has never been applied.
 	LastAppliedAt *string `json:"lastAppliedAt"`
@@ -17822,8 +16840,7 @@ type ProjectLabelSummaryFields struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The workspace that the project label belongs to.
 	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
-	// The parent label group. If set, this label is a child within a group. Only one
-	// child label from each group can be applied to a project at a time.
+	// The parent label group. If set, this label is a child within a group. Only one child label from each group can be applied to a project at a time.
 	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
 }
 
@@ -17870,10 +16887,7 @@ func (v *ProjectLabelSummaryFields) GetParent() *ProjectLabelSummaryFieldsParent
 // ProjectLabelSummaryFieldsOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type ProjectLabelSummaryFieldsOrganization struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -17885,9 +16899,7 @@ func (v *ProjectLabelSummaryFieldsOrganization) GetId() string { return v.Id }
 // ProjectLabelSummaryFieldsParentProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type ProjectLabelSummaryFieldsParentProjectLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -17928,9 +16940,7 @@ func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload) GetProjectLabe
 // ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -18107,9 +17117,7 @@ func (v *ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayload) Ge
 // ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestone struct {
 	ProjectMilestoneSummaryFields `json:"-"`
 	// The project that this milestone belongs to.
@@ -18224,9 +17232,7 @@ func (v *ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProj
 // ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestoneProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestoneProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -18391,25 +17397,23 @@ func (v *ProjectMilestoneDeleteResponse) GetProjectMilestoneDelete() ProjectMile
 type ProjectMilestoneStatus string
 
 const (
-	ProjectMilestoneStatusUnstarted ProjectMilestoneStatus = "unstarted"
+	ProjectMilestoneStatusDone      ProjectMilestoneStatus = "done"
 	ProjectMilestoneStatusNext      ProjectMilestoneStatus = "next"
 	ProjectMilestoneStatusOverdue   ProjectMilestoneStatus = "overdue"
-	ProjectMilestoneStatusDone      ProjectMilestoneStatus = "done"
+	ProjectMilestoneStatusUnstarted ProjectMilestoneStatus = "unstarted"
 )
 
 var AllProjectMilestoneStatus = []ProjectMilestoneStatus{
-	ProjectMilestoneStatusUnstarted,
+	ProjectMilestoneStatusDone,
 	ProjectMilestoneStatusNext,
 	ProjectMilestoneStatusOverdue,
-	ProjectMilestoneStatusDone,
+	ProjectMilestoneStatusUnstarted,
 }
 
 // ProjectMilestoneSummaryFields includes the GraphQL fields of ProjectMilestone requested by the fragment ProjectMilestoneSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type ProjectMilestoneSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -18472,9 +17476,7 @@ func (v *ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayload) Ge
 // ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestone struct {
 	ProjectMilestoneSummaryFields `json:"-"`
 	// The project that this milestone belongs to.
@@ -18589,9 +17591,7 @@ func (v *ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProj
 // ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestoneProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestoneProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -18723,18 +17723,15 @@ func (v *ProjectMilestoneUpdateResponse) GetProjectMilestoneUpdate() ProjectMile
 // ProjectRelationSummaryFields includes the GraphQL fields of ProjectRelation requested by the fragment ProjectRelationSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A dependency relation between two projects. Relations can optionally be anchored
-// to specific milestones within each project, allowing fine-grained dependency tracking.
+// A dependency relation between two projects. Relations can optionally be anchored to specific milestones within each project, allowing fine-grained dependency tracking.
 type ProjectRelationSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The type of dependency relationship from the project to the related project (e.g., blocks).
 	Type string `json:"type"`
-	// The type of anchor on the source project end of the relation, indicating
-	// whether it is anchored to the project itself or a specific milestone.
+	// The type of anchor on the source project end of the relation, indicating whether it is anchored to the project itself or a specific milestone.
 	AnchorType string `json:"anchorType"`
-	// The type of anchor on the target project end of the relation, indicating
-	// whether it is anchored to the project itself or a specific milestone.
+	// The type of anchor on the target project end of the relation, indicating whether it is anchored to the project itself or a specific milestone.
 	RelatedAnchorType string `json:"relatedAnchorType"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -18745,13 +17742,11 @@ type ProjectRelationSummaryFields struct {
 	ArchivedAt *string `json:"archivedAt"`
 	// The source project in the dependency relation.
 	Project ProjectRelationSummaryFieldsProject `json:"project"`
-	// The specific milestone within the source project that the relation is anchored
-	// to. Null if the relation applies to the project as a whole.
+	// The specific milestone within the source project that the relation is anchored to. Null if the relation applies to the project as a whole.
 	ProjectMilestone *ProjectRelationSummaryFieldsProjectMilestone `json:"projectMilestone"`
 	// The target project in the dependency relation.
 	RelatedProject ProjectRelationSummaryFieldsRelatedProject `json:"relatedProject"`
-	// The specific milestone within the target project that the relation is anchored
-	// to. Null if the relation applies to the target project as a whole.
+	// The specific milestone within the target project that the relation is anchored to. Null if the relation applies to the target project as a whole.
 	RelatedProjectMilestone *ProjectRelationSummaryFieldsRelatedProjectMilestone `json:"relatedProjectMilestone"`
 	// The user who last created or modified the relation. Null if the user has been deleted.
 	User *ProjectRelationSummaryFieldsUser `json:"user"`
@@ -18804,9 +17799,7 @@ func (v *ProjectRelationSummaryFields) GetUser() *ProjectRelationSummaryFieldsUs
 // ProjectRelationSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectRelationSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -18823,9 +17816,7 @@ func (v *ProjectRelationSummaryFieldsProject) GetName() string { return v.Name }
 // ProjectRelationSummaryFieldsProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type ProjectRelationSummaryFieldsProjectMilestone struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -18842,9 +17833,7 @@ func (v *ProjectRelationSummaryFieldsProjectMilestone) GetName() string { return
 // ProjectRelationSummaryFieldsRelatedProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectRelationSummaryFieldsRelatedProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -18861,9 +17850,7 @@ func (v *ProjectRelationSummaryFieldsRelatedProject) GetName() string { return v
 // ProjectRelationSummaryFieldsRelatedProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type ProjectRelationSummaryFieldsRelatedProjectMilestone struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -18880,10 +17867,7 @@ func (v *ProjectRelationSummaryFieldsRelatedProjectMilestone) GetName() string {
 // ProjectRelationSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type ProjectRelationSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -18924,9 +17908,7 @@ func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayload) GetProject() *Proje
 // ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -19058,10 +18040,7 @@ func (v *ProjectRemoveLabelResponse) GetProjectRemoveLabel() ProjectRemoveLabelP
 // ProjectStatusSummaryFields includes the GraphQL fields of ProjectStatus requested by the fragment ProjectStatusSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A custom project status within a workspace. Statuses are grouped by type
-// (backlog, planned, started, paused, completed, canceled) and define the
-// lifecycle stages a project can move through. Each workspace can customize the
-// names and colors of its project statuses.
+// A custom project status within a workspace. Statuses are grouped by type (backlog, planned, started, paused, completed, canceled) and define the lifecycle stages a project can move through. Each workspace can customize the names and colors of its project statuses.
 type ProjectStatusSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -19069,14 +18048,11 @@ type ProjectStatusSummaryFields struct {
 	Name string `json:"name"`
 	// Description of the status.
 	Description *string `json:"description"`
-	// The category type of the project status (e.g., backlog, planned, started,
-	// paused, completed, canceled). Determines the status's behavior and position in
-	// the project lifecycle.
+	// The category type of the project status (e.g., backlog, planned, started, paused, completed, canceled). Determines the status's behavior and position in the project lifecycle.
 	Type ProjectStatusType `json:"type"`
 	// The color of the status as a HEX string, used for display in the UI.
 	Color string `json:"color"`
-	// The position of the status within its type group in the workspace's project
-	// flow. Used for ordering statuses of the same type.
+	// The position of the status within its type group in the workspace's project flow. Used for ordering statuses of the same type.
 	Position float64 `json:"position"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
@@ -19119,28 +18095,26 @@ type ProjectStatusType string
 
 const (
 	ProjectStatusTypeBacklog   ProjectStatusType = "backlog"
+	ProjectStatusTypeCanceled  ProjectStatusType = "canceled"
+	ProjectStatusTypeCompleted ProjectStatusType = "completed"
+	ProjectStatusTypePaused    ProjectStatusType = "paused"
 	ProjectStatusTypePlanned   ProjectStatusType = "planned"
 	ProjectStatusTypeStarted   ProjectStatusType = "started"
-	ProjectStatusTypePaused    ProjectStatusType = "paused"
-	ProjectStatusTypeCompleted ProjectStatusType = "completed"
-	ProjectStatusTypeCanceled  ProjectStatusType = "canceled"
 )
 
 var AllProjectStatusType = []ProjectStatusType{
 	ProjectStatusTypeBacklog,
+	ProjectStatusTypeCanceled,
+	ProjectStatusTypeCompleted,
+	ProjectStatusTypePaused,
 	ProjectStatusTypePlanned,
 	ProjectStatusTypeStarted,
-	ProjectStatusTypePaused,
-	ProjectStatusTypeCompleted,
-	ProjectStatusTypeCanceled,
 }
 
 // ProjectSummaryFields includes the GraphQL fields of Project requested by the fragment ProjectSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -19154,11 +18128,9 @@ type ProjectSummaryFields struct {
 	Url string `json:"url"`
 	// The priority of the project. 0 = No priority, 1 = Urgent, 2 = High, 3 = Medium, 4 = Low.
 	Priority int `json:"priority"`
-	// The current project status. Defines the project's position in its lifecycle
-	// (e.g., backlog, planned, started, paused, completed, canceled).
+	// The current project status. Defines the project's position in its lifecycle (e.g., backlog, planned, started, paused, completed, canceled).
 	Status ProjectSummaryFieldsStatusProjectStatus `json:"status"`
-	// The user who leads the project. The project lead is typically responsible for
-	// posting status updates and driving the project to completion. Null if no lead is assigned.
+	// The user who leads the project. The project lead is typically responsible for posting status updates and driving the project to completion. Null if no lead is assigned.
 	Lead *ProjectSummaryFieldsLeadUser `json:"lead"`
 	// Teams associated with this project.
 	Teams ProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
@@ -19194,10 +18166,7 @@ func (v *ProjectSummaryFields) GetTeams() ProjectSummaryFieldsTeamsTeamConnectio
 // ProjectSummaryFieldsLeadUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type ProjectSummaryFieldsLeadUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -19219,18 +18188,13 @@ func (v *ProjectSummaryFieldsLeadUser) GetDisplayName() string { return v.Displa
 // ProjectSummaryFieldsStatusProjectStatus includes the requested fields of the GraphQL type ProjectStatus.
 // The GraphQL type's documentation follows.
 //
-// A custom project status within a workspace. Statuses are grouped by type
-// (backlog, planned, started, paused, completed, canceled) and define the
-// lifecycle stages a project can move through. Each workspace can customize the
-// names and colors of its project statuses.
+// A custom project status within a workspace. Statuses are grouped by type (backlog, planned, started, paused, completed, canceled) and define the lifecycle stages a project can move through. Each workspace can customize the names and colors of its project statuses.
 type ProjectSummaryFieldsStatusProjectStatus struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The name of the status.
 	Name string `json:"name"`
-	// The category type of the project status (e.g., backlog, planned, started,
-	// paused, completed, canceled). Determines the status's behavior and position in
-	// the project lifecycle.
+	// The category type of the project status (e.g., backlog, planned, started, paused, completed, canceled). Determines the status's behavior and position in the project lifecycle.
 	Type ProjectStatusType `json:"type"`
 }
 
@@ -19262,11 +18226,7 @@ func (v *ProjectSummaryFieldsTeamsTeamConnection) GetPageInfo() ProjectSummaryFi
 // ProjectSummaryFieldsTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type ProjectSummaryFieldsTeamsTeamConnectionNodesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -19318,9 +18278,7 @@ func (v *ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload) GetProjectU
 // ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to a project. Project updates communicate progress,
-// health, and blockers to stakeholders. Each update captures the project's health
-// at the time of writing and includes a rich-text body with the update content.
+// A status update posted to a project. Project updates communicate progress, health, and blockers to stakeholders. Each update captures the project's health at the time of writing and includes a rich-text body with the update content.
 type ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayloadProjectUpdate struct {
 	TopLevelProjectUpdateSummaryFields `json:"-"`
 }
@@ -19445,15 +18403,15 @@ func (v *ProjectUpdateCreateResponse) GetProjectUpdateCreate() ProjectUpdateCrea
 type ProjectUpdateHealthType string
 
 const (
-	ProjectUpdateHealthTypeOntrack  ProjectUpdateHealthType = "onTrack"
 	ProjectUpdateHealthTypeAtrisk   ProjectUpdateHealthType = "atRisk"
 	ProjectUpdateHealthTypeOfftrack ProjectUpdateHealthType = "offTrack"
+	ProjectUpdateHealthTypeOntrack  ProjectUpdateHealthType = "onTrack"
 )
 
 var AllProjectUpdateHealthType = []ProjectUpdateHealthType{
-	ProjectUpdateHealthTypeOntrack,
 	ProjectUpdateHealthTypeAtrisk,
 	ProjectUpdateHealthTypeOfftrack,
+	ProjectUpdateHealthTypeOntrack,
 }
 
 // ProjectUpdateProjectUpdateProjectPayload includes the requested fields of the GraphQL type ProjectPayload.
@@ -19478,9 +18436,7 @@ func (v *ProjectUpdateProjectUpdateProjectPayload) GetProject() *ProjectUpdatePr
 // ProjectUpdateProjectUpdateProjectPayloadProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectUpdateProjectUpdateProjectPayloadProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -19621,11 +18577,7 @@ func (v *ProjectsResponse) GetTeam() ProjectsTeam { return v.Team }
 // ProjectsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type ProjectsTeam struct {
 	// Projects associated with the team.
 	Projects ProjectsTeamProjectsProjectConnection `json:"projects"`
@@ -19653,9 +18605,7 @@ func (v *ProjectsTeamProjectsProjectConnection) GetPageInfo() ProjectsTeamProjec
 // ProjectsTeamProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type ProjectsTeamProjectsProjectConnectionNodesProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -19790,10 +18740,7 @@ func (v *ProjectsTeamProjectsProjectConnectionPageInfo) GetEndCursor() *string {
 // ReleaseHistorySummaryFields includes the GraphQL fields of ReleaseHistory requested by the fragment ReleaseHistorySummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A release history record containing a batch of chronologically ordered change
-// events for a release. Each record holds up to 30 entries, and new records are
-// created once the current record is full and a time window has elapsed. Tracks
-// changes to name, description, version, stage, dates, pipeline, and archive status.
+// A release history record containing a batch of chronologically ordered change events for a release. Each record holds up to 30 entries, and new records are created once the current record is full and a time window has elapsed. Tracks changes to name, description, version, stage, dates, pipeline, and archive status.
 type ReleaseHistorySummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -19833,11 +18780,7 @@ func (v *ReleaseHistorySummaryFields) GetRelease() ReleaseHistorySummaryFieldsRe
 // ReleaseHistorySummaryFieldsRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type ReleaseHistorySummaryFieldsRelease struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -19850,13 +18793,13 @@ func (v *ReleaseHistorySummaryFieldsRelease) GetId() string { return v.Id }
 type ReleaseNoteGenerationStatus string
 
 const (
-	ReleaseNoteGenerationStatusPending   ReleaseNoteGenerationStatus = "pending"
 	ReleaseNoteGenerationStatusCompleted ReleaseNoteGenerationStatus = "completed"
+	ReleaseNoteGenerationStatusPending   ReleaseNoteGenerationStatus = "pending"
 )
 
 var AllReleaseNoteGenerationStatus = []ReleaseNoteGenerationStatus{
-	ReleaseNoteGenerationStatusPending,
 	ReleaseNoteGenerationStatusCompleted,
+	ReleaseNoteGenerationStatusPending,
 }
 
 // ReleaseNoteSummaryFields includes the GraphQL fields of ReleaseNote requested by the fragment ReleaseNoteSummaryFields.
@@ -19870,9 +18813,7 @@ type ReleaseNoteSummaryFields struct {
 	Title *string `json:"title"`
 	// The release note's unique URL slug, used to construct human-readable URLs for the note.
 	SlugId string `json:"slugId"`
-	// Generation status when these release notes are being auto-generated: `pending`
-	// while the LLM call is running, `completed` once it lands. `null` means the
-	// release notes were written by a user and never went through auto-generation.
+	// Generation status when these release notes are being auto-generated: `pending` while the LLM call is running, `completed` once it lands. `null` means the release notes were written by a user and never went through auto-generation.
 	GenerationStatus *ReleaseNoteGenerationStatus `json:"generationStatus"`
 	// The number of releases covered by this note.
 	ReleaseCount int `json:"releaseCount"`
@@ -19935,18 +18876,13 @@ func (v *ReleaseNoteSummaryFields) GetLastRelease() *ReleaseNoteSummaryFieldsLas
 // ReleaseNoteSummaryFieldsFirstRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type ReleaseNoteSummaryFieldsFirstRelease struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The name of the release.
 	Name string `json:"name"`
-	// The version identifier for this release (e.g., 'v1.2.3' or a short commit
-	// hash). Must be unique within the pipeline. Null if no version has been assigned.
+	// The version identifier for this release (e.g., 'v1.2.3' or a short commit hash). Must be unique within the pipeline. Null if no version has been assigned.
 	Version *string `json:"version"`
 }
 
@@ -19962,18 +18898,13 @@ func (v *ReleaseNoteSummaryFieldsFirstRelease) GetVersion() *string { return v.V
 // ReleaseNoteSummaryFieldsLastRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type ReleaseNoteSummaryFieldsLastRelease struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The name of the release.
 	Name string `json:"name"`
-	// The version identifier for this release (e.g., 'v1.2.3' or a short commit
-	// hash). Must be unique within the pipeline. Null if no version has been assigned.
+	// The version identifier for this release (e.g., 'v1.2.3' or a short commit hash). Must be unique within the pipeline. Null if no version has been assigned.
 	Version *string `json:"version"`
 }
 
@@ -19989,10 +18920,7 @@ func (v *ReleaseNoteSummaryFieldsLastRelease) GetVersion() *string { return v.Ve
 // ReleaseNoteSummaryFieldsPipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type ReleaseNoteSummaryFieldsPipelineReleasePipeline struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20014,10 +18942,7 @@ func (v *ReleaseNoteSummaryFieldsPipelineReleasePipeline) GetSlugId() string { r
 // ReleasePipelineSummaryFields includes the GraphQL fields of ReleasePipeline requested by the fragment ReleasePipelineSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type ReleasePipelineSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20025,30 +18950,19 @@ type ReleasePipelineSummaryFields struct {
 	Name string `json:"name"`
 	// The pipeline's unique slug identifier, used in URLs and for lookup by human-readable identifier instead of UUID.
 	SlugId string `json:"slugId"`
-	// The type of the pipeline, which determines how releases are created and
-	// managed. Continuous pipelines create a completed release per sync, while
-	// scheduled pipelines accumulate issues in a started release.
+	// The type of the pipeline, which determines how releases are created and managed. Continuous pipelines create a completed release per sync, while scheduled pipelines accumulate issues in a started release.
 	Type ReleasePipelineType `json:"type"`
-	// Whether this pipeline targets a production environment. Defaults to true. Used
-	// to distinguish production pipelines from staging or development pipelines.
+	// Whether this pipeline targets a production environment. Defaults to true. Used to distinguish production pipelines from staging or development pipelines.
 	IsProduction bool `json:"isProduction"`
 	// Whether to automatically generate a release note when a release is completed.
 	AutoGenerateReleaseNotesOnCompletion bool `json:"autoGenerateReleaseNotesOnCompletion"`
-	// Glob patterns to filter commits by file path. When non-empty, only commits
-	// that modify files matching at least one pattern will be included in release
-	// syncs. An empty array means all commits are included regardless of file paths.
+	// Glob patterns to filter commits by file path. When non-empty, only commits that modify files matching at least one pattern will be included in release syncs. An empty array means all commits are included regardless of file paths.
 	IncludePathPatterns []string `json:"includePathPatterns"`
-	// The approximate number of non-archived releases in this pipeline. This is a
-	// denormalized count that is updated when releases are created or archived, and
-	// may not reflect the exact count at all times.
+	// The approximate number of non-archived releases in this pipeline. This is a denormalized count that is updated when releases are created or archived, and may not reflect the exact count at all times.
 	ApproximateReleaseCount int `json:"approximateReleaseCount"`
-	// A flag that indicates whether the pipeline is in the trash bin. Trashed
-	// pipelines are archived and will be permanently deleted after a retention
-	// period. Null when the pipeline is not trashed.
+	// A flag that indicates whether the pipeline is in the trash bin. Trashed pipelines are archived and will be permanently deleted after a retention period. Null when the pipeline is not trashed.
 	Trashed *bool `json:"trashed"`
-	// The document template used to define the release notes format for this
-	// pipeline. AI-generated release notes follow the structure and tone of this
-	// template. Null if no template has been configured.
+	// The document template used to define the release notes format for this pipeline. AI-generated release notes follow the structure and tone of this template. Null if no template has been configured.
 	ReleaseNoteTemplate *ReleasePipelineSummaryFieldsReleaseNoteTemplate `json:"releaseNoteTemplate"`
 	// The release note in this pipeline whose covered range ends with the most recent release.
 	LatestReleaseNote *ReleasePipelineSummaryFieldsLatestReleaseNote `json:"latestReleaseNote"`
@@ -20133,10 +19047,7 @@ func (v *ReleasePipelineSummaryFieldsLatestReleaseNote) GetId() string { return 
 // ReleasePipelineSummaryFieldsReleaseNoteTemplate includes the requested fields of the GraphQL type Template.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type ReleasePipelineSummaryFieldsReleaseNoteTemplate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20145,9 +19056,7 @@ type ReleasePipelineSummaryFieldsReleaseNoteTemplate struct {
 // GetId returns ReleasePipelineSummaryFieldsReleaseNoteTemplate.Id, and is useful for accessing the field via an interface.
 func (v *ReleasePipelineSummaryFieldsReleaseNoteTemplate) GetId() string { return v.Id }
 
-// The type of a release pipeline, which determines how releases are created and
-// managed. Continuous pipelines create a new completed release for each sync.
-// Scheduled pipelines accumulate issues into a started release that is explicitly completed.
+// The type of a release pipeline, which determines how releases are created and managed. Continuous pipelines create a new completed release for each sync. Scheduled pipelines accumulate issues into a started release that is explicitly completed.
 type ReleasePipelineType string
 
 const (
@@ -20163,10 +19072,7 @@ var AllReleasePipelineType = []ReleasePipelineType{
 // ReleaseStageSummaryFields includes the GraphQL fields of ReleaseStage requested by the fragment ReleaseStageSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A stage within a release pipeline that represents a phase in the release
-// lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress
-// through stages as they move toward production. Started-type stages can be frozen
-// to prevent new issues from being automatically synced into releases at that stage.
+// A stage within a release pipeline that represents a phase in the release lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress through stages as they move toward production. Started-type stages can be frozen to prevent new issues from being automatically synced into releases at that stage.
 type ReleaseStageSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20174,16 +19080,11 @@ type ReleaseStageSummaryFields struct {
 	Name string `json:"name"`
 	// The display color of the stage as a HEX string (e.g., '#0f783c'), used for visual representation in the UI.
 	Color string `json:"color"`
-	// The lifecycle type of the stage (planned, started, completed, or canceled).
-	// The type determines what lifecycle timestamps are set on a release when it
-	// enters this stage.
+	// The lifecycle type of the stage (planned, started, completed, or canceled). The type determines what lifecycle timestamps are set on a release when it enters this stage.
 	Type ReleaseStageType `json:"type"`
 	// The position of the stage within its pipeline, used for ordering stages in the UI. Lower values appear first.
 	Position float64 `json:"position"`
-	// Whether this stage is frozen. Only applicable to started-type stages. When a
-	// stage is frozen, automated release syncs will not target releases in this
-	// stage, and new issues will not be automatically added. At least one started
-	// stage in the pipeline must remain non-frozen.
+	// Whether this stage is frozen. Only applicable to started-type stages. When a stage is frozen, automated release syncs will not target releases in this stage, and new issues will not be automatically added. At least one started stage in the pipeline must remain non-frozen.
 	Frozen bool `json:"frozen"`
 	// The time at which the entity was created.
 	CreatedAt string `json:"createdAt"`
@@ -20231,10 +19132,7 @@ func (v *ReleaseStageSummaryFields) GetPipeline() ReleaseStageSummaryFieldsPipel
 // ReleaseStageSummaryFieldsPipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type ReleaseStageSummaryFieldsPipelineReleasePipeline struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20253,33 +19151,27 @@ func (v *ReleaseStageSummaryFieldsPipelineReleasePipeline) GetName() string { re
 // GetSlugId returns ReleaseStageSummaryFieldsPipelineReleasePipeline.SlugId, and is useful for accessing the field via an interface.
 func (v *ReleaseStageSummaryFieldsPipelineReleasePipeline) GetSlugId() string { return v.SlugId }
 
-// The type of a release stage, which determines the release's lifecycle state.
-// Types include planned, started, completed, and canceled. Each pipeline must have
-// at least one stage of each type, though only started stages may have multiple instances.
+// The type of a release stage, which determines the release's lifecycle state. Types include planned, started, completed, and canceled. Each pipeline must have at least one stage of each type, though only started stages may have multiple instances.
 type ReleaseStageType string
 
 const (
+	ReleaseStageTypeCanceled  ReleaseStageType = "canceled"
+	ReleaseStageTypeCompleted ReleaseStageType = "completed"
 	ReleaseStageTypePlanned   ReleaseStageType = "planned"
 	ReleaseStageTypeStarted   ReleaseStageType = "started"
-	ReleaseStageTypeCompleted ReleaseStageType = "completed"
-	ReleaseStageTypeCanceled  ReleaseStageType = "canceled"
 )
 
 var AllReleaseStageType = []ReleaseStageType{
+	ReleaseStageTypeCanceled,
+	ReleaseStageTypeCompleted,
 	ReleaseStageTypePlanned,
 	ReleaseStageTypeStarted,
-	ReleaseStageTypeCompleted,
-	ReleaseStageTypeCanceled,
 }
 
 // ReleaseSummaryFields includes the GraphQL fields of Release requested by the fragment ReleaseSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type ReleaseSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20287,40 +19179,27 @@ type ReleaseSummaryFields struct {
 	Name string `json:"name"`
 	// The release's unique URL slug, used to construct human-readable URLs for the release.
 	SlugId string `json:"slugId"`
-	// The version identifier for this release (e.g., 'v1.2.3' or a short commit
-	// hash). Must be unique within the pipeline. Null if no version has been assigned.
+	// The version identifier for this release (e.g., 'v1.2.3' or a short commit hash). Must be unique within the pipeline. Null if no version has been assigned.
 	Version *string `json:"version"`
 	// The description of the release in plain text or markdown. Null if no description has been set.
 	Description *string `json:"description"`
-	// The Git commit SHA associated with this release. Used for SHA-based
-	// idempotency when completing releases and for linking releases to specific
-	// points in the repository history. Null if the release was created without a
-	// commit reference.
+	// The Git commit SHA associated with this release. Used for SHA-based idempotency when completing releases and for linking releases to specific points in the repository history. Null if the release was created without a commit reference.
 	CommitSha *string `json:"commitSha"`
 	// Number of issues associated with the release.
 	IssueCount int `json:"issueCount"`
-	// A flag that indicates whether the release is in the trash bin. Trashed
-	// releases are archived and will be permanently deleted after a retention
-	// period. Null when the release is not trashed.
+	// A flag that indicates whether the release is in the trash bin. Trashed releases are archived and will be permanently deleted after a retention period. Null when the release is not trashed.
 	Trashed *bool `json:"trashed"`
 	// The URL to the release page in the Linear app.
 	Url string `json:"url"`
-	// The estimated start date of the release. This is a date-only value without a
-	// time component. Automatically set to today when the release moves to a started
-	// stage if not already set. Null if no start date has been specified.
+	// The estimated start date of the release. This is a date-only value without a time component. Automatically set to today when the release moves to a started stage if not already set. Null if no start date has been specified.
 	StartDate *string `json:"startDate"`
-	// The estimated completion date of the release. This is a date-only value
-	// without a time component. Null if no target date has been specified.
+	// The estimated completion date of the release. This is a date-only value without a time component. Null if no target date has been specified.
 	TargetDate *string `json:"targetDate"`
 	// The time at which the release first entered a started stage. Null if the release has not yet been started.
 	StartedAt *string `json:"startedAt"`
-	// The time at which the release was completed. Set automatically when the
-	// release moves to a completed stage. Reset to null if the release moves back to
-	// a non-completed stage.
+	// The time at which the release was completed. Set automatically when the release moves to a completed stage. Reset to null if the release moves back to a non-completed stage.
 	CompletedAt *string `json:"completedAt"`
-	// The time at which the release was canceled. Set automatically when the release
-	// moves to a canceled stage. Reset to null if the release moves back to a
-	// non-canceled stage.
+	// The time at which the release was canceled. Set automatically when the release moves to a canceled stage. Reset to null if the release moves back to a non-canceled stage.
 	CanceledAt *string `json:"canceledAt"`
 	// The time at which the release was automatically archived by the auto pruning process.
 	AutoArchivedAt *string `json:"autoArchivedAt"`
@@ -20333,15 +19212,11 @@ type ReleaseSummaryFields struct {
 	ArchivedAt *string `json:"archivedAt"`
 	// The release pipeline that this release belongs to. A release always belongs to exactly one pipeline.
 	Pipeline ReleaseSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
-	// The current stage of the release within its pipeline (e.g., Planned, In
-	// Progress, Completed, Canceled). Changing the stage triggers lifecycle
-	// timestamp updates and may move non-closed issues to a new release when
-	// completing a scheduled pipeline release.
+	// The current stage of the release within its pipeline (e.g., Planned, In Progress, Completed, Canceled). Changing the stage triggers lifecycle timestamp updates and may move non-closed issues to a new release when completing a scheduled pipeline release.
 	Stage ReleaseSummaryFieldsStageReleaseStage `json:"stage"`
 	// Release notes for the release.
 	ReleaseNotes []ReleaseSummaryFieldsReleaseNotesReleaseNote `json:"releaseNotes"`
-	// The user who created the release. Null if the release was created by a
-	// non-user context such as an access key or automation.
+	// The user who created the release. Null if the release was created by a non-user context such as an access key or automation.
 	Creator *ReleaseSummaryFieldsCreatorUser `json:"creator"`
 }
 
@@ -20418,10 +19293,7 @@ func (v *ReleaseSummaryFields) GetCreator() *ReleaseSummaryFieldsCreatorUser { r
 // ReleaseSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type ReleaseSummaryFieldsCreatorUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20438,10 +19310,7 @@ func (v *ReleaseSummaryFieldsCreatorUser) GetDisplayName() string { return v.Dis
 // ReleaseSummaryFieldsPipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type ReleaseSummaryFieldsPipelineReleasePipeline struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20485,18 +19354,13 @@ func (v *ReleaseSummaryFieldsReleaseNotesReleaseNote) GetSlugId() string { retur
 // ReleaseSummaryFieldsStageReleaseStage includes the requested fields of the GraphQL type ReleaseStage.
 // The GraphQL type's documentation follows.
 //
-// A stage within a release pipeline that represents a phase in the release
-// lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress
-// through stages as they move toward production. Started-type stages can be frozen
-// to prevent new issues from being automatically synced into releases at that stage.
+// A stage within a release pipeline that represents a phase in the release lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress through stages as they move toward production. Started-type stages can be frozen to prevent new issues from being automatically synced into releases at that stage.
 type ReleaseSummaryFieldsStageReleaseStage struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The name of the stage.
 	Name string `json:"name"`
-	// The lifecycle type of the stage (planned, started, completed, or canceled).
-	// The type determines what lifecycle timestamps are set on a release when it
-	// enters this stage.
+	// The lifecycle type of the stage (planned, started, completed, or canceled). The type determines what lifecycle timestamps are set on a release when it enters this stage.
 	Type ReleaseStageType `json:"type"`
 }
 
@@ -20512,8 +19376,7 @@ func (v *ReleaseSummaryFieldsStageReleaseStage) GetType() ReleaseStageType { ret
 // RoadmapSummaryFields includes the GraphQL fields of Roadmap requested by the fragment RoadmapSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
-// supersedes this entity and provides richer hierarchy and tracking capabilities.
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which supersedes this entity and provides richer hierarchy and tracking capabilities.
 type RoadmapSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20581,10 +19444,7 @@ func (v *RoadmapSummaryFields) GetOwner() *RoadmapSummaryFieldsOwnerUser { retur
 // RoadmapSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type RoadmapSummaryFieldsCreatorUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20601,10 +19461,7 @@ func (v *RoadmapSummaryFieldsCreatorUser) GetDisplayName() string { return v.Dis
 // RoadmapSummaryFieldsOwnerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type RoadmapSummaryFieldsOwnerUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20668,9 +19525,7 @@ func (v *RoadmapToProjectSummaryFields) GetProject() RoadmapToProjectSummaryFiel
 // RoadmapToProjectSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type RoadmapToProjectSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20697,8 +19552,7 @@ func (v *RoadmapToProjectSummaryFieldsProject) GetUrl() string { return v.Url }
 // RoadmapToProjectSummaryFieldsRoadmap includes the requested fields of the GraphQL type Roadmap.
 // The GraphQL type's documentation follows.
 //
-// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
-// supersedes this entity and provides richer hierarchy and tracking capabilities.
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which supersedes this entity and provides richer hierarchy and tracking capabilities.
 type RoadmapToProjectSummaryFieldsRoadmap struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20788,16 +19642,11 @@ func (v *SearchDocumentSummaryFields) GetCycle() *SearchDocumentSummaryFieldsCyc
 // SearchDocumentSummaryFieldsCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type SearchDocumentSummaryFieldsCycle struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The auto-incrementing number of the cycle, unique within its team. This value
-	// is assigned automatically by the database and cannot be set on creation.
+	// The auto-incrementing number of the cycle, unique within its team. This value is assigned automatically by the database and cannot be set on creation.
 	Number float64 `json:"number"`
 	// The custom name of the cycle. If not set, the cycle is displayed using its number (e.g., "Cycle 5").
 	Name *string `json:"name"`
@@ -20815,9 +19664,7 @@ func (v *SearchDocumentSummaryFieldsCycle) GetName() *string { return v.Name }
 // SearchDocumentSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type SearchDocumentSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20834,12 +19681,7 @@ func (v *SearchDocumentSummaryFieldsInitiative) GetName() string { return v.Name
 // SearchDocumentSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type SearchDocumentSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20861,9 +19703,7 @@ func (v *SearchDocumentSummaryFieldsIssue) GetTitle() string { return v.Title }
 // SearchDocumentSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type SearchDocumentSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20880,11 +19720,7 @@ func (v *SearchDocumentSummaryFieldsProject) GetName() string { return v.Name }
 // SearchDocumentSummaryFieldsRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type SearchDocumentSummaryFieldsRelease struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20901,11 +19737,7 @@ func (v *SearchDocumentSummaryFieldsRelease) GetName() string { return v.Name }
 // SearchDocumentSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type SearchDocumentSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20934,13 +19766,9 @@ type SearchIssueSummaryFields struct {
 	Title string `json:"title"`
 	// Issue URL.
 	Url string `json:"url"`
-	// The team that the issue belongs to. Every issue must belong to exactly one
-	// team, which determines the available workflow states, labels, and other
-	// team-specific configuration.
+	// The team that the issue belongs to. Every issue must belong to exactly one team, which determines the available workflow states, labels, and other team-specific configuration.
 	Team SearchIssueSummaryFieldsTeam `json:"team"`
-	// The workflow state (issue status) that the issue is currently in. Workflow
-	// states represent the issue's progress through the team's workflow, such as
-	// Triage, Todo, In Progress, Done, or Canceled.
+	// The workflow state (issue status) that the issue is currently in. Workflow states represent the issue's progress through the team's workflow, such as Triage, Todo, In Progress, Done, or Canceled.
 	State SearchIssueSummaryFieldsStateWorkflowState `json:"state"`
 	// The project that the issue is associated with. Null if the issue is not part of any project.
 	Project *SearchIssueSummaryFieldsProject `json:"project"`
@@ -20972,9 +19800,7 @@ func (v *SearchIssueSummaryFields) GetProject() *SearchIssueSummaryFieldsProject
 // SearchIssueSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type SearchIssueSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -20991,13 +19817,7 @@ func (v *SearchIssueSummaryFieldsProject) GetName() string { return v.Name }
 // SearchIssueSummaryFieldsStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type SearchIssueSummaryFieldsStateWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21019,11 +19839,7 @@ func (v *SearchIssueSummaryFieldsStateWorkflowState) GetType() string { return v
 // SearchIssueSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type SearchIssueSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21052,11 +19868,9 @@ type SearchProjectSummaryFields struct {
 	SlugId string `json:"slugId"`
 	// Project URL.
 	Url string `json:"url"`
-	// The current project status. Defines the project's position in its lifecycle
-	// (e.g., backlog, planned, started, paused, completed, canceled).
+	// The current project status. Defines the project's position in its lifecycle (e.g., backlog, planned, started, paused, completed, canceled).
 	Status SearchProjectSummaryFieldsStatusProjectStatus `json:"status"`
-	// The user who leads the project. The project lead is typically responsible for
-	// posting status updates and driving the project to completion. Null if no lead is assigned.
+	// The user who leads the project. The project lead is typically responsible for posting status updates and driving the project to completion. Null if no lead is assigned.
 	Lead *SearchProjectSummaryFieldsLeadUser `json:"lead"`
 	// Teams associated with this project.
 	Teams SearchProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
@@ -21090,10 +19904,7 @@ func (v *SearchProjectSummaryFields) GetTeams() SearchProjectSummaryFieldsTeamsT
 // SearchProjectSummaryFieldsLeadUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type SearchProjectSummaryFieldsLeadUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21115,18 +19926,13 @@ func (v *SearchProjectSummaryFieldsLeadUser) GetDisplayName() string { return v.
 // SearchProjectSummaryFieldsStatusProjectStatus includes the requested fields of the GraphQL type ProjectStatus.
 // The GraphQL type's documentation follows.
 //
-// A custom project status within a workspace. Statuses are grouped by type
-// (backlog, planned, started, paused, completed, canceled) and define the
-// lifecycle stages a project can move through. Each workspace can customize the
-// names and colors of its project statuses.
+// A custom project status within a workspace. Statuses are grouped by type (backlog, planned, started, paused, completed, canceled) and define the lifecycle stages a project can move through. Each workspace can customize the names and colors of its project statuses.
 type SearchProjectSummaryFieldsStatusProjectStatus struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The name of the status.
 	Name string `json:"name"`
-	// The category type of the project status (e.g., backlog, planned, started,
-	// paused, completed, canceled). Determines the status's behavior and position in
-	// the project lifecycle.
+	// The category type of the project status (e.g., backlog, planned, started, paused, completed, canceled). Determines the status's behavior and position in the project lifecycle.
 	Type ProjectStatusType `json:"type"`
 }
 
@@ -21152,11 +19958,7 @@ func (v *SearchProjectSummaryFieldsTeamsTeamConnection) GetNodes() []SearchProje
 // SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21178,9 +19980,7 @@ func (v *SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetName() strin
 // SemanticSearchResultSummaryFields includes the GraphQL fields of SemanticSearchResult requested by the fragment SemanticSearchResultSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A reference to an entity returned by semantic search, containing its type and
-// ID. Resolve the specific entity using the type-specific field resolvers (issue,
-// project, initiative, document).
+// A reference to an entity returned by semantic search, containing its type and ID. Resolve the specific entity using the type-specific field resolvers (issue, project, initiative, document).
 type SemanticSearchResultSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21225,10 +20025,7 @@ func (v *SemanticSearchResultSummaryFields) GetDocument() *SemanticSearchResultS
 // SemanticSearchResultSummaryFieldsDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type SemanticSearchResultSummaryFieldsDocument struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21250,9 +20047,7 @@ func (v *SemanticSearchResultSummaryFieldsDocument) GetUrl() string { return v.U
 // SemanticSearchResultSummaryFieldsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type SemanticSearchResultSummaryFieldsInitiative struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21274,12 +20069,7 @@ func (v *SemanticSearchResultSummaryFieldsInitiative) GetUrl() string { return v
 // SemanticSearchResultSummaryFieldsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type SemanticSearchResultSummaryFieldsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21306,9 +20096,7 @@ func (v *SemanticSearchResultSummaryFieldsIssue) GetUrl() string { return v.Url 
 // SemanticSearchResultSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type SemanticSearchResultSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21331,17 +20119,17 @@ func (v *SemanticSearchResultSummaryFieldsProject) GetUrl() string { return v.Ur
 type SemanticSearchResultType string
 
 const (
+	SemanticSearchResultTypeDocument   SemanticSearchResultType = "document"
+	SemanticSearchResultTypeInitiative SemanticSearchResultType = "initiative"
 	SemanticSearchResultTypeIssue      SemanticSearchResultType = "issue"
 	SemanticSearchResultTypeProject    SemanticSearchResultType = "project"
-	SemanticSearchResultTypeInitiative SemanticSearchResultType = "initiative"
-	SemanticSearchResultTypeDocument   SemanticSearchResultType = "document"
 )
 
 var AllSemanticSearchResultType = []SemanticSearchResultType{
+	SemanticSearchResultTypeDocument,
+	SemanticSearchResultTypeInitiative,
 	SemanticSearchResultTypeIssue,
 	SemanticSearchResultTypeProject,
-	SemanticSearchResultTypeInitiative,
-	SemanticSearchResultTypeDocument,
 }
 
 // SlaConfigurationSummaryFields includes the GraphQL fields of SlaConfiguration requested by the fragment SlaConfigurationSummaryFields.
@@ -21383,8 +20171,7 @@ func (v *SlaConfigurationSummaryFields) GetRemovesSla() bool { return v.RemovesS
 
 // StartedWorkflowStatesResponse is returned by StartedWorkflowStates on success.
 type StartedWorkflowStatesResponse struct {
-	// All issue workflow states (issue statuses). Returns a paginated list of
-	// workflow states visible to the authenticated user, across all teams they have access to.
+	// All issue workflow states (issue statuses). Returns a paginated list of workflow states visible to the authenticated user, across all teams they have access to.
 	WorkflowStates StartedWorkflowStatesWorkflowStatesWorkflowStateConnection `json:"workflowStates"`
 }
 
@@ -21406,13 +20193,7 @@ func (v *StartedWorkflowStatesWorkflowStatesWorkflowStateConnection) GetNodes() 
 // StartedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type StartedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21420,8 +20201,7 @@ type StartedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowStat
 	Name string `json:"name"`
 	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
 	Type string `json:"type"`
-	// The position of the state in the team's workflow. States are displayed in
-	// ascending order of position within their type group.
+	// The position of the state in the team's workflow. States are displayed in ascending order of position within their type group.
 	Position float64 `json:"position"`
 }
 
@@ -21448,9 +20228,7 @@ func (v *StartedWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflow
 // TargetProjectProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type TargetProjectProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21488,11 +20266,7 @@ func (v *TargetProjectProjectTeamsTeamConnection) GetPageInfo() TargetProjectPro
 // TargetProjectProjectTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type TargetProjectProjectTeamsTeamConnectionNodesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21521,10 +20295,7 @@ func (v *TargetProjectProjectTeamsTeamConnectionNodesTeam) GetOrganization() Tar
 // TargetProjectProjectTeamsTeamConnectionNodesTeamOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type TargetProjectProjectTeamsTeamConnectionNodesTeamOrganization struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21573,10 +20344,7 @@ func (v *TargetProjectResponse) GetProject() TargetProjectProject { return v.Pro
 // TeamMembershipSummaryFields includes the GraphQL fields of TeamMembership requested by the fragment TeamMembershipSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A join entity that defines a user's membership in a team. Each membership record
-// links a user to a team and tracks whether the user is a team owner. Users can be
-// members of multiple teams, and their memberships determine which teams' issues
-// and resources they can access.
+// A join entity that defines a user's membership in a team. Each membership record links a user to a team and tracks whether the user is a team owner. Users can be members of multiple teams, and their memberships determine which teams' issues and resources they can access.
 type TeamMembershipSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21587,8 +20355,7 @@ type TeamMembershipSummaryFields struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// Whether the user is an owner of the team. Team owners have elevated
-	// permissions for managing team settings, members, and resources.
+	// Whether the user is an owner of the team. Team owners have elevated permissions for managing team settings, members, and resources.
 	Owner bool `json:"owner"`
 	// The sort order of this team in the user's personal team list. Lower values appear first.
 	SortOrder float64 `json:"sortOrder"`
@@ -21625,11 +20392,7 @@ func (v *TeamMembershipSummaryFields) GetTeam() TeamMembershipSummaryFieldsTeam 
 // TeamMembershipSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type TeamMembershipSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21651,10 +20414,7 @@ func (v *TeamMembershipSummaryFieldsTeam) GetName() string { return v.Name }
 // TeamMembershipSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type TeamMembershipSummaryFieldsUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -21747,11 +20507,7 @@ func (v *TeamMembershipSummaryFieldsUser) __premarshalJSON() (*__premarshalTeamM
 // TeamSummaryFields includes the GraphQL fields of Team requested by the fragment TeamSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type TeamSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21788,10 +20544,7 @@ func (v *TeamSummaryFields) GetOrganization() TeamSummaryFieldsOrganization { re
 // TeamSummaryFieldsOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type TeamSummaryFieldsOrganization struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21812,10 +20565,7 @@ func (v *TeamSummaryFieldsOrganization) GetUrlKey() string { return v.UrlKey }
 
 // TeamsResponse is returned by Teams on success.
 type TeamsResponse struct {
-	// All teams whose issues the user can access. This includes public teams and
-	// private teams the user is a member of. This may differ from
-	// `administrableTeams`, which returns teams whose settings the user can change
-	// but whose issues they don't necessarily have access to.
+	// All teams whose issues the user can access. This includes public teams and private teams the user is a member of. This may differ from `administrableTeams`, which returns teams whose settings the user can change but whose issues they don't necessarily have access to.
 	Teams TeamsTeamsTeamConnection `json:"teams"`
 }
 
@@ -21837,11 +20587,7 @@ func (v *TeamsTeamsTeamConnection) GetPageInfo() TeamsTeamsTeamConnectionPageInf
 // TeamsTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type TeamsTeamsTeamConnectionNodesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21870,10 +20616,7 @@ func (v *TeamsTeamsTeamConnectionNodesTeam) GetOrganization() TeamsTeamsTeamConn
 // TeamsTeamsTeamConnectionNodesTeamOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type TeamsTeamsTeamConnectionNodesTeamOrganization struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21909,10 +20652,7 @@ func (v *TeamsTeamsTeamConnectionPageInfo) GetEndCursor() *string { return v.End
 // TemplateSummaryFields includes the GraphQL fields of Template requested by the fragment TemplateSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type TemplateSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -21939,9 +20679,7 @@ type TemplateSummaryFields struct {
 	ArchivedAt *string `json:"archivedAt"`
 	// The team that the template is associated with. If null, the template is global to the workspace.
 	Team *TemplateSummaryFieldsTeam `json:"team"`
-	// The release pipeline this template is bound to. Required when the template
-	// type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one
-	// release note template, which defines the format AI follows when generating release notes.
+	// The release pipeline this template is bound to. Required when the template type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one release note template, which defines the format AI follows when generating release notes.
 	Pipeline *TemplateSummaryFieldsPipelineReleasePipeline `json:"pipeline"`
 	// The user who created the template. Null if the creator's account has been deleted.
 	Creator *TemplateSummaryFieldsCreatorUser `json:"creator"`
@@ -22008,10 +20746,7 @@ func (v *TemplateSummaryFields) GetInheritedFrom() *TemplateSummaryFieldsInherit
 // TemplateSummaryFieldsCreatorUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type TemplateSummaryFieldsCreatorUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22023,10 +20758,7 @@ func (v *TemplateSummaryFieldsCreatorUser) GetId() string { return v.Id }
 // TemplateSummaryFieldsInheritedFromTemplate includes the requested fields of the GraphQL type Template.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type TemplateSummaryFieldsInheritedFromTemplate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22038,10 +20770,7 @@ func (v *TemplateSummaryFieldsInheritedFromTemplate) GetId() string { return v.I
 // TemplateSummaryFieldsLastUpdatedByUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type TemplateSummaryFieldsLastUpdatedByUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22053,10 +20782,7 @@ func (v *TemplateSummaryFieldsLastUpdatedByUser) GetId() string { return v.Id }
 // TemplateSummaryFieldsPipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type TemplateSummaryFieldsPipelineReleasePipeline struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22068,11 +20794,7 @@ func (v *TemplateSummaryFieldsPipelineReleasePipeline) GetId() string { return v
 // TemplateSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type TemplateSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22094,11 +20816,7 @@ func (v *TemplateSummaryFieldsTeam) GetName() string { return v.Name }
 // TimeScheduleSummaryFields includes the GraphQL fields of TimeSchedule requested by the fragment TimeScheduleSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A time-based schedule defining on-call rotations or availability windows.
-// Schedules contain a series of time entries, each specifying a user and their
-// active period. They can be synced from external services (such as PagerDuty or
-// Opsgenie) via integrations, or created manually. Schedules are used by triage
-// responsibilities to determine who should be assigned or notified when issues enter triage.
+// A time-based schedule defining on-call rotations or availability windows. Schedules contain a series of time entries, each specifying a user and their active period. They can be synced from external services (such as PagerDuty or Opsgenie) via integrations, or created manually. Schedules are used by triage responsibilities to determine who should be assigned or notified when issues enter triage.
 type TimeScheduleSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22161,11 +20879,9 @@ type TimeScheduleSummaryFieldsEntriesTimeScheduleEntry struct {
 	StartsAt string `json:"startsAt"`
 	// The end time of the schedule entry in ISO 8601 date-time format.
 	EndsAt string `json:"endsAt"`
-	// The Linear user id of the user on schedule. If the user cannot be mapped to a
-	// Linear user then `userEmail` can be used as a reference.
+	// The Linear user id of the user on schedule. If the user cannot be mapped to a Linear user then `userEmail` can be used as a reference.
 	UserId *string `json:"userId"`
-	// The email, name or reference to the user on schedule. This is used in case the
-	// external user could not be mapped to a Linear user id.
+	// The email, name or reference to the user on schedule. This is used in case the external user could not be mapped to a Linear user id.
 	UserEmail *string `json:"userEmail"`
 }
 
@@ -22186,13 +20902,7 @@ func (v *TimeScheduleSummaryFieldsEntriesTimeScheduleEntry) GetUserEmail() *stri
 // TimeScheduleSummaryFieldsIntegration includes the requested fields of the GraphQL type Integration.
 // The GraphQL type's documentation follows.
 //
-// An integration with an external service. Integrations connect Linear to tools
-// like Slack, GitHub, GitLab, Jira, Figma, Sentry, Zendesk, Intercom, Front,
-// PagerDuty, Opsgenie, Google Sheets, Microsoft Teams, Discord, Salesforce, and
-// others. Each integration record represents a single configured connection,
-// scoped to a workspace and optionally to a specific team, project, initiative, or
-// custom view. Personal integrations (e.g., Slack Personal, Jira Personal, GitHub
-// Personal) are scoped to the user who created them.
+// An integration with an external service. Integrations connect Linear to tools like Slack, GitHub, GitLab, Jira, Figma, Sentry, Zendesk, Intercom, Front, PagerDuty, Opsgenie, Google Sheets, Microsoft Teams, Discord, Salesforce, and others. Each integration record represents a single configured connection, scoped to a workspace and optionally to a specific team, project, initiative, or custom view. Personal integrations (e.g., Slack Personal, Jira Personal, GitHub Personal) are scoped to the user who created them.
 type TimeScheduleSummaryFieldsIntegration struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22204,11 +20914,7 @@ func (v *TimeScheduleSummaryFieldsIntegration) GetId() string { return v.Id }
 // TopLevelCommentSummaryFields includes the GraphQL fields of Comment requested by the fragment TopLevelCommentSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type TopLevelCommentSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22231,17 +20937,13 @@ type TopLevelCommentSummaryFields struct {
 	IssueId *string `json:"issueId"`
 	// The ID of the project that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	ProjectId *string `json:"projectId"`
-	// The ID of the project update that the comment is associated with. Null if the
-	// comment belongs to a different parent entity type.
+	// The ID of the project update that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	ProjectUpdateId *string `json:"projectUpdateId"`
-	// The ID of the initiative that the comment is associated with. Null if the
-	// comment belongs to a different parent entity type.
+	// The ID of the initiative that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	InitiativeId *string `json:"initiativeId"`
-	// The ID of the initiative update that the comment is associated with. Null if
-	// the comment belongs to a different parent entity type.
+	// The ID of the initiative update that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	InitiativeUpdateId *string `json:"initiativeUpdateId"`
-	// The ID of the document content that the comment is associated with. Null if
-	// the comment belongs to a different parent entity type.
+	// The ID of the document content that the comment is associated with. Null if the comment belongs to a different parent entity type.
 	DocumentContentId *string `json:"documentContentId"`
 	// The user who wrote the comment. Null for comments created by integrations or bots without a user association.
 	User *TopLevelCommentSummaryFieldsUser `json:"user"`
@@ -22295,10 +20997,7 @@ func (v *TopLevelCommentSummaryFields) GetUser() *TopLevelCommentSummaryFieldsUs
 // TopLevelCommentSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type TopLevelCommentSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22320,9 +21019,7 @@ func (v *TopLevelCommentSummaryFieldsUser) GetDisplayName() string { return v.Di
 // TopLevelProjectUpdateSummaryFields includes the GraphQL fields of ProjectUpdate requested by the fragment TopLevelProjectUpdateSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to a project. Project updates communicate progress,
-// health, and blockers to stakeholders. Each update captures the project's health
-// at the time of writing and includes a rich-text body with the update content.
+// A status update posted to a project. Project updates communicate progress, health, and blockers to stakeholders. Each update captures the project's health at the time of writing and includes a rich-text body with the update content.
 type TopLevelProjectUpdateSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22374,9 +21071,7 @@ func (v *TopLevelProjectUpdateSummaryFields) GetUser() TopLevelProjectUpdateSumm
 // TopLevelProjectUpdateSummaryFieldsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type TopLevelProjectUpdateSummaryFieldsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22393,10 +21088,7 @@ func (v *TopLevelProjectUpdateSummaryFieldsProject) GetName() string { return v.
 // TopLevelProjectUpdateSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type TopLevelProjectUpdateSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22431,10 +21123,7 @@ var AllTriageResponsibilityAction = []TriageResponsibilityAction{
 // TriageResponsibilitySummaryFields includes the GraphQL fields of TriageResponsibility requested by the fragment TriageResponsibilitySummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A team's triage responsibility configuration that defines how issues entering
-// triage are handled. Each team can have one triage responsibility, which
-// specifies the action to take (notify or assign) and the responsible users,
-// determined either by a manual selection of specific users or by an on-call time schedule.
+// A team's triage responsibility configuration that defines how issues entering triage are handled. Each team can have one triage responsibility, which specifies the action to take (notify or assign) and the responsible users, determined either by a manual selection of specific users or by an on-call time schedule.
 type TriageResponsibilitySummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22495,10 +21184,7 @@ func (v *TriageResponsibilitySummaryFields) GetManualSelection() *TriageResponsi
 // TriageResponsibilitySummaryFieldsCurrentUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type TriageResponsibilitySummaryFieldsCurrentUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22515,8 +21201,7 @@ func (v *TriageResponsibilitySummaryFieldsCurrentUser) GetDisplayName() string {
 // TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection includes the requested fields of the GraphQL type TriageResponsibilityManualSelection.
 // The GraphQL type's documentation follows.
 //
-// Manual triage responsibility configuration specifying a set of users to assign
-// triaged issues to, with optional round-robin rotation.
+// Manual triage responsibility configuration specifying a set of users to assign triaged issues to, with optional round-robin rotation.
 type TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityManualSelection struct {
 	// The set of users responsible for triage.
 	UserIds []string `json:"userIds"`
@@ -22530,11 +21215,7 @@ func (v *TriageResponsibilitySummaryFieldsManualSelectionTriageResponsibilityMan
 // TriageResponsibilitySummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type TriageResponsibilitySummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22556,11 +21237,7 @@ func (v *TriageResponsibilitySummaryFieldsTeam) GetName() string { return v.Name
 // TriageResponsibilitySummaryFieldsTimeSchedule includes the requested fields of the GraphQL type TimeSchedule.
 // The GraphQL type's documentation follows.
 //
-// A time-based schedule defining on-call rotations or availability windows.
-// Schedules contain a series of time entries, each specifying a user and their
-// active period. They can be synced from external services (such as PagerDuty or
-// Opsgenie) via integrations, or created manually. Schedules are used by triage
-// responsibilities to determine who should be assigned or notified when issues enter triage.
+// A time-based schedule defining on-call rotations or availability windows. Schedules contain a series of time entries, each specifying a user and their active period. They can be synced from external services (such as PagerDuty or Opsgenie) via integrations, or created manually. Schedules are used by triage responsibilities to determine who should be assigned or notified when issues enter triage.
 type TriageResponsibilitySummaryFieldsTimeSchedule struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22711,10 +21388,7 @@ func (v *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme) __p
 // UserSettingsSummaryFields includes the GraphQL fields of UserSettings requested by the fragment UserSettingsSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type UserSettingsSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -22729,8 +21403,7 @@ type UserSettingsSummaryFields struct {
 	AutoAssignToSelf bool `json:"autoAssignToSelf"`
 	// The user's last seen time for the pulse feed.
 	FeedLastSeenTime *string `json:"feedLastSeenTime"`
-	// The user's preferred schedule for receiving feed summary digests. Null if the
-	// user has not set a preference and will use the workspace default.
+	// The user's preferred schedule for receiving feed summary digests. Null if the user has not set a preference and will use the workspace default.
 	FeedSummarySchedule *FeedSummarySchedule `json:"feedSummarySchedule"`
 	// Whether to show full user names instead of display names.
 	ShowFullUserNames bool `json:"showFullUserNames"`
@@ -22744,14 +21417,11 @@ type UserSettingsSummaryFields struct {
 	SubscribedToPrivacyLegalUpdates bool `json:"subscribedToPrivacyLegalUpdates"`
 	// The user that these settings belong to.
 	User UserSettingsSummaryFieldsUser `json:"user"`
-	// The user's notification category preferences, indicating which notification
-	// categories are enabled or disabled per notification channel.
+	// The user's notification category preferences, indicating which notification categories are enabled or disabled per notification channel.
 	NotificationCategoryPreferences UserSettingsSummaryFieldsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
-	// The user's notification channel preferences, indicating which notification
-	// delivery channels (email, in-app, mobile push, Slack) are enabled.
+	// The user's notification channel preferences, indicating which notification delivery channels (email, in-app, mobile push, Slack) are enabled.
 	NotificationChannelPreferences UserSettingsSummaryFieldsNotificationChannelPreferences `json:"notificationChannelPreferences"`
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences UserSettingsSummaryFieldsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -22818,9 +21488,7 @@ func (v *UserSettingsSummaryFields) GetNotificationDeliveryPreferences() UserSet
 // UserSettingsSummaryFieldsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's fully resolved notification category preferences. Each category maps to
-// channel preferences indicating whether mobile, desktop, email, and Slack
-// delivery are enabled.
+// A user's fully resolved notification category preferences. Each category maps to channel preferences indicating whether mobile, desktop, email, and Slack delivery are enabled.
 type UserSettingsSummaryFieldsNotificationCategoryPreferences struct {
 	NotificationCategoryPreferencesFields `json:"-"`
 }
@@ -22997,8 +21665,7 @@ func (v *UserSettingsSummaryFieldsNotificationCategoryPreferences) __premarshalJ
 // UserSettingsSummaryFieldsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type UserSettingsSummaryFieldsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -23136,10 +21803,7 @@ func (v *UserSettingsSummaryFieldsNotificationDeliveryPreferences) __premarshalJ
 // UserSettingsSummaryFieldsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type UserSettingsSummaryFieldsUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -23265,45 +21929,42 @@ func (v *UserSettingsThemeFieldsCustomUserSettingsCustomTheme) __premarshalJSON(
 type UserSettingsThemeMode string
 
 const (
-	UserSettingsThemeModeLight UserSettingsThemeMode = "light"
 	UserSettingsThemeModeDark  UserSettingsThemeMode = "dark"
+	UserSettingsThemeModeLight UserSettingsThemeMode = "light"
 )
 
 var AllUserSettingsThemeMode = []UserSettingsThemeMode{
-	UserSettingsThemeModeLight,
 	UserSettingsThemeModeDark,
+	UserSettingsThemeModeLight,
 }
 
 // Theme preset options
 type UserSettingsThemePreset string
 
 const (
-	UserSettingsThemePresetSystem      UserSettingsThemePreset = "system"
-	UserSettingsThemePresetLight       UserSettingsThemePreset = "light"
-	UserSettingsThemePresetPurelight   UserSettingsThemePreset = "pureLight"
-	UserSettingsThemePresetDark        UserSettingsThemePreset = "dark"
-	UserSettingsThemePresetMagicblue   UserSettingsThemePreset = "magicBlue"
 	UserSettingsThemePresetClassicdark UserSettingsThemePreset = "classicDark"
 	UserSettingsThemePresetCustom      UserSettingsThemePreset = "custom"
+	UserSettingsThemePresetDark        UserSettingsThemePreset = "dark"
+	UserSettingsThemePresetLight       UserSettingsThemePreset = "light"
+	UserSettingsThemePresetMagicblue   UserSettingsThemePreset = "magicBlue"
+	UserSettingsThemePresetPurelight   UserSettingsThemePreset = "pureLight"
+	UserSettingsThemePresetSystem      UserSettingsThemePreset = "system"
 )
 
 var AllUserSettingsThemePreset = []UserSettingsThemePreset{
-	UserSettingsThemePresetSystem,
-	UserSettingsThemePresetLight,
-	UserSettingsThemePresetPurelight,
-	UserSettingsThemePresetDark,
-	UserSettingsThemePresetMagicblue,
 	UserSettingsThemePresetClassicdark,
 	UserSettingsThemePresetCustom,
+	UserSettingsThemePresetDark,
+	UserSettingsThemePresetLight,
+	UserSettingsThemePresetMagicblue,
+	UserSettingsThemePresetPurelight,
+	UserSettingsThemePresetSystem,
 }
 
 // UserSummaryFields includes the GraphQL fields of User requested by the fragment UserSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type UserSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -23354,10 +22015,7 @@ func (v *ViewerResponse) GetViewer() ViewerViewerUser { return v.Viewer }
 // ViewerViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type ViewerViewerUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -23389,10 +22047,7 @@ func (v *ViewerViewerUser) GetOrganization() ViewerViewerUserOrganization { retu
 // ViewerViewerUserOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type ViewerViewerUserOrganization struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -23414,13 +22069,7 @@ func (v *ViewerViewerUserOrganization) GetUrlKey() string { return v.UrlKey }
 // WorkflowStateSummaryFields includes the GraphQL fields of WorkflowState requested by the fragment WorkflowStateSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type WorkflowStateSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -23430,8 +22079,7 @@ type WorkflowStateSummaryFields struct {
 	Type string `json:"type"`
 	// The state's UI color as a HEX string.
 	Color string `json:"color"`
-	// The position of the state in the team's workflow. States are displayed in
-	// ascending order of position within their type group.
+	// The position of the state in the team's workflow. States are displayed in ascending order of position within their type group.
 	Position float64 `json:"position"`
 	// The team that this workflow state belongs to. Each team has its own set of workflow states.
 	Team WorkflowStateSummaryFieldsTeam `json:"team"`
@@ -23458,11 +22106,7 @@ func (v *WorkflowStateSummaryFields) GetTeam() WorkflowStateSummaryFieldsTeam { 
 // WorkflowStateSummaryFieldsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type WorkflowStateSummaryFieldsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -23483,8 +22127,7 @@ func (v *WorkflowStateSummaryFieldsTeam) GetName() string { return v.Name }
 
 // WorkflowStatesByTypeResponse is returned by WorkflowStatesByType on success.
 type WorkflowStatesByTypeResponse struct {
-	// All issue workflow states (issue statuses). Returns a paginated list of
-	// workflow states visible to the authenticated user, across all teams they have access to.
+	// All issue workflow states (issue statuses). Returns a paginated list of workflow states visible to the authenticated user, across all teams they have access to.
 	WorkflowStates WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection `json:"workflowStates"`
 }
 
@@ -23506,13 +22149,7 @@ func (v *WorkflowStatesByTypeWorkflowStatesWorkflowStateConnection) GetNodes() [
 // WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -23520,8 +22157,7 @@ type WorkflowStatesByTypeWorkflowStatesWorkflowStateConnectionNodesWorkflowState
 	Name string `json:"name"`
 	// The type of the state. One of "triage", "backlog", "unstarted", "started", "completed", "canceled", "duplicate".
 	Type string `json:"type"`
-	// The position of the state in the team's workflow. States are displayed in
-	// ascending order of position within their type group.
+	// The position of the state in the team's workflow. States are displayed in ascending order of position within their type group.
 	Position float64 `json:"position"`
 }
 
@@ -28094,11 +26730,7 @@ func (v *activeCyclesByTeamCyclesCycleConnection) GetNodes() []activeCyclesByTea
 // activeCyclesByTeamCyclesCycleConnectionNodesCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type activeCyclesByTeamCyclesCycleConnectionNodesCycle struct {
 	CycleSummaryFields `json:"-"`
 }
@@ -28246,11 +26878,7 @@ func (v *agentActivitiesAgentActivitiesAgentActivityConnection) GetPageInfo() ag
 // agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity includes the requested fields of the GraphQL type AgentActivity.
 // The GraphQL type's documentation follows.
 //
-// An activity performed by or directed at an AI coding agent during a session.
-// Activities represent the observable steps of an agent's work, including
-// thoughts, actions (tool calls), responses, prompts from users, errors, and
-// elicitation requests. Each activity belongs to an agent session and is
-// associated with the user who initiated it.
+// An activity performed by or directed at an AI coding agent during a session. Activities represent the observable steps of an agent's work, including thoughts, actions (tool calls), responses, prompts from users, errors, and elicitation requests. Each activity belongs to an agent session and is associated with the user who initiated it.
 type agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity struct {
 	AgentActivitySummaryFields `json:"-"`
 }
@@ -28419,11 +27047,7 @@ func (v *agentActivitiesResponse) GetAgentActivities() agentActivitiesAgentActiv
 // agentActivityAgentActivity includes the requested fields of the GraphQL type AgentActivity.
 // The GraphQL type's documentation follows.
 //
-// An activity performed by or directed at an AI coding agent during a session.
-// Activities represent the observable steps of an agent's work, including
-// thoughts, actions (tool calls), responses, prompts from users, errors, and
-// elicitation requests. Each activity belongs to an agent session and is
-// associated with the user who initiated it.
+// An activity performed by or directed at an AI coding agent during a session. Activities represent the observable steps of an agent's work, including thoughts, actions (tool calls), responses, prompts from users, errors, and elicitation requests. Each activity belongs to an agent session and is associated with the user who initiated it.
 type agentActivityAgentActivity struct {
 	AgentActivitySummaryFields `json:"-"`
 }
@@ -28570,12 +27194,7 @@ func (v *agentActivityResponse) GetAgentActivity() agentActivityAgentActivity { 
 // agentSessionAgentSession includes the requested fields of the GraphQL type AgentSession.
 // The GraphQL type's documentation follows.
 //
-// A session representing an AI coding agent's work on an issue or conversation.
-// Agent sessions track the lifecycle of an agent's engagement, from creation
-// through active work to completion or dismissal. Each session is associated with
-// an agent user (the bot), optionally a human creator, an issue, and a comment
-// thread where the agent posts updates. Sessions contain activities that record
-// the agent's observable steps and can be linked to pull requests created during the work.
+// A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.
 type agentSessionAgentSession struct {
 	AgentSessionSummaryFields `json:"-"`
 }
@@ -28743,12 +27362,7 @@ func (v *agentSessionsAgentSessionsAgentSessionConnection) GetPageInfo() agentSe
 // agentSessionsAgentSessionsAgentSessionConnectionNodesAgentSession includes the requested fields of the GraphQL type AgentSession.
 // The GraphQL type's documentation follows.
 //
-// A session representing an AI coding agent's work on an issue or conversation.
-// Agent sessions track the lifecycle of an agent's engagement, from creation
-// through active work to completion or dismissal. Each session is associated with
-// an agent user (the bot), optionally a human creator, an issue, and a comment
-// thread where the agent posts updates. Sessions contain activities that record
-// the agent's observable steps and can be linked to pull requests created during the work.
+// A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.
 type agentSessionsAgentSessionsAgentSessionConnectionNodesAgentSession struct {
 	AgentSessionSummaryFields `json:"-"`
 }
@@ -28930,8 +27544,7 @@ func (v *agentSessionsResponse) GetAgentSessions() agentSessionsAgentSessionsAge
 // agentSkillAgentSkill includes the requested fields of the GraphQL type AgentSkill.
 // The GraphQL type's documentation follows.
 //
-// A user-defined skill that can be saved and reused in conversations with the
-// Linear Agent. Skills can be private to a user or shared with a team.
+// A user-defined skill that can be saved and reused in conversations with the Linear Agent. Skills can be private to a user or shared with a team.
 type agentSkillAgentSkill struct {
 	AgentSkillSummaryFields `json:"-"`
 }
@@ -29115,8 +27728,7 @@ func (v *agentSkillsAgentSkillsAgentSkillConnection) GetPageInfo() agentSkillsAg
 // agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill includes the requested fields of the GraphQL type AgentSkill.
 // The GraphQL type's documentation follows.
 //
-// A user-defined skill that can be saved and reused in conversations with the
-// Linear Agent. Skills can be private to a user or shared with a team.
+// A user-defined skill that can be saved and reused in conversations with the Linear Agent. Skills can be private to a user or shared with a team.
 type agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill struct {
 	AgentSkillSummaryFields `json:"-"`
 }
@@ -29330,9 +27942,7 @@ func (v *agentSkillsResponse) GetAgentSkills() agentSkillsAgentSkillsAgentSkillC
 // applicationInfoApplicationInfoApplication includes the requested fields of the GraphQL type Application.
 // The GraphQL type's documentation follows.
 //
-// Public-facing information about an OAuth application. Contains only the fields
-// that are safe to display to users during the authorization flow, excluding
-// sensitive data like client secrets and internal configuration.
+// Public-facing information about an OAuth application. Contains only the fields that are safe to display to users during the authorization flow, excluding sensitive data like client secrets and internal configuration.
 type applicationInfoApplicationInfoApplication struct {
 	ApplicationInfoFields `json:"-"`
 }
@@ -29434,8 +28044,7 @@ func (v *applicationInfoApplicationInfoApplication) __premarshalJSON() (*__prema
 
 // applicationInfoResponse is returned by applicationInfo on success.
 type applicationInfoResponse struct {
-	// Retrieves public information about an OAuth application by its client ID. Used
-	// during the authorization flow to display application details to the user.
+	// Retrieves public information about an OAuth application by its client ID. Used during the authorization flow to display application details to the user.
 	ApplicationInfo applicationInfoApplicationInfoApplication `json:"applicationInfo"`
 }
 
@@ -29447,12 +28056,7 @@ func (v *applicationInfoResponse) GetApplicationInfo() applicationInfoApplicatio
 // attachmentAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type attachmentAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -29531,12 +28135,7 @@ func (v *attachmentAttachment) __premarshalJSON() (*__premarshalattachmentAttach
 // attachmentIssueAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssueAttachmentIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -29676,12 +28275,7 @@ func (v *attachmentIssueResponse) GetAttachmentIssue() attachmentIssueAttachment
 // attachmentIssue_attachmentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_attachmentsAttachmentIssue struct {
 	// Attachments associated with the issue.
 	Attachments attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnection `json:"attachments"`
@@ -29711,12 +28305,7 @@ func (v *attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnecti
 // attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -29834,12 +28423,7 @@ func (v *attachmentIssue_attachmentsResponse) GetAttachmentIssue() attachmentIss
 // attachmentIssue_botActorAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_botActorAttachmentIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -29858,10 +28442,7 @@ func (v *attachmentIssue_botActorAttachmentIssue) GetBotActor() *attachmentIssue
 // attachmentIssue_botActorAttachmentIssueBotActorActorBot includes the requested fields of the GraphQL type ActorBot.
 // The GraphQL type's documentation follows.
 //
-// A bot actor representing a non-human entity that performed an action, such as an
-// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
-// Bot actors are displayed in activity feeds and history to indicate when changes
-// were made by applications rather than users.
+// A bot actor representing a non-human entity that performed an action, such as an integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow. Bot actors are displayed in activity feeds and history to indicate when changes were made by applications rather than users.
 type attachmentIssue_botActorAttachmentIssueBotActorActorBot struct {
 	ActorBotSummaryFields `json:"-"`
 }
@@ -29969,12 +28550,7 @@ func (v *attachmentIssue_botActorResponse) GetAttachmentIssue() attachmentIssue_
 // attachmentIssue_childrenAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_childrenAttachmentIssue struct {
 	// Children of the issue.
 	Children attachmentIssue_childrenAttachmentIssueChildrenIssueConnection `json:"children"`
@@ -30004,12 +28580,7 @@ func (v *attachmentIssue_childrenAttachmentIssueChildrenIssueConnection) GetPage
 // attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -30175,18 +28746,13 @@ func (v *attachmentIssue_childrenResponse) GetAttachmentIssue() attachmentIssue_
 // attachmentIssue_commentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_commentsAttachmentIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// Issue's human readable identifier (e.g. ENG-123).
 	Identifier string `json:"identifier"`
-	// Comments associated with the issue.
+	// Comments associated with the issue, including inline comments on the issue's description.
 	Comments attachmentIssue_commentsAttachmentIssueCommentsCommentConnection `json:"comments"`
 }
 
@@ -30220,11 +28786,7 @@ func (v *attachmentIssue_commentsAttachmentIssueCommentsCommentConnection) GetPa
 // attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment struct {
 	CommentMetadataFields `json:"-"`
 }
@@ -30414,12 +28976,7 @@ func (v *attachmentIssue_commentsResponse) GetAttachmentIssue() attachmentIssue_
 // attachmentIssue_documentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_documentsAttachmentIssue struct {
 	// Documents associated with the issue.
 	Documents attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection `json:"documents"`
@@ -30449,10 +29006,7 @@ func (v *attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnection) Ge
 // attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -30594,12 +29148,7 @@ func (v *attachmentIssue_documentsResponse) GetAttachmentIssue() attachmentIssue
 // attachmentIssue_formerAttachmentsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_formerAttachmentsAttachmentIssue struct {
 	// Attachments previously associated with the issue before being moved to another issue.
 	FormerAttachments attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnection `json:"formerAttachments"`
@@ -30629,12 +29178,7 @@ func (v *attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttach
 // attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -30752,12 +29296,7 @@ func (v *attachmentIssue_formerAttachmentsResponse) GetAttachmentIssue() attachm
 // attachmentIssue_formerNeedsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_formerNeedsAttachmentIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -30797,11 +29336,7 @@ func (v *attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnec
 // attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedMetadataFields `json:"-"`
 }
@@ -30951,12 +29486,7 @@ func (v *attachmentIssue_formerNeedsResponse) GetAttachmentIssue() attachmentIss
 // attachmentIssue_historyAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_historyAttachmentIssue struct {
 	// History entries associated with the issue.
 	History attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection `json:"history"`
@@ -30986,17 +29516,11 @@ func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnection) Ge
 // attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory includes the requested fields of the GraphQL type IssueHistory.
 // The GraphQL type's documentation follows.
 //
-// A record of changes to an issue. Each history entry captures one or more
-// property changes made to an issue within a short grouping window by the same
-// actor. History entries track changes to fields such as title, assignee, status,
-// priority, project, cycle, labels, due date, estimate, parent issue, and more.
-// They also record metadata about what triggered the change (e.g., a user action,
-// workflow automation, triage rule, or integration).
+// A record of changes to an issue. Each history entry captures one or more property changes made to an issue within a short grouping window by the same actor. History entries track changes to fields such as title, assignee, status, priority, project, cycle, labels, due date, estimate, parent issue, and more. They also record metadata about what triggered the change (e.g., a user action, workflow automation, triage rule, or integration).
 type attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// Identifier of the user who made these changes. Can be used to query the user
-	// directly. Null if the change was made by an integration, automation, or system process.
+	// Identifier of the user who made these changes. Can be used to query the user directly. Null if the change was made by an integration, automation, or system process.
 	ActorId *string `json:"actorId"`
 	// Whether the issue's description was updated.
 	UpdatedDescription *bool `json:"updatedDescription"`
@@ -31049,12 +29573,7 @@ func (v *attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNode
 // attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -31097,12 +29616,7 @@ func (v *attachmentIssue_historyResponse) GetAttachmentIssue() attachmentIssue_h
 // attachmentIssue_inverseRelationsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_inverseRelationsAttachmentIssue struct {
 	// Inverse relations associated with this issue.
 	InverseRelations attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnection `json:"inverseRelations"`
@@ -31132,10 +29646,7 @@ func (v *attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRel
 // attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -31269,12 +29780,7 @@ func (v *attachmentIssue_inverseRelationsResponse) GetAttachmentIssue() attachme
 // attachmentIssue_labelsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_labelsAttachmentIssue struct {
 	// Labels associated with this issue.
 	Labels attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection `json:"labels"`
@@ -31304,11 +29810,7 @@ func (v *attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnection) GetPag
 // attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -31434,12 +29936,7 @@ func (v *attachmentIssue_labelsResponse) GetAttachmentIssue() attachmentIssue_la
 // attachmentIssue_needsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_needsAttachmentIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -31479,11 +29976,7 @@ func (v *attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnection) GetPag
 // attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedMetadataFields `json:"-"`
 }
@@ -31633,12 +30126,7 @@ func (v *attachmentIssue_needsResponse) GetAttachmentIssue() attachmentIssue_nee
 // attachmentIssue_relationsAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_relationsAttachmentIssue struct {
 	// Relations associated with this issue.
 	Relations attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnection `json:"relations"`
@@ -31668,10 +30156,7 @@ func (v *attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectio
 // attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -31805,12 +30290,7 @@ func (v *attachmentIssue_relationsResponse) GetAttachmentIssue() attachmentIssue
 // attachmentIssue_releasesAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_releasesAttachmentIssue struct {
 	// Releases associated with the issue.
 	Releases attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection `json:"releases"`
@@ -31840,11 +30320,7 @@ func (v *attachmentIssue_releasesAttachmentIssueReleasesReleaseConnection) GetPa
 // attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -32098,12 +30574,7 @@ func (v *attachmentIssue_releasesResponse) GetAttachmentIssue() attachmentIssue_
 // attachmentIssue_sharedAccessAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_sharedAccessAttachmentIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -32127,8 +30598,7 @@ func (v *attachmentIssue_sharedAccessAttachmentIssue) GetSharedAccess() attachme
 // attachmentIssue_sharedAccessAttachmentIssueSharedAccess includes the requested fields of the GraphQL type IssueSharedAccess.
 // The GraphQL type's documentation follows.
 //
-// Metadata about an issue's shared access state, including which users the issue
-// is shared with and any field restrictions for shared-only viewers.
+// Metadata about an issue's shared access state, including which users the issue is shared with and any field restrictions for shared-only viewers.
 type attachmentIssue_sharedAccessAttachmentIssueSharedAccess struct {
 	IssueSharedAccessFields `json:"-"`
 }
@@ -32220,12 +30690,7 @@ func (v *attachmentIssue_sharedAccessResponse) GetAttachmentIssue() attachmentIs
 // attachmentIssue_stateHistoryAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_stateHistoryAttachmentIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -32302,13 +30767,7 @@ func (v *attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanCo
 // attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -32365,12 +30824,7 @@ func (v *attachmentIssue_stateHistoryResponse) GetAttachmentIssue() attachmentIs
 // attachmentIssue_subscribersAttachmentIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type attachmentIssue_subscribersAttachmentIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -32405,10 +30859,7 @@ func (v *attachmentIssue_subscribersAttachmentIssueSubscribersUserConnection) Ge
 // attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -32568,12 +31019,7 @@ func (v *attachmentsAttachmentsAttachmentConnection) GetPageInfo() attachmentsAt
 // attachmentsAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type attachmentsAttachmentsAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -32696,12 +31142,7 @@ func (v *attachmentsForURLAttachmentsForURLAttachmentConnection) GetPageInfo() a
 // attachmentsForURLAttachmentsForURLAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type attachmentsForURLAttachmentsForURLAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -32857,11 +31298,7 @@ func (v *auditEntryTypesResponse) GetAuditEntryTypes() []auditEntryTypesAuditEnt
 // commentComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type commentComment struct {
 	TopLevelCommentSummaryFields `json:"-"`
 }
@@ -33019,11 +31456,7 @@ func (v *commentResponse) GetComment() commentComment { return v.Comment }
 // comment_botActorComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type comment_botActorComment struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -33042,10 +31475,7 @@ func (v *comment_botActorComment) GetBotActor() *comment_botActorCommentBotActor
 // comment_botActorCommentBotActorActorBot includes the requested fields of the GraphQL type ActorBot.
 // The GraphQL type's documentation follows.
 //
-// A bot actor representing a non-human entity that performed an action, such as an
-// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
-// Bot actors are displayed in activity feeds and history to indicate when changes
-// were made by applications rather than users.
+// A bot actor representing a non-human entity that performed an action, such as an integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow. Bot actors are displayed in activity feeds and history to indicate when changes were made by applications rather than users.
 type comment_botActorCommentBotActorActorBot struct {
 	ActorBotSummaryFields `json:"-"`
 }
@@ -33149,11 +31579,7 @@ func (v *comment_botActorResponse) GetComment() comment_botActorComment { return
 // comment_childrenComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type comment_childrenComment struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -33188,11 +31614,7 @@ func (v *comment_childrenCommentChildrenCommentConnection) GetPageInfo() comment
 // comment_childrenCommentChildrenCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type comment_childrenCommentChildrenCommentConnectionNodesComment struct {
 	CommentMetadataFields `json:"-"`
 }
@@ -33380,11 +31802,7 @@ func (v *comment_childrenResponse) GetComment() comment_childrenComment { return
 // comment_createdIssuesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type comment_createdIssuesComment struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -33419,12 +31837,7 @@ func (v *comment_createdIssuesCommentCreatedIssuesIssueConnection) GetPageInfo()
 // comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -33604,11 +32017,7 @@ func (v *commentsCommentsCommentConnection) GetPageInfo() commentsCommentsCommen
 // commentsCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type commentsCommentsCommentConnectionNodesComment struct {
 	TopLevelCommentSummaryFields `json:"-"`
 }
@@ -33800,10 +32209,7 @@ func (v *commentsResponse) GetComments() commentsCommentsCommentConnection { ret
 // customViewCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customViewCustomView struct {
 	CustomViewSummaryFields `json:"-"`
 }
@@ -33907,8 +32313,7 @@ func (v *customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscriber
 
 // customViewHasSubscribersResponse is returned by customViewHasSubscribers on success.
 type customViewHasSubscribersResponse struct {
-	// Whether a custom view has active notification subscribers other than the
-	// current user. Useful for warning before deleting a shared view.
+	// Whether a custom view has active notification subscribers other than the current user. Useful for warning before deleting a shared view.
 	CustomViewHasSubscribers customViewHasSubscribersCustomViewHasSubscribersCustomViewHasSubscribersPayload `json:"customViewHasSubscribers"`
 }
 
@@ -33929,13 +32334,9 @@ func (v *customViewResponse) GetCustomView() customViewCustomView { return v.Cus
 // customView_initiativesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_initiativesCustomView struct {
-	// Initiatives matching the custom view's initiative filter. Returns an empty
-	// connection if the view's modelName is not "Initiative".
+	// Initiatives matching the custom view's initiative filter. Returns an empty connection if the view's modelName is not "Initiative".
 	Initiatives customView_initiativesCustomViewInitiativesInitiativeConnection `json:"initiatives"`
 }
 
@@ -33963,9 +32364,7 @@ func (v *customView_initiativesCustomViewInitiativesInitiativeConnection) GetPag
 // customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative struct {
 	InitiativeSummaryFields `json:"-"`
 }
@@ -34107,10 +32506,7 @@ func (v *customView_initiativesResponse) GetCustomView() customView_initiativesC
 // customView_issuesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_issuesCustomView struct {
 	// Issues matching the custom view's issue filter. Returns an empty connection if the view's modelName is not "Issue".
 	Issues customView_issuesCustomViewIssuesIssueConnection `json:"issues"`
@@ -34140,12 +32536,7 @@ func (v *customView_issuesCustomViewIssuesIssueConnection) GetPageInfo() customV
 // customView_issuesCustomViewIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type customView_issuesCustomViewIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -34309,10 +32700,7 @@ func (v *customView_issuesResponse) GetCustomView() customView_issuesCustomView 
 // customView_organizationViewPreferencesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_organizationViewPreferencesCustomView struct {
 	// The workspace-level default view preferences for this custom view, if any have been set.
 	OrganizationViewPreferences *customView_organizationViewPreferencesCustomViewOrganizationViewPreferences `json:"organizationViewPreferences"`
@@ -34326,11 +32714,7 @@ func (v *customView_organizationViewPreferencesCustomView) GetOrganizationViewPr
 // customView_organizationViewPreferencesCustomViewOrganizationViewPreferences includes the requested fields of the GraphQL type ViewPreferences.
 // The GraphQL type's documentation follows.
 //
-// The display preferences for a view, controlling layout mode (list, board,
-// spreadsheet), grouping, sorting, column visibility, and other visual settings.
-// View preferences exist at two levels: organization-wide defaults and per-user
-// overrides. The effective preferences are computed by merging both layers, with
-// user preferences taking priority.
+// The display preferences for a view, controlling layout mode (list, board, spreadsheet), grouping, sorting, column visibility, and other visual settings. View preferences exist at two levels: organization-wide defaults and per-user overrides. The effective preferences are computed by merging both layers, with user preferences taking priority.
 type customView_organizationViewPreferencesCustomViewOrganizationViewPreferences struct {
 	CustomViewPreferencesFields `json:"-"`
 }
@@ -34446,10 +32830,7 @@ func (v *customView_organizationViewPreferencesResponse) GetCustomView() customV
 // customView_organizationViewPreferences_preferencesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_organizationViewPreferences_preferencesCustomView struct {
 	// The workspace-level default view preferences for this custom view, if any have been set.
 	OrganizationViewPreferences *customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences `json:"organizationViewPreferences"`
@@ -34463,11 +32844,7 @@ func (v *customView_organizationViewPreferences_preferencesCustomView) GetOrgani
 // customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences includes the requested fields of the GraphQL type ViewPreferences.
 // The GraphQL type's documentation follows.
 //
-// The display preferences for a view, controlling layout mode (list, board,
-// spreadsheet), grouping, sorting, column visibility, and other visual settings.
-// View preferences exist at two levels: organization-wide defaults and per-user
-// overrides. The effective preferences are computed by merging both layers, with
-// user preferences taking priority.
+// The display preferences for a view, controlling layout mode (list, board, spreadsheet), grouping, sorting, column visibility, and other visual settings. View preferences exist at two levels: organization-wide defaults and per-user overrides. The effective preferences are computed by merging both layers, with user preferences taking priority.
 type customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferences struct {
 	// The view preferences values, containing layout, grouping, sorting, and field visibility settings.
 	Preferences customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues `json:"preferences"`
@@ -34481,10 +32858,7 @@ func (v *customView_organizationViewPreferences_preferencesCustomViewOrganizatio
 // customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues includes the requested fields of the GraphQL type ViewPreferencesValues.
 // The GraphQL type's documentation follows.
 //
-// The computed view preferences values for a view, containing all display settings
-// such as layout mode, grouping, sorting, field visibility, and other visual
-// configuration. These values represent the merged result of organization defaults
-// and user overrides.
+// The computed view preferences values for a view, containing all display settings such as layout mode, grouping, sorting, field visibility, and other visual configuration. These values represent the merged result of organization defaults and user overrides.
 type customView_organizationViewPreferences_preferencesCustomViewOrganizationViewPreferencesPreferencesViewPreferencesValues struct {
 	CustomViewPreferencesValueFields `json:"-"`
 }
@@ -34696,10 +33070,7 @@ func (v *customView_organizationViewPreferences_preferencesResponse) GetCustomVi
 // customView_projectsCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_projectsCustomView struct {
 	// Projects matching the custom view's project filter. Returns an empty connection if the view's modelName is not "Project".
 	Projects customView_projectsCustomViewProjectsProjectConnection `json:"projects"`
@@ -34729,9 +33100,7 @@ func (v *customView_projectsCustomViewProjectsProjectConnection) GetPageInfo() c
 // customView_projectsCustomViewProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type customView_projectsCustomViewProjectsProjectConnectionNodesProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -34881,10 +33250,7 @@ func (v *customView_projectsResponse) GetCustomView() customView_projectsCustomV
 // customView_userViewPreferencesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_userViewPreferencesCustomView struct {
 	// The current user's personal view preferences for this custom view, if they have set any.
 	UserViewPreferences *customView_userViewPreferencesCustomViewUserViewPreferences `json:"userViewPreferences"`
@@ -34898,11 +33264,7 @@ func (v *customView_userViewPreferencesCustomView) GetUserViewPreferences() *cus
 // customView_userViewPreferencesCustomViewUserViewPreferences includes the requested fields of the GraphQL type ViewPreferences.
 // The GraphQL type's documentation follows.
 //
-// The display preferences for a view, controlling layout mode (list, board,
-// spreadsheet), grouping, sorting, column visibility, and other visual settings.
-// View preferences exist at two levels: organization-wide defaults and per-user
-// overrides. The effective preferences are computed by merging both layers, with
-// user preferences taking priority.
+// The display preferences for a view, controlling layout mode (list, board, spreadsheet), grouping, sorting, column visibility, and other visual settings. View preferences exist at two levels: organization-wide defaults and per-user overrides. The effective preferences are computed by merging both layers, with user preferences taking priority.
 type customView_userViewPreferencesCustomViewUserViewPreferences struct {
 	CustomViewPreferencesFields `json:"-"`
 }
@@ -35018,10 +33380,7 @@ func (v *customView_userViewPreferencesResponse) GetCustomView() customView_user
 // customView_userViewPreferences_preferencesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_userViewPreferences_preferencesCustomView struct {
 	// The current user's personal view preferences for this custom view, if they have set any.
 	UserViewPreferences *customView_userViewPreferences_preferencesCustomViewUserViewPreferences `json:"userViewPreferences"`
@@ -35035,11 +33394,7 @@ func (v *customView_userViewPreferences_preferencesCustomView) GetUserViewPrefer
 // customView_userViewPreferences_preferencesCustomViewUserViewPreferences includes the requested fields of the GraphQL type ViewPreferences.
 // The GraphQL type's documentation follows.
 //
-// The display preferences for a view, controlling layout mode (list, board,
-// spreadsheet), grouping, sorting, column visibility, and other visual settings.
-// View preferences exist at two levels: organization-wide defaults and per-user
-// overrides. The effective preferences are computed by merging both layers, with
-// user preferences taking priority.
+// The display preferences for a view, controlling layout mode (list, board, spreadsheet), grouping, sorting, column visibility, and other visual settings. View preferences exist at two levels: organization-wide defaults and per-user overrides. The effective preferences are computed by merging both layers, with user preferences taking priority.
 type customView_userViewPreferences_preferencesCustomViewUserViewPreferences struct {
 	// The view preferences values, containing layout, grouping, sorting, and field visibility settings.
 	Preferences customView_userViewPreferences_preferencesCustomViewUserViewPreferencesPreferencesViewPreferencesValues `json:"preferences"`
@@ -35053,10 +33408,7 @@ func (v *customView_userViewPreferences_preferencesCustomViewUserViewPreferences
 // customView_userViewPreferences_preferencesCustomViewUserViewPreferencesPreferencesViewPreferencesValues includes the requested fields of the GraphQL type ViewPreferencesValues.
 // The GraphQL type's documentation follows.
 //
-// The computed view preferences values for a view, containing all display settings
-// such as layout mode, grouping, sorting, field visibility, and other visual
-// configuration. These values represent the merged result of organization defaults
-// and user overrides.
+// The computed view preferences values for a view, containing all display settings such as layout mode, grouping, sorting, field visibility, and other visual configuration. These values represent the merged result of organization defaults and user overrides.
 type customView_userViewPreferences_preferencesCustomViewUserViewPreferencesPreferencesViewPreferencesValues struct {
 	CustomViewPreferencesValueFields `json:"-"`
 }
@@ -35268,14 +33620,9 @@ func (v *customView_userViewPreferences_preferencesResponse) GetCustomView() cus
 // customView_viewPreferencesValuesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customView_viewPreferencesValuesCustomView struct {
-	// The computed view preferences values for this custom view, merging
-	// organization defaults with user overrides and system defaults. Use this for
-	// the effective display settings rather than reading raw preferences directly.
+	// The computed view preferences values for this custom view, merging organization defaults with user overrides and system defaults. Use this for the effective display settings rather than reading raw preferences directly.
 	ViewPreferencesValues *customView_viewPreferencesValuesCustomViewViewPreferencesValues `json:"viewPreferencesValues"`
 }
 
@@ -35287,10 +33634,7 @@ func (v *customView_viewPreferencesValuesCustomView) GetViewPreferencesValues() 
 // customView_viewPreferencesValuesCustomViewViewPreferencesValues includes the requested fields of the GraphQL type ViewPreferencesValues.
 // The GraphQL type's documentation follows.
 //
-// The computed view preferences values for a view, containing all display settings
-// such as layout mode, grouping, sorting, field visibility, and other visual
-// configuration. These values represent the merged result of organization defaults
-// and user overrides.
+// The computed view preferences values for a view, containing all display settings such as layout mode, grouping, sorting, field visibility, and other visual configuration. These values represent the merged result of organization defaults and user overrides.
 type customView_viewPreferencesValuesCustomViewViewPreferencesValues struct {
 	CustomViewPreferencesValueFields `json:"-"`
 }
@@ -35518,10 +33862,7 @@ func (v *customViewsCustomViewsCustomViewConnection) GetPageInfo() customViewsCu
 // customViewsCustomViewsCustomViewConnectionNodesCustomView includes the requested fields of the GraphQL type CustomView.
 // The GraphQL type's documentation follows.
 //
-// A custom view built from a saved filter, sort, and grouping configuration. Views
-// can be personal (visible only to the owner) or shared with the entire workspace.
-// They define which issues, projects, initiatives, or feed items are displayed and
-// how they are organized. Views can optionally be scoped to a team, project, or initiative.
+// A custom view built from a saved filter, sort, and grouping configuration. Views can be personal (visible only to the owner) or shared with the entire workspace. They define which issues, projects, initiatives, or feed items are displayed and how they are organized. Views can optionally be scoped to a team, project, or initiative.
 type customViewsCustomViewsCustomViewConnectionNodesCustomView struct {
 	CustomViewSummaryFields `json:"-"`
 }
@@ -35643,8 +33984,7 @@ func (v *customViewsCustomViewsCustomViewConnectionPageInfo) GetEndCursor() *str
 
 // customViewsResponse is returned by customViews on success.
 type customViewsResponse struct {
-	// All custom views accessible to the user, including personal views and shared
-	// workspace views. Excludes views scoped to a specific project or initiative.
+	// All custom views accessible to the user, including personal views and shared workspace views. Excludes views scoped to a specific project or initiative.
 	CustomViews customViewsCustomViewsCustomViewConnection `json:"customViews"`
 }
 
@@ -35656,11 +33996,7 @@ func (v *customViewsResponse) GetCustomViews() customViewsCustomViewsCustomViewC
 // customerCustomer includes the requested fields of the GraphQL type Customer.
 // The GraphQL type's documentation follows.
 //
-// A customer organization tracked in Linear's customer management system.
-// Customers represent external companies or organizations whose product requests
-// and feedback are captured as customer needs, which can be linked to issues and
-// projects. Customers can be associated with domains, external system IDs, Slack
-// channels, and managed by integrations such as Intercom or Salesforce.
+// A customer organization tracked in Linear's customer management system. Customers represent external companies or organizations whose product requests and feedback are captured as customer needs, which can be linked to issues and projects. Customers can be associated with domains, external system IDs, Slack channels, and managed by integrations such as Intercom or Salesforce.
 type customerCustomer struct {
 	CustomerSummaryFields `json:"-"`
 }
@@ -35795,11 +34131,7 @@ func (v *customerCustomer) __premarshalJSON() (*__premarshalcustomerCustomer, er
 // customerNeedCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type customerNeedCustomerNeed struct {
 	CustomerNeedSummaryFields `json:"-"`
 }
@@ -35935,18 +34267,11 @@ func (v *customerNeedResponse) GetCustomerNeed() customerNeedCustomerNeed { retu
 // customerNeed_projectAttachmentCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type customerNeed_projectAttachmentCustomerNeed struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
-	// The project attachment linked to this need. Populated when the need originates
-	// from an intake source or when a URL is manually provided for a project-level
-	// need. Provides a link back to the original source of the customer feedback.
-	// Mutually exclusive with attachment.
+	// The project attachment linked to this need. Populated when the need originates from an intake source or when a URL is manually provided for a project-level need. Provides a link back to the original source of the customer feedback. Mutually exclusive with attachment.
 	ProjectAttachment *customerNeed_projectAttachmentCustomerNeedProjectAttachment `json:"projectAttachment"`
 }
 
@@ -35961,9 +34286,7 @@ func (v *customerNeed_projectAttachmentCustomerNeed) GetProjectAttachment() *cus
 // customerNeed_projectAttachmentCustomerNeedProjectAttachment includes the requested fields of the GraphQL type ProjectAttachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment (link, reference, or integration data) associated with a project.
-// Attachments are typically created by integrations and contain metadata for
-// rendering in the client.
+// An attachment (link, reference, or integration data) associated with a project. Attachments are typically created by integrations and contain metadata for rendering in the client.
 type customerNeed_projectAttachmentCustomerNeedProjectAttachment struct {
 	ProjectAttachmentSummaryFields `json:"-"`
 }
@@ -36079,11 +34402,7 @@ func (v *customerNeedsCustomerNeedsCustomerNeedConnection) GetPageInfo() custome
 // customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedSummaryFields `json:"-"`
 }
@@ -36258,10 +34577,7 @@ func (v *customerResponse) GetCustomer() customerCustomer { return v.Customer }
 // customerStatusCustomerStatus includes the requested fields of the GraphQL type CustomerStatus.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined lifecycle status for customers (e.g., Active, Churned,
-// Trial). Customer statuses are ordered by position and displayed with a color in
-// the UI. Every workspace has at least one status, and a default status is
-// assigned to new customers when none is specified.
+// A workspace-defined lifecycle status for customers (e.g., Active, Churned, Trial). Customer statuses are ordered by position and displayed with a color in the UI. Every workspace has at least one status, and a default status is assigned to new customers when none is specified.
 type customerStatusCustomerStatus struct {
 	CustomerStatusSummaryFields `json:"-"`
 }
@@ -36387,10 +34703,7 @@ func (v *customerStatusesCustomerStatusesCustomerStatusConnection) GetPageInfo()
 // customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus includes the requested fields of the GraphQL type CustomerStatus.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined lifecycle status for customers (e.g., Active, Churned,
-// Trial). Customer statuses are ordered by position and displayed with a color in
-// the UI. Every workspace has at least one status, and a default status is
-// assigned to new customers when none is specified.
+// A workspace-defined lifecycle status for customers (e.g., Active, Churned, Trial). Customer statuses are ordered by position and displayed with a color in the UI. Every workspace has at least one status, and a default status is assigned to new customers when none is specified.
 type customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus struct {
 	CustomerStatusSummaryFields `json:"-"`
 }
@@ -36524,10 +34837,7 @@ func (v *customerStatusesResponse) GetCustomerStatuses() customerStatusesCustome
 // customerTierCustomerTier includes the requested fields of the GraphQL type CustomerTier.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined tier or segment for categorizing customers (e.g.,
-// Enterprise, Pro, Free). Customer tiers are used for prioritization and
-// filtering, are ordered by position, and displayed with a color in the UI. Tier
-// names are unique within a workspace.
+// A workspace-defined tier or segment for categorizing customers (e.g., Enterprise, Pro, Free). Customer tiers are used for prioritization and filtering, are ordered by position, and displayed with a color in the UI. Tier names are unique within a workspace.
 type customerTierCustomerTier struct {
 	CustomerTierSummaryFields `json:"-"`
 }
@@ -36649,10 +34959,7 @@ func (v *customerTiersCustomerTiersCustomerTierConnection) GetPageInfo() custome
 // customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier includes the requested fields of the GraphQL type CustomerTier.
 // The GraphQL type's documentation follows.
 //
-// A workspace-defined tier or segment for categorizing customers (e.g.,
-// Enterprise, Pro, Free). Customer tiers are used for prioritization and
-// filtering, are ordered by position, and displayed with a color in the UI. Tier
-// names are unique within a workspace.
+// A workspace-defined tier or segment for categorizing customers (e.g., Enterprise, Pro, Free). Customer tiers are used for prioritization and filtering, are ordered by position, and displayed with a color in the UI. Tier names are unique within a workspace.
 type customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier struct {
 	CustomerTierSummaryFields `json:"-"`
 }
@@ -36802,11 +35109,7 @@ func (v *customersCustomersCustomerConnection) GetPageInfo() customersCustomersC
 // customersCustomersCustomerConnectionNodesCustomer includes the requested fields of the GraphQL type Customer.
 // The GraphQL type's documentation follows.
 //
-// A customer organization tracked in Linear's customer management system.
-// Customers represent external companies or organizations whose product requests
-// and feedback are captured as customer needs, which can be linked to issues and
-// projects. Customers can be associated with domains, external system IDs, Slack
-// channels, and managed by integrations such as Intercom or Salesforce.
+// A customer organization tracked in Linear's customer management system. Customers represent external companies or organizations whose product requests and feedback are captured as customer needs, which can be linked to issues and projects. Customers can be associated with domains, external system IDs, Slack channels, and managed by integrations such as Intercom or Salesforce.
 type customersCustomersCustomerConnectionNodesCustomer struct {
 	CustomerSummaryFields `json:"-"`
 }
@@ -36982,11 +35285,7 @@ func (v *customersResponse) GetCustomers() customersCustomersCustomerConnection 
 // cycleCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type cycleCycle struct {
 	CycleSummaryFields `json:"-"`
 }
@@ -37098,11 +35397,7 @@ func (v *cycleResponse) GetCycle() cycleCycle { return v.Cycle }
 // cycle_issuesCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type cycle_issuesCycle struct {
 	CycleSummaryFields `json:"-"`
 	// Issues that are currently assigned to this cycle.
@@ -37229,12 +35524,7 @@ func (v *cycle_issuesCycleIssuesIssueConnection) GetPageInfo() cycle_issuesCycle
 // cycle_issuesCycleIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type cycle_issuesCycleIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -37394,11 +35684,7 @@ func (v *cycle_issuesResponse) GetCycle() cycle_issuesCycle { return v.Cycle }
 // cycle_uncompletedIssuesUponCloseCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type cycle_uncompletedIssuesUponCloseCycle struct {
 	CycleSummaryFields `json:"-"`
 	// Issues that were still open (not completed) when the cycle was closed. These issues may have been moved to the next cycle.
@@ -37541,12 +35827,7 @@ func (v *cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueCon
 // cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -37728,11 +36009,7 @@ func (v *cyclesCyclesCycleConnection) GetPageInfo() cyclesCyclesCycleConnectionP
 // cyclesCyclesCycleConnectionNodesCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type cyclesCyclesCycleConnectionNodesCycle struct {
 	CycleSummaryFields `json:"-"`
 }
@@ -37872,10 +36149,7 @@ func (v *cyclesResponse) GetCycles() cyclesCyclesCycleConnection { return v.Cycl
 // documentDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type documentDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -37987,10 +36261,7 @@ func (v *documentResponse) GetDocument() documentDocument { return v.Document }
 // document_commentsDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type document_commentsDocument struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -38025,11 +36296,7 @@ func (v *document_commentsDocumentCommentsCommentConnection) GetPageInfo() docum
 // document_commentsDocumentCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type document_commentsDocumentCommentsCommentConnectionNodesComment struct {
 	CommentMetadataFields `json:"-"`
 }
@@ -38217,9 +36484,7 @@ func (v *document_commentsResponse) GetDocument() document_commentsDocument { re
 // emojiEmoji includes the requested fields of the GraphQL type Emoji.
 // The GraphQL type's documentation follows.
 //
-// A custom emoji defined in the workspace. Custom emojis are uploaded by users and
-// can be used in reactions and other places where standard emojis are supported.
-// Each emoji has a unique name within the workspace.
+// A custom emoji defined in the workspace. Custom emojis are uploaded by users and can be used in reactions and other places where standard emojis are supported. Each emoji has a unique name within the workspace.
 type emojiEmoji struct {
 	EmojiSummaryFields `json:"-"`
 }
@@ -38317,9 +36582,7 @@ func (v *emojisEmojisEmojiConnection) GetPageInfo() emojisEmojisEmojiConnectionP
 // emojisEmojisEmojiConnectionNodesEmoji includes the requested fields of the GraphQL type Emoji.
 // The GraphQL type's documentation follows.
 //
-// A custom emoji defined in the workspace. Custom emojis are uploaded by users and
-// can be used in reactions and other places where standard emojis are supported.
-// Each emoji has a unique name within the workspace.
+// A custom emoji defined in the workspace. Custom emojis are uploaded by users and can be used in reactions and other places where standard emojis are supported. Each emoji has a unique name within the workspace.
 type emojisEmojisEmojiConnectionNodesEmoji struct {
 	EmojiSummaryFields `json:"-"`
 }
@@ -38417,11 +36680,7 @@ func (v *emojisResponse) GetEmojis() emojisEmojisEmojiConnection { return v.Emoj
 // entityExternalLinkEntityExternalLink includes the requested fields of the GraphQL type EntityExternalLink.
 // The GraphQL type's documentation follows.
 //
-// An external link attached to a Linear entity such as an initiative, project,
-// team, release, or cycle. External links provide a way to reference related
-// resources outside of Linear (e.g., documentation, design files, dashboards)
-// directly from the entity's resources section. Each link has a URL, display
-// label, and sort order within its parent entity.
+// An external link attached to a Linear entity such as an initiative, project, team, release, or cycle. External links provide a way to reference related resources outside of Linear (e.g., documentation, design files, dashboards) directly from the entity's resources section. Each link has a URL, display label, and sort order within its parent entity.
 type entityExternalLinkEntityExternalLink struct {
 	EntityExternalLinkSummaryFields `json:"-"`
 }
@@ -38561,12 +36820,7 @@ func (v *entityExternalLinkResponse) GetEntityExternalLink() entityExternalLinkE
 // externalUserExternalUser includes the requested fields of the GraphQL type ExternalUser.
 // The GraphQL type's documentation follows.
 //
-// An external user who interacts with Linear through an integrated external
-// service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams)
-// but does not have a Linear account. External users can create issues, post
-// comments, and add reactions from their respective platforms. They are identified
-// by service-specific user IDs and may optionally have an email address. External
-// users are scoped to a single workspace.
+// An external user who interacts with Linear through an integrated external service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams) but does not have a Linear account. External users can create issues, post comments, and add reactions from their respective platforms. They are identified by service-specific user IDs and may optionally have an email address. External users are scoped to a single workspace.
 type externalUserExternalUser struct {
 	ExternalUserSummaryFields `json:"-"`
 }
@@ -38698,12 +36952,7 @@ func (v *externalUsersExternalUsersExternalUserConnection) GetPageInfo() externa
 // externalUsersExternalUsersExternalUserConnectionNodesExternalUser includes the requested fields of the GraphQL type ExternalUser.
 // The GraphQL type's documentation follows.
 //
-// An external user who interacts with Linear through an integrated external
-// service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams)
-// but does not have a Linear account. External users can create issues, post
-// comments, and add reactions from their respective platforms. They are identified
-// by service-specific user IDs and may optionally have an email address. External
-// users are scoped to a single workspace.
+// An external user who interacts with Linear through an integrated external service (such as Slack, Jira, GitHub, GitLab, Salesforce, or Microsoft Teams) but does not have a Linear account. External users can create issues, post comments, and add reactions from their respective platforms. They are identified by service-specific user IDs and may optionally have an email address. External users are scoped to a single workspace.
 type externalUsersExternalUsersExternalUserConnectionNodesExternalUser struct {
 	ExternalUserSummaryFields `json:"-"`
 }
@@ -38833,9 +37082,7 @@ func (v *externalUsersExternalUsersExternalUserConnectionPageInfo) GetEndCursor(
 
 // externalUsersResponse is returned by externalUsers on success.
 type externalUsersResponse struct {
-	// All external users for the organization. External users are people who
-	// interact with Linear through integrated services (Slack, Jira, GitHub, etc.)
-	// without having a Linear account.
+	// All external users for the organization. External users are people who interact with Linear through integrated services (Slack, Jira, GitHub, etc.) without having a Linear account.
 	ExternalUsers externalUsersExternalUsersExternalUserConnection `json:"externalUsers"`
 }
 
@@ -38847,12 +37094,7 @@ func (v *externalUsersResponse) GetExternalUsers() externalUsersExternalUsersExt
 // favoriteFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access.
-// Favorites can reference various entity types including issues, projects, cycles,
-// views, documents, initiatives, labels, users, customers, dashboards, and pull
-// requests. Favorites can be organized into folders and ordered by the user. Each
-// favorite is owned by a single user and links to exactly one target entity (or is
-// a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favoriteFavorite struct {
 	FavoriteSummaryFields `json:"-"`
 }
@@ -38934,12 +37176,7 @@ func (v *favoriteResponse) GetFavorite() favoriteFavorite { return v.Favorite }
 // favorite_childrenFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access.
-// Favorites can reference various entity types including issues, projects, cycles,
-// views, documents, initiatives, labels, users, customers, dashboards, and pull
-// requests. Favorites can be organized into folders and ordered by the user. Each
-// favorite is owned by a single user and links to exactly one target entity (or is
-// a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favorite_childrenFavorite struct {
 	// Children of the favorite. Only applies to favorites of type folder.
 	Children favorite_childrenFavoriteChildrenFavoriteConnection `json:"children"`
@@ -38969,12 +37206,7 @@ func (v *favorite_childrenFavoriteChildrenFavoriteConnection) GetPageInfo() favo
 // favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access.
-// Favorites can reference various entity types including issues, projects, cycles,
-// views, documents, initiatives, labels, users, customers, dashboards, and pull
-// requests. Favorites can be organized into folders and ordered by the user. Each
-// favorite is owned by a single user and links to exactly one target entity (or is
-// a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite struct {
 	FavoriteSummaryFields `json:"-"`
 }
@@ -39098,12 +37330,7 @@ func (v *favoritesFavoritesFavoriteConnection) GetPageInfo() favoritesFavoritesF
 // favoritesFavoritesFavoriteConnectionNodesFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access.
-// Favorites can reference various entity types including issues, projects, cycles,
-// views, documents, initiatives, labels, users, customers, dashboards, and pull
-// requests. Favorites can be organized into folders and ordered by the user. Each
-// favorite is owned by a single user and links to exactly one target entity (or is
-// a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favoritesFavoritesFavoriteConnectionNodesFavorite struct {
 	FavoriteSummaryFields `json:"-"`
 }
@@ -39223,8 +37450,7 @@ func (v *fileUploadFileUploadUploadPayload) GetUploadFile() *fileUploadFileUploa
 // fileUploadFileUploadUploadPayloadUploadFile includes the requested fields of the GraphQL type UploadFile.
 // The GraphQL type's documentation follows.
 //
-// Represents a file upload destination with a pre-signed upload URL, asset URL,
-// and required request headers for uploading to cloud storage.
+// Represents a file upload destination with a pre-signed upload URL, asset URL, and required request headers for uploading to cloud storage.
 type fileUploadFileUploadUploadPayloadUploadFile struct {
 	// The filename.
 	Filename string `json:"filename"`
@@ -39290,9 +37516,7 @@ func (v *fileUploadResponse) GetFileUpload() fileUploadFileUploadUploadPayload {
 // initiativeInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiativeInitiative struct {
 	InitiativeSummaryFields `json:"-"`
 }
@@ -39389,9 +37613,7 @@ func (v *initiativeInitiative) __premarshalJSON() (*__premarshalinitiativeInitia
 // initiativeRelationInitiativeRelation includes the requested fields of the GraphQL type InitiativeRelation.
 // The GraphQL type's documentation follows.
 //
-// A parent-child relation between two initiatives, forming a hierarchy. The
-// initiative field is the parent and relatedInitiative is the child. Cycles and
-// excessive nesting depth are prevented.
+// A parent-child relation between two initiatives, forming a hierarchy. The initiative field is the parent and relatedInitiative is the child. Cycles and excessive nesting depth are prevented.
 type initiativeRelationInitiativeRelation struct {
 	InitiativeRelationSummaryFields `json:"-"`
 }
@@ -39531,9 +37753,7 @@ func (v *initiativeRelationsInitiativeRelationsInitiativeRelationConnection) Get
 // initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation includes the requested fields of the GraphQL type InitiativeRelation.
 // The GraphQL type's documentation follows.
 //
-// A parent-child relation between two initiatives, forming a hierarchy. The
-// initiative field is the parent and relatedInitiative is the child. Cycles and
-// excessive nesting depth are prevented.
+// A parent-child relation between two initiatives, forming a hierarchy. The initiative field is the parent and relatedInitiative is the child. Cycles and excessive nesting depth are prevented.
 type initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation struct {
 	InitiativeRelationSummaryFields `json:"-"`
 }
@@ -39684,9 +37904,7 @@ func (v *initiativeResponse) GetInitiative() initiativeInitiative { return v.Ini
 // initiativeToProjectInitiativeToProject includes the requested fields of the GraphQL type InitiativeToProject.
 // The GraphQL type's documentation follows.
 //
-// The join entity linking a project to an initiative. A project can only appear
-// once in an initiative hierarchy -- it cannot be on both an initiative and one of
-// its ancestor or descendant initiatives.
+// The join entity linking a project to an initiative. A project can only appear once in an initiative hierarchy -- it cannot be on both an initiative and one of its ancestor or descendant initiatives.
 type initiativeToProjectInitiativeToProject struct {
 	InitiativeToProjectSummaryFields `json:"-"`
 }
@@ -39818,9 +38036,7 @@ func (v *initiativeToProjectsInitiativeToProjectsInitiativeToProjectConnection) 
 // initiativeToProjectsInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject includes the requested fields of the GraphQL type InitiativeToProject.
 // The GraphQL type's documentation follows.
 //
-// The join entity linking a project to an initiative. A project can only appear
-// once in an initiative hierarchy -- it cannot be on both an initiative and one of
-// its ancestor or descendant initiatives.
+// The join entity linking a project to an initiative. A project can only appear once in an initiative hierarchy -- it cannot be on both an initiative and one of its ancestor or descendant initiatives.
 type initiativeToProjectsInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject struct {
 	InitiativeToProjectSummaryFields `json:"-"`
 }
@@ -39954,10 +38170,7 @@ func (v *initiativeToProjectsResponse) GetInitiativeToProjects() initiativeToPro
 // initiativeUpdateInitiativeUpdate includes the requested fields of the GraphQL type InitiativeUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to an initiative. Initiative updates communicate
-// progress, health, and blockers to stakeholders. Each update captures the
-// initiative's health at the time of writing and includes a rich-text body with
-// the update content.
+// A status update posted to an initiative. Initiative updates communicate progress, health, and blockers to stakeholders. Each update captures the initiative's health at the time of writing and includes a rich-text body with the update content.
 type initiativeUpdateInitiativeUpdate struct {
 	InitiativeUpdateSummaryFields `json:"-"`
 }
@@ -40095,10 +38308,7 @@ func (v *initiativeUpdateResponse) GetInitiativeUpdate() initiativeUpdateInitiat
 // initiativeUpdate_commentsInitiativeUpdate includes the requested fields of the GraphQL type InitiativeUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to an initiative. Initiative updates communicate
-// progress, health, and blockers to stakeholders. Each update captures the
-// initiative's health at the time of writing and includes a rich-text body with
-// the update content.
+// A status update posted to an initiative. Initiative updates communicate progress, health, and blockers to stakeholders. Each update captures the initiative's health at the time of writing and includes a rich-text body with the update content.
 type initiativeUpdate_commentsInitiativeUpdate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -40133,11 +38343,7 @@ func (v *initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnection) Get
 // initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment struct {
 	CommentMetadataFields `json:"-"`
 }
@@ -40343,10 +38549,7 @@ func (v *initiativeUpdatesInitiativeUpdatesInitiativeUpdateConnection) GetPageIn
 // initiativeUpdatesInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate includes the requested fields of the GraphQL type InitiativeUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to an initiative. Initiative updates communicate
-// progress, health, and blockers to stakeholders. Each update captures the
-// initiative's health at the time of writing and includes a rich-text body with
-// the update content.
+// A status update posted to an initiative. Initiative updates communicate progress, health, and blockers to stakeholders. Each update captures the initiative's health at the time of writing and includes a rich-text body with the update content.
 type initiativeUpdatesInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate struct {
 	InitiativeUpdateSummaryFields `json:"-"`
 }
@@ -40504,9 +38707,7 @@ func (v *initiativeUpdatesResponse) GetInitiativeUpdates() initiativeUpdatesInit
 // initiative_documentsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiative_documentsInitiative struct {
 	// Documents associated with the initiative.
 	Documents initiative_documentsInitiativeDocumentsDocumentConnection `json:"documents"`
@@ -40536,10 +38737,7 @@ func (v *initiative_documentsInitiativeDocumentsDocumentConnection) GetPageInfo(
 // initiative_documentsInitiativeDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type initiative_documentsInitiativeDocumentsDocumentConnectionNodesDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -40681,9 +38879,7 @@ func (v *initiative_documentsResponse) GetInitiative() initiative_documentsIniti
 // initiative_historyInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiative_historyInitiative struct {
 	// History entries associated with the initiative.
 	History initiative_historyInitiativeHistoryInitiativeHistoryConnection `json:"history"`
@@ -40713,9 +38909,7 @@ func (v *initiative_historyInitiativeHistoryInitiativeHistoryConnection) GetPage
 // initiative_historyInitiativeHistoryInitiativeHistoryConnectionNodesInitiativeHistory includes the requested fields of the GraphQL type InitiativeHistory.
 // The GraphQL type's documentation follows.
 //
-// A history record associated with an initiative. Tracks changes to initiative
-// properties such as name, status, owner, target date, icon, color, and
-// parent-child relationships over time.
+// A history record associated with an initiative. Tracks changes to initiative properties such as name, status, owner, target date, icon, color, and parent-child relationships over time.
 type initiative_historyInitiativeHistoryInitiativeHistoryConnectionNodesInitiativeHistory struct {
 	InitiativeHistorySummaryFields `json:"-"`
 }
@@ -40841,9 +39035,7 @@ func (v *initiative_historyResponse) GetInitiative() initiative_historyInitiativ
 // initiative_initiativeUpdatesInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiative_initiativeUpdatesInitiative struct {
 	// Initiative updates associated with the initiative.
 	InitiativeUpdates initiative_initiativeUpdatesInitiativeInitiativeUpdatesInitiativeUpdateConnection `json:"initiativeUpdates"`
@@ -40873,10 +39065,7 @@ func (v *initiative_initiativeUpdatesInitiativeInitiativeUpdatesInitiativeUpdate
 // initiative_initiativeUpdatesInitiativeInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate includes the requested fields of the GraphQL type InitiativeUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to an initiative. Initiative updates communicate
-// progress, health, and blockers to stakeholders. Each update captures the
-// initiative's health at the time of writing and includes a rich-text body with
-// the update content.
+// A status update posted to an initiative. Initiative updates communicate progress, health, and blockers to stakeholders. Each update captures the initiative's health at the time of writing and includes a rich-text body with the update content.
 type initiative_initiativeUpdatesInitiativeInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate struct {
 	InitiativeUpdateSummaryFields `json:"-"`
 }
@@ -41034,9 +39223,7 @@ func (v *initiative_initiativeUpdatesResponse) GetInitiative() initiative_initia
 // initiative_linksInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiative_linksInitiative struct {
 	// Links associated with the initiative.
 	Links initiative_linksInitiativeLinksEntityExternalLinkConnection `json:"links"`
@@ -41066,11 +39253,7 @@ func (v *initiative_linksInitiativeLinksEntityExternalLinkConnection) GetPageInf
 // initiative_linksInitiativeLinksEntityExternalLinkConnectionNodesEntityExternalLink includes the requested fields of the GraphQL type EntityExternalLink.
 // The GraphQL type's documentation follows.
 //
-// An external link attached to a Linear entity such as an initiative, project,
-// team, release, or cycle. External links provide a way to reference related
-// resources outside of Linear (e.g., documentation, design files, dashboards)
-// directly from the entity's resources section. Each link has a URL, display
-// label, and sort order within its parent entity.
+// An external link attached to a Linear entity such as an initiative, project, team, release, or cycle. External links provide a way to reference related resources outside of Linear (e.g., documentation, design files, dashboards) directly from the entity's resources section. Each link has a URL, display label, and sort order within its parent entity.
 type initiative_linksInitiativeLinksEntityExternalLinkConnectionNodesEntityExternalLink struct {
 	EntityExternalLinkSummaryFields `json:"-"`
 }
@@ -41226,9 +39409,7 @@ func (v *initiative_linksResponse) GetInitiative() initiative_linksInitiative { 
 // initiative_projectsInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiative_projectsInitiative struct {
 	// Projects associated with the initiative.
 	Projects initiative_projectsInitiativeProjectsProjectConnection `json:"projects"`
@@ -41258,9 +39439,7 @@ func (v *initiative_projectsInitiativeProjectsProjectConnection) GetPageInfo() i
 // initiative_projectsInitiativeProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type initiative_projectsInitiativeProjectsProjectConnectionNodesProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -41410,9 +39589,7 @@ func (v *initiative_projectsResponse) GetInitiative() initiative_projectsInitiat
 // initiative_subInitiativesInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiative_subInitiativesInitiative struct {
 	// Sub-initiatives associated with the initiative.
 	SubInitiatives initiative_subInitiativesInitiativeSubInitiativesInitiativeConnection `json:"subInitiatives"`
@@ -41442,9 +39619,7 @@ func (v *initiative_subInitiativesInitiativeSubInitiativesInitiativeConnection) 
 // initiative_subInitiativesInitiativeSubInitiativesInitiativeConnectionNodesInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiative_subInitiativesInitiativeSubInitiativesInitiativeConnectionNodesInitiative struct {
 	InitiativeSummaryFields `json:"-"`
 }
@@ -41602,9 +39777,7 @@ func (v *initiativesInitiativesInitiativeConnection) GetPageInfo() initiativesIn
 // initiativesInitiativesInitiativeConnectionNodesInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type initiativesInitiativesInitiativeConnectionNodesInitiative struct {
 	InitiativeSummaryFields `json:"-"`
 }
@@ -41762,12 +39935,7 @@ func (v *issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnection) GetPageI
 // issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -41965,18 +40133,12 @@ func (v *issueFilterSuggestionResponse) GetIssueFilterSuggestion() issueFilterSu
 // issueIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueIssue struct {
 	// The issue's description in markdown format.
 	Description        *string `json:"description"`
 	IssueSummaryFields `json:"-"`
-	// The project milestone that the issue is associated with. Null if the issue is
-	// not assigned to a specific milestone within its project.
+	// The project milestone that the issue is associated with. Null if the issue is not assigned to a specific milestone within its project.
 	ProjectMilestone *issueIssueProjectMilestone `json:"projectMilestone"`
 }
 
@@ -42106,9 +40268,7 @@ func (v *issueIssue) __premarshalJSON() (*__premarshalissueIssue, error) {
 // issueIssueProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type issueIssueProjectMilestone struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -42125,11 +40285,7 @@ func (v *issueIssueProjectMilestone) GetName() string { return v.Name }
 // issueLabelIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type issueLabelIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -42225,11 +40381,7 @@ func (v *issueLabelResponse) GetIssueLabel() issueLabelIssueLabel { return v.Iss
 // issueLabel_childrenIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type issueLabel_childrenIssueLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -42269,11 +40421,7 @@ func (v *issueLabel_childrenIssueLabelChildrenIssueLabelConnection) GetPageInfo(
 // issueLabel_childrenIssueLabelChildrenIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type issueLabel_childrenIssueLabelChildrenIssueLabelConnectionNodesIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -42399,11 +40547,7 @@ func (v *issueLabel_childrenResponse) GetIssueLabel() issueLabel_childrenIssueLa
 // issueLabel_issuesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type issueLabel_issuesIssueLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -42443,12 +40587,7 @@ func (v *issueLabel_issuesIssueLabelIssuesIssueConnection) GetPageInfo() issueLa
 // issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -42642,10 +40781,7 @@ func (v *issuePriorityValuesResponse) GetIssuePriorityValues() []issuePriorityVa
 // issueRelationIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type issueRelationIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -42771,10 +40907,7 @@ func (v *issueRelationsIssueRelationsIssueRelationConnection) GetPageInfo() issu
 // issueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type issueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -42896,8 +41029,7 @@ func (v *issueRelationsIssueRelationsIssueRelationConnectionPageInfo) GetEndCurs
 
 // issueRelationsResponse is returned by issueRelations on success.
 type issueRelationsResponse struct {
-	// All issue relations. Returns a paginated list of all issue relations (blocks,
-	// blocked by, relates to, duplicates) visible to the authenticated user.
+	// All issue relations. Returns a paginated list of all issue relations (blocks, blocked by, relates to, duplicates) visible to the authenticated user.
 	IssueRelations issueRelationsIssueRelationsIssueRelationConnection `json:"issueRelations"`
 }
 
@@ -42934,12 +41066,7 @@ func (v *issueSearchIssueSearchIssueConnection) GetPageInfo() issueSearchIssueSe
 // issueSearchIssueSearchIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueSearchIssueSearchIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -43133,11 +41260,7 @@ func (v *issueTitleSuggestionFromCustomerRequestResponse) GetIssueTitleSuggestio
 // issueToReleaseIssueToRelease includes the requested fields of the GraphQL type IssueToRelease.
 // The GraphQL type's documentation follows.
 //
-// A join entity linking an issue to a release for release tracking. Each record
-// represents an association between a single issue and a single release, along
-// with metadata about the source of the link (e.g., which pull requests connected
-// the issue to the release). Creating or deleting these associations automatically
-// records the change in issue history.
+// A join entity linking an issue to a release for release tracking. Each record represents an association between a single issue and a single release, along with metadata about the source of the link (e.g., which pull requests connected the issue to the release). Creating or deleting these associations automatically records the change in issue history.
 type issueToReleaseIssueToRelease struct {
 	IssueToReleaseSummaryFields `json:"-"`
 }
@@ -43259,11 +41382,7 @@ func (v *issueToReleasesIssueToReleasesIssueToReleaseConnection) GetPageInfo() i
 // issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease includes the requested fields of the GraphQL type IssueToRelease.
 // The GraphQL type's documentation follows.
 //
-// A join entity linking an issue to a release for release tracking. Each record
-// represents an association between a single issue and a single release, along
-// with metadata about the source of the link (e.g., which pull requests connected
-// the issue to the release). Creating or deleting these associations automatically
-// records the change in issue history.
+// A join entity linking an issue to a release for release tracking. Each record represents an association between a single issue and a single release, along with metadata about the source of the link (e.g., which pull requests connected the issue to the release). Creating or deleting these associations automatically records the change in issue history.
 type issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease struct {
 	IssueToReleaseSummaryFields `json:"-"`
 }
@@ -43377,8 +41496,7 @@ func (v *issueToReleasesIssueToReleasesIssueToReleaseConnectionPageInfo) GetEndC
 
 // issueToReleasesResponse is returned by issueToReleases on success.
 type issueToReleasesResponse struct {
-	// All issue-to-release associations. Returns a paginated list of all
-	// issue-to-release links visible to the authenticated user.
+	// All issue-to-release associations. Returns a paginated list of all issue-to-release links visible to the authenticated user.
 	IssueToReleases issueToReleasesIssueToReleasesIssueToReleaseConnection `json:"issueToReleases"`
 }
 
@@ -43390,12 +41508,7 @@ func (v *issueToReleasesResponse) GetIssueToReleases() issueToReleasesIssueToRel
 // issueVcsBranchSearchIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearchIssueVcsBranchSearchIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -43543,12 +41656,7 @@ func (v *issueVcsBranchSearchResponse) GetIssueVcsBranchSearch() *issueVcsBranch
 // issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssue struct {
 	// Attachments associated with the issue.
 	Attachments issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnection `json:"attachments"`
@@ -43578,12 +41686,7 @@ func (v *issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAtt
 // issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -43701,12 +41804,7 @@ func (v *issueVcsBranchSearch_attachmentsResponse) GetIssueVcsBranchSearch() *is
 // issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -43725,10 +41823,7 @@ func (v *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssue) GetBotActor() *
 // issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot includes the requested fields of the GraphQL type ActorBot.
 // The GraphQL type's documentation follows.
 //
-// A bot actor representing a non-human entity that performed an action, such as an
-// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
-// Bot actors are displayed in activity feeds and history to indicate when changes
-// were made by applications rather than users.
+// A bot actor representing a non-human entity that performed an action, such as an integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow. Bot actors are displayed in activity feeds and history to indicate when changes were made by applications rather than users.
 type issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot struct {
 	ActorBotSummaryFields `json:"-"`
 }
@@ -43836,12 +41931,7 @@ func (v *issueVcsBranchSearch_botActorResponse) GetIssueVcsBranchSearch() *issue
 // issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_childrenIssueVcsBranchSearchIssue struct {
 	// Children of the issue.
 	Children issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnection `json:"children"`
@@ -43871,12 +41961,7 @@ func (v *issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConn
 // issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -44042,18 +42127,13 @@ func (v *issueVcsBranchSearch_childrenResponse) GetIssueVcsBranchSearch() *issue
 // issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_commentsIssueVcsBranchSearchIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// Issue's human readable identifier (e.g. ENG-123).
 	Identifier string `json:"identifier"`
-	// Comments associated with the issue.
+	// Comments associated with the issue, including inline comments on the issue's description.
 	Comments issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnection `json:"comments"`
 }
 
@@ -44089,11 +42169,7 @@ func (v *issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentCo
 // issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment struct {
 	CommentMetadataFields `json:"-"`
 }
@@ -44283,12 +42359,7 @@ func (v *issueVcsBranchSearch_commentsResponse) GetIssueVcsBranchSearch() *issue
 // issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_documentsIssueVcsBranchSearchIssue struct {
 	// Documents associated with the issue.
 	Documents issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnection `json:"documents"`
@@ -44318,10 +42389,7 @@ func (v *issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumen
 // issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -44463,12 +42531,7 @@ func (v *issueVcsBranchSearch_documentsResponse) GetIssueVcsBranchSearch() *issu
 // issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssue struct {
 	// Attachments previously associated with the issue before being moved to another issue.
 	FormerAttachments issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnection `json:"formerAttachments"`
@@ -44498,12 +42561,7 @@ func (v *issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAt
 // issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type issueVcsBranchSearch_formerAttachmentsIssueVcsBranchSearchIssueFormerAttachmentsAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -44621,12 +42679,7 @@ func (v *issueVcsBranchSearch_formerAttachmentsResponse) GetIssueVcsBranchSearch
 // issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -44668,11 +42721,7 @@ func (v *issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCus
 // issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type issueVcsBranchSearch_formerNeedsIssueVcsBranchSearchIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedMetadataFields `json:"-"`
 }
@@ -44822,12 +42871,7 @@ func (v *issueVcsBranchSearch_formerNeedsResponse) GetIssueVcsBranchSearch() *is
 // issueVcsBranchSearch_historyIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_historyIssueVcsBranchSearchIssue struct {
 	// History entries associated with the issue.
 	History issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnection `json:"history"`
@@ -44857,12 +42901,7 @@ func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistor
 // issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory includes the requested fields of the GraphQL type IssueHistory.
 // The GraphQL type's documentation follows.
 //
-// A record of changes to an issue. Each history entry captures one or more
-// property changes made to an issue within a short grouping window by the same
-// actor. History entries track changes to fields such as title, assignee, status,
-// priority, project, cycle, labels, due date, estimate, parent issue, and more.
-// They also record metadata about what triggered the change (e.g., a user action,
-// workflow automation, triage rule, or integration).
+// A record of changes to an issue. Each history entry captures one or more property changes made to an issue within a short grouping window by the same actor. History entries track changes to fields such as title, assignee, status, priority, project, cycle, labels, due date, estimate, parent issue, and more. They also record metadata about what triggered the change (e.g., a user action, workflow automation, triage rule, or integration).
 type issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -44873,8 +42912,7 @@ type issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryCon
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// Identifier of the user who made these changes. Can be used to query the user
-	// directly. Null if the change was made by an integration, automation, or system process.
+	// Identifier of the user who made these changes. Can be used to query the user directly. Null if the change was made by an integration, automation, or system process.
 	ActorId *string `json:"actorId"`
 	// Whether the issue's description was updated.
 	UpdatedDescription *bool `json:"updatedDescription"`
@@ -44920,12 +42958,7 @@ func (v *issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistor
 // issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -44968,12 +43001,7 @@ func (v *issueVcsBranchSearch_historyResponse) GetIssueVcsBranchSearch() *issueV
 // issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssue struct {
 	// Inverse relations associated with this issue.
 	InverseRelations issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnection `json:"inverseRelations"`
@@ -45003,10 +43031,7 @@ func (v *issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRe
 // issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type issueVcsBranchSearch_inverseRelationsIssueVcsBranchSearchIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -45140,12 +43165,7 @@ func (v *issueVcsBranchSearch_inverseRelationsResponse) GetIssueVcsBranchSearch(
 // issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_labelsIssueVcsBranchSearchIssue struct {
 	// Labels associated with this issue.
 	Labels issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnection `json:"labels"`
@@ -45175,11 +43195,7 @@ func (v *issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelCon
 // issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -45305,12 +43321,7 @@ func (v *issueVcsBranchSearch_labelsResponse) GetIssueVcsBranchSearch() *issueVc
 // issueVcsBranchSearch_needsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_needsIssueVcsBranchSearchIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -45352,11 +43363,7 @@ func (v *issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedCon
 // issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedMetadataFields `json:"-"`
 }
@@ -45506,12 +43513,7 @@ func (v *issueVcsBranchSearch_needsResponse) GetIssueVcsBranchSearch() *issueVcs
 // issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_relationsIssueVcsBranchSearchIssue struct {
 	// Relations associated with this issue.
 	Relations issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnection `json:"relations"`
@@ -45541,10 +43543,7 @@ func (v *issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRe
 // issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -45678,12 +43677,7 @@ func (v *issueVcsBranchSearch_relationsResponse) GetIssueVcsBranchSearch() *issu
 // issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_releasesIssueVcsBranchSearchIssue struct {
 	// Releases associated with the issue.
 	Releases issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnection `json:"releases"`
@@ -45713,11 +43707,7 @@ func (v *issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseCo
 // issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -45971,12 +43961,7 @@ func (v *issueVcsBranchSearch_releasesResponse) GetIssueVcsBranchSearch() *issue
 // issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -46002,8 +43987,7 @@ func (v *issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssue) GetSharedAc
 // issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess includes the requested fields of the GraphQL type IssueSharedAccess.
 // The GraphQL type's documentation follows.
 //
-// Metadata about an issue's shared access state, including which users the issue
-// is shared with and any field restrictions for shared-only viewers.
+// Metadata about an issue's shared access state, including which users the issue is shared with and any field restrictions for shared-only viewers.
 type issueVcsBranchSearch_sharedAccessIssueVcsBranchSearchIssueSharedAccess struct {
 	IssueSharedAccessFields `json:"-"`
 }
@@ -46095,12 +44079,7 @@ func (v *issueVcsBranchSearch_sharedAccessResponse) GetIssueVcsBranchSearch() *i
 // issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -46177,13 +44156,7 @@ func (v *issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryI
 // issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -46240,12 +44213,7 @@ func (v *issueVcsBranchSearch_stateHistoryResponse) GetIssueVcsBranchSearch() *i
 // issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -46280,10 +44248,7 @@ func (v *issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUse
 // issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -46417,12 +44382,7 @@ func (v *issueVcsBranchSearch_subscribersResponse) GetIssueVcsBranchSearch() *is
 // issue_attachmentsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_attachmentsIssue struct {
 	// Attachments associated with the issue.
 	Attachments issue_attachmentsIssueAttachmentsAttachmentConnection `json:"attachments"`
@@ -46452,12 +44412,7 @@ func (v *issue_attachmentsIssueAttachmentsAttachmentConnection) GetPageInfo() is
 // issue_attachmentsIssueAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type issue_attachmentsIssueAttachmentsAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -46573,12 +44528,7 @@ func (v *issue_attachmentsResponse) GetIssue() issue_attachmentsIssue { return v
 // issue_botActorIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_botActorIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -46595,10 +44545,7 @@ func (v *issue_botActorIssue) GetBotActor() *issue_botActorIssueBotActorActorBot
 // issue_botActorIssueBotActorActorBot includes the requested fields of the GraphQL type ActorBot.
 // The GraphQL type's documentation follows.
 //
-// A bot actor representing a non-human entity that performed an action, such as an
-// integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow.
-// Bot actors are displayed in activity feeds and history to indicate when changes
-// were made by applications rather than users.
+// A bot actor representing a non-human entity that performed an action, such as an integration (GitHub, Slack, Zendesk), an AI assistant, or an automated workflow. Bot actors are displayed in activity feeds and history to indicate when changes were made by applications rather than users.
 type issue_botActorIssueBotActorActorBot struct {
 	ActorBotSummaryFields `json:"-"`
 }
@@ -46698,12 +44645,7 @@ func (v *issue_botActorResponse) GetIssue() issue_botActorIssue { return v.Issue
 // issue_childrenIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_childrenIssue struct {
 	// Children of the issue.
 	Children issue_childrenIssueChildrenIssueConnection `json:"children"`
@@ -46733,12 +44675,7 @@ func (v *issue_childrenIssueChildrenIssueConnection) GetPageInfo() issue_childre
 // issue_childrenIssueChildrenIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_childrenIssueChildrenIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -46902,18 +44839,13 @@ func (v *issue_childrenResponse) GetIssue() issue_childrenIssue { return v.Issue
 // issue_commentsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_commentsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// Issue's human readable identifier (e.g. ENG-123).
 	Identifier string `json:"identifier"`
-	// Comments associated with the issue.
+	// Comments associated with the issue, including inline comments on the issue's description.
 	Comments issue_commentsIssueCommentsCommentConnection `json:"comments"`
 }
 
@@ -46947,11 +44879,7 @@ func (v *issue_commentsIssueCommentsCommentConnection) GetPageInfo() issue_comme
 // issue_commentsIssueCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type issue_commentsIssueCommentsCommentConnectionNodesComment struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -46994,10 +44922,7 @@ func (v *issue_commentsIssueCommentsCommentConnectionNodesComment) GetUser() *is
 // issue_commentsIssueCommentsCommentConnectionNodesCommentUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type issue_commentsIssueCommentsCommentConnectionNodesCommentUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -47050,12 +44975,7 @@ func (v *issue_commentsResponse) GetIssue() issue_commentsIssue { return v.Issue
 // issue_documentsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_documentsIssue struct {
 	// Documents associated with the issue.
 	Documents issue_documentsIssueDocumentsDocumentConnection `json:"documents"`
@@ -47085,10 +45005,7 @@ func (v *issue_documentsIssueDocumentsDocumentConnection) GetPageInfo() issue_do
 // issue_documentsIssueDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type issue_documentsIssueDocumentsDocumentConnectionNodesDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -47228,12 +45145,7 @@ func (v *issue_documentsResponse) GetIssue() issue_documentsIssue { return v.Iss
 // issue_formerAttachmentsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_formerAttachmentsIssue struct {
 	// Attachments previously associated with the issue before being moved to another issue.
 	FormerAttachments issue_formerAttachmentsIssueFormerAttachmentsAttachmentConnection `json:"formerAttachments"`
@@ -47263,12 +45175,7 @@ func (v *issue_formerAttachmentsIssueFormerAttachmentsAttachmentConnection) GetP
 // issue_formerAttachmentsIssueFormerAttachmentsAttachmentConnectionNodesAttachment includes the requested fields of the GraphQL type Attachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment linking external content to an issue. Attachments represent
-// connections to external resources such as GitHub pull requests, Slack messages,
-// Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain
-// URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL
-// serving as both the link destination and unique identifier per issue, and
-// optional metadata specific to the source integration.
+// An attachment linking external content to an issue. Attachments represent connections to external resources such as GitHub pull requests, Slack messages, Zendesk tickets, Figma files, Sentry issues, Intercom conversations, and plain URLs. Each attachment has a title and subtitle displayed in the Linear UI, a URL serving as both the link destination and unique identifier per issue, and optional metadata specific to the source integration.
 type issue_formerAttachmentsIssueFormerAttachmentsAttachmentConnectionNodesAttachment struct {
 	AttachmentSummaryFields `json:"-"`
 }
@@ -47384,12 +45291,7 @@ func (v *issue_formerAttachmentsResponse) GetIssue() issue_formerAttachmentsIssu
 // issue_formerNeedsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_formerNeedsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -47429,11 +45331,7 @@ func (v *issue_formerNeedsIssueFormerNeedsCustomerNeedConnection) GetPageInfo() 
 // issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedMetadataFields `json:"-"`
 }
@@ -47581,12 +45479,7 @@ func (v *issue_formerNeedsResponse) GetIssue() issue_formerNeedsIssue { return v
 // issue_historyIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_historyIssue struct {
 	// History entries associated with the issue.
 	History issue_historyIssueHistoryIssueHistoryConnection `json:"history"`
@@ -47616,12 +45509,7 @@ func (v *issue_historyIssueHistoryIssueHistoryConnection) GetPageInfo() issue_hi
 // issue_historyIssueHistoryIssueHistoryConnectionNodesIssueHistory includes the requested fields of the GraphQL type IssueHistory.
 // The GraphQL type's documentation follows.
 //
-// A record of changes to an issue. Each history entry captures one or more
-// property changes made to an issue within a short grouping window by the same
-// actor. History entries track changes to fields such as title, assignee, status,
-// priority, project, cycle, labels, due date, estimate, parent issue, and more.
-// They also record metadata about what triggered the change (e.g., a user action,
-// workflow automation, triage rule, or integration).
+// A record of changes to an issue. Each history entry captures one or more property changes made to an issue within a short grouping window by the same actor. History entries track changes to fields such as title, assignee, status, priority, project, cycle, labels, due date, estimate, parent issue, and more. They also record metadata about what triggered the change (e.g., a user action, workflow automation, triage rule, or integration).
 type issue_historyIssueHistoryIssueHistoryConnectionNodesIssueHistory struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -47632,8 +45520,7 @@ type issue_historyIssueHistoryIssueHistoryConnectionNodesIssueHistory struct {
 	UpdatedAt string `json:"updatedAt"`
 	// The time at which the entity was archived. Null if the entity has not been archived.
 	ArchivedAt *string `json:"archivedAt"`
-	// Identifier of the user who made these changes. Can be used to query the user
-	// directly. Null if the change was made by an integration, automation, or system process.
+	// Identifier of the user who made these changes. Can be used to query the user directly. Null if the change was made by an integration, automation, or system process.
 	ActorId *string `json:"actorId"`
 	// Whether the issue's description was updated.
 	UpdatedDescription *bool `json:"updatedDescription"`
@@ -47679,12 +45566,7 @@ func (v *issue_historyIssueHistoryIssueHistoryConnectionNodesIssueHistory) GetIs
 // issue_historyIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_historyIssueHistoryIssueHistoryConnectionNodesIssueHistoryIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -47725,12 +45607,7 @@ func (v *issue_historyResponse) GetIssue() issue_historyIssue { return v.Issue }
 // issue_inverseRelationsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_inverseRelationsIssue struct {
 	// Inverse relations associated with this issue.
 	InverseRelations issue_inverseRelationsIssueInverseRelationsIssueRelationConnection `json:"inverseRelations"`
@@ -47760,10 +45637,7 @@ func (v *issue_inverseRelationsIssueInverseRelationsIssueRelationConnection) Get
 // issue_inverseRelationsIssueInverseRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type issue_inverseRelationsIssueInverseRelationsIssueRelationConnectionNodesIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -47895,12 +45769,7 @@ func (v *issue_inverseRelationsResponse) GetIssue() issue_inverseRelationsIssue 
 // issue_labelsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_labelsIssue struct {
 	// Labels associated with this issue.
 	Labels issue_labelsIssueLabelsIssueLabelConnection `json:"labels"`
@@ -47928,11 +45797,7 @@ func (v *issue_labelsIssueLabelsIssueLabelConnection) GetPageInfo() issue_labels
 // issue_labelsIssueLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type issue_labelsIssueLabelsIssueLabelConnectionNodesIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -48056,12 +45921,7 @@ func (v *issue_labelsResponse) GetIssue() issue_labelsIssue { return v.Issue }
 // issue_needsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_needsIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -48099,11 +45959,7 @@ func (v *issue_needsIssueNeedsCustomerNeedConnection) GetPageInfo() issue_needsI
 // issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedMetadataFields `json:"-"`
 }
@@ -48251,12 +46107,7 @@ func (v *issue_needsResponse) GetIssue() issue_needsIssue { return v.Issue }
 // issue_relationsIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_relationsIssue struct {
 	// Relations associated with this issue.
 	Relations issue_relationsIssueRelationsIssueRelationConnection `json:"relations"`
@@ -48286,10 +46137,7 @@ func (v *issue_relationsIssueRelationsIssueRelationConnection) GetPageInfo() iss
 // issue_relationsIssueRelationsIssueRelationConnectionNodesIssueRelation includes the requested fields of the GraphQL type IssueRelation.
 // The GraphQL type's documentation follows.
 //
-// A relation between two issues. Issue relations represent directional
-// relationships such as blocking, being blocked by, relating to, or duplicating
-// another issue. Each relation connects a source issue to a related issue with a
-// specific type describing the nature of the relationship.
+// A relation between two issues. Issue relations represent directional relationships such as blocking, being blocked by, relating to, or duplicating another issue. Each relation connects a source issue to a related issue with a specific type describing the nature of the relationship.
 type issue_relationsIssueRelationsIssueRelationConnectionNodesIssueRelation struct {
 	IssueRelationSummaryFields `json:"-"`
 }
@@ -48421,12 +46269,7 @@ func (v *issue_relationsResponse) GetIssue() issue_relationsIssue { return v.Iss
 // issue_releasesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_releasesIssue struct {
 	// Releases associated with the issue.
 	Releases issue_releasesIssueReleasesReleaseConnection `json:"releases"`
@@ -48456,11 +46299,7 @@ func (v *issue_releasesIssueReleasesReleaseConnection) GetPageInfo() issue_relea
 // issue_releasesIssueReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type issue_releasesIssueReleasesReleaseConnectionNodesRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -48712,12 +46551,7 @@ func (v *issue_releasesResponse) GetIssue() issue_releasesIssue { return v.Issue
 // issue_sharedAccessIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_sharedAccessIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -48741,8 +46575,7 @@ func (v *issue_sharedAccessIssue) GetSharedAccess() issue_sharedAccessIssueShare
 // issue_sharedAccessIssueSharedAccess includes the requested fields of the GraphQL type IssueSharedAccess.
 // The GraphQL type's documentation follows.
 //
-// Metadata about an issue's shared access state, including which users the issue
-// is shared with and any field restrictions for shared-only viewers.
+// Metadata about an issue's shared access state, including which users the issue is shared with and any field restrictions for shared-only viewers.
 type issue_sharedAccessIssueSharedAccess struct {
 	IssueSharedAccessFields `json:"-"`
 }
@@ -48832,12 +46665,7 @@ func (v *issue_sharedAccessResponse) GetIssue() issue_sharedAccessIssue { return
 // issue_stateHistoryIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_stateHistoryIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -48914,13 +46742,7 @@ func (v *issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueSt
 // issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpanStateWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -48975,12 +46797,7 @@ func (v *issue_stateHistoryResponse) GetIssue() issue_stateHistoryIssue { return
 // issue_subscribersIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issue_subscribersIssue struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -49015,10 +46832,7 @@ func (v *issue_subscribersIssueSubscribersUserConnection) GetPageInfo() issue_su
 // issue_subscribersIssueSubscribersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type issue_subscribersIssueSubscribersUserConnectionNodesUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -49166,12 +46980,7 @@ func (v *issuesIssuesIssueConnection) GetPageInfo() issuesIssuesIssueConnectionP
 // issuesIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type issuesIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -49315,9 +47124,7 @@ func (v *issuesIssuesIssueConnectionPageInfo) GetEndCursor() *string { return v.
 
 // issuesResponse is returned by issues on success.
 type issuesResponse struct {
-	// All issues. Returns a paginated list of issues visible to the authenticated
-	// user. Can be filtered by various criteria including team, assignee, state,
-	// labels, project, and cycle.
+	// All issues. Returns a paginated list of issues visible to the authenticated user. Can be filtered by various criteria including team, assignee, state, labels, project, and cycle.
 	Issues issuesIssuesIssueConnection `json:"issues"`
 }
 
@@ -49341,11 +47148,7 @@ func (v *issuesResponse) GetIssues() issuesIssuesIssueConnection { return v.Issu
 // notificationNotificationWelcomeMessageNotification
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type notificationNotification interface {
 	implementsGraphQLInterfacenotificationNotification()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
@@ -51136,8 +48939,7 @@ func (v *notificationNotificationProductAnnouncementNotification) __premarshalJS
 // notificationNotificationProjectNotification includes the requested fields of the GraphQL type ProjectNotification.
 // The GraphQL type's documentation follows.
 //
-// A notification related to a project, such as being added as a member or lead,
-// project updates, comments, or mentions on the project or its milestones.
+// A notification related to a project, such as being added as a member or lead, project updates, comments, or mentions on the project or its milestones.
 type notificationNotificationProjectNotification struct {
 	Typename                                     *string `json:"__typename"`
 	NotificationSummaryFieldsProjectNotification `json:"-"`
@@ -51329,8 +49131,7 @@ func (v *notificationNotificationProjectNotification) __premarshalJSON() (*__pre
 // notificationNotificationPullRequestNotification includes the requested fields of the GraphQL type PullRequestNotification.
 // The GraphQL type's documentation follows.
 //
-// A notification related to a pull request, such as review requests, approvals,
-// comments, check failures, or merge queue events.
+// A notification related to a pull request, such as review requests, approvals, comments, check failures, or merge queue events.
 type notificationNotificationPullRequestNotification struct {
 	Typename                                         *string `json:"__typename"`
 	NotificationSummaryFieldsPullRequestNotification `json:"-"`
@@ -51988,12 +49789,7 @@ func (v *notificationResponse) __premarshalJSON() (*__premarshalnotificationResp
 // notificationSubscriptionNotificationSubscriptionUserNotificationSubscription
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type notificationSubscriptionNotificationSubscription interface {
 	implementsGraphQLInterfacenotificationSubscriptionNotificationSubscription()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
@@ -52176,8 +49972,7 @@ func __marshalnotificationSubscriptionNotificationSubscription(v *notificationSu
 // notificationSubscriptionNotificationSubscriptionCustomViewNotificationSubscription includes the requested fields of the GraphQL type CustomViewNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific custom view. The subscriber
-// receives notifications for events matching the custom view's filter criteria.
+// A notification subscription scoped to a specific custom view. The subscriber receives notifications for events matching the custom view's filter criteria.
 type notificationSubscriptionNotificationSubscriptionCustomViewNotificationSubscription struct {
 	Typename                                                                *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsCustomViewNotificationSubscription `json:"-"`
@@ -52363,9 +50158,7 @@ func (v *notificationSubscriptionNotificationSubscriptionCustomViewNotificationS
 // notificationSubscriptionNotificationSubscriptionCustomerNotificationSubscription includes the requested fields of the GraphQL type CustomerNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific customer. The subscriber
-// receives notifications for events related to this customer, such as new customer
-// needs or ownership changes.
+// A notification subscription scoped to a specific customer. The subscriber receives notifications for events related to this customer, such as new customer needs or ownership changes.
 type notificationSubscriptionNotificationSubscriptionCustomerNotificationSubscription struct {
 	Typename                                                              *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsCustomerNotificationSubscription `json:"-"`
@@ -52551,8 +50344,7 @@ func (v *notificationSubscriptionNotificationSubscriptionCustomerNotificationSub
 // notificationSubscriptionNotificationSubscriptionCycleNotificationSubscription includes the requested fields of the GraphQL type CycleNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific cycle. The subscriber receives
-// notifications for events related to issues in this cycle.
+// A notification subscription scoped to a specific cycle. The subscriber receives notifications for events related to issues in this cycle.
 type notificationSubscriptionNotificationSubscriptionCycleNotificationSubscription struct {
 	Typename                                                           *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsCycleNotificationSubscription `json:"-"`
@@ -52738,9 +50530,7 @@ func (v *notificationSubscriptionNotificationSubscriptionCycleNotificationSubscr
 // notificationSubscriptionNotificationSubscriptionInitiativeNotificationSubscription includes the requested fields of the GraphQL type InitiativeNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific initiative. The subscriber
-// receives notifications for events related to this initiative, such as updates,
-// comments, and ownership changes.
+// A notification subscription scoped to a specific initiative. The subscriber receives notifications for events related to this initiative, such as updates, comments, and ownership changes.
 type notificationSubscriptionNotificationSubscriptionInitiativeNotificationSubscription struct {
 	Typename                                                                *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsInitiativeNotificationSubscription `json:"-"`
@@ -52926,8 +50716,7 @@ func (v *notificationSubscriptionNotificationSubscriptionInitiativeNotificationS
 // notificationSubscriptionNotificationSubscriptionLabelNotificationSubscription includes the requested fields of the GraphQL type LabelNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific issue label. The subscriber
-// receives notifications for events related to issues with this label.
+// A notification subscription scoped to a specific issue label. The subscriber receives notifications for events related to issues with this label.
 type notificationSubscriptionNotificationSubscriptionLabelNotificationSubscription struct {
 	Typename                                                           *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsLabelNotificationSubscription `json:"-"`
@@ -53113,9 +50902,7 @@ func (v *notificationSubscriptionNotificationSubscriptionLabelNotificationSubscr
 // notificationSubscriptionNotificationSubscriptionProjectNotificationSubscription includes the requested fields of the GraphQL type ProjectNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific project. The subscriber
-// receives notifications for events related to this project, such as updates,
-// comments, and membership changes.
+// A notification subscription scoped to a specific project. The subscriber receives notifications for events related to this project, such as updates, comments, and membership changes.
 type notificationSubscriptionNotificationSubscriptionProjectNotificationSubscription struct {
 	Typename                                                             *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsProjectNotificationSubscription `json:"-"`
@@ -53301,8 +51088,7 @@ func (v *notificationSubscriptionNotificationSubscriptionProjectNotificationSubs
 // notificationSubscriptionNotificationSubscriptionTeamNotificationSubscription includes the requested fields of the GraphQL type TeamNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific team. The subscriber receives
-// notifications for events related to issues and activity in this team.
+// A notification subscription scoped to a specific team. The subscriber receives notifications for events related to issues and activity in this team.
 type notificationSubscriptionNotificationSubscriptionTeamNotificationSubscription struct {
 	Typename                                                          *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsTeamNotificationSubscription `json:"-"`
@@ -53488,8 +51274,7 @@ func (v *notificationSubscriptionNotificationSubscriptionTeamNotificationSubscri
 // notificationSubscriptionNotificationSubscriptionUserNotificationSubscription includes the requested fields of the GraphQL type UserNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific user view. The subscriber
-// receives notifications for events in the context of a particular user's activity view.
+// A notification subscription scoped to a specific user view. The subscriber receives notifications for events in the context of a particular user's activity view.
 type notificationSubscriptionNotificationSubscriptionUserNotificationSubscription struct {
 	Typename                                                          *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsUserNotificationSubscription `json:"-"`
@@ -53843,8 +51628,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesCustomViewNotificationSubscription includes the requested fields of the GraphQL type CustomViewNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific custom view. The subscriber
-// receives notifications for events matching the custom view's filter criteria.
+// A notification subscription scoped to a specific custom view. The subscriber receives notifications for events matching the custom view's filter criteria.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesCustomViewNotificationSubscription struct {
 	Typename                                                                *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsCustomViewNotificationSubscription `json:"-"`
@@ -54030,9 +51814,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesCustomerNotificationSubscription includes the requested fields of the GraphQL type CustomerNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific customer. The subscriber
-// receives notifications for events related to this customer, such as new customer
-// needs or ownership changes.
+// A notification subscription scoped to a specific customer. The subscriber receives notifications for events related to this customer, such as new customer needs or ownership changes.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesCustomerNotificationSubscription struct {
 	Typename                                                              *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsCustomerNotificationSubscription `json:"-"`
@@ -54218,8 +52000,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesCycleNotificationSubscription includes the requested fields of the GraphQL type CycleNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific cycle. The subscriber receives
-// notifications for events related to issues in this cycle.
+// A notification subscription scoped to a specific cycle. The subscriber receives notifications for events related to issues in this cycle.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesCycleNotificationSubscription struct {
 	Typename                                                           *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsCycleNotificationSubscription `json:"-"`
@@ -54405,9 +52186,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesInitiativeNotificationSubscription includes the requested fields of the GraphQL type InitiativeNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific initiative. The subscriber
-// receives notifications for events related to this initiative, such as updates,
-// comments, and ownership changes.
+// A notification subscription scoped to a specific initiative. The subscriber receives notifications for events related to this initiative, such as updates, comments, and ownership changes.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesInitiativeNotificationSubscription struct {
 	Typename                                                                *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsInitiativeNotificationSubscription `json:"-"`
@@ -54593,8 +52372,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesLabelNotificationSubscription includes the requested fields of the GraphQL type LabelNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific issue label. The subscriber
-// receives notifications for events related to issues with this label.
+// A notification subscription scoped to a specific issue label. The subscriber receives notifications for events related to issues with this label.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesLabelNotificationSubscription struct {
 	Typename                                                           *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsLabelNotificationSubscription `json:"-"`
@@ -54790,12 +52568,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesUserNotificationSubscription
 // The GraphQL type's documentation follows.
 //
-// A subscription that controls which notifications a user receives for a specific
-// entity such as a team, project, cycle, label, custom view, initiative, or user.
-// This is not a billing subscription -- it determines notification preferences.
-// Each subscription is scoped to exactly one target entity and specifies the
-// notification types the subscriber wants to receive. When active, matching events
-// on the target entity generate notifications for the subscriber.
+// A subscription that controls which notifications a user receives for a specific entity such as a team, project, cycle, label, custom view, initiative, or user. This is not a billing subscription -- it determines notification preferences. Each subscription is scoped to exactly one target entity and specifies the notification types the subscriber wants to receive. When active, matching events on the target entity generate notifications for the subscriber.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesNotificationSubscription interface {
 	implementsGraphQLInterfacenotificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesNotificationSubscription()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
@@ -54978,9 +52751,7 @@ func __marshalnotificationSubscriptionsNotificationSubscriptionsNotificationSubs
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesProjectNotificationSubscription includes the requested fields of the GraphQL type ProjectNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific project. The subscriber
-// receives notifications for events related to this project, such as updates,
-// comments, and membership changes.
+// A notification subscription scoped to a specific project. The subscriber receives notifications for events related to this project, such as updates, comments, and membership changes.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesProjectNotificationSubscription struct {
 	Typename                                                             *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsProjectNotificationSubscription `json:"-"`
@@ -55166,8 +52937,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesTeamNotificationSubscription includes the requested fields of the GraphQL type TeamNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific team. The subscriber receives
-// notifications for events related to issues and activity in this team.
+// A notification subscription scoped to a specific team. The subscriber receives notifications for events related to issues and activity in this team.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesTeamNotificationSubscription struct {
 	Typename                                                          *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsTeamNotificationSubscription `json:"-"`
@@ -55353,8 +53123,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 // notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesUserNotificationSubscription includes the requested fields of the GraphQL type UserNotificationSubscription.
 // The GraphQL type's documentation follows.
 //
-// A notification subscription scoped to a specific user view. The subscriber
-// receives notifications for events in the context of a particular user's activity view.
+// A notification subscription scoped to a specific user view. The subscriber receives notifications for events in the context of a particular user's activity view.
 type notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnectionNodesUserNotificationSubscription struct {
 	Typename                                                          *string `json:"__typename"`
 	NotificationSubscriptionSummaryFieldsUserNotificationSubscription `json:"-"`
@@ -55557,9 +53326,7 @@ func (v *notificationSubscriptionsNotificationSubscriptionsNotificationSubscript
 
 // notificationSubscriptionsResponse is returned by notificationSubscriptions on success.
 type notificationSubscriptionsResponse struct {
-	// The authenticated user's notification subscriptions. These subscriptions
-	// control which notifications the user receives for specific entities such as
-	// teams, projects, cycles, labels, custom views, initiatives, customers, and users.
+	// The authenticated user's notification subscriptions. These subscriptions control which notifications the user receives for specific entities such as teams, projects, cycles, labels, custom views, initiatives, customers, and users.
 	NotificationSubscriptions notificationSubscriptionsNotificationSubscriptionsNotificationSubscriptionConnection `json:"notificationSubscriptions"`
 }
 
@@ -56649,11 +54416,7 @@ func (v *notificationsNotificationsNotificationConnectionNodesIssueNotification)
 // notificationsNotificationsNotificationConnectionNodesWelcomeMessageNotification
 // The GraphQL type's documentation follows.
 //
-// A notification delivered to a user's inbox. Notifications are created in
-// response to activity in the workspace such as issue assignments, comments,
-// mentions, and status changes. Each notification has a specific type that
-// determines the associated entity (issue, project, document, etc.) and the nature
-// of the event. Notifications can be read, snoozed, or archived by the user.
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
 type notificationsNotificationsNotificationConnectionNodesNotification interface {
 	implementsGraphQLInterfacenotificationsNotificationsNotificationConnectionNodesNotification()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
@@ -57486,8 +55249,7 @@ func (v *notificationsNotificationsNotificationConnectionNodesProductAnnouncemen
 // notificationsNotificationsNotificationConnectionNodesProjectNotification includes the requested fields of the GraphQL type ProjectNotification.
 // The GraphQL type's documentation follows.
 //
-// A notification related to a project, such as being added as a member or lead,
-// project updates, comments, or mentions on the project or its milestones.
+// A notification related to a project, such as being added as a member or lead, project updates, comments, or mentions on the project or its milestones.
 type notificationsNotificationsNotificationConnectionNodesProjectNotification struct {
 	Typename                                     *string `json:"__typename"`
 	NotificationSummaryFieldsProjectNotification `json:"-"`
@@ -57681,8 +55443,7 @@ func (v *notificationsNotificationsNotificationConnectionNodesProjectNotificatio
 // notificationsNotificationsNotificationConnectionNodesPullRequestNotification includes the requested fields of the GraphQL type PullRequestNotification.
 // The GraphQL type's documentation follows.
 //
-// A notification related to a pull request, such as review requests, approvals,
-// comments, check failures, or merge queue events.
+// A notification related to a pull request, such as review requests, approvals, comments, check failures, or merge queue events.
 type notificationsNotificationsNotificationConnectionNodesPullRequestNotification struct {
 	Typename                                         *string `json:"__typename"`
 	NotificationSummaryFieldsPullRequestNotification `json:"-"`
@@ -58325,13 +56086,9 @@ func (v *organizationExistsResponse) GetOrganizationExists() organizationExistsO
 // organization_labelsOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type organization_labelsOrganization struct {
-	// Workspace-level issue labels (not associated with any specific team). These
-	// labels are available across all teams in the workspace.
+	// Workspace-level issue labels (not associated with any specific team). These labels are available across all teams in the workspace.
 	Labels organization_labelsOrganizationLabelsIssueLabelConnection `json:"labels"`
 }
 
@@ -58359,11 +56116,7 @@ func (v *organization_labelsOrganizationLabelsIssueLabelConnection) GetPageInfo(
 // organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -58489,10 +56242,7 @@ func (v *organization_labelsResponse) GetOrganization() organization_labelsOrgan
 // organization_projectLabelsOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type organization_projectLabelsOrganization struct {
 	// Project labels available in the workspace for categorizing projects.
 	ProjectLabels organization_projectLabelsOrganizationProjectLabelsProjectLabelConnection `json:"projectLabels"`
@@ -58522,9 +56272,7 @@ func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnecti
 // organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -58698,13 +56446,9 @@ func (v *organization_projectLabelsResponse) GetOrganization() organization_proj
 // organization_teamsOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type organization_teamsOrganization struct {
-	// Teams in the workspace. Returns only teams visible to the requesting user (all
-	// public teams plus private teams the user is a member of).
+	// Teams in the workspace. Returns only teams visible to the requesting user (all public teams plus private teams the user is a member of).
 	Teams organization_teamsOrganizationTeamsTeamConnection `json:"teams"`
 }
 
@@ -58732,11 +56476,7 @@ func (v *organization_teamsOrganizationTeamsTeamConnection) GetPageInfo() organi
 // organization_teamsOrganizationTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type organization_teamsOrganizationTeamsTeamConnectionNodesTeam struct {
 	TeamSummaryFields `json:"-"`
 }
@@ -58862,13 +56602,9 @@ func (v *organization_teamsResponse) GetOrganization() organization_teamsOrganiz
 // organization_templatesOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type organization_templatesOrganization struct {
-	// Workspace-level templates (not associated with any specific team). These
-	// templates are available across all teams in the workspace.
+	// Workspace-level templates (not associated with any specific team). These templates are available across all teams in the workspace.
 	Templates organization_templatesOrganizationTemplatesTemplateConnection `json:"templates"`
 }
 
@@ -58896,10 +56632,7 @@ func (v *organization_templatesOrganizationTemplatesTemplateConnection) GetPageI
 // organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate includes the requested fields of the GraphQL type Template.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate struct {
 	TemplateSummaryFields `json:"-"`
 }
@@ -59105,13 +56838,9 @@ func (v *organization_templatesResponse) GetOrganization() organization_template
 // organization_usersOrganization includes the requested fields of the GraphQL type Organization.
 // The GraphQL type's documentation follows.
 //
-// A workspace (referred to as Organization in the API). Workspaces are the
-// root-level container for all teams, users, projects, issues, and settings. Every
-// user belongs to at least one workspace, and all data is scoped within a
-// workspace boundary.
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
 type organization_usersOrganization struct {
-	// Users belonging to the workspace. By default only returns active users; use
-	// the includeDisabled argument to include deactivated users.
+	// Users belonging to the workspace. By default only returns active users; use the includeDisabled argument to include deactivated users.
 	Users organization_usersOrganizationUsersUserConnection `json:"users"`
 }
 
@@ -59139,10 +56868,7 @@ func (v *organization_usersOrganizationUsersUserConnection) GetPageInfo() organi
 // organization_usersOrganizationUsersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type organization_usersOrganizationUsersUserConnectionNodesUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -59308,9 +57034,7 @@ func (v *projectFilterSuggestionResponse) GetProjectFilterSuggestion() projectFi
 // projectLabelProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type projectLabelProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -59456,9 +57180,7 @@ func (v *projectLabelResponse) GetProjectLabel() projectLabelProjectLabel { retu
 // projectLabel_childrenProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type projectLabel_childrenProjectLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -59498,9 +57220,7 @@ func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnection) GetPag
 // projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -59674,9 +57394,7 @@ func (v *projectLabel_childrenResponse) GetProjectLabel() projectLabel_childrenP
 // projectLabel_projectsProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type projectLabel_projectsProjectLabel struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -59716,9 +57434,7 @@ func (v *projectLabel_projectsProjectLabelProjectsProjectConnection) GetPageInfo
 // projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -59884,9 +57600,7 @@ func (v *projectLabelsProjectLabelsProjectLabelConnection) GetPageInfo() project
 // projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -60060,9 +57774,7 @@ func (v *projectLabelsResponse) GetProjectLabels() projectLabelsProjectLabelsPro
 // projectMilestoneProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type projectMilestoneProjectMilestone struct {
 	ProjectMilestoneSummaryFields `json:"-"`
 	// The project that this milestone belongs to.
@@ -60175,9 +57887,7 @@ func (v *projectMilestoneProjectMilestone) __premarshalJSON() (*__premarshalproj
 // projectMilestoneProjectMilestoneProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type projectMilestoneProjectMilestoneProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -60305,9 +58015,7 @@ func (v *projectMilestoneResponse) GetProjectMilestone() projectMilestoneProject
 // projectMilestone_issuesProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type projectMilestone_issuesProjectMilestone struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -60347,12 +58055,7 @@ func (v *projectMilestone_issuesProjectMilestoneIssuesIssueConnection) GetPageIn
 // projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -60534,9 +58237,7 @@ func (v *projectMilestonesProjectMilestonesProjectMilestoneConnection) GetPageIn
 // projectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type projectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone struct {
 	ProjectMilestoneSummaryFields `json:"-"`
 }
@@ -60670,9 +58371,7 @@ func (v *projectMilestonesResponse) GetProjectMilestones() projectMilestonesProj
 // projectProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type projectProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -60779,8 +58478,7 @@ func (v *projectProject) __premarshalJSON() (*__premarshalprojectProject, error)
 // projectRelationProjectRelation includes the requested fields of the GraphQL type ProjectRelation.
 // The GraphQL type's documentation follows.
 //
-// A dependency relation between two projects. Relations can optionally be anchored
-// to specific milestones within each project, allowing fine-grained dependency tracking.
+// A dependency relation between two projects. Relations can optionally be anchored to specific milestones within each project, allowing fine-grained dependency tracking.
 type projectRelationProjectRelation struct {
 	ProjectRelationSummaryFields `json:"-"`
 }
@@ -60948,8 +58646,7 @@ func (v *projectRelationsProjectRelationsProjectRelationConnection) GetPageInfo(
 // projectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelation includes the requested fields of the GraphQL type ProjectRelation.
 // The GraphQL type's documentation follows.
 //
-// A dependency relation between two projects. Relations can optionally be anchored
-// to specific milestones within each project, allowing fine-grained dependency tracking.
+// A dependency relation between two projects. Relations can optionally be anchored to specific milestones within each project, allowing fine-grained dependency tracking.
 type projectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelation struct {
 	ProjectRelationSummaryFields `json:"-"`
 }
@@ -61171,10 +58868,7 @@ func (v *projectStatusProjectCountResponse) GetProjectStatusProjectCount() proje
 // projectStatusProjectStatus includes the requested fields of the GraphQL type ProjectStatus.
 // The GraphQL type's documentation follows.
 //
-// A custom project status within a workspace. Statuses are grouped by type
-// (backlog, planned, started, paused, completed, canceled) and define the
-// lifecycle stages a project can move through. Each workspace can customize the
-// names and colors of its project statuses.
+// A custom project status within a workspace. Statuses are grouped by type (backlog, planned, started, paused, completed, canceled) and define the lifecycle stages a project can move through. Each workspace can customize the names and colors of its project statuses.
 type projectStatusProjectStatus struct {
 	ProjectStatusSummaryFields `json:"-"`
 }
@@ -61314,10 +59008,7 @@ func (v *projectStatusesProjectStatusesProjectStatusConnection) GetPageInfo() pr
 // projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus includes the requested fields of the GraphQL type ProjectStatus.
 // The GraphQL type's documentation follows.
 //
-// A custom project status within a workspace. Statuses are grouped by type
-// (backlog, planned, started, paused, completed, canceled) and define the
-// lifecycle stages a project can move through. Each workspace can customize the
-// names and colors of its project statuses.
+// A custom project status within a workspace. Statuses are grouped by type (backlog, planned, started, paused, completed, canceled) and define the lifecycle stages a project can move through. Each workspace can customize the names and colors of its project statuses.
 type projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus struct {
 	ProjectStatusSummaryFields `json:"-"`
 }
@@ -61467,9 +59158,7 @@ func (v *projectStatusesResponse) GetProjectStatuses() projectStatusesProjectSta
 // projectUpdateProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to a project. Project updates communicate progress,
-// health, and blockers to stakeholders. Each update captures the project's health
-// at the time of writing and includes a rich-text body with the update content.
+// A status update posted to a project. Project updates communicate progress, health, and blockers to stakeholders. Each update captures the project's health at the time of writing and includes a rich-text body with the update content.
 type projectUpdateProjectUpdate struct {
 	TopLevelProjectUpdateSummaryFields `json:"-"`
 }
@@ -61587,9 +59276,7 @@ func (v *projectUpdateResponse) GetProjectUpdate() projectUpdateProjectUpdate { 
 // projectUpdate_commentsProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to a project. Project updates communicate progress,
-// health, and blockers to stakeholders. Each update captures the project's health
-// at the time of writing and includes a rich-text body with the update content.
+// A status update posted to a project. Project updates communicate progress, health, and blockers to stakeholders. Each update captures the project's health at the time of writing and includes a rich-text body with the update content.
 type projectUpdate_commentsProjectUpdate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -61624,11 +59311,7 @@ func (v *projectUpdate_commentsProjectUpdateCommentsCommentConnection) GetPageIn
 // projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment struct {
 	CommentMetadataFields `json:"-"`
 }
@@ -61834,9 +59517,7 @@ func (v *projectUpdatesProjectUpdatesProjectUpdateConnection) GetPageInfo() proj
 // projectUpdatesProjectUpdatesProjectUpdateConnectionNodesProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to a project. Project updates communicate progress,
-// health, and blockers to stakeholders. Each update captures the project's health
-// at the time of writing and includes a rich-text body with the update content.
+// A status update posted to a project. Project updates communicate progress, health, and blockers to stakeholders. Each update captures the project's health at the time of writing and includes a rich-text body with the update content.
 type projectUpdatesProjectUpdatesProjectUpdateConnectionNodesProjectUpdate struct {
 	TopLevelProjectUpdateSummaryFields `json:"-"`
 }
@@ -61978,9 +59659,7 @@ func (v *projectUpdatesResponse) GetProjectUpdates() projectUpdatesProjectUpdate
 // project_attachmentsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_attachmentsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62020,9 +59699,7 @@ func (v *project_attachmentsProjectAttachmentsProjectAttachmentConnection) GetPa
 // project_attachmentsProjectAttachmentsProjectAttachmentConnectionNodesProjectAttachment includes the requested fields of the GraphQL type ProjectAttachment.
 // The GraphQL type's documentation follows.
 //
-// An attachment (link, reference, or integration data) associated with a project.
-// Attachments are typically created by integrations and contain metadata for
-// rendering in the client.
+// An attachment (link, reference, or integration data) associated with a project. Attachments are typically created by integrations and contain metadata for rendering in the client.
 type project_attachmentsProjectAttachmentsProjectAttachmentConnectionNodesProjectAttachment struct {
 	ProjectAttachmentSummaryFields `json:"-"`
 }
@@ -62138,9 +59815,7 @@ func (v *project_attachmentsResponse) GetProject() project_attachmentsProject { 
 // project_commentsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_commentsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62180,11 +59855,7 @@ func (v *project_commentsProjectCommentsCommentConnection) GetPageInfo() project
 // project_commentsProjectCommentsCommentConnectionNodesComment includes the requested fields of the GraphQL type Comment.
 // The GraphQL type's documentation follows.
 //
-// A comment associated with an issue, project update, initiative update, document
-// content, post, project, or initiative. Comments support rich text (ProseMirror),
-// emoji reactions, and threaded replies via parentId. Comments can be created by
-// workspace users or by external users through integrations (e.g., Slack,
-// Intercom). Each comment belongs to exactly one parent entity.
+// A comment associated with an issue, project update, initiative update, document content, post, project, or initiative. Comments support rich text (ProseMirror), emoji reactions, and threaded replies via parentId. Comments can be created by workspace users or by external users through integrations (e.g., Slack, Intercom). Each comment belongs to exactly one parent entity.
 type project_commentsProjectCommentsCommentConnectionNodesComment struct {
 	CommentMetadataFields `json:"-"`
 }
@@ -62372,9 +60043,7 @@ func (v *project_commentsResponse) GetProject() project_commentsProject { return
 // project_documentsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_documentsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62414,10 +60083,7 @@ func (v *project_documentsProjectDocumentsDocumentConnection) GetPageInfo() proj
 // project_documentsProjectDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type project_documentsProjectDocumentsDocumentConnectionNodesDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -62557,9 +60223,7 @@ func (v *project_documentsResponse) GetProject() project_documentsProject { retu
 // project_externalLinksProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_externalLinksProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62599,11 +60263,7 @@ func (v *project_externalLinksProjectExternalLinksEntityExternalLinkConnection) 
 // project_externalLinksProjectExternalLinksEntityExternalLinkConnectionNodesEntityExternalLink includes the requested fields of the GraphQL type EntityExternalLink.
 // The GraphQL type's documentation follows.
 //
-// An external link attached to a Linear entity such as an initiative, project,
-// team, release, or cycle. External links provide a way to reference related
-// resources outside of Linear (e.g., documentation, design files, dashboards)
-// directly from the entity's resources section. Each link has a URL, display
-// label, and sort order within its parent entity.
+// An external link attached to a Linear entity such as an initiative, project, team, release, or cycle. External links provide a way to reference related resources outside of Linear (e.g., documentation, design files, dashboards) directly from the entity's resources section. Each link has a URL, display label, and sort order within its parent entity.
 type project_externalLinksProjectExternalLinksEntityExternalLinkConnectionNodesEntityExternalLink struct {
 	EntityExternalLinkSummaryFields `json:"-"`
 }
@@ -62759,9 +60419,7 @@ func (v *project_externalLinksResponse) GetProject() project_externalLinksProjec
 // project_historyProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_historyProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62801,8 +60459,7 @@ func (v *project_historyProjectHistoryProjectHistoryConnection) GetPageInfo() pr
 // project_historyProjectHistoryProjectHistoryConnectionNodesProjectHistory includes the requested fields of the GraphQL type ProjectHistory.
 // The GraphQL type's documentation follows.
 //
-// A history record associated with a project. Tracks changes to project
-// properties, status, members, teams, milestones, labels, and relationships over time.
+// A history record associated with a project. Tracks changes to project properties, status, members, teams, milestones, labels, and relationships over time.
 type project_historyProjectHistoryProjectHistoryConnectionNodesProjectHistory struct {
 	ProjectHistorySummaryFields `json:"-"`
 }
@@ -62926,9 +60583,7 @@ func (v *project_historyResponse) GetProject() project_historyProject { return v
 // project_initiativeToProjectsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_initiativeToProjectsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -62968,9 +60623,7 @@ func (v *project_initiativeToProjectsProjectInitiativeToProjectsInitiativeToProj
 // project_initiativeToProjectsProjectInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject includes the requested fields of the GraphQL type InitiativeToProject.
 // The GraphQL type's documentation follows.
 //
-// The join entity linking a project to an initiative. A project can only appear
-// once in an initiative hierarchy -- it cannot be on both an initiative and one of
-// its ancestor or descendant initiatives.
+// The join entity linking a project to an initiative. A project can only appear once in an initiative hierarchy -- it cannot be on both an initiative and one of its ancestor or descendant initiatives.
 type project_initiativeToProjectsProjectInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject struct {
 	InitiativeToProjectSummaryFields `json:"-"`
 }
@@ -63104,9 +60757,7 @@ func (v *project_initiativeToProjectsResponse) GetProject() project_initiativeTo
 // project_initiativesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_initiativesProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -63146,9 +60797,7 @@ func (v *project_initiativesProjectInitiativesInitiativeConnection) GetPageInfo(
 // project_initiativesProjectInitiativesInitiativeConnectionNodesInitiative includes the requested fields of the GraphQL type Initiative.
 // The GraphQL type's documentation follows.
 //
-// An initiative is a high-level strategic grouping of projects toward a business
-// goal. Initiatives can contain multiple projects, have their own status updates
-// and health tracking, and can be organized hierarchically with parent-child relationships.
+// An initiative is a high-level strategic grouping of projects toward a business goal. Initiatives can contain multiple projects, have their own status updates and health tracking, and can be organized hierarchically with parent-child relationships.
 type project_initiativesProjectInitiativesInitiativeConnectionNodesInitiative struct {
 	InitiativeSummaryFields `json:"-"`
 }
@@ -63288,9 +60937,7 @@ func (v *project_initiativesResponse) GetProject() project_initiativesProject { 
 // project_inverseRelationsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_inverseRelationsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -63330,8 +60977,7 @@ func (v *project_inverseRelationsProjectInverseRelationsProjectRelationConnectio
 // project_inverseRelationsProjectInverseRelationsProjectRelationConnectionNodesProjectRelation includes the requested fields of the GraphQL type ProjectRelation.
 // The GraphQL type's documentation follows.
 //
-// A dependency relation between two projects. Relations can optionally be anchored
-// to specific milestones within each project, allowing fine-grained dependency tracking.
+// A dependency relation between two projects. Relations can optionally be anchored to specific milestones within each project, allowing fine-grained dependency tracking.
 type project_inverseRelationsProjectInverseRelationsProjectRelationConnectionNodesProjectRelation struct {
 	ProjectRelationSummaryFields `json:"-"`
 }
@@ -63505,9 +61151,7 @@ func (v *project_inverseRelationsResponse) GetProject() project_inverseRelations
 // project_issuesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_issuesProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -63547,12 +61191,7 @@ func (v *project_issuesProjectIssuesIssueConnection) GetPageInfo() project_issue
 // project_issuesProjectIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type project_issuesProjectIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -63716,9 +61355,7 @@ func (v *project_issuesResponse) GetProject() project_issuesProject { return v.P
 // project_labelsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_labelsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -63758,9 +61395,7 @@ func (v *project_labelsProjectLabelsProjectLabelConnection) GetPageInfo() projec
 // project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
 //
-// A label that can be applied to projects for categorization. Project labels are
-// workspace-level and can be organized into groups with a parent-child hierarchy.
-// Only child labels (not group labels) can be directly applied to projects.
+// A label that can be applied to projects for categorization. Project labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to projects.
 type project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel struct {
 	ProjectLabelSummaryFields `json:"-"`
 }
@@ -63932,9 +61567,7 @@ func (v *project_labelsResponse) GetProject() project_labelsProject { return v.P
 // project_membersProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_membersProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -63974,10 +61607,7 @@ func (v *project_membersProjectMembersUserConnection) GetPageInfo() project_memb
 // project_membersProjectMembersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type project_membersProjectMembersUserConnectionNodesUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64033,9 +61663,7 @@ func (v *project_membersResponse) GetProject() project_membersProject { return v
 // project_needsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_needsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64075,11 +61703,7 @@ func (v *project_needsProjectNeedsCustomerNeedConnection) GetPageInfo() project_
 // project_needsProjectNeedsCustomerNeedConnectionNodesCustomerNeed includes the requested fields of the GraphQL type CustomerNeed.
 // The GraphQL type's documentation follows.
 //
-// A customer need represents a specific product request or piece of feedback from
-// a customer. Customer needs serve as the bridge between customer feedback and
-// engineering work by linking a customer to an issue or project, optionally with a
-// comment or attachment providing additional context. Needs can be created
-// manually, from integrations, or from intake sources like email.
+// A customer need represents a specific product request or piece of feedback from a customer. Customer needs serve as the bridge between customer feedback and engineering work by linking a customer to an issue or project, optionally with a comment or attachment providing additional context. Needs can be created manually, from integrations, or from intake sources like email.
 type project_needsProjectNeedsCustomerNeedConnectionNodesCustomerNeed struct {
 	CustomerNeedSummaryFields `json:"-"`
 }
@@ -64243,9 +61867,7 @@ func (v *project_needsResponse) GetProject() project_needsProject { return v.Pro
 // project_projectMilestonesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_projectMilestonesProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64285,9 +61907,7 @@ func (v *project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnec
 // project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone includes the requested fields of the GraphQL type ProjectMilestone.
 // The GraphQL type's documentation follows.
 //
-// A milestone within a project. Milestones break a project into phases or target
-// checkpoints, each with its own target date and set of issues. Issues can be
-// assigned to a milestone to track progress toward that checkpoint.
+// A milestone within a project. Milestones break a project into phases or target checkpoints, each with its own target date and set of issues. Issues can be assigned to a milestone to track progress toward that checkpoint.
 type project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone struct {
 	ProjectMilestoneSummaryFields `json:"-"`
 }
@@ -64421,9 +62041,7 @@ func (v *project_projectMilestonesResponse) GetProject() project_projectMileston
 // project_projectUpdatesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_projectUpdatesProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64463,9 +62081,7 @@ func (v *project_projectUpdatesProjectProjectUpdatesProjectUpdateConnection) Get
 // project_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodesProjectUpdate includes the requested fields of the GraphQL type ProjectUpdate.
 // The GraphQL type's documentation follows.
 //
-// A status update posted to a project. Project updates communicate progress,
-// health, and blockers to stakeholders. Each update captures the project's health
-// at the time of writing and includes a rich-text body with the update content.
+// A status update posted to a project. Project updates communicate progress, health, and blockers to stakeholders. Each update captures the project's health at the time of writing and includes a rich-text body with the update content.
 type project_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodesProjectUpdate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64515,10 +62131,7 @@ func (v *project_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodes
 // project_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodesProjectUpdateUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type project_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodesProjectUpdateUser struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64573,9 +62186,7 @@ func (v *project_projectUpdatesResponse) GetProject() project_projectUpdatesProj
 // project_relationsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_relationsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64615,8 +62226,7 @@ func (v *project_relationsProjectRelationsProjectRelationConnection) GetPageInfo
 // project_relationsProjectRelationsProjectRelationConnectionNodesProjectRelation includes the requested fields of the GraphQL type ProjectRelation.
 // The GraphQL type's documentation follows.
 //
-// A dependency relation between two projects. Relations can optionally be anchored
-// to specific milestones within each project, allowing fine-grained dependency tracking.
+// A dependency relation between two projects. Relations can optionally be anchored to specific milestones within each project, allowing fine-grained dependency tracking.
 type project_relationsProjectRelationsProjectRelationConnectionNodesProjectRelation struct {
 	ProjectRelationSummaryFields `json:"-"`
 }
@@ -64788,9 +62398,7 @@ func (v *project_relationsResponse) GetProject() project_relationsProject { retu
 // project_teamsProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type project_teamsProject struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -64828,11 +62436,7 @@ func (v *project_teamsProjectTeamsTeamConnection) GetPageInfo() project_teamsPro
 // project_teamsProjectTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type project_teamsProjectTeamsTeamConnectionNodesTeam struct {
 	TeamSummaryFields `json:"-"`
 }
@@ -64968,9 +62572,7 @@ func (v *projectsProjectsProjectConnection) GetPageInfo() projectsProjectsProjec
 // projectsProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type projectsProjectsProjectConnectionNodesProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -65186,8 +62788,7 @@ func (v *rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayl
 
 // rateLimitStatusResponse is returned by rateLimitStatus on success.
 type rateLimitStatusResponse struct {
-	// The current rate limit status for the authenticated client, including
-	// remaining quota and reset timing for each limit type.
+	// The current rate limit status for the authenticated client, including remaining quota and reset timing for each limit type.
 	RateLimitStatus rateLimitStatusRateLimitStatusRateLimitPayload `json:"rateLimitStatus"`
 }
 
@@ -65517,10 +63118,7 @@ func (v *releaseNotesResponse) GetReleaseNotes() releaseNotesReleaseNotesRelease
 // releasePipelineReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type releasePipelineReleasePipeline struct {
 	ReleasePipelineSummaryFields `json:"-"`
 }
@@ -65694,10 +63292,7 @@ func (v *releasePipelineResponse) GetReleasePipeline() releasePipelineReleasePip
 // releasePipeline_releasesReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type releasePipeline_releasesReleasePipeline struct {
 	// Releases associated with this pipeline.
 	Releases releasePipeline_releasesReleasePipelineReleasesReleaseConnection `json:"releases"`
@@ -65727,11 +63322,7 @@ func (v *releasePipeline_releasesReleasePipelineReleasesReleaseConnection) GetPa
 // releasePipeline_releasesReleasePipelineReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type releasePipeline_releasesReleasePipelineReleasesReleaseConnectionNodesRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -65985,10 +63576,7 @@ func (v *releasePipeline_releasesResponse) GetReleasePipeline() releasePipeline_
 // releasePipeline_stagesReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type releasePipeline_stagesReleasePipeline struct {
 	// Stages associated with this pipeline.
 	Stages releasePipeline_stagesReleasePipelineStagesReleaseStageConnection `json:"stages"`
@@ -66018,10 +63606,7 @@ func (v *releasePipeline_stagesReleasePipelineStagesReleaseStageConnection) GetP
 // releasePipeline_stagesReleasePipelineStagesReleaseStageConnectionNodesReleaseStage includes the requested fields of the GraphQL type ReleaseStage.
 // The GraphQL type's documentation follows.
 //
-// A stage within a release pipeline that represents a phase in the release
-// lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress
-// through stages as they move toward production. Started-type stages can be frozen
-// to prevent new issues from being automatically synced into releases at that stage.
+// A stage within a release pipeline that represents a phase in the release lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress through stages as they move toward production. Started-type stages can be frozen to prevent new issues from being automatically synced into releases at that stage.
 type releasePipeline_stagesReleasePipelineStagesReleaseStageConnectionNodesReleaseStage struct {
 	ReleaseStageSummaryFields `json:"-"`
 }
@@ -66179,10 +63764,7 @@ func (v *releasePipeline_stagesResponse) GetReleasePipeline() releasePipeline_st
 // releasePipeline_teamsReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type releasePipeline_teamsReleasePipeline struct {
 	// Teams associated with this pipeline.
 	Teams releasePipeline_teamsReleasePipelineTeamsTeamConnection `json:"teams"`
@@ -66212,11 +63794,7 @@ func (v *releasePipeline_teamsReleasePipelineTeamsTeamConnection) GetPageInfo() 
 // releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam struct {
 	TeamSummaryFields `json:"-"`
 }
@@ -66358,10 +63936,7 @@ func (v *releasePipelinesReleasePipelinesReleasePipelineConnection) GetPageInfo(
 // releasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type releasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline struct {
 	ReleasePipelineSummaryFields `json:"-"`
 }
@@ -66559,11 +64134,7 @@ func (v *releasePipelinesResponse) GetReleasePipelines() releasePipelinesRelease
 // releaseRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type releaseRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -66761,11 +64332,7 @@ func (v *releaseResponse) GetRelease() releaseRelease { return v.Release }
 // releaseSearchReleaseSearchRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type releaseSearchReleaseSearchRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -66979,9 +64546,7 @@ func (v *releaseSearchReleaseSearchRelease) __premarshalJSON() (*__premarshalrel
 
 // releaseSearchResponse is returned by releaseSearch on success.
 type releaseSearchResponse struct {
-	// Search releases with optional text matching against name, version, and
-	// pipeline name. When no search term is provided, returns releases ordered by
-	// stage priority (started > planned > completed > canceled).
+	// Search releases with optional text matching against name, version, and pipeline name. When no search term is provided, returns releases ordered by stage priority (started > planned > completed > canceled).
 	ReleaseSearch []releaseSearchReleaseSearchRelease `json:"releaseSearch"`
 }
 
@@ -66993,10 +64558,7 @@ func (v *releaseSearchResponse) GetReleaseSearch() []releaseSearchReleaseSearchR
 // releaseStageReleaseStage includes the requested fields of the GraphQL type ReleaseStage.
 // The GraphQL type's documentation follows.
 //
-// A stage within a release pipeline that represents a phase in the release
-// lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress
-// through stages as they move toward production. Started-type stages can be frozen
-// to prevent new issues from being automatically synced into releases at that stage.
+// A stage within a release pipeline that represents a phase in the release lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress through stages as they move toward production. Started-type stages can be frozen to prevent new issues from being automatically synced into releases at that stage.
 type releaseStageReleaseStage struct {
 	ReleaseStageSummaryFields `json:"-"`
 }
@@ -67124,10 +64686,7 @@ func (v *releaseStageResponse) GetReleaseStage() releaseStageReleaseStage { retu
 // releaseStage_releasesReleaseStage includes the requested fields of the GraphQL type ReleaseStage.
 // The GraphQL type's documentation follows.
 //
-// A stage within a release pipeline that represents a phase in the release
-// lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress
-// through stages as they move toward production. Started-type stages can be frozen
-// to prevent new issues from being automatically synced into releases at that stage.
+// A stage within a release pipeline that represents a phase in the release lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress through stages as they move toward production. Started-type stages can be frozen to prevent new issues from being automatically synced into releases at that stage.
 type releaseStage_releasesReleaseStage struct {
 	// Releases associated with this stage.
 	Releases releaseStage_releasesReleaseStageReleasesReleaseConnection `json:"releases"`
@@ -67157,11 +64716,7 @@ func (v *releaseStage_releasesReleaseStageReleasesReleaseConnection) GetPageInfo
 // releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -67431,10 +64986,7 @@ func (v *releaseStagesReleaseStagesReleaseStageConnection) GetPageInfo() release
 // releaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage includes the requested fields of the GraphQL type ReleaseStage.
 // The GraphQL type's documentation follows.
 //
-// A stage within a release pipeline that represents a phase in the release
-// lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress
-// through stages as they move toward production. Started-type stages can be frozen
-// to prevent new issues from being automatically synced into releases at that stage.
+// A stage within a release pipeline that represents a phase in the release lifecycle (e.g., Planned, In Progress, Completed, Canceled). Releases progress through stages as they move toward production. Started-type stages can be frozen to prevent new issues from being automatically synced into releases at that stage.
 type releaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage struct {
 	ReleaseStageSummaryFields `json:"-"`
 }
@@ -67592,11 +65144,7 @@ func (v *releaseStagesResponse) GetReleaseStages() releaseStagesReleaseStagesRel
 // release_documentsRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type release_documentsRelease struct {
 	// Documents associated with the release.
 	Documents release_documentsReleaseDocumentsDocumentConnection `json:"documents"`
@@ -67626,10 +65174,7 @@ func (v *release_documentsReleaseDocumentsDocumentConnection) GetPageInfo() rele
 // release_documentsReleaseDocumentsDocumentConnectionNodesDocument includes the requested fields of the GraphQL type Document.
 // The GraphQL type's documentation follows.
 //
-// A rich-text document that lives within a project, initiative, team, issue,
-// release, or cycle. Documents support collaborative editing via ProseMirror/Yjs
-// and store their content in a separate DocumentContent entity. Each document is
-// associated with exactly one parent entity.
+// A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 type release_documentsReleaseDocumentsDocumentConnectionNodesDocument struct {
 	DocumentSummaryFields `json:"-"`
 }
@@ -67769,11 +65314,7 @@ func (v *release_documentsResponse) GetRelease() release_documentsRelease { retu
 // release_historyRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type release_historyRelease struct {
 	// History entries associated with the release.
 	History release_historyReleaseHistoryReleaseHistoryConnection `json:"history"`
@@ -67803,10 +65344,7 @@ func (v *release_historyReleaseHistoryReleaseHistoryConnection) GetPageInfo() re
 // release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory includes the requested fields of the GraphQL type ReleaseHistory.
 // The GraphQL type's documentation follows.
 //
-// A release history record containing a batch of chronologically ordered change
-// events for a release. Each record holds up to 30 entries, and new records are
-// created once the current record is full and a time window has elapsed. Tracks
-// changes to name, description, version, stage, dates, pipeline, and archive status.
+// A release history record containing a batch of chronologically ordered change events for a release. Each record holds up to 30 entries, and new records are created once the current record is full and a time window has elapsed. Tracks changes to name, description, version, stage, dates, pipeline, and archive status.
 type release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory struct {
 	ReleaseHistorySummaryFields `json:"-"`
 }
@@ -67930,11 +65468,7 @@ func (v *release_historyResponse) GetRelease() release_historyRelease { return v
 // release_issuesRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type release_issuesRelease struct {
 	// Issues associated with the release.
 	Issues release_issuesReleaseIssuesIssueConnection `json:"issues"`
@@ -67964,12 +65498,7 @@ func (v *release_issuesReleaseIssuesIssueConnection) GetPageInfo() release_issue
 // release_issuesReleaseIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type release_issuesReleaseIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -68133,11 +65662,7 @@ func (v *release_issuesResponse) GetRelease() release_issuesRelease { return v.R
 // release_linksRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type release_linksRelease struct {
 	// Links associated with the release.
 	Links release_linksReleaseLinksEntityExternalLinkConnection `json:"links"`
@@ -68167,11 +65692,7 @@ func (v *release_linksReleaseLinksEntityExternalLinkConnection) GetPageInfo() re
 // release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink includes the requested fields of the GraphQL type EntityExternalLink.
 // The GraphQL type's documentation follows.
 //
-// An external link attached to a Linear entity such as an initiative, project,
-// team, release, or cycle. External links provide a way to reference related
-// resources outside of Linear (e.g., documentation, design files, dashboards)
-// directly from the entity's resources section. Each link has a URL, display
-// label, and sort order within its parent entity.
+// An external link attached to a Linear entity such as an initiative, project, team, release, or cycle. External links provide a way to reference related resources outside of Linear (e.g., documentation, design files, dashboards) directly from the entity's resources section. Each link has a URL, display label, and sort order within its parent entity.
 type release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink struct {
 	EntityExternalLinkSummaryFields `json:"-"`
 }
@@ -68343,11 +65864,7 @@ func (v *releasesReleasesReleaseConnection) GetPageInfo() releasesReleasesReleas
 // releasesReleasesReleaseConnectionNodesRelease includes the requested fields of the GraphQL type Release.
 // The GraphQL type's documentation follows.
 //
-// A release that bundles issues together for a software deployment or version.
-// Releases belong to a release pipeline and progress through stages (e.g.,
-// planned, started, completed, canceled). Issues are associated with releases via
-// the IssueToRelease join entity, and the release tracks lifecycle timestamps such
-// as when it was started, completed, or canceled.
+// A release that bundles issues together for a software deployment or version. Releases belong to a release pipeline and progress through stages (e.g., planned, started, completed, canceled). Issues are associated with releases via the IssueToRelease join entity, and the release tracks lifecycle timestamps such as when it was started, completed, or canceled.
 type releasesReleasesReleaseConnectionNodesRelease struct {
 	ReleaseSummaryFields `json:"-"`
 }
@@ -68604,8 +66121,7 @@ func (v *roadmapResponse) GetRoadmap() roadmapRoadmap { return v.Roadmap }
 // roadmapRoadmap includes the requested fields of the GraphQL type Roadmap.
 // The GraphQL type's documentation follows.
 //
-// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
-// supersedes this entity and provides richer hierarchy and tracking capabilities.
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which supersedes this entity and provides richer hierarchy and tracking capabilities.
 type roadmapRoadmap struct {
 	RoadmapSummaryFields `json:"-"`
 }
@@ -69003,8 +66519,7 @@ func (v *roadmap_projectsResponse) GetRoadmap() roadmap_projectsRoadmap { return
 // roadmap_projectsRoadmap includes the requested fields of the GraphQL type Roadmap.
 // The GraphQL type's documentation follows.
 //
-// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
-// supersedes this entity and provides richer hierarchy and tracking capabilities.
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which supersedes this entity and provides richer hierarchy and tracking capabilities.
 type roadmap_projectsRoadmap struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -69044,9 +66559,7 @@ func (v *roadmap_projectsRoadmapProjectsProjectConnection) GetPageInfo() roadmap
 // roadmap_projectsRoadmapProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type roadmap_projectsRoadmapProjectsProjectConnectionNodesProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -69210,8 +66723,7 @@ func (v *roadmapsRoadmapsRoadmapConnection) GetPageInfo() roadmapsRoadmapsRoadma
 // roadmapsRoadmapsRoadmapConnectionNodesRoadmap includes the requested fields of the GraphQL type Roadmap.
 // The GraphQL type's documentation follows.
 //
-// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which
-// supersedes this entity and provides richer hierarchy and tracking capabilities.
+// [Deprecated] A roadmap for grouping projects. Use Initiative instead, which supersedes this entity and provides richer hierarchy and tracking capabilities.
 type roadmapsRoadmapsRoadmapConnectionNodesRoadmap struct {
 	RoadmapSummaryFields `json:"-"`
 }
@@ -69369,9 +66881,7 @@ func (v *roadmapsRoadmapsRoadmapConnectionPageInfo) GetEndCursor() *string { ret
 
 // searchDocumentsResponse is returned by searchDocuments on success.
 type searchDocumentsResponse struct {
-	// Search documents by text query using full-text and vector search. Results are
-	// ranked by relevance unless an orderBy parameter is specified. Rate-limited to
-	// 30 requests per minute.
+	// Search documents by text query using full-text and vector search. Results are ranked by relevance unless an orderBy parameter is specified. Rate-limited to 30 requests per minute.
 	SearchDocuments searchDocumentsSearchDocumentsDocumentSearchPayload `json:"searchDocuments"`
 }
 
@@ -69549,9 +67059,7 @@ func (v *searchDocumentsSearchDocumentsDocumentSearchPayloadPageInfo) GetEndCurs
 
 // searchIssuesResponse is returned by searchIssues on success.
 type searchIssuesResponse struct {
-	// Search issues by text query using full-text and vector search. Results are
-	// ranked by relevance unless an orderBy parameter is specified. Supports
-	// optional issue filters and comment inclusion. Rate-limited to 30 requests per minute.
+	// Search issues by text query using full-text and vector search. Results are ranked by relevance unless an orderBy parameter is specified. Supports optional issue filters and comment inclusion. Rate-limited to 30 requests per minute.
 	SearchIssues searchIssuesSearchIssuesIssueSearchPayload `json:"searchIssues"`
 }
 
@@ -69703,9 +67211,7 @@ func (v *searchIssuesSearchIssuesIssueSearchPayloadPageInfo) GetEndCursor() *str
 
 // searchProjectsResponse is returned by searchProjects on success.
 type searchProjectsResponse struct {
-	// Search projects by text query using full-text and vector search. Results are
-	// ranked by relevance unless an orderBy parameter is specified. Rate-limited to
-	// 30 requests per minute.
+	// Search projects by text query using full-text and vector search. Results are ranked by relevance unless an orderBy parameter is specified. Rate-limited to 30 requests per minute.
 	SearchProjects searchProjectsSearchProjectsProjectSearchPayload `json:"searchProjects"`
 }
 
@@ -69859,10 +67365,7 @@ func (v *searchProjectsSearchProjectsProjectSearchPayloadPageInfo) GetEndCursor(
 
 // semanticSearchResponse is returned by semanticSearch on success.
 type semanticSearchResponse struct {
-	// Search for issues, projects, initiatives, and documents using natural
-	// language. Uses vector-based semantic search with optional full-text search and
-	// reranking. Results can be filtered by type and by entity-specific filters.
-	// Rate-limited to 30 requests per minute.
+	// Search for issues, projects, initiatives, and documents using natural language. Uses vector-based semantic search with optional full-text search and reranking. Results can be filtered by type and by entity-specific filters. Rate-limited to 30 requests per minute.
 	SemanticSearch semanticSearchSemanticSearchSemanticSearchPayload `json:"semanticSearch"`
 }
 
@@ -69888,9 +67391,7 @@ func (v *semanticSearchSemanticSearchSemanticSearchPayload) GetResults() []seman
 // semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult includes the requested fields of the GraphQL type SemanticSearchResult.
 // The GraphQL type's documentation follows.
 //
-// A reference to an entity returned by semantic search, containing its type and
-// ID. Resolve the specific entity using the type-specific field resolvers (issue,
-// project, initiative, document).
+// A reference to an entity returned by semantic search, containing its type and ID. Resolve the specific entity using the type-specific field resolvers (issue, project, initiative, document).
 type semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult struct {
 	SemanticSearchResultSummaryFields `json:"-"`
 }
@@ -70104,11 +67605,7 @@ func (v *teamEstimateConfigResponse) GetTeam() teamEstimateConfigTeam { return v
 // teamEstimateConfigTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type teamEstimateConfigTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -70143,10 +67640,7 @@ func (v *teamMembershipResponse) GetTeamMembership() teamMembershipTeamMembershi
 // teamMembershipTeamMembership includes the requested fields of the GraphQL type TeamMembership.
 // The GraphQL type's documentation follows.
 //
-// A join entity that defines a user's membership in a team. Each membership record
-// links a user to a team and tracks whether the user is a team owner. Users can be
-// members of multiple teams, and their memberships determine which teams' issues
-// and resources they can access.
+// A join entity that defines a user's membership in a team. Each membership record links a user to a team and tracks whether the user is a team owner. Users can be members of multiple teams, and their memberships determine which teams' issues and resources they can access.
 type teamMembershipTeamMembership struct {
 	TeamMembershipSummaryFields `json:"-"`
 }
@@ -70282,10 +67776,7 @@ func (v *teamMembershipsTeamMembershipsTeamMembershipConnection) GetPageInfo() t
 // teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
 // The GraphQL type's documentation follows.
 //
-// A join entity that defines a user's membership in a team. Each membership record
-// links a user to a team and tracks whether the user is a team owner. Users can be
-// members of multiple teams, and their memberships determine which teams' issues
-// and resources they can access.
+// A join entity that defines a user's membership in a team. Each membership record links a user to a team and tracks whether the user is a team owner. Users can be members of multiple teams, and their memberships determine which teams' issues and resources they can access.
 type teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
 	TeamMembershipSummaryFields `json:"-"`
 }
@@ -70425,11 +67916,7 @@ func (v *teamResponse) GetTeam() teamTeam { return v.Team }
 // teamTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type teamTeam struct {
 	TeamSummaryFields `json:"-"`
 }
@@ -70525,11 +68012,7 @@ func (v *team_cyclesResponse) GetTeam() team_cyclesTeam { return v.Team }
 // team_cyclesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_cyclesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -70572,11 +68055,7 @@ func (v *team_cyclesTeamCyclesCycleConnection) GetPageInfo() team_cyclesTeamCycl
 // team_cyclesTeamCyclesCycleConnectionNodesCycle includes the requested fields of the GraphQL type Cycle.
 // The GraphQL type's documentation follows.
 //
-// A time-boxed iteration (similar to a sprint) used for planning and tracking
-// work. Cycles belong to a team and have defined start and end dates. Issues are
-// assigned to cycles for time-based planning, and progress is tracked via
-// completed, in-progress, and total scope. Cycles are automatically completed when
-// their end date passes, and uncompleted issues can be carried over to the next cycle.
+// A time-boxed iteration (similar to a sprint) used for planning and tracking work. Cycles belong to a team and have defined start and end dates. Issues are assigned to cycles for time-based planning, and progress is tracked via completed, in-progress, and total scope. Cycles are automatically completed when their end date passes, and uncompleted issues can be carried over to the next cycle.
 type team_cyclesTeamCyclesCycleConnectionNodesCycle struct {
 	CycleSummaryFields `json:"-"`
 }
@@ -70720,11 +68199,7 @@ func (v *team_gitAutomationStatesResponse) GetTeam() team_gitAutomationStatesTea
 // team_gitAutomationStatesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_gitAutomationStatesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -70769,11 +68244,7 @@ func (v *team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnec
 // team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState includes the requested fields of the GraphQL type GitAutomationState.
 // The GraphQL type's documentation follows.
 //
-// A Git automation rule that automatically transitions issues to a specified
-// workflow state when a Git event occurs (e.g., when a PR is opened, move the
-// linked issue to 'In Review'). Each rule is scoped to a team and optionally to a
-// specific target branch. When no target branch is specified, the rule acts as the
-// default for all branches. Target-branch-specific rules override the defaults.
+// A Git automation rule that automatically transitions issues to a specified workflow state when a Git event occurs (e.g., when a PR is opened, move the linked issue to 'In Review'). Each rule is scoped to a team and optionally to a specific target branch. When no target branch is specified, the rule acts as the default for all branches. Target-branch-specific rules override the defaults.
 type team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState struct {
 	GitAutomationStateSummaryFields `json:"-"`
 }
@@ -70905,11 +68376,7 @@ func (v *team_issuesResponse) GetTeam() team_issuesTeam { return v.Team }
 // team_issuesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_issuesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -70952,12 +68419,7 @@ func (v *team_issuesTeamIssuesIssueConnection) GetPageInfo() team_issuesTeamIssu
 // team_issuesTeamIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type team_issuesTeamIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -71117,11 +68579,7 @@ func (v *team_labelsResponse) GetTeam() team_labelsTeam { return v.Team }
 // team_labelsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_labelsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -71164,11 +68622,7 @@ func (v *team_labelsTeamLabelsIssueLabelConnection) GetPageInfo() team_labelsTea
 // team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel includes the requested fields of the GraphQL type IssueLabel.
 // The GraphQL type's documentation follows.
 //
-// Labels that can be associated with issues. Labels help categorize and filter
-// issues across a workspace. They can be workspace-level (shared across all teams)
-// or team-scoped. Labels have a color for visual identification and can be
-// organized hierarchically into groups, where a parent label acts as a group
-// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+// Labels that can be associated with issues. Labels help categorize and filter issues across a workspace. They can be workspace-level (shared across all teams) or team-scoped. Labels have a color for visual identification and can be organized hierarchically into groups, where a parent label acts as a group containing child labels. Labels may also be inherited from parent teams to sub-teams.
 type team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel struct {
 	IssueLabelSummaryFields `json:"-"`
 }
@@ -71292,11 +68746,7 @@ func (v *team_membersResponse) GetTeam() team_membersTeam { return v.Team }
 // team_membersTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_membersTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -71339,10 +68789,7 @@ func (v *team_membersTeamMembersUserConnection) GetPageInfo() team_membersTeamMe
 // team_membersTeamMembersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type team_membersTeamMembersUserConnectionNodesUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -71470,11 +68917,7 @@ func (v *team_membershipsResponse) GetTeam() team_membershipsTeam { return v.Tea
 // team_membershipsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_membershipsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -71519,10 +68962,7 @@ func (v *team_membershipsTeamMembershipsTeamMembershipConnection) GetPageInfo() 
 // team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
 // The GraphQL type's documentation follows.
 //
-// A join entity that defines a user's membership in a team. Each membership record
-// links a user to a team and tracks whether the user is a team owner. Users can be
-// members of multiple teams, and their memberships determine which teams' issues
-// and resources they can access.
+// A join entity that defines a user's membership in a team. Each membership record links a user to a team and tracks whether the user is a team owner. Users can be members of multiple teams, and their memberships determine which teams' issues and resources they can access.
 type team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
 	TeamMembershipSummaryFields `json:"-"`
 }
@@ -71662,11 +69102,7 @@ func (v *team_projectsResponse) GetTeam() team_projectsTeam { return v.Team }
 // team_projectsTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_projectsTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -71711,9 +69147,7 @@ func (v *team_projectsTeamProjectsProjectConnection) GetPageInfo() team_projects
 // team_projectsTeamProjectsProjectConnectionNodesProject includes the requested fields of the GraphQL type Project.
 // The GraphQL type's documentation follows.
 //
-// A project is a collection of issues working toward a shared goal. Projects have
-// start and target dates, milestones, status tracking, and progress metrics. They
-// can span multiple teams and be grouped under initiatives.
+// A project is a collection of issues working toward a shared goal. Projects have start and target dates, milestones, status tracking, and progress metrics. They can span multiple teams and be grouped under initiatives.
 type team_projectsTeamProjectsProjectConnectionNodesProject struct {
 	ProjectSummaryFields `json:"-"`
 }
@@ -71861,11 +69295,7 @@ func (v *team_releasePipelinesResponse) GetTeam() team_releasePipelinesTeam { re
 // team_releasePipelinesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_releasePipelinesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -71910,10 +69340,7 @@ func (v *team_releasePipelinesTeamReleasePipelinesReleasePipelineConnection) Get
 // team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline includes the requested fields of the GraphQL type ReleasePipeline.
 // The GraphQL type's documentation follows.
 //
-// A release pipeline that defines a release workflow with ordered stages.
-// Pipelines can be continuous (each sync creates a completed release) or scheduled
-// (issues accumulate in a started release that is explicitly completed). Pipelines
-// are associated with teams and can filter commits by file path patterns.
+// A release pipeline that defines a release workflow with ordered stages. Pipelines can be continuous (each sync creates a completed release) or scheduled (issues accumulate in a started release that is explicitly completed). Pipelines are associated with teams and can filter commits by file path patterns.
 type team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline struct {
 	ReleasePipelineSummaryFields `json:"-"`
 }
@@ -72109,11 +69536,7 @@ func (v *team_statesResponse) GetTeam() team_statesTeam { return v.Team }
 // team_statesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_statesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -72156,13 +69579,7 @@ func (v *team_statesTeamStatesWorkflowStateConnection) GetPageInfo() team_states
 // team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState struct {
 	WorkflowStateSummaryFields `json:"-"`
 }
@@ -72286,11 +69703,7 @@ func (v *team_templatesResponse) GetTeam() team_templatesTeam { return v.Team }
 // team_templatesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type team_templatesTeam struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -72335,10 +69748,7 @@ func (v *team_templatesTeamTemplatesTemplateConnection) GetPageInfo() team_templ
 // team_templatesTeamTemplatesTemplateConnectionNodesTemplate includes the requested fields of the GraphQL type Template.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type team_templatesTeamTemplatesTemplateConnectionNodesTemplate struct {
 	TemplateSummaryFields `json:"-"`
 }
@@ -72532,10 +69942,7 @@ func (v *team_templatesTeamTemplatesTemplateConnectionPageInfo) GetEndCursor() *
 
 // teams_listResponse is returned by teams_list on success.
 type teams_listResponse struct {
-	// All teams whose issues the user can access. This includes public teams and
-	// private teams the user is a member of. This may differ from
-	// `administrableTeams`, which returns teams whose settings the user can change
-	// but whose issues they don't necessarily have access to.
+	// All teams whose issues the user can access. This includes public teams and private teams the user is a member of. This may differ from `administrableTeams`, which returns teams whose settings the user can change but whose issues they don't necessarily have access to.
 	Teams teams_listTeamsTeamConnection `json:"teams"`
 }
 
@@ -72561,11 +69968,7 @@ func (v *teams_listTeamsTeamConnection) GetPageInfo() teams_listTeamsTeamConnect
 // teams_listTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type teams_listTeamsTeamConnectionNodesTeam struct {
 	TeamSummaryFields `json:"-"`
 }
@@ -72679,18 +70082,13 @@ func (v *templateContentResponse) GetTemplate() templateContentTemplate { return
 // templateContentTemplate includes the requested fields of the GraphQL type Template.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type templateContentTemplate struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
 	// The name of the template.
 	Name string `json:"name"`
-	// The template data as a JSON-encoded string containing the pre-filled
-	// attributes for the entity type (e.g., issue fields, project configuration, or
-	// document content).
+	// The template data as a JSON-encoded string containing the pre-filled attributes for the entity type (e.g., issue fields, project configuration, or document content).
 	TemplateData json.RawMessage `json:"templateData"`
 }
 
@@ -72715,10 +70113,7 @@ func (v *templateResponse) GetTemplate() templateTemplate { return v.Template }
 // templateTemplate includes the requested fields of the GraphQL type Template.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type templateTemplate struct {
 	TemplateSummaryFields `json:"-"`
 }
@@ -72880,10 +70275,7 @@ func (v *templatesResponse) GetTemplates() []templatesTemplatesTemplate { return
 // templatesTemplatesTemplate includes the requested fields of the GraphQL type Template.
 // The GraphQL type's documentation follows.
 //
-// A reusable template for creating issues, projects, or documents. Templates store
-// pre-filled field values and content as JSON data. They can be scoped to a
-// specific team or shared across the entire workspace. Team-scoped templates may
-// be inherited from parent teams.
+// A reusable template for creating issues, projects, or documents. Templates store pre-filled field values and content as JSON data. They can be scoped to a specific team or shared across the entire workspace. Team-scoped templates may be inherited from parent teams.
 type templatesTemplatesTemplate struct {
 	TemplateSummaryFields `json:"-"`
 }
@@ -73053,11 +70445,7 @@ func (v *timeScheduleResponse) GetTimeSchedule() timeScheduleTimeSchedule { retu
 // timeScheduleTimeSchedule includes the requested fields of the GraphQL type TimeSchedule.
 // The GraphQL type's documentation follows.
 //
-// A time-based schedule defining on-call rotations or availability windows.
-// Schedules contain a series of time entries, each specifying a user and their
-// active period. They can be synced from external services (such as PagerDuty or
-// Opsgenie) via integrations, or created manually. Schedules are used by triage
-// responsibilities to determine who should be assigned or notified when issues enter triage.
+// A time-based schedule defining on-call rotations or availability windows. Schedules contain a series of time entries, each specifying a user and their active period. They can be synced from external services (such as PagerDuty or Opsgenie) via integrations, or created manually. Schedules are used by triage responsibilities to determine who should be assigned or notified when issues enter triage.
 type timeScheduleTimeSchedule struct {
 	TimeScheduleSummaryFields `json:"-"`
 }
@@ -73201,11 +70589,7 @@ func (v *timeSchedulesTimeSchedulesTimeScheduleConnection) GetPageInfo() timeSch
 // timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule includes the requested fields of the GraphQL type TimeSchedule.
 // The GraphQL type's documentation follows.
 //
-// A time-based schedule defining on-call rotations or availability windows.
-// Schedules contain a series of time entries, each specifying a user and their
-// active period. They can be synced from external services (such as PagerDuty or
-// Opsgenie) via integrations, or created manually. Schedules are used by triage
-// responsibilities to determine who should be assigned or notified when issues enter triage.
+// A time-based schedule defining on-call rotations or availability windows. Schedules contain a series of time entries, each specifying a user and their active period. They can be synced from external services (such as PagerDuty or Opsgenie) via integrations, or created manually. Schedules are used by triage responsibilities to determine who should be assigned or notified when issues enter triage.
 type timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule struct {
 	TimeScheduleSummaryFields `json:"-"`
 }
@@ -73371,10 +70755,7 @@ func (v *triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnect
 // triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility includes the requested fields of the GraphQL type TriageResponsibility.
 // The GraphQL type's documentation follows.
 //
-// A team's triage responsibility configuration that defines how issues entering
-// triage are handled. Each team can have one triage responsibility, which
-// specifies the action to take (notify or assign) and the responsible users,
-// determined either by a manual selection of specific users or by an on-call time schedule.
+// A team's triage responsibility configuration that defines how issues entering triage are handled. Each team can have one triage responsibility, which specifies the action to take (notify or assign) and the responsible users, determined either by a manual selection of specific users or by an on-call time schedule.
 type triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility struct {
 	TriageResponsibilitySummaryFields `json:"-"`
 }
@@ -73524,10 +70905,7 @@ func (v *triageResponsibilityResponse) GetTriageResponsibility() triageResponsib
 // triageResponsibilityTriageResponsibility includes the requested fields of the GraphQL type TriageResponsibility.
 // The GraphQL type's documentation follows.
 //
-// A team's triage responsibility configuration that defines how issues entering
-// triage are handled. Each team can have one triage responsibility, which
-// specifies the action to take (notify or assign) and the responsible users,
-// determined either by a manual selection of specific users or by an on-call time schedule.
+// A team's triage responsibility configuration that defines how issues entering triage are handled. Each team can have one triage responsibility, which specifies the action to take (notify or assign) and the responsible users, determined either by a manual selection of specific users or by an on-call time schedule.
 type triageResponsibilityTriageResponsibility struct {
 	TriageResponsibilitySummaryFields `json:"-"`
 }
@@ -73659,10 +71037,7 @@ func (v *triageResponsibility_manualSelectionResponse) GetTriageResponsibility()
 // triageResponsibility_manualSelectionTriageResponsibility includes the requested fields of the GraphQL type TriageResponsibility.
 // The GraphQL type's documentation follows.
 //
-// A team's triage responsibility configuration that defines how issues entering
-// triage are handled. Each team can have one triage responsibility, which
-// specifies the action to take (notify or assign) and the responsible users,
-// determined either by a manual selection of specific users or by an on-call time schedule.
+// A team's triage responsibility configuration that defines how issues entering triage are handled. Each team can have one triage responsibility, which specifies the action to take (notify or assign) and the responsible users, determined either by a manual selection of specific users or by an on-call time schedule.
 type triageResponsibility_manualSelectionTriageResponsibility struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -73681,8 +71056,7 @@ func (v *triageResponsibility_manualSelectionTriageResponsibility) GetManualSele
 // triageResponsibility_manualSelectionTriageResponsibilityManualSelection includes the requested fields of the GraphQL type TriageResponsibilityManualSelection.
 // The GraphQL type's documentation follows.
 //
-// Manual triage responsibility configuration specifying a set of users to assign
-// triaged issues to, with optional round-robin rotation.
+// Manual triage responsibility configuration specifying a set of users to assign triaged issues to, with optional round-robin rotation.
 type triageResponsibility_manualSelectionTriageResponsibilityManualSelection struct {
 	// The set of users responsible for triage.
 	UserIds []string `json:"userIds"`
@@ -73714,10 +71088,7 @@ func (v *userSettingsResponse) GetUserSettings() userSettingsUserSettings { retu
 // userSettingsUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettingsUserSettings struct {
 	UserSettingsSummaryFields `json:"-"`
 }
@@ -73903,13 +71274,9 @@ func (v *userSettings_notificationCategoryPreferencesResponse) GetUserSettings()
 // userSettings_notificationCategoryPreferencesUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationCategoryPreferencesUserSettings struct {
-	// The user's notification category preferences, indicating which notification
-	// categories are enabled or disabled per notification channel.
+	// The user's notification category preferences, indicating which notification categories are enabled or disabled per notification channel.
 	NotificationCategoryPreferences userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences `json:"notificationCategoryPreferences"`
 }
 
@@ -73921,9 +71288,7 @@ func (v *userSettings_notificationCategoryPreferencesUserSettings) GetNotificati
 // userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences includes the requested fields of the GraphQL type NotificationCategoryPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's fully resolved notification category preferences. Each category maps to
-// channel preferences indicating whether mobile, desktop, email, and Slack
-// delivery are enabled.
+// A user's fully resolved notification category preferences. Each category maps to channel preferences indicating whether mobile, desktop, email, and Slack delivery are enabled.
 type userSettings_notificationCategoryPreferencesUserSettingsNotificationCategoryPreferences struct {
 	NotificationCategoryPreferencesFields `json:"-"`
 }
@@ -74111,13 +71476,9 @@ func (v *userSettings_notificationChannelPreferencesResponse) GetUserSettings() 
 // userSettings_notificationChannelPreferencesUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationChannelPreferencesUserSettings struct {
-	// The user's notification channel preferences, indicating which notification
-	// delivery channels (email, in-app, mobile push, Slack) are enabled.
+	// The user's notification channel preferences, indicating which notification delivery channels (email, in-app, mobile push, Slack) are enabled.
 	NotificationChannelPreferences userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences `json:"notificationChannelPreferences"`
 }
 
@@ -74129,8 +71490,7 @@ func (v *userSettings_notificationChannelPreferencesUserSettings) GetNotificatio
 // userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences includes the requested fields of the GraphQL type NotificationChannelPreferences.
 // The GraphQL type's documentation follows.
 //
-// A user's resolved notification channel preferences, indicating whether each
-// delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
+// A user's resolved notification channel preferences, indicating whether each delivery channel (mobile, desktop, email, Slack) is enabled or disabled.
 type userSettings_notificationChannelPreferencesUserSettingsNotificationChannelPreferences struct {
 	NotificationChannelPreferencesFields `json:"-"`
 }
@@ -74222,13 +71582,9 @@ func (v *userSettings_notificationDeliveryPreferencesResponse) GetUserSettings()
 // userSettings_notificationDeliveryPreferencesUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferencesUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferencesUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -74308,13 +71664,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobileResponse) GetUserSet
 // userSettings_notificationDeliveryPreferences_mobileUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobileUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -74340,8 +71692,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobileUserSettingsNotifica
 // userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobileUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	NotificationDeliveryPreferencesChannelFields `json:"-"`
 }
@@ -74417,13 +71768,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleResponse) G
 // userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -74449,8 +71796,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSetting
 // userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -74464,9 +71810,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_scheduleUserSetting
 // userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_scheduleUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	NotificationDeliveryPreferencesScheduleFields `json:"-"`
 }
@@ -74590,13 +71934,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayResp
 // userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -74622,8 +71962,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -74637,9 +71976,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	// Delivery preferences for Friday.
 	Friday userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay `json:"friday"`
@@ -74653,8 +71990,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleFridayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -74730,13 +72066,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayResp
 // userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -74762,8 +72094,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -74777,9 +72108,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	// Delivery preferences for Monday.
 	Monday userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay `json:"monday"`
@@ -74793,8 +72122,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleMondayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -74870,13 +72198,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayRe
 // userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -74902,8 +72226,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUs
 // userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -74917,9 +72240,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUs
 // userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	// Delivery preferences for Saturday.
 	Saturday userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay `json:"saturday"`
@@ -74933,8 +72254,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUs
 // userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSaturdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -75010,13 +72330,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayResp
 // userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -75042,8 +72358,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -75057,9 +72372,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	// Delivery preferences for Sunday.
 	Sunday userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay `json:"sunday"`
@@ -75073,8 +72386,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUser
 // userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleSundayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -75150,13 +72462,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayRe
 // userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -75182,8 +72490,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUs
 // userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -75197,9 +72504,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUs
 // userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	// Delivery preferences for Thursday.
 	Thursday userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay `json:"thursday"`
@@ -75213,8 +72518,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUs
 // userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleThursdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -75290,13 +72594,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayRes
 // userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -75322,8 +72622,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUse
 // userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -75337,9 +72636,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUse
 // userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	// Delivery preferences for Tuesday.
 	Tuesday userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay `json:"tuesday"`
@@ -75353,8 +72650,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUse
 // userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleTuesdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -75430,13 +72726,9 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayR
 // userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettings struct {
-	// The notification delivery preferences for the user. Note: notificationDisabled
-	// field is deprecated in favor of notificationChannelPreferences.
+	// The notification delivery preferences for the user. Note: notificationDisabled field is deprecated in favor of notificationChannelPreferences.
 	NotificationDeliveryPreferences userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferences `json:"notificationDeliveryPreferences"`
 }
 
@@ -75462,8 +72754,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayU
 // userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel includes the requested fields of the GraphQL type NotificationDeliveryPreferencesChannel.
 // The GraphQL type's documentation follows.
 //
-// Delivery preferences for a specific notification channel, including an optional
-// delivery schedule that restricts when notifications are sent.
+// Delivery preferences for a specific notification channel, including an optional delivery schedule that restricts when notifications are sent.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel struct {
 	// The schedule for notifications on this channel.
 	Schedule *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule `json:"schedule"`
@@ -75477,9 +72768,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayU
 // userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule includes the requested fields of the GraphQL type NotificationDeliveryPreferencesSchedule.
 // The GraphQL type's documentation follows.
 //
-// A user's weekly notification delivery schedule, defining delivery windows for
-// each day of the week. Notifications outside these windows are held and delivered
-// when the window opens.
+// A user's weekly notification delivery schedule, defining delivery windows for each day of the week. Notifications outside these windows are held and delivered when the window opens.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesSchedule struct {
 	// Delivery preferences for Wednesday.
 	Wednesday userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay `json:"wednesday"`
@@ -75493,8 +72782,7 @@ func (v *userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayU
 // userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay includes the requested fields of the GraphQL type NotificationDeliveryPreferencesDay.
 // The GraphQL type's documentation follows.
 //
-// A user's notification delivery window for a specific day of the week. Defines
-// the time range during which notifications will be delivered.
+// A user's notification delivery window for a specific day of the week. Defines the time range during which notifications will be delivered.
 type userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannelScheduleNotificationDeliveryPreferencesScheduleWednesdayNotificationDeliveryPreferencesDay struct {
 	NotificationDeliveryPreferencesDayFields `json:"-"`
 }
@@ -75570,13 +72858,9 @@ func (v *userSettings_themeResponse) GetUserSettings() userSettings_themeUserSet
 // userSettings_themeUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_themeUserSettings struct {
-	// The user's theme configuration for the specified color mode (light/dark) and
-	// device type (desktop/mobile). Returns null if no valid theme preset is configured.
+	// The user's theme configuration for the specified color mode (light/dark) and device type (desktop/mobile). Returns null if no valid theme preset is configured.
 	Theme *userSettings_themeUserSettingsTheme `json:"theme"`
 }
 
@@ -75664,13 +72948,9 @@ func (v *userSettings_theme_customResponse) GetUserSettings() userSettings_theme
 // userSettings_theme_customUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_theme_customUserSettings struct {
-	// The user's theme configuration for the specified color mode (light/dark) and
-	// device type (desktop/mobile). Returns null if no valid theme preset is configured.
+	// The user's theme configuration for the specified color mode (light/dark) and device type (desktop/mobile). Returns null if no valid theme preset is configured.
 	Theme *userSettings_theme_customUserSettingsTheme `json:"theme"`
 }
 
@@ -75788,13 +73068,9 @@ func (v *userSettings_theme_custom_sidebarResponse) GetUserSettings() userSettin
 // userSettings_theme_custom_sidebarUserSettings includes the requested fields of the GraphQL type UserSettings.
 // The GraphQL type's documentation follows.
 //
-// Per-user settings and preferences for a workspace member. Includes notification
-// delivery preferences, email subscription settings, notification category and
-// channel preferences, theme configuration, and various UI preferences. Each user
-// has exactly one UserSettings record per workspace.
+// Per-user settings and preferences for a workspace member. Includes notification delivery preferences, email subscription settings, notification category and channel preferences, theme configuration, and various UI preferences. Each user has exactly one UserSettings record per workspace.
 type userSettings_theme_custom_sidebarUserSettings struct {
-	// The user's theme configuration for the specified color mode (light/dark) and
-	// device type (desktop/mobile). Returns null if no valid theme preset is configured.
+	// The user's theme configuration for the specified color mode (light/dark) and device type (desktop/mobile). Returns null if no valid theme preset is configured.
 	Theme *userSettings_theme_custom_sidebarUserSettingsTheme `json:"theme"`
 }
 
@@ -75907,10 +73183,7 @@ func (v *userSettings_theme_custom_sidebarUserSettingsThemeCustomUserSettingsCus
 // userUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type userUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -76010,10 +73283,7 @@ func (v *user_assignedIssuesResponse) GetUser() user_assignedIssuesUser { return
 // user_assignedIssuesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type user_assignedIssuesUser struct {
 	// Issues assigned to the user.
 	AssignedIssues user_assignedIssuesUserAssignedIssuesIssueConnection `json:"assignedIssues"`
@@ -76043,12 +73313,7 @@ func (v *user_assignedIssuesUserAssignedIssuesIssueConnection) GetPageInfo() use
 // user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -76212,10 +73477,7 @@ func (v *user_createdIssuesResponse) GetUser() user_createdIssuesUser { return v
 // user_createdIssuesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type user_createdIssuesUser struct {
 	// Issues created by the user.
 	CreatedIssues user_createdIssuesUserCreatedIssuesIssueConnection `json:"createdIssues"`
@@ -76245,12 +73507,7 @@ func (v *user_createdIssuesUserCreatedIssuesIssueConnection) GetPageInfo() user_
 // user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -76414,10 +73671,7 @@ func (v *user_delegatedIssuesResponse) GetUser() user_delegatedIssuesUser { retu
 // user_delegatedIssuesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type user_delegatedIssuesUser struct {
 	// Issues delegated to this user.
 	DelegatedIssues user_delegatedIssuesUserDelegatedIssuesIssueConnection `json:"delegatedIssues"`
@@ -76447,12 +73701,7 @@ func (v *user_delegatedIssuesUserDelegatedIssuesIssueConnection) GetPageInfo() u
 // user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -76616,10 +73865,7 @@ func (v *user_teamMembershipsResponse) GetUser() user_teamMembershipsUser { retu
 // user_teamMembershipsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type user_teamMembershipsUser struct {
 	// Memberships associated with the user. For easier access of the same data, use `teams` query.
 	TeamMemberships user_teamMembershipsUserTeamMembershipsTeamMembershipConnection `json:"teamMemberships"`
@@ -76649,10 +73895,7 @@ func (v *user_teamMembershipsUserTeamMembershipsTeamMembershipConnection) GetPag
 // user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
 // The GraphQL type's documentation follows.
 //
-// A join entity that defines a user's membership in a team. Each membership record
-// links a user to a team and tracks whether the user is a team owner. Users can be
-// members of multiple teams, and their memberships determine which teams' issues
-// and resources they can access.
+// A join entity that defines a user's membership in a team. Each membership record links a user to a team and tracks whether the user is a team owner. Users can be members of multiple teams, and their memberships determine which teams' issues and resources they can access.
 type user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
 	TeamMembershipSummaryFields `json:"-"`
 }
@@ -76792,10 +74035,7 @@ func (v *user_teamsResponse) GetUser() user_teamsUser { return v.User }
 // user_teamsUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type user_teamsUser struct {
 	// Teams the user is a member of. Supports filtering by team properties.
 	Teams user_teamsUserTeamsTeamConnection `json:"teams"`
@@ -76823,11 +74063,7 @@ func (v *user_teamsUserTeamsTeamConnection) GetPageInfo() user_teamsUserTeamsTea
 // user_teamsUserTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type user_teamsUserTeamsTeamConnectionNodesTeam struct {
 	TeamSummaryFields `json:"-"`
 }
@@ -76955,10 +74191,7 @@ func (v *usersUsersUserConnection) GetPageInfo() usersUsersUserConnectionPageInf
 // usersUsersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type usersUsersUserConnectionNodesUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -77074,10 +74307,7 @@ func (v *viewerResponse) GetViewer() viewerViewerUser { return v.Viewer }
 // viewerViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type viewerViewerUser struct {
 	UserSummaryFields `json:"-"`
 }
@@ -77177,10 +74407,7 @@ func (v *viewer_assignedIssuesResponse) GetViewer() viewer_assignedIssuesViewerU
 // viewer_assignedIssuesViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type viewer_assignedIssuesViewerUser struct {
 	// Issues assigned to the user.
 	AssignedIssues viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection `json:"assignedIssues"`
@@ -77210,12 +74437,7 @@ func (v *viewer_assignedIssuesViewerUserAssignedIssuesIssueConnection) GetPageIn
 // viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -77379,10 +74601,7 @@ func (v *viewer_createdIssuesResponse) GetViewer() viewer_createdIssuesViewerUse
 // viewer_createdIssuesViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type viewer_createdIssuesViewerUser struct {
 	// Issues created by the user.
 	CreatedIssues viewer_createdIssuesViewerUserCreatedIssuesIssueConnection `json:"createdIssues"`
@@ -77412,12 +74631,7 @@ func (v *viewer_createdIssuesViewerUserCreatedIssuesIssueConnection) GetPageInfo
 // viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -77583,10 +74797,7 @@ func (v *viewer_delegatedIssuesResponse) GetViewer() viewer_delegatedIssuesViewe
 // viewer_delegatedIssuesViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type viewer_delegatedIssuesViewerUser struct {
 	// Issues delegated to this user.
 	DelegatedIssues viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection `json:"delegatedIssues"`
@@ -77616,12 +74827,7 @@ func (v *viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnection) GetPage
 // viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -77785,10 +74991,7 @@ func (v *viewer_draftsResponse) GetViewer() viewer_draftsViewerUser { return v.V
 // viewer_draftsViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type viewer_draftsViewerUser struct {
 	// The user's saved drafts.
 	Drafts viewer_draftsViewerUserDraftsDraftConnection `json:"drafts"`
@@ -77818,11 +75021,7 @@ func (v *viewer_draftsViewerUserDraftsDraftConnection) GetPageInfo() viewer_draf
 // viewer_draftsViewerUserDraftsDraftConnectionNodesDraft includes the requested fields of the GraphQL type Draft.
 // The GraphQL type's documentation follows.
 //
-// A general-purpose draft for unsaved content. Drafts store in-progress text for
-// comments, project updates, initiative updates, posts, pull request comments, and
-// customer needs. Each draft belongs to a user and is associated with exactly one
-// parent entity. Drafts are automatically deleted when the user publishes the
-// corresponding comment or update.
+// A general-purpose draft for unsaved content. Drafts store in-progress text for comments, project updates, initiative updates, posts, pull request comments, and customer needs. Each draft belongs to a user and is associated with exactly one parent entity. Drafts are automatically deleted when the user publishes the corresponding comment or update.
 type viewer_draftsViewerUserDraftsDraftConnectionNodesDraft struct {
 	DraftSummaryFields `json:"-"`
 }
@@ -77996,10 +75195,7 @@ func (v *viewer_teamMembershipsResponse) GetViewer() viewer_teamMembershipsViewe
 // viewer_teamMembershipsViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type viewer_teamMembershipsViewerUser struct {
 	// Memberships associated with the user. For easier access of the same data, use `teams` query.
 	TeamMemberships viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection `json:"teamMemberships"`
@@ -78029,10 +75225,7 @@ func (v *viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnection
 // viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership includes the requested fields of the GraphQL type TeamMembership.
 // The GraphQL type's documentation follows.
 //
-// A join entity that defines a user's membership in a team. Each membership record
-// links a user to a team and tracks whether the user is a team owner. Users can be
-// members of multiple teams, and their memberships determine which teams' issues
-// and resources they can access.
+// A join entity that defines a user's membership in a team. Each membership record links a user to a team and tracks whether the user is a team owner. Users can be members of multiple teams, and their memberships determine which teams' issues and resources they can access.
 type viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership struct {
 	TeamMembershipSummaryFields `json:"-"`
 }
@@ -78172,10 +75365,7 @@ func (v *viewer_teamsResponse) GetViewer() viewer_teamsViewerUser { return v.Vie
 // viewer_teamsViewerUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
-// A user that belongs to a workspace. Users can have different roles (admin,
-// member, guest, or app) that determine their level of access. Users can be
-// members of multiple teams, and can be active or deactivated. Guest users have
-// limited access scoped to specific teams they are invited to.
+// A user that belongs to a workspace. Users can have different roles (admin, member, guest, or app) that determine their level of access. Users can be members of multiple teams, and can be active or deactivated. Guest users have limited access scoped to specific teams they are invited to.
 type viewer_teamsViewerUser struct {
 	// Teams the user is a member of. Supports filtering by team properties.
 	Teams viewer_teamsViewerUserTeamsTeamConnection `json:"teams"`
@@ -78203,11 +75393,7 @@ func (v *viewer_teamsViewerUserTeamsTeamConnection) GetPageInfo() viewer_teamsVi
 // viewer_teamsViewerUserTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
-// A team is the primary organizational unit in Linear. Issues belong to teams, and
-// each team has its own workflow states, cycles, labels, and settings. Teams can
-// be public (visible to all workspace members), private (visible only to team
-// members), or restricted (visible only within an enclosing private-team
-// boundary). Teams can also have sub-teams that inherit settings from their parent.
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
 type viewer_teamsViewerUserTeamsTeamConnectionNodesTeam struct {
 	TeamSummaryFields `json:"-"`
 }
@@ -78331,13 +75517,7 @@ func (v *workflowStateResponse) GetWorkflowState() workflowStateWorkflowState { 
 // workflowStateWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type workflowStateWorkflowState struct {
 	WorkflowStateSummaryFields `json:"-"`
 }
@@ -78437,13 +75617,7 @@ func (v *workflowState_issuesResponse) GetWorkflowState() workflowState_issuesWo
 // workflowState_issuesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type workflowState_issuesWorkflowState struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -78483,12 +75657,7 @@ func (v *workflowState_issuesWorkflowStateIssuesIssueConnection) GetPageInfo() w
 // workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL type Issue.
 // The GraphQL type's documentation follows.
 //
-// An issue is the core work item in Linear. Issues belong to a team, have a
-// workflow status, can be assigned to users, carry a priority level, and can be
-// organized into projects and cycles. Issues support sub-issues (parent-child
-// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
-// They can also be linked to other issues via relations, attached to releases, and
-// tracked through their full history of changes.
+// An issue is the core work item in Linear. Issues belong to a team, have a workflow status, can be assigned to users, carry a priority level, and can be organized into projects and cycles. Issues support sub-issues (parent-child hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking. They can also be linked to other issues via relations, attached to releases, and tracked through their full history of changes.
 type workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue struct {
 	IssueSummaryFields `json:"-"`
 }
@@ -78642,8 +75811,7 @@ func (v *workflowState_issuesWorkflowStateIssuesIssueConnectionPageInfo) GetEndC
 
 // workflowStatesResponse is returned by workflowStates on success.
 type workflowStatesResponse struct {
-	// All issue workflow states (issue statuses). Returns a paginated list of
-	// workflow states visible to the authenticated user, across all teams they have access to.
+	// All issue workflow states (issue statuses). Returns a paginated list of workflow states visible to the authenticated user, across all teams they have access to.
 	WorkflowStates workflowStatesWorkflowStatesWorkflowStateConnection `json:"workflowStates"`
 }
 
@@ -78671,13 +75839,7 @@ func (v *workflowStatesWorkflowStatesWorkflowStateConnection) GetPageInfo() work
 // workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState includes the requested fields of the GraphQL type WorkflowState.
 // The GraphQL type's documentation follows.
 //
-// A state in a team's workflow, representing an issue status such as Triage,
-// Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own
-// set of workflow states that define the progression of issues through the team's
-// process. Workflow states have a type that categorizes them (triage, backlog,
-// unstarted, started, completed, canceled), a position that determines their
-// display order, and a color for visual identification. States can be inherited
-// from parent teams to sub-teams.
+// A state in a team's workflow, representing an issue status such as Triage, Backlog, Todo, In Progress, In Review, Done, or Canceled. Each team has its own set of workflow states that define the progression of issues through the team's process. Workflow states have a type that categorizes them (triage, backlog, unstarted, started, completed, canceled), a position that determines their display order, and a color for visual identification. States can be inherited from parent teams to sub-teams.
 type workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState struct {
 	WorkflowStateSummaryFields `json:"-"`
 }
