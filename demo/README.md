@@ -1,8 +1,17 @@
 # Demo assets
 
-Source for the terminal demo shown in the project README: reads are free, a guarded write into
-the pinned target lands, and the same write aimed at a team the credential cannot reach is
-refused.
+Two separate things live here.
+
+| Directory | What it is |
+| --- | --- |
+| this one (`demo.tape`, `render*.sh`) | the **terminal recording** in the README: real command output, captured with vhs |
+| `readme-hero/` | the **explainer video**: a designed HyperFrames composition, 4K60 |
+| `launch/` | the 17s deadpan launch spot, kept as-is |
+
+## The terminal recording
+
+Reads are free, a guarded write into the pinned target lands, and the same write aimed at a team
+the credential cannot reach is refused.
 
 There are two ways to render it. Both produce `../docs/assets/demo.{gif,mp4}`.
 
@@ -49,3 +58,28 @@ create` lands a real issue in the demo target, so use a disposable one.
 4. `issue create --team STG` — the same write aimed at a team the credential cannot reach is
    refused with `{"error_code":"TARGET_MISMATCH"}` and a non-zero exit. `--team` sets the
    pinned target; it does not relax the guard. There is no bypass flag.
+
+## The explainer video (`readme-hero/`)
+
+A [HyperFrames](https://hyperframes.heygen.com) composition: five scenes covering the problem,
+the standing context cost of an MCP server, a write that lands, the same write refused, and the
+honest limit. Deadpan, monospace, no narration, no music.
+
+Only the source is tracked (`index.html`, `meta.json`, `hyperframes.json`, `package.json`).
+Renders and snapshots are generated.
+
+```bash
+cd readme-hero
+npx hyperframes check      # lint, runtime, layout, motion, contrast
+npx hyperframes preview    # watch it in the browser while editing
+npx hyperframes render --resolution landscape-4k --fps 60 --quality high \
+  --output renders/linctl-4k60.mp4
+```
+
+The composition is authored at 1920x1080; `--resolution landscape-4k` renders it at 3840x2160 by
+raising Chrome's device pixel ratio, so there is one set of coordinates to reason about.
+
+**Every number and string on screen is load-bearing.** The token counts come from
+`scripts/mcp-token-measure.sh`, the terminal lines match the real binary's output shapes, and the
+closing "confused agent, not a hostile one" is the guard's actual limit. If any of those change,
+change the composition too.

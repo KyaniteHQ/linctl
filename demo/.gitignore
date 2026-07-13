@@ -14,3 +14,15 @@ launch/composition/assets/
 launch/composition/skills-lock.json
 launch/composition/AGENTS.md
 launch/composition/CLAUDE.md
+
+# readme-hero composition: same rule. index.html, meta.json, hyperframes.json and
+# package.json are the source; everything below is generated or scaffolded.
+readme-hero/node_modules/
+readme-hero/renders/
+readme-hero/snapshots/
+readme-hero/.hyperframes/
+readme-hero/.claude/
+readme-hero/assets/
+readme-hero/skills-lock.json
+readme-hero/AGENTS.md
+readme-hero/CLAUDE.md

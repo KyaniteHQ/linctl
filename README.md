@@ -21,6 +21,8 @@ Real command output, real exit codes. The organization and issue ids are invente
 re-record it yourself with [`demo/render-fixture.sh`](demo/render-fixture.sh) and no Linear
 account at all.
 
+Prefer it explained? [**40-second explainer**](docs/assets/explainer-4k60.mp4) (4K, no narration).
+
 ---
 
 ## The problem

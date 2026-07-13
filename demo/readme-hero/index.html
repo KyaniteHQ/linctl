@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>linctl</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --surface: #11161f;
+        --border: #2a3342;
+        --ink: #bfbdb6;
+        --dim: #6b7687;
+        --green: #7fd962;
+        --red: #ea6c73;
+        --amber: #e6b450;
+        --cyan: #90e1c6;
+        --mono: ui-monospace, "JetBrains Mono", "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: var(--mono);
+        color: var(--ink);
+      }
+
+      /* The scene fill lives on a full-bleed child, never on the root itself. */
+      #bg {
+        position: absolute;
+        inset: 0;
+        background: var(--bg);
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+
+      .stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 200px;
+      }
+
+      .line {
+        font-size: 60px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        margin-bottom: 26px;
+        text-wrap: balance;
+      }
+
+      .line.dim {
+        color: var(--dim);
+      }
+
+      /* The honest limit is an aside, not the headline. It gets said, quietly,
+         and then the claim lands at full size. */
+      .aside {
+        font-size: 42px;
+        font-weight: 400;
+        color: var(--dim);
+        letter-spacing: -0.01em;
+        margin-bottom: 34px;
+      }
+
+      .kicker {
+        font-size: 26px;
+        color: var(--dim);
+        margin-bottom: 52px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .caption {
+        font-size: 31px;
+        color: var(--dim);
+        margin-top: 44px;
+      }
+
+      /* token-cost bars */
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .row-label {
+        width: 290px;
+        flex: none;
+        font-size: 33px;
+        font-weight: 600;
+      }
+
+      .row-label small {
+        display: block;
+        font-size: 23px;
+        font-weight: 400;
+        /* Lighter than --dim: at 23px this is body text and owes 4.5:1, not 3:1. */
+        color: #8892a3;
+        margin-top: 8px;
+      }
+
+      .track {
+        position: relative;
+        flex: 1;
+        height: 60px;
+      }
+
+      .bar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 60px;
+        border-radius: 6px;
+        transform-origin: left center;
+      }
+
+      .bar-value {
+        position: absolute;
+        top: 13px;
+        font-size: 31px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      /* terminal card */
+      .term {
+        width: 1360px;
+        margin: 0 auto;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 38px 46px 44px 46px;
+      }
+
+      .dots {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 34px;
+      }
+
+      .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+
+      .term p {
+        margin-bottom: 18px;
+        font-size: 29px;
+        line-height: 1.45;
+        white-space: nowrap;
+      }
+
+      .prompt {
+        color: var(--amber);
+      }
+      .ok {
+        color: var(--green);
+      }
+      .bad {
+        color: var(--red);
+      }
+      .muted {
+        color: var(--dim);
+      }
+
+      .install {
+        align-self: flex-start;
+        font-size: 29px;
+        color: var(--cyan);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 22px 30px;
+        margin-top: 10px;
+      }
+
+      .foot {
+        font-size: 25px;
+        color: var(--dim);
+        margin-top: 44px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      id="root"
+      data-composition-id="readme-hero"
+      data-start="0"
+      data-width="1920"
+      data-height="1080"
+      data-fps="60"
+      data-duration="37"
+    >
+      <div id="bg"></div>
+
+      <!-- 1. the problem -->
+      <section id="s1" class="clip" data-start="0" data-duration="6.6" data-track-index="1">
+        <div class="stage">
+          <p id="s1a" class="line">An agent with write access to Linear.</p>
+          <p id="s1b" class="line dim">Wrong token. Wrong checkout. Wrong team.</p>
+          <p id="s1c" class="caption">Usually, nothing stops it.</p>
+        </div>
+      </section>
+
+      <!-- 2. what it costs before it does anything -->
+      <section id="s2" class="clip" data-start="6" data-duration="8.6" data-track-index="2">
+        <div class="stage">
+          <p id="s2k" class="kicker">Loaded into every session, before any work</p>
+
+          <div class="row">
+            <div class="row-label">Linear MCP<small>47 tools</small></div>
+            <div class="track">
+              <div id="bar-mcp" class="bar" style="width: 1150px; background: var(--amber)"></div>
+              <div id="val-mcp" class="bar-value" style="left: 26px; color: #0b0e14">~17,000 tokens</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="row-label">linctl<small>1 binary</small></div>
+            <div class="track">
+              <div id="bar-lin" class="bar" style="width: 6px; background: var(--green)"></div>
+              <div id="val-lin" class="bar-value" style="left: 30px; color: var(--green)">0</div>
+            </div>
+          </div>
+
+          <p id="s2c" class="caption">No tool schema. You pay for output you asked for.</p>
+        </div>
+      </section>
+
+      <!-- 3. the write that lands -->
+      <section id="s3" class="clip" data-start="14" data-duration="8.6" data-track-index="3">
+        <div class="stage">
+          <div class="term">
+            <div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+            <p id="s3a"><span class="prompt">&#10095;</span> linctl issue list --state started</p>
+            <p id="s3b" class="muted">LIT-12 Flaky pagination test [In Progress]</p>
+            <p id="s3c"><span class="prompt">&#10095;</span> linctl issue create --title "Add rate-limit backoff"</p>
+            <p id="s3d" class="ok">LIT-15 Add rate-limit backoff [Backlog]</p>
+          </div>
+          <p id="s3e" class="caption" style="text-align: center">Reads go anywhere. The write goes where you pinned it.</p>
+        </div>
+      </section>
+
+      <!-- 4. the same write, refused -->
+      <section id="s4" class="clip" data-start="22" data-duration="8.6" data-track-index="4">
+        <div class="stage">
+          <div class="term">
+            <div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+            <p id="s4a" class="muted"># the same command, aimed at another team</p>
+            <p id="s4b"><span class="prompt">&#10095;</span> linctl issue create --title "..." --team STG</p>
+            <p id="s4c" class="bad">{"error_code":"TARGET_MISMATCH"}</p>
+            <p id="s4d" class="muted">exit 1</p>
+          </div>
+          <p id="s4e" class="caption" style="text-align: center">The credential is re-resolved. There is no bypass flag.</p>
+        </div>
+      </section>
+
+      <!-- 5. the limit, then the claim -->
+      <section id="s5" class="clip" data-start="30" data-duration="7" data-track-index="5">
+        <div class="stage">
+          <p id="s5a" class="aside">It stops a confused agent, not a hostile one.</p>
+          <p id="s5b" class="line">Reads everywhere. Writes fail closed.</p>
+          <code id="s5c" class="install">go install github.com/KyaniteHQ/linctl/cmd/linctl@latest</code>
+          <p id="s5d" class="foot">github.com/KyaniteHQ/linctl</p>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Deadpan. Everything enters slowly and holds. Nothing bounces, nothing
+      // stings. The refusal is treated as routine, because it is.
+      const FADE = 0.6;
+
+      const scenes = [
+        { id: "#s1", start: 0, end: 6.6 },
+        { id: "#s2", start: 6, end: 14.6 },
+        { id: "#s3", start: 14, end: 22.6 },
+        { id: "#s4", start: 22, end: 30.6 },
+        { id: "#s5", start: 30, end: 37 },
+      ];
+
+      scenes.forEach((scene) => {
+        tl.fromTo(scene.id, { opacity: 0 }, { opacity: 1, duration: FADE, ease: "sine.inOut" }, scene.start);
+        if (scene.end < 37) {
+          tl.to(scene.id, { opacity: 0, duration: FADE, ease: "sine.inOut" }, scene.end - FADE);
+        }
+      });
+
+      // 1
+      tl.from("#s1a", { y: 30, opacity: 0, duration: 0.7, ease: "power2.out" }, 0.5)
+        .from("#s1b", { y: 30, opacity: 0, duration: 0.7, ease: "power2.out" }, 2.0)
+        .from("#s1c", { opacity: 0, duration: 0.9, ease: "sine.out" }, 3.9);
+
+      // 2 — the bars grow from nothing, which is the whole argument
+      tl.from("#s2k", { opacity: 0, duration: 0.6, ease: "sine.out" }, 6.5)
+        .from("#bar-mcp", { scaleX: 0, duration: 1.4, ease: "power2.out" }, 7.1)
+        .from("#val-mcp", { opacity: 0, duration: 0.5 }, 8.2)
+        .from("#bar-lin", { scaleX: 0, duration: 0.4, ease: "power2.out" }, 9.6)
+        .from("#val-lin", { opacity: 0, duration: 0.5 }, 9.8)
+        .from("#s2c", { opacity: 0, duration: 0.8, ease: "sine.out" }, 11.0);
+
+      // 3
+      tl.from("#s3 .term", { y: 24, opacity: 0, duration: 0.8, ease: "power2.out" }, 14.4)
+        .from("#s3a", { opacity: 0, duration: 0.35 }, 15.1)
+        .from("#s3b", { opacity: 0, duration: 0.35 }, 15.6)
+        .from("#s3c", { opacity: 0, duration: 0.35 }, 16.4)
+        .from("#s3d", { opacity: 0, duration: 0.45 }, 17.2)
+        .from("#s3e", { opacity: 0, duration: 0.8, ease: "sine.out" }, 18.4);
+
+      // 4 — no shake, no buzz. Routine.
+      tl.from("#s4 .term", { y: 24, opacity: 0, duration: 0.8, ease: "power2.out" }, 22.4)
+        .from("#s4a", { opacity: 0, duration: 0.35 }, 23.1)
+        .from("#s4b", { opacity: 0, duration: 0.35 }, 23.7)
+        .from("#s4c", { opacity: 0, duration: 0.45 }, 24.8)
+        .from("#s4d", { opacity: 0, duration: 0.35 }, 25.5)
+        .from("#s4e", { opacity: 0, duration: 0.8, ease: "sine.out" }, 26.6);
+
+      // 5 — the limit first, then the claim. In that order, on purpose.
+      tl.from("#s5a", { opacity: 0, duration: 0.8, ease: "sine.out" }, 30.5)
+        .from("#s5b", { y: 26, opacity: 0, duration: 0.7, ease: "power2.out" }, 32.0)
+        .from("#s5c", { opacity: 0, duration: 0.7, ease: "sine.out" }, 33.4)
+        .from("#s5d", { opacity: 0, duration: 0.6, ease: "sine.out" }, 34.4);
+
+      window.__timelines["readme-hero"] = tl;
+    </script>
+  </body>
+</html>
