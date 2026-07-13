@@ -18,8 +18,11 @@ const (
 )
 
 var (
-	runtimeGOOS = runtime.GOOS
-	chmodFile   = os.Chmod
+	runtimeGOOS   = runtime.GOOS
+	chmodFile     = os.Chmod
+	writeTempFile = (*os.File).Write
+	syncTempFile  = (*os.File).Sync
+	closeTempFile = (*os.File).Close
 )
 
 // Env resolves environment variables by key.
@@ -343,10 +346,37 @@ func writeJSON(path string, value any, label string) error {
 	if err := chmodIfSupported(filepath.Dir(path), 0o700); err != nil {
 		return fmt.Errorf("secure %s directory: %w", label, err)
 	}
-	if err := os.WriteFile(path, data, 0o600); err != nil {
+
+	tmp, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".tmp-*")
+	if err != nil {
 		return fmt.Errorf("write %s %s: %w", label, path, err)
 	}
-	if err := chmodIfSupported(path, 0o600); err != nil {
+	tmpPath := tmp.Name()
+	defer func() {
+		if err != nil {
+			_ = os.Remove(tmpPath) //nolint:errcheck // temp cleanup is best effort after a failed write.
+		}
+	}()
+
+	if err = chmodIfSupported(tmpPath, 0o600); err != nil {
+		_ = tmp.Close() //nolint:errcheck // the original error is still returned.
+		return fmt.Errorf("secure %s %s: %w", label, tmpPath, err)
+	}
+	if _, err = writeTempFile(tmp, data); err != nil {
+		_ = tmp.Close() //nolint:errcheck // the original error is still returned.
+		return fmt.Errorf("write %s %s: %w", label, path, err)
+	}
+	if err = syncTempFile(tmp); err != nil {
+		_ = tmp.Close() //nolint:errcheck // the original error is still returned.
+		return fmt.Errorf("write %s %s: %w", label, path, err)
+	}
+	if err = closeTempFile(tmp); err != nil {
+		return fmt.Errorf("write %s %s: %w", label, path, err)
+	}
+	if err = os.Rename(tmpPath, path); err != nil {
+		return fmt.Errorf("write %s %s: %w", label, path, err)
+	}
+	if err = chmodIfSupported(path, 0o600); err != nil {
 		return fmt.Errorf("secure %s %s: %w", label, path, err)
 	}
 
