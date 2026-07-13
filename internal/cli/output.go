@@ -165,23 +165,34 @@ func sortByJSONField[T any](items []T, field string, order string) ([]T, error) 
 
 	parts := strings.Split(field, ".")
 	type sortableItem struct {
-		item T
-		key  string
+		item      T
+		key       string
+		numeric   float64
+		isNumeric bool
 	}
 	sortableItems := make([]sortableItem, 0, len(items))
 	for _, item := range items {
-		key, err := jsonFieldValueByPath(item, field, parts)
+		raw, err := jsonFieldRawValueByPath(item, field, parts)
 		if err != nil {
 			return nil, err
 		}
-		sortableItems = append(sortableItems, sortableItem{item: item, key: key})
+		numeric, isNumeric := raw.(float64)
+		sortableItems = append(sortableItems, sortableItem{
+			item: item, key: fmt.Sprint(raw), numeric: numeric, isNumeric: isNumeric,
+		})
 	}
+	// Numbers compare numerically when both sides are numeric (so 2 sorts before 10);
+	// any other pairing falls back to the stringified comparison so ordering stays deterministic.
 	sort.SliceStable(sortableItems, func(leftIndex int, rightIndex int) bool {
+		left, right := sortableItems[leftIndex], sortableItems[rightIndex]
 		if order == "desc" {
-			return sortableItems[rightIndex].key < sortableItems[leftIndex].key
+			left, right = right, left
+		}
+		if left.isNumeric && right.isNumeric {
+			return left.numeric < right.numeric
 		}
 
-		return sortableItems[leftIndex].key < sortableItems[rightIndex].key
+		return left.key < right.key
 	})
 	sortedItems := make([]T, 0, len(sortableItems))
 	for _, item := range sortableItems {
@@ -196,25 +207,34 @@ func jsonFieldValue(value any, field string) (string, error) {
 }
 
 func jsonFieldValueByPath(value any, field string, parts []string) (string, error) {
-	raw, err := jsonRoundTrip(value)
+	raw, err := jsonFieldRawValueByPath(value, field, parts)
 	if err != nil {
 		return "", err
+	}
+
+	return fmt.Sprint(raw), nil
+}
+
+func jsonFieldRawValueByPath(value any, field string, parts []string) (any, error) {
+	raw, err := jsonRoundTrip(value)
+	if err != nil {
+		return nil, err
 	}
 
 	current := any(raw)
 	for _, part := range parts {
 		object, ok := current.(map[string]any)
 		if !ok {
-			return "", fmt.Errorf("sort field %q is not an object path", field)
+			return nil, fmt.Errorf("sort field %q is not an object path", field)
 		}
 		next, ok := object[part]
 		if !ok {
-			return "", fmt.Errorf("sort field %q is not present", field)
+			return nil, fmt.Errorf("sort field %q is not present", field)
 		}
 		current = next
 	}
 
-	return fmt.Sprint(current), nil
+	return current, nil
 }
 
 func normalizedHumanFormat(options *rootOptions) (string, error) {

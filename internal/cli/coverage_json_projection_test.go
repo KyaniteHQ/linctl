@@ -268,6 +268,43 @@ func Test_CliOutputHelpers_cover_json_projection_and_sort_edges(t *testing.T) {
 	_, err = sortByJSONField([]map[string]any{{"state": "Todo"}}, "state.name", "asc")
 	require.ErrorContains(t, err, "not an object path")
 
+	var nilItems []client.IssueSummary
+	sortedItems, err = sortByJSONField(nilItems, "title", "asc")
+	require.NoError(t, err)
+	require.Nil(t, sortedItems)
+
+	type numbered struct {
+		Number float64 `json:"number"`
+	}
+	numberedItems := []numbered{{Number: 2}, {Number: 10}, {Number: 1}}
+	sortedNumbers, err := sortByJSONField(numberedItems, "number", "asc")
+	require.NoError(t, err)
+	require.Equal(t, []numbered{{Number: 1}, {Number: 2}, {Number: 10}}, sortedNumbers)
+
+	sortedNumbers, err = sortByJSONField(numberedItems, "number", "desc")
+	require.NoError(t, err)
+	require.Equal(t, []numbered{{Number: 10}, {Number: 2}, {Number: 1}}, sortedNumbers)
+
+	type counted struct {
+		Count int `json:"count"`
+	}
+	countedItems := []counted{{Count: 2}, {Count: 10}, {Count: 1}}
+	sortedCounts, err := sortByJSONField(countedItems, "count", "asc")
+	require.NoError(t, err)
+	require.Equal(t, []counted{{Count: 1}, {Count: 2}, {Count: 10}}, sortedCounts)
+
+	type mixed struct {
+		Value any `json:"value"`
+	}
+	mixedItems := []mixed{{Value: 10.0}, {Value: "abc"}, {Value: 2.0}}
+	sortedMixed, err := sortByJSONField(mixedItems, "value", "asc")
+	require.NoError(t, err)
+	require.Equal(t, []mixed{{Value: 2.0}, {Value: 10.0}, {Value: "abc"}}, sortedMixed)
+
+	sortedMixed, err = sortByJSONField(mixedItems, "value", "desc")
+	require.NoError(t, err)
+	require.Equal(t, []mixed{{Value: "abc"}, {Value: 10.0}, {Value: 2.0}}, sortedMixed)
+
 	_, err = jsonFieldValue(map[string]any{"bad": func() {}}, "bad")
 	require.ErrorContains(t, err, "marshal output")
 
