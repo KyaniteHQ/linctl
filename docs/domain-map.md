@@ -122,7 +122,7 @@ Only `audit-entry types` is implemented in the current CLI. Audit entry listing 
 Schema backing:
 
 - Types: `Notification`, `NotificationConnection`, `NotificationSubscription`, `NotificationSubscriptionConnection`
-- Reads: `Query.notifications`, `Query.notification`, `Query.notificationSubscriptions`, `Query.notificationSubscription`
+- Reads: `Query.notifications`, `Query.notification`, `Query.notificationsUnreadCount`, `Query.notificationSubscriptions`, `Query.notificationSubscription`
 - Writes: `Mutation.notificationArchive`, `Mutation.notificationArchiveAll`, `Mutation.notificationUpdate`, `Mutation.notificationMarkReadAll`, `Mutation.notificationMarkUnreadAll`, `Mutation.notificationSnoozeAll`, `Mutation.notificationUnsnoozeAll`, `Mutation.notificationCategoryChannelSubscriptionUpdate`, `Mutation.notificationSubscriptionCreate`, `Mutation.notificationSubscriptionUpdate`, `Mutation.notificationSubscriptionDelete`
 - Relevant fields: `Notification.id`, `Notification.type`, `Notification.category`, `Notification.title`, `Notification.subtitle`, `Notification.url`, `Notification.inboxUrl`, `Notification.user`, `Notification.actor`, `NotificationSubscription.id`, `NotificationSubscription.active`, `NotificationSubscription.subscriber`, target entity fields
 
@@ -132,6 +132,7 @@ Planned commands:
 | --- | --- | --- |
 | `notification list` | `Query.notifications` | Read-only |
 | `notification get` | `Query.notification` | Read-only |
+| `notification unread-count` | `Query.notificationsUnreadCount` | Read-only |
 | `notification subscription list` | `Query.notificationSubscriptions` | Read-only |
 | `notification subscription get` | `Query.notificationSubscription` | Read-only |
 | `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model |
@@ -146,7 +147,7 @@ Planned commands:
 | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation |
 | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics |
 
-Only `notification list`, `notification get`, `notification subscription list`, and `notification subscription get` are implemented in the current CLI. Notification writes are deferred as viewer-state and preference surface.
+Only the five read commands above are implemented in the current CLI. Notification writes are deferred as viewer-state and preference surface.
 
 ## Release
 

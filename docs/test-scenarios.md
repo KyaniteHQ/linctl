@@ -1135,6 +1135,10 @@ Success is pass/fail:
    - Success: `linctl initiative-label list --limit N` and `linctl initiative-label get INITIATIVE_LABEL_ID` map organization-level InitiativeLabel responses into compact models, preserve parent-group metadata, and support standard human and machine output controls.
    - Evidence: `go test ./internal/client ./internal/cli`, `Test_InitiativeLabelReads_return_compact_models`, `Test_InitiativeLabelReads_wrap_errors`, `Test_InitiativeLabelCommandFlows_list_get_and_project_fields`, `Test_WriteInitiativeLabel_covers_human_and_machine_modes`.
 
+215. Notification unread count
+   - Success: `linctl notification unread-count` prints the authenticated user's unread notification count as a bare integer, supports `--json` and `--quiet`, and returns operation failures without changing exit-code semantics.
+   - Evidence: `go test ./internal/client ./internal/cli`, `Test_GetNotificationsUnreadCount_returns_fake_response`, `Test_GetNotificationsUnreadCount_wraps_operation_errors`, `Test_NotificationUnreadCount_command_outputs_supported_modes`, `Test_NotificationUnreadCount_command_returns_operation_errors`, `Test_NotificationUnreadCount_command_returns_runtime_errors`.
+
 ## Current Outcome
 
 All local scenarios pass under the method above. The complete product suite also passes with

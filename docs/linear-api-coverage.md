@@ -17,10 +17,10 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
 | Upstream SDK root methods with generated local operations | 466 | 150 | 466 |
-| Upstream Query root fields used by generated local operations | 162 | 115 | 162 |
+| Upstream Query root fields used by generated local operations | 162 | 116 | 162 |
 | Upstream Mutation root fields used by generated local operations | 370 | 36 | 370 |
-| Local generated Go operations declared in GraphQL files | 335 | 335 | 335 |
-| Public CLI commands from command inventory | 434 | 312 | 434 |
+| Local generated Go operations declared in GraphQL files | 336 | 336 | 336 |
+| Public CLI commands from command inventory | 435 | 313 | 435 |
 
 ## Upstream SDK Root Methods
 
@@ -591,7 +591,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `notificationSubscription` | `NotificationSubscription!` | generated_operation | root field used by local GraphQL operation |
 | `notificationSubscriptions` | `NotificationSubscriptionConnection!` | generated_operation | root field used by local GraphQL operation |
 | `notifications` | `NotificationConnection!` | generated_operation | root field used by local GraphQL operation |
-| `notificationsUnreadCount` | `Int!` | safe_candidate | read operation may fit future CLI coverage |
+| `notificationsUnreadCount` | `Int!` | generated_operation | root field used by local GraphQL operation |
 | `oauthApplication` | `OAuthApplication!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `oauthApplications` | `[OAuthApplication!]!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `organization` | `Organization!` | generated_operation | root field used by local GraphQL operation |
@@ -1236,6 +1236,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `notificationSubscription` | query | `notificationSubscription` | generated | `internal/client/generated.go` |
 | `notificationSubscriptions` | query | `notificationSubscriptions` | generated | `internal/client/generated.go` |
 | `notifications` | query | `notifications` | generated | `internal/client/generated.go` |
+| `notificationsUnreadCount` | query | `notificationsUnreadCount` | generated | `internal/client/generated.go` |
 | `organizationExists` | query | `organizationExists` | generated | `internal/client/generated.go` |
 | `organization_labels` | query | `organization` | generated | `internal/client/generated.go` |
 | `organization_projectLabels` | query | `organization` | generated | `internal/client/generated.go` |
@@ -1394,6 +1395,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | AuditEntry | `audit-entry list` | `Query.auditEntries` | Blocked: audit log entries can expose actor, IP, country, and request metadata; needs an explicit admin/security output model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
 | Notification | `notification list` | `Query.notifications` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Notification | `notification get` | `Query.notification` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Notification | `notification unread-count` | `Query.notificationsUnreadCount` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Notification | `notification subscription list` | `Query.notificationSubscriptions` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Notification | `notification subscription get` | `Query.notificationSubscription` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Notification | `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |

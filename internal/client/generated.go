@@ -56488,6 +56488,17 @@ func (v *notificationsResponse) GetNotifications() notificationsNotificationsNot
 	return v.Notifications
 }
 
+// notificationsUnreadCountResponse is returned by notificationsUnreadCount on success.
+type notificationsUnreadCountResponse struct {
+	// [Internal] A number of unread notifications.
+	NotificationsUnreadCount int `json:"notificationsUnreadCount"`
+}
+
+// GetNotificationsUnreadCount returns notificationsUnreadCountResponse.NotificationsUnreadCount, and is useful for accessing the field via an interface.
+func (v *notificationsUnreadCountResponse) GetNotificationsUnreadCount() int {
+	return v.NotificationsUnreadCount
+}
+
 // organizationExistsOrganizationExistsOrganizationExistsPayload includes the requested fields of the GraphQL type OrganizationExistsPayload.
 // The GraphQL type's documentation follows.
 //
@@ -88373,6 +88384,34 @@ func notifications(
 	}
 
 	data_ = &notificationsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by notificationsUnreadCount.
+const notificationsUnreadCount_Operation = `
+query notificationsUnreadCount {
+	notificationsUnreadCount
+}
+`
+
+func notificationsUnreadCount(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *notificationsUnreadCountResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "notificationsUnreadCount",
+		Query:  notificationsUnreadCount_Operation,
+	}
+
+	data_ = &notificationsUnreadCountResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

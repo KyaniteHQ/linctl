@@ -16,6 +16,10 @@ query notification($id: String!) {
   }
 }
 
+query notificationsUnreadCount {
+  notificationsUnreadCount
+}
+
 query notificationSubscriptions($first: Int, $after: String, $includeArchived: Boolean) {
   notificationSubscriptions(first: $first, after: $after, includeArchived: $includeArchived) {
     nodes {

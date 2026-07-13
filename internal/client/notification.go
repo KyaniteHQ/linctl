@@ -90,6 +90,16 @@ func GetNotificationByID(ctx context.Context, graphqlClient graphql.Client, id s
 	return notificationSummary(result.Notification), nil
 }
 
+// GetNotificationsUnreadCount returns the authenticated user's unread notification count.
+func GetNotificationsUnreadCount(ctx context.Context, graphqlClient graphql.Client) (int, error) {
+	result, err := notificationsUnreadCount(ctx, graphqlClient)
+	if err != nil {
+		return 0, fmt.Errorf("get notifications unread count: %w", err)
+	}
+
+	return result.NotificationsUnreadCount, nil
+}
+
 // ListNotificationSubscriptions returns the authenticated user's notification subscriptions.
 func ListNotificationSubscriptions(
 	ctx context.Context,

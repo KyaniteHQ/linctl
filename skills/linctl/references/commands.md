@@ -2534,6 +2534,14 @@ Flags:
       --limit int   maximum notification subscriptions to return (default 50)
 ```
 
+### linctl notification unread-count
+
+Print the authenticated user's unread notification count
+
+```
+linctl notification unread-count
+```
+
 ### linctl organization
 
 Read Linear organization metadata
