@@ -23,13 +23,13 @@ func projectUpdateJSON(health string, body string) string {
 }
 
 func Test_CreateProjectUpdate_returns_summary_when_target_matches(t *testing.T) {
-	graphqlClient := projectWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
 		"project": `{"project":` + projectJSON(projectFixture{ID: "project-id", Name: "fixture", Status: "Backlog"}) + `}`,
 		"ProjectUpdateCreate": `{"projectUpdateCreate":{"success":true,"projectUpdate":` +
 			projectUpdateJSON("onTrack", "All good") + `}}`,
-	})
+	})}
 
-	update, err := CreateProjectUpdate(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateCreateRequest{
+	update, err := CreateProjectUpdate(context.Background(), recorder, matchingTarget(), ProjectUpdateCreateRequest{
 		ProjectID: "project-id",
 		Body:      "All good",
 		Health:    "onTrack",
@@ -40,6 +40,13 @@ func Test_CreateProjectUpdate_returns_summary_when_target_matches(t *testing.T) 
 	require.Equal(t, "onTrack", update.Health)
 	require.Equal(t, "All good", update.Body)
 	require.Equal(t, "project-id", update.ProjectID)
+	require.JSONEq(t, `{
+		"input": {
+			"projectId": "project-id",
+			"body": "All good",
+			"health": "onTrack"
+		}
+	}`, string(recorder.variablesFor(t, "ProjectUpdateCreate")))
 }
 
 func Test_CreateProjectUpdate_refuses_when_pinned_project_differs(t *testing.T) {

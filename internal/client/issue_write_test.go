@@ -61,6 +61,44 @@ func Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project(t
 	require.ErrorIs(t, err, ErrTargetMismatch)
 }
 
+// Test_UpdateIssue_succeeds_without_pinned_project_when_team_matches is the
+// success-path counterpart to Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project:
+// with no project pinned, requireIssueDetail skips the project comparison but
+// still enforces the team match.
+func Test_UpdateIssue_succeeds_without_pinned_project_when_team_matches(t *testing.T) {
+	// Given
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-3",
+			Title:      "any project",
+			ProjectID:  "other-project",
+			Project:    "other",
+			StateID:    "state-id",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-3",
+			Title:      "new title",
+			ProjectID:  "other-project",
+			Project:    "other",
+			StateID:    "state-id",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}}`,
+	})
+
+	// When
+	issue, err := UpdateIssue(context.Background(), graphqlClient, teamOnlyTarget(), IssueUpdateRequest{
+		ID:    "LIT-3",
+		Title: "new title",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "new title", issue.Title)
+}
+
 func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_matches(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
@@ -197,6 +235,16 @@ func matchingTarget() config.Target {
 	}
 }
 
+// teamOnlyTarget is a pinned target without a project, exercising the
+// project-unpinned guard mode (CONTEXT.md: project_id optional).
+func teamOnlyTarget() config.Target {
+	return config.Target{
+		OrgID:   "org-id",
+		TeamKey: "LIT",
+		TeamID:  "team-id",
+	}
+}
+
 type issueFixture struct {
 	Identifier string
 	Title      string
@@ -209,7 +257,7 @@ type issueFixture struct {
 
 func Test_CreateIssue_resolves_state_type_and_priority_when_provided(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
 			{"id":"todo-state","name":"Todo","type":"unstarted","position":2},
 			{"id":"backlog-state","name":"Backlog","type":"unstarted","position":1}
@@ -223,10 +271,10 @@ func Test_CreateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 			State:      "Backlog",
 			StateType:  "unstarted",
 		}) + `}}`,
-	})
+	})}
 
 	// When
-	issue, err := CreateIssue(context.Background(), graphqlClient, matchingTarget(), IssueCreateRequest{
+	issue, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
 		Title:     "typed",
 		StateType: "unstarted",
 		Priority:  "2",
@@ -235,6 +283,15 @@ func Test_CreateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, "LIT-3", issue.Identifier)
+	require.JSONEq(t, `{
+		"input": {
+			"title": "typed",
+			"teamId": "team-id",
+			"projectId": "project-id",
+			"stateId": "backlog-state",
+			"priority": 2
+		}
+	}`, string(recorder.variablesFor(t, "IssueCreate")))
 }
 
 func Test_CreateIssue_returns_error_when_state_type_has_no_workflow_states(t *testing.T) {
@@ -282,7 +339,7 @@ func Test_UpdateIssue_returns_error_when_state_type_has_no_workflow_states(t *te
 
 func Test_UpdateIssue_resolves_state_type_and_priority_when_provided(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-1",
 			Title:      "existing",
@@ -304,10 +361,10 @@ func Test_UpdateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 			State:      "Done",
 			StateType:  "completed",
 		}) + `}}`,
-	})
+	})}
 
 	// When
-	issue, err := UpdateIssue(context.Background(), graphqlClient, matchingTarget(), IssueUpdateRequest{
+	issue, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
 		ID:        "LIT-1",
 		StateType: "completed",
 		Priority:  "1",
@@ -316,6 +373,13 @@ func Test_UpdateIssue_resolves_state_type_and_priority_when_provided(t *testing.
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, "completed", issue.StateType)
+	require.JSONEq(t, `{
+		"id": "LIT-1",
+		"input": {
+			"stateId": "done-state",
+			"priority": 1
+		}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
 }
 
 func Test_UpdateIssue_returns_error_when_all_fields_empty(t *testing.T) {

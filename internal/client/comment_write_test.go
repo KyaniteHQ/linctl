@@ -35,13 +35,13 @@ func commentFieldsJSON(issueID string, body string) string {
 }
 
 func Test_UpdateComment_edits_comment_when_target_matches(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"comment":       `{"comment":` + commentFieldsJSON("issue-id", "existing body") + `}`,
 		"issue":         relationIssueRead(),
 		"CommentUpdate": `{"commentUpdate":{"success":true,"comment":` + commentFieldsJSON("issue-id", "updated body") + `}}`,
-	})
+	})}
 
-	comment, err := UpdateComment(context.Background(), graphqlClient, matchingTarget(), CommentUpdateRequest{
+	comment, err := UpdateComment(context.Background(), recorder, matchingTarget(), CommentUpdateRequest{
 		ID:   "comment-id",
 		Body: "updated body",
 	})
@@ -49,6 +49,12 @@ func Test_UpdateComment_edits_comment_when_target_matches(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "comment-id", comment.ID)
 	require.Equal(t, "updated body", comment.Body)
+	require.JSONEq(t, `{
+		"id": "comment-id",
+		"input": {
+			"body": "updated body"
+		}
+	}`, string(recorder.variablesFor(t, "CommentUpdate")))
 }
 
 func Test_UpdateComment_requires_id(t *testing.T) {

@@ -10,18 +10,19 @@ import (
 
 func Test_CreateProject_returns_created_project_when_target_matches(t *testing.T) {
 	// Given
-	graphqlClient := projectWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
 		"ProjectCreate": `{"projectCreate":{"success":true,"project":` + projectJSON(projectFixture{
 			ID:     "project-id",
 			Name:   "created",
 			Status: "Backlog",
 		}) + `}}`,
-	})
+	})}
 
 	// When
-	project, err := CreateProject(context.Background(), graphqlClient, matchingTarget(), ProjectCreateRequest{
+	project, err := CreateProject(context.Background(), recorder, matchingTarget(), ProjectCreateRequest{
 		Name:        "created",
 		Description: "body",
+		Content:     "# heading",
 	})
 
 	// Then
@@ -29,6 +30,14 @@ func Test_CreateProject_returns_created_project_when_target_matches(t *testing.T
 	require.Equal(t, "project-id", project.ID)
 	require.Equal(t, "created", project.Name)
 	require.True(t, projectHasTeam(project, "team-id", "LIT"))
+	require.JSONEq(t, `{
+		"input": {
+			"name": "created",
+			"description": "body",
+			"content": "# heading",
+			"teamIds": ["team-id"]
+		}
+	}`, string(recorder.variablesFor(t, "ProjectCreate")))
 }
 
 func Test_UpdateProject_refuses_when_pinned_project_differs(t *testing.T) {
@@ -73,6 +82,70 @@ func Test_UpdateProject_refuses_when_project_lacks_pinned_team(t *testing.T) {
 	// Then
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_UpdateProject_returns_updated_project_when_target_matches(t *testing.T) {
+	// Given
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID:     "project-id",
+			Name:   "fixture",
+			Status: "Backlog",
+		}) + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSON(projectFixture{
+			ID:     "project-id",
+			Name:   "updated",
+			Status: "Backlog",
+		}) + `}}`,
+	})}
+
+	// When
+	project, err := UpdateProject(context.Background(), recorder, matchingTarget(), ProjectUpdateRequest{
+		ID:      "project-id",
+		Name:    "updated",
+		Content: "# updated content",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "updated", project.Name)
+	require.JSONEq(t, `{
+		"id": "project-id",
+		"input": {
+			"name": "updated",
+			"content": "# updated content"
+		}
+	}`, string(recorder.variablesFor(t, "ProjectUpdate")))
+}
+
+// Test_UpdateProject_succeeds_without_pinned_project_when_team_matches is the
+// success-path counterpart to Test_UpdateProject_refuses_when_pinned_project_differs:
+// with no project pinned, requireProject skips the project-id comparison but
+// still enforces the pinned team (Test_UpdateProject_refuses_when_project_lacks_pinned_team).
+func Test_UpdateProject_succeeds_without_pinned_project_when_team_matches(t *testing.T) {
+	// Given
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID:     "any-project",
+			Name:   "fixture",
+			Status: "Backlog",
+		}) + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSON(projectFixture{
+			ID:     "any-project",
+			Name:   "updated",
+			Status: "Backlog",
+		}) + `}}`,
+	})
+
+	// When
+	project, err := UpdateProject(context.Background(), graphqlClient, teamOnlyTarget(), ProjectUpdateRequest{
+		ID:   "any-project",
+		Name: "updated",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "updated", project.Name)
 }
 
 type projectWriteFakeClient map[string]string

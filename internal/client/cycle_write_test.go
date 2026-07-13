@@ -10,11 +10,11 @@ import (
 )
 
 func Test_CreateCycle_returns_created_cycle_when_target_matches(t *testing.T) {
-	graphqlClient := projectWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: projectWriteFakeClient(map[string]string{
 		"CycleCreate": `{"cycleCreate":{"success":true,"cycle":` + cycleJSON("Planning cycle", "team-id", "LIT") + `}}`,
-	})
+	})}
 
-	cycle, err := CreateCycle(context.Background(), graphqlClient, matchingTarget(), CycleCreateRequest{
+	cycle, err := CreateCycle(context.Background(), recorder, matchingTarget(), CycleCreateRequest{
 		Name:        "Planning cycle",
 		Description: "cycle body",
 		StartsAt:    "2026-07-01T00:00:00Z",
@@ -26,6 +26,15 @@ func Test_CreateCycle_returns_created_cycle_when_target_matches(t *testing.T) {
 	require.Equal(t, "Planning cycle", cycle.Name)
 	require.Equal(t, "team-id", cycle.TeamID)
 	require.Equal(t, "LIT", cycle.TeamKey)
+	require.JSONEq(t, `{
+		"input": {
+			"teamId": "team-id",
+			"name": "Planning cycle",
+			"description": "cycle body",
+			"startsAt": "2026-07-01T00:00:00Z",
+			"endsAt": "2026-07-15T00:00:00Z"
+		}
+	}`, string(recorder.variablesFor(t, "CycleCreate")))
 }
 
 func Test_CreateCycle_returns_mutation_failed_when_payload_omits_cycle(t *testing.T) {

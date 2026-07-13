@@ -23,12 +23,12 @@ func documentJSON(title string, teamID string, teamKey string, projectID string)
 }
 
 func Test_CreateDocument_returns_created_document_when_target_matches(t *testing.T) {
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"DocumentCreate": `{"documentCreate":{"success":true,"document":` +
 			documentJSON("created", "team-id", "LIT", "project-id") + `}}`,
-	})
+	})}
 
-	document, err := CreateDocument(context.Background(), graphqlClient, matchingTarget(), DocumentCreateRequest{
+	document, err := CreateDocument(context.Background(), recorder, matchingTarget(), DocumentCreateRequest{
 		Title:   "created",
 		Content: "body",
 	})
@@ -36,6 +36,14 @@ func Test_CreateDocument_returns_created_document_when_target_matches(t *testing
 	require.NoError(t, err)
 	require.Equal(t, "document-id", document.ID)
 	require.Equal(t, "created", document.Title)
+	require.JSONEq(t, `{
+		"input": {
+			"title": "created",
+			"content": "body",
+			"teamId": "team-id",
+			"projectId": "project-id"
+		}
+	}`, string(recorder.variablesFor(t, "DocumentCreate")))
 }
 
 func Test_CreateDocument_refuses_when_team_differs(t *testing.T) {
