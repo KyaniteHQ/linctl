@@ -16,7 +16,7 @@ func addProjectLabelCommand(ctx context.Context, root *cobra.Command, options *r
 		options,
 		readListGetSpec[client.ProjectLabelList, client.ProjectLabelSummary]{
 			Use:           "project-label",
-			Short:         "Read Linear project labels",
+			Short:         "Read and write Linear project labels",
 			ListShort:     "List visible Linear project labels",
 			LimitHelp:     "maximum project labels to return",
 			GetUse:        "get PROJECT_LABEL_ID",
@@ -29,6 +29,10 @@ func addProjectLabelCommand(ctx context.Context, root *cobra.Command, options *r
 	)
 	addProjectLabelChildrenCommand(ctx, parentCommand, options)
 	addProjectLabelProjectsCommand(ctx, parentCommand, options)
+	addProjectLabelCreateCommand(ctx, parentCommand, options)
+	addProjectLabelUpdateCommand(ctx, parentCommand, options)
+	addProjectLabelRetireCommand(ctx, parentCommand, options)
+	addProjectLabelRestoreCommand(ctx, parentCommand, options)
 }
 
 func addProjectLabelChildrenCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

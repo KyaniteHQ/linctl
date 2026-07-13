@@ -5009,6 +5009,176 @@ func (v *InitiativeUpdateSummaryFieldsUser) GetName() string { return v.Name }
 // GetDisplayName returns InitiativeUpdateSummaryFieldsUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *InitiativeUpdateSummaryFieldsUser) GetDisplayName() string { return v.DisplayName }
 
+// IssueAddLabelIssueAddLabelIssuePayload includes the requested fields of the GraphQL type IssuePayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an issue mutation, containing the created or updated issue and a success indicator.
+type IssueAddLabelIssueAddLabelIssuePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The issue that was created or updated.
+	Issue *IssueAddLabelIssueAddLabelIssuePayloadIssue `json:"issue"`
+}
+
+// GetSuccess returns IssueAddLabelIssueAddLabelIssuePayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayload) GetSuccess() bool { return v.Success }
+
+// GetIssue returns IssueAddLabelIssueAddLabelIssuePayload.Issue, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayload) GetIssue() *IssueAddLabelIssueAddLabelIssuePayloadIssue {
+	return v.Issue
+}
+
+// IssueAddLabelIssueAddLabelIssuePayloadIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type IssueAddLabelIssueAddLabelIssuePayloadIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Id, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetId() string { return v.IssueSummaryFields.Id }
+
+// GetIdentifier returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Title, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns IssueAddLabelIssueAddLabelIssuePayloadIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Url, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Priority, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns IssueAddLabelIssueAddLabelIssuePayloadIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Team, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns IssueAddLabelIssueAddLabelIssuePayloadIssue.State, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns IssueAddLabelIssueAddLabelIssuePayloadIssue.Project, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*IssueAddLabelIssueAddLabelIssuePayloadIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.IssueAddLabelIssueAddLabelIssuePayloadIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalIssueAddLabelIssueAddLabelIssuePayloadIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *IssueAddLabelIssueAddLabelIssuePayloadIssue) __premarshalJSON() (*__premarshalIssueAddLabelIssueAddLabelIssuePayloadIssue, error) {
+	var retval __premarshalIssueAddLabelIssueAddLabelIssuePayloadIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// IssueAddLabelResponse is returned by IssueAddLabel on success.
+type IssueAddLabelResponse struct {
+	// Adds a label to an issue.
+	IssueAddLabel IssueAddLabelIssueAddLabelIssuePayload `json:"issueAddLabel"`
+}
+
+// GetIssueAddLabel returns IssueAddLabelResponse.IssueAddLabel, and is useful for accessing the field via an interface.
+func (v *IssueAddLabelResponse) GetIssueAddLabel() IssueAddLabelIssueAddLabelIssuePayload {
+	return v.IssueAddLabel
+}
+
 // IssueArchiveIssueArchiveIssueArchivePayload includes the requested fields of the GraphQL type IssueArchivePayload.
 // The GraphQL type's documentation follows.
 //
@@ -6751,6 +6921,400 @@ type IssueDependenciesResponse struct {
 // GetIssue returns IssueDependenciesResponse.Issue, and is useful for accessing the field via an interface.
 func (v *IssueDependenciesResponse) GetIssue() IssueDependenciesIssue { return v.Issue }
 
+// IssueLabelCreateIssueLabelCreateIssueLabelPayload includes the requested fields of the GraphQL type IssueLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a label mutation, containing the created or updated label and a success indicator.
+type IssueLabelCreateIssueLabelCreateIssueLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	IssueLabel IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel `json:"issueLabel"`
+}
+
+// GetSuccess returns IssueLabelCreateIssueLabelCreateIssueLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayload) GetSuccess() bool { return v.Success }
+
+// GetIssueLabel returns IssueLabelCreateIssueLabelCreateIssueLabelPayload.IssueLabel, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayload) GetIssueLabel() IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel {
+	return v.IssueLabel
+}
+
+// IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalIssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *IssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel) __premarshalJSON() (*__premarshalIssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel, error) {
+	var retval __premarshalIssueLabelCreateIssueLabelCreateIssueLabelPayloadIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// IssueLabelCreateResponse is returned by IssueLabelCreate on success.
+type IssueLabelCreateResponse struct {
+	// Creates a new label.
+	IssueLabelCreate IssueLabelCreateIssueLabelCreateIssueLabelPayload `json:"issueLabelCreate"`
+}
+
+// GetIssueLabelCreate returns IssueLabelCreateResponse.IssueLabelCreate, and is useful for accessing the field via an interface.
+func (v *IssueLabelCreateResponse) GetIssueLabelCreate() IssueLabelCreateIssueLabelCreateIssueLabelPayload {
+	return v.IssueLabelCreate
+}
+
+// IssueLabelRestoreIssueLabelRestoreIssueLabelPayload includes the requested fields of the GraphQL type IssueLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a label mutation, containing the created or updated label and a success indicator.
+type IssueLabelRestoreIssueLabelRestoreIssueLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	IssueLabel IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel `json:"issueLabel"`
+}
+
+// GetSuccess returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayload) GetSuccess() bool { return v.Success }
+
+// GetIssueLabel returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayload.IssueLabel, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayload) GetIssueLabel() IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel {
+	return v.IssueLabel
+}
+
+// IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalIssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *IssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel) __premarshalJSON() (*__premarshalIssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel, error) {
+	var retval __premarshalIssueLabelRestoreIssueLabelRestoreIssueLabelPayloadIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// IssueLabelRestoreResponse is returned by IssueLabelRestore on success.
+type IssueLabelRestoreResponse struct {
+	// Restores a previously retired label, making it available for use again.
+	IssueLabelRestore IssueLabelRestoreIssueLabelRestoreIssueLabelPayload `json:"issueLabelRestore"`
+}
+
+// GetIssueLabelRestore returns IssueLabelRestoreResponse.IssueLabelRestore, and is useful for accessing the field via an interface.
+func (v *IssueLabelRestoreResponse) GetIssueLabelRestore() IssueLabelRestoreIssueLabelRestoreIssueLabelPayload {
+	return v.IssueLabelRestore
+}
+
+// IssueLabelRetireIssueLabelRetireIssueLabelPayload includes the requested fields of the GraphQL type IssueLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a label mutation, containing the created or updated label and a success indicator.
+type IssueLabelRetireIssueLabelRetireIssueLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	IssueLabel IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel `json:"issueLabel"`
+}
+
+// GetSuccess returns IssueLabelRetireIssueLabelRetireIssueLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayload) GetSuccess() bool { return v.Success }
+
+// GetIssueLabel returns IssueLabelRetireIssueLabelRetireIssueLabelPayload.IssueLabel, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayload) GetIssueLabel() IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel {
+	return v.IssueLabel
+}
+
+// IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalIssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *IssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel) __premarshalJSON() (*__premarshalIssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel, error) {
+	var retval __premarshalIssueLabelRetireIssueLabelRetireIssueLabelPayloadIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// IssueLabelRetireResponse is returned by IssueLabelRetire on success.
+type IssueLabelRetireResponse struct {
+	// Retires a label. Retired labels are still visible but cannot be applied to new
+	// issues. Existing issues with the label are not affected.
+	IssueLabelRetire IssueLabelRetireIssueLabelRetireIssueLabelPayload `json:"issueLabelRetire"`
+}
+
+// GetIssueLabelRetire returns IssueLabelRetireResponse.IssueLabelRetire, and is useful for accessing the field via an interface.
+func (v *IssueLabelRetireResponse) GetIssueLabelRetire() IssueLabelRetireIssueLabelRetireIssueLabelPayload {
+	return v.IssueLabelRetire
+}
+
 // IssueLabelSummaryFields includes the GraphQL fields of IssueLabel requested by the fragment IssueLabelSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -6820,6 +7384,137 @@ func (v *IssueLabelSummaryFieldsTeam) GetKey() string { return v.Key }
 
 // GetName returns IssueLabelSummaryFieldsTeam.Name, and is useful for accessing the field via an interface.
 func (v *IssueLabelSummaryFieldsTeam) GetName() string { return v.Name }
+
+// IssueLabelUpdateIssueLabelUpdateIssueLabelPayload includes the requested fields of the GraphQL type IssueLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a label mutation, containing the created or updated label and a success indicator.
+type IssueLabelUpdateIssueLabelUpdateIssueLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	IssueLabel IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel `json:"issueLabel"`
+}
+
+// GetSuccess returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayload) GetSuccess() bool { return v.Success }
+
+// GetIssueLabel returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayload.IssueLabel, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayload) GetIssueLabel() IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel {
+	return v.IssueLabel
+}
+
+// IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel includes the requested fields of the GraphQL type IssueLabel.
+// The GraphQL type's documentation follows.
+//
+// Labels that can be associated with issues. Labels help categorize and filter
+// issues across a workspace. They can be workspace-level (shared across all teams)
+// or team-scoped. Labels have a color for visual identification and can be
+// organized hierarchically into groups, where a parent label acts as a group
+// containing child labels. Labels may also be inherited from parent teams to sub-teams.
+type IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel struct {
+	IssueLabelSummaryFields `json:"-"`
+}
+
+// GetId returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel.Id, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) GetId() string {
+	return v.IssueLabelSummaryFields.Id
+}
+
+// GetName returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel.Name, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) GetName() string {
+	return v.IssueLabelSummaryFields.Name
+}
+
+// GetDescription returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel.Description, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) GetDescription() *string {
+	return v.IssueLabelSummaryFields.Description
+}
+
+// GetColor returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel.Color, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) GetColor() string {
+	return v.IssueLabelSummaryFields.Color
+}
+
+// GetIsGroup returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) GetIsGroup() bool {
+	return v.IssueLabelSummaryFields.IsGroup
+}
+
+// GetTeam returns IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel.Team, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) GetTeam() *IssueLabelSummaryFieldsTeam {
+	return v.IssueLabelSummaryFields.Team
+}
+
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalIssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	Team *IssueLabelSummaryFieldsTeam `json:"team"`
+}
+
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *IssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel) __premarshalJSON() (*__premarshalIssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel, error) {
+	var retval __premarshalIssueLabelUpdateIssueLabelUpdateIssueLabelPayloadIssueLabel
+
+	retval.Id = v.IssueLabelSummaryFields.Id
+	retval.Name = v.IssueLabelSummaryFields.Name
+	retval.Description = v.IssueLabelSummaryFields.Description
+	retval.Color = v.IssueLabelSummaryFields.Color
+	retval.IsGroup = v.IssueLabelSummaryFields.IsGroup
+	retval.Team = v.IssueLabelSummaryFields.Team
+	return &retval, nil
+}
+
+// IssueLabelUpdateResponse is returned by IssueLabelUpdate on success.
+type IssueLabelUpdateResponse struct {
+	// Updates a label.
+	IssueLabelUpdate IssueLabelUpdateIssueLabelUpdateIssueLabelPayload `json:"issueLabelUpdate"`
+}
+
+// GetIssueLabelUpdate returns IssueLabelUpdateResponse.IssueLabelUpdate, and is useful for accessing the field via an interface.
+func (v *IssueLabelUpdateResponse) GetIssueLabelUpdate() IssueLabelUpdateIssueLabelUpdateIssueLabelPayload {
+	return v.IssueLabelUpdate
+}
 
 // IssueLabelsIssueLabelsIssueLabelConnection includes the requested fields of the GraphQL type IssueLabelConnection.
 type IssueLabelsIssueLabelsIssueLabelConnection struct {
@@ -7239,6 +7934,178 @@ func (v *IssueRelationSummaryFieldsRelatedIssue) GetIdentifier() string { return
 
 // GetTitle returns IssueRelationSummaryFieldsRelatedIssue.Title, and is useful for accessing the field via an interface.
 func (v *IssueRelationSummaryFieldsRelatedIssue) GetTitle() string { return v.Title }
+
+// IssueRemoveLabelIssueRemoveLabelIssuePayload includes the requested fields of the GraphQL type IssuePayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an issue mutation, containing the created or updated issue and a success indicator.
+type IssueRemoveLabelIssueRemoveLabelIssuePayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The issue that was created or updated.
+	Issue *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue `json:"issue"`
+}
+
+// GetSuccess returns IssueRemoveLabelIssueRemoveLabelIssuePayload.Success, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayload) GetSuccess() bool { return v.Success }
+
+// GetIssue returns IssueRemoveLabelIssueRemoveLabelIssuePayload.Issue, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayload) GetIssue() *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue {
+	return v.Issue
+}
+
+// IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue includes the requested fields of the GraphQL type Issue.
+// The GraphQL type's documentation follows.
+//
+// An issue is the core work item in Linear. Issues belong to a team, have a
+// workflow status, can be assigned to users, carry a priority level, and can be
+// organized into projects and cycles. Issues support sub-issues (parent-child
+// hierarchy up to 10 levels deep), labels, due dates, estimates, and SLA tracking.
+// They can also be linked to other issues via relations, attached to releases, and
+// tracked through their full history of changes.
+type IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue struct {
+	IssueSummaryFields `json:"-"`
+}
+
+// GetId returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Id, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetId() string {
+	return v.IssueSummaryFields.Id
+}
+
+// GetIdentifier returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Identifier, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetIdentifier() string {
+	return v.IssueSummaryFields.Identifier
+}
+
+// GetTitle returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Title, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetTitle() string {
+	return v.IssueSummaryFields.Title
+}
+
+// GetBranchName returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.BranchName, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetBranchName() string {
+	return v.IssueSummaryFields.BranchName
+}
+
+// GetUrl returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Url, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetUrl() string {
+	return v.IssueSummaryFields.Url
+}
+
+// GetPriority returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Priority, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetPriority() float64 {
+	return v.IssueSummaryFields.Priority
+}
+
+// GetPriorityLabel returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.PriorityLabel, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetPriorityLabel() string {
+	return v.IssueSummaryFields.PriorityLabel
+}
+
+// GetTeam returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Team, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetTeam() IssueSummaryFieldsTeam {
+	return v.IssueSummaryFields.Team
+}
+
+// GetState returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.State, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetState() IssueSummaryFieldsStateWorkflowState {
+	return v.IssueSummaryFields.State
+}
+
+// GetAssignee returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Assignee, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetAssignee() *IssueSummaryFieldsAssigneeUser {
+	return v.IssueSummaryFields.Assignee
+}
+
+// GetProject returns IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue.Project, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) GetProject() *IssueSummaryFieldsProject {
+	return v.IssueSummaryFields.Project
+}
+
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.IssueSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalIssueRemoveLabelIssueRemoveLabelIssuePayloadIssue struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Title string `json:"title"`
+
+	BranchName string `json:"branchName"`
+
+	Url string `json:"url"`
+
+	Priority float64 `json:"priority"`
+
+	PriorityLabel string `json:"priorityLabel"`
+
+	Team IssueSummaryFieldsTeam `json:"team"`
+
+	State IssueSummaryFieldsStateWorkflowState `json:"state"`
+
+	Assignee *IssueSummaryFieldsAssigneeUser `json:"assignee"`
+
+	Project *IssueSummaryFieldsProject `json:"project"`
+}
+
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *IssueRemoveLabelIssueRemoveLabelIssuePayloadIssue) __premarshalJSON() (*__premarshalIssueRemoveLabelIssueRemoveLabelIssuePayloadIssue, error) {
+	var retval __premarshalIssueRemoveLabelIssueRemoveLabelIssuePayloadIssue
+
+	retval.Id = v.IssueSummaryFields.Id
+	retval.Identifier = v.IssueSummaryFields.Identifier
+	retval.Title = v.IssueSummaryFields.Title
+	retval.BranchName = v.IssueSummaryFields.BranchName
+	retval.Url = v.IssueSummaryFields.Url
+	retval.Priority = v.IssueSummaryFields.Priority
+	retval.PriorityLabel = v.IssueSummaryFields.PriorityLabel
+	retval.Team = v.IssueSummaryFields.Team
+	retval.State = v.IssueSummaryFields.State
+	retval.Assignee = v.IssueSummaryFields.Assignee
+	retval.Project = v.IssueSummaryFields.Project
+	return &retval, nil
+}
+
+// IssueRemoveLabelResponse is returned by IssueRemoveLabel on success.
+type IssueRemoveLabelResponse struct {
+	// Removes a label from an issue.
+	IssueRemoveLabel IssueRemoveLabelIssueRemoveLabelIssuePayload `json:"issueRemoveLabel"`
+}
+
+// GetIssueRemoveLabel returns IssueRemoveLabelResponse.IssueRemoveLabel, and is useful for accessing the field via an interface.
+func (v *IssueRemoveLabelResponse) GetIssueRemoveLabel() IssueRemoveLabelIssueRemoveLabelIssuePayload {
+	return v.IssueRemoveLabel
+}
 
 // Issue update fields that are disallowed for users with only shared access.
 type IssueSharedAccessDisallowedField string
@@ -15434,6 +16301,159 @@ type OrganizationResponse struct {
 // GetOrganization returns OrganizationResponse.Organization, and is useful for accessing the field via an interface.
 func (v *OrganizationResponse) GetOrganization() OrganizationOrganization { return v.Organization }
 
+// ProjectAddLabelProjectAddLabelProjectPayload includes the requested fields of the GraphQL type ProjectPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a project mutation.
+type ProjectAddLabelProjectAddLabelProjectPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The project that was created or updated.
+	Project *ProjectAddLabelProjectAddLabelProjectPayloadProject `json:"project"`
+}
+
+// GetSuccess returns ProjectAddLabelProjectAddLabelProjectPayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayload) GetSuccess() bool { return v.Success }
+
+// GetProject returns ProjectAddLabelProjectAddLabelProjectPayload.Project, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayload) GetProject() *ProjectAddLabelProjectAddLabelProjectPayloadProject {
+	return v.Project
+}
+
+// ProjectAddLabelProjectAddLabelProjectPayloadProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type ProjectAddLabelProjectAddLabelProjectPayloadProject struct {
+	ProjectSummaryFields `json:"-"`
+}
+
+// GetId returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Id, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetId() string {
+	return v.ProjectSummaryFields.Id
+}
+
+// GetName returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Name, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetName() string {
+	return v.ProjectSummaryFields.Name
+}
+
+// GetDescription returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Description, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetDescription() string {
+	return v.ProjectSummaryFields.Description
+}
+
+// GetSlugId returns ProjectAddLabelProjectAddLabelProjectPayloadProject.SlugId, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetSlugId() string {
+	return v.ProjectSummaryFields.SlugId
+}
+
+// GetUrl returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Url, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetUrl() string {
+	return v.ProjectSummaryFields.Url
+}
+
+// GetPriority returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Priority, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetPriority() int {
+	return v.ProjectSummaryFields.Priority
+}
+
+// GetStatus returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Status, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetStatus() ProjectSummaryFieldsStatusProjectStatus {
+	return v.ProjectSummaryFields.Status
+}
+
+// GetLead returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Lead, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetLead() *ProjectSummaryFieldsLeadUser {
+	return v.ProjectSummaryFields.Lead
+}
+
+// GetTeams returns ProjectAddLabelProjectAddLabelProjectPayloadProject.Teams, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetTeams() ProjectSummaryFieldsTeamsTeamConnection {
+	return v.ProjectSummaryFields.Teams
+}
+
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ProjectAddLabelProjectAddLabelProjectPayloadProject
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ProjectAddLabelProjectAddLabelProjectPayloadProject = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalProjectAddLabelProjectAddLabelProjectPayloadProject struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description string `json:"description"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Priority int `json:"priority"`
+
+	Status ProjectSummaryFieldsStatusProjectStatus `json:"status"`
+
+	Lead *ProjectSummaryFieldsLeadUser `json:"lead"`
+
+	Teams ProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
+}
+
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) __premarshalJSON() (*__premarshalProjectAddLabelProjectAddLabelProjectPayloadProject, error) {
+	var retval __premarshalProjectAddLabelProjectAddLabelProjectPayloadProject
+
+	retval.Id = v.ProjectSummaryFields.Id
+	retval.Name = v.ProjectSummaryFields.Name
+	retval.Description = v.ProjectSummaryFields.Description
+	retval.SlugId = v.ProjectSummaryFields.SlugId
+	retval.Url = v.ProjectSummaryFields.Url
+	retval.Priority = v.ProjectSummaryFields.Priority
+	retval.Status = v.ProjectSummaryFields.Status
+	retval.Lead = v.ProjectSummaryFields.Lead
+	retval.Teams = v.ProjectSummaryFields.Teams
+	return &retval, nil
+}
+
+// ProjectAddLabelResponse is returned by ProjectAddLabel on success.
+type ProjectAddLabelResponse struct {
+	// Adds a label to a project.
+	ProjectAddLabel ProjectAddLabelProjectAddLabelProjectPayload `json:"projectAddLabel"`
+}
+
+// GetProjectAddLabel returns ProjectAddLabelResponse.ProjectAddLabel, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelResponse) GetProjectAddLabel() ProjectAddLabelProjectAddLabelProjectPayload {
+	return v.ProjectAddLabel
+}
+
 // ProjectArchiveProjectArchiveProjectArchivePayload includes the requested fields of the GraphQL type ProjectArchivePayload.
 // The GraphQL type's documentation follows.
 //
@@ -15831,6 +16851,539 @@ type ProjectHistorySummaryFieldsProject struct {
 // GetId returns ProjectHistorySummaryFieldsProject.Id, and is useful for accessing the field via an interface.
 func (v *ProjectHistorySummaryFieldsProject) GetId() string { return v.Id }
 
+// ProjectLabelCreateProjectLabelCreateProjectLabelPayload includes the requested fields of the GraphQL type ProjectLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a project label mutation.
+type ProjectLabelCreateProjectLabelCreateProjectLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	ProjectLabel ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel `json:"projectLabel"`
+}
+
+// GetSuccess returns ProjectLabelCreateProjectLabelCreateProjectLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayload) GetSuccess() bool { return v.Success }
+
+// GetProjectLabel returns ProjectLabelCreateProjectLabelCreateProjectLabelPayload.ProjectLabel, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayload) GetProjectLabel() ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel {
+	return v.ProjectLabel
+}
+
+// ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetId() string {
+	return v.ProjectLabelSummaryFields.Id
+}
+
+// GetName returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetName() string {
+	return v.ProjectLabelSummaryFields.Name
+}
+
+// GetDescription returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetColor() string {
+	return v.ProjectLabelSummaryFields.Color
+}
+
+// GetIsGroup returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetIsGroup() bool {
+	return v.ProjectLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetOrganization returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
+// GetParent returns ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel) __premarshalJSON() (*__premarshalProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel, error) {
+	var retval __premarshalProjectLabelCreateProjectLabelCreateProjectLabelPayloadProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// ProjectLabelCreateResponse is returned by ProjectLabelCreate on success.
+type ProjectLabelCreateResponse struct {
+	// Creates a new project label.
+	ProjectLabelCreate ProjectLabelCreateProjectLabelCreateProjectLabelPayload `json:"projectLabelCreate"`
+}
+
+// GetProjectLabelCreate returns ProjectLabelCreateResponse.ProjectLabelCreate, and is useful for accessing the field via an interface.
+func (v *ProjectLabelCreateResponse) GetProjectLabelCreate() ProjectLabelCreateProjectLabelCreateProjectLabelPayload {
+	return v.ProjectLabelCreate
+}
+
+// ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload includes the requested fields of the GraphQL type ProjectLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a project label mutation.
+type ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	ProjectLabel ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel `json:"projectLabel"`
+}
+
+// GetSuccess returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetProjectLabel returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload.ProjectLabel, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload) GetProjectLabel() ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel {
+	return v.ProjectLabel
+}
+
+// ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetId() string {
+	return v.ProjectLabelSummaryFields.Id
+}
+
+// GetName returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetName() string {
+	return v.ProjectLabelSummaryFields.Name
+}
+
+// GetDescription returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetColor() string {
+	return v.ProjectLabelSummaryFields.Color
+}
+
+// GetIsGroup returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetIsGroup() bool {
+	return v.ProjectLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetOrganization returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
+// GetParent returns ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel) __premarshalJSON() (*__premarshalProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel, error) {
+	var retval __premarshalProjectLabelRestoreProjectLabelRestoreProjectLabelPayloadProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// ProjectLabelRestoreResponse is returned by ProjectLabelRestore on success.
+type ProjectLabelRestoreResponse struct {
+	// Restores a previously retired project label, making it available for use on new projects.
+	ProjectLabelRestore ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload `json:"projectLabelRestore"`
+}
+
+// GetProjectLabelRestore returns ProjectLabelRestoreResponse.ProjectLabelRestore, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRestoreResponse) GetProjectLabelRestore() ProjectLabelRestoreProjectLabelRestoreProjectLabelPayload {
+	return v.ProjectLabelRestore
+}
+
+// ProjectLabelRetireProjectLabelRetireProjectLabelPayload includes the requested fields of the GraphQL type ProjectLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a project label mutation.
+type ProjectLabelRetireProjectLabelRetireProjectLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	ProjectLabel ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel `json:"projectLabel"`
+}
+
+// GetSuccess returns ProjectLabelRetireProjectLabelRetireProjectLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayload) GetSuccess() bool { return v.Success }
+
+// GetProjectLabel returns ProjectLabelRetireProjectLabelRetireProjectLabelPayload.ProjectLabel, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayload) GetProjectLabel() ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel {
+	return v.ProjectLabel
+}
+
+// ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetId() string {
+	return v.ProjectLabelSummaryFields.Id
+}
+
+// GetName returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetName() string {
+	return v.ProjectLabelSummaryFields.Name
+}
+
+// GetDescription returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetColor() string {
+	return v.ProjectLabelSummaryFields.Color
+}
+
+// GetIsGroup returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetIsGroup() bool {
+	return v.ProjectLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetOrganization returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
+// GetParent returns ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel) __premarshalJSON() (*__premarshalProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel, error) {
+	var retval __premarshalProjectLabelRetireProjectLabelRetireProjectLabelPayloadProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// ProjectLabelRetireResponse is returned by ProjectLabelRetire on success.
+type ProjectLabelRetireResponse struct {
+	// Retires a project label. Retired labels remain on existing projects but cannot be applied to new ones.
+	ProjectLabelRetire ProjectLabelRetireProjectLabelRetireProjectLabelPayload `json:"projectLabelRetire"`
+}
+
+// GetProjectLabelRetire returns ProjectLabelRetireResponse.ProjectLabelRetire, and is useful for accessing the field via an interface.
+func (v *ProjectLabelRetireResponse) GetProjectLabelRetire() ProjectLabelRetireProjectLabelRetireProjectLabelPayload {
+	return v.ProjectLabelRetire
+}
+
 // ProjectLabelSummaryFields includes the GraphQL fields of ProjectLabel requested by the fragment ProjectLabelSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -15861,6 +17414,8 @@ type ProjectLabelSummaryFields struct {
 	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
 	// been updated after creation.
 	UpdatedAt string `json:"updatedAt"`
+	// The workspace that the project label belongs to.
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
 	// The parent label group. If set, this label is a child within a group. Only one
 	// child label from each group can be applied to a project at a time.
 	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
@@ -15896,10 +17451,30 @@ func (v *ProjectLabelSummaryFields) GetCreatedAt() string { return v.CreatedAt }
 // GetUpdatedAt returns ProjectLabelSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
 func (v *ProjectLabelSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
 
+// GetOrganization returns ProjectLabelSummaryFields.Organization, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFields) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.Organization
+}
+
 // GetParent returns ProjectLabelSummaryFields.Parent, and is useful for accessing the field via an interface.
 func (v *ProjectLabelSummaryFields) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
 	return v.Parent
 }
+
+// ProjectLabelSummaryFieldsOrganization includes the requested fields of the GraphQL type Organization.
+// The GraphQL type's documentation follows.
+//
+// A workspace (referred to as Organization in the API). Workspaces are the
+// root-level container for all teams, users, projects, issues, and settings. Every
+// user belongs to at least one workspace, and all data is scoped within a
+// workspace boundary.
+type ProjectLabelSummaryFieldsOrganization struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns ProjectLabelSummaryFieldsOrganization.Id, and is useful for accessing the field via an interface.
+func (v *ProjectLabelSummaryFieldsOrganization) GetId() string { return v.Id }
 
 // ProjectLabelSummaryFieldsParentProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
 // The GraphQL type's documentation follows.
@@ -15924,6 +17499,183 @@ func (v *ProjectLabelSummaryFieldsParentProjectLabel) GetName() string { return 
 
 // GetColor returns ProjectLabelSummaryFieldsParentProjectLabel.Color, and is useful for accessing the field via an interface.
 func (v *ProjectLabelSummaryFieldsParentProjectLabel) GetColor() string { return v.Color }
+
+// ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload includes the requested fields of the GraphQL type ProjectLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a project label mutation.
+type ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	ProjectLabel ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel `json:"projectLabel"`
+}
+
+// GetSuccess returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload) GetSuccess() bool { return v.Success }
+
+// GetProjectLabel returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload.ProjectLabel, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload) GetProjectLabel() ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel {
+	return v.ProjectLabel
+}
+
+// ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel includes the requested fields of the GraphQL type ProjectLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to projects for categorization. Project labels are
+// workspace-level and can be organized into groups with a parent-child hierarchy.
+// Only child labels (not group labels) can be directly applied to projects.
+type ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel struct {
+	ProjectLabelSummaryFields `json:"-"`
+}
+
+// GetId returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.Id, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetId() string {
+	return v.ProjectLabelSummaryFields.Id
+}
+
+// GetName returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.Name, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetName() string {
+	return v.ProjectLabelSummaryFields.Name
+}
+
+// GetDescription returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.Description, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetDescription() *string {
+	return v.ProjectLabelSummaryFields.Description
+}
+
+// GetColor returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.Color, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetColor() string {
+	return v.ProjectLabelSummaryFields.Color
+}
+
+// GetIsGroup returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetIsGroup() bool {
+	return v.ProjectLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetLastAppliedAt() *string {
+	return v.ProjectLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetRetiredAt() *string {
+	return v.ProjectLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetArchivedAt() *string {
+	return v.ProjectLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetCreatedAt() string {
+	return v.ProjectLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetUpdatedAt() string {
+	return v.ProjectLabelSummaryFields.UpdatedAt
+}
+
+// GetOrganization returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
+// GetParent returns ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel.Parent, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
+	return v.ProjectLabelSummaryFields.Parent
+}
+
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
+	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
+}
+
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel) __premarshalJSON() (*__premarshalProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel, error) {
+	var retval __premarshalProjectLabelUpdateProjectLabelUpdateProjectLabelPayloadProjectLabel
+
+	retval.Id = v.ProjectLabelSummaryFields.Id
+	retval.Name = v.ProjectLabelSummaryFields.Name
+	retval.Description = v.ProjectLabelSummaryFields.Description
+	retval.Color = v.ProjectLabelSummaryFields.Color
+	retval.IsGroup = v.ProjectLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.ProjectLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.ProjectLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
+	retval.Parent = v.ProjectLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// ProjectLabelUpdateResponse is returned by ProjectLabelUpdate on success.
+type ProjectLabelUpdateResponse struct {
+	// Updates a project label.
+	ProjectLabelUpdate ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload `json:"projectLabelUpdate"`
+}
+
+// GetProjectLabelUpdate returns ProjectLabelUpdateResponse.ProjectLabelUpdate, and is useful for accessing the field via an interface.
+func (v *ProjectLabelUpdateResponse) GetProjectLabelUpdate() ProjectLabelUpdateProjectLabelUpdateProjectLabelPayload {
+	return v.ProjectLabelUpdate
+}
 
 // ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayload includes the requested fields of the GraphQL type ProjectMilestonePayload.
 // The GraphQL type's documentation follows.
@@ -16743,6 +18495,159 @@ func (v *ProjectRelationSummaryFieldsUser) GetName() string { return v.Name }
 
 // GetDisplayName returns ProjectRelationSummaryFieldsUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *ProjectRelationSummaryFieldsUser) GetDisplayName() string { return v.DisplayName }
+
+// ProjectRemoveLabelProjectRemoveLabelProjectPayload includes the requested fields of the GraphQL type ProjectPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of a project mutation.
+type ProjectRemoveLabelProjectRemoveLabelProjectPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The project that was created or updated.
+	Project *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject `json:"project"`
+}
+
+// GetSuccess returns ProjectRemoveLabelProjectRemoveLabelProjectPayload.Success, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayload) GetSuccess() bool { return v.Success }
+
+// GetProject returns ProjectRemoveLabelProjectRemoveLabelProjectPayload.Project, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayload) GetProject() *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject {
+	return v.Project
+}
+
+// ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// A project is a collection of issues working toward a shared goal. Projects have
+// start and target dates, milestones, status tracking, and progress metrics. They
+// can span multiple teams and be grouped under initiatives.
+type ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject struct {
+	ProjectSummaryFields `json:"-"`
+}
+
+// GetId returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Id, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetId() string {
+	return v.ProjectSummaryFields.Id
+}
+
+// GetName returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Name, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetName() string {
+	return v.ProjectSummaryFields.Name
+}
+
+// GetDescription returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Description, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetDescription() string {
+	return v.ProjectSummaryFields.Description
+}
+
+// GetSlugId returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.SlugId, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetSlugId() string {
+	return v.ProjectSummaryFields.SlugId
+}
+
+// GetUrl returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Url, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetUrl() string {
+	return v.ProjectSummaryFields.Url
+}
+
+// GetPriority returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Priority, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetPriority() int {
+	return v.ProjectSummaryFields.Priority
+}
+
+// GetStatus returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Status, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetStatus() ProjectSummaryFieldsStatusProjectStatus {
+	return v.ProjectSummaryFields.Status
+}
+
+// GetLead returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Lead, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetLead() *ProjectSummaryFieldsLeadUser {
+	return v.ProjectSummaryFields.Lead
+}
+
+// GetTeams returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.Teams, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetTeams() ProjectSummaryFieldsTeamsTeamConnection {
+	return v.ProjectSummaryFields.Teams
+}
+
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ProjectSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalProjectRemoveLabelProjectRemoveLabelProjectPayloadProject struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description string `json:"description"`
+
+	SlugId string `json:"slugId"`
+
+	Url string `json:"url"`
+
+	Priority int `json:"priority"`
+
+	Status ProjectSummaryFieldsStatusProjectStatus `json:"status"`
+
+	Lead *ProjectSummaryFieldsLeadUser `json:"lead"`
+
+	Teams ProjectSummaryFieldsTeamsTeamConnection `json:"teams"`
+}
+
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) __premarshalJSON() (*__premarshalProjectRemoveLabelProjectRemoveLabelProjectPayloadProject, error) {
+	var retval __premarshalProjectRemoveLabelProjectRemoveLabelProjectPayloadProject
+
+	retval.Id = v.ProjectSummaryFields.Id
+	retval.Name = v.ProjectSummaryFields.Name
+	retval.Description = v.ProjectSummaryFields.Description
+	retval.SlugId = v.ProjectSummaryFields.SlugId
+	retval.Url = v.ProjectSummaryFields.Url
+	retval.Priority = v.ProjectSummaryFields.Priority
+	retval.Status = v.ProjectSummaryFields.Status
+	retval.Lead = v.ProjectSummaryFields.Lead
+	retval.Teams = v.ProjectSummaryFields.Teams
+	return &retval, nil
+}
+
+// ProjectRemoveLabelResponse is returned by ProjectRemoveLabel on success.
+type ProjectRemoveLabelResponse struct {
+	// Removes a label from a project.
+	ProjectRemoveLabel ProjectRemoveLabelProjectRemoveLabelProjectPayload `json:"projectRemoveLabel"`
+}
+
+// GetProjectRemoveLabel returns ProjectRemoveLabelResponse.ProjectRemoveLabel, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelResponse) GetProjectRemoveLabel() ProjectRemoveLabelProjectRemoveLabelProjectPayload {
+	return v.ProjectRemoveLabel
+}
 
 // ProjectStatusSummaryFields includes the GraphQL fields of ProjectStatus requested by the fragment ProjectStatusSummaryFields.
 // The GraphQL type's documentation follows.
@@ -21343,6 +23248,18 @@ func (v *__DocumentsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __DocumentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__DocumentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __IssueAddLabelInput is used internally by genqlient
+type __IssueAddLabelInput struct {
+	Id      string `json:"id"`
+	LabelId string `json:"labelId"`
+}
+
+// GetId returns __IssueAddLabelInput.Id, and is useful for accessing the field via an interface.
+func (v *__IssueAddLabelInput) GetId() string { return v.Id }
+
+// GetLabelId returns __IssueAddLabelInput.LabelId, and is useful for accessing the field via an interface.
+func (v *__IssueAddLabelInput) GetLabelId() string { return v.LabelId }
+
 // __IssueArchiveInput is used internally by genqlient
 type __IssueArchiveInput struct {
 	Id    string `json:"id"`
@@ -21423,6 +23340,50 @@ func (v *__IssueDependenciesInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __IssueDependenciesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__IssueDependenciesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __IssueLabelCreateInput is used internally by genqlient
+type __IssueLabelCreateInput struct {
+	ReplaceTeamLabels *bool                       `json:"replaceTeamLabels"`
+	Input             LinearIssueLabelCreateInput `json:"input"`
+}
+
+// GetReplaceTeamLabels returns __IssueLabelCreateInput.ReplaceTeamLabels, and is useful for accessing the field via an interface.
+func (v *__IssueLabelCreateInput) GetReplaceTeamLabels() *bool { return v.ReplaceTeamLabels }
+
+// GetInput returns __IssueLabelCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__IssueLabelCreateInput) GetInput() LinearIssueLabelCreateInput { return v.Input }
+
+// __IssueLabelRestoreInput is used internally by genqlient
+type __IssueLabelRestoreInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __IssueLabelRestoreInput.Id, and is useful for accessing the field via an interface.
+func (v *__IssueLabelRestoreInput) GetId() string { return v.Id }
+
+// __IssueLabelRetireInput is used internally by genqlient
+type __IssueLabelRetireInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __IssueLabelRetireInput.Id, and is useful for accessing the field via an interface.
+func (v *__IssueLabelRetireInput) GetId() string { return v.Id }
+
+// __IssueLabelUpdateInput is used internally by genqlient
+type __IssueLabelUpdateInput struct {
+	Id                string                      `json:"id"`
+	ReplaceTeamLabels *bool                       `json:"replaceTeamLabels"`
+	Input             LinearIssueLabelUpdateInput `json:"input"`
+}
+
+// GetId returns __IssueLabelUpdateInput.Id, and is useful for accessing the field via an interface.
+func (v *__IssueLabelUpdateInput) GetId() string { return v.Id }
+
+// GetReplaceTeamLabels returns __IssueLabelUpdateInput.ReplaceTeamLabels, and is useful for accessing the field via an interface.
+func (v *__IssueLabelUpdateInput) GetReplaceTeamLabels() *bool { return v.ReplaceTeamLabels }
+
+// GetInput returns __IssueLabelUpdateInput.Input, and is useful for accessing the field via an interface.
+func (v *__IssueLabelUpdateInput) GetInput() LinearIssueLabelUpdateInput { return v.Input }
+
 // __IssueLabelsInput is used internally by genqlient
 type __IssueLabelsInput struct {
 	First           *int    `json:"first"`
@@ -21454,6 +23415,18 @@ type __IssueRelationDeleteInput struct {
 
 // GetId returns __IssueRelationDeleteInput.Id, and is useful for accessing the field via an interface.
 func (v *__IssueRelationDeleteInput) GetId() string { return v.Id }
+
+// __IssueRemoveLabelInput is used internally by genqlient
+type __IssueRemoveLabelInput struct {
+	Id      string `json:"id"`
+	LabelId string `json:"labelId"`
+}
+
+// GetId returns __IssueRemoveLabelInput.Id, and is useful for accessing the field via an interface.
+func (v *__IssueRemoveLabelInput) GetId() string { return v.Id }
+
+// GetLabelId returns __IssueRemoveLabelInput.LabelId, and is useful for accessing the field via an interface.
+func (v *__IssueRemoveLabelInput) GetLabelId() string { return v.LabelId }
 
 // __IssueUpdateInput is used internally by genqlient
 type __IssueUpdateInput struct {
@@ -21715,6 +23688,18 @@ func (v *__NextIssuesByTeamInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __NextIssuesByTeamInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__NextIssuesByTeamInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __ProjectAddLabelInput is used internally by genqlient
+type __ProjectAddLabelInput struct {
+	Id      string `json:"id"`
+	LabelId string `json:"labelId"`
+}
+
+// GetId returns __ProjectAddLabelInput.Id, and is useful for accessing the field via an interface.
+func (v *__ProjectAddLabelInput) GetId() string { return v.Id }
+
+// GetLabelId returns __ProjectAddLabelInput.LabelId, and is useful for accessing the field via an interface.
+func (v *__ProjectAddLabelInput) GetLabelId() string { return v.LabelId }
+
 // __ProjectArchiveInput is used internally by genqlient
 type __ProjectArchiveInput struct {
 	Id    string `json:"id"`
@@ -21734,6 +23719,42 @@ type __ProjectCreateInput struct {
 
 // GetInput returns __ProjectCreateInput.Input, and is useful for accessing the field via an interface.
 func (v *__ProjectCreateInput) GetInput() LinearProjectCreateInput { return v.Input }
+
+// __ProjectLabelCreateInput is used internally by genqlient
+type __ProjectLabelCreateInput struct {
+	Input LinearProjectLabelCreateInput `json:"input"`
+}
+
+// GetInput returns __ProjectLabelCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__ProjectLabelCreateInput) GetInput() LinearProjectLabelCreateInput { return v.Input }
+
+// __ProjectLabelRestoreInput is used internally by genqlient
+type __ProjectLabelRestoreInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __ProjectLabelRestoreInput.Id, and is useful for accessing the field via an interface.
+func (v *__ProjectLabelRestoreInput) GetId() string { return v.Id }
+
+// __ProjectLabelRetireInput is used internally by genqlient
+type __ProjectLabelRetireInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __ProjectLabelRetireInput.Id, and is useful for accessing the field via an interface.
+func (v *__ProjectLabelRetireInput) GetId() string { return v.Id }
+
+// __ProjectLabelUpdateInput is used internally by genqlient
+type __ProjectLabelUpdateInput struct {
+	Id    string                        `json:"id"`
+	Input LinearProjectLabelUpdateInput `json:"input"`
+}
+
+// GetId returns __ProjectLabelUpdateInput.Id, and is useful for accessing the field via an interface.
+func (v *__ProjectLabelUpdateInput) GetId() string { return v.Id }
+
+// GetInput returns __ProjectLabelUpdateInput.Input, and is useful for accessing the field via an interface.
+func (v *__ProjectLabelUpdateInput) GetInput() LinearProjectLabelUpdateInput { return v.Input }
 
 // __ProjectMilestoneCreateInput is used internally by genqlient
 type __ProjectMilestoneCreateInput struct {
@@ -21762,6 +23783,18 @@ func (v *__ProjectMilestoneUpdateInput) GetId() string { return v.Id }
 
 // GetInput returns __ProjectMilestoneUpdateInput.Input, and is useful for accessing the field via an interface.
 func (v *__ProjectMilestoneUpdateInput) GetInput() LinearProjectMilestoneUpdateInput { return v.Input }
+
+// __ProjectRemoveLabelInput is used internally by genqlient
+type __ProjectRemoveLabelInput struct {
+	Id      string `json:"id"`
+	LabelId string `json:"labelId"`
+}
+
+// GetId returns __ProjectRemoveLabelInput.Id, and is useful for accessing the field via an interface.
+func (v *__ProjectRemoveLabelInput) GetId() string { return v.Id }
+
+// GetLabelId returns __ProjectRemoveLabelInput.LabelId, and is useful for accessing the field via an interface.
+func (v *__ProjectRemoveLabelInput) GetLabelId() string { return v.LabelId }
 
 // __ProjectUpdateCreateInput is used internally by genqlient
 type __ProjectUpdateCreateInput struct {
@@ -55955,6 +57988,11 @@ func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnecti
 	return v.ProjectLabelSummaryFields.UpdatedAt
 }
 
+// GetOrganization returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
 // GetParent returns organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel.Parent, and is useful for accessing the field via an interface.
 func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
 	return v.ProjectLabelSummaryFields.Parent
@@ -56006,6 +58044,8 @@ type __premarshalorganization_projectLabelsOrganizationProjectLabelsProjectLabel
 
 	UpdatedAt string `json:"updatedAt"`
 
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
 	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
 }
 
@@ -56030,6 +58070,7 @@ func (v *organization_projectLabelsOrganizationProjectLabelsProjectLabelConnecti
 	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
 	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
 	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
 	retval.Parent = v.ProjectLabelSummaryFields.Parent
 	return &retval, nil
 }
@@ -56725,6 +58766,11 @@ func (v *projectLabelProjectLabel) GetUpdatedAt() string {
 	return v.ProjectLabelSummaryFields.UpdatedAt
 }
 
+// GetOrganization returns projectLabelProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *projectLabelProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
 // GetParent returns projectLabelProjectLabel.Parent, and is useful for accessing the field via an interface.
 func (v *projectLabelProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
 	return v.ProjectLabelSummaryFields.Parent
@@ -56776,6 +58822,8 @@ type __premarshalprojectLabelProjectLabel struct {
 
 	UpdatedAt string `json:"updatedAt"`
 
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
 	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
 }
 
@@ -56800,6 +58848,7 @@ func (v *projectLabelProjectLabel) __premarshalJSON() (*__premarshalprojectLabel
 	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
 	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
 	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
 	retval.Parent = v.ProjectLabelSummaryFields.Parent
 	return &retval, nil
 }
@@ -56915,6 +58964,11 @@ func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesPro
 	return v.ProjectLabelSummaryFields.UpdatedAt
 }
 
+// GetOrganization returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
 // GetParent returns projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel.Parent, and is useful for accessing the field via an interface.
 func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
 	return v.ProjectLabelSummaryFields.Parent
@@ -56966,6 +59020,8 @@ type __premarshalprojectLabel_childrenProjectLabelChildrenProjectLabelConnection
 
 	UpdatedAt string `json:"updatedAt"`
 
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
 	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
 }
 
@@ -56990,6 +59046,7 @@ func (v *projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesPro
 	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
 	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
 	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
 	retval.Parent = v.ProjectLabelSummaryFields.Parent
 	return &retval, nil
 }
@@ -57293,6 +59350,11 @@ func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetU
 	return v.ProjectLabelSummaryFields.UpdatedAt
 }
 
+// GetOrganization returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
 // GetParent returns projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Parent, and is useful for accessing the field via an interface.
 func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
 	return v.ProjectLabelSummaryFields.Parent
@@ -57344,6 +59406,8 @@ type __premarshalprojectLabelsProjectLabelsProjectLabelConnectionNodesProjectLab
 
 	UpdatedAt string `json:"updatedAt"`
 
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
 	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
 }
 
@@ -57368,6 +59432,7 @@ func (v *projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel) __pr
 	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
 	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
 	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
 	retval.Parent = v.ProjectLabelSummaryFields.Parent
 	return &retval, nil
 }
@@ -61159,6 +63224,11 @@ func (v *project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel) Get
 	return v.ProjectLabelSummaryFields.UpdatedAt
 }
 
+// GetOrganization returns project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Organization, and is useful for accessing the field via an interface.
+func (v *project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetOrganization() ProjectLabelSummaryFieldsOrganization {
+	return v.ProjectLabelSummaryFields.Organization
+}
+
 // GetParent returns project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel.Parent, and is useful for accessing the field via an interface.
 func (v *project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel) GetParent() *ProjectLabelSummaryFieldsParentProjectLabel {
 	return v.ProjectLabelSummaryFields.Parent
@@ -61210,6 +63280,8 @@ type __premarshalproject_labelsProjectLabelsProjectLabelConnectionNodesProjectLa
 
 	UpdatedAt string `json:"updatedAt"`
 
+	Organization ProjectLabelSummaryFieldsOrganization `json:"organization"`
+
 	Parent *ProjectLabelSummaryFieldsParentProjectLabel `json:"parent"`
 }
 
@@ -61234,6 +63306,7 @@ func (v *project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel) __p
 	retval.ArchivedAt = v.ProjectLabelSummaryFields.ArchivedAt
 	retval.CreatedAt = v.ProjectLabelSummaryFields.CreatedAt
 	retval.UpdatedAt = v.ProjectLabelSummaryFields.UpdatedAt
+	retval.Organization = v.ProjectLabelSummaryFields.Organization
 	retval.Parent = v.ProjectLabelSummaryFields.Parent
 	return &retval, nil
 }
@@ -76750,6 +78823,73 @@ func Documents(
 	return data_, err_
 }
 
+// The mutation executed by IssueAddLabel.
+const IssueAddLabel_Operation = `
+mutation IssueAddLabel ($id: String!, $labelId: String!) {
+	issueAddLabel(id: $id, labelId: $labelId) {
+		success
+		issue {
+			... IssueSummaryFields
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func IssueAddLabel(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	labelId string,
+) (data_ *IssueAddLabelResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueAddLabel",
+		Query:  IssueAddLabel_Operation,
+		Variables: &__IssueAddLabelInput{
+			Id:      id,
+			LabelId: labelId,
+		},
+	}
+
+	data_ = &IssueAddLabelResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by IssueArchive.
 const IssueArchive_Operation = `
 mutation IssueArchive ($id: String!, $trash: Boolean) {
@@ -77208,6 +79348,208 @@ func IssueDependencies(
 	return data_, err_
 }
 
+// The mutation executed by IssueLabelCreate.
+const IssueLabelCreate_Operation = `
+mutation IssueLabelCreate ($replaceTeamLabels: Boolean, $input: IssueLabelCreateInput!) {
+	issueLabelCreate(replaceTeamLabels: $replaceTeamLabels, input: $input) {
+		success
+		issueLabel {
+			... IssueLabelSummaryFields
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func IssueLabelCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	replaceTeamLabels *bool,
+	input LinearIssueLabelCreateInput,
+) (data_ *IssueLabelCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueLabelCreate",
+		Query:  IssueLabelCreate_Operation,
+		Variables: &__IssueLabelCreateInput{
+			ReplaceTeamLabels: replaceTeamLabels,
+			Input:             input,
+		},
+	}
+
+	data_ = &IssueLabelCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by IssueLabelRestore.
+const IssueLabelRestore_Operation = `
+mutation IssueLabelRestore ($id: String!) {
+	issueLabelRestore(id: $id) {
+		success
+		issueLabel {
+			... IssueLabelSummaryFields
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func IssueLabelRestore(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *IssueLabelRestoreResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueLabelRestore",
+		Query:  IssueLabelRestore_Operation,
+		Variables: &__IssueLabelRestoreInput{
+			Id: id,
+		},
+	}
+
+	data_ = &IssueLabelRestoreResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by IssueLabelRetire.
+const IssueLabelRetire_Operation = `
+mutation IssueLabelRetire ($id: String!) {
+	issueLabelRetire(id: $id) {
+		success
+		issueLabel {
+			... IssueLabelSummaryFields
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func IssueLabelRetire(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *IssueLabelRetireResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueLabelRetire",
+		Query:  IssueLabelRetire_Operation,
+		Variables: &__IssueLabelRetireInput{
+			Id: id,
+		},
+	}
+
+	data_ = &IssueLabelRetireResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by IssueLabelUpdate.
+const IssueLabelUpdate_Operation = `
+mutation IssueLabelUpdate ($id: String!, $replaceTeamLabels: Boolean, $input: IssueLabelUpdateInput!) {
+	issueLabelUpdate(id: $id, replaceTeamLabels: $replaceTeamLabels, input: $input) {
+		success
+		issueLabel {
+			... IssueLabelSummaryFields
+		}
+	}
+}
+fragment IssueLabelSummaryFields on IssueLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func IssueLabelUpdate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	replaceTeamLabels *bool,
+	input LinearIssueLabelUpdateInput,
+) (data_ *IssueLabelUpdateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueLabelUpdate",
+		Query:  IssueLabelUpdate_Operation,
+		Variables: &__IssueLabelUpdateInput{
+			Id:                id,
+			ReplaceTeamLabels: replaceTeamLabels,
+			Input:             input,
+		},
+	}
+
+	data_ = &IssueLabelUpdateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by IssueLabels.
 const IssueLabels_Operation = `
 query IssueLabels ($first: Int, $after: String, $includeArchived: Boolean) {
@@ -77342,6 +79684,73 @@ func IssueRelationDelete(
 	}
 
 	data_ = &IssueRelationDeleteResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by IssueRemoveLabel.
+const IssueRemoveLabel_Operation = `
+mutation IssueRemoveLabel ($id: String!, $labelId: String!) {
+	issueRemoveLabel(id: $id, labelId: $labelId) {
+		success
+		issue {
+			... IssueSummaryFields
+		}
+	}
+}
+fragment IssueSummaryFields on Issue {
+	id
+	identifier
+	title
+	branchName
+	url
+	priority
+	priorityLabel
+	team {
+		id
+		key
+		name
+	}
+	state {
+		id
+		name
+		type
+	}
+	assignee {
+		id
+		name
+		displayName
+	}
+	project {
+		id
+		name
+	}
+}
+`
+
+func IssueRemoveLabel(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	labelId string,
+) (data_ *IssueRemoveLabelResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "IssueRemoveLabel",
+		Query:  IssueRemoveLabel_Operation,
+		Variables: &__IssueRemoveLabelInput{
+			Id:      id,
+			LabelId: labelId,
+		},
+	}
+
+	data_ = &IssueRemoveLabelResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -78292,6 +80701,70 @@ func Organization(
 	return data_, err_
 }
 
+// The mutation executed by ProjectAddLabel.
+const ProjectAddLabel_Operation = `
+mutation ProjectAddLabel ($id: String!, $labelId: String!) {
+	projectAddLabel(id: $id, labelId: $labelId) {
+		success
+		project {
+			... ProjectSummaryFields
+		}
+	}
+}
+fragment ProjectSummaryFields on Project {
+	id
+	name
+	description
+	slugId
+	url
+	priority
+	status {
+		id
+		name
+		type
+	}
+	lead {
+		id
+		name
+		displayName
+	}
+	teams(first: 50) {
+		nodes {
+			id
+			key
+			name
+		}
+	}
+}
+`
+
+func ProjectAddLabel(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	labelId string,
+) (data_ *ProjectAddLabelResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectAddLabel",
+		Query:  ProjectAddLabel_Operation,
+		Variables: &__ProjectAddLabelInput{
+			Id:      id,
+			LabelId: labelId,
+		},
+	}
+
+	data_ = &ProjectAddLabelResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by ProjectArchive.
 const ProjectArchive_Operation = `
 mutation ProjectArchive ($id: String!, $trash: Boolean) {
@@ -78407,6 +80880,236 @@ func ProjectCreate(
 	}
 
 	data_ = &ProjectCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by ProjectLabelCreate.
+const ProjectLabelCreate_Operation = `
+mutation ProjectLabelCreate ($input: ProjectLabelCreateInput!) {
+	projectLabelCreate(input: $input) {
+		success
+		projectLabel {
+			... ProjectLabelSummaryFields
+		}
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	organization {
+		id
+	}
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func ProjectLabelCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input LinearProjectLabelCreateInput,
+) (data_ *ProjectLabelCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectLabelCreate",
+		Query:  ProjectLabelCreate_Operation,
+		Variables: &__ProjectLabelCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &ProjectLabelCreateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by ProjectLabelRestore.
+const ProjectLabelRestore_Operation = `
+mutation ProjectLabelRestore ($id: String!) {
+	projectLabelRestore(id: $id) {
+		success
+		projectLabel {
+			... ProjectLabelSummaryFields
+		}
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	organization {
+		id
+	}
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func ProjectLabelRestore(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *ProjectLabelRestoreResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectLabelRestore",
+		Query:  ProjectLabelRestore_Operation,
+		Variables: &__ProjectLabelRestoreInput{
+			Id: id,
+		},
+	}
+
+	data_ = &ProjectLabelRestoreResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by ProjectLabelRetire.
+const ProjectLabelRetire_Operation = `
+mutation ProjectLabelRetire ($id: String!) {
+	projectLabelRetire(id: $id) {
+		success
+		projectLabel {
+			... ProjectLabelSummaryFields
+		}
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	organization {
+		id
+	}
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func ProjectLabelRetire(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *ProjectLabelRetireResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectLabelRetire",
+		Query:  ProjectLabelRetire_Operation,
+		Variables: &__ProjectLabelRetireInput{
+			Id: id,
+		},
+	}
+
+	data_ = &ProjectLabelRetireResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by ProjectLabelUpdate.
+const ProjectLabelUpdate_Operation = `
+mutation ProjectLabelUpdate ($id: String!, $input: ProjectLabelUpdateInput!) {
+	projectLabelUpdate(id: $id, input: $input) {
+		success
+		projectLabel {
+			... ProjectLabelSummaryFields
+		}
+	}
+}
+fragment ProjectLabelSummaryFields on ProjectLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	organization {
+		id
+	}
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func ProjectLabelUpdate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	input LinearProjectLabelUpdateInput,
+) (data_ *ProjectLabelUpdateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectLabelUpdate",
+		Query:  ProjectLabelUpdate_Operation,
+		Variables: &__ProjectLabelUpdateInput{
+			Id:    id,
+			Input: input,
+		},
+	}
+
+	data_ = &ProjectLabelUpdateResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -78592,6 +81295,70 @@ func ProjectMilestoneUpdate(
 	}
 
 	data_ = &ProjectMilestoneUpdateResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by ProjectRemoveLabel.
+const ProjectRemoveLabel_Operation = `
+mutation ProjectRemoveLabel ($id: String!, $labelId: String!) {
+	projectRemoveLabel(id: $id, labelId: $labelId) {
+		success
+		project {
+			... ProjectSummaryFields
+		}
+	}
+}
+fragment ProjectSummaryFields on Project {
+	id
+	name
+	description
+	slugId
+	url
+	priority
+	status {
+		id
+		name
+		type
+	}
+	lead {
+		id
+		name
+		displayName
+	}
+	teams(first: 50) {
+		nodes {
+			id
+			key
+			name
+		}
+	}
+}
+`
+
+func ProjectRemoveLabel(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	labelId string,
+) (data_ *ProjectRemoveLabelResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ProjectRemoveLabel",
+		Query:  ProjectRemoveLabel_Operation,
+		Variables: &__ProjectRemoveLabelInput{
+			Id:      id,
+			LabelId: labelId,
+		},
+	}
+
+	data_ = &ProjectRemoveLabelResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -87237,6 +90004,9 @@ fragment ProjectLabelSummaryFields on ProjectLabel {
 	archivedAt
 	createdAt
 	updatedAt
+	organization {
+		id
+	}
 	parent {
 		id
 		name
@@ -87577,6 +90347,9 @@ fragment ProjectLabelSummaryFields on ProjectLabel {
 	archivedAt
 	createdAt
 	updatedAt
+	organization {
+		id
+	}
 	parent {
 		id
 		name
@@ -87638,6 +90411,9 @@ fragment ProjectLabelSummaryFields on ProjectLabel {
 	archivedAt
 	createdAt
 	updatedAt
+	organization {
+		id
+	}
 	parent {
 		id
 		name
@@ -87776,6 +90552,9 @@ fragment ProjectLabelSummaryFields on ProjectLabel {
 	archivedAt
 	createdAt
 	updatedAt
+	organization {
+		id
+	}
 	parent {
 		id
 		name
@@ -89116,6 +91895,9 @@ fragment ProjectLabelSummaryFields on ProjectLabel {
 	archivedAt
 	createdAt
 	updatedAt
+	organization {
+		id
+	}
 	parent {
 		id
 		name

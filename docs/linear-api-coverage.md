@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 466 | 134 | 466 |
+| Upstream SDK root methods with generated local operations | 466 | 146 | 466 |
 | Upstream Query root fields used by generated local operations | 162 | 113 | 162 |
-| Upstream Mutation root fields used by generated local operations | 370 | 22 | 370 |
-| Local generated Go operations declared in GraphQL files | 318 | 318 | 318 |
-| Public CLI commands from command inventory | 421 | 296 | 421 |
+| Upstream Mutation root fields used by generated local operations | 370 | 34 | 370 |
+| Local generated Go operations declared in GraphQL files | 330 | 330 | 330 |
+| Public CLI commands from command inventory | 427 | 308 | 427 |
 
 ## Upstream SDK Root Methods
 
@@ -109,13 +109,13 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `createIntegrationsSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `createIssue` | method | generated_operation | local GraphQL operation uses this root |
 | `createIssueBatch` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createIssueLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createIssueLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `createIssueRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `createIssueToRelease` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createNotificationSubscription` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createOrganizationInvite` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createProject` | method | generated_operation | local GraphQL operation uses this root |
-| `createProjectLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createProjectLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `createProjectMilestone` | method | generated_operation | local GraphQL operation uses this root |
 | `createProjectRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createProjectStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -282,7 +282,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integrations` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettings` | method | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `issue` | method | generated_operation | local GraphQL operation uses this root |
-| `issueAddLabel` | method | blocked_needs_design | issue label mutation needs issue target pinning and target-mismatch tests |
+| `issueAddLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `issueExternalSyncDisable` | method | blocked_needs_design | issue external-sync disable changes integration state and needs explicit integration guard semantics |
 | `issueFigmaFileKeySearch` | method | generated_operation | local GraphQL operation uses this root |
 | `issueFilterSuggestion` | method | generated_operation | local GraphQL operation uses this root |
@@ -296,14 +296,14 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueImportJqlCheck` | method | blocked_needs_design | JQL import validation can expose external tracker payloads and needs an explicit redaction/output model |
 | `issueImportProcess` | method | blocked_needs_design | issue import processing advances external import workflow state and needs explicit integration guard semantics |
 | `issueLabel` | method | generated_operation | local GraphQL operation uses this root |
-| `issueLabelRestore` | method | blocked_needs_design | issue label lifecycle restore needs explicit organization/admin safety semantics |
-| `issueLabelRetire` | method | blocked_needs_design | issue label lifecycle retire needs explicit organization/admin safety semantics |
+| `issueLabelRestore` | method | generated_operation | local GraphQL operation uses this root |
+| `issueLabelRetire` | method | generated_operation | local GraphQL operation uses this root |
 | `issueLabels` | method | generated_operation | local GraphQL operation uses this root |
 | `issuePriorityValues` | getter | generated_operation | local GraphQL operation uses this root |
 | `issueRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `issueRelations` | method | generated_operation | local GraphQL operation uses this root |
 | `issueReminder` | method | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
-| `issueRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `issueRemoveLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `issueRepositorySuggestions` | method | intentionally_excluded | repository suggestion reads expose VCS integration metadata outside the default Linear work CLI surface |
 | `issueSearch` | method | generated_operation | local GraphQL operation uses this root |
 | `issueShare` | method | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
@@ -338,18 +338,18 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationStartTrial` | getter | blocked_needs_design | mutation needs product and safety design |
 | `organizationStartTrialForPlan` | method | blocked_needs_design | mutation needs product and safety design |
 | `project` | method | generated_operation | local GraphQL operation uses this root |
-| `projectAddLabel` | method | blocked_needs_design | project label mutation needs project target pinning and target-mismatch tests |
+| `projectAddLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `projectExternalSyncDisable` | method | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
 | `projectFilterSuggestion` | method | generated_operation | local GraphQL operation uses this root |
 | `projectLabel` | method | generated_operation | local GraphQL operation uses this root |
-| `projectLabelRestore` | method | blocked_needs_design | project label lifecycle restore needs explicit organization/admin safety semantics |
-| `projectLabelRetire` | method | blocked_needs_design | project label lifecycle retire needs explicit organization/admin safety semantics |
+| `projectLabelRestore` | method | generated_operation | local GraphQL operation uses this root |
+| `projectLabelRetire` | method | generated_operation | local GraphQL operation uses this root |
 | `projectLabels` | method | generated_operation | local GraphQL operation uses this root |
 | `projectMilestone` | method | generated_operation | local GraphQL operation uses this root |
 | `projectMilestones` | method | generated_operation | local GraphQL operation uses this root |
 | `projectRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `projectRelations` | method | generated_operation | local GraphQL operation uses this root |
-| `projectRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `projectRemoveLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `projectStatus` | method | generated_operation | local GraphQL operation uses this root |
 | `projectStatuses` | method | generated_operation | local GraphQL operation uses this root |
 | `projectUpdate` | method | generated_operation | local GraphQL operation uses this root |
@@ -445,7 +445,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `updateIssue` | method | generated_operation | local GraphQL operation uses this root |
 | `updateIssueBatch` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateIssueImport` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `updateIssueLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `updateIssueLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `updateIssueRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateNotification` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateNotificationCategoryChannelSubscription` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -453,7 +453,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `updateOrganization` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateOrganizationInvite` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateProject` | method | generated_operation | local GraphQL operation uses this root |
-| `updateProjectLabel` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `updateProjectLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `updateProjectMilestone` | method | generated_operation | local GraphQL operation uses this root |
 | `updateProjectRelation` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `updateProjectStatus` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -844,7 +844,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `integrationZendesk` | `IntegrationPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettingsCreate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
 | `integrationsSettingsUpdate` | `IntegrationsSettingsPayload!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `issueAddLabel` | `IssuePayload!` | blocked_needs_design | issue label mutation needs issue target pinning and target-mismatch tests |
+| `issueAddLabel` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueArchive` | `IssueArchivePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueBatchCreate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueBatchUpdate` | `IssueBatchPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -861,16 +861,16 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `issueImportDelete` | `IssueImportDeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `issueImportProcess` | `IssueImportPayload!` | blocked_needs_design | issue import processing advances external import workflow state and needs explicit integration guard semantics |
 | `issueImportUpdate` | `IssueImportPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `issueLabelCreate` | `IssueLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `issueLabelCreate` | `IssueLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `issueLabelRestore` | `IssueLabelPayload!` | blocked_needs_design | issue label lifecycle restore needs explicit organization/admin safety semantics |
-| `issueLabelRetire` | `IssueLabelPayload!` | blocked_needs_design | issue label lifecycle retire needs explicit organization/admin safety semantics |
-| `issueLabelUpdate` | `IssueLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `issueLabelRestore` | `IssueLabelPayload!` | generated_operation | root field used by local GraphQL operation |
+| `issueLabelRetire` | `IssueLabelPayload!` | generated_operation | root field used by local GraphQL operation |
+| `issueLabelUpdate` | `IssueLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueRelationCreate` | `IssueRelationPayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueRelationDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueRelationUpdate` | `IssueRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `issueReminder` | `IssuePayload!` | blocked_needs_design | issue reminder mutation changes notification state and needs target-pinned guard semantics |
-| `issueRemoveLabel` | `IssuePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `issueRemoveLabel` | `IssuePayload!` | generated_operation | root field used by local GraphQL operation |
 | `issueShare` | `IssuePayload!` | blocked_needs_design | issue sharing changes access state and needs target-pinned guard semantics |
 | `issueSubscribe` | `IssuePayload!` | blocked_needs_design | issue subscription changes notification state and needs target-pinned guard semantics |
 | `issueToReleaseCreate` | `IssueToReleasePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -920,17 +920,17 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | mutation needs product and safety design |
-| `projectAddLabel` | `ProjectPayload!` | blocked_needs_design | project label mutation needs project target pinning and target-mismatch tests |
+| `projectAddLabel` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectArchive` | `ProjectArchivePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreate` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectCreateSlackChannel` | `ProjectPayload!` | blocked_needs_design | project Slack channel creation mutates chat integration state and needs explicit integration guard semantics |
 | `projectDelete` | `ProjectArchivePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectExternalSyncDisable` | `ProjectPayload!` | blocked_needs_design | project external-sync disable changes integration state and needs explicit integration guard semantics |
-| `projectLabelCreate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectLabelCreate` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `projectLabelRestore` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle restore needs explicit organization/admin safety semantics |
-| `projectLabelRetire` | `ProjectLabelPayload!` | blocked_needs_design | project label lifecycle retire needs explicit organization/admin safety semantics |
-| `projectLabelUpdate` | `ProjectLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `projectLabelRestore` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
+| `projectLabelRetire` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
+| `projectLabelUpdate` | `ProjectLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectMilestoneCreate` | `ProjectMilestonePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectMilestoneDelete` | `DeletePayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectMilestoneMove` | `ProjectMilestoneMovePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -939,7 +939,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `projectRelationCreate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectRelationDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `projectRelationUpdate` | `ProjectRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `projectRemoveLabel` | `ProjectPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
+| `projectRemoveLabel` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectStatusArchive` | `ProjectStatusArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectStatusCreate` | `ProjectStatusPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `projectStatusUnarchive` | `ProjectStatusArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1050,15 +1050,21 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `DocumentCreate` | mutation | `documentCreate` | generated | `internal/client/generated.go` |
 | `DocumentUpdate` | mutation | `documentUpdate` | generated | `internal/client/generated.go` |
 | `Documents` | query | `documents` | generated | `internal/client/generated.go` |
+| `IssueAddLabel` | mutation | `issueAddLabel` | generated | `internal/client/generated.go` |
 | `IssueArchive` | mutation | `issueArchive` | generated | `internal/client/generated.go` |
 | `IssueBlockedIssues` | query | `issue` | generated | `internal/client/generated.go` |
 | `IssueClose` | mutation | `issueUpdate` | generated | `internal/client/generated.go` |
 | `IssueCommentCreate` | mutation | `commentCreate` | generated | `internal/client/generated.go` |
 | `IssueCreate` | mutation | `issueCreate` | generated | `internal/client/generated.go` |
 | `IssueDependencies` | query | `issue` | generated | `internal/client/generated.go` |
+| `IssueLabelCreate` | mutation | `issueLabelCreate` | generated | `internal/client/generated.go` |
+| `IssueLabelRestore` | mutation | `issueLabelRestore` | generated | `internal/client/generated.go` |
+| `IssueLabelRetire` | mutation | `issueLabelRetire` | generated | `internal/client/generated.go` |
+| `IssueLabelUpdate` | mutation | `issueLabelUpdate` | generated | `internal/client/generated.go` |
 | `IssueLabels` | query | `issueLabels` | generated | `internal/client/generated.go` |
 | `IssueRelationCreate` | mutation | `issueRelationCreate` | generated | `internal/client/generated.go` |
 | `IssueRelationDelete` | mutation | `issueRelationDelete` | generated | `internal/client/generated.go` |
+| `IssueRemoveLabel` | mutation | `issueRemoveLabel` | generated | `internal/client/generated.go` |
 | `IssueUpdate` | mutation | `issueUpdate` | generated | `internal/client/generated.go` |
 | `IssuesByTeam` | query | `issues` | generated | `internal/client/generated.go` |
 | `IssuesByTeamAssignee` | query | `issues` | generated | `internal/client/generated.go` |
@@ -1072,11 +1078,17 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `IssuesByTeamState` | query | `issues` | generated | `internal/client/generated.go` |
 | `NextIssuesByTeam` | query | `issues` | generated | `internal/client/generated.go` |
 | `Organization` | query | `organization` | generated | `internal/client/generated.go` |
+| `ProjectAddLabel` | mutation | `projectAddLabel` | generated | `internal/client/generated.go` |
 | `ProjectArchive` | mutation | `projectArchive` | generated | `internal/client/generated.go` |
 | `ProjectCreate` | mutation | `projectCreate` | generated | `internal/client/generated.go` |
+| `ProjectLabelCreate` | mutation | `projectLabelCreate` | generated | `internal/client/generated.go` |
+| `ProjectLabelRestore` | mutation | `projectLabelRestore` | generated | `internal/client/generated.go` |
+| `ProjectLabelRetire` | mutation | `projectLabelRetire` | generated | `internal/client/generated.go` |
+| `ProjectLabelUpdate` | mutation | `projectLabelUpdate` | generated | `internal/client/generated.go` |
 | `ProjectMilestoneCreate` | mutation | `projectMilestoneCreate` | generated | `internal/client/generated.go` |
 | `ProjectMilestoneDelete` | mutation | `projectMilestoneDelete` | generated | `internal/client/generated.go` |
 | `ProjectMilestoneUpdate` | mutation | `projectMilestoneUpdate` | generated | `internal/client/generated.go` |
+| `ProjectRemoveLabel` | mutation | `projectRemoveLabel` | generated | `internal/client/generated.go` |
 | `ProjectUpdate` | mutation | `projectUpdate` | generated | `internal/client/generated.go` |
 | `ProjectUpdateCreate` | mutation | `projectUpdateCreate` | generated | `internal/client/generated.go` |
 | `Projects` | query | `team` | generated | `internal/client/generated.go` |
@@ -1492,6 +1504,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Issue | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Issue | `issue comments` | `Issue.comments` via `Query.issue` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue add-label` | `Mutation.issueAddLabel` | Resource-scoped: resolve the issue through `requireIssue`; the label must match the resolved team or be organization-wide | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Issue | `issue remove-label` | `Mutation.issueRemoveLabel` | Resource-scoped, same resolution and comparison as `issue add-label` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation list` | `Query.issueRelations` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue-relation get` | `Query.issueRelation` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | IssueRelation | `issue relate` | `Mutation.issueRelationCreate` with `IssueRelationCreateInput` | Team-scoped on both endpoints: resolve each issue and compare the pinned team before linking; `--type blocks` is refused when it would close a direct cycle | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
@@ -1523,6 +1537,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Project | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Project | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Project | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project add-label` | `Mutation.projectAddLabel` | Resource-scoped: resolve the project through `requireProject`; the ProjectLabel must belong to the resolved organization | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Project | `project remove-label` | `Mutation.projectRemoveLabel` | Resource-scoped, same resolution and comparison as `project add-label` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Project | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Project | `project needs` | `Project.needs` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Project | `project relations` | `Project.relations` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
@@ -1546,11 +1562,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | ProjectLabel | `project-label get` | `Query.projectLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectLabel | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectLabel | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
-| ProjectLabel | `project-label create` | `Mutation.projectLabelCreate` | Blocked: organization label configuration needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectLabel | `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectLabel | `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| ProjectLabel | `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| ProjectLabel | `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
+| ProjectLabel | `project-label create` | `Mutation.projectLabelCreate` with `ProjectLabelCreateInput` | Org-Scoped Write; `--org-wide` is required (ProjectLabel has no team scope) | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label update` | `Mutation.projectLabelUpdate` | Org-Scoped Write; resolve the label and compare its organization; `--org-wide` is required | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label retire` | `Mutation.projectLabelRetire` | Org-Scoped Write, same resolution and comparison as `project-label update` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label restore` | `Mutation.projectLabelRestore` | Org-Scoped Write, same resolution and comparison as `project-label update` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| ProjectLabel | `project-label delete` | `Mutation.projectLabelDelete` | Blocked: hard delete stays excluded; retire/restore is the supported lifecycle | blocked_needs_design | destructive command needs explicit safety semantics |
 | ProjectRelation | `project-relation list` | `Query.projectRelations` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectRelation | `project-relation get` | `Query.projectRelation` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | ProjectRelation | `project-relation create` | `Mutation.projectRelationCreate` | Blocked: create must resolve and compare both project dependency endpoints before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
@@ -1582,9 +1598,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Label | `label get` | `Query.issueLabel` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Label | `label children` | `IssueLabel.children` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
 | Label | `label issues` | `IssueLabel.issues` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
-| Label | `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Label | `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |
-| Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
+| Label | `label create` | `Mutation.issueLabelCreate` with `teamId` from the resolved team, or omitted with `--org-wide` | Team-Scoped Write by default; Org-Scoped Write with `--org-wide`; `--parent` requires the parent label to share the same effective scope | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label update` | `Mutation.issueLabelUpdate` | Resource-scoped: resolve the label and compare its team; an organization-wide label (null team) requires `--org-wide` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label retire` | `Mutation.issueLabelRetire` | Resource-scoped, same resolution and comparison as `label update` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label restore` | `Mutation.issueLabelRestore` | Resource-scoped, same resolution and comparison as `label update` | guarded_write_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
+| Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: hard delete stays excluded; retire/restore is the supported lifecycle | blocked_needs_design | destructive command needs explicit safety semantics |
 | Team | `team list` | `Query.teams` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Team | `team get` | `Query.team` | Read-only | public_command | `linctl --help`, `docs/domain-map.md`, and local GraphQL root |
 | Team | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model | blocked_needs_design | blocked in `docs/domain-map.md` pending explicit safety semantics |

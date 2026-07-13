@@ -72,6 +72,16 @@ type issueRelationDeleter interface {
 	DeleteIssueRelation(ctx context.Context, relationID string) (string, error)
 }
 
+// issueLabelAdder is the port the issue add-label command depends on.
+type issueLabelAdder interface {
+	AddIssueLabel(ctx context.Context, request client.IssueLabelAssociationRequest) (client.IssueSummary, error)
+}
+
+// issueLabelRemover is the port the issue remove-label command depends on.
+type issueLabelRemover interface {
+	RemoveIssueLabel(ctx context.Context, request client.IssueLabelAssociationRequest) (client.IssueSummary, error)
+}
+
 // issueReader is the port the issue list command depends on for its dispatch:
 // it either lists across teams or resolves the pinned team and lists with the
 // assembled filters.
@@ -166,6 +176,20 @@ func (adapter issueClientAdapter) CreateIssueRelation(
 
 func (adapter issueClientAdapter) DeleteIssueRelation(ctx context.Context, relationID string) (string, error) {
 	return client.DeleteIssueRelation(ctx, adapter.graphqlClient, adapter.target, relationID)
+}
+
+func (adapter issueClientAdapter) AddIssueLabel(
+	ctx context.Context,
+	request client.IssueLabelAssociationRequest,
+) (client.IssueSummary, error) {
+	return client.AddIssueLabel(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter issueClientAdapter) RemoveIssueLabel(
+	ctx context.Context,
+	request client.IssueLabelAssociationRequest,
+) (client.IssueSummary, error) {
+	return client.RemoveIssueLabel(ctx, adapter.graphqlClient, adapter.target, request)
 }
 
 func (adapter issueClientAdapter) ResolveTarget(ctx context.Context) (client.ResolvedTarget, error) {

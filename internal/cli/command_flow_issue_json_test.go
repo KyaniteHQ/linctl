@@ -161,6 +161,7 @@ func commandProjectLabelJSON(id string, name string, color string) string {
 		"archivedAt":null,
 		"createdAt":"2026-06-19T12:00:00Z",
 		"updatedAt":"2026-06-19T12:00:00Z",
+		"organization":{"id":"org-id"},
 		"parent":null
 	}`
 }

@@ -4,7 +4,7 @@ func commandFlowProjectPayload(operation string, fake commandFlowFakeClient) (st
 	if payload, ok := commandFlowProjectStatusPayload(operation); ok {
 		return payload, true
 	}
-	if payload, ok := commandFlowProjectLabelPayload(operation); ok {
+	if payload, ok := commandFlowProjectLabelPayload(operation, fake); ok {
 		return payload, true
 	}
 	if payload, ok := commandFlowProjectRelationPayload(operation); ok {
@@ -148,13 +148,20 @@ func commandFlowProjectStatusPayload(operation string) (string, bool) {
 	}
 }
 
-func commandFlowProjectLabelPayload(operation string) (string, bool) {
+func commandFlowProjectLabelPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
 	case "projectLabels":
 		return `{"projectLabels":{"nodes":[` +
 			commandProjectLabelJSON("project-label-id", "Roadmap", "#f2c94c") +
 			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "projectLabel":
+		if fake.otherOrgProjectLabel {
+			return `{"projectLabel":{"id":"project-label-id","name":"Roadmap","description":"Project label",` +
+				`"color":"#f2c94c","isGroup":false,"lastAppliedAt":"2026-06-19T12:00:00Z","retiredAt":null,` +
+				`"archivedAt":null,"createdAt":"2026-06-19T12:00:00Z","updatedAt":"2026-06-19T12:00:00Z",` +
+				`"organization":{"id":"other-org"},"parent":null}}`, true
+		}
+
 		return `{"projectLabel":` + commandProjectLabelJSON("project-label-id", "Roadmap", "#f2c94c") + `}`, true
 	case "projectLabel_children":
 		return `{"projectLabel":{"id":"project-label-id","name":"Roadmap","children":{"nodes":[` +
@@ -196,6 +203,22 @@ func commandFlowProjectWritePayload(operation string) (string, bool) {
 		return `{"projectUpdate":{"success":true,"project":` + commandProjectJSON("Updated project", "Started", "started") + `}}`, true
 	case "ProjectArchive":
 		return `{"projectArchive":{"success":true,"entity":` + commandProjectJSON("Archived project", "Canceled", "canceled") + `}}`, true
+	case "ProjectAddLabel":
+		return `{"projectAddLabel":{"success":true,"project":` + commandProjectJSON("Labeled project", "Backlog", "backlog") + `}}`, true
+	case "ProjectRemoveLabel":
+		return `{"projectRemoveLabel":{"success":true,"project":` + commandProjectJSON("Unlabeled project", "Backlog", "backlog") + `}}`, true
+	case "ProjectLabelCreate":
+		return `{"projectLabelCreate":{"success":true,"projectLabel":` +
+			commandProjectLabelJSON("project-label-id", "Created project label", "#f2c94c") + `}}`, true
+	case "ProjectLabelUpdate":
+		return `{"projectLabelUpdate":{"success":true,"projectLabel":` +
+			commandProjectLabelJSON("project-label-id", "Updated project label", "#f2c94c") + `}}`, true
+	case "ProjectLabelRetire":
+		return `{"projectLabelRetire":{"success":true,"projectLabel":` +
+			commandProjectLabelJSON("project-label-id", "Retired project label", "#f2c94c") + `}}`, true
+	case "ProjectLabelRestore":
+		return `{"projectLabelRestore":{"success":true,"projectLabel":` +
+			commandProjectLabelJSON("project-label-id", "Restored project label", "#f2c94c") + `}}`, true
 	default:
 		return "", false
 	}

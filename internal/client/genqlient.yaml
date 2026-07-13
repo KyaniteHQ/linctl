@@ -24,6 +24,10 @@ bindings:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearDocumentUpdateInput
   IssueCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueCreateInput
+  IssueLabelCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueLabelCreateInput
+  IssueLabelUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueLabelUpdateInput
   IssueRelationCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueRelationCreateInput
   IssueUpdateInput:
@@ -34,6 +38,10 @@ bindings:
     type: encoding/json.RawMessage
   ProjectCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectCreateInput
+  ProjectLabelCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectLabelCreateInput
+  ProjectLabelUpdateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectLabelUpdateInput
   ProjectMilestoneCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectMilestoneCreateInput
   ProjectMilestoneUpdateInput:

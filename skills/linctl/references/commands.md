@@ -1436,6 +1436,14 @@ Read and write Linear issues
 linctl issue
 ```
 
+### linctl issue add-label
+
+Attach a label to an issue after pinned-target comparison
+
+```
+linctl issue add-label ISSUE_ID LABEL_ID
+```
+
 ### linctl issue attachments
 
 List issue attachments
@@ -1845,6 +1853,14 @@ Flags:
 
 ```
       --limit int   maximum releases to return (default 50)
+```
+
+### linctl issue remove-label
+
+Detach a label from an issue after pinned-target comparison
+
+```
+linctl issue remove-label ISSUE_ID LABEL_ID
 ```
 
 ### linctl issue reply
@@ -2277,7 +2293,7 @@ Flags:
 
 ### linctl label
 
-Read Linear issue labels
+Read and write Linear issue labels
 
 ```
 linctl label
@@ -2295,6 +2311,24 @@ Flags:
 
 ```
       --limit int   maximum labels to return (default 50)
+```
+
+### linctl label create
+
+Create a label in the pinned team, or organization-wide with --org-wide
+
+```
+linctl label create [flags]
+```
+
+Flags:
+
+```
+      --color string         label color
+      --description string   label description
+      --name string          label name
+      --org-wide             create an organization-wide label instead of a team-scoped label
+      --parent string        parent label id
 ```
 
 ### linctl label get
@@ -2331,6 +2365,51 @@ Flags:
 
 ```
       --limit int   maximum labels to return (default 50)
+```
+
+### linctl label restore
+
+Restore a retired label after pinned-target comparison
+
+```
+linctl label restore LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --org-wide   act on an organization-wide label instead of a team-scoped label
+```
+
+### linctl label retire
+
+Retire a label after pinned-target comparison
+
+```
+linctl label retire LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --org-wide   act on an organization-wide label instead of a team-scoped label
+```
+
+### linctl label update
+
+Update a label after pinned-target comparison
+
+```
+linctl label update LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --color string         new label color
+      --description string   new label description
+      --name string          new label name
+      --org-wide             act on an organization-wide label instead of a team-scoped label
 ```
 
 ### linctl next
@@ -2501,6 +2580,14 @@ Read and write Linear projects
 
 ```
 linctl project
+```
+
+### linctl project add-label
+
+Attach a ProjectLabel to a project after pinned-target comparison
+
+```
+linctl project add-label PROJECT_ID LABEL_ID
 ```
 
 ### linctl project all
@@ -2768,6 +2855,14 @@ Flags:
       --limit int   maximum relations to return (default 50)
 ```
 
+### linctl project remove-label
+
+Detach a ProjectLabel from a project after pinned-target comparison
+
+```
+linctl project remove-label PROJECT_ID LABEL_ID
+```
+
 ### linctl project teams
 
 List project teams
@@ -2823,7 +2918,7 @@ linctl project usage
 
 ### linctl project-label
 
-Read Linear project labels
+Read and write Linear project labels
 
 ```
 linctl project-label
@@ -2841,6 +2936,23 @@ Flags:
 
 ```
       --limit int   maximum child project labels to return (default 50)
+```
+
+### linctl project-label create
+
+Create a project label; requires --org-wide (affects every team and project in the organization)
+
+```
+linctl project-label create [flags]
+```
+
+Flags:
+
+```
+      --color string         project label color
+      --description string   project label description
+      --name string          project label name
+      --org-wide             required: project labels have no team scope; confirms this write affects every team and project in the organization
 ```
 
 ### linctl project-label get
@@ -2877,6 +2989,51 @@ Flags:
 
 ```
       --limit int   maximum projects to return (default 50)
+```
+
+### linctl project-label restore
+
+Restore a retired project label; requires --org-wide (affects every team and project)
+
+```
+linctl project-label restore PROJECT_LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --org-wide   required: project labels have no team scope; confirms this write affects every team and project in the organization
+```
+
+### linctl project-label retire
+
+Retire a project label; requires --org-wide (affects every team and project in the organization)
+
+```
+linctl project-label retire PROJECT_LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --org-wide   required: project labels have no team scope; confirms this write affects every team and project in the organization
+```
+
+### linctl project-label update
+
+Update a project label; requires --org-wide (affects every team and project in the organization)
+
+```
+linctl project-label update PROJECT_LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --color string         new project label color
+      --description string   new project label description
+      --name string          new project label name
+      --org-wide             required: project labels have no team scope; confirms this write affects every team and project in the organization
 ```
 
 ### linctl project-milestone

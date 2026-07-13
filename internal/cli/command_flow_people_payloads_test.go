@@ -79,7 +79,23 @@ func commandFlowPeopleAndReferencePayload(operation string, fake commandFlowFake
 	case "IssueLabels":
 		return `{"issueLabels":{"nodes":[` + commandLabelJSON("label body") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "issueLabel":
+		if fake.orgWideLabel {
+			return `{"issueLabel":{"id":"label-id","name":"Bug","description":null,"color":"#ff0000","isGroup":false,"team":null}}`, true
+		}
+
 		return `{"issueLabel":` + commandLabelJSON("") + `}`, true
+	case "IssueLabelCreate":
+		return `{"issueLabelCreate":{"success":true,"issueLabel":` +
+			commandNamedLabelJSON("label-id", "Created label", "#ff0000", "") + `}}`, true
+	case "IssueLabelUpdate":
+		return `{"issueLabelUpdate":{"success":true,"issueLabel":` +
+			commandNamedLabelJSON("label-id", "Updated label", "#ff0000", "") + `}}`, true
+	case "IssueLabelRetire":
+		return `{"issueLabelRetire":{"success":true,"issueLabel":` +
+			commandNamedLabelJSON("label-id", "Retired label", "#ff0000", "") + `}}`, true
+	case "IssueLabelRestore":
+		return `{"issueLabelRestore":{"success":true,"issueLabel":` +
+			commandNamedLabelJSON("label-id", "Restored label", "#ff0000", "") + `}}`, true
 	case "team":
 		return `{"team":` + commandTeamJSON(true) + `}`, true
 	case "team_members":

@@ -201,6 +201,42 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "label get", args: []string{"label", "get", "label-id"}, contains: "label-id Bug #ff0000"},
 		{name: "label children", args: []string{"label", "children", "label-id", "--limit", "1"}, contains: "child-label-id Mobile #56ccf2"},
 		{name: "label issues", args: []string{"label", "issues", "label-id", "--limit", "1"}, contains: "LIT-1 Detail issue [Todo]"},
+		{name: "label create", args: []string{"label", "create", "--name", "Created label"}, contains: "label-id Created label #ff0000"},
+		{name: "label update", args: []string{"label", "update", "label-id", "--name", "Updated label"}, contains: "label-id Updated label #ff0000"},
+		{name: "label retire", args: []string{"label", "retire", "label-id"}, contains: "label-id Retired label #ff0000"},
+		{name: "label restore", args: []string{"label", "restore", "label-id"}, contains: "label-id Restored label #ff0000"},
+		{name: "issue add-label", args: []string{"issue", "add-label", "LIT-1", "label-id"}, contains: "LIT-1 Labeled issue [Todo]"},
+		{name: "issue remove-label", args: []string{"issue", "remove-label", "LIT-1", "label-id"}, contains: "LIT-1 Unlabeled issue [Todo]"},
+		{
+			name: "project add-label", args: []string{"project", "add-label", "project-id", "label-id"},
+			contains: "project-id Labeled project [Backlog]",
+		},
+		{
+			name: "project remove-label", args: []string{"project", "remove-label", "project-id", "label-id"},
+			contains: "project-id Unlabeled project [Backlog]",
+		},
+		{
+			name:     "project label create",
+			args:     []string{"project-label", "create", "--name", "Created project label", "--org-wide"},
+			contains: "project-label-id Created project label #f2c94c",
+		},
+		{
+			name: "project label update",
+			args: []string{
+				"project-label", "update", "project-label-id", "--name", "Updated project label", "--org-wide",
+			},
+			contains: "project-label-id Updated project label #f2c94c",
+		},
+		{
+			name:     "project label retire",
+			args:     []string{"project-label", "retire", "project-label-id", "--org-wide"},
+			contains: "project-label-id Retired project label #f2c94c",
+		},
+		{
+			name:     "project label restore",
+			args:     []string{"project-label", "restore", "project-label-id", "--org-wide"},
+			contains: "project-label-id Restored project label #f2c94c",
+		},
 		{name: "team list", args: []string{"team", "list", "--limit", "1"}, contains: "team-id LIT linctl"},
 		{name: "team get", args: []string{"team", "get", "team-id"}, contains: "team-id LIT linctl"},
 		{name: "team cycles", args: []string{"team", "cycles", "team-id", "--limit", "1"}, contains: "cycle-id Planning cycle [active]"},

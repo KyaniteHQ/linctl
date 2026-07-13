@@ -235,6 +235,8 @@ func CreateProjectMilestone(
 }
 
 // UpdateProjectMilestone updates a ProjectMilestone after resolving and comparing its project.
+//
+//nolint:dupl // Mirrors UpdateProjectLabel's resolve-then-mutate shape; the guard target and mutation differ.
 func UpdateProjectMilestone(
 	ctx context.Context,
 	graphqlClient graphql.Client,

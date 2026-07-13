@@ -9,6 +9,9 @@ fragment ProjectLabelSummaryFields on ProjectLabel {
   archivedAt
   createdAt
   updatedAt
+  organization {
+    id
+  }
   parent {
     id
     name
@@ -62,6 +65,42 @@ query projectLabel_projects($id: String!, $first: Int, $after: String, $includeA
         hasNextPage
         endCursor
       }
+    }
+  }
+}
+
+mutation ProjectLabelCreate($input: ProjectLabelCreateInput!) {
+  projectLabelCreate(input: $input) {
+    success
+    projectLabel {
+      ...ProjectLabelSummaryFields
+    }
+  }
+}
+
+mutation ProjectLabelUpdate($id: String!, $input: ProjectLabelUpdateInput!) {
+  projectLabelUpdate(id: $id, input: $input) {
+    success
+    projectLabel {
+      ...ProjectLabelSummaryFields
+    }
+  }
+}
+
+mutation ProjectLabelRetire($id: String!) {
+  projectLabelRetire(id: $id) {
+    success
+    projectLabel {
+      ...ProjectLabelSummaryFields
+    }
+  }
+}
+
+mutation ProjectLabelRestore($id: String!) {
+  projectLabelRestore(id: $id) {
+    success
+    projectLabel {
+      ...ProjectLabelSummaryFields
     }
   }
 }

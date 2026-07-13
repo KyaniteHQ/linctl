@@ -350,3 +350,21 @@ mutation ProjectArchive($id: String!, $trash: Boolean) {
     }
   }
 }
+
+mutation ProjectAddLabel($id: String!, $labelId: String!) {
+  projectAddLabel(id: $id, labelId: $labelId) {
+    success
+    project {
+      ...ProjectSummaryFields
+    }
+  }
+}
+
+mutation ProjectRemoveLabel($id: String!, $labelId: String!) {
+  projectRemoveLabel(id: $id, labelId: $labelId) {
+    success
+    project {
+      ...ProjectSummaryFields
+    }
+  }
+}

@@ -48,6 +48,8 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addIssueCloseCommand(ctx, issueCommand, options)
 	addIssueRelateCommand(ctx, issueCommand, options)
 	addIssueUnrelateCommand(ctx, issueCommand, options)
+	addIssueAddLabelCommand(ctx, issueCommand, options)
+	addIssueRemoveLabelCommand(ctx, issueCommand, options)
 	addIssueLinkCommand(ctx, issueCommand, options)
 	addIssueOpenCommand(ctx, issueCommand, options)
 	addIssueExportCommand(ctx, issueCommand, options)

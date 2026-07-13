@@ -20,3 +20,16 @@ type projectUpdater interface {
 type projectArchiver interface {
 	ArchiveProject(ctx context.Context, projectID string) (client.ProjectSummary, error)
 }
+
+// projectLabelAdder is the Command Port the project add-label command depends on.
+type projectLabelAdder interface {
+	AddProjectLabel(ctx context.Context, request client.ProjectLabelAssociationRequest) (client.ProjectSummary, error)
+}
+
+// projectLabelRemover is the Command Port the project remove-label command depends on.
+type projectLabelRemover interface {
+	RemoveProjectLabel(
+		ctx context.Context,
+		request client.ProjectLabelAssociationRequest,
+	) (client.ProjectSummary, error)
+}

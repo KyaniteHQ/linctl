@@ -116,6 +116,10 @@ _Avoid_: Unscoped create, workspace write
 A guarded write against an existing Linear entity. It resolves the entity first and compares the pinned project when a project is configured.
 _Avoid_: Direct update, blind write
 
+**Org-Scoped Write**:
+A guarded write against an organization-owned entity that has no team scope, selected by an explicit `--org-wide` flag. The comparison is organization-only and Target Mismatch stays a hard stop; the flag confirms blast radius and is never a bypass, and it is rejected for team-scoped resources.
+_Avoid_: Workspace write, bypass flag, unscoped write
+
 **Command Port**:
 The narrow, domain-typed interface a Read Command or Guarded Write depends on to reach Linear, decoupled from the GraphQL transport. A command port is defined by its consumer, returns domain summaries rather than GraphQL responses, and is satisfied in production by a thin adapter over the client and in tests by an in-memory fake. It makes the command's interface the test surface. Guarded writes go through a port by design; read commands may call the client package directly, and the issue domain routing reads through its port is accepted variance for testability, not a rule.
 _Avoid_: client, gateway, service, mock

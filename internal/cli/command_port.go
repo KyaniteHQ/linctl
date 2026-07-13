@@ -77,3 +77,77 @@ func (adapter commandClientAdapter) DeleteProjectMilestone(
 ) (string, error) {
 	return client.DeleteProjectMilestone(ctx, adapter.graphqlClient, adapter.target, projectMilestoneID)
 }
+
+func (adapter commandClientAdapter) CreateLabel(
+	ctx context.Context,
+	request client.LabelCreateRequest,
+) (client.LabelSummary, error) {
+	return client.CreateLabel(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter commandClientAdapter) UpdateLabel(
+	ctx context.Context,
+	request client.LabelUpdateRequest,
+) (client.LabelSummary, error) {
+	return client.UpdateLabel(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter commandClientAdapter) RetireLabel(
+	ctx context.Context,
+	id string,
+	orgWide bool,
+) (client.LabelSummary, error) {
+	return client.RetireLabel(ctx, adapter.graphqlClient, adapter.target, id, orgWide)
+}
+
+func (adapter commandClientAdapter) RestoreLabel(
+	ctx context.Context,
+	id string,
+	orgWide bool,
+) (client.LabelSummary, error) {
+	return client.RestoreLabel(ctx, adapter.graphqlClient, adapter.target, id, orgWide)
+}
+
+func (adapter commandClientAdapter) AddProjectLabel(
+	ctx context.Context,
+	request client.ProjectLabelAssociationRequest,
+) (client.ProjectSummary, error) {
+	return client.AddProjectLabel(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter commandClientAdapter) RemoveProjectLabel(
+	ctx context.Context,
+	request client.ProjectLabelAssociationRequest,
+) (client.ProjectSummary, error) {
+	return client.RemoveProjectLabel(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter commandClientAdapter) CreateProjectLabel(
+	ctx context.Context,
+	request client.ProjectLabelCreateRequest,
+) (client.ProjectLabelSummary, error) {
+	return client.CreateProjectLabel(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter commandClientAdapter) UpdateProjectLabel(
+	ctx context.Context,
+	request client.ProjectLabelUpdateRequest,
+) (client.ProjectLabelSummary, error) {
+	return client.UpdateProjectLabel(ctx, adapter.graphqlClient, adapter.target, request)
+}
+
+func (adapter commandClientAdapter) RetireProjectLabel(
+	ctx context.Context,
+	id string,
+	orgWide bool,
+) (client.ProjectLabelSummary, error) {
+	return client.RetireProjectLabel(ctx, adapter.graphqlClient, adapter.target, id, orgWide)
+}
+
+func (adapter commandClientAdapter) RestoreProjectLabel(
+	ctx context.Context,
+	id string,
+	orgWide bool,
+) (client.ProjectLabelSummary, error) {
+	return client.RestoreProjectLabel(ctx, adapter.graphqlClient, adapter.target, id, orgWide)
+}

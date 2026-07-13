@@ -470,6 +470,10 @@ func commandFlowIssueWritePayload(operation string, fake commandFlowFakeClient) 
 		return `{"workflowStates":{"nodes":[{"id":"type-state-id","name":"TypeState","type":"unstarted","position":1}]}}`, true
 	case "IssueClose":
 		return `{"issueUpdate":{"success":true,"issue":` + commandIssueJSON("LIT-1", "Closed issue", "done-state", "Done", "completed") + `}}`, true
+	case "IssueAddLabel":
+		return `{"issueAddLabel":{"success":true,"issue":` + commandIssueJSON("LIT-1", "Labeled issue", "todo-state", "Todo", "unstarted") + `}}`, true
+	case "IssueRemoveLabel":
+		return `{"issueRemoveLabel":{"success":true,"issue":` + commandIssueJSON("LIT-1", "Unlabeled issue", "todo-state", "Todo", "unstarted") + `}}`, true
 	default:
 		return "", false
 	}

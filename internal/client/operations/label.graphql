@@ -60,3 +60,39 @@ fragment IssueLabelSummaryFields on IssueLabel {
     name
   }
 }
+
+mutation IssueLabelCreate($replaceTeamLabels: Boolean, $input: IssueLabelCreateInput!) {
+  issueLabelCreate(replaceTeamLabels: $replaceTeamLabels, input: $input) {
+    success
+    issueLabel {
+      ...IssueLabelSummaryFields
+    }
+  }
+}
+
+mutation IssueLabelUpdate($id: String!, $replaceTeamLabels: Boolean, $input: IssueLabelUpdateInput!) {
+  issueLabelUpdate(id: $id, replaceTeamLabels: $replaceTeamLabels, input: $input) {
+    success
+    issueLabel {
+      ...IssueLabelSummaryFields
+    }
+  }
+}
+
+mutation IssueLabelRetire($id: String!) {
+  issueLabelRetire(id: $id) {
+    success
+    issueLabel {
+      ...IssueLabelSummaryFields
+    }
+  }
+}
+
+mutation IssueLabelRestore($id: String!) {
+  issueLabelRestore(id: $id) {
+    success
+    issueLabel {
+      ...IssueLabelSummaryFields
+    }
+  }
+}

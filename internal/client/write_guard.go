@@ -164,6 +164,138 @@ func (guard writeGuard) teamNotAttachedError() error {
 	)
 }
 
+// requireOrganization compares a resolved organization id (read from an
+// entity such as a ProjectLabel) against the guard's resolved organization.
+// It is the Org-Scoped Write hard stop: organization-owned entities have no
+// team to compare, so organization membership is the whole check.
+func (guard writeGuard) requireOrganization(orgID string) error {
+	if orgID != guard.target.Org.ID {
+		return guard.organizationMismatchError(orgID)
+	}
+
+	return nil
+}
+
+// organizationMismatchError reports a Target Mismatch between the pinned
+// organization and the organization resolved from an existing entity.
+func (guard writeGuard) organizationMismatchError(orgID string) error {
+	return fmt.Errorf(
+		"%w: expected org_id=%s resolved org_id=%s",
+		ErrTargetMismatch,
+		guard.target.Org.ID,
+		orgID,
+	)
+}
+
+// requireIssueLabel resolves an IssueLabel for a taxonomy mutation (update,
+// retire, restore). A team-scoped label must match the resolved team and must
+// not be combined with orgWide. An organization-wide label (null team)
+// requires orgWide and fails closed otherwise.
+func (guard writeGuard) requireIssueLabel(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	labelID string,
+	orgWide bool,
+) error {
+	label, err := GetLabelByID(ctx, graphqlClient, labelID)
+	if err != nil {
+		return err
+	}
+	if label.TeamID == "" {
+		if !orgWide {
+			return fmt.Errorf(
+				"%w: label %s is organization-wide; pass --org-wide to act on it",
+				ErrTargetMismatch,
+				labelID,
+			)
+		}
+
+		return nil
+	}
+	if orgWide {
+		return fmt.Errorf(
+			"%w: label %s is team-scoped; --org-wide only applies to organization-wide labels",
+			ErrWriteInvalid,
+			labelID,
+		)
+	}
+	if label.TeamID != guard.target.Team.ID || label.TeamKey != guard.target.Team.Key {
+		return guard.teamMismatchError("label", label.TeamID, label.TeamKey)
+	}
+
+	return nil
+}
+
+// requireLabelParentScope resolves a candidate parent IssueLabel and confirms
+// it shares the effective scope of the label being created: the resolved team
+// by default, or organization-wide when orgWide is set.
+func (guard writeGuard) requireLabelParentScope(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	parentID string,
+	orgWide bool,
+) error {
+	parent, err := GetLabelByID(ctx, graphqlClient, parentID)
+	if err != nil {
+		return err
+	}
+	if orgWide {
+		if parent.TeamID != "" {
+			return fmt.Errorf(
+				"%w: parent label %s is team-scoped; an organization-wide label requires an organization-wide parent",
+				ErrTargetMismatch,
+				parentID,
+			)
+		}
+
+		return nil
+	}
+	if parent.TeamID != guard.target.Team.ID || parent.TeamKey != guard.target.Team.Key {
+		return guard.teamMismatchError("parent label", parent.TeamID, parent.TeamKey)
+	}
+
+	return nil
+}
+
+// requireAttachableLabel resolves an IssueLabel for attaching to or removing
+// from an issue: a team-scoped label must match the resolved team, and an
+// organization-wide label (null team) is always attachable within the
+// resolved organization. There is no --org-wide flag for association writes.
+func (guard writeGuard) requireAttachableLabel(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	labelID string,
+) error {
+	label, err := GetLabelByID(ctx, graphqlClient, labelID)
+	if err != nil {
+		return err
+	}
+	if label.TeamID == "" {
+		return nil
+	}
+	if label.TeamID != guard.target.Team.ID || label.TeamKey != guard.target.Team.Key {
+		return guard.teamMismatchError("label", label.TeamID, label.TeamKey)
+	}
+
+	return nil
+}
+
+// requireProjectLabel resolves a ProjectLabel and confirms it belongs to the
+// resolved organization. ProjectLabel is organization-owned; there is no team
+// scope to compare.
+func (guard writeGuard) requireProjectLabel(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	labelID string,
+) error {
+	label, err := GetProjectLabelByID(ctx, graphqlClient, labelID)
+	if err != nil {
+		return err
+	}
+
+	return guard.requireOrganization(label.OrgID)
+}
+
 func projectHasTeam(project ProjectSummary, teamID string, teamKey string) bool {
 	for _, team := range project.Teams {
 		if team.ID == teamID && team.Key == teamKey {

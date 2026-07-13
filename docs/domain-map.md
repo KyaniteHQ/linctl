@@ -214,7 +214,7 @@ Schema backing:
 
 - Types: `Issue`, `IssueConnection`
 - Reads: `Query.issues`, `Query.issue`, `Issue.botActor`, `Issue.stateHistory`, `Issue.subscribers`
-- Writes: `Mutation.issueCreate`, `Mutation.issueUpdate`, `Mutation.issueArchive`, `Mutation.commentCreate`
+- Writes: `Mutation.issueCreate`, `Mutation.issueUpdate`, `Mutation.issueArchive`, `Mutation.commentCreate`, `Mutation.issueAddLabel`, `Mutation.issueRemoveLabel`
 - Inputs: `IssueCreateInput`, `IssueUpdateInput`
 - Relevant fields: `Issue.id`, `Issue.identifier`, `Issue.number`, `Issue.title`, `Issue.team`, `Issue.cycle`, `Issue.project`, `Issue.projectMilestone`, `Issue.assignee`, `Issue.state`, `Issue.documents`, `Issue.comments`, `Issue.url`, `Issue.branchName`
 
@@ -281,6 +281,8 @@ Planned commands:
 | `issue close` | `Mutation.issueUpdate` state change | Resource-scoped when a project target is involved |
 | `issue link` | `Mutation.attachmentCreate` with `AttachmentCreateInput.issueId` and `url` | Resource-scoped: resolve the issue through `requireIssue` and compare the pinned team/project before attaching |
 | `issue comments` | `Issue.comments` via `Query.issue` | Read-only |
+| `issue add-label` | `Mutation.issueAddLabel` | Resource-scoped: resolve the issue through `requireIssue`; the label must match the resolved team or be organization-wide |
+| `issue remove-label` | `Mutation.issueRemoveLabel` | Resource-scoped, same resolution and comparison as `issue add-label` |
 
 Issue customer-need child reads use a metadata-only projection and intentionally omit `body` and `content`. Shared-access reads omit shared user details and expose only booleans, counts, and disallowed field names.
 
@@ -340,7 +342,7 @@ Schema backing:
 
 - Types: `Project`, `ProjectConnection`
 - Reads: `Query.projects`, `Query.project`, `Project.attachments`, `Project.documents`, `Project.externalLinks`, `Project.history`, `Project.initiativeToProjects`, `Project.initiatives`, `Project.inverseRelations`, `Project.issues`, `Project.labels`, `Project.members`, `Project.needs`, `Project.relations`, `Project.teams`, `Project.projectUpdates`
-- Writes: `Mutation.projectCreate`, `Mutation.projectUpdate`, `Mutation.projectArchive`
+- Writes: `Mutation.projectCreate`, `Mutation.projectUpdate`, `Mutation.projectArchive`, `Mutation.projectAddLabel`, `Mutation.projectRemoveLabel`
 - Inputs: `ProjectCreateInput`, `ProjectUpdateInput`
 - Relevant fields: `Project.id`, `Project.name`, `Project.description`, `Project.status`, `Project.lead`, `Project.url`, `Project.teams`, `Project.members`, `Project.documents`, `Project.projectMilestones`, `Project.issues`, `Project.comments`
 
@@ -365,6 +367,8 @@ Planned commands:
 | `project create` | `Mutation.projectCreate` with `ProjectCreateInput.teamIds` | Team-scoped |
 | `project update` | `Mutation.projectUpdate` with `ProjectUpdateInput` | Resource-scoped, compare `project_id` |
 | `project archive` | `Mutation.projectArchive` | Resource-scoped, compare `project_id` |
+| `project add-label` | `Mutation.projectAddLabel` | Resource-scoped: resolve the project through `requireProject`; the ProjectLabel must belong to the resolved organization |
+| `project remove-label` | `Mutation.projectRemoveLabel` | Resource-scoped, same resolution and comparison as `project add-label` |
 | `project members` | `Project.members` plus `Mutation.projectUpdate` with `ProjectUpdateInput.memberIds` | Read-only for list, resource-scoped for writes |
 | `project needs` | `Project.needs` | Read-only |
 | `project relations` | `Project.relations` | Read-only |
@@ -431,8 +435,9 @@ Schema backing:
 
 - Types: `ProjectLabel`, `ProjectLabelConnection`
 - Reads: `Query.projectLabels`, `Query.projectLabel`, `ProjectLabel.children`, `ProjectLabel.projects`
-- Writes: `Mutation.projectLabelCreate`, `Mutation.projectLabelUpdate`, `Mutation.projectLabelDelete`, `Mutation.projectLabelRetire`, `Mutation.projectLabelRestore`
-- Relevant fields: `ProjectLabel.id`, `ProjectLabel.name`, `ProjectLabel.description`, `ProjectLabel.color`, `ProjectLabel.isGroup`, `ProjectLabel.parent`, `ProjectLabel.retiredAt`, `ProjectLabel.archivedAt`
+- Writes: `Mutation.projectLabelCreate`, `Mutation.projectLabelUpdate`, `Mutation.projectLabelRetire`, `Mutation.projectLabelRestore`, `Mutation.projectLabelDelete`
+- Inputs: `ProjectLabelCreateInput`, `ProjectLabelUpdateInput`
+- Relevant fields: `ProjectLabel.id`, `ProjectLabel.name`, `ProjectLabel.description`, `ProjectLabel.color`, `ProjectLabel.isGroup`, `ProjectLabel.parent`, `ProjectLabel.retiredAt`, `ProjectLabel.archivedAt`, `ProjectLabel.organization`
 
 Planned commands:
 
@@ -442,13 +447,13 @@ Planned commands:
 | `project-label get` | `Query.projectLabel` | Read-only |
 | `project-label children` | `ProjectLabel.children` via `Query.projectLabel` | Read-only |
 | `project-label projects` | `ProjectLabel.projects` via `Query.projectLabel` | Read-only |
-| `project-label create` | `Mutation.projectLabelCreate` | Blocked: organization label configuration needs an explicit admin safety model |
-| `project-label update` | `Mutation.projectLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
-| `project-label delete` | `Mutation.projectLabelDelete` | Blocked: destructive command needs explicit safety semantics |
-| `project-label retire` | `Mutation.projectLabelRetire` | Blocked: lifecycle command needs explicit admin safety semantics |
-| `project-label restore` | `Mutation.projectLabelRestore` | Blocked: restore semantics need an explicit admin safety model |
+| `project-label create` | `Mutation.projectLabelCreate` with `ProjectLabelCreateInput` | Org-Scoped Write; `--org-wide` is required (ProjectLabel has no team scope) |
+| `project-label update` | `Mutation.projectLabelUpdate` | Org-Scoped Write; resolve the label and compare its organization; `--org-wide` is required |
+| `project-label retire` | `Mutation.projectLabelRetire` | Org-Scoped Write, same resolution and comparison as `project-label update` |
+| `project-label restore` | `Mutation.projectLabelRestore` | Org-Scoped Write, same resolution and comparison as `project-label update` |
+| `project-label delete` | `Mutation.projectLabelDelete` | Blocked: hard delete stays excluded; retire/restore is the supported lifecycle |
 
-Only `project-label list`, `project-label get`, `project-label children`, and `project-label projects` are implemented in the current CLI. ProjectLabel writes are deferred as organization/admin configuration surface.
+`project-label list`, `project-label get`, `project-label children`, `project-label projects`, `project-label create`, `project-label update`, `project-label retire`, and `project-label restore` are implemented in the current CLI. ProjectLabel has no team scope, so `--org-wide` is required on every taxonomy write and the command refuses to run without it, naming the flag in the error; a resolved label belonging to a different organization fails closed as Target Mismatch. A pinned `project_id` does not block these writes (103 decision memo ruling). `project-label delete` (hard delete) stays excluded.
 
 ## ProjectRelation
 
@@ -569,7 +574,7 @@ Schema backing:
 
 - Types: `IssueLabel`, `IssueLabelConnection`
 - Reads: `Query.issueLabels`, `Query.issueLabel`, `IssueLabel.children`, `IssueLabel.issues`, `Team.labels`
-- Writes: `Mutation.issueLabelCreate`, `Mutation.issueLabelUpdate`, `Mutation.issueLabelDelete`
+- Writes: `Mutation.issueLabelCreate`, `Mutation.issueLabelUpdate`, `Mutation.issueLabelRetire`, `Mutation.issueLabelRestore`, `Mutation.issueLabelDelete`
 - Inputs: `IssueLabelCreateInput`, `IssueLabelUpdateInput`
 - Relevant fields: `IssueLabel.id`, `IssueLabel.name`, `IssueLabel.description`, `IssueLabel.color`, `IssueLabel.team`, `IssueLabel.children`, `IssueLabel.issues`
 
@@ -581,11 +586,13 @@ Planned commands:
 | `label get` | `Query.issueLabel` | Read-only |
 | `label children` | `IssueLabel.children` | Read-only |
 | `label issues` | `IssueLabel.issues` | Read-only |
-| `label create` | `Mutation.issueLabelCreate` with optional `teamId` | Blocked: optional team scope needs explicit org/team target behavior before writes |
-| `label update` | `Mutation.issueLabelUpdate` | Blocked: update must resolve and compare the label's owning team before mutation |
-| `label delete` | `Mutation.issueLabelDelete` | Blocked: destructive command needs explicit safety semantics |
+| `label create` | `Mutation.issueLabelCreate` with `teamId` from the resolved team, or omitted with `--org-wide` | Team-Scoped Write by default; Org-Scoped Write with `--org-wide`; `--parent` requires the parent label to share the same effective scope |
+| `label update` | `Mutation.issueLabelUpdate` | Resource-scoped: resolve the label and compare its team; an organization-wide label (null team) requires `--org-wide` |
+| `label retire` | `Mutation.issueLabelRetire` | Resource-scoped, same resolution and comparison as `label update` |
+| `label restore` | `Mutation.issueLabelRestore` | Resource-scoped, same resolution and comparison as `label update` |
+| `label delete` | `Mutation.issueLabelDelete` | Blocked: hard delete stays excluded; retire/restore is the supported lifecycle |
 
-Only read-only label commands are implemented in the current CLI. Label writes are deferred until the team-scope guard is designed.
+`label list`, `label get`, `label children`, `label issues`, `label create`, `label update`, `label retire`, and `label restore` are implemented in the current CLI. `label create` sends the resolved team's id as `teamId` by default (Team-Scoped Write); `--org-wide` omits `teamId` for an Org-Scoped Write instead. `label update`/`retire`/`restore` resolve the existing label and compare its team; an organization-wide label (null team) is refused unless `--org-wide` is passed, and `--org-wide` is refused for a team-scoped label. `--org-wide` selects a comparison class — it is never a bypass or confirmation flag. `label delete` (hard delete) stays excluded.
 
 ## Team
 

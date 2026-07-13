@@ -14,6 +14,7 @@ type ProjectLabelSummary struct {
 	Description   string `json:"description,omitempty"`
 	Color         string `json:"color"`
 	IsGroup       bool   `json:"is_group"`
+	OrgID         string `json:"org_id,omitempty"`
 	ParentID      string `json:"parent_id,omitempty"`
 	ParentName    string `json:"parent_name,omitempty"`
 	ParentColor   string `json:"parent_color,omitempty"`
@@ -140,6 +141,7 @@ func projectLabelSummary(fields ProjectLabelSummaryFields) ProjectLabelSummary {
 		Description:   stringValue(fields.Description),
 		Color:         fields.Color,
 		IsGroup:       fields.IsGroup,
+		OrgID:         fields.Organization.Id,
 		LastAppliedAt: stringValue(fields.LastAppliedAt),
 		RetiredAt:     stringValue(fields.RetiredAt),
 		ArchivedAt:    stringValue(fields.ArchivedAt),
