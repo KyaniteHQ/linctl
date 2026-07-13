@@ -15,13 +15,10 @@ linctl issue list --mine                      # reads work anywhere
 linctl issue create --title "Spike: exports"  # writes land only in the pinned team
 ```
 
-![linctl reads Linear freely, then refuses the same write when the active credential does not resolve to the pinned team, exiting non-zero with TARGET_MISMATCH](docs/assets/demo.gif)
+![What linctl is: an MCP server loads about 17,000 tokens of tool definitions into every agent session before any work, while linctl loads none. A write into the pinned team lands; the same write aimed at a team the credential cannot reach is refused with TARGET_MISMATCH and exit 1.](docs/assets/explainer.gif)
 
-Real command output, real exit codes. The organization and issue ids are invented, so you can
-re-record it yourself with [`demo/render-fixture.sh`](demo/render-fixture.sh) and no Linear
-account at all.
-
-Prefer it explained? [**40-second explainer**](docs/assets/explainer-4k60.mp4) (4K, no narration).
+<sub>Also available as a [4K master](docs/assets/explainer-4k60.mp4). Source:
+[`demo/readme-hero/`](demo/readme-hero/).</sub>
 
 ---
 
@@ -67,6 +64,17 @@ flowchart LR
 ```
 
 </details>
+
+### Watch it refuse
+
+The same `issue create`, run twice. Once into the pinned team, where it lands. Once at a team the
+credential cannot reach, where nothing happens at all.
+
+![linctl reads Linear freely, then refuses the same write when the active credential does not resolve to the pinned team, exiting non-zero with TARGET_MISMATCH](docs/assets/demo.gif)
+
+Real command output, real exit codes. The organization and issue ids are invented, so you can
+re-record this yourself with [`demo/render-fixture.sh`](demo/render-fixture.sh) and no Linear
+account at all.
 
 ### What the guard does not do
 
