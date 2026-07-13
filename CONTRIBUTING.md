@@ -94,6 +94,30 @@ be archived during cleanup.
 
 ## Schema Changes
 
+A nightly `schema-drift` job (`.github/workflows/integration.yml`) reports semantic drift
+between the vendored `internal/client/schema.graphql` and the upstream `linear/linear` SDK
+schema: types, fields, and enum values added or removed, and field type changes on types
+present in both. It is read-only and not part of `go tool task ci`, so it never blocks a PR;
+it exists to flag when the vendored snapshot has fallen behind. Run it locally with:
+
+```bash
+go tool task schema-drift-check
+```
+
+When the nightly job fails, refresh the schema and land the refresh as its own commit:
+
+```bash
+npm ci
+LINCTL_OAUTH_ACCESS_TOKEN=<token> bash scripts/refresh-schema.sh
+go generate ./...
+go tool task ci
+```
+
+Review the generated diff before committing. Drift confined to schema areas linctl doesn't
+use is safe to batch into a routine refresh; drift touching fields or types the current
+operations depend on is urgent, though `go tool task graphql-operation-check` would already
+be failing in that case.
+
 Refresh the vendored Linear schema before adding or changing GraphQL operations:
 
 ```bash

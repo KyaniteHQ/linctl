@@ -164,6 +164,25 @@ tasks:
         go run scripts/linear_api_coverage*.go --upstream "$upstream" --output "$tmp"
         diff -u docs/linear-api-coverage.md "$tmp"
 
+  schema-drift-check:
+    desc: Report semantic drift between the vendored Linear schema and the upstream Linear SDK schema (nightly-only, not part of ci)
+    cmds:
+      - |
+        upstream="${LINCTL_LINEAR_SDK_UPSTREAM:-}"
+        upstream_root=""
+        if [[ -z "$upstream" ]]; then
+          upstream_root="$(mktemp -d)"
+          upstream="$upstream_root/linear"
+        fi
+        cleanup() {
+          if [[ -n "$upstream_root" ]]; then
+            rm -rf "$upstream_root"
+          fi
+        }
+        trap cleanup EXIT
+        LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
+        go run scripts/linear_schema_drift_check.go --upstream "$upstream"
+
   graphql-operation-check:
     desc: Validate local GraphQL operations against the upstream Linear SDK schema
     cmds:

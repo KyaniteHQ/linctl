@@ -66,3 +66,24 @@ jobs:
       - name: Live smoke (e2e)
         if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
         run: bash scripts/live-smoke.sh
+
+  schema-drift:
+    name: schema drift check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.repository == 'KyaniteHQ/linctl'
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
+      - name: Verify dependencies
+        run: |
+          go mod download
+          go mod verify
+      - name: Schema drift check
+        run: go tool task schema-drift-check
