@@ -37,6 +37,9 @@ type Paths struct {
 }
 
 // AppConfig is the saved OAuth application material.
+//
+// Secret-bearing fields (ClientSecret) must appear in String/GoString/MarshalJSON
+// redaction below AND in persistedAppConfig for on-disk persistence.
 type AppConfig struct {
 	ClientID     string   `json:"client_id,omitempty"`
 	ClientSecret string   `json:"client_secret,omitempty"`
@@ -44,7 +47,43 @@ type AppConfig struct {
 	Scopes       []string `json:"scopes,omitempty"`
 }
 
+// String redacts secret material for fmt's %v, %+v, and %s verbs.
+func (app AppConfig) String() string {
+	return fmt.Sprintf(
+		"auth.AppConfig{ClientID:%s, ClientSecret:%s, RedirectURI:%s, Scopes:%v}",
+		presenceValue(app.ClientID), presenceValue(app.ClientSecret), presenceValue(app.RedirectURI), app.Scopes,
+	)
+}
+
+// GoString redacts secret material for fmt's %#v verb.
+func (app AppConfig) GoString() string {
+	return app.String()
+}
+
+// MarshalJSON redacts secret material so json.Marshal never emits raw values.
+func (app AppConfig) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		ClientID     string   `json:"client_id"`
+		ClientSecret string   `json:"client_secret"`
+		RedirectURI  string   `json:"redirect_uri"`
+		Scopes       []string `json:"scopes"`
+	}{
+		ClientID:     presenceValue(app.ClientID),
+		ClientSecret: presenceValue(app.ClientSecret),
+		RedirectURI:  presenceValue(app.RedirectURI),
+		Scopes:       app.Scopes,
+	})
+}
+
+// persistedAppConfig carries the same fields as AppConfig but drops its redaction
+// methods, so marshaling it writes real values to disk.
+type persistedAppConfig AppConfig
+
 // TokenState is the saved OAuth token material.
+//
+// Secret-bearing fields (AccessToken, RefreshToken) must appear in
+// String/GoString/MarshalJSON redaction below AND in persistedTokenState for
+// on-disk persistence.
 type TokenState struct {
 	AccessToken  string     `json:"access_token,omitempty"`
 	RefreshToken string     `json:"refresh_token,omitempty"`
@@ -53,6 +92,54 @@ type TokenState struct {
 	ExpiresAt    *time.Time `json:"expires_at,omitempty"`
 	Actor        string     `json:"actor,omitempty"`
 	GrantType    string     `json:"grant_type,omitempty"`
+}
+
+// String redacts secret material for fmt's %v, %+v, and %s verbs.
+func (token TokenState) String() string {
+	return fmt.Sprintf(
+		"auth.TokenState{AccessToken:%s, RefreshToken:%s, TokenType:%s, Scopes:%v, "+
+			"ExpiresAt:%v, Actor:%s, GrantType:%s}",
+		presenceValue(token.AccessToken), presenceValue(token.RefreshToken), token.TokenType, token.Scopes,
+		token.ExpiresAt, presenceValue(token.Actor), token.GrantType,
+	)
+}
+
+// GoString redacts secret material for fmt's %#v verb.
+func (token TokenState) GoString() string {
+	return token.String()
+}
+
+// MarshalJSON redacts secret material so json.Marshal never emits raw values.
+func (token TokenState) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		AccessToken  string     `json:"access_token"`
+		RefreshToken string     `json:"refresh_token"`
+		TokenType    string     `json:"token_type"`
+		Scopes       []string   `json:"scopes"`
+		ExpiresAt    *time.Time `json:"expires_at"`
+		Actor        string     `json:"actor"`
+		GrantType    string     `json:"grant_type"`
+	}{
+		AccessToken:  presenceValue(token.AccessToken),
+		RefreshToken: presenceValue(token.RefreshToken),
+		TokenType:    token.TokenType,
+		Scopes:       token.Scopes,
+		ExpiresAt:    token.ExpiresAt,
+		Actor:        presenceValue(token.Actor),
+		GrantType:    token.GrantType,
+	})
+}
+
+// persistedTokenState carries the same fields as TokenState but drops its
+// redaction methods, so marshaling it writes real values to disk.
+type persistedTokenState TokenState
+
+func presenceValue(value string) string {
+	if value == "" {
+		return "missing"
+	}
+
+	return "set"
 }
 
 // ProfileState is auth state scoped to one auth profile.
@@ -69,13 +156,13 @@ type State struct {
 }
 
 type appConfigFile struct {
-	App      AppConfig            `json:"app,omitempty"`
-	Profiles map[string]AppConfig `json:"profiles,omitempty"`
+	App      persistedAppConfig            `json:"app,omitempty"`
+	Profiles map[string]persistedAppConfig `json:"profiles,omitempty"`
 }
 
 type tokenFile struct {
-	Token    TokenState            `json:"token,omitempty"`
-	Profiles map[string]TokenState `json:"profiles,omitempty"`
+	Token    persistedTokenState            `json:"token,omitempty"`
+	Profiles map[string]persistedTokenState `json:"profiles,omitempty"`
 }
 
 type osEnv struct{}
@@ -148,12 +235,12 @@ func (store Store) SaveAppConfig(ctx context.Context, profile string, app AppCon
 		return err
 	}
 	if profile == "" {
-		appState.App = app
+		appState.App = persistedAppConfig(app)
 	} else {
 		if appState.Profiles == nil {
-			appState.Profiles = map[string]AppConfig{}
+			appState.Profiles = map[string]persistedAppConfig{}
 		}
-		appState.Profiles[profile] = app
+		appState.Profiles[profile] = persistedAppConfig(app)
 	}
 
 	return writeJSON(store.paths.AppConfigPath, appState, "auth app config")
@@ -170,12 +257,12 @@ func (store Store) SaveTokenState(ctx context.Context, profile string, token Tok
 		return err
 	}
 	if profile == "" {
-		tokenState.Token = token
+		tokenState.Token = persistedTokenState(token)
 	} else {
 		if tokenState.Profiles == nil {
-			tokenState.Profiles = map[string]TokenState{}
+			tokenState.Profiles = map[string]persistedTokenState{}
 		}
-		tokenState.Profiles[profile] = token
+		tokenState.Profiles[profile] = persistedTokenState(token)
 	}
 
 	return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
@@ -192,7 +279,7 @@ func (store Store) ClearTokenState(ctx context.Context, profile string) error {
 		return err
 	}
 	if profile == "" {
-		tokenState.Token = TokenState{}
+		tokenState.Token = persistedTokenState{}
 	} else if tokenState.Profiles != nil {
 		delete(tokenState.Profiles, profile)
 	}
@@ -210,7 +297,7 @@ func (store Store) ClearAppConfig(ctx context.Context, profile string) error {
 		return err
 	}
 	if profile == "" {
-		appState.App = AppConfig{}
+		appState.App = persistedAppConfig{}
 	} else if appState.Profiles != nil {
 		delete(appState.Profiles, profile)
 	}
@@ -388,31 +475,31 @@ func errorsIsNotExist(err error) bool {
 }
 
 func appConfigFileFromState(state State) appConfigFile {
-	profiles := map[string]AppConfig{}
+	profiles := map[string]persistedAppConfig{}
 	for name, profile := range state.Profiles {
 		if !appConfigEmpty(profile.App) {
-			profiles[name] = profile.App
+			profiles[name] = persistedAppConfig(profile.App)
 		}
 	}
 	if len(profiles) == 0 {
 		profiles = nil
 	}
 
-	return appConfigFile{App: state.App, Profiles: profiles}
+	return appConfigFile{App: persistedAppConfig(state.App), Profiles: profiles}
 }
 
 func tokenFileFromState(state State) tokenFile {
-	profiles := map[string]TokenState{}
+	profiles := map[string]persistedTokenState{}
 	for name, profile := range state.Profiles {
 		if !tokenStateEmpty(profile.Token) {
-			profiles[name] = profile.Token
+			profiles[name] = persistedTokenState(profile.Token)
 		}
 	}
 	if len(profiles) == 0 {
 		profiles = nil
 	}
 
-	return tokenFile{Token: state.Token, Profiles: profiles}
+	return tokenFile{Token: persistedTokenState(state.Token), Profiles: profiles}
 }
 
 func appConfigEmpty(app AppConfig) bool {
@@ -434,15 +521,15 @@ func tokenStateEmpty(token TokenState) bool {
 
 func mergeFiles(appState appConfigFile, tokenState tokenFile) State {
 	state := State{
-		App:   appState.App,
-		Token: tokenState.Token,
+		App:   AppConfig(appState.App),
+		Token: TokenState(tokenState.Token),
 	}
 	for name, app := range appState.Profiles {
 		if state.Profiles == nil {
 			state.Profiles = map[string]ProfileState{}
 		}
 		profile := state.Profiles[name]
-		profile.App = app
+		profile.App = AppConfig(app)
 		state.Profiles[name] = profile
 	}
 	for name, token := range tokenState.Profiles {
@@ -450,7 +537,7 @@ func mergeFiles(appState appConfigFile, tokenState tokenFile) State {
 			state.Profiles = map[string]ProfileState{}
 		}
 		profile := state.Profiles[name]
-		profile.Token = token
+		profile.Token = TokenState(token)
 		state.Profiles[name] = profile
 	}
 
