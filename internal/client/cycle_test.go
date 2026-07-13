@@ -59,7 +59,7 @@ func Test_GetCycleByID_wraps_graphql_errors(t *testing.T) {
 
 func Test_CurrentCycleByTeam_returns_active_cycle(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
-		"cycles": `{"cycles":{"nodes":[{"id":"future-cycle-id","number":13,"name":"Future cycle","description":null,"startsAt":"2099-01-01T00:00:00Z","endsAt":"2099-02-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}},{"id":"cycle-id","number":12,"name":"Current sprint","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"activeCyclesByTeam": `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":"Current sprint","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}]}}`,
 	}
 
 	cycle, err := CurrentCycleByTeam(context.Background(), graphqlClient, "team-id")
@@ -72,12 +72,22 @@ func Test_CurrentCycleByTeam_returns_active_cycle(t *testing.T) {
 
 func Test_CurrentCycleByTeam_reports_empty_active_cycle(t *testing.T) {
 	graphqlClient := fakeGraphQLClient{
-		"cycles": `{"cycles":{"nodes":[{"id":"future-cycle-id","number":13,"name":"Future cycle","description":null,"startsAt":"2099-01-01T00:00:00Z","endsAt":"2099-02-01T00:00:00Z","completedAt":null,"progress":0,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`,
+		"activeCyclesByTeam": `{"cycles":{"nodes":[]}}`,
 	}
 
 	_, err := CurrentCycleByTeam(context.Background(), graphqlClient, "team-id")
 
 	require.ErrorContains(t, err, "current sprint: no active Cycle")
+}
+
+func Test_CurrentCycleByTeam_reports_multiple_active_cycles(t *testing.T) {
+	graphqlClient := fakeGraphQLClient{
+		"activeCyclesByTeam": `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":"First","description":null,"startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}},{"id":"other-cycle-id","number":13,"name":"Second","description":null,"startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.1,"team":{"id":"team-id","key":"LIT","name":"linctl"}}]}}`,
+	}
+
+	_, err := CurrentCycleByTeam(context.Background(), graphqlClient, "team-id")
+
+	require.ErrorContains(t, err, "current sprint: multiple active Cycles")
 }
 
 func Test_CurrentCycleByTeam_wraps_graphql_errors(t *testing.T) {

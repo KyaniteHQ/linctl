@@ -85,11 +85,8 @@ func (guard writeGuard) requireProject(
 	if guard.target.Project != nil && project.ID != guard.target.Project.ID {
 		return guard.projectMismatchError("project_id", project.ID)
 	}
-	if !projectHasTeam(project, guard.target.Team.ID, guard.target.Team.Key) {
-		return guard.teamNotAttachedError()
-	}
 
-	return nil
+	return guard.requireProjectTeam(project)
 }
 
 func (guard writeGuard) requireProjectMilestone(
@@ -104,11 +101,8 @@ func (guard writeGuard) requireProjectMilestone(
 	if guard.target.Project != nil && milestone.Project.ID != guard.target.Project.ID {
 		return guard.projectMismatchError("project_id", milestone.Project.ID)
 	}
-	if !projectHasTeam(milestone.Project, guard.target.Team.ID, guard.target.Team.Key) {
-		return guard.teamNotAttachedError()
-	}
 
-	return nil
+	return guard.requireProjectTeam(milestone.Project)
 }
 
 func (guard writeGuard) requireCycle(
@@ -294,6 +288,24 @@ func (guard writeGuard) requireProjectLabel(
 	}
 
 	return guard.requireOrganization(label.OrgID)
+}
+
+// requireProjectTeam compares a resolved project's teams against the pinned
+// team. An unmatched result on a truncated team page fails closed instead of
+// silently trusting the first 50 teams.
+func (guard writeGuard) requireProjectTeam(project ProjectSummary) error {
+	if projectHasTeam(project, guard.target.Team.ID, guard.target.Team.Key) {
+		return nil
+	}
+	if project.TeamsTruncated {
+		return fmt.Errorf(
+			"%w: project %s has more than 50 teams; cannot verify pinned team membership",
+			ErrTargetMismatch,
+			project.ID,
+		)
+	}
+
+	return guard.teamNotAttachedError()
 }
 
 func projectHasTeam(project ProjectSummary, teamID string, teamKey string) bool {

@@ -174,6 +174,14 @@ func guardBlockingCycle(
 			)
 		}
 	}
+	if dependencies.HasNextPage {
+		return fmt.Errorf(
+			"%w: issue %s has more than %d relations; cannot verify the blocks relation would not close a cycle",
+			ErrWriteInvalid,
+			issue.Identifier,
+			dependencyCheckLimit,
+		)
+	}
 
 	return nil
 }

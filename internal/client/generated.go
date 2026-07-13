@@ -18839,12 +18839,18 @@ func (v *ProjectSummaryFieldsStatusProjectStatus) GetType() ProjectStatusType { 
 
 // ProjectSummaryFieldsTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
 type ProjectSummaryFieldsTeamsTeamConnection struct {
-	Nodes []ProjectSummaryFieldsTeamsTeamConnectionNodesTeam `json:"nodes"`
+	Nodes    []ProjectSummaryFieldsTeamsTeamConnectionNodesTeam `json:"nodes"`
+	PageInfo ProjectSummaryFieldsTeamsTeamConnectionPageInfo    `json:"pageInfo"`
 }
 
 // GetNodes returns ProjectSummaryFieldsTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
 func (v *ProjectSummaryFieldsTeamsTeamConnection) GetNodes() []ProjectSummaryFieldsTeamsTeamConnectionNodesTeam {
 	return v.Nodes
+}
+
+// GetPageInfo returns ProjectSummaryFieldsTeamsTeamConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ProjectSummaryFieldsTeamsTeamConnection) GetPageInfo() ProjectSummaryFieldsTeamsTeamConnectionPageInfo {
+	return v.PageInfo
 }
 
 // ProjectSummaryFieldsTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
@@ -18872,6 +18878,15 @@ func (v *ProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetKey() string { ret
 
 // GetName returns ProjectSummaryFieldsTeamsTeamConnectionNodesTeam.Name, and is useful for accessing the field via an interface.
 func (v *ProjectSummaryFieldsTeamsTeamConnectionNodesTeam) GetName() string { return v.Name }
+
+// ProjectSummaryFieldsTeamsTeamConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+type ProjectSummaryFieldsTeamsTeamConnectionPageInfo struct {
+	// Indicates if there are more results when paginating forward.
+	HasNextPage bool `json:"hasNextPage"`
+}
+
+// GetHasNextPage returns ProjectSummaryFieldsTeamsTeamConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *ProjectSummaryFieldsTeamsTeamConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
 
 // ProjectUpdateCreateProjectUpdateCreateProjectUpdatePayload includes the requested fields of the GraphQL type ProjectUpdatePayload.
 // The GraphQL type's documentation follows.
@@ -23896,6 +23911,14 @@ func (v *__WorkflowStatesByTypeInput) GetStateType() string { return v.StateType
 // GetFirst returns __WorkflowStatesByTypeInput.First, and is useful for accessing the field via an interface.
 func (v *__WorkflowStatesByTypeInput) GetFirst() *int { return v.First }
 
+// __activeCyclesByTeamInput is used internally by genqlient
+type __activeCyclesByTeamInput struct {
+	TeamId string `json:"teamId"`
+}
+
+// GetTeamId returns __activeCyclesByTeamInput.TeamId, and is useful for accessing the field via an interface.
+func (v *__activeCyclesByTeamInput) GetTeamId() string { return v.TeamId }
+
 // __agentActivitiesInput is used internally by genqlient
 type __agentActivitiesInput struct {
 	First           *int    `json:"first"`
@@ -27635,6 +27658,152 @@ func (v *__workflowStatesInput) GetAfter() *string { return v.After }
 
 // GetIncludeArchived returns __workflowStatesInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__workflowStatesInput) GetIncludeArchived() *bool { return v.IncludeArchived }
+
+// activeCyclesByTeamCyclesCycleConnection includes the requested fields of the GraphQL type CycleConnection.
+type activeCyclesByTeamCyclesCycleConnection struct {
+	Nodes []activeCyclesByTeamCyclesCycleConnectionNodesCycle `json:"nodes"`
+}
+
+// GetNodes returns activeCyclesByTeamCyclesCycleConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnection) GetNodes() []activeCyclesByTeamCyclesCycleConnectionNodesCycle {
+	return v.Nodes
+}
+
+// activeCyclesByTeamCyclesCycleConnectionNodesCycle includes the requested fields of the GraphQL type Cycle.
+// The GraphQL type's documentation follows.
+//
+// A time-boxed iteration (similar to a sprint) used for planning and tracking
+// work. Cycles belong to a team and have defined start and end dates. Issues are
+// assigned to cycles for time-based planning, and progress is tracked via
+// completed, in-progress, and total scope. Cycles are automatically completed when
+// their end date passes, and uncompleted issues can be carried over to the next cycle.
+type activeCyclesByTeamCyclesCycleConnectionNodesCycle struct {
+	CycleSummaryFields `json:"-"`
+}
+
+// GetId returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.Id, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetId() string {
+	return v.CycleSummaryFields.Id
+}
+
+// GetNumber returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.Number, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetNumber() float64 {
+	return v.CycleSummaryFields.Number
+}
+
+// GetName returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.Name, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetName() *string {
+	return v.CycleSummaryFields.Name
+}
+
+// GetDescription returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.Description, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetDescription() *string {
+	return v.CycleSummaryFields.Description
+}
+
+// GetStartsAt returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.StartsAt, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetStartsAt() string {
+	return v.CycleSummaryFields.StartsAt
+}
+
+// GetEndsAt returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.EndsAt, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetEndsAt() string {
+	return v.CycleSummaryFields.EndsAt
+}
+
+// GetCompletedAt returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.CompletedAt, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetCompletedAt() *string {
+	return v.CycleSummaryFields.CompletedAt
+}
+
+// GetProgress returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.Progress, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetProgress() float64 {
+	return v.CycleSummaryFields.Progress
+}
+
+// GetTeam returns activeCyclesByTeamCyclesCycleConnectionNodesCycle.Team, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) GetTeam() CycleSummaryFieldsTeam {
+	return v.CycleSummaryFields.Team
+}
+
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*activeCyclesByTeamCyclesCycleConnectionNodesCycle
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.activeCyclesByTeamCyclesCycleConnectionNodesCycle = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CycleSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalactiveCyclesByTeamCyclesCycleConnectionNodesCycle struct {
+	Id string `json:"id"`
+
+	Number float64 `json:"number"`
+
+	Name *string `json:"name"`
+
+	Description *string `json:"description"`
+
+	StartsAt string `json:"startsAt"`
+
+	EndsAt string `json:"endsAt"`
+
+	CompletedAt *string `json:"completedAt"`
+
+	Progress float64 `json:"progress"`
+
+	Team CycleSummaryFieldsTeam `json:"team"`
+}
+
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *activeCyclesByTeamCyclesCycleConnectionNodesCycle) __premarshalJSON() (*__premarshalactiveCyclesByTeamCyclesCycleConnectionNodesCycle, error) {
+	var retval __premarshalactiveCyclesByTeamCyclesCycleConnectionNodesCycle
+
+	retval.Id = v.CycleSummaryFields.Id
+	retval.Number = v.CycleSummaryFields.Number
+	retval.Name = v.CycleSummaryFields.Name
+	retval.Description = v.CycleSummaryFields.Description
+	retval.StartsAt = v.CycleSummaryFields.StartsAt
+	retval.EndsAt = v.CycleSummaryFields.EndsAt
+	retval.CompletedAt = v.CycleSummaryFields.CompletedAt
+	retval.Progress = v.CycleSummaryFields.Progress
+	retval.Team = v.CycleSummaryFields.Team
+	return &retval, nil
+}
+
+// activeCyclesByTeamResponse is returned by activeCyclesByTeam on success.
+type activeCyclesByTeamResponse struct {
+	// All cycles accessible to the user.
+	Cycles activeCyclesByTeamCyclesCycleConnection `json:"cycles"`
+}
+
+// GetCycles returns activeCyclesByTeamResponse.Cycles, and is useful for accessing the field via an interface.
+func (v *activeCyclesByTeamResponse) GetCycles() activeCyclesByTeamCyclesCycleConnection {
+	return v.Cycles
+}
 
 // agentActivitiesAgentActivitiesAgentActivityConnection includes the requested fields of the GraphQL type AgentActivityConnection.
 type agentActivitiesAgentActivitiesAgentActivityConnection struct {
@@ -80734,6 +80903,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -80798,6 +80970,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -80861,6 +81036,9 @@ fragment ProjectSummaryFields on Project {
 			id
 			key
 			name
+		}
+		pageInfo {
+			hasNextPage
 		}
 	}
 }
@@ -81166,6 +81344,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -81275,6 +81456,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -81339,6 +81523,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -81402,6 +81589,9 @@ fragment ProjectSummaryFields on Project {
 			id
 			key
 			name
+		}
+		pageInfo {
+			hasNextPage
 		}
 	}
 }
@@ -81525,6 +81715,9 @@ fragment ProjectSummaryFields on Project {
 			id
 			key
 			name
+		}
+		pageInfo {
+			hasNextPage
 		}
 	}
 }
@@ -81778,6 +81971,57 @@ func WorkflowStatesByType(
 	}
 
 	data_ = &WorkflowStatesByTypeResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by activeCyclesByTeam.
+const activeCyclesByTeam_Operation = `
+query activeCyclesByTeam ($teamId: ID!) {
+	cycles(filter: {team:{id:{eq:$teamId}},isActive:{eq:true}}, first: 2) {
+		nodes {
+			... CycleSummaryFields
+		}
+	}
+}
+fragment CycleSummaryFields on Cycle {
+	id
+	number
+	name
+	description
+	startsAt
+	endsAt
+	completedAt
+	progress
+	team {
+		id
+		key
+		name
+	}
+}
+`
+
+func activeCyclesByTeam(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamId string,
+) (data_ *activeCyclesByTeamResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "activeCyclesByTeam",
+		Query:  activeCyclesByTeam_Operation,
+		Variables: &__activeCyclesByTeamInput{
+			TeamId: teamId,
+		},
+	}
+
+	data_ = &activeCyclesByTeamResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -84193,6 +84437,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -86572,6 +86819,9 @@ fragment ProjectSummaryFields on Project {
 			id
 			key
 			name
+		}
+		pageInfo {
+			hasNextPage
 		}
 	}
 }
@@ -90263,6 +90513,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -90493,6 +90746,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -90633,6 +90889,9 @@ fragment ProjectSummaryFields on Project {
 			id
 			key
 			name
+		}
+		pageInfo {
+			hasNextPage
 		}
 	}
 }
@@ -92359,6 +92618,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -93800,6 +94062,9 @@ fragment ProjectSummaryFields on Project {
 			key
 			name
 		}
+		pageInfo {
+			hasNextPage
+		}
 	}
 }
 `
@@ -94879,6 +95144,9 @@ fragment ProjectSummaryFields on Project {
 			id
 			key
 			name
+		}
+		pageInfo {
+			hasNextPage
 		}
 	}
 }

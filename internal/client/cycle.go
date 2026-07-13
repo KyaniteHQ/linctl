@@ -120,19 +120,31 @@ func GetCycleByID(ctx context.Context, graphqlClient graphql.Client, id string) 
 	return cycleSummary(cycle.Cycle.CycleSummaryFields), nil
 }
 
-// CurrentCycleByTeam returns the active Cycle for a team.
+// CurrentCycleByTeam returns the active Cycle for a team, using a server-side
+// isActive filter so history beyond one page never hides the active Cycle.
 func CurrentCycleByTeam(ctx context.Context, graphqlClient graphql.Client, teamID string) (CycleSummary, error) {
-	cycles, err := ListCyclesByTeam(ctx, graphqlClient, teamID, 50)
+	cycle, err := currentActiveCycle(ctx, graphqlClient, teamID)
 	if err != nil {
 		return CycleSummary{}, fmt.Errorf("current sprint: %w", err)
 	}
-	for _, cycle := range cycles.Cycles {
-		if cycle.Status == "active" {
-			return cycle, nil
-		}
+
+	return cycle, nil
+}
+
+func currentActiveCycle(ctx context.Context, graphqlClient graphql.Client, teamID string) (CycleSummary, error) {
+	page, err := activeCyclesByTeam(ctx, graphqlClient, teamID)
+	if err != nil {
+		return CycleSummary{}, fmt.Errorf("list cycles: %w", err)
 	}
 
-	return CycleSummary{}, fmt.Errorf("current sprint: no active Cycle for team %s", teamID)
+	switch len(page.Cycles.Nodes) {
+	case 0:
+		return CycleSummary{}, fmt.Errorf("no active Cycle for team %s", teamID)
+	case 1:
+		return cycleSummary(page.Cycles.Nodes[0].CycleSummaryFields), nil
+	default:
+		return CycleSummary{}, fmt.Errorf("multiple active Cycles for team %s", teamID)
+	}
 }
 
 // GetSprintReport returns one Cycle and its assigned issues.

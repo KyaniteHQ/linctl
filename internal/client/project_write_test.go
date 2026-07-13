@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
@@ -82,6 +83,60 @@ func Test_UpdateProject_refuses_when_project_lacks_pinned_team(t *testing.T) {
 	// Then
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+// Test_UpdateProject_succeeds_when_pinned_team_matches_on_truncated_page proves
+// a truncated teams page (hasNextPage=true) does not block a legitimate write
+// when the pinned team is found within the fetched page.
+func Test_UpdateProject_succeeds_when_pinned_team_matches_on_truncated_page(t *testing.T) {
+	// Given
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
+			ID:     "project-id",
+			Name:   "fixture",
+			Status: "Backlog",
+		}, "team-id", "LIT", true) + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSON(projectFixture{
+			ID:     "project-id",
+			Name:   "updated",
+			Status: "Backlog",
+		}) + `}}`,
+	})
+
+	// When
+	project, err := UpdateProject(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateRequest{
+		ID:   "project-id",
+		Name: "updated",
+	})
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, "updated", project.Name)
+}
+
+// Test_UpdateProject_refuses_fail_closed_when_teams_page_is_truncated proves an
+// unmatched pinned team on a truncated teams page fails closed with a distinct
+// message instead of silently trusting the first 50 teams.
+func Test_UpdateProject_refuses_fail_closed_when_teams_page_is_truncated(t *testing.T) {
+	// Given
+	graphqlClient := projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
+			ID:     "project-id",
+			Name:   "fixture",
+			Status: "Backlog",
+		}, "other-team", "OTHER", true) + `}`,
+	})
+
+	// When
+	_, err := UpdateProject(context.Background(), graphqlClient, matchingTarget(), ProjectUpdateRequest{
+		ID:   "project-id",
+		Name: "updated",
+	})
+
+	// Then
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.Contains(t, err.Error(), "more than 50 teams")
 }
 
 func Test_UpdateProject_returns_updated_project_when_target_matches(t *testing.T) {
@@ -213,6 +268,10 @@ func projectJSON(project projectFixture) string {
 }
 
 func projectJSONWithTeam(project projectFixture, teamID string, teamKey string) string {
+	return projectJSONWithTeamPage(project, teamID, teamKey, false)
+}
+
+func projectJSONWithTeamPage(project projectFixture, teamID string, teamKey string, teamsHasNextPage bool) string {
 	return `{
 		"id":"` + project.ID + `",
 		"name":"` + project.Name + `",
@@ -222,6 +281,9 @@ func projectJSONWithTeam(project projectFixture, teamID string, teamKey string) 
 		"priority":0,
 		"status":{"id":"status-id","name":"` + project.Status + `","type":"backlog"},
 		"lead":null,
-		"teams":{"nodes":[{"id":"` + teamID + `","key":"` + teamKey + `","name":"linctl-it"}]}
+		"teams":{
+			"nodes":[{"id":"` + teamID + `","key":"` + teamKey + `","name":"linctl-it"}],
+			"pageInfo":{"hasNextPage":` + strconv.FormatBool(teamsHasNextPage) + `}
+		}
 	}`
 }

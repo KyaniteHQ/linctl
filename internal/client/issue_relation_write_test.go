@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -53,6 +54,12 @@ func relationIssueReadWrongTeam() string {
 // issueRelationDepsJSON builds an IssueDependencies response; blockedBy adds an
 // inverse blocks relation whose blocker resolves to the shared issue-id.
 func issueRelationDepsJSON(blockedBy bool) string {
+	return issueRelationDepsJSONWithNextPage(blockedBy, false)
+}
+
+// issueRelationDepsJSONWithNextPage additionally controls the inverse-relations
+// pageInfo, to exercise the fail-closed truncated-scan boundary.
+func issueRelationDepsJSONWithNextPage(blockedBy bool, hasNextPage bool) string {
 	inverse := `[]`
 	if blockedBy {
 		inverse = `[{"id":"blocked-by-relation","type":"blocks","issue":` + issueJSON(issueFixture{
@@ -70,7 +77,7 @@ func issueRelationDepsJSON(blockedBy bool) string {
 		"parent":null,
 		"children":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
 		"relations":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
-		"inverseRelations":{"nodes":` + inverse + `,"pageInfo":{"hasNextPage":false,"endCursor":null}}
+		"inverseRelations":{"nodes":` + inverse + `,"pageInfo":{"hasNextPage":` + strconv.FormatBool(hasNextPage) + `,"endCursor":null}}
 	}}`
 }
 
@@ -139,6 +146,25 @@ func Test_CreateIssueRelation_wraps_dependency_read_error(t *testing.T) {
 
 	require.Error(t, err)
 	require.NotErrorIs(t, err, ErrTargetMismatch)
+}
+
+// Test_CreateIssueRelation_refuses_blocks_when_dependency_scan_is_truncated
+// proves a truncated blocked-by scan (hasNextPage=true) with no match found in
+// the fetched page fails closed instead of assuming no cycle exists.
+func Test_CreateIssueRelation_refuses_blocks_when_dependency_scan_is_truncated(t *testing.T) {
+	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issue":             relationIssueRead(),
+		"IssueDependencies": issueRelationDepsJSONWithNextPage(false, true),
+	})
+
+	_, err := CreateIssueRelation(context.Background(), graphqlClient, matchingTarget(), IssueRelationCreateRequest{
+		IssueID:        "LIT-1",
+		RelatedIssueID: "LIT-2",
+		Type:           "blocks",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "more than 50 relations")
 }
 
 func Test_CreateIssueRelation_requires_both_ids(t *testing.T) {

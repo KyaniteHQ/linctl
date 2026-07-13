@@ -19,6 +19,9 @@ type ProjectSummary struct {
 	Status      ProjectStatus `json:"status"`
 	Lead        string        `json:"lead,omitempty"`
 	Teams       []ProjectTeam `json:"teams"`
+	// TeamsTruncated is true when the project has more teams than the fetched
+	// page, so an unmatched pinned team cannot be ruled out from this page alone.
+	TeamsTruncated bool `json:"teams_truncated,omitempty"`
 }
 
 // ProjectStatus is the compact project lifecycle status.
@@ -838,7 +841,8 @@ func projectSummaryFromFields(project ProjectSummaryFields) ProjectSummary {
 			Name: project.Status.Name,
 			Type: string(project.Status.Type),
 		},
-		Lead:  lead,
-		Teams: teams,
+		Lead:           lead,
+		Teams:          teams,
+		TeamsTruncated: project.Teams.PageInfo.HasNextPage,
 	}
 }

@@ -21,6 +21,14 @@ query cycle($id: String!) {
   }
 }
 
+query activeCyclesByTeam($teamId: ID!) {
+  cycles(filter: { team: { id: { eq: $teamId } }, isActive: { eq: true } }, first: 2) {
+    nodes {
+      ...CycleSummaryFields
+    }
+  }
+}
+
 query CycleReport($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   cycle(id: $id) {
     ...CycleSummaryFields

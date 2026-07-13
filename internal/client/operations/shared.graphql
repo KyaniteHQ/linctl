@@ -79,5 +79,8 @@ fragment ProjectSummaryFields on Project {
       key
       name
     }
+    pageInfo {
+      hasNextPage
+    }
   }
 }

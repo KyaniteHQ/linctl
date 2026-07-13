@@ -182,7 +182,7 @@ func Test_CycleCommandFlows_report_current_sprint_edges(t *testing.T) {
 		},
 		{
 			name:        "list operation",
-			fake:        cycleCommandFlowFakeClient{failOperation: "cycles"},
+			fake:        cycleCommandFlowFakeClient{failOperation: "activeCyclesByTeam"},
 			wantMessage: "current sprint: list cycles",
 		},
 	}
@@ -710,6 +710,11 @@ func cycleCommandFlowCyclePayload(operation string, emptyCycles bool, emptyRepor
 			return `{"cycles":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 		}
 		return `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":null,"description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "activeCyclesByTeam":
+		if emptyCycles {
+			return `{"cycles":{"nodes":[]}}`, true
+		}
+		return `{"cycles":{"nodes":[{"id":"cycle-id","number":12,"name":null,"description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}]}}`, true
 	case "cycle":
 		return `{"cycle":{"id":"cycle-id","number":12,"name":"Named cycle","description":"cycle body","startsAt":"2026-01-01T00:00:00Z","endsAt":"2099-01-01T00:00:00Z","completedAt":null,"progress":0.25,"team":{"id":"team-id","key":"LIT","name":"linctl"}}}`, true
 	case "CycleCreate":
