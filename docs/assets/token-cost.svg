@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" width="1200" height="470" role="img" aria-labelledby="title desc">
+  <title id="title">Standing context cost per agent session</title>
+  <desc id="desc">The Linear MCP server loads about 17,000 tokens of tool definitions into every session before the agent does any work. linctl loads zero; its "usage" command costs about 400 tokens and only when the agent asks for it.</desc>
+
+  <style>
+    .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas, monospace; }
+    .h    { fill: #bfbdb6; font-size: 25px; font-weight: 600; letter-spacing: -0.01em; }
+    .sub  { fill: #6b7687; font-size: 15px; }
+    .name { fill: #bfbdb6; font-size: 18px; font-weight: 600; }
+    .val  { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .note { fill: #6b7687; font-size: 14px; }
+    .foot { fill: #55606f; font-size: 13px; }
+  </style>
+
+  <rect width="1200" height="470" rx="14" fill="#0b0e14"/>
+  <rect x="0.5" y="0.5" width="1199" height="469" rx="14" fill="none" stroke="#2a3342"/>
+
+  <text class="mono h"   x="48" y="58">Standing context cost, per agent session</text>
+  <text class="mono sub" x="48" y="86">What the model pays before it has done any work at all.</text>
+
+  <line x1="48" y1="112" x2="1152" y2="112" stroke="#2a3342"/>
+
+  <!-- Scale: 830px of track = 17,000 tokens. Track starts at x=322. -->
+
+  <!-- Linear MCP server -->
+  <text class="mono name" x="48" y="168">Linear MCP</text>
+  <text class="mono note" x="48" y="190">47 tools</text>
+  <rect x="322" y="146" width="830" height="34" rx="4" fill="#e6b450"/>
+  <text class="mono val" x="342" y="169" fill="#0b0e14">~17,000 tokens</text>
+  <text class="mono note" x="322" y="206">Every session. Whether or not the agent touches Linear.</text>
+
+  <!-- linctl -->
+  <text class="mono name" x="48" y="272">linctl</text>
+  <text class="mono note" x="48" y="294">1 binary</text>
+  <rect x="322" y="250" width="4" height="34" rx="2" fill="#7fd962"/>
+  <text class="mono val" x="342" y="273" fill="#7fd962">0 tokens</text>
+  <text class="mono note" x="322" y="310">Nothing is loaded. You pay only for output you asked for.</text>
+
+  <!-- usage, to scale -->
+  <text class="mono name" x="48" y="376" fill="#6b7687">linctl usage</text>
+  <text class="mono note" x="48" y="398">on demand</text>
+  <rect x="322" y="354" width="20" height="34" rx="3" fill="#90e1c6"/>
+  <text class="mono val" x="358" y="377" fill="#90e1c6">~400 tokens</text>
+  <text class="mono note" x="322" y="414">Drawn to scale. Printed only when an agent asks for orientation.</text>
+
+  <line x1="48" y1="438" x2="1152" y2="438" stroke="#2a3342"/>
+  <text class="mono foot" x="48" y="460">Measured 2026-07-13 against mcp.linear.app · tiktoken o200k_base · reproduce with scripts/mcp-token-measure.sh</text>
+</svg>

@@ -5,73 +5,125 @@
 [![Release](https://img.shields.io/github/v/release/KyaniteHQ/linctl)](https://github.com/KyaniteHQ/linctl/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/KyaniteHQ/linctl)](LICENSE)
 
-> **Reads everywhere. Writes fail closed. No standing context cost.**
+**A Linear CLI you can hand to an AI agent.**
 
-Your agent's Linear MCP server loads its tool definitions into every session before it does any
-work, on the order of ~13k tokens (measured).[^mcp] `linctl` is one binary with no standing
-context: only a command's output costs tokens, and reads need no pin. Every write re-resolves the
-active OAuth credential and **fails closed** when the resolved org/team doesn't match the target pinned for
-the repo, so stale or wrong auth can't quietly land issues in the wrong team. There is no
-bypass flag.
-
-![linctl: reads are free; the same write to a team the active auth can't reach fails closed with TARGET_MISMATCH](docs/assets/demo.gif)
+Your agent reads Linear as widely as its credential allows. It writes only to the one team you
+named in the repo.
 
 ```bash
-linctl issue list --mine --state started     # read anything
-linctl issue create --title "Spike: exports" # write only inside the pinned target
+linctl issue list --mine                      # reads work anywhere
+linctl issue create --title "Spike: exports"  # writes land only in the pinned team
 ```
 
-## 🔒 How writes stay safe
+![linctl reads Linear freely, then refuses the same write when the active credential does not resolve to the pinned team, exiting non-zero with TARGET_MISMATCH](docs/assets/demo.gif)
 
-linctl's vocabulary deliberately separates reads from writes:
+Real command output, real exit codes. The organization and issue ids are invented, so you can
+re-record it yourself with [`demo/render-fixture.sh`](demo/render-fixture.sh) and no Linear
+account at all.
 
-- **Pinned Target** — the org/team/(optional project) a repo declares in `.linctl.toml`
-  as the *only* allowed destination for writes.
-- **Resolved Target** — the org/team/project proven from the active OAuth credential at command time.
-- **Target Mismatch** — when the two disagree. For a guarded write this is a **hard stop**,
-  never a prompt or a warning.
+---
 
-![Guarded write flow: resolve the target from the active OAuth credential, compare it to the pinned target, proceed on a match or hard-stop with no mutation on a mismatch](docs/assets/guard-flow.png)
+## The problem
 
-The guard checks the active OAuth credential, not just the file. An agent that edits
-`.linctl.toml` to point at another org still can't write there unless its local auth
-also resolves to that org. Team-scoped creates compare org + team (the entity does not exist yet);
-resource-scoped updates and archives resolve the existing entity first, then compare the
-pinned `project_id` when one is configured. There is **no bypass flag** — `--org`,
-`--team`, `--team-id`, and `--project` set the pinned target, they do not relax the guard. See
-[`docs/adr/0001-linctl-architecture-baseline.md`](docs/adr/0001-linctl-architecture-baseline.md).
+You give an agent write access to Linear. Then one of these happens:
+
+- Its token is stale, or it is the wrong token.
+- It is running in a checkout you forgot you had.
+- It read the wrong config and picked another team.
+
+It writes anyway. Issues land in the wrong team and you find out later.
+
+An OAuth token is usually far broader than the job in front of it. linctl narrows it. You name
+one team in the repo, and every write has to prove, against the live credential, that it is
+going there.
+
+## How the guard works
+
+Before any write, linctl checks two things against the **live** OAuth credential, not against a
+cached value and not just against the file on disk:
+
+| | |
+|---|---|
+| **The organization** | The credential's own organization must be the one pinned in `.linctl.toml`. A token from a different organization fails here. |
+| **The team** | The pinned team must be a team that credential can actually reach. A stale token that has lost access fails here. |
+
+If both hold, the write runs. If either fails, linctl stops, exits non-zero, and prints
+`{"error_code":"TARGET_MISMATCH"}`. It is not a prompt. It is not a warning. **There is no
+bypass flag**, and adding one was [explicitly rejected](docs/adr/0001-linctl-architecture-baseline.md).
+
+![Guarded write flow: linctl resolves the target from the live OAuth credential, compares it to the target pinned in the repo, and either proceeds or hard-stops with no mutation](docs/assets/guard-flow.svg)
 
 <details>
-<summary>Mermaid source for the diagram above</summary>
+<summary>Diagram source (mermaid)</summary>
 
 ```mermaid
 flowchart LR
-    A[linctl write command] --> B[Resolve Target<br/>from active auth]
-    B --> C{Resolved matches<br/>Pinned Target?}
-    C -->|match| D[Guarded write proceeds]
-    C -->|mismatch| E[Target Mismatch<br/>hard stop · no mutation]
+    A[linctl write command] --> B[Resolve target<br/>from the live credential]
+    B --> C{Matches the<br/>pinned target?}
+    C -->|match| D[Write proceeds]
+    C -->|mismatch| E[TARGET_MISMATCH<br/>hard stop, nothing mutated]
 ```
 
 </details>
 
-## 🤖 Agent-first
+### What the guard does not do
 
-linctl is built to be driven by an LLM agent from a Bash tool, with deterministic output
-and no standing context cost:
+Read this part. A safety claim you have to walk back later is worse than one you scoped
+honestly up front.
 
-- **No MCP tax.** The Linear MCP server loads ~13k tokens of tool definitions into every
-  session before any work.[^mcp] linctl loads none — `linctl usage` returns a compact,
-  on-demand reference (~400 tokens) and `linctl <group> --help` covers the rest.
-- **Structured output.** `--json` / `--compact` / `--fields` / `--id-only` give stable,
-  pipeable shapes; diagnostics go to stderr so stdout stays clean.
-- **Drop-in skill.** [`skills/linctl/SKILL.md`](skills/linctl/SKILL.md) teaches an agent to
-  drive linctl and ships an `AGENTS.md` snippet for consuming repos. Verify a checkout with
-  no credentials via `bash skills/linctl/scripts/linctl-offline-smoke.sh`, or do a read-only
-  auth check via `bash skills/linctl/scripts/linctl-smoke.sh`.
+- **It stops a confused agent, not a hostile one.** A stale token, a wrong token, a drifted
+  checkout, a misread config: caught. An agent that deliberately edits `.linctl.toml` to name
+  a *sibling team its own token already reaches*: **not caught**. The guard narrows a
+  credential; it cannot be stronger than that credential. Scope the token too.
+- **It is a team boundary, not a correctness check.** If your agent updates the wrong issue
+  *inside* the correctly pinned team, the guard has no opinion. It never claimed to.
+- **It does not touch reads.** By design. `linctl issue list --all-teams` reads everything the
+  token can see.
+- **Label retire and restore can be organization-wide.** Those entities have no team, so
+  `--org-wide` compares the organization only. It is an explicit flag that makes the blast
+  radius visible, and a mismatch is still a hard stop, but it is not a team-level check.
+- **The check and the write are separate API calls.** If something moves between them, the
+  guard saw the old state. This is a narrow race, not a defense against a determined actor.
 
-## ⚡ Quickstart
+The value is not that the guard is unbreakable. It is that the boring, common, expensive
+failure (an agent with the wrong auth writing somewhere real) becomes an exit code instead of
+an incident.
 
-### Install
+## Why not the Linear MCP server?
+
+The honest answer is that MCP is a fine way to give a hosted assistant access to Linear, and
+if that is what you want, use it. linctl exists for a different setup: an agent with a shell,
+in a repo, that you want to keep cheap and keep fenced.
+
+Two differences matter.
+
+**1. Standing context cost.** Most agent clients today fetch an MCP server's whole tool list up
+front and put it in the model's context, before the agent does any work. Measured against the
+official Linear MCP server on 2026-07-13: **47 tools, 13.6k tokens compact and 20.3k
+pretty-printed.** Your client decides which end of that you pay, and you pay it every session,
+whether or not the agent touches Linear.
+
+linctl is a binary behind a Bash tool, so there is no tool schema to load. You pay for the
+output of commands the agent actually ran. When it needs orientation it asks: `linctl usage`
+prints ~400 tokens on demand, and `linctl <group> --help` covers the rest.
+
+![Standing context cost: the Linear MCP server loads about 17,000 tokens of tool definitions into every session before any work; linctl loads zero and costs only the output of commands actually run](docs/assets/token-cost.svg)
+
+Do not take the number on faith, and do not assume it is still current. It moves fast: the same
+server was 38 tools and 10.2k compact tokens in late June, so the standing cost grew about a
+third in two weeks. Re-measure in a minute with
+[`scripts/mcp-token-measure.sh`](scripts/mcp-token-measure.sh).
+
+**2. The guard.** This is not something MCP *cannot* do; nothing in the protocol forbids it. It
+is something the official Linear MCP server does not do. It hands an agent the full reach of
+its token. linctl hands it that token narrowed to a target pinned in the repo, under your
+version control rather than the agent's improvisation. That is the whole product.
+
+Full comparison, including what MCP does better: [`docs/why-not-mcp.md`](docs/why-not-mcp.md).
+
+---
+
+## Install
 
 ```bash
 # Homebrew cask (macOS)
@@ -82,192 +134,91 @@ go install github.com/KyaniteHQ/linctl/cmd/linctl@latest
 ```
 
 ```bash
-linctl --version && linctl usage   # zero-config smoke check — no auth required
+linctl --version && linctl usage   # works with no auth and no config
 ```
 
-Prebuilt binaries (darwin/linux/windows × amd64/arm64) and checksums are attached to
-every [release](https://github.com/KyaniteHQ/linctl/releases/latest).
+Prebuilt binaries (darwin / linux / windows, amd64 and arm64) with checksums and signatures
+are on every [release](https://github.com/KyaniteHQ/linctl/releases/latest).
 
-<details>
-<summary>From source checkout</summary>
+**Next:** [`docs/quickstart.md`](docs/quickstart.md) takes you from a fresh install to a write
+that lands, in about five minutes.
+
+## Commands
+
+62 command groups covering the Linear schema. The ones you will actually use:
 
 ```bash
-git clone https://github.com/KyaniteHQ/linctl.git && cd linctl
-GOBIN="$PWD/bin" go install ./cmd/linctl
-./bin/linctl --version
-```
-
-Use your platform or distro package manager to install Go first. If you install
-Go manually from `go.dev/dl`, verify the published checksum and follow Go's
-platform-specific instructions instead of replacing a managed `/usr/local/go`.
-
-</details>
-
-### Configure
-
-Pin the repo target in `.linctl.toml`, then configure OAuth app material outside
-repo config.
-
-You need a Linear OAuth app client id before the auth step can continue. Export
-it, or pass the value directly with `--client-id`; use a client secret only when
-your app has one. Keep both values out of `.linctl.toml` and do not print them.
-
-```bash
-: "${LINCTL_OAUTH_CLIENT_ID:?set this to your Linear OAuth app client id}"
-
-linctl auth configure \
-  --client-id "$LINCTL_OAUTH_CLIENT_ID" \
-  --redirect-uri "http://127.0.0.1:8765/callback" \
-  --scopes read,write,issues:create,comments:create
-```
-
-Use `--client-secret "$LINCTL_OAUTH_CLIENT_SECRET"` when the app has a secret.
-Never print secrets; report them as `set` or `missing`.
-
-<details>
-<summary><code>.linctl.toml</code> example + auth setup paths</summary>
-
-```toml
-[target]
-org_id     = "linear-org-id"
-team_key   = "LIT"
-team_id    = "linear-team-id"
-project_id = "optional-linear-project-id"   # omit for team-scoped writes
-```
-
-Local auth state is machine-local and stays outside `.linctl.toml`. Use
-`linctl auth app` for headless app-actor auth when a client secret is available, or
-`linctl auth login` for browser authorization-code auth. Browser login uses the app actor
-by default; pass `--actor user` when you need personal attribution. `linctl auth refresh`
-explicitly refreshes or reacquires token state, and `linctl auth logout` revokes tokens
-when Linear accepts revocation, removes local token state, and keeps app configuration
-unless `--forget-app` is passed.
-
-Environment OAuth variables are non-persistent automation overrides, not repo config.
-A repo `.linctl.toml` overlays global target config.
-
-</details>
-
-### First commands
-
-```bash
-linctl usage              # orientation — no auth required
-linctl auth login         # browser authorization-code auth
-linctl auth status        # actor, scopes, expiry, and target readiness
-linctl target --json      # confirm the active auth org / team / project
-linctl doctor             # config, auth, and target health
-linctl issue list --mine  # your issues in the pinned team
-```
-
-## 📖 Command reference
-
-Across 60 top-level command groups, linctl maps the Linear schema. The most-used ones are below; the
-exhaustive catalog with GraphQL backing lives in [`docs/domain-map.md`](docs/domain-map.md),
-and `linctl <group> --help` lists every subcommand.
-
-**Context & health**
-
-```bash
-linctl target --json          # resolved org/team/project for the active auth
-linctl doctor                 # config / auth / target health report
+linctl target --json          # what the live credential resolves to
+linctl doctor                 # config, auth, and target health in one report
 linctl current                # the issue for the current git branch
 linctl next --dry-run         # preview the top-ranked unblocked issue
-```
 
-**Issues** — reads, rich `list` filters, and guarded writes. Related: `issue-relation`, `comment`, `agent-session`.
-
-```bash
 linctl issue list --state started --mine --limit 20
 linctl issue get LIT-123 --json
-linctl issue deps LIT-123                       # parent / children / blocks / blocked-by
+linctl issue deps LIT-123     # parent, children, blocks, blocked-by
 linctl issue search "flaky export test"
-linctl issue create --title "Spike: exports" --assignee <user-id> --label <label-id> --estimate 3
-linctl issue link https://example.com/spec LIT-123   # attach a URL (guarded)
+linctl issue create --title "Spike: exports" --assignee <user-id> --estimate 3
 ```
 
 <details>
-<summary>More groups — projects, cycles, planning, teams, search, releases, customers, metadata</summary>
-
-**Projects** — reads plus create/update/archive. Related: `project-update`, `project-status`, `project-label`, `project-relation`.
+<summary>Everything else: projects, cycles, planning, teams, search, releases, customers</summary>
 
 ```bash
+# Projects and milestones
 linctl project list --limit 20
-linctl project get <project-id> --json
 linctl project issues <project-id>
 linctl project-milestone list <project-id>
-```
 
-**Cycles & sprints** — `cycle` writes the schema entity; `sprint` is a read-only report alias.
-
-```bash
+# Cycles. `cycle` is the real entity and owns the writes; `sprint` is a read-only report alias.
 linctl cycle list
-linctl sprint current                           # active cycle for the team
+linctl sprint current
 linctl sprint report <cycle-id>
-```
 
-**Planning** — Initiatives are the current strategic surface; `roadmap*` is legacy read-only.
-
-```bash
+# Planning. Initiatives are current; roadmap commands are legacy reads only.
 linctl initiative list
 linctl initiative projects <initiative-id>
-linctl initiative-to-project list
-```
 
-**Teams, users & org**
-
-```bash
+# Teams, users, org
 linctl team list
 linctl team members <team-id>
 linctl user me
-linctl organization teams
-```
 
-**Search**
-
-```bash
+# Search
 linctl search issues "rate limit"
 linctl semantic-search "exports are slow" --limit 20
-```
 
-**Releases** — `release`, `release-note`, `release-pipeline`, `release-stage`, `issue-to-release`, `external-link`.
-
-```bash
+# Releases
 linctl release list
 linctl release-pipeline list
-```
 
-**Customers** — `customer`, `customer-need`, `customer-status`, `customer-tier`.
-
-```bash
+# Customers
 linctl customer list
 linctl customer-need list
 ```
 
-**Metadata & more** — most groups support `list`/`get` plus entity-specific reads:
-`label`, `document`, `template`, `workflow-state`, `time-schedule`, `notification`,
-`triage-responsibility`, `sla-configuration`, `rate-limit`, `application`, `audit-entry`,
-`agent-activity`, `agent-session`, `agent-skill`, `external-user`, `custom-view`,
-`favorite`, `emoji`, `attachment`. Run `linctl <group> --help` or see
-[`docs/domain-map.md`](docs/domain-map.md).
+Most other groups follow the same `list` / `get` shape: `label`, `document`, `template`,
+`workflow-state`, `notification`, `attachment`, `custom-view`, `favorite`, `audit-entry`,
+`agent-session`, and more. Run `linctl <group> --help`, or read the
+[command-to-GraphQL map](docs/internal/domain-map.md).
 
 </details>
 
-## 🧰 Output & scripting
+## Output and scripting
 
-Output controls are global flags — combine them with any command.
+These are global flags. Combine them with any command.
 
 | Flag | Effect |
 | --- | --- |
-| `--json` / `--compact` | JSON output; `--compact` makes it single-line |
-| `--fields a,b.c` | project JSON to an allowlist of (dot-path) keys |
-| `--id-only` | emit only the Linear id, for `$(...)` chaining |
-| `--quiet` | suppress output on a successful write |
-| `--fail-on-empty` | exit non-zero when a list result is empty (monitors) |
-| `--sort FIELD --order asc\|desc` | deterministic list ordering |
-| `--format minimal\|compact\|full` | human (non-JSON) output detail |
-| `--profile` / `--org` / `--team` / `--team-id` / `--project` | config profile and target overrides |
-| `--timeout 30s` | total per-command deadline across retries |
-| `--debug` | structured diagnostics to **stderr** (`LINCTL_DEBUG_JSON=1` for JSON) |
+| `--json` / `--compact` | JSON output; `--compact` puts it on one line |
+| `--fields a,b.c` | keep only these (dot-path) keys |
+| `--id-only` | print just the Linear id, for `$(...)` chaining |
+| `--quiet` | print nothing when a write succeeds |
+| `--fail-on-empty` | exit non-zero when a list comes back empty, for monitors |
+| `--sort FIELD --order asc\|desc` | deterministic ordering |
+| `--format minimal\|compact\|full` | detail level for human output |
+| `--profile` / `--org` / `--team` / `--team-id` / `--project` | pick a config profile, or set the pinned target |
+| `--timeout 30s` | one deadline for the whole command, retries included |
+| `--debug` | diagnostics to **stderr** (`LINCTL_DEBUG_JSON=1` for JSON) |
 
 ```bash
 linctl issue list --json --compact --fields identifier,title,state
@@ -275,77 +226,72 @@ id=$(linctl --id-only issue create --title "task"); linctl issue start "$id"
 linctl issue list --fail-on-empty --sort title --order asc
 ```
 
-Stable JSON shapes for parsing are documented in
-[`skills/linctl/references/json-output.md`](skills/linctl/references/json-output.md).
+Diagnostics go to stderr, so stdout stays clean enough to pipe. JSON shapes are stable and
+documented in [`skills/linctl/references/json-output.md`](skills/linctl/references/json-output.md).
 
-## ✍️ Guarded writes
+`--org`, `--team`, `--team-id`, and `--project` **set** the pinned target. They do not relax
+the guard. Everything still gets compared against the live credential.
 
-Every mutation is checked against the pinned target before it runs. Coverage:
+## Every guarded write
 
-- **Issues** — `create` (with `--assignee`, `--label`, `--due-date`, `--estimate`,
-  `--parent` for sub-issues, templates, and guarded `import`), `update` / `--append`,
-  `start`, `comment`, `reply`, `close`, `done`, `next` start, and `link` (attach a URL).
-- **Issue relations** — `relate`, `unrelate`.
-- **Comments** — `update`, `delete`.
-- **Projects** — `create`, `update`, `archive`. **Project updates** — `create`.
-- **Documents** — `create`, `update`.
-- **Cycles** — `create`, `update`, `archive`.
-- **Project milestones** — `create`, `update`.
+If a command changes Linear, it goes through the guard. The complete list:
 
-`--estimate` is validated against the team's estimation config; `--parent` confirms the
-parent belongs to the pinned target. For test runs, create namespaced throwaway resources
-(`linctl-it-<runid>`) and clean them up — close disposable issues, archive disposable
-projects.
+| Group | Guarded writes |
+| --- | --- |
+| `issue` | `create`, `import`, `update`, `start`, `close`, `comment`, `reply`, `link`, `add-label`, `remove-label` |
+| `issue-relation` | `relate`, `unrelate` |
+| `comment` | `update`, `delete`, `resolve`, `unresolve` |
+| `project` | `create`, `update`, `archive`, `add-label`, `remove-label` |
+| `project-update` | `create` |
+| `project-milestone` | `create`, `update`, **`delete`** |
+| `project-label` | `create`, `update`, `retire`, `restore` |
+| `label` | `create`, `update`, `retire`, `restore` |
+| `cycle` | `create`, `update`, `archive` |
+| `document` | `create`, `update` |
+| `files` | `upload` |
+| `next` / `done` | reuse `issue start` and `issue close` |
 
-## 🔧 Development
+Two of these are irreversible: **`project-milestone delete`** and **`comment delete`**. Nothing
+in linctl brings them back. Everything else that removes something archives or retires it, so
+it can be restored.
+
+`--estimate` is validated against the team's estimation config. `--parent` confirms the parent
+issue belongs to the pinned target. When you test against a real organization, create
+throwaway resources named `linctl-it-<runid>` and clean them up after.
+
+## For agents
+
+linctl is meant to be driven by an LLM from a Bash tool.
+
+Point your agent at [`skills/linctl/SKILL.md`](skills/linctl/SKILL.md). It teaches the command
+surface, the output contracts, and the guard, and it ships an `AGENTS.md` snippet you can paste
+into any repo that uses linctl.
+
+Verify a checkout with no credentials at all:
 
 ```bash
-go tool task ci                 # deps-check → fmt-check → generate-check → vet → test → build → smoke-run → lint → shellcheck → actionlint → vuln
-go tool task coverage           # 100% hand-written statement coverage
-go tool task release-preflight  # pre-tag local release gate; no tag, push, publish, or release secrets
+bash skills/linctl/scripts/linctl-offline-smoke.sh   # no auth needed
+bash skills/linctl/scripts/linctl-smoke.sh           # read-only auth check
+```
+
+## Development
+
+```bash
+go tool task ci                 # the full local gate; run before every PR
+go tool task coverage           # 100% statement coverage on hand-written code
+go tool task release-preflight  # pre-tag check; publishes nothing
 ```
 
 `internal/client/generated.go` is generated by genqlient from
-`internal/client/operations/*.graphql`; CI fails on drift, so run `go generate ./...` and
-commit it after changing operations. Integration tests and the live smoke harness hit a
-disposable Linear org and never run under plain `go test`:
+`internal/client/operations/*.graphql`. CI fails on drift, so run `go generate ./...` and commit
+the result whenever you change an operation.
 
-```bash
-linctl auth configure --client-id "$LINCTL_OAUTH_CLIENT_ID" --redirect-uri "http://127.0.0.1:8765/callback" --scopes read,write,issues:create,comments:create
-linctl auth app
-go test -count=1 -tags=integration ./internal/client
-go tool task browser-login-smoke-check
-go tool task live-oauth
-go tool task live-smoke
-go tool task browser-login-smoke
-```
+Contributor workflow and releases: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Domain vocabulary: [`CONTEXT.md`](CONTEXT.md).
+All documentation: [`docs/`](docs/README.md).
+Reporting a vulnerability: [`SECURITY.md`](SECURITY.md).
+Community expectations: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-For the project Infisical setup, the fixture secrets live under `/linctl`:
-
-```bash
-go tool task live-oauth-infisical
-go tool task live-smoke-infisical
-go tool task browser-login-smoke-infisical
-```
-
-`browser-login-smoke-check` is the deterministic non-live harness check. It
-requires no Linear secrets, browser, or network write, and proves missing-fixture
-handling, callback listener capture, and redaction sentinels. `browser-login-smoke`
-is the manual browser-login smoke in an isolated temp auth state: it starts a
-one-shot localhost callback listener, prints the Linear authorization URL, shows
-a browser success page after authorization, verifies redacted `auth status --json`,
-and removes the temp token state. The auth URL uses Linear re-consent, and the
-task defaults to user-actor login because an already-installed app-actor OAuth
-fixture opens Linear's Manage screen instead of producing a repeatable callback.
-Use `live-oauth` for the live OAuth app fixture check and repeatable app-actor
-fixture coverage; pass `-- app` only when testing a fresh browser install path.
-
-Contributor workflow and the release process are in
-[`CONTRIBUTING.md`](CONTRIBUTING.md); domain vocabulary is in [`CONTEXT.md`](CONTEXT.md);
-command-to-GraphQL mapping and named test scenarios are under [`docs/`](docs/).
-
-## 📄 License
+## License
 
 [MIT](LICENSE) © 2026 KyaniteHQ
-
-[^mcp]: Measured against the official Linear MCP server's tools/list: 38 tools, ~10.2k tokens compact and ~15.3k pretty-printed (tiktoken o200k_base), loaded before any work. The common ~13k is a midpoint; where you land depends on how your client serializes the schema and the Linear server version.

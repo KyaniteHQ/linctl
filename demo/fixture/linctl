@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# A stand-in for the linctl binary, used only to render the README demo without a
+# live Linear organization.
+#
+# It is not a mock in the testing sense and proves nothing. Every line it prints
+# is copied from the real binary's output format:
+#
+#   issue list / issue create  internal/cli/issue_write.go  "%s %s [%s]"
+#   target                     internal/cli/target.go       "org %s team %s/%s project %s confirmed %t"
+#   error envelope             internal/cli/output.go       {"error_code":..., "message":...}
+#
+# The organization, team, and issue ids below are invented. If you change the
+# binary's output shape, change it here too, or re-record against a throwaway
+# Linear organization with ../render.sh instead.
+set -euo pipefail
+
+ORG_ID="c5bc56eb-7e79-4d90-969b-65d938103e0d"
+TEAM_ID="9c870067-bd25-412e-9e78-62c56a6d2716"
+PROJECT_ID="151e4a94-678f-4cf6-9fce-ccdc803fe7b1"
+
+args="$*"
+
+case "$args" in
+  "issue list --state started")
+    echo "LIT-12 Flaky pagination test in issue list [In Progress]"
+    echo "LIT-11 Spike: streaming CSV export [In Progress]"
+    echo "LIT-10 Wire up OAuth device flow [In Progress]"
+    ;;
+
+  "target")
+    echo "org ${ORG_ID} team LIT/${TEAM_ID} project ${PROJECT_ID} confirmed true"
+    ;;
+
+  *--team\ STG*)
+    # The guard resolves the target from the live credential, cannot reach STG,
+    # and refuses. The flag set the pinned target; it did not relax the check.
+    echo '{"error_code":"TARGET_MISMATCH","message":"target mismatch: the active credential cannot reach team_key=STG"}' >&2
+    echo "target mismatch: the active credential cannot reach team_key=STG" >&2
+    exit 1
+    ;;
+
+  "issue create --title "*)
+    echo "LIT-15 Add rate-limit backoff to sync [Backlog]"
+    ;;
+
+  *)
+    echo "demo fixture: unhandled command: linctl ${args}" >&2
+    exit 2
+    ;;
+esac

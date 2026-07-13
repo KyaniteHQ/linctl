@@ -1,4 +1,7 @@
+# The linctl binary that render.sh builds here. The fixture stand-in used by
+# render-fixture.sh is source, not a build artifact, so it stays tracked.
 linctl
+!fixture/linctl
 *.local.*
 
 # hyperframes composition: keep the source (index.html, plan, brief, render config),

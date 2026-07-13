@@ -16,10 +16,16 @@ coverage.html
 # test/integration-config.json.example as a template, or use env vars in CI.
 test/integration-config.json
 
-# Third-party Go skill set (samber/cc-skills-golang), installed locally
-skills/cc-skills-golang/
+# Third-party agent skills installed locally (samber/cc-skills-golang, and the
+# HyperFrames set from `npx skills add heygen-com/hyperframes`). Only the repo's
+# own skills are tracked: skills/linctl and .claude/skills/check.
+/skills/*
+!/skills/linctl/
+/.claude/skills/*
+!/.claude/skills/check/
 .agents/
-.claude/skills/cc-skills-golang
+/agent/
+/skills-lock.json
 
 # Launch announcement drafts — kept local, never part of the public tree
 /launch/

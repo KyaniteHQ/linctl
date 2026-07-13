@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400" role="img" aria-labelledby="title desc">
+  <title id="title">How a guarded write is decided</title>
+  <desc id="desc">A linctl write command resolves the organization, team and project from the live OAuth credential, then compares that to the target pinned in the repo's .linctl.toml. On a match the write proceeds. On a mismatch linctl hard-stops with TARGET_MISMATCH and exit code 1, and nothing is mutated. There is no bypass flag.</desc>
+
+  <style>
+    .mono  { font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas, monospace; }
+    .h     { fill: #bfbdb6; font-size: 25px; font-weight: 600; letter-spacing: -0.01em; }
+    .box   { fill: #11161f; stroke: #2a3342; }
+    .lbl   { fill: #bfbdb6; font-size: 16px; font-weight: 600; }
+    .sm    { fill: #6b7687; font-size: 13px; }
+    .edge  { stroke: #2a3342; stroke-width: 1.5; fill: none; }
+    .tag   { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
+    .foot  { fill: #55606f; font-size: 13px; }
+  </style>
+
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a3342"/>
+    </marker>
+    <marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7fd962"/>
+    </marker>
+    <marker id="no" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ea6c73"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="400" rx="14" fill="#0b0e14"/>
+  <rect x="0.5" y="0.5" width="1199" height="399" rx="14" fill="none" stroke="#2a3342"/>
+
+  <text class="mono h" x="40" y="54">How every write is decided</text>
+
+  <!-- command -->
+  <rect class="box" x="40" y="152" width="170" height="72" rx="8"/>
+  <text class="mono lbl" x="58" y="182">issue create</text>
+  <text class="mono sm"  x="58" y="203">any write command</text>
+
+  <!-- split into the two inputs -->
+  <path class="edge" d="M 210 188 L 230 188"/>
+  <path class="edge" d="M 230 188 L 230 130 L 244 130" marker-end="url(#a)"/>
+  <path class="edge" d="M 230 188 L 230 246 L 244 246" marker-end="url(#a)"/>
+
+  <rect class="box" x="250" y="98" width="250" height="66" rx="8"/>
+  <text class="mono lbl" x="268" y="126">Pinned target</text>
+  <text class="mono sm"  x="268" y="147">what .linctl.toml declares</text>
+
+  <rect class="box" x="250" y="214" width="250" height="66" rx="8"/>
+  <text class="mono lbl" x="268" y="242">Resolved target</text>
+  <text class="mono sm"  x="268" y="263">what the live credential proves</text>
+
+  <!-- compare -->
+  <path class="edge" d="M 500 131 L 522 131 L 522 172 L 539 172" marker-end="url(#a)"/>
+  <path class="edge" d="M 500 247 L 522 247 L 522 204 L 539 204" marker-end="url(#a)"/>
+
+  <rect class="box" x="545" y="152" width="180" height="72" rx="8" stroke="#e6b450"/>
+  <text class="mono lbl" x="563" y="182" fill="#e6b450">Do they match?</text>
+  <text class="mono sm"  x="563" y="203">org · team · project</text>
+
+  <!-- match -->
+  <path class="edge" d="M 725 174 L 762 174 L 762 120 L 794 120" stroke="#7fd962" marker-end="url(#ok)"/>
+  <text class="mono tag" x="732" y="164" fill="#7fd962">MATCH</text>
+
+  <rect class="box" x="800" y="84" width="360" height="72" rx="8" stroke="#7fd962"/>
+  <text class="mono lbl" x="820" y="114" fill="#7fd962">The write runs</text>
+  <text class="mono sm"  x="820" y="135">LIT-42  Spike: exports  [Backlog]</text>
+
+  <!-- mismatch -->
+  <path class="edge" d="M 725 202 L 762 202 L 762 262 L 794 262" stroke="#ea6c73" marker-end="url(#no)"/>
+  <text class="mono tag" x="732" y="226" fill="#ea6c73">MISMATCH</text>
+
+  <rect class="box" x="800" y="220" width="360" height="86" rx="8" stroke="#ea6c73"/>
+  <text class="mono lbl" x="820" y="250" fill="#ea6c73">Nothing happens</text>
+  <text class="mono sm"  x="820" y="272">{"error_code":"TARGET_MISMATCH"}</text>
+  <text class="mono sm"  x="820" y="292">exit 1 · no mutation is sent</text>
+
+  <line x1="40" y1="344" x2="1160" y2="344" stroke="#2a3342"/>
+  <text class="mono foot" x="40" y="368">The credential is re-resolved on every write, never cached. There is no bypass flag.</text>
+  <text class="mono foot" x="40" y="386">--org / --team / --project set the pinned target. They do not relax the check.</text>
+</svg>
