@@ -76,6 +76,26 @@ for item in data.get(collection, []):
 ' "$collection" "$id_field" "$name_field" "$namespace_prefix" "$archived_field" "$status_field"
 }
 
+is_unarchivable_project() {
+  local error_path="$1"
+  python3 - "$error_path" <<'PY'
+import json
+import sys
+
+for line in open(sys.argv[1], encoding="utf-8"):
+    try:
+        error = json.loads(line)
+    except json.JSONDecodeError:
+        continue
+    if (
+        error.get("error_code") == "GRAPHQL_ERROR"
+        and "projectArchive cannot delete project (INPUT_ERROR)" in error.get("message", "")
+    ):
+        sys.exit(0)
+sys.exit(1)
+PY
+}
+
 (
   export XDG_CONFIG_HOME="$sweep_dir/config"
   export XDG_STATE_HOME="$sweep_dir/state"
@@ -94,11 +114,22 @@ for item in data.get(collection, []):
   done < <(filter_ids_by_prefix issues id title <<<"$issue_json")
 
   project_json="$("$binary" project list --json --limit 250)"
+  skipped=0
   while IFS= read -r project_id; do
     [[ -z "$project_id" ]] && continue
-    "$binary" project archive "$project_id" >/dev/null
-    swept=$((swept + 1))
+    project_error="$sweep_dir/project-archive.err"
+    if "$binary" project archive "$project_id" >/dev/null 2>"$project_error"; then
+      swept=$((swept + 1))
+    elif is_unarchivable_project "$project_error"; then
+      skipped=$((skipped + 1))
+    else
+      cat "$project_error" >&2
+      exit 1
+    fi
   done < <(filter_ids_by_prefix projects id name archived_at status <<<"$project_json")
 
   printf 'live-sweep: closed/archived %d namespaced (%s) resource(s)\n' "$swept" "$namespace_prefix"
+  if ((skipped)); then
+    printf 'live-sweep: skipped %d namespaced project(s) rejected as unarchivable by Linear\n' "$skipped" >&2
+  fi
 )
