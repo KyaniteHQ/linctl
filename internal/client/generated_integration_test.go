@@ -113,6 +113,9 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 
 	// When
 	listed, listErr := ListProjectsByTeam(ctx, transport, fixture.TeamID, 100)
+	require.NoError(t, listErr)
+	require.NotEmpty(t, listed.Projects)
+	wrongProjectID := listed.Projects[0].ID
 	created, createErr := CreateProject(ctx, transport, target, ProjectCreateRequest{
 		Name:        name,
 		Description: "created by linctl integration test",
@@ -142,16 +145,14 @@ func Test_Integration_projectWriteRoundTrip_whenTargetPinned(t *testing.T) {
 		OrgID:     fixture.OrgID,
 		TeamKey:   fixture.TeamKey,
 		TeamID:    fixture.TeamID,
-		ProjectID: fixture.ProjectID,
+		ProjectID: wrongProjectID,
 	}, created.ID)
 
 	// Then
-	require.NoError(t, listErr)
 	require.NoError(t, readErr)
 	require.NoError(t, updateErr)
 	require.NoError(t, membersErr)
 	require.ErrorIs(t, wrongProjectErr, ErrTargetMismatch)
-	require.NotEmpty(t, listed.Projects)
 	require.Equal(t, created.ID, read.ID)
 	require.Equal(t, name+" updated", updated.Name)
 	require.Equal(t, created.ID, members.ProjectID)

@@ -18418,6 +18418,11 @@ func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetDescription() s
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns ProjectAddLabelProjectAddLabelProjectPayloadProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns ProjectAddLabelProjectAddLabelProjectPayloadProject.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -18480,6 +18485,8 @@ type __premarshalProjectAddLabelProjectAddLabelProjectPayloadProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -18507,6 +18514,7 @@ func (v *ProjectAddLabelProjectAddLabelProjectPayloadProject) __premarshalJSON()
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -18567,6 +18575,11 @@ func (v *ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject) GetName
 // GetDescription returns ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject.Description, and is useful for accessing the field via an interface.
 func (v *ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject) GetDescription() string {
 	return v.ProjectSummaryFields.Description
+}
+
+// GetArchivedAt returns ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
 }
 
 // GetSlugId returns ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject.SlugId, and is useful for accessing the field via an interface.
@@ -18631,6 +18644,8 @@ type __premarshalProjectArchiveProjectArchiveProjectArchivePayloadEntityProject 
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -18658,6 +18673,7 @@ func (v *ProjectArchiveProjectArchiveProjectArchivePayloadEntityProject) __prema
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -18752,6 +18768,11 @@ func (v *ProjectCreateProjectCreateProjectPayloadProject) GetDescription() strin
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns ProjectCreateProjectCreateProjectPayloadProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectCreateProjectCreateProjectPayloadProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns ProjectCreateProjectCreateProjectPayloadProject.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectCreateProjectCreateProjectPayloadProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -18814,6 +18835,8 @@ type __premarshalProjectCreateProjectCreateProjectPayloadProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -18841,6 +18864,7 @@ func (v *ProjectCreateProjectCreateProjectPayloadProject) __premarshalJSON() (*_
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -19880,6 +19904,11 @@ func (v *ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProj
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestoneProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestoneProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestoneProject.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProjectMilestoneProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -19942,6 +19971,8 @@ type __premarshalProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePay
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -19969,6 +20000,7 @@ func (v *ProjectMilestoneCreateProjectMilestoneCreateProjectMilestonePayloadProj
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -20239,6 +20271,11 @@ func (v *ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProj
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestoneProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestoneProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestoneProject.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProjectMilestoneProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -20301,6 +20338,8 @@ type __premarshalProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePay
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -20328,6 +20367,7 @@ func (v *ProjectMilestoneUpdateProjectMilestoneUpdateProjectMilestonePayloadProj
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -20556,6 +20596,11 @@ func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetDescripti
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -20618,6 +20663,8 @@ type __premarshalProjectRemoveLabelProjectRemoveLabelProjectPayloadProject struc
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -20645,6 +20692,7 @@ func (v *ProjectRemoveLabelProjectRemoveLabelProjectPayloadProject) __premarshal
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -20750,6 +20798,8 @@ type ProjectSummaryFields struct {
 	Name string `json:"name"`
 	// The short description of the project.
 	Description string `json:"description"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
 	// The project's unique URL slug, used to construct human-readable URLs.
 	SlugId string `json:"slugId"`
 	// Project URL.
@@ -20772,6 +20822,9 @@ func (v *ProjectSummaryFields) GetName() string { return v.Name }
 
 // GetDescription returns ProjectSummaryFields.Description, and is useful for accessing the field via an interface.
 func (v *ProjectSummaryFields) GetDescription() string { return v.Description }
+
+// GetArchivedAt returns ProjectSummaryFields.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectSummaryFields) GetArchivedAt() *string { return v.ArchivedAt }
 
 // GetSlugId returns ProjectSummaryFields.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectSummaryFields) GetSlugId() string { return v.SlugId }
@@ -21084,6 +21137,11 @@ func (v *ProjectUpdateProjectUpdateProjectPayloadProject) GetDescription() strin
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns ProjectUpdateProjectUpdateProjectPayloadProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectUpdateProjectUpdateProjectPayloadProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns ProjectUpdateProjectUpdateProjectPayloadProject.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectUpdateProjectUpdateProjectPayloadProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -21146,6 +21204,8 @@ type __premarshalProjectUpdateProjectUpdateProjectPayloadProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -21173,6 +21233,7 @@ func (v *ProjectUpdateProjectUpdateProjectPayloadProject) __premarshalJSON() (*_
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -21253,6 +21314,11 @@ func (v *ProjectsTeamProjectsProjectConnectionNodesProject) GetDescription() str
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns ProjectsTeamProjectsProjectConnectionNodesProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *ProjectsTeamProjectsProjectConnectionNodesProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns ProjectsTeamProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
 func (v *ProjectsTeamProjectsProjectConnectionNodesProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -21315,6 +21381,8 @@ type __premarshalProjectsTeamProjectsProjectConnectionNodesProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -21342,6 +21410,7 @@ func (v *ProjectsTeamProjectsProjectConnectionNodesProject) __premarshalJSON() (
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -34244,6 +34313,11 @@ func (v *customView_projectsCustomViewProjectsProjectConnectionNodesProject) Get
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns customView_projectsCustomViewProjectsProjectConnectionNodesProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *customView_projectsCustomViewProjectsProjectConnectionNodesProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns customView_projectsCustomViewProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
 func (v *customView_projectsCustomViewProjectsProjectConnectionNodesProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -34306,6 +34380,8 @@ type __premarshalcustomView_projectsCustomViewProjectsProjectConnectionNodesProj
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -34333,6 +34409,7 @@ func (v *customView_projectsCustomViewProjectsProjectConnectionNodesProject) __p
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -40909,6 +40986,11 @@ func (v *initiative_projectsInitiativeProjectsProjectConnectionNodesProject) Get
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns initiative_projectsInitiativeProjectsProjectConnectionNodesProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *initiative_projectsInitiativeProjectsProjectConnectionNodesProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns initiative_projectsInitiativeProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
 func (v *initiative_projectsInitiativeProjectsProjectConnectionNodesProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -40971,6 +41053,8 @@ type __premarshalinitiative_projectsInitiativeProjectsProjectConnectionNodesProj
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -40998,6 +41082,7 @@ func (v *initiative_projectsInitiativeProjectsProjectConnectionNodesProject) __p
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -55967,6 +56052,11 @@ func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject)
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
 func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -56029,6 +56119,8 @@ type __premarshalprojectLabel_projectsProjectLabelProjectsProjectConnectionNodes
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -56056,6 +56148,7 @@ func (v *projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject)
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -56418,6 +56511,11 @@ func (v *projectMilestoneProjectMilestoneProject) GetDescription() string {
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns projectMilestoneProjectMilestoneProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectMilestoneProjectMilestoneProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns projectMilestoneProjectMilestoneProject.SlugId, and is useful for accessing the field via an interface.
 func (v *projectMilestoneProjectMilestoneProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -56478,6 +56576,8 @@ type __premarshalprojectMilestoneProjectMilestoneProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -56505,6 +56605,7 @@ func (v *projectMilestoneProjectMilestoneProject) __premarshalJSON() (*__premars
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -56898,6 +56999,9 @@ func (v *projectProject) GetName() string { return v.ProjectSummaryFields.Name }
 // GetDescription returns projectProject.Description, and is useful for accessing the field via an interface.
 func (v *projectProject) GetDescription() string { return v.ProjectSummaryFields.Description }
 
+// GetArchivedAt returns projectProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectProject) GetArchivedAt() *string { return v.ProjectSummaryFields.ArchivedAt }
+
 // GetSlugId returns projectProject.SlugId, and is useful for accessing the field via an interface.
 func (v *projectProject) GetSlugId() string { return v.ProjectSummaryFields.SlugId }
 
@@ -56952,6 +57056,8 @@ type __premarshalprojectProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -56979,6 +57085,7 @@ func (v *projectProject) __premarshalJSON() (*__premarshalprojectProject, error)
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -61105,6 +61212,11 @@ func (v *projectsProjectsProjectConnectionNodesProject) GetDescription() string 
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns projectsProjectsProjectConnectionNodesProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *projectsProjectsProjectConnectionNodesProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns projectsProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
 func (v *projectsProjectsProjectConnectionNodesProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -61167,6 +61279,8 @@ type __premarshalprojectsProjectsProjectConnectionNodesProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -61194,6 +61308,7 @@ func (v *projectsProjectsProjectConnectionNodesProject) __premarshalJSON() (*__p
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -65092,6 +65207,11 @@ func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetDescri
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns roadmap_projectsRoadmapProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
 func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -65154,6 +65274,8 @@ type __premarshalroadmap_projectsRoadmapProjectsProjectConnectionNodesProject st
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -65181,6 +65303,7 @@ func (v *roadmap_projectsRoadmapProjectsProjectConnectionNodesProject) __premars
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -67680,6 +67803,11 @@ func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetDescription(
 	return v.ProjectSummaryFields.Description
 }
 
+// GetArchivedAt returns team_projectsTeamProjectsProjectConnectionNodesProject.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetArchivedAt() *string {
+	return v.ProjectSummaryFields.ArchivedAt
+}
+
 // GetSlugId returns team_projectsTeamProjectsProjectConnectionNodesProject.SlugId, and is useful for accessing the field via an interface.
 func (v *team_projectsTeamProjectsProjectConnectionNodesProject) GetSlugId() string {
 	return v.ProjectSummaryFields.SlugId
@@ -67742,6 +67870,8 @@ type __premarshalteam_projectsTeamProjectsProjectConnectionNodesProject struct {
 
 	Description string `json:"description"`
 
+	ArchivedAt *string `json:"archivedAt"`
+
 	SlugId string `json:"slugId"`
 
 	Url string `json:"url"`
@@ -67769,6 +67899,7 @@ func (v *team_projectsTeamProjectsProjectConnectionNodesProject) __premarshalJSO
 	retval.Id = v.ProjectSummaryFields.Id
 	retval.Name = v.ProjectSummaryFields.Name
 	retval.Description = v.ProjectSummaryFields.Description
+	retval.ArchivedAt = v.ProjectSummaryFields.ArchivedAt
 	retval.SlugId = v.ProjectSummaryFields.SlugId
 	retval.Url = v.ProjectSummaryFields.Url
 	retval.Priority = v.ProjectSummaryFields.Priority
@@ -77097,6 +77228,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -77164,6 +77296,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -77231,6 +77364,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -77538,6 +77672,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -77650,6 +77785,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -77717,6 +77853,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -77784,6 +77921,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -77910,6 +78048,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -80681,6 +80820,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -83176,6 +83316,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -86990,6 +87131,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -87223,6 +87365,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -87367,6 +87510,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -89095,6 +89239,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -90539,6 +90684,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority
@@ -91622,6 +91768,7 @@ fragment ProjectSummaryFields on Project {
 	id
 	name
 	description
+	archivedAt
 	slugId
 	url
 	priority

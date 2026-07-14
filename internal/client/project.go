@@ -18,6 +18,7 @@ type ProjectSummary struct {
 	ID          string        `json:"id"`
 	Name        string        `json:"name"`
 	Description string        `json:"description"`
+	ArchivedAt  string        `json:"archived_at,omitempty"`
 	SlugID      string        `json:"slug_id"`
 	URL         string        `json:"url"`
 	Priority    int           `json:"priority"`
@@ -868,6 +869,7 @@ func projectSummaryFromFields(project gql.ProjectSummaryFields) ProjectSummary {
 		ID:          project.Id,
 		Name:        project.Name,
 		Description: project.Description,
+		ArchivedAt:  stringValue(project.ArchivedAt),
 		SlugID:      project.SlugId,
 		URL:         project.Url,
 		Priority:    project.Priority,

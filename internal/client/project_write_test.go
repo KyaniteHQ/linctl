@@ -276,6 +276,7 @@ func projectJSONWithTeamPage(project projectFixture, teamID string, teamKey stri
 		"id":"` + project.ID + `",
 		"name":"` + project.Name + `",
 		"description":"description",
+		"archivedAt":null,
 		"slugId":"` + project.Name + `",
 		"url":"https://linear.app/kyanite/project/` + project.ID + `",
 		"priority":0,

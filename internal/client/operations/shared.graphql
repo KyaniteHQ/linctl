@@ -267,6 +267,7 @@ fragment ProjectSummaryFields on Project {
   id
   name
   description
+  archivedAt
   slugId
   url
   priority

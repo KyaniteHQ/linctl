@@ -55,6 +55,12 @@ func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.
 			"archivedAt":"2026-06-19T12:00:00Z",
 			"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}
 		}}`,
+		"project": `{"project":` + strings.Replace(
+			projectJSON(projectFixture{ID: "project-id", Name: "Archived", Status: "Backlog"}),
+			`"archivedAt":null`,
+			`"archivedAt":"2026-06-19T12:00:00Z"`,
+			1,
+		) + `}`,
 	}
 
 	document, err := GetDocumentByID(context.Background(), graphqlClient, "document-id")
@@ -67,6 +73,10 @@ func Test_SummaryMappingScenarios_preserve_reference_domain_variants(t *testing.
 	require.NoError(t, err)
 	require.Empty(t, team.Description)
 	require.Equal(t, "2026-06-19T12:00:00Z", team.ArchivedAt)
+
+	project, err := GetProjectByID(context.Background(), graphqlClient, "project-id")
+	require.NoError(t, err)
+	require.Equal(t, "2026-06-19T12:00:00Z", project.ArchivedAt)
 }
 
 func Test_SummaryMappingScenarios_preserve_release_note_without_generation_status(t *testing.T) {
