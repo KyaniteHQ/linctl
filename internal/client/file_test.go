@@ -23,59 +23,87 @@ func uploadFileResponseJSON(success bool, hasFile bool) string {
 }
 
 func Test_PrepareFileUpload_returns_signed_target_on_success(t *testing.T) {
-	graphqlClient := fakeGraphQLClient(map[string]string{
+	graphqlClient := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"fileUpload": uploadFileResponseJSON(true, true),
-	})
+	})}
 
-	upload, err := PrepareFileUpload(context.Background(), graphqlClient, "a.png", "image/png", 12)
+	upload, err := PrepareFileUpload(context.Background(), graphqlClient, matchingTarget(), "a.png", "image/png", 12)
 
 	require.NoError(t, err)
 	require.Equal(t, "https://assets.example/a.png", upload.AssetURL)
 	require.Equal(t, "https://uploads.example/put", upload.UploadURL)
 	require.Len(t, upload.Headers, 1)
 	require.Equal(t, "x-amz-meta", upload.Headers[0].Key)
+	require.Equal(t, []string{"Viewer", "team", "Teams", "TargetProject", "fileUpload"}, recordedOperationNames(graphqlClient))
+}
+
+func Test_PrepareFileUpload_refuses_target_mismatch_before_mutation(t *testing.T) {
+	graphqlClient := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"fileUpload": uploadFileResponseJSON(true, true),
+	})}
+	target := matchingTarget()
+	target.OrgID = "other-org"
+
+	_, err := PrepareFileUpload(context.Background(), graphqlClient, target, "a.png", "image/png", 12)
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.Equal(t, 0, graphqlClient.countOf("fileUpload"))
 }
 
 func Test_PrepareFileUpload_requires_filename(t *testing.T) {
-	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), "", "image/png", 12)
+	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), matchingTarget(), "", "image/png", 12)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
 func Test_PrepareFileUpload_requires_content_type(t *testing.T) {
-	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), "a.png", "", 12)
+	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), matchingTarget(), "a.png", "", 12)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
 func Test_PrepareFileUpload_requires_positive_size(t *testing.T) {
-	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), "a.png", "image/png", 0)
+	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), matchingTarget(), "a.png", "image/png", 0)
 
 	require.ErrorIs(t, err, ErrWriteInvalid)
 }
 
 func Test_PrepareFileUpload_wraps_mutation_error(t *testing.T) {
-	_, err := PrepareFileUpload(context.Background(), fakeGraphQLClient(map[string]string{}), "a.png", "image/png", 12)
+	_, err := PrepareFileUpload(
+		context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(), "a.png", "image/png", 12,
+	)
 
 	require.ErrorContains(t, err, "prepare file upload")
 }
 
 func Test_PrepareFileUpload_fails_when_no_upload_target(t *testing.T) {
-	graphqlClient := fakeGraphQLClient(map[string]string{
+	graphqlClient := issueWriteFakeClient(map[string]string{
 		"fileUpload": uploadFileResponseJSON(false, true),
 	})
 
-	_, err := PrepareFileUpload(context.Background(), graphqlClient, "a.png", "image/png", 12)
+	_, err := PrepareFileUpload(context.Background(), graphqlClient, matchingTarget(), "a.png", "image/png", 12)
 
 	require.ErrorIs(t, err, ErrMutationFailed)
 }
 
 func Test_PrepareFileUpload_fails_when_upload_file_missing(t *testing.T) {
-	graphqlClient := fakeGraphQLClient(map[string]string{
+	graphqlClient := issueWriteFakeClient(map[string]string{
 		"fileUpload": uploadFileResponseJSON(true, false),
 	})
 
-	_, err := PrepareFileUpload(context.Background(), graphqlClient, "a.png", "image/png", 12)
+	_, err := PrepareFileUpload(context.Background(), graphqlClient, matchingTarget(), "a.png", "image/png", 12)
 
 	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
+func recordedOperationNames(graphqlClient *recordingGraphQLClient) []string {
+	graphqlClient.mu.Lock()
+	defer graphqlClient.mu.Unlock()
+
+	operations := make([]string, 0, len(graphqlClient.requests))
+	for _, request := range graphqlClient.requests {
+		operations = append(operations, request.OpName)
+	}
+
+	return operations
 }

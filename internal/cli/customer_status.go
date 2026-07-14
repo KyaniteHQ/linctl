@@ -12,16 +12,15 @@ import (
 
 func addCustomerStatusCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.CustomerStatusList, client.CustomerStatusSummary]{
-		Use:           "customer-status",
-		Short:         "Read Linear customer statuses",
-		ListShort:     "List organization customer statuses",
-		LimitHelp:     "maximum customer statuses to return",
-		GetUse:        "get CUSTOMER_STATUS_ID",
-		GetShort:      "Get one customer status by id",
-		LoadList:      loadCustomerStatusList,
-		PageWithItems: customerStatusPageWithItems,
-		LoadGet:       loadCustomerStatus,
-		WriteItem:     writeCustomerStatus,
+		Use:       "customer-status",
+		Short:     "Read Linear customer statuses",
+		ListShort: "List organization customer statuses",
+		LimitHelp: "maximum customer statuses to return",
+		GetUse:    "get CUSTOMER_STATUS_ID",
+		GetShort:  "Get one customer status by id",
+		LoadList:  loadCustomerStatusList,
+		LoadGet:   loadCustomerStatus,
+		WriteItem: writeCustomerStatus,
 	})
 }
 

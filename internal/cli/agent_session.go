@@ -12,16 +12,15 @@ import (
 
 func addAgentSessionCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.AgentSessionList, client.AgentSessionSummary]{
-		Use:           "agent-session",
-		Short:         "Read Linear AgentSessions",
-		ListShort:     "List Linear AgentSessions",
-		LimitHelp:     "maximum AgentSessions to return",
-		GetUse:        "get AGENT_SESSION_ID",
-		GetShort:      "Get one AgentSession by id",
-		LoadList:      loadAgentSessionList,
-		PageWithItems: agentSessionPageWithItems,
-		LoadGet:       loadAgentSession,
-		WriteItem:     writeAgentSession,
+		Use:       "agent-session",
+		Short:     "Read Linear AgentSessions",
+		ListShort: "List Linear AgentSessions",
+		LimitHelp: "maximum AgentSessions to return",
+		GetUse:    "get AGENT_SESSION_ID",
+		GetShort:  "Get one AgentSession by id",
+		LoadList:  loadAgentSessionList,
+		LoadGet:   loadAgentSession,
+		WriteItem: writeAgentSession,
 	})
 }
 

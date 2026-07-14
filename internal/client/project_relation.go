@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ProjectRelationSummary is one dependency relation between Linear projects.
@@ -42,13 +44,13 @@ func ListProjectRelations(
 	graphqlClient graphql.Client,
 	limit int,
 ) (ProjectRelationList, error) {
-	result, err := projectRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectRelationList{}, fmt.Errorf("list project relations: %w", err)
 	}
 
 	relations := mapNodes(result.ProjectRelations.Nodes, func(
-		relation projectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
+		relation gql.XProjectRelationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
 	) ProjectRelationSummary {
 		return projectRelationSummary(relation.ProjectRelationSummaryFields)
 	})
@@ -66,7 +68,7 @@ func GetProjectRelationByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (ProjectRelationSummary, error) {
-	result, err := projectRelation(ctx, graphqlClient, id)
+	result, err := gql.XProjectRelation(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectRelationSummary{}, fmt.Errorf("get project relation %s: %w", id, err)
 	}
@@ -74,7 +76,7 @@ func GetProjectRelationByID(
 	return projectRelationSummary(result.ProjectRelation.ProjectRelationSummaryFields), nil
 }
 
-func projectRelationSummary(relation ProjectRelationSummaryFields) ProjectRelationSummary {
+func projectRelationSummary(relation gql.ProjectRelationSummaryFields) ProjectRelationSummary {
 	summary := ProjectRelationSummary{
 		ID:                 relation.Id,
 		Type:               relation.Type,

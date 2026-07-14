@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // RoadmapSummary is the compact deprecated roadmap model used by read-only commands.
@@ -43,13 +45,13 @@ type RoadmapProjectList struct {
 
 // ListRoadmaps returns visible Linear roadmaps.
 func ListRoadmaps(ctx context.Context, graphqlClient graphql.Client, limit int) (RoadmapList, error) {
-	result, err := roadmaps(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XRoadmaps(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return RoadmapList{}, fmt.Errorf("list roadmaps: %w", err)
 	}
 
 	summaries := mapNodes(result.Roadmaps.Nodes, func(
-		node roadmapsRoadmapsRoadmapConnectionNodesRoadmap,
+		node gql.XRoadmapsRoadmapsRoadmapConnectionNodesRoadmap,
 	) RoadmapSummary {
 		return roadmapSummary(node.RoadmapSummaryFields)
 	})
@@ -63,7 +65,7 @@ func ListRoadmaps(ctx context.Context, graphqlClient graphql.Client, limit int) 
 
 // GetRoadmapByID returns one deprecated Linear roadmap by id.
 func GetRoadmapByID(ctx context.Context, graphqlClient graphql.Client, id string) (RoadmapSummary, error) {
-	result, err := roadmap(ctx, graphqlClient, id)
+	result, err := gql.XRoadmap(ctx, graphqlClient, id)
 	if err != nil {
 		return RoadmapSummary{}, fmt.Errorf("get roadmap %s: %w", id, err)
 	}
@@ -78,13 +80,13 @@ func ListRoadmapProjects(
 	id string,
 	limit int,
 ) (RoadmapProjectList, error) {
-	result, err := roadmap_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XRoadmap_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return RoadmapProjectList{}, fmt.Errorf("list roadmap projects %s: %w", id, err)
 	}
 
 	projects := mapNodes(result.Roadmap.Projects.Nodes, func(
-		project roadmap_projectsRoadmapProjectsProjectConnectionNodesProject,
+		project gql.XRoadmap_projectsRoadmapProjectsProjectConnectionNodesProject,
 	) ProjectSummary {
 		return projectSummaryFromFields(project.ProjectSummaryFields)
 	})
@@ -98,7 +100,7 @@ func ListRoadmapProjects(
 	}, nil
 }
 
-func roadmapSummary(fields RoadmapSummaryFields) RoadmapSummary {
+func roadmapSummary(fields gql.RoadmapSummaryFields) RoadmapSummary {
 	summary := RoadmapSummary{
 		ID:                 fields.Id,
 		Name:               fields.Name,

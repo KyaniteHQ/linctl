@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -29,21 +30,31 @@ func AddProjectLabel(
 		return ProjectSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectSummary, error) {
-		if err := resolveProjectLabelAssociation(ctx, graphqlClient, guard, request); err != nil {
-			return ProjectSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectSummary{}, err
+	}
 
-		updated, err := ProjectAddLabel(ctx, graphqlClient, request.ProjectID, request.LabelID)
-		if err != nil {
-			return ProjectSummary{}, fmt.Errorf("add label to project %s: %w", request.ProjectID, err)
-		}
-		if !updated.ProjectAddLabel.Success || updated.ProjectAddLabel.Project == nil {
-			return ProjectSummary{}, fmt.Errorf("%w: projectAddLabel reported no success", ErrMutationFailed)
-		}
+	return guard.addProjectLabel(ctx, request)
+}
 
-		return projectSummaryFromFields(updated.ProjectAddLabel.Project.ProjectSummaryFields), nil
-	})
+func (guard *guardedClient) addProjectLabel(
+	ctx context.Context,
+	request ProjectLabelAssociationRequest,
+) (ProjectSummary, error) {
+	if err := guard.requireProjectLabelAssociation(ctx, request); err != nil {
+		return ProjectSummary{}, err
+	}
+
+	updated, err := gql.ProjectAddLabel(ctx, guard.graphqlClient, request.ProjectID, request.LabelID)
+	if err != nil {
+		return ProjectSummary{}, fmt.Errorf("add label to project %s: %w", request.ProjectID, err)
+	}
+	if !updated.ProjectAddLabel.Success || updated.ProjectAddLabel.Project == nil {
+		return ProjectSummary{}, fmt.Errorf("%w: projectAddLabel reported no success", ErrMutationFailed)
+	}
+
+	return projectSummaryFromFields(updated.ProjectAddLabel.Project.ProjectSummaryFields), nil
 }
 
 // RemoveProjectLabel detaches a ProjectLabel from a project after resolving
@@ -58,37 +69,45 @@ func RemoveProjectLabel(
 		return ProjectSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectSummary, error) {
-		if err := resolveProjectLabelAssociation(ctx, graphqlClient, guard, request); err != nil {
-			return ProjectSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectSummary{}, err
+	}
 
-		updated, err := ProjectRemoveLabel(ctx, graphqlClient, request.ProjectID, request.LabelID)
-		if err != nil {
-			return ProjectSummary{}, fmt.Errorf("remove label from project %s: %w", request.ProjectID, err)
-		}
-		if !updated.ProjectRemoveLabel.Success || updated.ProjectRemoveLabel.Project == nil {
-			return ProjectSummary{}, fmt.Errorf("%w: projectRemoveLabel reported no success", ErrMutationFailed)
-		}
+	return guard.removeProjectLabel(ctx, request)
+}
 
-		return projectSummaryFromFields(updated.ProjectRemoveLabel.Project.ProjectSummaryFields), nil
-	})
+func (guard *guardedClient) removeProjectLabel(
+	ctx context.Context,
+	request ProjectLabelAssociationRequest,
+) (ProjectSummary, error) {
+	if err := guard.requireProjectLabelAssociation(ctx, request); err != nil {
+		return ProjectSummary{}, err
+	}
+
+	updated, err := gql.ProjectRemoveLabel(ctx, guard.graphqlClient, request.ProjectID, request.LabelID)
+	if err != nil {
+		return ProjectSummary{}, fmt.Errorf("remove label from project %s: %w", request.ProjectID, err)
+	}
+	if !updated.ProjectRemoveLabel.Success || updated.ProjectRemoveLabel.Project == nil {
+		return ProjectSummary{}, fmt.Errorf("%w: projectRemoveLabel reported no success", ErrMutationFailed)
+	}
+
+	return projectSummaryFromFields(updated.ProjectRemoveLabel.Project.ProjectSummaryFields), nil
 }
 
 // resolveProjectLabelAssociation resolves the project and confirms the
 // ProjectLabel belongs to the resolved organization, shared by
 // AddProjectLabel and RemoveProjectLabel before either mutation is sent.
-func resolveProjectLabelAssociation(
+func (guard *guardedClient) requireProjectLabelAssociation(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	guard writeGuard,
 	request ProjectLabelAssociationRequest,
 ) error {
-	if err := guard.requireProject(ctx, graphqlClient, request.ProjectID); err != nil {
+	if err := guard.requireProject(ctx, request.ProjectID); err != nil {
 		return err
 	}
 
-	return guard.requireProjectLabel(ctx, graphqlClient, request.LabelID)
+	return guard.requireProjectLabel(ctx, request.LabelID)
 }
 
 func validateProjectLabelAssociationRequest(request ProjectLabelAssociationRequest) error {

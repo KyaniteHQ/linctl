@@ -5,11 +5,13 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // GetIssueByVCSBranch returns an issue by VCS branch name.
 func GetIssueByVCSBranch(ctx context.Context, graphqlClient graphql.Client, branchName string) (IssueSummary, error) {
-	result, err := issueVcsBranchSearch(ctx, graphqlClient, branchName)
+	result, err := gql.XIssueVcsBranchSearch(ctx, graphqlClient, branchName)
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("get issue by vcs branch %s: %w", branchName, err)
 	}
@@ -27,7 +29,9 @@ func ListIssueVCSBranchAttachments(
 	branchName string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := issueVcsBranchSearch_attachments(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_attachments(
+		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	)
 	if err != nil {
 		return AttachmentList{}, fmt.Errorf("list issue vcs branch attachments %s: %w", branchName, err)
 	}
@@ -36,7 +40,7 @@ func ListIssueVCSBranchAttachments(
 	}
 
 	attachments := mapNodes(result.IssueVcsBranchSearch.Attachments.Nodes, func(
-		node issueVcsBranchSearch_attachmentsIssueVcsBranchSearchIssueAttachmentsAttachmentConnectionNodesAttachment,
+		node gql.IssueAttachmentsProjectionAttachmentsAttachmentConnectionNodesAttachment,
 	) AttachmentSummary {
 		return attachmentSummary(node.AttachmentSummaryFields)
 	})
@@ -54,7 +58,7 @@ func GetIssueVCSBranchBotActor(
 	graphqlClient graphql.Client,
 	branchName string,
 ) (IssueBotActor, error) {
-	result, err := issueVcsBranchSearch_botActor(ctx, graphqlClient, branchName)
+	result, err := gql.XIssueVcsBranchSearch_botActor(ctx, graphqlClient, branchName)
 	if err != nil {
 		return IssueBotActor{}, fmt.Errorf("get issue vcs branch bot actor %s: %w", branchName, err)
 	}
@@ -64,7 +68,7 @@ func GetIssueVCSBranchBotActor(
 
 	return IssueBotActor{
 		IssueID: result.IssueVcsBranchSearch.Id,
-		Bot:     issueVCSBranchActorBotSummary(result.IssueVcsBranchSearch.BotActor),
+		Bot:     issueActorBotSummary(result.IssueVcsBranchSearch.BotActor),
 	}, nil
 }
 
@@ -75,7 +79,7 @@ func ListIssueVCSBranchChildren(
 	branchName string,
 	limit int,
 ) (IssueList, error) {
-	result, err := issueVcsBranchSearch_children(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_children(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issue vcs branch children %s: %w", branchName, err)
 	}
@@ -84,7 +88,7 @@ func ListIssueVCSBranchChildren(
 	}
 
 	issues := mapNodes(result.IssueVcsBranchSearch.Children.Nodes, func(
-		issue issueVcsBranchSearch_childrenIssueVcsBranchSearchIssueChildrenIssueConnectionNodesIssue,
+		issue gql.IssueChildrenProjectionChildrenIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -103,7 +107,9 @@ func ListIssueVCSBranchDocuments(
 	branchName string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := issueVcsBranchSearch_documents(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_documents(
+		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	)
 	if err != nil {
 		return DocumentList{}, fmt.Errorf("list issue vcs branch documents %s: %w", branchName, err)
 	}
@@ -112,7 +118,7 @@ func ListIssueVCSBranchDocuments(
 	}
 
 	documents := mapNodes(result.IssueVcsBranchSearch.Documents.Nodes, func(
-		document issueVcsBranchSearch_documentsIssueVcsBranchSearchIssueDocumentsDocumentConnectionNodesDocument,
+		document gql.IssueDocumentsProjectionDocumentsDocumentConnectionNodesDocument,
 	) DocumentSummary {
 		return documentSummary(document.DocumentSummaryFields)
 	})
@@ -131,7 +137,7 @@ func ListIssueVCSBranchFormerAttachments(
 	branchName string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := issueVcsBranchSearch_formerAttachments(
+	result, err := gql.XIssueVcsBranchSearch_formerAttachments(
 		ctx,
 		graphqlClient,
 		branchName,
@@ -165,7 +171,7 @@ func ListIssueVCSBranchHistory(
 	branchName string,
 	limit int,
 ) (IssueHistoryList, error) {
-	result, err := issueVcsBranchSearch_history(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_history(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueHistoryList{}, fmt.Errorf("list issue vcs branch history %s: %w", branchName, err)
 	}
@@ -173,7 +179,7 @@ func ListIssueVCSBranchHistory(
 		return IssueHistoryList{}, notFoundError("list issue vcs branch history %s", branchName)
 	}
 
-	history := mapNodes(result.IssueVcsBranchSearch.History.Nodes, issueVCSBranchHistorySummary)
+	history := mapNodes(result.IssueVcsBranchSearch.History.Nodes, issueHistorySummary)
 
 	return IssueHistoryList{
 		History:     history,
@@ -189,7 +195,7 @@ func ListIssueVCSBranchInverseRelations(
 	branchName string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := issueVcsBranchSearch_inverseRelations(
+	result, err := gql.XIssueVcsBranchSearch_inverseRelations(
 		ctx,
 		graphqlClient,
 		branchName,
@@ -223,7 +229,7 @@ func ListIssueVCSBranchLabels(
 	branchName string,
 	limit int,
 ) (LabelList, error) {
-	result, err := issueVcsBranchSearch_labels(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_labels(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return LabelList{}, fmt.Errorf("list issue vcs branch labels %s: %w", branchName, err)
 	}
@@ -232,7 +238,7 @@ func ListIssueVCSBranchLabels(
 	}
 
 	labels := mapNodes(result.IssueVcsBranchSearch.Labels.Nodes, func(
-		label issueVcsBranchSearch_labelsIssueVcsBranchSearchIssueLabelsIssueLabelConnectionNodesIssueLabel,
+		label gql.IssueLabelsProjectionLabelsIssueLabelConnectionNodesIssueLabel,
 	) LabelSummary {
 		return labelSummary(label.IssueLabelSummaryFields)
 	})
@@ -251,7 +257,9 @@ func ListIssueVCSBranchRelations(
 	branchName string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := issueVcsBranchSearch_relations(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_relations(
+		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	)
 	if err != nil {
 		return IssueRelationList{}, fmt.Errorf("list issue vcs branch relations %s: %w", branchName, err)
 	}
@@ -260,7 +268,7 @@ func ListIssueVCSBranchRelations(
 	}
 
 	relations := mapNodes(result.IssueVcsBranchSearch.Relations.Nodes, func(
-		node issueVcsBranchSearch_relationsIssueVcsBranchSearchIssueRelationsIssueRelationConnectionNodesIssueRelation,
+		node gql.IssueRelationsProjectionRelationsIssueRelationConnectionNodesIssueRelation,
 	) IssueRelationSummary {
 		return issueRelationSummary(node.IssueRelationSummaryFields)
 	})
@@ -279,7 +287,7 @@ func ListIssueVCSBranchReleases(
 	branchName string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := issueVcsBranchSearch_releases(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_releases(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseList{}, fmt.Errorf("list issue vcs branch releases %s: %w", branchName, err)
 	}
@@ -288,7 +296,7 @@ func ListIssueVCSBranchReleases(
 	}
 
 	releases := mapNodes(result.IssueVcsBranchSearch.Releases.Nodes, func(
-		release issueVcsBranchSearch_releasesIssueVcsBranchSearchIssueReleasesReleaseConnectionNodesRelease,
+		release gql.IssueReleasesProjectionReleasesReleaseConnectionNodesRelease,
 	) ReleaseSummary {
 		return releaseSummary(release.ReleaseSummaryFields)
 	})
@@ -307,7 +315,7 @@ func ListIssueVCSBranchStateHistory(
 	branchName string,
 	limit int,
 ) (IssueStateHistoryList, error) {
-	result, err := issueVcsBranchSearch_stateHistory(ctx, graphqlClient, branchName, intPtr(limit), nil)
+	result, err := gql.XIssueVcsBranchSearch_stateHistory(ctx, graphqlClient, branchName, intPtr(limit), nil)
 	if err != nil {
 		return IssueStateHistoryList{}, fmt.Errorf("list issue vcs branch state history %s: %w", branchName, err)
 	}
@@ -315,7 +323,7 @@ func ListIssueVCSBranchStateHistory(
 		return IssueStateHistoryList{}, notFoundError("list issue vcs branch state history %s", branchName)
 	}
 
-	spans := mapNodes(result.IssueVcsBranchSearch.StateHistory.Nodes, issueVCSBranchStateSpanSummary)
+	spans := mapNodes(result.IssueVcsBranchSearch.StateHistory.Nodes, issueStateSpanSummary)
 
 	return IssueStateHistoryList{
 		IssueID:     result.IssueVcsBranchSearch.Id,
@@ -332,7 +340,9 @@ func ListIssueVCSBranchSubscribers(
 	branchName string,
 	limit int,
 ) (UserList, error) {
-	result, err := issueVcsBranchSearch_subscribers(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_subscribers(
+		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	)
 	if err != nil {
 		return UserList{}, fmt.Errorf("list issue vcs branch subscribers %s: %w", branchName, err)
 	}
@@ -341,7 +351,7 @@ func ListIssueVCSBranchSubscribers(
 	}
 
 	users := mapNodes(result.IssueVcsBranchSearch.Subscribers.Nodes, func(
-		node issueVcsBranchSearch_subscribersIssueVcsBranchSearchIssueSubscribersUserConnectionNodesUser,
+		node gql.IssueSubscribersProjectionSubscribersUserConnectionNodesUser,
 	) UserSummary {
 		return userSummary(node.UserSummaryFields)
 	})
@@ -351,49 +361,4 @@ func ListIssueVCSBranchSubscribers(
 		HasNextPage: result.IssueVcsBranchSearch.Subscribers.PageInfo.HasNextPage,
 		EndCursor:   result.IssueVcsBranchSearch.Subscribers.PageInfo.EndCursor,
 	}, nil
-}
-
-func issueVCSBranchHistorySummary(
-	history issueVcsBranchSearch_historyIssueVcsBranchSearchIssueHistoryIssueHistoryConnectionNodesIssueHistory,
-) IssueHistorySummary {
-	return IssueHistorySummary{
-		ID:                 history.Id,
-		IssueID:            history.Issue.Id,
-		ActorID:            stringValue(history.ActorId),
-		UpdatedDescription: boolValue(history.UpdatedDescription),
-		CreatedAt:          history.CreatedAt,
-		UpdatedAt:          history.UpdatedAt,
-		ArchivedAt:         stringValue(history.ArchivedAt),
-	}
-}
-
-func issueVCSBranchActorBotSummary(
-	bot *issueVcsBranchSearch_botActorIssueVcsBranchSearchIssueBotActorActorBot,
-) *ActorBotSummary {
-	if bot == nil {
-		return nil
-	}
-
-	return actorBotSummary(&bot.ActorBotSummaryFields)
-}
-
-//nolint:lll // The aliased name is generated by genqlient from the GraphQL selection path.
-type issueVCSBranchStateSpan = issueVcsBranchSearch_stateHistoryIssueVcsBranchSearchIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan
-
-func issueVCSBranchStateSpanSummary(span issueVCSBranchStateSpan) IssueStateSpanSummary {
-	stateName := ""
-	stateType := ""
-	if span.State != nil {
-		stateName = span.State.Name
-		stateType = span.State.Type
-	}
-
-	return IssueStateSpanSummary{
-		ID:        span.Id,
-		StateID:   span.StateId,
-		StateName: stateName,
-		StateType: stateType,
-		StartedAt: span.StartedAt,
-		EndedAt:   stringValue(span.EndedAt),
-	}
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // TeamMembershipSummary is one user's membership in a Linear team.
@@ -40,13 +42,13 @@ func ListTeamMemberships(
 	graphqlClient graphql.Client,
 	limit int,
 ) (TeamMembershipList, error) {
-	result, err := teamMemberships(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XTeamMemberships(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TeamMembershipList{}, fmt.Errorf("list team memberships: %w", err)
 	}
 
 	memberships := mapNodes(result.TeamMemberships.Nodes, func(
-		membership teamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+		membership gql.XTeamMembershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
 	) TeamMembershipSummary {
 		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
 	})
@@ -64,7 +66,7 @@ func GetTeamMembershipByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (TeamMembershipSummary, error) {
-	result, err := teamMembership(ctx, graphqlClient, id)
+	result, err := gql.XTeamMembership(ctx, graphqlClient, id)
 	if err != nil {
 		return TeamMembershipSummary{}, fmt.Errorf("get team membership %s: %w", id, err)
 	}
@@ -72,7 +74,7 @@ func GetTeamMembershipByID(
 	return teamMembershipSummary(result.TeamMembership.TeamMembershipSummaryFields), nil
 }
 
-func teamMembershipSummary(membership TeamMembershipSummaryFields) TeamMembershipSummary {
+func teamMembershipSummary(membership gql.TeamMembershipSummaryFields) TeamMembershipSummary {
 	return TeamMembershipSummary{
 		ID:          membership.Id,
 		UserID:      membership.User.Id,

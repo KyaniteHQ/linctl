@@ -379,224 +379,91 @@ query issue_comments($id: String!, $first: Int, $after: String, $includeArchived
 
 query issue_attachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    attachments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...AttachmentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueAttachmentsProjection
   }
 }
 
 query issue_botActor($id: String!) {
   issue(id: $id) {
-    id
-    botActor {
-      ...ActorBotSummaryFields
-    }
+    ...IssueBotActorProjection
   }
 }
 
 query issue_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    children(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueChildrenProjection
   }
 }
 
 query issue_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    documents(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...DocumentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueDocumentsProjection
   }
 }
 
 query issue_formerAttachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...AttachmentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueFormerAttachmentsProjection
   }
 }
 
 query issue_formerNeeds($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    id
-    identifier
-    formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CustomerNeedMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueFormerNeedsProjection
   }
 }
 
 query issue_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    history(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        id
-        createdAt
-        updatedAt
-        archivedAt
-        actorId
-        updatedDescription
-        issue {
-          id
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueHistoryProjection
   }
 }
 
 query issue_inverseRelations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueRelationSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueInverseRelationsProjection
   }
 }
 
 query issue_labels($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    labels(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueLabelSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueLabelsProjection
   }
 }
 
 query issue_needs($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    id
-    identifier
-    needs(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CustomerNeedMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueNeedsProjection
   }
 }
 
 query issue_relations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    relations(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueRelationSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueRelationsProjection
   }
 }
 
 query issue_releases($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    releases(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...ReleaseSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueReleasesProjection
   }
 }
 
 query issue_sharedAccess($id: String!) {
   issue(id: $id) {
-    id
-    identifier
-    sharedAccess {
-      ...IssueSharedAccessFields
-    }
+    ...IssueSharedAccessProjection
   }
 }
 
 query issue_stateHistory($id: String!, $first: Int, $after: String) {
   issue(id: $id) {
-    id
-    stateHistory(first: $first, after: $after) {
-      nodes {
-        id
-        stateId
-        startedAt
-        endedAt
-        state {
-          id
-          name
-          type
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueStateHistoryProjection
   }
 }
 
 query issue_subscribers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issue(id: $id) {
-    id
-    subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...UserSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueSubscribersProjection
   }
 }
 
@@ -608,82 +475,37 @@ query issueVcsBranchSearch($branchName: String!) {
 
 query issueVcsBranchSearch_attachments($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    attachments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...AttachmentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueAttachmentsProjection
   }
 }
 
 query issueVcsBranchSearch_botActor($branchName: String!) {
   issueVcsBranchSearch(branchName: $branchName) {
-    id
-    botActor {
-      ...ActorBotSummaryFields
-    }
+    ...IssueBotActorProjection
   }
 }
 
 query issueVcsBranchSearch_children($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    children(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueChildrenProjection
   }
 }
 
 query issueVcsBranchSearch_documents($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    documents(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...DocumentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueDocumentsProjection
   }
 }
 
 query issueVcsBranchSearch_formerAttachments($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...AttachmentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueFormerAttachmentsProjection
   }
 }
 
 query issueVcsBranchSearch_comments($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    id
-    identifier
-    comments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CommentMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueCommentMetadataProjection
   }
 }
 
@@ -694,39 +516,13 @@ query issueVcsBranchSearch_formerNeeds(
   $includeArchived: Boolean
 ) {
   issueVcsBranchSearch(branchName: $branchName) {
-    id
-    identifier
-    formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CustomerNeedMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueFormerNeedsProjection
   }
 }
 
 query issueVcsBranchSearch_history($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    history(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        id
-        createdAt
-        updatedAt
-        archivedAt
-        actorId
-        updatedDescription
-        issue {
-          id
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueHistoryProjection
   }
 }
 
@@ -737,121 +533,49 @@ query issueVcsBranchSearch_inverseRelations(
   $includeArchived: Boolean
 ) {
   issueVcsBranchSearch(branchName: $branchName) {
-    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueRelationSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueInverseRelationsProjection
   }
 }
 
 query issueVcsBranchSearch_labels($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    labels(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueLabelSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueLabelsProjection
   }
 }
 
 query issueVcsBranchSearch_needs($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    id
-    identifier
-    needs(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CustomerNeedMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueNeedsProjection
   }
 }
 
 query issueVcsBranchSearch_relations($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    relations(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueRelationSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueRelationsProjection
   }
 }
 
 query issueVcsBranchSearch_releases($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    releases(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...ReleaseSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueReleasesProjection
   }
 }
 
 query issueVcsBranchSearch_sharedAccess($branchName: String!) {
   issueVcsBranchSearch(branchName: $branchName) {
-    id
-    identifier
-    sharedAccess {
-      ...IssueSharedAccessFields
-    }
+    ...IssueSharedAccessProjection
   }
 }
 
 query issueVcsBranchSearch_stateHistory($branchName: String!, $first: Int, $after: String) {
   issueVcsBranchSearch(branchName: $branchName) {
-    id
-    stateHistory(first: $first, after: $after) {
-      nodes {
-        id
-        stateId
-        startedAt
-        endedAt
-        state {
-          id
-          name
-          type
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueStateHistoryProjection
   }
 }
 
 query issueVcsBranchSearch_subscribers($branchName: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   issueVcsBranchSearch(branchName: $branchName) {
-    id
-    subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...UserSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueSubscribersProjection
   }
 }
 

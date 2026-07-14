@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // TriageResponsibilitySummary is the compact triage responsibility model used by read-only commands.
@@ -43,13 +45,13 @@ func ListTriageResponsibilities(
 	graphqlClient graphql.Client,
 	limit int,
 ) (TriageResponsibilityList, error) {
-	result, err := triageResponsibilities(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XTriageResponsibilities(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TriageResponsibilityList{}, fmt.Errorf("list triage responsibilities: %w", err)
 	}
 
 	summaries := mapNodes(result.TriageResponsibilities.Nodes, func(
-		node triageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility,
+		node gql.XTriageResponsibilitiesTriageResponsibilitiesTriageResponsibilityConnectionNodesTriageResponsibility,
 	) TriageResponsibilitySummary {
 		return triageResponsibilitySummary(node.TriageResponsibilitySummaryFields)
 	})
@@ -67,7 +69,7 @@ func GetTriageResponsibilityByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (TriageResponsibilitySummary, error) {
-	result, err := triageResponsibility(ctx, graphqlClient, id)
+	result, err := gql.XTriageResponsibility(ctx, graphqlClient, id)
 	if err != nil {
 		return TriageResponsibilitySummary{}, fmt.Errorf("get triage responsibility %s: %w", id, err)
 	}
@@ -81,7 +83,7 @@ func GetTriageResponsibilityManualSelection(
 	graphqlClient graphql.Client,
 	id string,
 ) (TriageResponsibilityManualSelection, error) {
-	result, err := triageResponsibility_manualSelection(ctx, graphqlClient, id)
+	result, err := gql.XTriageResponsibility_manualSelection(ctx, graphqlClient, id)
 	if err != nil {
 		return TriageResponsibilityManualSelection{}, fmt.Errorf(
 			"get triage responsibility manual selection %s: %w",
@@ -97,7 +99,7 @@ func GetTriageResponsibilityManualSelection(
 	return selection, nil
 }
 
-func triageResponsibilitySummary(fields TriageResponsibilitySummaryFields) TriageResponsibilitySummary {
+func triageResponsibilitySummary(fields gql.TriageResponsibilitySummaryFields) TriageResponsibilitySummary {
 	summary := TriageResponsibilitySummary{
 		ID:         fields.Id,
 		Action:     string(fields.Action),

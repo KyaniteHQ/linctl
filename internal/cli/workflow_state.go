@@ -16,16 +16,15 @@ func addWorkflowStateCommand(ctx context.Context, root *cobra.Command, options *
 		root,
 		options,
 		readListGetSpec[client.WorkflowStateList, client.WorkflowStateSummary]{
-			Use:           "workflow-state",
-			Short:         "Read Linear workflow states",
-			ListShort:     "List visible workflow states",
-			LimitHelp:     "maximum workflow states to return",
-			GetUse:        "get WORKFLOW_STATE_ID",
-			GetShort:      "Get one workflow state by id",
-			LoadList:      loadWorkflowStateList,
-			PageWithItems: workflowStatePageWithItems,
-			LoadGet:       loadWorkflowState,
-			WriteItem:     writeWorkflowState,
+			Use:       "workflow-state",
+			Short:     "Read Linear workflow states",
+			ListShort: "List visible workflow states",
+			LimitHelp: "maximum workflow states to return",
+			GetUse:    "get WORKFLOW_STATE_ID",
+			GetShort:  "Get one workflow state by id",
+			LoadList:  loadWorkflowStateList,
+			LoadGet:   loadWorkflowState,
+			WriteItem: writeWorkflowState,
 		},
 	)
 	addWorkflowStateIssuesCommand(ctx, workflowStateCommand, options)
@@ -45,13 +44,12 @@ func addWorkflowStateIssuesCommand(ctx context.Context, root *cobra.Command, opt
 				options,
 				limit,
 				loadWorkflowStateIssues,
-				workflowStateIssuePageWithItems,
 				writeIssue,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadWorkflowStateIssues))
 }
 
 func writeWorkflowState(command *cobra.Command, options *rootOptions, state client.WorkflowStateSummary) error {

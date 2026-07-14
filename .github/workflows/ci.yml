@@ -16,6 +16,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  LINCTL_LINEAR_SDK_REF: 202a5e0fbce142cd1f0cd5c5265c3a310f629702
+
 jobs:
   generated-client:
     name: generated client
@@ -35,9 +38,7 @@ jobs:
           go mod download
           go mod verify
       - name: Verify generated client
-        run: |
-          go generate ./...
-          git diff --exit-code -- internal/client/generated.go
+        run: go tool task generated-client-check
       - name: Verify generated command reference
         run: |
           go run scripts/gen-skill.go

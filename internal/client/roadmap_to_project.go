@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // RoadmapToProjectSummary is one project association under a Roadmap.
@@ -36,13 +38,13 @@ func ListRoadmapToProjects(
 	graphqlClient graphql.Client,
 	limit int,
 ) (RoadmapToProjectList, error) {
-	result, err := roadmapToProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XRoadmapToProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return RoadmapToProjectList{}, fmt.Errorf("list roadmap to projects: %w", err)
 	}
 
 	associations := mapNodes(result.RoadmapToProjects.Nodes, func(
-		association roadmapToProjectsRoadmapToProjectsRoadmapToProjectConnectionNodesRoadmapToProject,
+		association gql.XRoadmapToProjectsRoadmapToProjectsRoadmapToProjectConnectionNodesRoadmapToProject,
 	) RoadmapToProjectSummary {
 		return roadmapToProjectSummary(association.RoadmapToProjectSummaryFields)
 	})
@@ -60,7 +62,7 @@ func GetRoadmapToProjectByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (RoadmapToProjectSummary, error) {
-	result, err := roadmapToProject(ctx, graphqlClient, id)
+	result, err := gql.XRoadmapToProject(ctx, graphqlClient, id)
 	if err != nil {
 		return RoadmapToProjectSummary{}, fmt.Errorf("get roadmap to project %s: %w", id, err)
 	}
@@ -68,7 +70,7 @@ func GetRoadmapToProjectByID(
 	return roadmapToProjectSummary(result.RoadmapToProject.RoadmapToProjectSummaryFields), nil
 }
 
-func roadmapToProjectSummary(association RoadmapToProjectSummaryFields) RoadmapToProjectSummary {
+func roadmapToProjectSummary(association gql.RoadmapToProjectSummaryFields) RoadmapToProjectSummary {
 	return RoadmapToProjectSummary{
 		ID:            association.Id,
 		RoadmapID:     association.Roadmap.Id,

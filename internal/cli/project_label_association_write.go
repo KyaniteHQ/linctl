@@ -20,10 +20,13 @@ func addProjectAddLabelCommand(ctx context.Context, root *cobra.Command, options
 				return err
 			}
 
-			return runProjectAddLabel(
-				ctx, command, options, commandAdapterFor(runtime),
-				client.ProjectLabelAssociationRequest{ProjectID: args[0], LabelID: args[1]},
-			)
+			request := client.ProjectLabelAssociationRequest{ProjectID: args[0], LabelID: args[1]}
+			project, err := client.AddProjectLabel(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProject(command, options, project)
 		},
 	})
 }
@@ -39,40 +42,13 @@ func addProjectRemoveLabelCommand(ctx context.Context, root *cobra.Command, opti
 				return err
 			}
 
-			return runProjectRemoveLabel(
-				ctx, command, options, commandAdapterFor(runtime),
-				client.ProjectLabelAssociationRequest{ProjectID: args[0], LabelID: args[1]},
-			)
+			request := client.ProjectLabelAssociationRequest{ProjectID: args[0], LabelID: args[1]}
+			project, err := client.RemoveProjectLabel(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProject(command, options, project)
 		},
 	})
-}
-
-func runProjectAddLabel(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	adder projectLabelAdder,
-	request client.ProjectLabelAssociationRequest,
-) error {
-	project, err := adder.AddProjectLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProject(command, options, project)
-}
-
-func runProjectRemoveLabel(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	remover projectLabelRemover,
-	request client.ProjectLabelAssociationRequest,
-) error {
-	project, err := remover.RemoveProjectLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProject(command, options, project)
 }

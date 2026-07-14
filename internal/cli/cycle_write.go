@@ -27,7 +27,12 @@ func addCycleCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 				CompletedAt: flags.CompletedAt,
 			}
 
-			return runCycleCreate(ctx, command, options, commandAdapterFor(runtime), request)
+			cycle, err := client.CreateCycle(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeCycle(command, options, cycle)
 		},
 	}
 	bindCycleWriteFlags(command, &flags, "")
@@ -54,7 +59,12 @@ func addCycleUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 				CompletedAt: flags.CompletedAt,
 			}
 
-			return runCycleUpdate(ctx, command, options, commandAdapterFor(runtime), request)
+			cycle, err := client.UpdateCycle(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeCycle(command, options, cycle)
 		},
 	}
 	bindCycleWriteFlags(command, &flags, "new ")
@@ -72,7 +82,12 @@ func addCycleArchiveCommand(ctx context.Context, root *cobra.Command, options *r
 				return err
 			}
 
-			return runCycleArchive(ctx, command, options, commandAdapterFor(runtime), args[0])
+			cycle, err := client.ArchiveCycle(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeCycle(command, options, cycle)
 		},
 	})
 }
@@ -91,49 +106,4 @@ func bindCycleWriteFlags(command *cobra.Command, flags *cycleWriteFlags, helpPre
 	command.Flags().StringVar(&flags.StartsAt, "starts-at", "", helpPrefix+"Cycle start time")
 	command.Flags().StringVar(&flags.EndsAt, "ends-at", "", helpPrefix+"Cycle end time")
 	command.Flags().StringVar(&flags.CompletedAt, "completed-at", "", helpPrefix+"Cycle completion time")
-}
-
-func runCycleCreate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	creator cycleCreator,
-	request client.CycleCreateRequest,
-) error {
-	cycle, err := creator.CreateCycle(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeCycle(command, options, cycle)
-}
-
-func runCycleUpdate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	updater cycleUpdater,
-	request client.CycleUpdateRequest,
-) error {
-	cycle, err := updater.UpdateCycle(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeCycle(command, options, cycle)
-}
-
-func runCycleArchive(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	archiver cycleArchiver,
-	cycleID string,
-) error {
-	cycle, err := archiver.ArchiveCycle(ctx, cycleID)
-	if err != nil {
-		return err
-	}
-
-	return writeCycle(command, options, cycle)
 }

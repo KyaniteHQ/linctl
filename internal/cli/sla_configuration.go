@@ -46,6 +46,10 @@ func addSLAConfigurationCommand(ctx context.Context, root *cobra.Command, option
 			return nil
 		},
 	}
+	annotateReadCollectionCommand(
+		listCommand,
+		mustCollectionKeyForList[client.SLAConfigurationList, client.SLAConfigurationSummary](),
+	)
 
 	command.AddCommand(listCommand)
 	root.AddCommand(command)

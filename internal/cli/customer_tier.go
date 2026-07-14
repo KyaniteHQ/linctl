@@ -12,16 +12,15 @@ import (
 
 func addCustomerTierCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.CustomerTierList, client.CustomerTierSummary]{
-		Use:           "customer-tier",
-		Short:         "Read Linear customer tiers",
-		ListShort:     "List organization customer tiers",
-		LimitHelp:     "maximum customer tiers to return",
-		GetUse:        "get CUSTOMER_TIER_ID",
-		GetShort:      "Get one customer tier by id",
-		LoadList:      loadCustomerTierList,
-		PageWithItems: customerTierPageWithItems,
-		LoadGet:       loadCustomerTier,
-		WriteItem:     writeCustomerTier,
+		Use:       "customer-tier",
+		Short:     "Read Linear customer tiers",
+		ListShort: "List organization customer tiers",
+		LimitHelp: "maximum customer tiers to return",
+		GetUse:    "get CUSTOMER_TIER_ID",
+		GetShort:  "Get one customer tier by id",
+		LoadList:  loadCustomerTierList,
+		LoadGet:   loadCustomerTier,
+		WriteItem: writeCustomerTier,
 	})
 }
 

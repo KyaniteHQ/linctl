@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // UserSummary is the compact User model used by user commands.
@@ -46,12 +48,12 @@ type DraftList struct {
 
 // ListUsers returns visible users.
 func ListUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (UserList, error) {
-	userPage, err := users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true), boolPtr(true))
+	userPage, err := gql.XUsers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true), boolPtr(true))
 	if err != nil {
 		return UserList{}, fmt.Errorf("list users: %w", err)
 	}
 
-	summaries := mapNodes(userPage.Users.Nodes, func(user usersUsersUserConnectionNodesUser) UserSummary {
+	summaries := mapNodes(userPage.Users.Nodes, func(user gql.XUsersUsersUserConnectionNodesUser) UserSummary {
 		return userSummary(user.UserSummaryFields)
 	})
 
@@ -64,7 +66,7 @@ func ListUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (Us
 
 // GetUserByID returns one User by id.
 func GetUserByID(ctx context.Context, graphqlClient graphql.Client, id string) (UserSummary, error) {
-	userResult, err := user(ctx, graphqlClient, id)
+	userResult, err := gql.XUser(ctx, graphqlClient, id)
 	if err != nil {
 		return UserSummary{}, fmt.Errorf("get user %s: %w", id, err)
 	}
@@ -74,7 +76,7 @@ func GetUserByID(ctx context.Context, graphqlClient graphql.Client, id string) (
 
 // GetViewerUser returns the authenticated User.
 func GetViewerUser(ctx context.Context, graphqlClient graphql.Client) (UserSummary, error) {
-	userResult, err := viewer(ctx, graphqlClient)
+	userResult, err := gql.XViewer(ctx, graphqlClient)
 	if err != nil {
 		return UserSummary{}, fmt.Errorf("get viewer user: %w", err)
 	}
@@ -84,13 +86,13 @@ func GetViewerUser(ctx context.Context, graphqlClient graphql.Client) (UserSumma
 
 // ListViewerDrafts returns the authenticated user's saved draft metadata.
 func ListViewerDrafts(ctx context.Context, graphqlClient graphql.Client, limit int) (DraftList, error) {
-	draftPage, err := viewer_drafts(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	draftPage, err := gql.XViewer_drafts(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return DraftList{}, fmt.Errorf("list viewer drafts: %w", err)
 	}
 
 	summaries := mapNodes(draftPage.Viewer.Drafts.Nodes, func(
-		draft viewer_draftsViewerUserDraftsDraftConnectionNodesDraft,
+		draft gql.XViewer_draftsViewerUserDraftsDraftConnectionNodesDraft,
 	) DraftSummary {
 		return draftSummary(draft.DraftSummaryFields)
 	})
@@ -109,13 +111,13 @@ func ListUserAssignedIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := user_assignedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XUser_assignedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list user assigned issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.User.AssignedIssues.Nodes, func(
-		issue user_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue,
+		issue gql.XUser_assignedIssuesUserAssignedIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -129,13 +131,13 @@ func ListUserAssignedIssues(
 
 // ListUserCreatedIssues returns issues created by one User.
 func ListUserCreatedIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (IssueList, error) {
-	result, err := user_createdIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XUser_createdIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list user created issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.User.CreatedIssues.Nodes, func(
-		issue user_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue,
+		issue gql.XUser_createdIssuesUserCreatedIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -154,13 +156,13 @@ func ListUserDelegatedIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := user_delegatedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XUser_delegatedIssues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list user delegated issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.User.DelegatedIssues.Nodes, func(
-		issue user_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue,
+		issue gql.XUser_delegatedIssuesUserDelegatedIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -179,13 +181,13 @@ func ListUserTeamMemberships(
 	id string,
 	limit int,
 ) (TeamMembershipList, error) {
-	result, err := user_teamMemberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XUser_teamMemberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return TeamMembershipList{}, fmt.Errorf("list user team memberships %s: %w", id, err)
 	}
 
 	memberships := mapNodes(result.User.TeamMemberships.Nodes, func(
-		membership user_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+		membership gql.XUser_teamMembershipsUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
 	) TeamMembershipSummary {
 		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
 	})
@@ -199,12 +201,12 @@ func ListUserTeamMemberships(
 
 // ListUserTeams returns Teams associated with one User.
 func ListUserTeams(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TeamList, error) {
-	result, err := user_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XUser_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return TeamList{}, fmt.Errorf("list user teams %s: %w", id, err)
 	}
 
-	teams := mapNodes(result.User.Teams.Nodes, func(team user_teamsUserTeamsTeamConnectionNodesTeam) TeamSummary {
+	teams := mapNodes(result.User.Teams.Nodes, func(team gql.XUser_teamsUserTeamsTeamConnectionNodesTeam) TeamSummary {
 		return teamSummary(team.TeamSummaryFields)
 	})
 
@@ -217,13 +219,13 @@ func ListUserTeams(ctx context.Context, graphqlClient graphql.Client, id string,
 
 // ListViewerAssignedIssues returns issues assigned to the authenticated User.
 func ListViewerAssignedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	result, err := viewer_assignedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XViewer_assignedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list viewer assigned issues: %w", err)
 	}
 
 	issues := mapNodes(result.Viewer.AssignedIssues.Nodes, func(
-		issue viewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue,
+		issue gql.XViewer_assignedIssuesViewerUserAssignedIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -237,13 +239,13 @@ func ListViewerAssignedIssues(ctx context.Context, graphqlClient graphql.Client,
 
 // ListViewerCreatedIssues returns issues created by the authenticated User.
 func ListViewerCreatedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	result, err := viewer_createdIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XViewer_createdIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list viewer created issues: %w", err)
 	}
 
 	issues := mapNodes(result.Viewer.CreatedIssues.Nodes, func(
-		issue viewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue,
+		issue gql.XViewer_createdIssuesViewerUserCreatedIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -257,13 +259,13 @@ func ListViewerCreatedIssues(ctx context.Context, graphqlClient graphql.Client, 
 
 // ListViewerDelegatedIssues returns issues delegated to the authenticated User.
 func ListViewerDelegatedIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	result, err := viewer_delegatedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XViewer_delegatedIssues(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list viewer delegated issues: %w", err)
 	}
 
 	issues := mapNodes(result.Viewer.DelegatedIssues.Nodes, func(
-		issue viewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue,
+		issue gql.XViewer_delegatedIssuesViewerUserDelegatedIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -281,13 +283,13 @@ func ListViewerTeamMemberships(
 	graphqlClient graphql.Client,
 	limit int,
 ) (TeamMembershipList, error) {
-	result, err := viewer_teamMemberships(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XViewer_teamMemberships(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return TeamMembershipList{}, fmt.Errorf("list viewer team memberships: %w", err)
 	}
 
 	memberships := mapNodes(result.Viewer.TeamMemberships.Nodes, func(
-		membership viewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+		membership gql.XViewer_teamMembershipsViewerUserTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
 	) TeamMembershipSummary {
 		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
 	})
@@ -301,13 +303,13 @@ func ListViewerTeamMemberships(
 
 // ListViewerTeams returns Teams associated with the authenticated User.
 func ListViewerTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
-	result, err := viewer_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XViewer_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return TeamList{}, fmt.Errorf("list viewer teams: %w", err)
 	}
 
 	teams := mapNodes(result.Viewer.Teams.Nodes, func(
-		team viewer_teamsViewerUserTeamsTeamConnectionNodesTeam,
+		team gql.XViewer_teamsViewerUserTeamsTeamConnectionNodesTeam,
 	) TeamSummary {
 		return teamSummary(team.TeamSummaryFields)
 	})
@@ -319,7 +321,7 @@ func ListViewerTeams(ctx context.Context, graphqlClient graphql.Client, limit in
 	}, nil
 }
 
-func userSummary(user UserSummaryFields) UserSummary {
+func userSummary(user gql.UserSummaryFields) UserSummary {
 	return UserSummary{
 		ID:          user.Id,
 		Name:        user.Name,
@@ -331,7 +333,7 @@ func userSummary(user UserSummaryFields) UserSummary {
 	}
 }
 
-func draftSummary(draft DraftSummaryFields) DraftSummary {
+func draftSummary(draft gql.DraftSummaryFields) DraftSummary {
 	summary := DraftSummary{
 		ID:         draft.Id,
 		CreatedAt:  draft.CreatedAt,

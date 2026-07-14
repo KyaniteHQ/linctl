@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -28,22 +29,6 @@ type LabelUpdateRequest struct {
 	OrgWide     bool
 }
 
-// LinearIssueLabelCreateInput is the sparse Linear issueLabelCreate payload linctl supports.
-type LinearIssueLabelCreateInput struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Color       *string `json:"color,omitempty"`
-	ParentID    *string `json:"parentId,omitempty"`
-	TeamID      *string `json:"teamId,omitempty"`
-}
-
-// LinearIssueLabelUpdateInput is the sparse Linear issueLabelUpdate payload linctl supports.
-type LinearIssueLabelUpdateInput struct {
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Color       *string `json:"color,omitempty"`
-}
-
 // CreateLabel creates an IssueLabel in the pinned team, or organization-wide
 // when OrgWide is set, after target comparison. replaceTeamLabels is never
 // sent true.
@@ -57,33 +42,40 @@ func CreateLabel(
 		return LabelSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (LabelSummary, error) {
-		var teamID *string
-		if !request.OrgWide {
-			teamID = stringPtr(guard.target.Team.ID)
-		}
-		if request.ParentID != "" {
-			if err := guard.requireLabelParentScope(ctx, graphqlClient, request.ParentID, request.OrgWide); err != nil {
-				return LabelSummary{}, err
-			}
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return LabelSummary{}, err
+	}
 
-		created, err := IssueLabelCreate(ctx, graphqlClient, boolPtr(false), LinearIssueLabelCreateInput{
-			Name:        request.Name,
-			Description: optionalString(request.Description),
-			Color:       optionalString(request.Color),
-			ParentID:    optionalString(request.ParentID),
-			TeamID:      teamID,
-		})
-		if err != nil {
-			return LabelSummary{}, fmt.Errorf("create label: %w", err)
-		}
-		if !created.IssueLabelCreate.Success {
-			return LabelSummary{}, fmt.Errorf("%w: issueLabelCreate reported no success", ErrMutationFailed)
-		}
+	return guard.createLabel(ctx, request)
+}
 
-		return labelSummary(created.IssueLabelCreate.IssueLabel.IssueLabelSummaryFields), nil
+func (guard *guardedClient) createLabel(ctx context.Context, request LabelCreateRequest) (LabelSummary, error) {
+	var teamID *string
+	if !request.OrgWide {
+		teamID = stringPtr(guard.target.Team.ID)
+	}
+	if request.ParentID != "" {
+		if err := guard.requireLabelParentScope(ctx, request.ParentID, request.OrgWide); err != nil {
+			return LabelSummary{}, err
+		}
+	}
+
+	created, err := gql.IssueLabelCreate(ctx, guard.graphqlClient, boolPtr(false), LinearIssueLabelCreateInput{
+		Name:        request.Name,
+		Description: optionalString(request.Description),
+		Color:       optionalString(request.Color),
+		ParentID:    optionalString(request.ParentID),
+		TeamID:      teamID,
 	})
+	if err != nil {
+		return LabelSummary{}, fmt.Errorf("create label: %w", err)
+	}
+	if !created.IssueLabelCreate.Success {
+		return LabelSummary{}, fmt.Errorf("%w: issueLabelCreate reported no success", ErrMutationFailed)
+	}
+
+	return labelSummary(created.IssueLabelCreate.IssueLabel.IssueLabelSummaryFields), nil
 }
 
 // UpdateLabel updates an IssueLabel after resolving and comparing its scope:
@@ -99,25 +91,34 @@ func UpdateLabel(
 		return LabelSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (LabelSummary, error) {
-		if err := guard.requireIssueLabel(ctx, graphqlClient, request.ID, request.OrgWide); err != nil {
-			return LabelSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return LabelSummary{}, err
+	}
 
-		updated, err := IssueLabelUpdate(ctx, graphqlClient, request.ID, boolPtr(false), LinearIssueLabelUpdateInput{
+	return guard.updateLabel(ctx, request)
+}
+
+func (guard *guardedClient) updateLabel(ctx context.Context, request LabelUpdateRequest) (LabelSummary, error) {
+	if err := guard.requireIssueLabel(ctx, request.ID, request.OrgWide); err != nil {
+		return LabelSummary{}, err
+	}
+
+	updated, err := gql.IssueLabelUpdate(
+		ctx, guard.graphqlClient, request.ID, boolPtr(false), LinearIssueLabelUpdateInput{
 			Name:        optionalString(request.Name),
 			Description: optionalString(request.Description),
 			Color:       optionalString(request.Color),
-		})
-		if err != nil {
-			return LabelSummary{}, fmt.Errorf("update label %s: %w", request.ID, err)
-		}
-		if !updated.IssueLabelUpdate.Success {
-			return LabelSummary{}, fmt.Errorf("%w: issueLabelUpdate reported no success", ErrMutationFailed)
-		}
+		},
+	)
+	if err != nil {
+		return LabelSummary{}, fmt.Errorf("update label %s: %w", request.ID, err)
+	}
+	if !updated.IssueLabelUpdate.Success {
+		return LabelSummary{}, fmt.Errorf("%w: issueLabelUpdate reported no success", ErrMutationFailed)
+	}
 
-		return labelSummary(updated.IssueLabelUpdate.IssueLabel.IssueLabelSummaryFields), nil
-	})
+	return labelSummary(updated.IssueLabelUpdate.IssueLabel.IssueLabelSummaryFields), nil
 }
 
 // RetireLabel retires an IssueLabel after resolving and comparing its scope.
@@ -132,21 +133,28 @@ func RetireLabel(
 		return LabelSummary{}, fmt.Errorf("%w: label id is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (LabelSummary, error) {
-		if err := guard.requireIssueLabel(ctx, graphqlClient, id, orgWide); err != nil {
-			return LabelSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return LabelSummary{}, err
+	}
 
-		retired, err := IssueLabelRetire(ctx, graphqlClient, id)
-		if err != nil {
-			return LabelSummary{}, fmt.Errorf("retire label %s: %w", id, err)
-		}
-		if !retired.IssueLabelRetire.Success {
-			return LabelSummary{}, fmt.Errorf("%w: issueLabelRetire reported no success", ErrMutationFailed)
-		}
+	return guard.retireLabel(ctx, id, orgWide)
+}
 
-		return labelSummary(retired.IssueLabelRetire.IssueLabel.IssueLabelSummaryFields), nil
-	})
+func (guard *guardedClient) retireLabel(ctx context.Context, id string, orgWide bool) (LabelSummary, error) {
+	if err := guard.requireIssueLabel(ctx, id, orgWide); err != nil {
+		return LabelSummary{}, err
+	}
+
+	retired, err := gql.IssueLabelRetire(ctx, guard.graphqlClient, id)
+	if err != nil {
+		return LabelSummary{}, fmt.Errorf("retire label %s: %w", id, err)
+	}
+	if !retired.IssueLabelRetire.Success {
+		return LabelSummary{}, fmt.Errorf("%w: issueLabelRetire reported no success", ErrMutationFailed)
+	}
+
+	return labelSummary(retired.IssueLabelRetire.IssueLabel.IssueLabelSummaryFields), nil
 }
 
 // RestoreLabel restores a previously retired IssueLabel after resolving and
@@ -162,21 +170,28 @@ func RestoreLabel(
 		return LabelSummary{}, fmt.Errorf("%w: label id is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (LabelSummary, error) {
-		if err := guard.requireIssueLabel(ctx, graphqlClient, id, orgWide); err != nil {
-			return LabelSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return LabelSummary{}, err
+	}
 
-		restored, err := IssueLabelRestore(ctx, graphqlClient, id)
-		if err != nil {
-			return LabelSummary{}, fmt.Errorf("restore label %s: %w", id, err)
-		}
-		if !restored.IssueLabelRestore.Success {
-			return LabelSummary{}, fmt.Errorf("%w: issueLabelRestore reported no success", ErrMutationFailed)
-		}
+	return guard.restoreLabel(ctx, id, orgWide)
+}
 
-		return labelSummary(restored.IssueLabelRestore.IssueLabel.IssueLabelSummaryFields), nil
-	})
+func (guard *guardedClient) restoreLabel(ctx context.Context, id string, orgWide bool) (LabelSummary, error) {
+	if err := guard.requireIssueLabel(ctx, id, orgWide); err != nil {
+		return LabelSummary{}, err
+	}
+
+	restored, err := gql.IssueLabelRestore(ctx, guard.graphqlClient, id)
+	if err != nil {
+		return LabelSummary{}, fmt.Errorf("restore label %s: %w", id, err)
+	}
+	if !restored.IssueLabelRestore.Success {
+		return LabelSummary{}, fmt.Errorf("%w: issueLabelRestore reported no success", ErrMutationFailed)
+	}
+
+	return labelSummary(restored.IssueLabelRestore.IssueLabel.IssueLabelSummaryFields), nil
 }
 
 func validateLabelUpdateRequest(request LabelUpdateRequest) error {

@@ -15,16 +15,15 @@ func addReleasePipelineCommand(ctx context.Context, root *cobra.Command, options
 		root,
 		options,
 		readListGetSpec[client.ReleasePipelineList, client.ReleasePipelineSummary]{
-			Use:           "release-pipeline",
-			Short:         "Read Linear release pipelines",
-			ListShort:     "List visible Linear release pipelines",
-			LimitHelp:     "maximum release pipelines to return",
-			GetUse:        "get RELEASE_PIPELINE_ID",
-			GetShort:      "Get one release pipeline by id",
-			LoadList:      loadReleasePipelineList,
-			PageWithItems: releasePipelinePageWithItems,
-			LoadGet:       loadReleasePipeline,
-			WriteItem:     writeReleasePipeline,
+			Use:       "release-pipeline",
+			Short:     "Read Linear release pipelines",
+			ListShort: "List visible Linear release pipelines",
+			LimitHelp: "maximum release pipelines to return",
+			GetUse:    "get RELEASE_PIPELINE_ID",
+			GetShort:  "Get one release pipeline by id",
+			LoadList:  loadReleasePipelineList,
+			LoadGet:   loadReleasePipeline,
+			WriteItem: writeReleasePipeline,
 		},
 	)
 	addReleasePipelineReleasesCommand(ctx, command, options)
@@ -46,13 +45,12 @@ func addReleasePipelineReleasesCommand(ctx context.Context, root *cobra.Command,
 				options,
 				limit,
 				loadReleasePipelineReleases,
-				releasePageWithItems,
 				writeRelease,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum releases to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleasePipelineReleases))
 }
 
 func addReleasePipelineStagesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -69,13 +67,12 @@ func addReleasePipelineStagesCommand(ctx context.Context, root *cobra.Command, o
 				options,
 				limit,
 				loadReleasePipelineStages,
-				releaseStagePageWithItems,
 				writeReleaseStage,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum release stages to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleasePipelineStages))
 }
 
 func addReleasePipelineTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -92,13 +89,12 @@ func addReleasePipelineTeamsCommand(ctx context.Context, root *cobra.Command, op
 				options,
 				limit,
 				loadReleasePipelineTeams,
-				teamPageWithItems,
 				writeTeam,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum teams to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleasePipelineTeams))
 }
 
 func addReleaseStageCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -107,16 +103,15 @@ func addReleaseStageCommand(ctx context.Context, root *cobra.Command, options *r
 		root,
 		options,
 		readListGetSpec[client.ReleaseStageList, client.ReleaseStageSummary]{
-			Use:           "release-stage",
-			Short:         "Read Linear release stages",
-			ListShort:     "List visible Linear release stages",
-			LimitHelp:     "maximum release stages to return",
-			GetUse:        "get RELEASE_STAGE_ID",
-			GetShort:      "Get one release stage by id",
-			LoadList:      loadReleaseStageList,
-			PageWithItems: releaseStagePageWithItems,
-			LoadGet:       loadReleaseStage,
-			WriteItem:     writeReleaseStage,
+			Use:       "release-stage",
+			Short:     "Read Linear release stages",
+			ListShort: "List visible Linear release stages",
+			LimitHelp: "maximum release stages to return",
+			GetUse:    "get RELEASE_STAGE_ID",
+			GetShort:  "Get one release stage by id",
+			LoadList:  loadReleaseStageList,
+			LoadGet:   loadReleaseStage,
+			WriteItem: writeReleaseStage,
 		},
 	)
 	addReleaseStageReleasesCommand(ctx, command, options)
@@ -136,13 +131,12 @@ func addReleaseStageReleasesCommand(ctx context.Context, root *cobra.Command, op
 				options,
 				limit,
 				loadReleaseStageReleases,
-				releasePageWithItems,
 				writeRelease,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum releases to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleaseStageReleases))
 }
 
 func writeReleasePipeline(command *cobra.Command, options *rootOptions, pipeline client.ReleasePipelineSummary) error {

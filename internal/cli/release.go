@@ -15,16 +15,15 @@ func addReleaseCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		root,
 		options,
 		readListGetSpec[client.ReleaseList, client.ReleaseSummary]{
-			Use:           "release",
-			Short:         "Read Linear releases",
-			ListShort:     "List visible Linear releases",
-			LimitHelp:     "maximum releases to return",
-			GetUse:        "get RELEASE_ID",
-			GetShort:      "Get one release by id",
-			LoadList:      loadReleaseList,
-			PageWithItems: releasePageWithItems,
-			LoadGet:       loadRelease,
-			WriteItem:     writeRelease,
+			Use:       "release",
+			Short:     "Read Linear releases",
+			ListShort: "List visible Linear releases",
+			LimitHelp: "maximum releases to return",
+			GetUse:    "get RELEASE_ID",
+			GetShort:  "Get one release by id",
+			LoadList:  loadReleaseList,
+			LoadGet:   loadRelease,
+			WriteItem: writeRelease,
 		},
 	)
 	addReleaseSearchCommand(ctx, command, options)
@@ -58,7 +57,7 @@ func addReleaseSearchCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 			if options.json {
-				return writeJSONValue(command, options, releasePageWithItems(releases, items))
+				return writePageJSON(command, options, releases, items)
 			}
 			for _, release := range items {
 				if err := writeRelease(command, options, release); err != nil {
@@ -86,13 +85,12 @@ func addReleaseHistoryCommand(ctx context.Context, root *cobra.Command, options 
 				options,
 				limit,
 				loadReleaseHistory,
-				releaseHistoryPageWithItems,
 				writeReleaseHistory,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum history records to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleaseHistory))
 }
 
 func addReleaseDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -109,13 +107,12 @@ func addReleaseDocumentsCommand(ctx context.Context, root *cobra.Command, option
 				options,
 				limit,
 				loadReleaseDocuments,
-				documentPageWithItems,
 				writeDocument,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum documents to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleaseDocuments))
 }
 
 func addReleaseIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -132,13 +129,12 @@ func addReleaseIssuesCommand(ctx context.Context, root *cobra.Command, options *
 				options,
 				limit,
 				loadReleaseIssues,
-				issuePageWithItems,
 				writeIssue,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleaseIssues))
 }
 
 func addReleaseLinksCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -155,13 +151,12 @@ func addReleaseLinksCommand(ctx context.Context, root *cobra.Command, options *r
 				options,
 				limit,
 				loadReleaseLinks,
-				releaseLinksPageWithItems,
 				writeEntityExternalLink,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum links to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadReleaseLinks))
 }
 
 func addReleaseNoteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -170,16 +165,15 @@ func addReleaseNoteCommand(ctx context.Context, root *cobra.Command, options *ro
 		root,
 		options,
 		readListGetSpec[client.ReleaseNoteList, client.ReleaseNoteSummary]{
-			Use:           "release-note",
-			Short:         "Read Linear release notes",
-			ListShort:     "List visible Linear release notes",
-			LimitHelp:     "maximum release notes to return",
-			GetUse:        "get RELEASE_NOTE_ID",
-			GetShort:      "Get one release note by id",
-			LoadList:      loadReleaseNoteList,
-			PageWithItems: releaseNotePageWithItems,
-			LoadGet:       loadReleaseNote,
-			WriteItem:     writeReleaseNote,
+			Use:       "release-note",
+			Short:     "Read Linear release notes",
+			ListShort: "List visible Linear release notes",
+			LimitHelp: "maximum release notes to return",
+			GetUse:    "get RELEASE_NOTE_ID",
+			GetShort:  "Get one release note by id",
+			LoadList:  loadReleaseNoteList,
+			LoadGet:   loadReleaseNote,
+			WriteItem: writeReleaseNote,
 		},
 	)
 }

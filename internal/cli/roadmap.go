@@ -15,16 +15,15 @@ func addRoadmapCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		root,
 		options,
 		readListGetSpec[client.RoadmapList, client.RoadmapSummary]{
-			Use:           "roadmap",
-			Short:         "Read legacy Linear roadmaps; prefer initiative for new planning",
-			ListShort:     "List visible legacy Linear roadmaps",
-			LimitHelp:     "maximum legacy roadmaps to return",
-			GetUse:        "get ROADMAP_ID",
-			GetShort:      "Get one legacy roadmap by id",
-			LoadList:      loadRoadmapList,
-			PageWithItems: roadmapPageWithItems,
-			LoadGet:       loadRoadmap,
-			WriteItem:     writeRoadmap,
+			Use:       "roadmap",
+			Short:     "Read legacy Linear roadmaps; prefer initiative for new planning",
+			ListShort: "List visible legacy Linear roadmaps",
+			LimitHelp: "maximum legacy roadmaps to return",
+			GetUse:    "get ROADMAP_ID",
+			GetShort:  "Get one legacy roadmap by id",
+			LoadList:  loadRoadmapList,
+			LoadGet:   loadRoadmap,
+			WriteItem: writeRoadmap,
 		},
 	)
 	roadmapCommand.Long = "Roadmap is Linear's deprecated planning surface. " +
@@ -49,13 +48,12 @@ func addRoadmapProjectsCommand(ctx context.Context, root *cobra.Command, options
 				options,
 				limit,
 				loadRoadmapProjects,
-				roadmapProjectPageWithItems,
 				writeProject,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadRoadmapProjects))
 }
 
 func writeRoadmap(command *cobra.Command, options *rootOptions, roadmap client.RoadmapSummary) error {

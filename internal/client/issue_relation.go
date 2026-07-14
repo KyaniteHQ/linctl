@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // IssueRelationSummary is one directional relation between Linear issues.
@@ -35,13 +37,13 @@ func ListIssueRelations(
 	graphqlClient graphql.Client,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := issueRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueRelationList{}, fmt.Errorf("list issue relations: %w", err)
 	}
 
 	relations := mapNodes(result.IssueRelations.Nodes, func(
-		relation issueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation,
+		relation gql.XIssueRelationsIssueRelationsIssueRelationConnectionNodesIssueRelation,
 	) IssueRelationSummary {
 		return issueRelationSummary(relation.IssueRelationSummaryFields)
 	})
@@ -59,7 +61,7 @@ func GetIssueRelationByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (IssueRelationSummary, error) {
-	result, err := issueRelation(ctx, graphqlClient, id)
+	result, err := gql.XIssueRelation(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueRelationSummary{}, fmt.Errorf("get issue relation %s: %w", id, err)
 	}
@@ -67,7 +69,7 @@ func GetIssueRelationByID(
 	return issueRelationSummary(result.IssueRelation.IssueRelationSummaryFields), nil
 }
 
-func issueRelationSummary(relation IssueRelationSummaryFields) IssueRelationSummary {
+func issueRelationSummary(relation gql.IssueRelationSummaryFields) IssueRelationSummary {
 	return IssueRelationSummary{
 		ID:                     relation.Id,
 		Type:                   relation.Type,

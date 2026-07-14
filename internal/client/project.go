@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ProjectSummary is the compact project model used by project commands.
@@ -226,13 +228,13 @@ func ListProjectsByTeam(
 	teamID string,
 	limit int,
 ) (ProjectList, error) {
-	projects, err := Projects(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
+	projects, err := gql.Projects(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectList{}, fmt.Errorf("list projects: %w", err)
 	}
 
 	summaries := mapNodes(projects.Team.Projects.Nodes, func(
-		project ProjectsTeamProjectsProjectConnectionNodesProject,
+		project gql.ProjectsTeamProjectsProjectConnectionNodesProject,
 	) ProjectSummary {
 		return projectSummaryFromFields(project.ProjectSummaryFields)
 	})
@@ -246,13 +248,13 @@ func ListProjectsByTeam(
 
 // ListProjects returns Linear projects visible to the authenticated user.
 func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectList, error) {
-	result, err := projects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectList{}, fmt.Errorf("list projects: %w", err)
 	}
 
 	summaries := mapNodes(result.Projects.Nodes, func(
-		project projectsProjectsProjectConnectionNodesProject,
+		project gql.XProjectsProjectsProjectConnectionNodesProject,
 	) ProjectSummary {
 		return projectSummaryFromFields(project.ProjectSummaryFields)
 	})
@@ -266,7 +268,7 @@ func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) 
 
 // GetProjectByID returns a project by Linear id or slug.
 func GetProjectByID(ctx context.Context, graphqlClient graphql.Client, id string) (ProjectSummary, error) {
-	projectResult, err := project(ctx, graphqlClient, id)
+	projectResult, err := gql.XProject(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectSummary{}, fmt.Errorf("get project %s: %w", id, err)
 	}
@@ -281,13 +283,13 @@ func ListProjectAttachments(
 	id string,
 	limit int,
 ) (ProjectAttachmentList, error) {
-	result, err := project_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectAttachmentList{}, fmt.Errorf("list project attachments %s: %w", id, err)
 	}
 
 	attachments := mapNodes(result.Project.Attachments.Nodes, func(
-		node project_attachmentsProjectAttachmentsProjectAttachmentConnectionNodesProjectAttachment,
+		node gql.XProject_attachmentsProjectAttachmentsProjectAttachmentConnectionNodesProjectAttachment,
 	) AttachmentSummary {
 		return projectAttachmentSummary(node.ProjectAttachmentSummaryFields)
 	})
@@ -308,13 +310,13 @@ func ListProjectDocuments(
 	id string,
 	limit int,
 ) (ProjectDocumentList, error) {
-	result, err := project_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectDocumentList{}, fmt.Errorf("list project documents %s: %w", id, err)
 	}
 
 	documents := mapNodes(result.Project.Documents.Nodes, func(
-		node project_documentsProjectDocumentsDocumentConnectionNodesDocument,
+		node gql.XProject_documentsProjectDocumentsDocumentConnectionNodesDocument,
 	) DocumentSummary {
 		return documentSummary(node.DocumentSummaryFields)
 	})
@@ -335,13 +337,13 @@ func ListProjectExternalLinks(
 	id string,
 	limit int,
 ) (ProjectExternalLinkList, error) {
-	result, err := project_externalLinks(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_externalLinks(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectExternalLinkList{}, fmt.Errorf("list project external links %s: %w", id, err)
 	}
 
 	links := mapNodes(result.Project.ExternalLinks.Nodes, func(
-		node project_externalLinksProjectExternalLinksEntityExternalLinkConnectionNodesEntityExternalLink,
+		node gql.XProject_externalLinksProjectExternalLinksEntityExternalLinkConnectionNodesEntityExternalLink,
 	) EntityExternalLinkSummary {
 		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
 	})
@@ -362,13 +364,13 @@ func ListProjectHistory(
 	id string,
 	limit int,
 ) (ProjectHistoryList, error) {
-	result, err := project_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectHistoryList{}, fmt.Errorf("list project history %s: %w", id, err)
 	}
 
 	history := mapNodes(result.Project.History.Nodes, func(
-		node project_historyProjectHistoryProjectHistoryConnectionNodesProjectHistory,
+		node gql.XProject_historyProjectHistoryProjectHistoryConnectionNodesProjectHistory,
 	) ProjectHistorySummary {
 		return projectHistorySummary(node.ProjectHistorySummaryFields)
 	})
@@ -389,7 +391,7 @@ func ListProjectInitiativeToProjects(
 	id string,
 	limit int,
 ) (ProjectInitiativeToProjectList, error) {
-	result, err := project_initiativeToProjects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_initiativeToProjects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectInitiativeToProjectList{}, fmt.Errorf("list project initiative associations %s: %w", id, err)
 	}
@@ -415,13 +417,13 @@ func ListProjectInitiatives(
 	id string,
 	limit int,
 ) (ProjectInitiativeList, error) {
-	result, err := project_initiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_initiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectInitiativeList{}, fmt.Errorf("list project initiatives %s: %w", id, err)
 	}
 
 	initiatives := mapNodes(result.Project.Initiatives.Nodes, func(
-		node project_initiativesProjectInitiativesInitiativeConnectionNodesInitiative,
+		node gql.XProject_initiativesProjectInitiativesInitiativeConnectionNodesInitiative,
 	) InitiativeSummary {
 		return initiativeSummary(node.InitiativeSummaryFields)
 	})
@@ -442,13 +444,13 @@ func ListProjectInverseRelations(
 	id string,
 	limit int,
 ) (ProjectProjectRelationList, error) {
-	result, err := project_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectProjectRelationList{}, fmt.Errorf("list project inverse relations %s: %w", id, err)
 	}
 
 	relations := mapNodes(result.Project.InverseRelations.Nodes, func(
-		node project_inverseRelationsProjectInverseRelationsProjectRelationConnectionNodesProjectRelation,
+		node gql.XProject_inverseRelationsProjectInverseRelationsProjectRelationConnectionNodesProjectRelation,
 	) ProjectRelationSummary {
 		return projectRelationSummary(node.ProjectRelationSummaryFields)
 	})
@@ -469,13 +471,13 @@ func ListProjectIssues(
 	id string,
 	limit int,
 ) (ProjectIssueList, error) {
-	result, err := project_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectIssueList{}, fmt.Errorf("list project issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.Project.Issues.Nodes, func(
-		node project_issuesProjectIssuesIssueConnectionNodesIssue,
+		node gql.XProject_issuesProjectIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(node.IssueSummaryFields)
 	})
@@ -496,13 +498,13 @@ func ListProjectComments(
 	id string,
 	limit int,
 ) (ProjectCommentList, error) {
-	result, err := project_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectCommentList{}, fmt.Errorf("list project comments %s: %w", id, err)
 	}
 
 	comments := mapNodes(result.Project.Comments.Nodes, func(
-		node project_commentsProjectCommentsCommentConnectionNodesComment,
+		node gql.XProject_commentsProjectCommentsCommentConnectionNodesComment,
 	) CommentMetadataSummary {
 		return commentMetadataSummary(node.CommentMetadataFields)
 	})
@@ -523,13 +525,13 @@ func ListLabelsForProject(
 	id string,
 	limit int,
 ) (ProjectProjectLabelList, error) {
-	result, err := project_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectProjectLabelList{}, fmt.Errorf("list project labels %s: %w", id, err)
 	}
 
 	labels := mapNodes(result.Project.Labels.Nodes, func(
-		node project_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
+		node gql.XProject_labelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
 	) ProjectLabelSummary {
 		return projectLabelSummary(node.ProjectLabelSummaryFields)
 	})
@@ -550,13 +552,13 @@ func ListProjectNeeds(
 	id string,
 	limit int,
 ) (ProjectCustomerNeedList, error) {
-	result, err := project_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectCustomerNeedList{}, fmt.Errorf("list project customer needs %s: %w", id, err)
 	}
 
 	needs := mapNodes(result.Project.Needs.Nodes, func(
-		node project_needsProjectNeedsCustomerNeedConnectionNodesCustomerNeed,
+		node gql.XProject_needsProjectNeedsCustomerNeedConnectionNodesCustomerNeed,
 	) CustomerNeedSummary {
 		return customerNeedSummary(node.CustomerNeedSummaryFields)
 	})
@@ -577,13 +579,13 @@ func ListProjectRelationsForProject(
 	id string,
 	limit int,
 ) (ProjectProjectRelationList, error) {
-	result, err := project_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectProjectRelationList{}, fmt.Errorf("list project relations %s: %w", id, err)
 	}
 
 	relations := mapNodes(result.Project.Relations.Nodes, func(
-		node project_relationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
+		node gql.XProject_relationsProjectRelationsProjectRelationConnectionNodesProjectRelation,
 	) ProjectRelationSummary {
 		return projectRelationSummary(node.ProjectRelationSummaryFields)
 	})
@@ -604,13 +606,13 @@ func ListProjectTeams(
 	id string,
 	limit int,
 ) (ProjectTeamList, error) {
-	result, err := project_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProject_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectTeamList{}, fmt.Errorf("list project teams %s: %w", id, err)
 	}
 
 	teams := mapNodes(result.Project.Teams.Nodes, func(
-		node project_teamsProjectTeamsTeamConnectionNodesTeam,
+		node gql.XProject_teamsProjectTeamsTeamConnectionNodesTeam,
 	) TeamSummary {
 		return teamSummary(node.TeamSummaryFields)
 	})
@@ -631,13 +633,13 @@ func ListProjectMembers(
 	id string,
 	limit int,
 ) (ProjectMemberList, error) {
-	project, err := project_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	project, err := gql.XProject_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectMemberList{}, fmt.Errorf("list project members %s: %w", id, err)
 	}
 
 	members := mapNodes(project.Project.Members.Nodes, func(
-		member project_membersProjectMembersUserConnectionNodesUser,
+		member gql.XProject_membersProjectMembersUserConnectionNodesUser,
 	) ProjectMember {
 		return ProjectMember{
 			ID:          member.Id,
@@ -663,7 +665,7 @@ func ListProjectUpdates(
 	id string,
 	limit int,
 ) (ProjectUpdateList, error) {
-	project, err := project_projectUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	project, err := gql.XProject_projectUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectUpdateList{}, fmt.Errorf("list project updates %s: %w", id, err)
 	}
@@ -686,7 +688,7 @@ func GetProjectFilterSuggestion(
 	prompt string,
 	teamID string,
 ) (ProjectFilterSuggestion, error) {
-	suggestion, err := projectFilterSuggestion(ctx, graphqlClient, prompt, optionalString(teamID))
+	suggestion, err := gql.XProjectFilterSuggestion(ctx, graphqlClient, prompt, optionalString(teamID))
 	if err != nil {
 		return ProjectFilterSuggestion{}, fmt.Errorf("get project filter suggestion: %w", err)
 	}
@@ -704,13 +706,13 @@ func GetProjectFilterSuggestion(
 
 // ListAllProjectUpdates returns visible project status updates across projects.
 func ListAllProjectUpdates(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectUpdateList, error) {
-	updatesResponse, err := projectUpdates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	updatesResponse, err := gql.XProjectUpdates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectUpdateList{}, fmt.Errorf("list project updates: %w", err)
 	}
 
 	updates := mapNodes(updatesResponse.ProjectUpdates.Nodes, func(
-		update projectUpdatesProjectUpdatesProjectUpdateConnectionNodesProjectUpdate,
+		update gql.XProjectUpdatesProjectUpdatesProjectUpdateConnectionNodesProjectUpdate,
 	) ProjectUpdateSummary {
 		return projectUpdateSummary(update.TopLevelProjectUpdateSummaryFields)
 	})
@@ -728,7 +730,7 @@ func GetProjectUpdateByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (ProjectUpdateSummary, error) {
-	update, err := projectUpdate(ctx, graphqlClient, id)
+	update, err := gql.XProjectUpdate(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectUpdateSummary{}, fmt.Errorf("get project update %s: %w", id, err)
 	}
@@ -743,13 +745,13 @@ func ListProjectUpdateComments(
 	id string,
 	limit int,
 ) (ProjectUpdateCommentList, error) {
-	result, err := projectUpdate_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectUpdate_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectUpdateCommentList{}, fmt.Errorf("list project update comments %s: %w", id, err)
 	}
 
 	comments := mapNodes(result.ProjectUpdate.Comments.Nodes, func(
-		node projectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment,
+		node gql.XProjectUpdate_commentsProjectUpdateCommentsCommentConnectionNodesComment,
 	) CommentMetadataSummary {
 		return commentMetadataSummary(node.CommentMetadataFields)
 	})
@@ -763,7 +765,7 @@ func ListProjectUpdateComments(
 }
 
 func projectScopedProjectUpdateSummary(
-	update project_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodesProjectUpdate,
+	update gql.XProject_projectUpdatesProjectProjectUpdatesProjectUpdateConnectionNodesProjectUpdate,
 ) ProjectUpdateSummary {
 	return ProjectUpdateSummary{
 		ID:          update.Id,
@@ -777,7 +779,7 @@ func projectScopedProjectUpdateSummary(
 	}
 }
 
-func projectUpdateSummary(update TopLevelProjectUpdateSummaryFields) ProjectUpdateSummary {
+func projectUpdateSummary(update gql.TopLevelProjectUpdateSummaryFields) ProjectUpdateSummary {
 	return ProjectUpdateSummary{
 		ID:          update.Id,
 		Body:        update.Body,
@@ -793,7 +795,7 @@ func projectUpdateSummary(update TopLevelProjectUpdateSummaryFields) ProjectUpda
 	}
 }
 
-func projectHistorySummary(fields ProjectHistorySummaryFields) ProjectHistorySummary {
+func projectHistorySummary(fields gql.ProjectHistorySummaryFields) ProjectHistorySummary {
 	return ProjectHistorySummary{
 		ID:         fields.Id,
 		ProjectID:  fields.Project.Id,
@@ -805,7 +807,7 @@ func projectHistorySummary(fields ProjectHistorySummaryFields) ProjectHistorySum
 	}
 }
 
-func projectAttachmentSummary(fields ProjectAttachmentSummaryFields) AttachmentSummary {
+func projectAttachmentSummary(fields gql.ProjectAttachmentSummaryFields) AttachmentSummary {
 	return AttachmentSummary{
 		ID:         fields.Id,
 		Title:      fields.Title,
@@ -815,13 +817,13 @@ func projectAttachmentSummary(fields ProjectAttachmentSummaryFields) AttachmentS
 	}
 }
 
-func projectSummaryFromFields(project ProjectSummaryFields) ProjectSummary {
+func projectSummaryFromFields(project gql.ProjectSummaryFields) ProjectSummary {
 	lead := ""
 	if project.Lead != nil {
 		lead = project.Lead.DisplayName
 	}
 
-	teams := mapNodes(project.Teams.Nodes, func(team ProjectSummaryFieldsTeamsTeamConnectionNodesTeam) ProjectTeam {
+	teams := mapNodes(project.Teams.Nodes, func(team gql.ProjectSummaryFieldsTeamsTeamConnectionNodesTeam) ProjectTeam {
 		return ProjectTeam{
 			ID:   team.Id,
 			Key:  team.Key,

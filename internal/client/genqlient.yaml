@@ -1,54 +1,55 @@
 schema: schema.graphql
 operations:
   - operations/*.graphql
-generated: generated.go
+generated: internal/gql/generated.go
+package: gql
 optional: pointer
 bindings:
   AttachmentCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearAttachmentCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearAttachmentCreateInput
   CommentCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearCommentCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearCommentCreateInput
   CommentUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearCommentUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearCommentUpdateInput
   CycleCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearCycleCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearCycleCreateInput
   CycleUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearCycleUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearCycleUpdateInput
   DateTime:
     type: string
   DateTimeOrDuration:
     type: string
   DocumentCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearDocumentCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearDocumentCreateInput
   DocumentUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearDocumentUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearDocumentUpdateInput
   IssueCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueCreateInput
   IssueLabelCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueLabelCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueLabelCreateInput
   IssueLabelUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueLabelUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueLabelUpdateInput
   IssueRelationCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueRelationCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueRelationCreateInput
   IssueUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearIssueUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueUpdateInput
   JSON:
     type: encoding/json.RawMessage
   JSONObject:
     type: encoding/json.RawMessage
   ProjectCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectCreateInput
   ProjectLabelCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectLabelCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectLabelCreateInput
   ProjectLabelUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectLabelUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectLabelUpdateInput
   ProjectMilestoneCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectMilestoneCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectMilestoneCreateInput
   ProjectMilestoneUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectMilestoneUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectMilestoneUpdateInput
   ProjectUpdateCreateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectUpdateCreateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectUpdateCreateInput
   ProjectUpdateInput:
-    type: github.com/KyaniteHQ/linctl/internal/client.LinearProjectUpdateInput
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectUpdateInput
   TimelessDate:
     type: string

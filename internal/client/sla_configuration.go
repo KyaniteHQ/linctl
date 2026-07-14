@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // SLAConfigurationSummary is the compact SLA rule model used by read-only commands.
@@ -30,13 +32,13 @@ func ListSLAConfigurations(
 	graphqlClient graphql.Client,
 	teamIDOrKey string,
 ) (SLAConfigurationList, error) {
-	result, err := slaConfigurations(ctx, graphqlClient, teamIDOrKey)
+	result, err := gql.XSlaConfigurations(ctx, graphqlClient, teamIDOrKey)
 	if err != nil {
 		return SLAConfigurationList{}, fmt.Errorf("list SLA configurations %s: %w", teamIDOrKey, err)
 	}
 
 	configurations := mapNodes(result.SlaConfigurations, func(
-		configuration slaConfigurationsSlaConfigurationsSlaConfiguration,
+		configuration gql.XSlaConfigurationsSlaConfigurationsSlaConfiguration,
 	) SLAConfigurationSummary {
 		return slaConfigurationSummary(configuration.SlaConfigurationSummaryFields)
 	})
@@ -47,7 +49,7 @@ func ListSLAConfigurations(
 	}, nil
 }
 
-func slaConfigurationSummary(fields SlaConfigurationSummaryFields) SLAConfigurationSummary {
+func slaConfigurationSummary(fields gql.SlaConfigurationSummaryFields) SLAConfigurationSummary {
 	summary := SLAConfigurationSummary{
 		ID:         fields.Id,
 		Name:       fields.Name,

@@ -7,6 +7,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -72,7 +73,7 @@ func CheckOrganizationExists(
 	graphqlClient graphql.Client,
 	urlKey string,
 ) (OrganizationExistsStatus, error) {
-	result, err := organizationExists(ctx, graphqlClient, urlKey)
+	result, err := gql.XOrganizationExists(ctx, graphqlClient, urlKey)
 	if err != nil {
 		return OrganizationExistsStatus{}, err
 	}
@@ -90,7 +91,7 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 		return ResolvedTarget{}, err
 	}
 
-	viewer, err := Viewer(ctx, graphqlClient)
+	viewer, err := gql.Viewer(ctx, graphqlClient)
 	if err != nil {
 		return ResolvedTarget{}, fmt.Errorf("resolve viewer: %w", err)
 	}
@@ -111,7 +112,7 @@ func ResolveTarget(ctx context.Context, graphqlClient graphql.Client, expected c
 		return ResolvedTarget{}, err
 	}
 
-	resolved := resolvedTargetConfig(viewer.Viewer.Organization.Id, resolvedTeam, project, hasProject, expected)
+	resolved := resolvedTargetConfig(viewer.Viewer.Organization.Id, resolvedTeam, project, hasProject)
 	if err := requireTargetMatch(expected, resolved); err != nil {
 		return ResolvedTarget{}, err
 	}
@@ -139,7 +140,7 @@ func resolveTeam(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	expected config.Target,
-) (TeamsTeamsTeamConnectionNodesTeam, bool, error) {
+) (gql.TeamsTeamsTeamConnectionNodesTeam, bool, error) {
 	// Fast path: the pinned target already names the exact team id, so try a
 	// direct lookup before paging the org's full team list. Any error or
 	// mismatch falls through to the scan below, which remains the semantic
@@ -150,9 +151,9 @@ func resolveTeam(
 
 	var after *string
 	for {
-		teams, err := Teams(ctx, graphqlClient, intPtr(targetResolutionPageSize), after, boolPtr(true))
+		teams, err := gql.Teams(ctx, graphqlClient, intPtr(targetResolutionPageSize), after, boolPtr(true))
 		if err != nil {
-			return TeamsTeamsTeamConnectionNodesTeam{}, false, fmt.Errorf("resolve teams: %w", err)
+			return gql.TeamsTeamsTeamConnectionNodesTeam{}, false, fmt.Errorf("resolve teams: %w", err)
 		}
 		resolvedTeam, ok := findResolvedTeam(teams.Teams.Nodes, expected)
 		if ok {
@@ -164,7 +165,7 @@ func resolveTeam(
 			"teams",
 		)
 		if err != nil || !ok {
-			return TeamsTeamsTeamConnectionNodesTeam{}, false, err
+			return gql.TeamsTeamsTeamConnectionNodesTeam{}, false, err
 		}
 		after = next
 	}
@@ -172,16 +173,14 @@ func resolveTeam(
 
 func resolvedTargetConfig(
 	orgID string,
-	team TeamsTeamsTeamConnectionNodesTeam,
+	team gql.TeamsTeamsTeamConnectionNodesTeam,
 	project ResolvedProject,
 	hasProject bool,
-	expected config.Target,
 ) config.Target {
 	resolved := config.Target{
-		OrgID:     orgID,
-		TeamKey:   team.Key,
-		TeamID:    team.Id,
-		ProjectID: expected.ProjectID,
+		OrgID:   orgID,
+		TeamKey: team.Key,
+		TeamID:  team.Id,
 	}
 	if hasProject {
 		resolved.ProjectID = project.ID
@@ -206,8 +205,9 @@ func requireTargetMatch(expected config.Target, resolved config.Target) error {
 	// An empty pinned team id means the target named the team by key alone, so the
 	// id resolved from the credential is the answer rather than something to check.
 	idMatches := expected.TeamID == "" || resolved.TeamID == expected.TeamID
+	projectMatches := resolved.ProjectID == expected.ProjectID
 
-	if orgMatches && keyMatches && idMatches {
+	if orgMatches && keyMatches && idMatches && projectMatches {
 		return nil
 	}
 
@@ -215,8 +215,8 @@ func requireTargetMatch(expected config.Target, resolved config.Target) error {
 }
 
 func newResolvedTarget(
-	viewer ViewerViewerUser,
-	team TeamsTeamsTeamConnectionNodesTeam,
+	viewer gql.ViewerViewerUser,
+	team gql.TeamsTeamsTeamConnectionNodesTeam,
 	project ResolvedProject,
 	hasProject bool,
 	expected config.Target,
@@ -250,28 +250,28 @@ func resolveTeamDirect(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	expected config.Target,
-) (TeamsTeamsTeamConnectionNodesTeam, bool) {
+) (gql.TeamsTeamsTeamConnectionNodesTeam, bool) {
 	// Without a pinned team id there is nothing to look up directly; the scan
 	// below resolves the team from its key instead.
 	if expected.TeamID == "" {
-		return TeamsTeamsTeamConnectionNodesTeam{}, false
+		return gql.TeamsTeamsTeamConnectionNodesTeam{}, false
 	}
 
-	result, err := team(ctx, graphqlClient, expected.TeamID)
+	result, err := gql.XTeam(ctx, graphqlClient, expected.TeamID)
 	if err != nil {
-		return TeamsTeamsTeamConnectionNodesTeam{}, false
+		return gql.TeamsTeamsTeamConnectionNodesTeam{}, false
 	}
 
 	found := result.Team
 	if found.Id != expected.TeamID || found.Key != expected.TeamKey || found.Organization.Id != expected.OrgID {
-		return TeamsTeamsTeamConnectionNodesTeam{}, false
+		return gql.TeamsTeamsTeamConnectionNodesTeam{}, false
 	}
 
-	return TeamsTeamsTeamConnectionNodesTeam{
+	return gql.TeamsTeamsTeamConnectionNodesTeam{
 		Id:   found.Id,
 		Key:  found.Key,
 		Name: found.Name,
-		Organization: TeamsTeamsTeamConnectionNodesTeamOrganization{
+		Organization: gql.TeamsTeamsTeamConnectionNodesTeamOrganization{
 			Id:     found.Organization.Id,
 			Name:   found.Organization.Name,
 			UrlKey: found.Organization.UrlKey,
@@ -280,9 +280,9 @@ func resolveTeamDirect(
 }
 
 func findResolvedTeam(
-	teams []TeamsTeamsTeamConnectionNodesTeam,
+	teams []gql.TeamsTeamsTeamConnectionNodesTeam,
 	expected config.Target,
-) (TeamsTeamsTeamConnectionNodesTeam, bool) {
+) (gql.TeamsTeamsTeamConnectionNodesTeam, bool) {
 	for _, team := range teams {
 		if team.Key != expected.TeamKey || team.Organization.Id != expected.OrgID {
 			continue
@@ -296,32 +296,26 @@ func findResolvedTeam(
 		return team, true
 	}
 
-	return TeamsTeamsTeamConnectionNodesTeam{}, false
+	return gql.TeamsTeamsTeamConnectionNodesTeam{}, false
 }
 
 func resolveProject(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	expected config.Target,
-	team TeamsTeamsTeamConnectionNodesTeam,
+	team gql.TeamsTeamsTeamConnectionNodesTeam,
 ) (ResolvedProject, bool, error) {
 	if expected.ProjectID == "" {
 		return ResolvedProject{}, false, nil
 	}
 
-	project, err := TargetProject(
-		ctx,
-		graphqlClient,
-		expected.ProjectID,
-		intPtr(targetResolutionPageSize),
-		nil,
-	)
+	project, err := targetProjectPage(ctx, graphqlClient, expected.ProjectID, nil)
 	if err != nil {
-		return ResolvedProject{}, false, fmt.Errorf("resolve project: %w", err)
+		return ResolvedProject{}, false, err
 	}
 	projectID := project.Project.Id
 	projectName := project.Project.Name
-	projectTeamPages := []TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
+	projectTeamPages := []gql.TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
 	after := project.Project.Teams.PageInfo.EndCursor
 	for {
 		for _, projectTeam := range projectTeamPageNodes(projectTeamPages) {
@@ -343,17 +337,11 @@ func resolveProject(
 		if !ok {
 			break
 		}
-		project, err := TargetProject(
-			ctx,
-			graphqlClient,
-			expected.ProjectID,
-			intPtr(targetResolutionPageSize),
-			next,
-		)
+		project, err := targetProjectPage(ctx, graphqlClient, expected.ProjectID, next)
 		if err != nil {
-			return ResolvedProject{}, false, fmt.Errorf("resolve project: %w", err)
+			return ResolvedProject{}, false, err
 		}
-		projectTeamPages = []TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
+		projectTeamPages = []gql.TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
 		after = project.Project.Teams.PageInfo.EndCursor
 	}
 
@@ -365,10 +353,39 @@ func resolveProject(
 	)
 }
 
+func targetProjectPage(
+	ctx context.Context,
+	graphqlClient graphql.Client,
+	expectedProjectID string,
+	after *string,
+) (*gql.TargetProjectResponse, error) {
+	project, err := gql.TargetProject(
+		ctx,
+		graphqlClient,
+		expectedProjectID,
+		intPtr(targetResolutionPageSize),
+		after,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("resolve project: %w", err)
+	}
+	projectID := project.Project.Id
+	if projectID == "" || projectID != expectedProjectID {
+		return nil, fmt.Errorf(
+			"%w: expected project_id=%s resolved project_id=%s",
+			ErrTargetMismatch,
+			expectedProjectID,
+			projectID,
+		)
+	}
+
+	return project, nil
+}
+
 func projectTeamPageNodes(
-	pages []TargetProjectProjectTeamsTeamConnection,
-) []TargetProjectProjectTeamsTeamConnectionNodesTeam {
-	teams := []TargetProjectProjectTeamsTeamConnectionNodesTeam{}
+	pages []gql.TargetProjectProjectTeamsTeamConnection,
+) []gql.TargetProjectProjectTeamsTeamConnectionNodesTeam {
+	teams := []gql.TargetProjectProjectTeamsTeamConnectionNodesTeam{}
 	for _, page := range pages {
 		teams = append(teams, page.Nodes...)
 	}

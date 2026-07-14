@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -14,13 +15,6 @@ type ProjectUpdateCreateRequest struct {
 	ProjectID string
 	Body      string
 	Health    string
-}
-
-// LinearProjectUpdateCreateInput is the sparse Linear projectUpdateCreate payload linctl supports.
-type LinearProjectUpdateCreateInput struct {
-	ProjectID string  `json:"projectId"`
-	Body      *string `json:"body,omitempty"`
-	Health    *string `json:"health,omitempty"`
 }
 
 // CreateProjectUpdate posts a status update to a project after resolving and
@@ -39,23 +33,33 @@ func CreateProjectUpdate(
 		return ProjectUpdateSummary{}, fmt.Errorf("%w: body or health is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectUpdateSummary, error) {
-		if err := guard.requireProject(ctx, graphqlClient, request.ProjectID); err != nil {
-			return ProjectUpdateSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectUpdateSummary{}, err
+	}
 
-		created, err := ProjectUpdateCreate(ctx, graphqlClient, LinearProjectUpdateCreateInput{
-			ProjectID: request.ProjectID,
-			Body:      optionalString(request.Body),
-			Health:    optionalString(request.Health),
-		})
-		if err != nil {
-			return ProjectUpdateSummary{}, fmt.Errorf("create project update: %w", err)
-		}
-		if !created.ProjectUpdateCreate.Success {
-			return ProjectUpdateSummary{}, fmt.Errorf("%w: projectUpdateCreate returned no update", ErrMutationFailed)
-		}
+	return guard.createProjectUpdate(ctx, request)
+}
 
-		return projectUpdateSummary(created.ProjectUpdateCreate.ProjectUpdate.TopLevelProjectUpdateSummaryFields), nil
+func (guard *guardedClient) createProjectUpdate(
+	ctx context.Context,
+	request ProjectUpdateCreateRequest,
+) (ProjectUpdateSummary, error) {
+	if err := guard.requireProject(ctx, request.ProjectID); err != nil {
+		return ProjectUpdateSummary{}, err
+	}
+
+	created, err := gql.ProjectUpdateCreate(ctx, guard.graphqlClient, LinearProjectUpdateCreateInput{
+		ProjectID: request.ProjectID,
+		Body:      optionalString(request.Body),
+		Health:    optionalString(request.Health),
 	})
+	if err != nil {
+		return ProjectUpdateSummary{}, fmt.Errorf("create project update: %w", err)
+	}
+	if !created.ProjectUpdateCreate.Success {
+		return ProjectUpdateSummary{}, fmt.Errorf("%w: projectUpdateCreate returned no update", ErrMutationFailed)
+	}
+
+	return projectUpdateSummary(created.ProjectUpdateCreate.ProjectUpdate.TopLevelProjectUpdateSummaryFields), nil
 }

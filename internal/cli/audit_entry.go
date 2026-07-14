@@ -11,7 +11,7 @@ import (
 
 func addAuditEntryCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	command := newGroupCommand("audit-entry", "Read Linear audit entry catalogs")
-	command.AddCommand(&cobra.Command{
+	typesCommand := &cobra.Command{
 		Use:   "types",
 		Short: "List Linear audit entry types",
 		Args:  cobra.NoArgs,
@@ -27,7 +27,12 @@ func addAuditEntryCommand(ctx context.Context, root *cobra.Command, options *roo
 
 			return writeAuditEntryTypes(command, options, types)
 		},
-	})
+	}
+	annotateReadCollectionCommand(
+		typesCommand,
+		mustCollectionKeyForList[client.AuditEntryTypeList, client.AuditEntryTypeSummary](),
+	)
+	command.AddCommand(typesCommand)
 	root.AddCommand(command)
 }
 

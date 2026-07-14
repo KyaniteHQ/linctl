@@ -15,16 +15,15 @@ func addInitiativeUpdateCommand(ctx context.Context, root *cobra.Command, option
 		root,
 		options,
 		readListGetSpec[client.InitiativeUpdateList, client.InitiativeUpdateSummary]{
-			Use:           "initiative-update",
-			Short:         "Read Linear initiative updates",
-			ListShort:     "List visible initiative updates",
-			LimitHelp:     "maximum initiative updates to return",
-			GetUse:        "get INITIATIVE_UPDATE_ID",
-			GetShort:      "Get one initiative update by id",
-			LoadList:      loadInitiativeUpdateList,
-			PageWithItems: initiativeUpdatePageWithItems,
-			LoadGet:       loadInitiativeUpdate,
-			WriteItem:     writeInitiativeUpdate,
+			Use:       "initiative-update",
+			Short:     "Read Linear initiative updates",
+			ListShort: "List visible initiative updates",
+			LimitHelp: "maximum initiative updates to return",
+			GetUse:    "get INITIATIVE_UPDATE_ID",
+			GetShort:  "Get one initiative update by id",
+			LoadList:  loadInitiativeUpdateList,
+			LoadGet:   loadInitiativeUpdate,
+			WriteItem: writeInitiativeUpdate,
 		},
 	)
 	addInitiativeUpdateCommentsCommand(ctx, initiativeUpdateCommand, options)
@@ -44,13 +43,12 @@ func addInitiativeUpdateCommentsCommand(ctx context.Context, root *cobra.Command
 				options,
 				limit,
 				loadInitiativeUpdateCommentList,
-				initiativeUpdateCommentPageWithItems,
 				writeCommentMetadata,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum comments to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadInitiativeUpdateCommentList))
 }
 
 func writeInitiativeUpdate(command *cobra.Command, options *rootOptions, update client.InitiativeUpdateSummary) error {

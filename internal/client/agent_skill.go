@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // AgentSkillSummary is the compact AgentSkill model used by read-only commands.
@@ -37,13 +39,13 @@ type AgentSkillList struct {
 
 // ListAgentSkills returns AgentSkills visible to the authenticated user.
 func ListAgentSkills(ctx context.Context, graphqlClient graphql.Client, limit int) (AgentSkillList, error) {
-	result, err := agentSkills(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAgentSkills(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AgentSkillList{}, fmt.Errorf("list agent skills: %w", err)
 	}
 
 	summaries := mapNodes(result.AgentSkills.Nodes, func(
-		node agentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill,
+		node gql.XAgentSkillsAgentSkillsAgentSkillConnectionNodesAgentSkill,
 	) AgentSkillSummary {
 		return agentSkillSummary(node.AgentSkillSummaryFields)
 	})
@@ -57,7 +59,7 @@ func ListAgentSkills(ctx context.Context, graphqlClient graphql.Client, limit in
 
 // GetAgentSkillByID returns one AgentSkill by id.
 func GetAgentSkillByID(ctx context.Context, graphqlClient graphql.Client, id string) (AgentSkillSummary, error) {
-	result, err := agentSkill(ctx, graphqlClient, id)
+	result, err := gql.XAgentSkill(ctx, graphqlClient, id)
 	if err != nil {
 		return AgentSkillSummary{}, fmt.Errorf("get agent skill %s: %w", id, err)
 	}
@@ -65,7 +67,7 @@ func GetAgentSkillByID(ctx context.Context, graphqlClient graphql.Client, id str
 	return agentSkillSummary(result.AgentSkill.AgentSkillSummaryFields), nil
 }
 
-func agentSkillSummary(fields AgentSkillSummaryFields) AgentSkillSummary {
+func agentSkillSummary(fields gql.AgentSkillSummaryFields) AgentSkillSummary {
 	summary := AgentSkillSummary{
 		ID:               fields.Id,
 		Title:            fields.Title,

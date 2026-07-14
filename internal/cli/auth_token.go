@@ -57,7 +57,7 @@ func currentOrRefreshedAuthToken(
 	timeout time.Duration,
 ) (auth.TokenState, authReadinessReport, error) {
 	if token.AccessToken != "" || token.RefreshToken != "" {
-		return refreshAuthTokenState(ctx, authContext, app, token, timeout)
+		return refreshPersistedAuthToken(ctx, authContext, app, timeout)
 	}
 	if app.ClientID == "" || app.ClientSecret == "" {
 		return auth.TokenState{}, authReadinessReport{}, auth.NewError(
@@ -66,7 +66,44 @@ func currentOrRefreshedAuthToken(
 		)
 	}
 
-	return acquireClientCredentialsToken(ctx, authContext, app, timeout)
+	return acquirePersistedClientCredentialsToken(ctx, authContext, app, timeout)
+}
+
+func acquirePersistedClientCredentialsToken(
+	ctx context.Context,
+	authContext authCommandContext,
+	app auth.AppConfig,
+	timeout time.Duration,
+) (auth.TokenState, authReadinessReport, error) {
+	var readiness authReadinessReport
+	readinessChecked := false
+	token, err := authContext.store.TransactTokenState(
+		ctx,
+		authContext.profile,
+		func(current auth.TokenState) (auth.TokenState, error) {
+			if tokenUsable(current, authNow()) {
+				return current, nil
+			}
+
+			acquired, checkedReadiness, err := acquireClientCredentialsToken(ctx, authContext, app, timeout)
+			if err != nil {
+				return auth.TokenState{}, err
+			}
+			readiness = checkedReadiness
+			readinessChecked = true
+
+			return acquired, nil
+		},
+	)
+	if err != nil {
+		return auth.TokenState{}, authReadinessReport{}, err
+	}
+	if readinessChecked {
+		return token, readiness, nil
+	}
+
+	readiness, err = refreshedAuthReadiness(ctx, authContext, app, token, token.Actor, timeout)
+	return token, readiness, err
 }
 
 func acquireClientCredentialsToken(
@@ -103,30 +140,85 @@ func refreshAuthTokenState(
 	token auth.TokenState,
 	timeout time.Duration,
 ) (auth.TokenState, authReadinessReport, error) {
+	refreshed, err := refreshAuthToken(ctx, app, token, timeout)
+	if err != nil {
+		return auth.TokenState{}, authReadinessReport{}, err
+	}
+
+	readiness, err := refreshedAuthReadiness(ctx, authContext, app, refreshed, token.Actor, timeout)
+	return refreshed, readiness, err
+}
+
+func refreshPersistedAuthToken(
+	ctx context.Context,
+	authContext authCommandContext,
+	app auth.AppConfig,
+	timeout time.Duration,
+) (auth.TokenState, authReadinessReport, error) {
+	var readiness authReadinessReport
+	readinessChecked := false
+	token, err := authContext.store.TransactTokenState(
+		ctx,
+		authContext.profile,
+		func(current auth.TokenState) (auth.TokenState, error) {
+			if current.AccessToken == "" && current.RefreshToken == "" {
+				return auth.TokenState{}, missingPersistedTokenError(authContext.credentialKind)
+			}
+			if !current.Equal(authContext.localToken) && tokenUsable(current, authNow()) {
+				return current, nil
+			}
+
+			refreshed, checkedReadiness, err := refreshAuthTokenState(ctx, authContext, app, current, timeout)
+			if err != nil {
+				return auth.TokenState{}, err
+			}
+			readiness = checkedReadiness
+			readinessChecked = true
+
+			return refreshed, nil
+		},
+	)
+	if err != nil {
+		return auth.TokenState{}, authReadinessReport{}, err
+	}
+	if readinessChecked {
+		return token, readiness, nil
+	}
+
+	readiness, err = refreshedAuthReadiness(ctx, authContext, app, token, token.Actor, timeout)
+	return token, readiness, err
+}
+
+func refreshAuthToken(
+	ctx context.Context,
+	app auth.AppConfig,
+	token auth.TokenState,
+	timeout time.Duration,
+) (auth.TokenState, error) {
 	if token.AccessToken == "" && token.RefreshToken == "" {
-		return auth.TokenState{}, authReadinessReport{}, auth.NewError(
+		return auth.TokenState{}, auth.NewError(
 			auth.ErrorCodeNotConfigured,
 			"missing OAuth token state: run linctl auth login or linctl auth app",
 		)
 	}
 	if token.GrantType == authGrantClientCredentials {
 		if app.ClientID == "" || app.ClientSecret == "" {
-			return auth.TokenState{}, authReadinessReport{}, auth.NewError(
+			return auth.TokenState{}, auth.NewError(
 				auth.ErrorCodeNotConfigured,
 				"missing OAuth app client credentials: run linctl auth configure",
 			)
 		}
 
-		return acquireClientCredentialsToken(ctx, authContext, app, timeout)
+		return exchangeClientCredentialsToken(ctx, newAuthOAuthClient(timeout), app)
 	}
 	if token.RefreshToken == "" {
-		return auth.TokenState{}, authReadinessReport{}, auth.NewError(
+		return auth.TokenState{}, auth.NewError(
 			auth.ErrorCodeReauthRequired,
 			"missing OAuth refresh token: run linctl auth login or linctl auth app",
 		)
 	}
 	if app.ClientID == "" {
-		return auth.TokenState{}, authReadinessReport{}, auth.NewError(
+		return auth.TokenState{}, auth.NewError(
 			auth.ErrorCodeNotConfigured,
 			"missing OAuth client id: run linctl auth configure",
 		)
@@ -135,22 +227,43 @@ func refreshAuthTokenState(
 	scopes := requiredScopes(app)
 	refreshed, err := refreshAuthorizationCodeToken(ctx, newAuthOAuthClient(timeout), app, token, scopes)
 	if err != nil {
-		return auth.TokenState{}, authReadinessReport{}, err
-	}
-	readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
-		AccessToken:    refreshed.AccessToken,
-		TokenActor:     refreshed.Actor,
-		TokenScopes:    refreshed.Scopes,
-		ExpectedTarget: authContext.target,
-		ExpectedActor:  firstNonEmptyString(token.Actor, appActor),
-		RequiredScopes: scopes,
-		Timeout:        timeout,
-	})
-	if err != nil {
-		return auth.TokenState{}, authReadinessReport{}, err
+		return auth.TokenState{}, err
 	}
 
-	return refreshed, readiness, nil
+	return refreshed, nil
+}
+
+func refreshedAuthReadiness(
+	ctx context.Context,
+	authContext authCommandContext,
+	app auth.AppConfig,
+	token auth.TokenState,
+	expectedActor string,
+	timeout time.Duration,
+) (authReadinessReport, error) {
+	return requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
+		AccessToken:    token.AccessToken,
+		TokenActor:     token.Actor,
+		TokenScopes:    token.Scopes,
+		ExpectedTarget: authContext.target,
+		ExpectedActor:  firstNonEmptyString(expectedActor, appActor),
+		RequiredScopes: requiredScopes(app),
+		Timeout:        timeout,
+	})
+}
+
+func missingPersistedTokenError(kind auth.CredentialKind) error {
+	if kind == auth.CredentialKindInjectedAccessToken {
+		return auth.NewError(
+			auth.ErrorCodeReauthRequired,
+			"running on an injected LINCTL_OAUTH_ACCESS_TOKEN; unset it to manage the local session",
+		)
+	}
+
+	return auth.NewError(
+		auth.ErrorCodeNotConfigured,
+		"missing OAuth token state: run linctl auth login or linctl auth app",
+	)
 }
 
 func refreshAuthorizationCodeToken(

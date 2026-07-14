@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // TimeScheduleEntrySummary is one compact entry in a Linear time schedule.
@@ -38,13 +40,13 @@ type TimeScheduleList struct {
 
 // ListTimeSchedules returns visible Linear time schedules.
 func ListTimeSchedules(ctx context.Context, graphqlClient graphql.Client, limit int) (TimeScheduleList, error) {
-	result, err := timeSchedules(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XTimeSchedules(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TimeScheduleList{}, fmt.Errorf("list time schedules: %w", err)
 	}
 
 	summaries := mapNodes(result.TimeSchedules.Nodes, func(
-		node timeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule,
+		node gql.XTimeSchedulesTimeSchedulesTimeScheduleConnectionNodesTimeSchedule,
 	) TimeScheduleSummary {
 		return timeScheduleSummary(node.TimeScheduleSummaryFields)
 	})
@@ -58,7 +60,7 @@ func ListTimeSchedules(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetTimeScheduleByID returns one Linear time schedule by id.
 func GetTimeScheduleByID(ctx context.Context, graphqlClient graphql.Client, id string) (TimeScheduleSummary, error) {
-	result, err := timeSchedule(ctx, graphqlClient, id)
+	result, err := gql.XTimeSchedule(ctx, graphqlClient, id)
 	if err != nil {
 		return TimeScheduleSummary{}, fmt.Errorf("get time schedule %s: %w", id, err)
 	}
@@ -66,9 +68,9 @@ func GetTimeScheduleByID(ctx context.Context, graphqlClient graphql.Client, id s
 	return timeScheduleSummary(result.TimeSchedule.TimeScheduleSummaryFields), nil
 }
 
-func timeScheduleSummary(fields TimeScheduleSummaryFields) TimeScheduleSummary {
+func timeScheduleSummary(fields gql.TimeScheduleSummaryFields) TimeScheduleSummary {
 	entries := mapNodes(fields.Entries, func(
-		entry TimeScheduleSummaryFieldsEntriesTimeScheduleEntry,
+		entry gql.TimeScheduleSummaryFieldsEntriesTimeScheduleEntry,
 	) TimeScheduleEntrySummary {
 		return TimeScheduleEntrySummary{
 			StartsAt:  entry.StartsAt,

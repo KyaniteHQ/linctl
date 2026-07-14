@@ -6,9 +6,13 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	goast "go/ast"
+	goparser "go/parser"
+	"go/token"
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/vektah/gqlparser/v2/ast"
@@ -134,18 +138,32 @@ func mustLocalOperations(pattern string) []localOperation {
 }
 
 func mustGeneratedOperations(path string) []string {
-	pattern := regexp.MustCompile(`^func ([A-Za-z_][A-Za-z0-9_]*)\(`)
-	names := []string{}
-	scanner := bufio.NewScanner(bytes.NewReader(mustRead(path)))
-	for scanner.Scan() {
-		match := pattern.FindStringSubmatch(scanner.Text())
-		if match != nil {
-			names = append(names, match[1])
-		}
-	}
-	if err := scanner.Err(); err != nil {
+	source := mustRead(path)
+	file, err := goparser.ParseFile(token.NewFileSet(), path, source, 0)
+	if err != nil {
 		fail(err)
 	}
+	names := []string{}
+	goast.Inspect(file, func(node goast.Node) bool {
+		field, ok := node.(*goast.KeyValueExpr)
+		if !ok {
+			return true
+		}
+		key, ok := field.Key.(*goast.Ident)
+		if !ok || key.Name != "OpName" {
+			return true
+		}
+		value, ok := field.Value.(*goast.BasicLit)
+		if !ok || value.Kind != token.STRING {
+			fail(fmt.Errorf("generated OpName in %s is not a string literal", path))
+		}
+		name, err := strconv.Unquote(value.Value)
+		if err != nil {
+			fail(fmt.Errorf("decode generated OpName in %s: %w", path, err))
+		}
+		names = append(names, name)
+		return true
+	})
 	sort.Strings(names)
 	return names
 }

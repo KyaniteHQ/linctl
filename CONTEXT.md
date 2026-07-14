@@ -121,8 +121,8 @@ A guarded write against an organization-owned entity that has no team scope, sel
 _Avoid_: Workspace write, bypass flag, unscoped write
 
 **Command Port**:
-The narrow, domain-typed interface a Read Command or Guarded Write depends on to reach Linear, decoupled from the GraphQL transport. A command port is defined by its consumer, returns domain summaries rather than GraphQL responses, and is satisfied in production by a thin adapter over the client and in tests by an in-memory fake. It makes the command's interface the test surface. Guarded writes go through a port by design; read commands may call the client package directly, and the issue domain routing reads through its port is accepted variance for testability, not a rule.
-_Avoid_: client, gateway, service, mock
+The narrow, consumer-owned interface for a multi-call command decision or replaceable external effect. A command port returns command or domain types rather than generated GraphQL responses and can be satisfied by an in-memory fake in focused tests. One-call commands invoke exported client functions directly. Guarded-write safety stays fail-closed in the client package and does not depend on whether a command uses a port.
+_Avoid_: forwarding adapter, client alias, gateway, service, mock
 
 **Current Issue**:
 The Linear issue referenced by the current checkout context. It comes from an issue identifier in the branch name or checkout metadata.

@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ReleasePipelineSummary is the compact release pipeline model used by read-only commands.
@@ -58,13 +60,13 @@ type ReleaseStageList struct {
 
 // ListReleasePipelines returns visible Linear release pipelines.
 func ListReleasePipelines(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleasePipelineList, error) {
-	result, err := releasePipelines(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleasePipelines(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleasePipelineList{}, fmt.Errorf("list release pipelines: %w", err)
 	}
 
 	summaries := mapNodes(result.ReleasePipelines.Nodes, func(
-		node releasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
+		node gql.XReleasePipelinesReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
 	) ReleasePipelineSummary {
 		return releasePipelineSummary(node.ReleasePipelineSummaryFields)
 	})
@@ -82,7 +84,7 @@ func GetReleasePipelineByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (ReleasePipelineSummary, error) {
-	result, err := releasePipeline(ctx, graphqlClient, id)
+	result, err := gql.XReleasePipeline(ctx, graphqlClient, id)
 	if err != nil {
 		return ReleasePipelineSummary{}, fmt.Errorf("get release pipeline %s: %w", id, err)
 	}
@@ -97,13 +99,13 @@ func ListReleasePipelineReleases(
 	id string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := releasePipeline_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleasePipeline_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseList{}, fmt.Errorf("list release pipeline releases %s: %w", id, err)
 	}
 
 	summaries := mapNodes(result.ReleasePipeline.Releases.Nodes, func(
-		node releasePipeline_releasesReleasePipelineReleasesReleaseConnectionNodesRelease,
+		node gql.XReleasePipeline_releasesReleasePipelineReleasesReleaseConnectionNodesRelease,
 	) ReleaseSummary {
 		return releaseSummary(node.ReleaseSummaryFields)
 	})
@@ -122,13 +124,13 @@ func ListReleasePipelineStages(
 	id string,
 	limit int,
 ) (ReleaseStageList, error) {
-	result, err := releasePipeline_stages(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleasePipeline_stages(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseStageList{}, fmt.Errorf("list release pipeline stages %s: %w", id, err)
 	}
 
 	summaries := mapNodes(result.ReleasePipeline.Stages.Nodes, func(
-		node releasePipeline_stagesReleasePipelineStagesReleaseStageConnectionNodesReleaseStage,
+		node gql.XReleasePipeline_stagesReleasePipelineStagesReleaseStageConnectionNodesReleaseStage,
 	) ReleaseStageSummary {
 		return releaseStageSummary(node.ReleaseStageSummaryFields)
 	})
@@ -147,13 +149,13 @@ func ListReleasePipelineTeams(
 	id string,
 	limit int,
 ) (TeamList, error) {
-	result, err := releasePipeline_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleasePipeline_teams(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TeamList{}, fmt.Errorf("list release pipeline teams %s: %w", id, err)
 	}
 
 	teams := mapNodes(result.ReleasePipeline.Teams.Nodes, func(
-		node releasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam,
+		node gql.XReleasePipeline_teamsReleasePipelineTeamsTeamConnectionNodesTeam,
 	) TeamSummary {
 		return teamSummary(node.TeamSummaryFields)
 	})
@@ -167,13 +169,13 @@ func ListReleasePipelineTeams(
 
 // ListReleaseStages returns visible Linear release stages.
 func ListReleaseStages(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseStageList, error) {
-	result, err := releaseStages(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleaseStages(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseStageList{}, fmt.Errorf("list release stages: %w", err)
 	}
 
 	summaries := mapNodes(result.ReleaseStages.Nodes, func(
-		node releaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage,
+		node gql.XReleaseStagesReleaseStagesReleaseStageConnectionNodesReleaseStage,
 	) ReleaseStageSummary {
 		return releaseStageSummary(node.ReleaseStageSummaryFields)
 	})
@@ -187,7 +189,7 @@ func ListReleaseStages(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetReleaseStageByID returns one Linear release stage by id.
 func GetReleaseStageByID(ctx context.Context, graphqlClient graphql.Client, id string) (ReleaseStageSummary, error) {
-	result, err := releaseStage(ctx, graphqlClient, id)
+	result, err := gql.XReleaseStage(ctx, graphqlClient, id)
 	if err != nil {
 		return ReleaseStageSummary{}, fmt.Errorf("get release stage %s: %w", id, err)
 	}
@@ -202,13 +204,13 @@ func ListReleaseStageReleases(
 	id string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := releaseStage_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleaseStage_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseList{}, fmt.Errorf("list release stage releases %s: %w", id, err)
 	}
 
 	summaries := mapNodes(result.ReleaseStage.Releases.Nodes, func(
-		node releaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease,
+		node gql.XReleaseStage_releasesReleaseStageReleasesReleaseConnectionNodesRelease,
 	) ReleaseSummary {
 		return releaseSummary(node.ReleaseSummaryFields)
 	})
@@ -220,7 +222,7 @@ func ListReleaseStageReleases(
 	}, nil
 }
 
-func releasePipelineSummary(fields ReleasePipelineSummaryFields) ReleasePipelineSummary {
+func releasePipelineSummary(fields gql.ReleasePipelineSummaryFields) ReleasePipelineSummary {
 	summary := ReleasePipelineSummary{
 		ID:                                   fields.Id,
 		Name:                                 fields.Name,
@@ -253,7 +255,7 @@ func boolValue(value *bool) bool {
 	return *value
 }
 
-func releaseStageSummary(fields ReleaseStageSummaryFields) ReleaseStageSummary {
+func releaseStageSummary(fields gql.ReleaseStageSummaryFields) ReleaseStageSummary {
 	return ReleaseStageSummary{
 		ID:             fields.Id,
 		Name:           fields.Name,

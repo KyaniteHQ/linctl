@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // CustomerSummary is the compact customer model used by read-only commands.
@@ -36,13 +38,13 @@ type CustomerList struct {
 
 // ListCustomers returns visible Linear customers.
 func ListCustomers(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerList, error) {
-	result, err := customers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XCustomers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CustomerList{}, fmt.Errorf("list customers: %w", err)
 	}
 
 	summaries := mapNodes(result.Customers.Nodes, func(
-		node customersCustomersCustomerConnectionNodesCustomer,
+		node gql.XCustomersCustomersCustomerConnectionNodesCustomer,
 	) CustomerSummary {
 		return customerSummary(node.CustomerSummaryFields)
 	})
@@ -56,7 +58,7 @@ func ListCustomers(ctx context.Context, graphqlClient graphql.Client, limit int)
 
 // GetCustomerByID returns one Linear customer by id or slug.
 func GetCustomerByID(ctx context.Context, graphqlClient graphql.Client, id string) (CustomerSummary, error) {
-	result, err := customer(ctx, graphqlClient, id)
+	result, err := gql.XCustomer(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomerSummary{}, fmt.Errorf("get customer %s: %w", id, err)
 	}
@@ -64,7 +66,7 @@ func GetCustomerByID(ctx context.Context, graphqlClient graphql.Client, id strin
 	return customerSummary(result.Customer.CustomerSummaryFields), nil
 }
 
-func customerSummary(fields CustomerSummaryFields) CustomerSummary {
+func customerSummary(fields gql.CustomerSummaryFields) CustomerSummary {
 	summary := CustomerSummary{
 		ID:                   fields.Id,
 		Name:                 fields.Name,

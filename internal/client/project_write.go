@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -24,22 +25,6 @@ type ProjectUpdateRequest struct {
 	Content     string
 }
 
-// LinearProjectCreateInput is the sparse Linear projectCreate payload linctl supports.
-type LinearProjectCreateInput struct {
-	Name        string   `json:"name"`
-	Description *string  `json:"description,omitempty"`
-	Content     *string  `json:"content,omitempty"`
-	TeamIDs     []string `json:"teamIds"`
-}
-
-// LinearProjectUpdateInput is the sparse Linear projectUpdate payload linctl supports.
-type LinearProjectUpdateInput struct {
-	Name        *string  `json:"name,omitempty"`
-	Description *string  `json:"description,omitempty"`
-	Content     *string  `json:"content,omitempty"`
-	TeamIDs     []string `json:"teamIds,omitempty"`
-}
-
 // CreateProject creates a team-scoped project after target comparison.
 func CreateProject(
 	ctx context.Context,
@@ -51,22 +36,29 @@ func CreateProject(
 		return ProjectSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectSummary, error) {
-		created, err := ProjectCreate(ctx, graphqlClient, LinearProjectCreateInput{
-			Name:        request.Name,
-			Description: optionalString(request.Description),
-			Content:     optionalString(request.Content),
-			TeamIDs:     []string{guard.target.Team.ID},
-		})
-		if err != nil {
-			return ProjectSummary{}, fmt.Errorf("create project: %w", err)
-		}
-		if !created.ProjectCreate.Success || created.ProjectCreate.Project == nil {
-			return ProjectSummary{}, fmt.Errorf("%w: projectCreate returned no project", ErrMutationFailed)
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectSummary{}, err
+	}
 
-		return projectSummaryFromFields(created.ProjectCreate.Project.ProjectSummaryFields), nil
+	return guard.createProject(ctx, request)
+}
+
+func (guard *guardedClient) createProject(ctx context.Context, request ProjectCreateRequest) (ProjectSummary, error) {
+	created, err := gql.ProjectCreate(ctx, guard.graphqlClient, LinearProjectCreateInput{
+		Name:        request.Name,
+		Description: optionalString(request.Description),
+		Content:     optionalString(request.Content),
+		TeamIDs:     []string{guard.target.Team.ID},
 	})
+	if err != nil {
+		return ProjectSummary{}, fmt.Errorf("create project: %w", err)
+	}
+	if !created.ProjectCreate.Success || created.ProjectCreate.Project == nil {
+		return ProjectSummary{}, fmt.Errorf("%w: projectCreate returned no project", ErrMutationFailed)
+	}
+
+	return projectSummaryFromFields(created.ProjectCreate.Project.ProjectSummaryFields), nil
 }
 
 // UpdateProject updates a resource-scoped project after target comparison.
@@ -80,25 +72,32 @@ func UpdateProject(
 		return ProjectSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectSummary, error) {
-		if err := guard.requireProject(ctx, graphqlClient, request.ID); err != nil {
-			return ProjectSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectSummary{}, err
+	}
 
-		updated, err := ProjectUpdate(ctx, graphqlClient, request.ID, LinearProjectUpdateInput{
-			Name:        optionalString(request.Name),
-			Description: optionalString(request.Description),
-			Content:     optionalString(request.Content),
-		})
-		if err != nil {
-			return ProjectSummary{}, fmt.Errorf("update project %s: %w", request.ID, err)
-		}
-		if !updated.ProjectUpdate.Success || updated.ProjectUpdate.Project == nil {
-			return ProjectSummary{}, fmt.Errorf("%w: projectUpdate returned no project", ErrMutationFailed)
-		}
+	return guard.updateProject(ctx, request)
+}
 
-		return projectSummaryFromFields(updated.ProjectUpdate.Project.ProjectSummaryFields), nil
+func (guard *guardedClient) updateProject(ctx context.Context, request ProjectUpdateRequest) (ProjectSummary, error) {
+	if err := guard.requireProject(ctx, request.ID); err != nil {
+		return ProjectSummary{}, err
+	}
+
+	updated, err := gql.ProjectUpdate(ctx, guard.graphqlClient, request.ID, LinearProjectUpdateInput{
+		Name:        optionalString(request.Name),
+		Description: optionalString(request.Description),
+		Content:     optionalString(request.Content),
 	})
+	if err != nil {
+		return ProjectSummary{}, fmt.Errorf("update project %s: %w", request.ID, err)
+	}
+	if !updated.ProjectUpdate.Success || updated.ProjectUpdate.Project == nil {
+		return ProjectSummary{}, fmt.Errorf("%w: projectUpdate returned no project", ErrMutationFailed)
+	}
+
+	return projectSummaryFromFields(updated.ProjectUpdate.Project.ProjectSummaryFields), nil
 }
 
 // ArchiveProject archives a resource-scoped project after target comparison.
@@ -108,21 +107,28 @@ func ArchiveProject(
 	expected config.Target,
 	projectID string,
 ) (ProjectSummary, error) {
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectSummary, error) {
-		if err := guard.requireProject(ctx, graphqlClient, projectID); err != nil {
-			return ProjectSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectSummary{}, err
+	}
 
-		archived, err := ProjectArchive(ctx, graphqlClient, projectID, boolPtr(false))
-		if err != nil {
-			return ProjectSummary{}, fmt.Errorf("archive project %s: %w", projectID, err)
-		}
-		if !archived.ProjectArchive.Success || archived.ProjectArchive.Entity == nil {
-			return ProjectSummary{}, fmt.Errorf("%w: projectArchive returned no project", ErrMutationFailed)
-		}
+	return guard.archiveProject(ctx, projectID)
+}
 
-		return projectSummaryFromFields(archived.ProjectArchive.Entity.ProjectSummaryFields), nil
-	})
+func (guard *guardedClient) archiveProject(ctx context.Context, projectID string) (ProjectSummary, error) {
+	if err := guard.requireProject(ctx, projectID); err != nil {
+		return ProjectSummary{}, err
+	}
+
+	archived, err := gql.ProjectArchive(ctx, guard.graphqlClient, projectID, boolPtr(false))
+	if err != nil {
+		return ProjectSummary{}, fmt.Errorf("archive project %s: %w", projectID, err)
+	}
+	if !archived.ProjectArchive.Success || archived.ProjectArchive.Entity == nil {
+		return ProjectSummary{}, fmt.Errorf("%w: projectArchive returned no project", ErrMutationFailed)
+	}
+
+	return projectSummaryFromFields(archived.ProjectArchive.Entity.ProjectSummaryFields), nil
 }
 
 func validateProjectUpdateRequest(request ProjectUpdateRequest) error {

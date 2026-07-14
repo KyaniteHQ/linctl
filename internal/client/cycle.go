@@ -7,6 +7,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -68,25 +69,6 @@ type CycleUpdateRequest struct {
 	CompletedAt string
 }
 
-// LinearCycleCreateInput is the sparse Linear cycleCreate payload linctl supports.
-type LinearCycleCreateInput struct {
-	TeamID      string  `json:"teamId"`
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	StartsAt    string  `json:"startsAt"`
-	EndsAt      string  `json:"endsAt"`
-	CompletedAt *string `json:"completedAt,omitempty"`
-}
-
-// LinearCycleUpdateInput is the sparse Linear cycleUpdate payload linctl supports.
-type LinearCycleUpdateInput struct {
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	StartsAt    *string `json:"startsAt,omitempty"`
-	EndsAt      *string `json:"endsAt,omitempty"`
-	CompletedAt *string `json:"completedAt,omitempty"`
-}
-
 // ListCyclesByTeam returns Cycles scoped to a resolved team.
 func ListCyclesByTeam(
 	ctx context.Context,
@@ -94,12 +76,12 @@ func ListCyclesByTeam(
 	teamID string,
 	limit int,
 ) (CycleList, error) {
-	cyclePage, err := cycles(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
+	cyclePage, err := gql.XCycles(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CycleList{}, fmt.Errorf("list cycles: %w", err)
 	}
 
-	summaries := mapNodes(cyclePage.Cycles.Nodes, func(cycle cyclesCyclesCycleConnectionNodesCycle) CycleSummary {
+	summaries := mapNodes(cyclePage.Cycles.Nodes, func(cycle gql.XCyclesCyclesCycleConnectionNodesCycle) CycleSummary {
 		return cycleSummary(cycle.CycleSummaryFields)
 	})
 
@@ -112,7 +94,7 @@ func ListCyclesByTeam(
 
 // GetCycleByID returns a Cycle by Linear id or slug.
 func GetCycleByID(ctx context.Context, graphqlClient graphql.Client, id string) (CycleSummary, error) {
-	cycle, err := cycle(ctx, graphqlClient, id)
+	cycle, err := gql.XCycle(ctx, graphqlClient, id)
 	if err != nil {
 		return CycleSummary{}, fmt.Errorf("get cycle %s: %w", id, err)
 	}
@@ -132,7 +114,7 @@ func CurrentCycleByTeam(ctx context.Context, graphqlClient graphql.Client, teamI
 }
 
 func currentActiveCycle(ctx context.Context, graphqlClient graphql.Client, teamID string) (CycleSummary, error) {
-	page, err := activeCyclesByTeam(ctx, graphqlClient, teamID)
+	page, err := gql.XActiveCyclesByTeam(ctx, graphqlClient, teamID)
 	if err != nil {
 		return CycleSummary{}, fmt.Errorf("list cycles: %w", err)
 	}
@@ -149,13 +131,13 @@ func currentActiveCycle(ctx context.Context, graphqlClient graphql.Client, teamI
 
 // GetSprintReport returns one Cycle and its assigned issues.
 func GetSprintReport(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (SprintReport, error) {
-	report, err := CycleReport(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	report, err := gql.CycleReport(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return SprintReport{}, fmt.Errorf("sprint report %s: %w", id, err)
 	}
 
 	issues := mapNodes(report.Cycle.Issues.Nodes, func(
-		issue CycleReportCycleIssuesIssueConnectionNodesIssue,
+		issue gql.CycleReportCycleIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -170,13 +152,13 @@ func GetSprintReport(ctx context.Context, graphqlClient graphql.Client, id strin
 
 // ListCycleIssues returns Issues assigned to one Cycle.
 func ListCycleIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (CycleIssueList, error) {
-	issuePage, err := cycle_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	issuePage, err := gql.XCycle_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CycleIssueList{}, fmt.Errorf("list cycle issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(issuePage.Cycle.Issues.Nodes, func(
-		issue cycle_issuesCycleIssuesIssueConnectionNodesIssue,
+		issue gql.XCycle_issuesCycleIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -196,13 +178,13 @@ func ListCycleUncompletedIssuesUponClose(
 	id string,
 	limit int,
 ) (CycleIssueList, error) {
-	issuePage, err := cycle_uncompletedIssuesUponClose(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	issuePage, err := gql.XCycle_uncompletedIssuesUponClose(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CycleIssueList{}, fmt.Errorf("list cycle uncompleted issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(issuePage.Cycle.UncompletedIssuesUponClose.Nodes, func(
-		issue cycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue,
+		issue gql.XCycle_uncompletedIssuesUponCloseCycleUncompletedIssuesUponCloseIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -229,24 +211,31 @@ func CreateCycle(
 		return CycleSummary{}, fmt.Errorf("%w: ends at is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CycleSummary, error) {
-		created, err := CycleCreate(ctx, graphqlClient, LinearCycleCreateInput{
-			TeamID:      guard.target.Team.ID,
-			Name:        optionalString(request.Name),
-			Description: optionalString(request.Description),
-			StartsAt:    request.StartsAt,
-			EndsAt:      request.EndsAt,
-			CompletedAt: optionalString(request.CompletedAt),
-		})
-		if err != nil {
-			return CycleSummary{}, fmt.Errorf("create cycle: %w", err)
-		}
-		if !created.CycleCreate.Success || created.CycleCreate.Cycle == nil {
-			return CycleSummary{}, fmt.Errorf("%w: cycleCreate failed", ErrMutationFailed)
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return CycleSummary{}, err
+	}
 
-		return cycleSummary(created.CycleCreate.Cycle.CycleSummaryFields), nil
+	return guard.createCycle(ctx, request)
+}
+
+func (guard *guardedClient) createCycle(ctx context.Context, request CycleCreateRequest) (CycleSummary, error) {
+	created, err := gql.CycleCreate(ctx, guard.graphqlClient, LinearCycleCreateInput{
+		TeamID:      guard.target.Team.ID,
+		Name:        optionalString(request.Name),
+		Description: optionalString(request.Description),
+		StartsAt:    request.StartsAt,
+		EndsAt:      request.EndsAt,
+		CompletedAt: optionalString(request.CompletedAt),
 	})
+	if err != nil {
+		return CycleSummary{}, fmt.Errorf("create cycle: %w", err)
+	}
+	if !created.CycleCreate.Success || created.CycleCreate.Cycle == nil {
+		return CycleSummary{}, fmt.Errorf("%w: cycleCreate failed", ErrMutationFailed)
+	}
+
+	return cycleSummary(created.CycleCreate.Cycle.CycleSummaryFields), nil
 }
 
 // UpdateCycle updates a Cycle after resolving and comparing its team.
@@ -260,27 +249,34 @@ func UpdateCycle(
 		return CycleSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CycleSummary, error) {
-		if err := guard.requireCycle(ctx, graphqlClient, request.ID); err != nil {
-			return CycleSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return CycleSummary{}, err
+	}
 
-		updated, err := CycleUpdate(ctx, graphqlClient, request.ID, LinearCycleUpdateInput{
-			Name:        optionalString(request.Name),
-			Description: optionalString(request.Description),
-			StartsAt:    optionalString(request.StartsAt),
-			EndsAt:      optionalString(request.EndsAt),
-			CompletedAt: optionalString(request.CompletedAt),
-		})
-		if err != nil {
-			return CycleSummary{}, fmt.Errorf("update cycle %s: %w", request.ID, err)
-		}
-		if !updated.CycleUpdate.Success || updated.CycleUpdate.Cycle == nil {
-			return CycleSummary{}, fmt.Errorf("%w: cycleUpdate failed", ErrMutationFailed)
-		}
+	return guard.updateCycle(ctx, request)
+}
 
-		return cycleSummary(updated.CycleUpdate.Cycle.CycleSummaryFields), nil
+func (guard *guardedClient) updateCycle(ctx context.Context, request CycleUpdateRequest) (CycleSummary, error) {
+	if err := guard.requireCycle(ctx, request.ID); err != nil {
+		return CycleSummary{}, err
+	}
+
+	updated, err := gql.CycleUpdate(ctx, guard.graphqlClient, request.ID, LinearCycleUpdateInput{
+		Name:        optionalString(request.Name),
+		Description: optionalString(request.Description),
+		StartsAt:    optionalString(request.StartsAt),
+		EndsAt:      optionalString(request.EndsAt),
+		CompletedAt: optionalString(request.CompletedAt),
 	})
+	if err != nil {
+		return CycleSummary{}, fmt.Errorf("update cycle %s: %w", request.ID, err)
+	}
+	if !updated.CycleUpdate.Success || updated.CycleUpdate.Cycle == nil {
+		return CycleSummary{}, fmt.Errorf("%w: cycleUpdate failed", ErrMutationFailed)
+	}
+
+	return cycleSummary(updated.CycleUpdate.Cycle.CycleSummaryFields), nil
 }
 
 // ArchiveCycle archives a Cycle after resolving and comparing its team.
@@ -293,21 +289,28 @@ func ArchiveCycle(
 	if id == "" {
 		return CycleSummary{}, fmt.Errorf("%w: cycle id is required", ErrWriteInvalid)
 	}
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CycleSummary, error) {
-		if err := guard.requireCycle(ctx, graphqlClient, id); err != nil {
-			return CycleSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return CycleSummary{}, err
+	}
 
-		archived, err := CycleArchive(ctx, graphqlClient, id)
-		if err != nil {
-			return CycleSummary{}, fmt.Errorf("archive cycle %s: %w", id, err)
-		}
-		if !archived.CycleArchive.Success || archived.CycleArchive.Entity == nil {
-			return CycleSummary{}, fmt.Errorf("%w: cycleArchive failed", ErrMutationFailed)
-		}
+	return guard.archiveCycle(ctx, id)
+}
 
-		return cycleSummary(archived.CycleArchive.Entity.CycleSummaryFields), nil
-	})
+func (guard *guardedClient) archiveCycle(ctx context.Context, id string) (CycleSummary, error) {
+	if err := guard.requireCycle(ctx, id); err != nil {
+		return CycleSummary{}, err
+	}
+
+	archived, err := gql.CycleArchive(ctx, guard.graphqlClient, id)
+	if err != nil {
+		return CycleSummary{}, fmt.Errorf("archive cycle %s: %w", id, err)
+	}
+	if !archived.CycleArchive.Success || archived.CycleArchive.Entity == nil {
+		return CycleSummary{}, fmt.Errorf("%w: cycleArchive failed", ErrMutationFailed)
+	}
+
+	return cycleSummary(archived.CycleArchive.Entity.CycleSummaryFields), nil
 }
 
 func validateCycleUpdateRequest(request CycleUpdateRequest) error {
@@ -325,7 +328,7 @@ func validateCycleUpdateRequest(request CycleUpdateRequest) error {
 	return nil
 }
 
-func cycleSummary(cycle CycleSummaryFields) CycleSummary {
+func cycleSummary(cycle gql.CycleSummaryFields) CycleSummary {
 	name := fmt.Sprintf("Cycle %.0f", cycle.Number)
 	if cycle.Name != nil && *cycle.Name != "" {
 		name = *cycle.Name

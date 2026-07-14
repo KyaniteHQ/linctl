@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -29,22 +30,32 @@ func AddIssueLabel(
 		return IssueSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
-		issue, err := resolveIssueLabelAssociation(ctx, graphqlClient, guard, request)
-		if err != nil {
-			return IssueSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
 
-		updated, err := IssueAddLabel(ctx, graphqlClient, issue.ID, request.LabelID)
-		if err != nil {
-			return IssueSummary{}, fmt.Errorf("add label to issue %s: %w", request.IssueID, err)
-		}
-		if !updated.IssueAddLabel.Success || updated.IssueAddLabel.Issue == nil {
-			return IssueSummary{}, fmt.Errorf("%w: issueAddLabel reported no success", ErrMutationFailed)
-		}
+	return guard.addIssueLabel(ctx, request)
+}
 
-		return issueSummaryFromFields(updated.IssueAddLabel.Issue.IssueSummaryFields), nil
-	})
+func (guard *guardedClient) addIssueLabel(
+	ctx context.Context,
+	request IssueLabelAssociationRequest,
+) (IssueSummary, error) {
+	issue, err := guard.resolveIssueLabelAssociation(ctx, request)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	updated, err := gql.IssueAddLabel(ctx, guard.graphqlClient, issue.ID, request.LabelID)
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("add label to issue %s: %w", request.IssueID, err)
+	}
+	if !updated.IssueAddLabel.Success || updated.IssueAddLabel.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issueAddLabel reported no success", ErrMutationFailed)
+	}
+
+	return issueSummaryFromFields(updated.IssueAddLabel.Issue.IssueSummaryFields), nil
 }
 
 // RemoveIssueLabel detaches an IssueLabel from an issue after resolving and
@@ -59,38 +70,46 @@ func RemoveIssueLabel(
 		return IssueSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
-		issue, err := resolveIssueLabelAssociation(ctx, graphqlClient, guard, request)
-		if err != nil {
-			return IssueSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
 
-		updated, err := IssueRemoveLabel(ctx, graphqlClient, issue.ID, request.LabelID)
-		if err != nil {
-			return IssueSummary{}, fmt.Errorf("remove label from issue %s: %w", request.IssueID, err)
-		}
-		if !updated.IssueRemoveLabel.Success || updated.IssueRemoveLabel.Issue == nil {
-			return IssueSummary{}, fmt.Errorf("%w: issueRemoveLabel reported no success", ErrMutationFailed)
-		}
+	return guard.removeIssueLabel(ctx, request)
+}
 
-		return issueSummaryFromFields(updated.IssueRemoveLabel.Issue.IssueSummaryFields), nil
-	})
+func (guard *guardedClient) removeIssueLabel(
+	ctx context.Context,
+	request IssueLabelAssociationRequest,
+) (IssueSummary, error) {
+	issue, err := guard.resolveIssueLabelAssociation(ctx, request)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	updated, err := gql.IssueRemoveLabel(ctx, guard.graphqlClient, issue.ID, request.LabelID)
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("remove label from issue %s: %w", request.IssueID, err)
+	}
+	if !updated.IssueRemoveLabel.Success || updated.IssueRemoveLabel.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issueRemoveLabel reported no success", ErrMutationFailed)
+	}
+
+	return issueSummaryFromFields(updated.IssueRemoveLabel.Issue.IssueSummaryFields), nil
 }
 
 // resolveIssueLabelAssociation resolves the issue and confirms the label is
 // attachable within the resolved team, shared by AddIssueLabel and
 // RemoveIssueLabel before either mutation is sent.
-func resolveIssueLabelAssociation(
+func (guard *guardedClient) resolveIssueLabelAssociation(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	guard writeGuard,
 	request IssueLabelAssociationRequest,
 ) (IssueSummary, error) {
-	issue, err := guard.requireIssue(ctx, graphqlClient, request.IssueID)
+	issue, err := guard.requireIssue(ctx, request.IssueID)
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	if err := guard.requireAttachableLabel(ctx, graphqlClient, request.LabelID); err != nil {
+	if err := guard.requireAttachableLabel(ctx, request.LabelID); err != nil {
 		return IssueSummary{}, err
 	}
 

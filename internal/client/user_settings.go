@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // NotificationChannelPreference is a compact channel preference set.
@@ -120,18 +122,18 @@ type notificationDeliveryDaySource interface {
 
 type notificationDeliveryScheduleSource interface {
 	GetDisabled() *bool
-	GetFriday() NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay
-	GetMonday() NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay
-	GetSaturday() NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay
-	GetSunday() NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay
-	GetThursday() NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay
-	GetTuesday() NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay
-	GetWednesday() NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay
+	GetFriday() gql.NotificationDeliveryPreferencesScheduleFieldsFridayNotificationDeliveryPreferencesDay
+	GetMonday() gql.NotificationDeliveryPreferencesScheduleFieldsMondayNotificationDeliveryPreferencesDay
+	GetSaturday() gql.NotificationDeliveryPreferencesScheduleFieldsSaturdayNotificationDeliveryPreferencesDay
+	GetSunday() gql.NotificationDeliveryPreferencesScheduleFieldsSundayNotificationDeliveryPreferencesDay
+	GetThursday() gql.NotificationDeliveryPreferencesScheduleFieldsThursdayNotificationDeliveryPreferencesDay
+	GetTuesday() gql.NotificationDeliveryPreferencesScheduleFieldsTuesdayNotificationDeliveryPreferencesDay
+	GetWednesday() gql.NotificationDeliveryPreferencesScheduleFieldsWednesdayNotificationDeliveryPreferencesDay
 }
 
 type notificationDeliveryChannelSource interface {
 	GetNotificationsDisabled() *bool
-	GetSchedule() *NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule
+	GetSchedule() *gql.NotificationDeliveryPreferencesChannelFieldsScheduleNotificationDeliveryPreferencesSchedule
 }
 
 type userSettingsCustomSidebarThemeSource interface {
@@ -144,38 +146,38 @@ type userSettingsCustomThemeSource interface {
 	GetAccent() []float64
 	GetBase() []float64
 	GetContrast() int
-	GetSidebar() *UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme
+	GetSidebar() *gql.UserSettingsCustomThemeFieldsSidebarUserSettingsCustomSidebarTheme
 }
 
 type userSettingsThemeSource interface {
-	GetPreset() UserSettingsThemePreset
-	GetCustom() *UserSettingsThemeFieldsCustomUserSettingsCustomTheme
+	GetPreset() gql.UserSettingsThemePreset
+	GetCustom() *gql.UserSettingsThemeFieldsCustomUserSettingsCustomTheme
 }
 
 //nolint:lll
-type userSettingsFridayMobile = userSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+type userSettingsFridayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
 
 //nolint:lll
-type userSettingsMondayMobile = userSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+type userSettingsMondayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
 
 //nolint:lll
-type userSettingsSaturdayMobile = userSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+type userSettingsSaturdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
 
 //nolint:lll
-type userSettingsSundayMobile = userSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+type userSettingsSundayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
 
 //nolint:lll
-type userSettingsThursdayMobile = userSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+type userSettingsThursdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
 
 //nolint:lll
-type userSettingsTuesdayMobile = userSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+type userSettingsTuesdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
 
 //nolint:lll
-type userSettingsWednesdayMobile = userSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
+type userSettingsWednesdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
 
 // GetUserSettings returns the authenticated user's compact settings.
 func GetUserSettings(ctx context.Context, graphqlClient graphql.Client) (UserSettingsSummary, error) {
-	result, err := userSettings(ctx, graphqlClient)
+	result, err := gql.XUserSettings(ctx, graphqlClient)
 	if err != nil {
 		return UserSettingsSummary{}, fmt.Errorf("get user settings: %w", err)
 	}
@@ -188,7 +190,7 @@ func GetUserSettingsNotificationCategoryPreferences(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 ) (NotificationCategoryPreferences, error) {
-	result, err := userSettings_notificationCategoryPreferences(ctx, graphqlClient)
+	result, err := gql.XUserSettings_notificationCategoryPreferences(ctx, graphqlClient)
 	if err != nil {
 		return NotificationCategoryPreferences{}, fmt.Errorf("get user settings notification categories: %w", err)
 	}
@@ -209,7 +211,7 @@ func GetUserSettingsNotificationCategoryPreference(
 		return NotificationChannelPreference{}, fmt.Errorf("unknown user settings notification category %q", category)
 	}
 
-	result, err := userSettings_notificationCategoryPreferences(ctx, graphqlClient)
+	result, err := gql.XUserSettings_notificationCategoryPreferences(ctx, graphqlClient)
 	if err != nil {
 		return NotificationChannelPreference{}, fmt.Errorf("get user settings category %s: %w", category, err)
 	}
@@ -258,7 +260,7 @@ func GetUserSettingsNotificationChannelPreferences(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 ) (NotificationChannelPreference, error) {
-	result, err := userSettings_notificationChannelPreferences(ctx, graphqlClient)
+	result, err := gql.XUserSettings_notificationChannelPreferences(ctx, graphqlClient)
 	if err != nil {
 		return NotificationChannelPreference{}, fmt.Errorf("get user settings notification channels: %w", err)
 	}
@@ -271,7 +273,7 @@ func GetUserSettingsNotificationDeliveryPreferences(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 ) (NotificationDeliveryPreferences, error) {
-	result, err := userSettings_notificationDeliveryPreferences(ctx, graphqlClient)
+	result, err := gql.XUserSettings_notificationDeliveryPreferences(ctx, graphqlClient)
 	if err != nil {
 		return NotificationDeliveryPreferences{}, fmt.Errorf("get user settings notification delivery: %w", err)
 	}
@@ -288,7 +290,7 @@ func GetUserSettingsMobileDeliveryPreferences(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 ) (*NotificationDeliveryChannel, error) {
-	result, err := userSettings_notificationDeliveryPreferences_mobile(ctx, graphqlClient)
+	result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile(ctx, graphqlClient)
 	if err != nil {
 		return nil, fmt.Errorf("get user settings mobile delivery: %w", err)
 	}
@@ -306,7 +308,7 @@ func GetUserSettingsMobileSchedule(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 ) (*NotificationDeliverySchedule, error) {
-	result, err := userSettings_notificationDeliveryPreferences_mobile_schedule(ctx, graphqlClient)
+	result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule(ctx, graphqlClient)
 	if err != nil {
 		return nil, fmt.Errorf("get user settings mobile schedule: %w", err)
 	}
@@ -326,19 +328,19 @@ func GetUserSettingsMobileScheduleDay(
 ) (NotificationDeliveryDay, error) {
 	switch normalizedUserSettingsKey(day) {
 	case "friday":
-		result, err := userSettings_notificationDeliveryPreferences_mobile_schedule_friday(ctx, graphqlClient)
+		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_friday(ctx, graphqlClient)
 		if err != nil {
 			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
 		}
 		return notificationDeliveryDayFromMobileFriday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
 	case "monday":
-		result, err := userSettings_notificationDeliveryPreferences_mobile_schedule_monday(ctx, graphqlClient)
+		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_monday(ctx, graphqlClient)
 		if err != nil {
 			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
 		}
 		return notificationDeliveryDayFromMobileMonday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
 	case "saturday":
-		result, err := userSettings_notificationDeliveryPreferences_mobile_schedule_saturday(ctx, graphqlClient)
+		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_saturday(ctx, graphqlClient)
 		if err != nil {
 			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
 		}
@@ -346,13 +348,13 @@ func GetUserSettingsMobileScheduleDay(
 			result.UserSettings.NotificationDeliveryPreferences.Mobile,
 		), nil
 	case "sunday":
-		result, err := userSettings_notificationDeliveryPreferences_mobile_schedule_sunday(ctx, graphqlClient)
+		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_sunday(ctx, graphqlClient)
 		if err != nil {
 			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
 		}
 		return notificationDeliveryDayFromMobileSunday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
 	case "thursday":
-		result, err := userSettings_notificationDeliveryPreferences_mobile_schedule_thursday(ctx, graphqlClient)
+		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_thursday(ctx, graphqlClient)
 		if err != nil {
 			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
 		}
@@ -360,13 +362,13 @@ func GetUserSettingsMobileScheduleDay(
 			result.UserSettings.NotificationDeliveryPreferences.Mobile,
 		), nil
 	case "tuesday":
-		result, err := userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday(ctx, graphqlClient)
+		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_tuesday(ctx, graphqlClient)
 		if err != nil {
 			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
 		}
 		return notificationDeliveryDayFromMobileTuesday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
 	case "wednesday":
-		result, err := userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday(ctx, graphqlClient)
+		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_wednesday(ctx, graphqlClient)
 		if err != nil {
 			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
 		}
@@ -391,7 +393,7 @@ func GetUserSettingsTheme(
 	if err != nil {
 		return nil, err
 	}
-	result, err := userSettings_theme(ctx, graphqlClient, deviceTypeValue, modeValue)
+	result, err := gql.XUserSettings_theme(ctx, graphqlClient, deviceTypeValue, modeValue)
 	if err != nil {
 		return nil, fmt.Errorf("get user settings theme: %w", err)
 	}
@@ -415,7 +417,7 @@ func GetUserSettingsCustomTheme(
 	if err != nil {
 		return nil, err
 	}
-	result, err := userSettings_theme_custom(ctx, graphqlClient, deviceTypeValue, modeValue)
+	result, err := gql.XUserSettings_theme_custom(ctx, graphqlClient, deviceTypeValue, modeValue)
 	if err != nil {
 		return nil, fmt.Errorf("get user settings custom theme: %w", err)
 	}
@@ -439,7 +441,7 @@ func GetUserSettingsCustomSidebarTheme(
 	if err != nil {
 		return nil, err
 	}
-	result, err := userSettings_theme_custom_sidebar(ctx, graphqlClient, deviceTypeValue, modeValue)
+	result, err := gql.XUserSettings_theme_custom_sidebar(ctx, graphqlClient, deviceTypeValue, modeValue)
 	if err != nil {
 		return nil, fmt.Errorf("get user settings custom sidebar theme: %w", err)
 	}
@@ -452,7 +454,7 @@ func GetUserSettingsCustomSidebarTheme(
 	return userSettingsCustomSidebarTheme(result.UserSettings.Theme.Custom.Sidebar), nil
 }
 
-func userSettingsSummary(settings UserSettingsSummaryFields) UserSettingsSummary {
+func userSettingsSummary(settings gql.UserSettingsSummaryFields) UserSettingsSummary {
 	feedSummarySchedule := ""
 	if settings.FeedSummarySchedule != nil {
 		feedSummarySchedule = string(*settings.FeedSummarySchedule)
@@ -483,7 +485,7 @@ func userSettingsSummary(settings UserSettingsSummaryFields) UserSettingsSummary
 }
 
 func notificationCategoryPreferences(
-	preferences NotificationCategoryPreferencesFields,
+	preferences gql.NotificationCategoryPreferencesFields,
 ) NotificationCategoryPreferences {
 	return NotificationCategoryPreferences{
 		AppsAndIntegrations: notificationChannelPreference(&preferences.AppsAndIntegrations),
@@ -515,7 +517,7 @@ func notificationChannelPreference(source notificationChannelPreferenceSource) N
 }
 
 func notificationDeliveryPreferences(
-	preferences NotificationDeliveryPreferencesFields,
+	preferences gql.NotificationDeliveryPreferencesFields,
 ) NotificationDeliveryPreferences {
 	if preferences.Mobile == nil {
 		return NotificationDeliveryPreferences{}
@@ -654,7 +656,7 @@ func userSettingsCustomSidebarTheme(
 func userSettingsThemeArgs(
 	deviceType string,
 	mode string,
-) (*UserSettingsThemeDeviceType, *UserSettingsThemeMode, error) {
+) (*gql.UserSettingsThemeDeviceType, *gql.UserSettingsThemeMode, error) {
 	deviceTypeValue, err := parseUserSettingsThemeDeviceType(deviceType)
 	if err != nil {
 		return nil, nil, err
@@ -667,26 +669,26 @@ func userSettingsThemeArgs(
 	return deviceTypeValue, modeValue, nil
 }
 
-func parseUserSettingsThemeDeviceType(value string) (*UserSettingsThemeDeviceType, error) {
+func parseUserSettingsThemeDeviceType(value string) (*gql.UserSettingsThemeDeviceType, error) {
 	switch normalizedUserSettingsKey(value) {
 	case "", "desktop":
-		deviceType := UserSettingsThemeDeviceTypeDesktop
+		deviceType := gql.UserSettingsThemeDeviceTypeDesktop
 		return &deviceType, nil
 	case "mobile-web", "mobileweb":
-		deviceType := UserSettingsThemeDeviceTypeMobileweb
+		deviceType := gql.UserSettingsThemeDeviceTypeMobileweb
 		return &deviceType, nil
 	default:
 		return nil, fmt.Errorf("invalid theme device type %q: use desktop or mobile-web", value)
 	}
 }
 
-func parseUserSettingsThemeMode(value string) (*UserSettingsThemeMode, error) {
+func parseUserSettingsThemeMode(value string) (*gql.UserSettingsThemeMode, error) {
 	switch normalizedUserSettingsKey(value) {
 	case "", "light":
-		mode := UserSettingsThemeModeLight
+		mode := gql.UserSettingsThemeModeLight
 		return &mode, nil
 	case "dark":
-		mode := UserSettingsThemeModeDark
+		mode := gql.UserSettingsThemeModeDark
 		return &mode, nil
 	default:
 		return nil, fmt.Errorf("invalid theme mode %q: use light or dark", value)

@@ -78,6 +78,7 @@ type fakeOAuthTokenClient struct {
 	authorizationCodeRequest oauth.AuthorizationCodeRequest
 	refreshTokenCalls        int
 	refreshTokenRequest      oauth.RefreshTokenRequest
+	beforeRefresh            func()
 	revokeTokenCalls         int
 	revokeTokenRequests      []oauth.RevocationRequest
 	revokeTokenErr           error
@@ -103,6 +104,9 @@ func (client *fakeOAuthTokenClient) RefreshToken(
 ) (auth.TokenState, error) {
 	client.refreshTokenCalls++
 	client.refreshTokenRequest = request
+	if client.beforeRefresh != nil {
+		client.beforeRefresh()
+	}
 	if client.err != nil {
 		return auth.TokenState{}, client.err
 	}

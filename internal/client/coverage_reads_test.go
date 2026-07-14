@@ -23,8 +23,6 @@ func Test_ClientReadHelpers_cover_nil_actor_bot_summaries(t *testing.T) {
 	require.Nil(t, actorBotSummary(nil))
 	require.Nil(t, commentActorBotSummary(nil))
 	require.Nil(t, issueActorBotSummary(nil))
-	require.Nil(t, issueVCSBranchActorBotSummary(nil))
-	require.Nil(t, attachmentIssueActorBotSummary(nil))
 }
 
 func Test_ClientReadScenarios_return_not_found_for_null_vcs_branch_issue(t *testing.T) {

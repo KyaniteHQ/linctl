@@ -153,31 +153,6 @@ func clientIssue(identifier string, title string) client.IssueSummary {
 	}
 }
 
-func Test_runCurrentIssueRead_reads_current_issue_through_the_port(t *testing.T) {
-	command, stdout, _ := bufferedCommand()
-	port := &fakeIssuePort{
-		gotIssue: clientIssue("LIT-9", "Current from port"),
-	}
-
-	err := runCurrentIssueRead(context.Background(), command, &rootOptions{}, port, "LIT-9")
-
-	require.NoError(t, err)
-	require.Equal(t, "LIT-9", port.getIssueID)
-	require.Contains(t, stdout.String(), "LIT-9 Current from port")
-}
-
-func Test_resolveIssueArgumentWithReader_reads_issue_argument_through_the_port(t *testing.T) {
-	port := &fakeIssuePort{
-		gotIssue: clientIssue("LIT-10", "Issue current from port"),
-	}
-
-	issue, err := resolveIssueArgumentWithReader(context.Background(), port, "LIT-10")
-
-	require.NoError(t, err)
-	require.Equal(t, "LIT-10", port.getIssueID)
-	require.Equal(t, "Issue current from port", issue.Title)
-}
-
 func Test_CommandFlows_report_next_errors(t *testing.T) {
 	t.Run("empty candidate list", func(t *testing.T) {
 		restore := useCommandRuntime(t, commandFlowFakeClient{emptyNextIssues: true})
@@ -276,7 +251,7 @@ func Test_CommandFlows_next_checkout_failure_aborts(t *testing.T) {
 
 func Test_runNextWithPicker_reads_and_starts_through_the_port(t *testing.T) {
 	command, stdout, _ := bufferedCommand()
-	port := &fakeIssuePort{
+	port := &fakeIssueWorkflow{
 		resolved: client.ResolvedTarget{Team: client.TargetTeam{ID: "team-id"}},
 		nextList: client.IssueList{Issues: []client.IssueSummary{
 			{

@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // TemplateSummary is the compact Linear template model used by read-only commands.
@@ -39,13 +41,13 @@ type TemplateList struct {
 
 // ListOrganizationTemplates returns organization-wide Linear templates.
 func ListOrganizationTemplates(ctx context.Context, graphqlClient graphql.Client, limit int) (TemplateList, error) {
-	result, err := organization_templates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XOrganization_templates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TemplateList{}, fmt.Errorf("list organization templates: %w", err)
 	}
 
 	summaries := mapNodes(result.Organization.Templates.Nodes, func(
-		node organization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate,
+		node gql.XOrganization_templatesOrganizationTemplatesTemplateConnectionNodesTemplate,
 	) TemplateSummary {
 		return templateSummary(node.TemplateSummaryFields)
 	})
@@ -60,7 +62,7 @@ func ListOrganizationTemplates(ctx context.Context, graphqlClient graphql.Client
 
 // ListTemplates returns visible Linear templates.
 func ListTemplates(ctx context.Context, graphqlClient graphql.Client, limit int) (TemplateList, error) {
-	result, err := templates(ctx, graphqlClient)
+	result, err := gql.XTemplates(ctx, graphqlClient)
 	if err != nil {
 		return TemplateList{}, fmt.Errorf("list templates: %w", err)
 	}
@@ -81,7 +83,7 @@ func ListTemplates(ctx context.Context, graphqlClient graphql.Client, limit int)
 
 // GetTemplateByID returns one Linear template by id.
 func GetTemplateByID(ctx context.Context, graphqlClient graphql.Client, id string) (TemplateSummary, error) {
-	result, err := template(ctx, graphqlClient, id)
+	result, err := gql.XTemplate(ctx, graphqlClient, id)
 	if err != nil {
 		return TemplateSummary{}, fmt.Errorf("get template %s: %w", id, err)
 	}
@@ -89,7 +91,7 @@ func GetTemplateByID(ctx context.Context, graphqlClient graphql.Client, id strin
 	return templateSummary(result.Template.TemplateSummaryFields), nil
 }
 
-func templateSummary(fields TemplateSummaryFields) TemplateSummary {
+func templateSummary(fields gql.TemplateSummaryFields) TemplateSummary {
 	summary := TemplateSummary{
 		ID:            fields.Id,
 		Name:          fields.Name,

@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // IssueTemplateContent is the issue title and description pre-filled by a Linear template.
@@ -25,7 +27,7 @@ func GetIssueTemplateContent(
 	if templateID == "" {
 		return IssueTemplateContent{}, fmt.Errorf("%w: template id is required", ErrWriteInvalid)
 	}
-	result, err := templateContent(ctx, graphqlClient, templateID)
+	result, err := gql.XTemplateContent(ctx, graphqlClient, templateID)
 	if err != nil {
 		return IssueTemplateContent{}, fmt.Errorf("get template content %s: %w", templateID, err)
 	}

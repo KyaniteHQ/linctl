@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // DocumentSummary is the compact Document model used by document commands.
@@ -35,13 +37,13 @@ type DocumentCommentList struct {
 
 // ListDocuments returns visible Documents.
 func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int) (DocumentList, error) {
-	documents, err := Documents(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	documents, err := gql.Documents(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return DocumentList{}, fmt.Errorf("list documents: %w", err)
 	}
 
 	summaries := mapNodes(documents.Documents.Nodes, func(
-		document DocumentsDocumentsDocumentConnectionNodesDocument,
+		document gql.DocumentsDocumentsDocumentConnectionNodesDocument,
 	) DocumentSummary {
 		return documentSummary(document.DocumentSummaryFields)
 	})
@@ -55,7 +57,7 @@ func ListDocuments(ctx context.Context, graphqlClient graphql.Client, limit int)
 
 // GetDocumentByID returns one Document by id or slug.
 func GetDocumentByID(ctx context.Context, graphqlClient graphql.Client, id string) (DocumentSummary, error) {
-	document, err := document(ctx, graphqlClient, id)
+	document, err := gql.XDocument(ctx, graphqlClient, id)
 	if err != nil {
 		return DocumentSummary{}, fmt.Errorf("get document %s: %w", id, err)
 	}
@@ -70,13 +72,13 @@ func ListDocumentComments(
 	id string,
 	limit int,
 ) (DocumentCommentList, error) {
-	result, err := document_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XDocument_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return DocumentCommentList{}, fmt.Errorf("list document comments %s: %w", id, err)
 	}
 
 	comments := mapNodes(result.Document.Comments.Nodes, func(
-		node document_commentsDocumentCommentsCommentConnectionNodesComment,
+		node gql.XDocument_commentsDocumentCommentsCommentConnectionNodesComment,
 	) CommentMetadataSummary {
 		return commentMetadataSummary(node.CommentMetadataFields)
 	})
@@ -89,7 +91,7 @@ func ListDocumentComments(
 	}, nil
 }
 
-func documentSummary(document DocumentSummaryFields) DocumentSummary {
+func documentSummary(document gql.DocumentSummaryFields) DocumentSummary {
 	summary := DocumentSummary{
 		ID:     document.Id,
 		Title:  document.Title,

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -27,13 +28,6 @@ type IssueRelationCreateRequest struct {
 	Type           string
 }
 
-// LinearIssueRelationCreateInput is the sparse Linear issueRelationCreate payload linctl supports.
-type LinearIssueRelationCreateInput struct {
-	Type           string `json:"type"`
-	IssueID        string `json:"issueId"`
-	RelatedIssueID string `json:"relatedIssueId"`
-}
-
 // CreateIssueRelation links two issues after resolving and comparing the pinned
 // target for both endpoints. Each issue must belong to the resolved team. For
 // blocks relations it refuses to close a direct cycle.
@@ -47,30 +41,40 @@ func CreateIssueRelation(
 		return IssueRelationSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueRelationSummary, error) {
-		resolved, err := requireIssuePair(ctx, graphqlClient, guard, request.IssueID, request.RelatedIssueID)
-		if err != nil {
-			return IssueRelationSummary{}, err
-		}
-		issue, related := resolved[0], resolved[1]
-		if err := guardBlockingCycle(ctx, graphqlClient, request.Type, issue, related); err != nil {
-			return IssueRelationSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueRelationSummary{}, err
+	}
 
-		created, err := IssueRelationCreate(ctx, graphqlClient, LinearIssueRelationCreateInput{
-			Type:           request.Type,
-			IssueID:        issue.ID,
-			RelatedIssueID: related.ID,
-		})
-		if err != nil {
-			return IssueRelationSummary{}, fmt.Errorf("create issue relation: %w", err)
-		}
-		if !created.IssueRelationCreate.Success {
-			return IssueRelationSummary{}, fmt.Errorf("%w: issueRelationCreate returned no relation", ErrMutationFailed)
-		}
+	return guard.createIssueRelation(ctx, request)
+}
 
-		return issueRelationSummary(created.IssueRelationCreate.IssueRelation.IssueRelationSummaryFields), nil
+func (guard *guardedClient) createIssueRelation(
+	ctx context.Context,
+	request IssueRelationCreateRequest,
+) (IssueRelationSummary, error) {
+	resolved, err := guard.requireIssuePair(ctx, request.IssueID, request.RelatedIssueID)
+	if err != nil {
+		return IssueRelationSummary{}, err
+	}
+	issue, related := resolved[0], resolved[1]
+	if err := guard.guardBlockingCycle(ctx, request.Type, issue, related); err != nil {
+		return IssueRelationSummary{}, err
+	}
+
+	created, err := gql.IssueRelationCreate(ctx, guard.graphqlClient, LinearIssueRelationCreateInput{
+		Type:           request.Type,
+		IssueID:        issue.ID,
+		RelatedIssueID: related.ID,
 	})
+	if err != nil {
+		return IssueRelationSummary{}, fmt.Errorf("create issue relation: %w", err)
+	}
+	if !created.IssueRelationCreate.Success {
+		return IssueRelationSummary{}, fmt.Errorf("%w: issueRelationCreate returned no relation", ErrMutationFailed)
+	}
+
+	return issueRelationSummary(created.IssueRelationCreate.IssueRelation.IssueRelationSummaryFields), nil
 }
 
 // DeleteIssueRelation removes an existing relation after resolving the relation
@@ -85,41 +89,46 @@ func DeleteIssueRelation(
 		return "", fmt.Errorf("%w: relation id is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (string, error) {
-		relation, err := GetIssueRelationByID(ctx, graphqlClient, relationID)
-		if err != nil {
-			return "", err
-		}
-		if _, err := requireIssuePair(
-			ctx, graphqlClient, guard, relation.IssueIdentifier, relation.RelatedIssueIdentifier,
-		); err != nil {
-			return "", err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return "", err
+	}
 
-		deleted, err := IssueRelationDelete(ctx, graphqlClient, relationID)
-		if err != nil {
-			return "", fmt.Errorf("delete issue relation %s: %w", relationID, err)
-		}
-		if !deleted.IssueRelationDelete.Success {
-			return "", fmt.Errorf("%w: issueRelationDelete reported no success", ErrMutationFailed)
-		}
+	return guard.deleteIssueRelation(ctx, relationID)
+}
 
-		return relation.ID, nil
-	})
+func (guard *guardedClient) deleteIssueRelation(ctx context.Context, relationID string) (string, error) {
+	relation, err := GetIssueRelationByID(ctx, guard.graphqlClient, relationID)
+	if err != nil {
+		return "", err
+	}
+	if _, err := guard.requireIssuePair(
+		ctx, relation.IssueIdentifier, relation.RelatedIssueIdentifier,
+	); err != nil {
+		return "", err
+	}
+
+	deleted, err := gql.IssueRelationDelete(ctx, guard.graphqlClient, relationID)
+	if err != nil {
+		return "", fmt.Errorf("delete issue relation %s: %w", relationID, err)
+	}
+	if !deleted.IssueRelationDelete.Success {
+		return "", fmt.Errorf("%w: issueRelationDelete reported no success", ErrMutationFailed)
+	}
+
+	return relation.ID, nil
 }
 
 // requireIssuePair resolves both endpoints of a relation through the guard,
 // confirming each issue belongs to the resolved team before any mutation.
-func requireIssuePair(
+func (guard *guardedClient) requireIssuePair(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	guard writeGuard,
 	firstID string,
 	secondID string,
 ) ([2]IssueSummary, error) {
 	var resolved [2]IssueSummary
 	for index, id := range [2]string{firstID, secondID} {
-		summary, err := guard.requireIssue(ctx, graphqlClient, id)
+		summary, err := guard.requireIssue(ctx, id)
 		if err != nil {
 			return resolved, err
 		}
@@ -150,9 +159,8 @@ func validateIssueRelationCreateRequest(request IssueRelationCreateRequest) erro
 // guardBlockingCycle refuses a blocks relation that would close a direct cycle:
 // when the related issue already blocks the issue, adding issue->blocks->related
 // makes them block each other. Non-blocks relation types are always allowed.
-func guardBlockingCycle(
+func (guard *guardedClient) guardBlockingCycle(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	relationType string,
 	issue IssueSummary,
 	related IssueSummary,
@@ -160,7 +168,7 @@ func guardBlockingCycle(
 	if relationType != "blocks" {
 		return nil
 	}
-	dependencies, err := GetIssueDependencies(ctx, graphqlClient, issue.ID, dependencyCheckLimit)
+	dependencies, err := GetIssueDependencies(ctx, guard.graphqlClient, issue.ID, dependencyCheckLimit)
 	if err != nil {
 		return err
 	}

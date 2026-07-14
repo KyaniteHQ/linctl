@@ -20,7 +20,7 @@ func addIssueCommentsCommand(ctx context.Context, root *cobra.Command, options *
 			if err != nil {
 				return err
 			}
-			comments, err := issueAdapterFor(runtime).ListIssueComments(ctx, args[0], limit)
+			comments, err := client.ListIssueComments(ctx, runtime.graphqlClient, args[0], limit)
 			if err != nil {
 				return err
 			}
@@ -39,6 +39,10 @@ func addIssueCommentsCommand(ctx context.Context, root *cobra.Command, options *
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum comments to return")
+	annotateReadCollectionCommand(
+		command,
+		mustCollectionKeyForList[client.IssueCommentList, client.IssueCommentSummary](),
+	)
 	root.AddCommand(command)
 }
 

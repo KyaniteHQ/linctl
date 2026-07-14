@@ -14,16 +14,15 @@ func addRoadmapToProjectCommand(ctx context.Context, root *cobra.Command, option
 		client.RoadmapToProjectList,
 		client.RoadmapToProjectSummary,
 	](ctx, root, options, readListGetSpec[client.RoadmapToProjectList, client.RoadmapToProjectSummary]{
-		Use:           "roadmap-to-project",
-		Short:         "Read legacy Linear Roadmap-to-Project associations",
-		ListShort:     "List visible legacy Roadmap-to-Project associations",
-		LimitHelp:     "maximum legacy Roadmap-to-Project associations to return",
-		GetUse:        "get ROADMAP_TO_PROJECT_ID",
-		GetShort:      "Get one legacy Roadmap-to-Project association by id",
-		LoadList:      loadRoadmapToProjectList,
-		PageWithItems: roadmapToProjectPageWithItems,
-		LoadGet:       loadRoadmapToProject,
-		WriteItem:     writeRoadmapToProject,
+		Use:       "roadmap-to-project",
+		Short:     "Read legacy Linear Roadmap-to-Project associations",
+		ListShort: "List visible legacy Roadmap-to-Project associations",
+		LimitHelp: "maximum legacy Roadmap-to-Project associations to return",
+		GetUse:    "get ROADMAP_TO_PROJECT_ID",
+		GetShort:  "Get one legacy Roadmap-to-Project association by id",
+		LoadList:  loadRoadmapToProjectList,
+		LoadGet:   loadRoadmapToProject,
+		WriteItem: writeRoadmapToProject,
 	})
 	command.Long = "RoadmapToProject is Linear's deprecated planning association surface. " +
 		"These reads remain for compatibility; use `linctl initiative-to-project` for new workflows."

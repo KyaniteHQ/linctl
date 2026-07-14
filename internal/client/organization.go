@@ -5,17 +5,19 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ListOrganizationLabels returns organization-wide issue labels.
 func ListOrganizationLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (LabelList, error) {
-	result, err := organization_labels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XOrganization_labels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return LabelList{}, fmt.Errorf("list organization labels: %w", err)
 	}
 
 	labels := mapNodes(result.Organization.Labels.Nodes, func(
-		label organization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel,
+		label gql.XOrganization_labelsOrganizationLabelsIssueLabelConnectionNodesIssueLabel,
 	) LabelSummary {
 		return labelSummary(label.IssueLabelSummaryFields)
 	})
@@ -33,13 +35,13 @@ func ListOrganizationProjectLabels(
 	graphqlClient graphql.Client,
 	limit int,
 ) (ProjectLabelList, error) {
-	result, err := organization_projectLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XOrganization_projectLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return ProjectLabelList{}, fmt.Errorf("list organization project labels: %w", err)
 	}
 
 	labels := mapNodes(result.Organization.ProjectLabels.Nodes, func(
-		label organization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel,
+		label gql.XOrganization_projectLabelsOrganizationProjectLabelsProjectLabelConnectionNodesProjectLabel,
 	) ProjectLabelSummary {
 		return projectLabelSummary(label.ProjectLabelSummaryFields)
 	})
@@ -53,13 +55,13 @@ func ListOrganizationProjectLabels(
 
 // ListOrganizationTeams returns teams visible to the authenticated user.
 func ListOrganizationTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
-	result, err := organization_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XOrganization_teams(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return TeamList{}, fmt.Errorf("list organization teams: %w", err)
 	}
 
 	teams := mapNodes(result.Organization.Teams.Nodes, func(
-		team organization_teamsOrganizationTeamsTeamConnectionNodesTeam,
+		team gql.XOrganization_teamsOrganizationTeamsTeamConnectionNodesTeam,
 	) TeamSummary {
 		return teamSummary(team.TeamSummaryFields)
 	})
@@ -73,13 +75,13 @@ func ListOrganizationTeams(ctx context.Context, graphqlClient graphql.Client, li
 
 // ListOrganizationUsers returns active users visible to the authenticated user.
 func ListOrganizationUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (UserList, error) {
-	result, err := organization_users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XOrganization_users(ctx, graphqlClient, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return UserList{}, fmt.Errorf("list organization users: %w", err)
 	}
 
 	users := mapNodes(result.Organization.Users.Nodes, func(
-		user organization_usersOrganizationUsersUserConnectionNodesUser,
+		user gql.XOrganization_usersOrganizationUsersUserConnectionNodesUser,
 	) UserSummary {
 		return userSummary(user.UserSummaryFields)
 	})

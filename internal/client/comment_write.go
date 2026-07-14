@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -13,11 +14,6 @@ import (
 type CommentUpdateRequest struct {
 	ID   string
 	Body string
-}
-
-// LinearCommentUpdateInput is the sparse Linear commentUpdate payload linctl supports.
-type LinearCommentUpdateInput struct {
-	Body *string `json:"body,omitempty"`
 }
 
 // UpdateComment edits a comment after resolving the comment and comparing the
@@ -36,23 +32,30 @@ func UpdateComment(
 		return CommentSummary{}, fmt.Errorf("%w: body is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CommentSummary, error) {
-		if err := guardCommentTarget(ctx, graphqlClient, guard, request.ID); err != nil {
-			return CommentSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return CommentSummary{}, err
+	}
 
-		updated, err := CommentUpdate(ctx, graphqlClient, request.ID, LinearCommentUpdateInput{
-			Body: stringPtr(request.Body),
-		})
-		if err != nil {
-			return CommentSummary{}, fmt.Errorf("update comment %s: %w", request.ID, err)
-		}
-		if !updated.CommentUpdate.Success {
-			return CommentSummary{}, fmt.Errorf("%w: commentUpdate reported no success", ErrMutationFailed)
-		}
+	return guard.updateComment(ctx, request)
+}
 
-		return topLevelCommentSummary(updated.CommentUpdate.Comment.TopLevelCommentSummaryFields), nil
+func (guard *guardedClient) updateComment(ctx context.Context, request CommentUpdateRequest) (CommentSummary, error) {
+	if err := guard.requireCommentTarget(ctx, request.ID); err != nil {
+		return CommentSummary{}, err
+	}
+
+	updated, err := gql.CommentUpdate(ctx, guard.graphqlClient, request.ID, LinearCommentUpdateInput{
+		Body: stringPtr(request.Body),
 	})
+	if err != nil {
+		return CommentSummary{}, fmt.Errorf("update comment %s: %w", request.ID, err)
+	}
+	if !updated.CommentUpdate.Success {
+		return CommentSummary{}, fmt.Errorf("%w: commentUpdate reported no success", ErrMutationFailed)
+	}
+
+	return topLevelCommentSummary(updated.CommentUpdate.Comment.TopLevelCommentSummaryFields), nil
 }
 
 // DeleteComment removes a comment after resolving the comment and comparing the
@@ -68,21 +71,28 @@ func DeleteComment(
 		return "", fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (string, error) {
-		if err := guardCommentTarget(ctx, graphqlClient, guard, commentID); err != nil {
-			return "", err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return "", err
+	}
 
-		deleted, err := CommentDelete(ctx, graphqlClient, commentID)
-		if err != nil {
-			return "", fmt.Errorf("delete comment %s: %w", commentID, err)
-		}
-		if !deleted.CommentDelete.Success {
-			return "", fmt.Errorf("%w: commentDelete reported no success", ErrMutationFailed)
-		}
+	return guard.deleteComment(ctx, commentID)
+}
 
-		return commentID, nil
-	})
+func (guard *guardedClient) deleteComment(ctx context.Context, commentID string) (string, error) {
+	if err := guard.requireCommentTarget(ctx, commentID); err != nil {
+		return "", err
+	}
+
+	deleted, err := gql.CommentDelete(ctx, guard.graphqlClient, commentID)
+	if err != nil {
+		return "", fmt.Errorf("delete comment %s: %w", commentID, err)
+	}
+	if !deleted.CommentDelete.Success {
+		return "", fmt.Errorf("%w: commentDelete reported no success", ErrMutationFailed)
+	}
+
+	return commentID, nil
 }
 
 // ResolveComment resolves a comment thread after comparing the pinned target
@@ -97,21 +107,28 @@ func ResolveComment(
 		return CommentSummary{}, fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CommentSummary, error) {
-		if err := guardCommentTarget(ctx, graphqlClient, guard, commentID); err != nil {
-			return CommentSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return CommentSummary{}, err
+	}
 
-		resolved, err := CommentResolve(ctx, graphqlClient, commentID)
-		if err != nil {
-			return CommentSummary{}, fmt.Errorf("resolve comment %s: %w", commentID, err)
-		}
-		if !resolved.CommentResolve.Success {
-			return CommentSummary{}, fmt.Errorf("%w: commentResolve reported no success", ErrMutationFailed)
-		}
+	return guard.resolveComment(ctx, commentID)
+}
 
-		return topLevelCommentSummary(resolved.CommentResolve.Comment.TopLevelCommentSummaryFields), nil
-	})
+func (guard *guardedClient) resolveComment(ctx context.Context, commentID string) (CommentSummary, error) {
+	if err := guard.requireCommentTarget(ctx, commentID); err != nil {
+		return CommentSummary{}, err
+	}
+
+	resolved, err := gql.CommentResolve(ctx, guard.graphqlClient, commentID)
+	if err != nil {
+		return CommentSummary{}, fmt.Errorf("resolve comment %s: %w", commentID, err)
+	}
+	if !resolved.CommentResolve.Success {
+		return CommentSummary{}, fmt.Errorf("%w: commentResolve reported no success", ErrMutationFailed)
+	}
+
+	return topLevelCommentSummary(resolved.CommentResolve.Comment.TopLevelCommentSummaryFields), nil
 }
 
 // UnresolveComment reopens a comment thread after comparing the pinned target
@@ -126,33 +143,38 @@ func UnresolveComment(
 		return CommentSummary{}, fmt.Errorf("%w: comment id is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (CommentSummary, error) {
-		if err := guardCommentTarget(ctx, graphqlClient, guard, commentID); err != nil {
-			return CommentSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return CommentSummary{}, err
+	}
 
-		unresolved, err := CommentUnresolve(ctx, graphqlClient, commentID)
-		if err != nil {
-			return CommentSummary{}, fmt.Errorf("unresolve comment %s: %w", commentID, err)
-		}
-		if !unresolved.CommentUnresolve.Success {
-			return CommentSummary{}, fmt.Errorf("%w: commentUnresolve reported no success", ErrMutationFailed)
-		}
+	return guard.unresolveComment(ctx, commentID)
+}
 
-		return topLevelCommentSummary(unresolved.CommentUnresolve.Comment.TopLevelCommentSummaryFields), nil
-	})
+func (guard *guardedClient) unresolveComment(ctx context.Context, commentID string) (CommentSummary, error) {
+	if err := guard.requireCommentTarget(ctx, commentID); err != nil {
+		return CommentSummary{}, err
+	}
+
+	unresolved, err := gql.CommentUnresolve(ctx, guard.graphqlClient, commentID)
+	if err != nil {
+		return CommentSummary{}, fmt.Errorf("unresolve comment %s: %w", commentID, err)
+	}
+	if !unresolved.CommentUnresolve.Success {
+		return CommentSummary{}, fmt.Errorf("%w: commentUnresolve reported no success", ErrMutationFailed)
+	}
+
+	return topLevelCommentSummary(unresolved.CommentUnresolve.Comment.TopLevelCommentSummaryFields), nil
 }
 
 // guardCommentTarget resolves a comment and confirms its parent issue belongs to
 // the resolved team. Comments not attached to an issue are refused because the
 // issue guard cannot prove their target.
-func guardCommentTarget(
+func (guard *guardedClient) requireCommentTarget(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	guard writeGuard,
 	commentID string,
 ) error {
-	comment, err := GetCommentByID(ctx, graphqlClient, commentID)
+	comment, err := GetCommentByID(ctx, guard.graphqlClient, commentID)
 	if err != nil {
 		return err
 	}
@@ -163,7 +185,7 @@ func guardCommentTarget(
 			commentID,
 		)
 	}
-	_, err = guard.requireIssue(ctx, graphqlClient, comment.IssueID)
+	_, err = guard.requireIssue(ctx, comment.IssueID)
 
 	return err
 }

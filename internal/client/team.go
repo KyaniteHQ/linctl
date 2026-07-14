@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // TeamSummary is the compact Team model used by team commands.
@@ -63,12 +65,12 @@ type GitAutomationStateList struct {
 
 // ListTeams returns visible teams.
 func ListTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (TeamList, error) {
-	teams, err := teams_list(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	teams, err := gql.XTeams_list(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TeamList{}, fmt.Errorf("list teams: %w", err)
 	}
 
-	summaries := mapNodes(teams.Teams.Nodes, func(team teams_listTeamsTeamConnectionNodesTeam) TeamSummary {
+	summaries := mapNodes(teams.Teams.Nodes, func(team gql.XTeams_listTeamsTeamConnectionNodesTeam) TeamSummary {
 		return teamSummary(team.TeamSummaryFields)
 	})
 
@@ -81,7 +83,7 @@ func ListTeams(ctx context.Context, graphqlClient graphql.Client, limit int) (Te
 
 // GetTeamByID returns one Team by id.
 func GetTeamByID(ctx context.Context, graphqlClient graphql.Client, id string) (TeamSummary, error) {
-	teamResult, err := team(ctx, graphqlClient, id)
+	teamResult, err := gql.XTeam(ctx, graphqlClient, id)
 	if err != nil {
 		return TeamSummary{}, fmt.Errorf("get team %s: %w", id, err)
 	}
@@ -91,13 +93,13 @@ func GetTeamByID(ctx context.Context, graphqlClient graphql.Client, id string) (
 
 // ListTeamMembers returns visible members for one Team.
 func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TeamMemberList, error) {
-	team, err := team_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_members(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TeamMemberList{}, fmt.Errorf("list team members %s: %w", id, err)
 	}
 
 	members := mapNodes(team.Team.Members.Nodes, func(
-		member team_membersTeamMembersUserConnectionNodesUser,
+		member gql.XTeam_membersTeamMembersUserConnectionNodesUser,
 	) UserSummary {
 		return userSummary(member.UserSummaryFields)
 	})
@@ -114,12 +116,14 @@ func ListTeamMembers(ctx context.Context, graphqlClient graphql.Client, id strin
 
 // ListTeamCycles returns Cycles associated with one Team.
 func ListTeamCycles(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (CycleList, error) {
-	team, err := team_cycles(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_cycles(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CycleList{}, fmt.Errorf("list team cycles %s: %w", id, err)
 	}
 
-	cycles := mapNodes(team.Team.Cycles.Nodes, func(cycle team_cyclesTeamCyclesCycleConnectionNodesCycle) CycleSummary {
+	cycles := mapNodes(team.Team.Cycles.Nodes, func(
+		cycle gql.XTeam_cyclesTeamCyclesCycleConnectionNodesCycle,
+	) CycleSummary {
 		return cycleSummary(cycle.CycleSummaryFields)
 	})
 
@@ -132,12 +136,14 @@ func ListTeamCycles(ctx context.Context, graphqlClient graphql.Client, id string
 
 // ListTeamIssues returns issues associated with one Team.
 func ListTeamIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (IssueList, error) {
-	team, err := team_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list team issues %s: %w", id, err)
 	}
 
-	issues := mapNodes(team.Team.Issues.Nodes, func(issue team_issuesTeamIssuesIssueConnectionNodesIssue) IssueSummary {
+	issues := mapNodes(team.Team.Issues.Nodes, func(
+		issue gql.XTeam_issuesTeamIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
 
@@ -150,13 +156,13 @@ func ListTeamIssues(ctx context.Context, graphqlClient graphql.Client, id string
 
 // ListTeamLabels returns IssueLabels associated with one Team.
 func ListTeamLabels(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (LabelList, error) {
-	team, err := team_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return LabelList{}, fmt.Errorf("list team labels %s: %w", id, err)
 	}
 
 	labels := mapNodes(team.Team.Labels.Nodes, func(
-		label team_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel,
+		label gql.XTeam_labelsTeamLabelsIssueLabelConnectionNodesIssueLabel,
 	) LabelSummary {
 		return labelSummary(label.IssueLabelSummaryFields)
 	})
@@ -175,13 +181,13 @@ func ListTeamMembershipsForTeam(
 	id string,
 	limit int,
 ) (TeamMembershipList, error) {
-	team, err := team_memberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_memberships(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TeamMembershipList{}, fmt.Errorf("list team memberships %s: %w", id, err)
 	}
 
 	memberships := mapNodes(team.Team.Memberships.Nodes, func(
-		membership team_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
+		membership gql.XTeam_membershipsTeamMembershipsTeamMembershipConnectionNodesTeamMembership,
 	) TeamMembershipSummary {
 		return teamMembershipSummary(membership.TeamMembershipSummaryFields)
 	})
@@ -195,13 +201,13 @@ func ListTeamMembershipsForTeam(
 
 // ListTeamProjects returns Projects associated with one Team.
 func ListTeamProjects(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (ProjectList, error) {
-	team, err := team_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectList{}, fmt.Errorf("list team projects %s: %w", id, err)
 	}
 
 	projects := mapNodes(team.Team.Projects.Nodes, func(
-		project team_projectsTeamProjectsProjectConnectionNodesProject,
+		project gql.XTeam_projectsTeamProjectsProjectConnectionNodesProject,
 	) ProjectSummary {
 		return projectSummaryFromFields(project.ProjectSummaryFields)
 	})
@@ -220,13 +226,13 @@ func ListTeamReleasePipelines(
 	id string,
 	limit int,
 ) (ReleasePipelineList, error) {
-	team, err := team_releasePipelines(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_releasePipelines(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleasePipelineList{}, fmt.Errorf("list team release pipelines %s: %w", id, err)
 	}
 
 	pipelines := mapNodes(team.Team.ReleasePipelines.Nodes, func(
-		pipeline team_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
+		pipeline gql.XTeam_releasePipelinesTeamReleasePipelinesReleasePipelineConnectionNodesReleasePipeline,
 	) ReleasePipelineSummary {
 		return releasePipelineSummary(pipeline.ReleasePipelineSummaryFields)
 	})
@@ -245,13 +251,13 @@ func ListTeamWorkflowStates(
 	id string,
 	limit int,
 ) (WorkflowStateList, error) {
-	team, err := team_states(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_states(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return WorkflowStateList{}, fmt.Errorf("list team states %s: %w", id, err)
 	}
 
 	states := mapNodes(team.Team.States.Nodes, func(
-		state team_statesTeamStatesWorkflowStateConnectionNodesWorkflowState,
+		state gql.XTeam_statesTeamStatesWorkflowStateConnectionNodesWorkflowState,
 	) WorkflowStateSummary {
 		return workflowStateSummary(state.WorkflowStateSummaryFields)
 	})
@@ -270,13 +276,13 @@ func ListTeamGitAutomationStates(
 	id string,
 	limit int,
 ) (GitAutomationStateList, error) {
-	team, err := team_gitAutomationStates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_gitAutomationStates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return GitAutomationStateList{}, fmt.Errorf("list team git automation states %s: %w", id, err)
 	}
 
 	states := mapNodes(team.Team.GitAutomationStates.Nodes, func(
-		state team_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState,
+		state gql.XTeam_gitAutomationStatesTeamGitAutomationStatesGitAutomationStateConnectionNodesGitAutomationState,
 	) GitAutomationStateSummary {
 		return gitAutomationStateSummary(state.GitAutomationStateSummaryFields)
 	})
@@ -293,13 +299,13 @@ func ListTeamGitAutomationStates(
 
 // ListTeamTemplates returns Templates associated with one Team.
 func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (TemplateList, error) {
-	team, err := team_templates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	team, err := gql.XTeam_templates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return TemplateList{}, fmt.Errorf("list team templates %s: %w", id, err)
 	}
 
 	templates := mapNodes(team.Team.Templates.Nodes, func(
-		template team_templatesTeamTemplatesTemplateConnectionNodesTemplate,
+		template gql.XTeam_templatesTeamTemplatesTemplateConnectionNodesTemplate,
 	) TemplateSummary {
 		return templateSummary(template.TemplateSummaryFields)
 	})
@@ -312,7 +318,7 @@ func ListTeamTemplates(ctx context.Context, graphqlClient graphql.Client, id str
 	}, nil
 }
 
-func teamSummary(team TeamSummaryFields) TeamSummary {
+func teamSummary(team gql.TeamSummaryFields) TeamSummary {
 	return TeamSummary{
 		ID:          team.Id,
 		Key:         team.Key,
@@ -325,7 +331,7 @@ func teamSummary(team TeamSummaryFields) TeamSummary {
 	}
 }
 
-func gitAutomationStateSummary(fields GitAutomationStateSummaryFields) GitAutomationStateSummary {
+func gitAutomationStateSummary(fields gql.GitAutomationStateSummaryFields) GitAutomationStateSummary {
 	summary := GitAutomationStateSummary{
 		ID:         fields.Id,
 		Event:      string(fields.Event),

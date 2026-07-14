@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ExternalUserSummary is the compact ExternalUser model used by read-only commands.
@@ -28,13 +30,13 @@ type ExternalUserList struct {
 
 // ListExternalUsers returns ExternalUsers visible to the authenticated user.
 func ListExternalUsers(ctx context.Context, graphqlClient graphql.Client, limit int) (ExternalUserList, error) {
-	result, err := externalUsers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XExternalUsers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ExternalUserList{}, fmt.Errorf("list external users: %w", err)
 	}
 
 	summaries := mapNodes(result.ExternalUsers.Nodes, func(
-		node externalUsersExternalUsersExternalUserConnectionNodesExternalUser,
+		node gql.XExternalUsersExternalUsersExternalUserConnectionNodesExternalUser,
 	) ExternalUserSummary {
 		return externalUserSummary(node.ExternalUserSummaryFields)
 	})
@@ -48,7 +50,7 @@ func ListExternalUsers(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetExternalUserByID returns one ExternalUser by id.
 func GetExternalUserByID(ctx context.Context, graphqlClient graphql.Client, id string) (ExternalUserSummary, error) {
-	result, err := externalUser(ctx, graphqlClient, id)
+	result, err := gql.XExternalUser(ctx, graphqlClient, id)
 	if err != nil {
 		return ExternalUserSummary{}, fmt.Errorf("get external user %s: %w", id, err)
 	}
@@ -56,7 +58,7 @@ func GetExternalUserByID(ctx context.Context, graphqlClient graphql.Client, id s
 	return externalUserSummary(result.ExternalUser.ExternalUserSummaryFields), nil
 }
 
-func externalUserSummary(fields ExternalUserSummaryFields) ExternalUserSummary {
+func externalUserSummary(fields gql.ExternalUserSummaryFields) ExternalUserSummary {
 	return ExternalUserSummary{
 		ID:          fields.Id,
 		Name:        fields.Name,

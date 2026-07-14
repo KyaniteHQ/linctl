@@ -12,16 +12,15 @@ import (
 
 func addAgentActivityCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.AgentActivityList, client.AgentActivitySummary]{
-		Use:           "agent-activity",
-		Short:         "Read Linear AgentActivities",
-		ListShort:     "List Linear AgentActivities",
-		LimitHelp:     "maximum AgentActivities to return",
-		GetUse:        "get AGENT_ACTIVITY_ID",
-		GetShort:      "Get one AgentActivity by id",
-		LoadList:      loadAgentActivityList,
-		PageWithItems: agentActivityPageWithItems,
-		LoadGet:       loadAgentActivity,
-		WriteItem:     writeAgentActivity,
+		Use:       "agent-activity",
+		Short:     "Read Linear AgentActivities",
+		ListShort: "List Linear AgentActivities",
+		LimitHelp: "maximum AgentActivities to return",
+		GetUse:    "get AGENT_ACTIVITY_ID",
+		GetShort:  "Get one AgentActivity by id",
+		LoadList:  loadAgentActivityList,
+		LoadGet:   loadAgentActivity,
+		WriteItem: writeAgentActivity,
 	})
 }
 

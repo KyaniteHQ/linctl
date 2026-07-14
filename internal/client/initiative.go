@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // InitiativeSummary is the compact initiative model used by read-only commands.
@@ -47,13 +49,13 @@ type InitiativeHistoryList struct {
 
 // ListInitiatives returns visible initiatives.
 func ListInitiatives(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeList, error) {
-	result, err := initiatives(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiatives(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeList{}, fmt.Errorf("list initiatives: %w", err)
 	}
 
 	summaries := mapNodes(result.Initiatives.Nodes, func(
-		node initiativesInitiativesInitiativeConnectionNodesInitiative,
+		node gql.XInitiativesInitiativesInitiativeConnectionNodesInitiative,
 	) InitiativeSummary {
 		return initiativeSummary(node.InitiativeSummaryFields)
 	})
@@ -71,7 +73,7 @@ func GetInitiativeByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (InitiativeSummary, error) {
-	result, err := initiative(ctx, graphqlClient, id)
+	result, err := gql.XInitiative(ctx, graphqlClient, id)
 	if err != nil {
 		return InitiativeSummary{}, fmt.Errorf("get initiative %s: %w", id, err)
 	}
@@ -86,13 +88,13 @@ func ListInitiativeHistory(
 	id string,
 	limit int,
 ) (InitiativeHistoryList, error) {
-	result, err := initiative_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiative_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeHistoryList{}, fmt.Errorf("list initiative history %s: %w", id, err)
 	}
 
 	history := mapNodes(result.Initiative.History.Nodes, func(
-		node initiative_historyInitiativeHistoryInitiativeHistoryConnectionNodesInitiativeHistory,
+		node gql.XInitiative_historyInitiativeHistoryInitiativeHistoryConnectionNodesInitiativeHistory,
 	) InitiativeHistorySummary {
 		return initiativeHistorySummary(node.InitiativeHistorySummaryFields)
 	})
@@ -111,13 +113,13 @@ func ListInitiativeLinks(
 	id string,
 	limit int,
 ) (EntityExternalLinkList, error) {
-	result, err := initiative_links(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiative_links(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return EntityExternalLinkList{}, fmt.Errorf("list initiative links %s: %w", id, err)
 	}
 
 	links := mapNodes(result.Initiative.Links.Nodes, func(
-		node initiative_linksInitiativeLinksEntityExternalLinkConnectionNodesEntityExternalLink,
+		node gql.XInitiative_linksInitiativeLinksEntityExternalLinkConnectionNodesEntityExternalLink,
 	) EntityExternalLinkSummary {
 		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
 	})
@@ -136,13 +138,13 @@ func ListSubInitiatives(
 	id string,
 	limit int,
 ) (InitiativeList, error) {
-	result, err := initiative_subInitiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiative_subInitiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeList{}, fmt.Errorf("list initiative sub-initiatives %s: %w", id, err)
 	}
 
 	initiatives := mapNodes(result.Initiative.SubInitiatives.Nodes, func(
-		node initiative_subInitiativesInitiativeSubInitiativesInitiativeConnectionNodesInitiative,
+		node gql.XInitiative_subInitiativesInitiativeSubInitiativesInitiativeConnectionNodesInitiative,
 	) InitiativeSummary {
 		return initiativeSummary(node.InitiativeSummaryFields)
 	})
@@ -161,13 +163,14 @@ func ListInitiativeUpdatesForInitiative(
 	id string,
 	limit int,
 ) (InitiativeUpdateList, error) {
-	result, err := initiative_initiativeUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiative_initiativeUpdates(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeUpdateList{}, fmt.Errorf("list initiative updates %s: %w", id, err)
 	}
 
 	updates := mapNodes(result.Initiative.InitiativeUpdates.Nodes, func(
-		node initiative_initiativeUpdatesInitiativeInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate,
+		node gql.
+			XInitiative_initiativeUpdatesInitiativeInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate,
 	) InitiativeUpdateSummary {
 		return initiativeUpdateSummary(node.InitiativeUpdateSummaryFields)
 	})
@@ -186,13 +189,13 @@ func ListInitiativeDocuments(
 	id string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := initiative_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiative_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return DocumentList{}, fmt.Errorf("list initiative documents %s: %w", id, err)
 	}
 
 	documents := mapNodes(result.Initiative.Documents.Nodes, func(
-		node initiative_documentsInitiativeDocumentsDocumentConnectionNodesDocument,
+		node gql.XInitiative_documentsInitiativeDocumentsDocumentConnectionNodesDocument,
 	) DocumentSummary {
 		return documentSummary(node.DocumentSummaryFields)
 	})
@@ -211,13 +214,13 @@ func ListInitiativeProjects(
 	id string,
 	limit int,
 ) (ProjectList, error) {
-	result, err := initiative_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true), boolPtr(false))
+	result, err := gql.XInitiative_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true), boolPtr(false))
 	if err != nil {
 		return ProjectList{}, fmt.Errorf("list initiative projects %s: %w", id, err)
 	}
 
 	projects := mapNodes(result.Initiative.Projects.Nodes, func(
-		node initiative_projectsInitiativeProjectsProjectConnectionNodesProject,
+		node gql.XInitiative_projectsInitiativeProjectsProjectConnectionNodesProject,
 	) ProjectSummary {
 		return projectSummaryFromFields(node.ProjectSummaryFields)
 	})
@@ -229,7 +232,7 @@ func ListInitiativeProjects(
 	}, nil
 }
 
-func initiativeSummary(fields InitiativeSummaryFields) InitiativeSummary {
+func initiativeSummary(fields gql.InitiativeSummaryFields) InitiativeSummary {
 	return InitiativeSummary{
 		ID:          fields.Id,
 		Name:        fields.Name,
@@ -242,7 +245,7 @@ func initiativeSummary(fields InitiativeSummaryFields) InitiativeSummary {
 	}
 }
 
-func initiativeHistorySummary(fields InitiativeHistorySummaryFields) InitiativeHistorySummary {
+func initiativeHistorySummary(fields gql.InitiativeHistorySummaryFields) InitiativeHistorySummary {
 	return InitiativeHistorySummary{
 		ID:           fields.Id,
 		InitiativeID: fields.Initiative.Id,

@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ProjectLabelSummary is the compact project label model used by read-only commands.
@@ -52,13 +54,13 @@ type ProjectLabelProjectsList struct {
 
 // ListProjectLabels returns visible Linear project labels.
 func ListProjectLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectLabelList, error) {
-	result, err := projectLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectLabelList{}, fmt.Errorf("list project labels: %w", err)
 	}
 
 	labels := mapNodes(result.ProjectLabels.Nodes, func(
-		label projectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
+		label gql.XProjectLabelsProjectLabelsProjectLabelConnectionNodesProjectLabel,
 	) ProjectLabelSummary {
 		return projectLabelSummary(label.ProjectLabelSummaryFields)
 	})
@@ -72,7 +74,7 @@ func ListProjectLabels(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetProjectLabelByID returns one Linear project label by id.
 func GetProjectLabelByID(ctx context.Context, graphqlClient graphql.Client, id string) (ProjectLabelSummary, error) {
-	result, err := projectLabel(ctx, graphqlClient, id)
+	result, err := gql.XProjectLabel(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectLabelSummary{}, fmt.Errorf("get project label %s: %w", id, err)
 	}
@@ -87,13 +89,13 @@ func ListProjectLabelChildren(
 	id string,
 	limit int,
 ) (ProjectLabelChildrenList, error) {
-	result, err := projectLabel_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectLabel_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectLabelChildrenList{}, fmt.Errorf("list project label children %s: %w", id, err)
 	}
 
 	labels := mapNodes(result.ProjectLabel.Children.Nodes, func(
-		label projectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel,
+		label gql.XProjectLabel_childrenProjectLabelChildrenProjectLabelConnectionNodesProjectLabel,
 	) ProjectLabelSummary {
 		return projectLabelSummary(label.ProjectLabelSummaryFields)
 	})
@@ -114,13 +116,13 @@ func ListProjectLabelProjects(
 	id string,
 	limit int,
 ) (ProjectLabelProjectsList, error) {
-	result, err := projectLabel_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectLabel_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectLabelProjectsList{}, fmt.Errorf("list project label projects %s: %w", id, err)
 	}
 
 	projects := mapNodes(result.ProjectLabel.Projects.Nodes, func(
-		project projectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject,
+		project gql.XProjectLabel_projectsProjectLabelProjectsProjectConnectionNodesProject,
 	) ProjectSummary {
 		return projectSummaryFromFields(project.ProjectSummaryFields)
 	})
@@ -134,7 +136,7 @@ func ListProjectLabelProjects(
 	}, nil
 }
 
-func projectLabelSummary(fields ProjectLabelSummaryFields) ProjectLabelSummary {
+func projectLabelSummary(fields gql.ProjectLabelSummaryFields) ProjectLabelSummary {
 	label := ProjectLabelSummary{
 		ID:            fields.Id,
 		Name:          fields.Name,

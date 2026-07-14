@@ -20,10 +20,15 @@ func addIssueAddLabelCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 
-			return runIssueAddLabel(
-				ctx, command, options, issueAdapterFor(runtime),
+			issue, err := client.AddIssueLabel(
+				ctx, runtime.graphqlClient, runtime.config.Target,
 				client.IssueLabelAssociationRequest{IssueID: args[0], LabelID: args[1]},
 			)
+			if err != nil {
+				return err
+			}
+
+			return writeIssue(command, options, issue)
 		},
 	})
 }
@@ -39,40 +44,15 @@ func addIssueRemoveLabelCommand(ctx context.Context, root *cobra.Command, option
 				return err
 			}
 
-			return runIssueRemoveLabel(
-				ctx, command, options, issueAdapterFor(runtime),
+			issue, err := client.RemoveIssueLabel(
+				ctx, runtime.graphqlClient, runtime.config.Target,
 				client.IssueLabelAssociationRequest{IssueID: args[0], LabelID: args[1]},
 			)
+			if err != nil {
+				return err
+			}
+
+			return writeIssue(command, options, issue)
 		},
 	})
-}
-
-func runIssueAddLabel(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	adder issueLabelAdder,
-	request client.IssueLabelAssociationRequest,
-) error {
-	issue, err := adder.AddIssueLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeIssue(command, options, issue)
-}
-
-func runIssueRemoveLabel(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	remover issueLabelRemover,
-	request client.IssueLabelAssociationRequest,
-) error {
-	issue, err := remover.RemoveIssueLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeIssue(command, options, issue)
 }

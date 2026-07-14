@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ReleaseSummary is the compact release model used by read-only commands.
@@ -118,13 +120,13 @@ type ReleaseNoteList struct {
 
 // ListReleases returns visible Linear releases.
 func ListReleases(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseList, error) {
-	result, err := releases(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleases(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseList{}, fmt.Errorf("list releases: %w", err)
 	}
 
 	summaries := mapNodes(result.Releases.Nodes, func(
-		node releasesReleasesReleaseConnectionNodesRelease,
+		node gql.XReleasesReleasesReleaseConnectionNodesRelease,
 	) ReleaseSummary {
 		return releaseSummary(node.ReleaseSummaryFields)
 	})
@@ -138,7 +140,7 @@ func ListReleases(ctx context.Context, graphqlClient graphql.Client, limit int) 
 
 // GetReleaseByID returns one Linear release by id.
 func GetReleaseByID(ctx context.Context, graphqlClient graphql.Client, id string) (ReleaseSummary, error) {
-	result, err := release(ctx, graphqlClient, id)
+	result, err := gql.XRelease(ctx, graphqlClient, id)
 	if err != nil {
 		return ReleaseSummary{}, fmt.Errorf("get release %s: %w", id, err)
 	}
@@ -153,13 +155,13 @@ func ListReleaseHistory(
 	id string,
 	limit int,
 ) (ReleaseHistoryList, error) {
-	result, err := release_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XRelease_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseHistoryList{}, fmt.Errorf("list release history %s: %w", id, err)
 	}
 
 	history := mapNodes(result.Release.History.Nodes, func(
-		node release_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory,
+		node gql.XRelease_historyReleaseHistoryReleaseHistoryConnectionNodesReleaseHistory,
 	) ReleaseHistorySummary {
 		return releaseHistorySummary(node.ReleaseHistorySummaryFields)
 	})
@@ -178,13 +180,13 @@ func ListReleaseDocuments(
 	id string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := release_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XRelease_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return DocumentList{}, fmt.Errorf("list release documents %s: %w", id, err)
 	}
 
 	documents := mapNodes(result.Release.Documents.Nodes, func(
-		node release_documentsReleaseDocumentsDocumentConnectionNodesDocument,
+		node gql.XRelease_documentsReleaseDocumentsDocumentConnectionNodesDocument,
 	) DocumentSummary {
 		return documentSummary(node.DocumentSummaryFields)
 	})
@@ -203,13 +205,13 @@ func ListReleaseIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := release_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XRelease_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list release issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.Release.Issues.Nodes, func(
-		node release_issuesReleaseIssuesIssueConnectionNodesIssue,
+		node gql.XRelease_issuesReleaseIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(node.IssueSummaryFields)
 	})
@@ -228,13 +230,13 @@ func ListReleaseLinks(
 	id string,
 	limit int,
 ) (EntityExternalLinkList, error) {
-	result, err := release_links(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XRelease_links(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return EntityExternalLinkList{}, fmt.Errorf("list release links %s: %w", id, err)
 	}
 
 	links := mapNodes(result.Release.Links.Nodes, func(
-		node release_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink,
+		node gql.XRelease_linksReleaseLinksEntityExternalLinkConnectionNodesEntityExternalLink,
 	) EntityExternalLinkSummary {
 		return entityExternalLinkSummary(node.EntityExternalLinkSummaryFields)
 	})
@@ -252,7 +254,7 @@ func GetEntityExternalLinkByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (EntityExternalLinkSummary, error) {
-	result, err := entityExternalLink(ctx, graphqlClient, id)
+	result, err := gql.XEntityExternalLink(ctx, graphqlClient, id)
 	if err != nil {
 		return EntityExternalLinkSummary{}, fmt.Errorf("get external link %s: %w", id, err)
 	}
@@ -262,12 +264,12 @@ func GetEntityExternalLinkByID(
 
 // SearchReleases returns Linear releases matching a term.
 func SearchReleases(ctx context.Context, graphqlClient graphql.Client, term string, limit int) (ReleaseList, error) {
-	result, err := releaseSearch(ctx, graphqlClient, stringPtr(term), intPtr(limit))
+	result, err := gql.XReleaseSearch(ctx, graphqlClient, stringPtr(term), intPtr(limit))
 	if err != nil {
 		return ReleaseList{}, fmt.Errorf("search releases: %w", err)
 	}
 
-	summaries := mapNodes(result.ReleaseSearch, func(node releaseSearchReleaseSearchRelease) ReleaseSummary {
+	summaries := mapNodes(result.ReleaseSearch, func(node gql.XReleaseSearchReleaseSearchRelease) ReleaseSummary {
 		return releaseSummary(node.ReleaseSummaryFields)
 	})
 
@@ -276,13 +278,13 @@ func SearchReleases(ctx context.Context, graphqlClient graphql.Client, term stri
 
 // ListReleaseNotes returns visible Linear release notes.
 func ListReleaseNotes(ctx context.Context, graphqlClient graphql.Client, limit int) (ReleaseNoteList, error) {
-	result, err := releaseNotes(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XReleaseNotes(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseNoteList{}, fmt.Errorf("list release notes: %w", err)
 	}
 
 	summaries := mapNodes(result.ReleaseNotes.Nodes, func(
-		node releaseNotesReleaseNotesReleaseNoteConnectionNodesReleaseNote,
+		node gql.XReleaseNotesReleaseNotesReleaseNoteConnectionNodesReleaseNote,
 	) ReleaseNoteSummary {
 		return releaseNoteSummary(node.ReleaseNoteSummaryFields)
 	})
@@ -296,7 +298,7 @@ func ListReleaseNotes(ctx context.Context, graphqlClient graphql.Client, limit i
 
 // GetReleaseNoteByID returns one Linear release note by id.
 func GetReleaseNoteByID(ctx context.Context, graphqlClient graphql.Client, id string) (ReleaseNoteSummary, error) {
-	result, err := releaseNote(ctx, graphqlClient, id)
+	result, err := gql.XReleaseNote(ctx, graphqlClient, id)
 	if err != nil {
 		return ReleaseNoteSummary{}, fmt.Errorf("get release note %s: %w", id, err)
 	}
@@ -304,7 +306,7 @@ func GetReleaseNoteByID(ctx context.Context, graphqlClient graphql.Client, id st
 	return releaseNoteSummary(result.ReleaseNote.ReleaseNoteSummaryFields), nil
 }
 
-func releaseSummary(fields ReleaseSummaryFields) ReleaseSummary {
+func releaseSummary(fields gql.ReleaseSummaryFields) ReleaseSummary {
 	summary := ReleaseSummary{
 		ID:               fields.Id,
 		Name:             fields.Name,
@@ -340,7 +342,7 @@ func releaseSummary(fields ReleaseSummaryFields) ReleaseSummary {
 	return summary
 }
 
-func releaseHistorySummary(fields ReleaseHistorySummaryFields) ReleaseHistorySummary {
+func releaseHistorySummary(fields gql.ReleaseHistorySummaryFields) ReleaseHistorySummary {
 	return ReleaseHistorySummary{
 		ID:         fields.Id,
 		ReleaseID:  fields.Release.Id,
@@ -352,7 +354,7 @@ func releaseHistorySummary(fields ReleaseHistorySummaryFields) ReleaseHistorySum
 	}
 }
 
-func entityExternalLinkSummary(fields EntityExternalLinkSummaryFields) EntityExternalLinkSummary {
+func entityExternalLinkSummary(fields gql.EntityExternalLinkSummaryFields) EntityExternalLinkSummary {
 	summary := EntityExternalLinkSummary{
 		ID:         fields.Id,
 		Label:      fields.Label,
@@ -378,7 +380,7 @@ func entityExternalLinkSummary(fields EntityExternalLinkSummaryFields) EntityExt
 	return summary
 }
 
-func releaseNoteSummary(fields ReleaseNoteSummaryFields) ReleaseNoteSummary {
+func releaseNoteSummary(fields gql.ReleaseNoteSummaryFields) ReleaseNoteSummary {
 	summary := ReleaseNoteSummary{
 		ID:               fields.Id,
 		Title:            stringValue(fields.Title),
@@ -406,7 +408,7 @@ func releaseNoteSummary(fields ReleaseNoteSummaryFields) ReleaseNoteSummary {
 	return summary
 }
 
-func releaseNoteGenerationStatus(status *ReleaseNoteGenerationStatus) string {
+func releaseNoteGenerationStatus(status *gql.ReleaseNoteGenerationStatus) string {
 	if status == nil {
 		return ""
 	}

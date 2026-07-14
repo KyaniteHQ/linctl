@@ -127,7 +127,7 @@ func runIssueImport(
 		return err
 	}
 
-	return createImportedIssues(ctx, command, options, issueAdapterFor(runtime), requests)
+	return createImportedIssues(ctx, command, options, bulkIssueClient{runtime: runtime}, requests)
 }
 
 func runIssueImportDryRun(
@@ -174,10 +174,7 @@ func importDryRunTeamKey(ctx context.Context, options *rootOptions) (string, err
 	return resolvedConfig.Target.TeamKey, nil
 }
 
-// bulkIssueCreator is the narrow Command Port the import create loop depends on.
-// Defined by its consumer (it needs only the batch create) and satisfied in
-// production by issueClientAdapter, so the row accumulation and per-row error
-// wrapping are tested against an in-memory fake rather than canned GraphQL JSON.
+// bulkIssueCreator isolates the one guarded batch call used by issue import.
 type bulkIssueCreator interface {
 	CreateIssues(
 		ctx context.Context,
@@ -186,12 +183,25 @@ type bulkIssueCreator interface {
 	) ([]client.IssueCreateOutcome, error)
 }
 
-// The shared production adapter satisfies the narrow bulk port; this assertion
-// fails the build if CreateIssues's shape drifts, keeping the write-guard
-// forwarding intact rather than letting an adapter quietly stop satisfying it.
-var _ bulkIssueCreator = issueClientAdapter{}
+type bulkIssueClient struct {
+	runtime commandRuntime
+}
 
-// importBatchConcurrency is 0 so the port's production adapter defers to
+func (creator bulkIssueClient) CreateIssues(
+	ctx context.Context,
+	requests []client.IssueCreateRequest,
+	concurrency int,
+) ([]client.IssueCreateOutcome, error) {
+	return client.CreateIssues(
+		ctx,
+		creator.runtime.graphqlClient,
+		creator.runtime.config.Target,
+		requests,
+		concurrency,
+	)
+}
+
+// importBatchConcurrency is 0 so the port's production implementation defers to
 // client.CreateIssues's own default and cap.
 const importBatchConcurrency = 0
 
@@ -473,7 +483,9 @@ func runIssueBulkExport(
 	if err != nil {
 		return err
 	}
-	issues, err := issueAdapterFor(runtime).ListIssuesByTeam(ctx, target.Team.ID, limit, client.IssueListFilters{})
+	issues, err := client.ListIssuesByTeam(
+		ctx, runtime.graphqlClient, target.Team.ID, limit, client.IssueListFilters{},
+	)
 	if err != nil {
 		return err
 	}

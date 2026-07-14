@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // AgentSessionSummary is the compact AgentSession model used by read-only commands.
@@ -34,13 +36,13 @@ type AgentSessionList struct {
 
 // ListAgentSessions returns AgentSessions visible to the authenticated user.
 func ListAgentSessions(ctx context.Context, graphqlClient graphql.Client, limit int) (AgentSessionList, error) {
-	result, err := agentSessions(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAgentSessions(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AgentSessionList{}, fmt.Errorf("list agent sessions: %w", err)
 	}
 
 	summaries := mapNodes(result.AgentSessions.Nodes, func(
-		node agentSessionsAgentSessionsAgentSessionConnectionNodesAgentSession,
+		node gql.XAgentSessionsAgentSessionsAgentSessionConnectionNodesAgentSession,
 	) AgentSessionSummary {
 		return agentSessionSummary(node.AgentSessionSummaryFields)
 	})
@@ -54,7 +56,7 @@ func ListAgentSessions(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetAgentSessionByID returns one AgentSession by id.
 func GetAgentSessionByID(ctx context.Context, graphqlClient graphql.Client, id string) (AgentSessionSummary, error) {
-	result, err := agentSession(ctx, graphqlClient, id)
+	result, err := gql.XAgentSession(ctx, graphqlClient, id)
 	if err != nil {
 		return AgentSessionSummary{}, fmt.Errorf("get agent session %s: %w", id, err)
 	}
@@ -62,7 +64,7 @@ func GetAgentSessionByID(ctx context.Context, graphqlClient graphql.Client, id s
 	return agentSessionSummary(result.AgentSession.AgentSessionSummaryFields), nil
 }
 
-func agentSessionSummary(fields AgentSessionSummaryFields) AgentSessionSummary {
+func agentSessionSummary(fields gql.AgentSessionSummaryFields) AgentSessionSummary {
 	summary := AgentSessionSummary{
 		ID:         fields.Id,
 		SlugID:     fields.SlugId,

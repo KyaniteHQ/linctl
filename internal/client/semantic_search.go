@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // SemanticSearchResultSummary is a compact reference returned by semantic search.
@@ -28,13 +30,13 @@ func SearchSemantic(
 	query string,
 	limit int,
 ) (SemanticSearchList, error) {
-	result, err := semanticSearch(ctx, graphqlClient, query, intPtr(limit), boolPtr(false))
+	result, err := gql.XSemanticSearch(ctx, graphqlClient, query, intPtr(limit), boolPtr(false))
 	if err != nil {
 		return SemanticSearchList{}, fmt.Errorf("semantic search: %w", err)
 	}
 
 	results := mapNodes(result.SemanticSearch.Results, func(
-		searchResult semanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult,
+		searchResult gql.XSemanticSearchSemanticSearchSemanticSearchPayloadResultsSemanticSearchResult,
 	) SemanticSearchResultSummary {
 		return semanticSearchResultSummary(searchResult.SemanticSearchResultSummaryFields)
 	})
@@ -42,7 +44,7 @@ func SearchSemantic(
 	return SemanticSearchList{Results: results}, nil
 }
 
-func semanticSearchResultSummary(fields SemanticSearchResultSummaryFields) SemanticSearchResultSummary {
+func semanticSearchResultSummary(fields gql.SemanticSearchResultSummaryFields) SemanticSearchResultSummary {
 	summary := SemanticSearchResultSummary{
 		Type: string(fields.Type),
 		ID:   fields.Id,

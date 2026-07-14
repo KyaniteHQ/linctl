@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // WorkflowStateSummary is the compact workflow state model used by read-only commands.
@@ -37,13 +39,13 @@ type WorkflowStateIssueList struct {
 
 // ListWorkflowStates returns visible workflow states.
 func ListWorkflowStates(ctx context.Context, graphqlClient graphql.Client, limit int) (WorkflowStateList, error) {
-	states, err := workflowStates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	states, err := gql.XWorkflowStates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return WorkflowStateList{}, fmt.Errorf("list workflow states: %w", err)
 	}
 
 	summaries := mapNodes(states.WorkflowStates.Nodes, func(
-		state workflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState,
+		state gql.XWorkflowStatesWorkflowStatesWorkflowStateConnectionNodesWorkflowState,
 	) WorkflowStateSummary {
 		return workflowStateSummary(state.WorkflowStateSummaryFields)
 	})
@@ -61,7 +63,7 @@ func GetWorkflowStateByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (WorkflowStateSummary, error) {
-	state, err := workflowState(ctx, graphqlClient, id)
+	state, err := gql.XWorkflowState(ctx, graphqlClient, id)
 	if err != nil {
 		return WorkflowStateSummary{}, fmt.Errorf("get workflow state %s: %w", id, err)
 	}
@@ -76,13 +78,13 @@ func ListWorkflowStateIssues(
 	id string,
 	limit int,
 ) (WorkflowStateIssueList, error) {
-	state, err := workflowState_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	state, err := gql.XWorkflowState_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return WorkflowStateIssueList{}, fmt.Errorf("list workflow state issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(state.WorkflowState.Issues.Nodes, func(
-		issue workflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue,
+		issue gql.XWorkflowState_issuesWorkflowStateIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -96,7 +98,7 @@ func ListWorkflowStateIssues(
 	}, nil
 }
 
-func workflowStateSummary(state WorkflowStateSummaryFields) WorkflowStateSummary {
+func workflowStateSummary(state gql.WorkflowStateSummaryFields) WorkflowStateSummary {
 	return WorkflowStateSummary{
 		ID:       state.Id,
 		Name:     state.Name,

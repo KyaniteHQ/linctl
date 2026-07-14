@@ -15,16 +15,15 @@ func addProjectLabelCommand(ctx context.Context, root *cobra.Command, options *r
 		root,
 		options,
 		readListGetSpec[client.ProjectLabelList, client.ProjectLabelSummary]{
-			Use:           "project-label",
-			Short:         "Read and write Linear project labels",
-			ListShort:     "List visible Linear project labels",
-			LimitHelp:     "maximum project labels to return",
-			GetUse:        "get PROJECT_LABEL_ID",
-			GetShort:      "Get one project label by id",
-			LoadList:      loadProjectLabelList,
-			PageWithItems: projectLabelPageWithItems,
-			LoadGet:       loadProjectLabel,
-			WriteItem:     writeProjectLabel,
+			Use:       "project-label",
+			Short:     "Read and write Linear project labels",
+			ListShort: "List visible Linear project labels",
+			LimitHelp: "maximum project labels to return",
+			GetUse:    "get PROJECT_LABEL_ID",
+			GetShort:  "Get one project label by id",
+			LoadList:  loadProjectLabelList,
+			LoadGet:   loadProjectLabel,
+			WriteItem: writeProjectLabel,
 		},
 	)
 	addProjectLabelChildrenCommand(ctx, parentCommand, options)
@@ -49,13 +48,12 @@ func addProjectLabelChildrenCommand(ctx context.Context, root *cobra.Command, op
 				options,
 				limit,
 				loadProjectLabelChildrenList,
-				projectLabelChildrenPageWithItems,
 				writeProjectLabel,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum child project labels to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadProjectLabelChildrenList))
 }
 
 func addProjectLabelProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -72,13 +70,12 @@ func addProjectLabelProjectsCommand(ctx context.Context, root *cobra.Command, op
 				options,
 				limit,
 				loadProjectLabelProjectsList,
-				projectLabelProjectsPageWithItems,
 				writeProject,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadProjectLabelProjectsList))
 }
 
 func writeProjectLabel(command *cobra.Command, options *rootOptions, label client.ProjectLabelSummary) error {

@@ -12,6 +12,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/KyaniteHQ/linctl/internal/oauth"
 )
@@ -35,9 +36,9 @@ func Test_Integration_generatedViewerOrganizationTeams_whenTokenConfigured(t *te
 	includeArchived := true
 
 	// When
-	viewer, viewerErr := Viewer(ctx, transport)
-	organization, organizationErr := Organization(ctx, transport)
-	teams, teamsErr := Teams(ctx, transport, &first, nil, &includeArchived)
+	viewer, viewerErr := gql.Viewer(ctx, transport)
+	organization, organizationErr := gql.Organization(ctx, transport)
+	teams, teamsErr := gql.Teams(ctx, transport, &first, nil, &includeArchived)
 
 	// Then
 	require.NoError(t, viewerErr)
@@ -301,7 +302,7 @@ func requireLiveWriteIntegration(t *testing.T) {
 }
 
 func archiveIntegrationIssue(ctx context.Context, transport *Transport, issueID string) (IssueSummary, error) {
-	archived, err := IssueArchive(ctx, transport, issueID, boolPtr(false))
+	archived, err := gql.IssueArchive(ctx, transport, issueID, boolPtr(false))
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -312,7 +313,7 @@ func archiveIntegrationIssue(ctx context.Context, transport *Transport, issueID 
 	return issueSummaryFromFields(archived.IssueArchive.Entity.IssueSummaryFields), nil
 }
 
-func containsTeamID(teams []TeamsTeamsTeamConnectionNodesTeam, teamID string) bool {
+func containsTeamID(teams []gql.TeamsTeamsTeamConnectionNodesTeam, teamID string) bool {
 	for _, team := range teams {
 		if team.Id == teamID {
 			return true

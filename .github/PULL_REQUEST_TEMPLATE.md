@@ -13,7 +13,7 @@
 <!-- If this adds or touches a write, confirm it goes through the target guard. -->
 
 - [ ] Reads stay free; any new write is target-pinned and fails closed on mismatch (no bypass flag)
-- [ ] Operations are schema-aligned (genqlient); `internal/client/generated.go` regenerated and committed if operations changed
+- [ ] Operations are schema-aligned (genqlient); `internal/client/internal/gql/generated.go` regenerated and committed if operations changed
 - [ ] No token value is printed or logged
 
 ## Checks

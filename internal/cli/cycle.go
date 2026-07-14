@@ -25,13 +25,12 @@ func addCycleCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 
 func addCycleListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.CycleList, client.CycleSummary]{
-		Use:           "list",
-		Short:         "List Cycles for the resolved team",
-		LimitHelp:     "Cycles",
-		Args:          cobra.NoArgs,
-		Load:          loadCyclesByTeam,
-		PageWithItems: cyclePageWithItems,
-		WriteItem:     writeCycle,
+		Use:       "list",
+		Short:     "List Cycles for the resolved team",
+		LimitHelp: "Cycles",
+		Args:      cobra.NoArgs,
+		Load:      loadCyclesByTeam,
+		WriteItem: writeCycle,
 	})
 }
 
@@ -111,8 +110,7 @@ func addCycleIssueListCommand(
 			list, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Issues, err
 		},
-		PageWithItems: cycleIssuePageWithItems,
-		WriteItem:     writeIssue,
+		WriteItem: writeIssue,
 	})
 }
 

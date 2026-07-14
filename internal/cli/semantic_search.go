@@ -23,13 +23,12 @@ func addSemanticSearchCommand(ctx context.Context, root *cobra.Command, options 
 				options,
 				limit,
 				loadSemanticSearch,
-				semanticSearchPageWithItems,
 				writeSemanticSearchResult,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum semantic search results to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadSemanticSearch))
 }
 
 func writeSemanticSearchResult(

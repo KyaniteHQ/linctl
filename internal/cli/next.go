@@ -63,16 +63,30 @@ func runNext(ctx context.Context, command *cobra.Command, options *rootOptions, 
 }
 
 type nextIssueClientAdapter struct {
-	issueClientAdapter
 	runtime commandRuntime
 }
 
 func nextIssueAdapterFor(runtime commandRuntime) nextIssueClientAdapter {
-	return nextIssueClientAdapter{issueClientAdapter: issueAdapterFor(runtime), runtime: runtime}
+	return nextIssueClientAdapter{runtime: runtime}
 }
 
 func (adapter nextIssueClientAdapter) ResolveTarget(ctx context.Context) (client.ResolvedTarget, error) {
 	return adapter.runtime.resolveTarget(ctx)
+}
+
+func (adapter nextIssueClientAdapter) ListNextIssuesByTeam(
+	ctx context.Context,
+	teamID string,
+	limit int,
+) (client.IssueList, error) {
+	return client.ListNextIssuesByTeam(ctx, adapter.runtime.graphqlClient, teamID, limit)
+}
+
+func (adapter nextIssueClientAdapter) StartIssue(
+	ctx context.Context,
+	issueID string,
+) (client.IssueSummary, error) {
+	return client.StartIssue(ctx, adapter.runtime.graphqlClient, adapter.runtime.config.Target, issueID)
 }
 
 func runNextWithPicker(

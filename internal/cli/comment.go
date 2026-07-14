@@ -15,16 +15,15 @@ func addCommentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 		root,
 		options,
 		readListGetSpec[client.CommentList, client.CommentSummary]{
-			Use:           "comment",
-			Short:         "Read Linear comments",
-			ListShort:     "List visible comments",
-			LimitHelp:     "maximum comments to return",
-			GetUse:        "get COMMENT_ID",
-			GetShort:      "Get one comment by id",
-			LoadList:      loadCommentList,
-			PageWithItems: commentPageWithItems,
-			LoadGet:       loadComment,
-			WriteItem:     writeComment,
+			Use:       "comment",
+			Short:     "Read Linear comments",
+			ListShort: "List visible comments",
+			LimitHelp: "maximum comments to return",
+			GetUse:    "get COMMENT_ID",
+			GetShort:  "Get one comment by id",
+			LoadList:  loadCommentList,
+			LoadGet:   loadComment,
+			WriteItem: writeComment,
 		},
 	)
 	addCommentBotActorCommand(ctx, commentCommand, options)
@@ -49,35 +48,23 @@ func addCommentUpdateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 			request.ID = args[0]
+			if err := resolveBodyFlag(command, &request.Body); err != nil {
+				return err
+			}
+			if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
+				return err
+			}
+			comment, err := client.UpdateComment(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
 
-			return runCommentUpdate(ctx, command, options, commandAdapterFor(runtime), request, bodyFile)
+			return writeComment(command, options, comment)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "new comment body as markdown; use - to read stdin")
 	command.Flags().StringVar(&bodyFile, "body-file", "", "read new comment body from file")
 	root.AddCommand(command)
-}
-
-func runCommentUpdate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	updater commentUpdater,
-	request client.CommentUpdateRequest,
-	bodyFile string,
-) error {
-	if err := resolveBodyFlag(command, &request.Body); err != nil {
-		return err
-	}
-	if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
-		return err
-	}
-	comment, err := updater.UpdateComment(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeComment(command, options, comment)
 }
 
 func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -91,24 +78,14 @@ func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 
-			return runCommentDelete(ctx, command, options, commandAdapterFor(runtime), args[0])
+			deletedID, err := client.DeleteComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeDeletion(command, options, deletedID)
 		},
 	})
-}
-
-func runCommentDelete(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	deleter commentDeleter,
-	commentID string,
-) error {
-	deletedID, err := deleter.DeleteComment(ctx, commentID)
-	if err != nil {
-		return err
-	}
-
-	return writeDeletion(command, options, deletedID)
 }
 
 func addCommentResolveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -122,24 +99,14 @@ func addCommentResolveCommand(ctx context.Context, root *cobra.Command, options 
 				return err
 			}
 
-			return runCommentResolve(ctx, command, options, commandAdapterFor(runtime), args[0])
+			comment, err := client.ResolveComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeComment(command, options, comment)
 		},
 	})
-}
-
-func runCommentResolve(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	resolver commentResolver,
-	commentID string,
-) error {
-	comment, err := resolver.ResolveComment(ctx, commentID)
-	if err != nil {
-		return err
-	}
-
-	return writeComment(command, options, comment)
 }
 
 func addCommentUnresolveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -153,24 +120,14 @@ func addCommentUnresolveCommand(ctx context.Context, root *cobra.Command, option
 				return err
 			}
 
-			return runCommentUnresolve(ctx, command, options, commandAdapterFor(runtime), args[0])
+			comment, err := client.UnresolveComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeComment(command, options, comment)
 		},
 	})
-}
-
-func runCommentUnresolve(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	unresolver commentUnresolver,
-	commentID string,
-) error {
-	comment, err := unresolver.UnresolveComment(ctx, commentID)
-	if err != nil {
-		return err
-	}
-
-	return writeComment(command, options, comment)
 }
 
 func writeComment(command *cobra.Command, options *rootOptions, comment client.CommentSummary) error {
@@ -220,13 +177,12 @@ func addCommentChildrenCommand(ctx context.Context, root *cobra.Command, options
 				options,
 				limit,
 				loadCommentChildren,
-				commentChildPageWithItems,
 				writeCommentMetadata,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum child comments to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadCommentChildren))
 }
 
 func addCommentCreatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -243,13 +199,12 @@ func addCommentCreatedIssuesCommand(ctx context.Context, root *cobra.Command, op
 				options,
 				limit,
 				loadCommentCreatedIssues,
-				issuePageWithItems,
 				writeIssue,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadCommentCreatedIssues))
 }
 
 func writeCommentBotActor(command *cobra.Command, options *rootOptions, actor client.CommentBotActor) error {

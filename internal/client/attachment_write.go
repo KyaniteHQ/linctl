@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -15,14 +16,6 @@ type AttachmentLinkRequest struct {
 	URL      string
 	Title    string
 	Subtitle string
-}
-
-// LinearAttachmentCreateInput is the sparse Linear attachmentCreate payload linctl supports.
-type LinearAttachmentCreateInput struct {
-	Title    *string `json:"title,omitempty"`
-	Subtitle *string `json:"subtitle,omitempty"`
-	URL      string  `json:"url"`
-	IssueID  string  `json:"issueId"`
 }
 
 // LinkIssueAttachment attaches a URL to an issue after resolving and comparing
@@ -40,25 +33,35 @@ func LinkIssueAttachment(
 		return AttachmentSummary{}, fmt.Errorf("%w: url is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (AttachmentSummary, error) {
-		issue, err := guard.requireIssue(ctx, graphqlClient, request.IssueID)
-		if err != nil {
-			return AttachmentSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return AttachmentSummary{}, err
+	}
 
-		created, err := AttachmentLinkURL(ctx, graphqlClient, LinearAttachmentCreateInput{
-			Title:    optionalString(request.Title),
-			Subtitle: optionalString(request.Subtitle),
-			URL:      request.URL,
-			IssueID:  issue.ID,
-		})
-		if err != nil {
-			return AttachmentSummary{}, fmt.Errorf("link attachment to issue %s: %w", request.IssueID, err)
-		}
-		if !created.AttachmentCreate.Success {
-			return AttachmentSummary{}, fmt.Errorf("%w: attachmentCreate reported no success", ErrMutationFailed)
-		}
+	return guard.linkIssueAttachment(ctx, request)
+}
 
-		return attachmentSummary(created.AttachmentCreate.Attachment.AttachmentSummaryFields), nil
+func (guard *guardedClient) linkIssueAttachment(
+	ctx context.Context,
+	request AttachmentLinkRequest,
+) (AttachmentSummary, error) {
+	issue, err := guard.requireIssue(ctx, request.IssueID)
+	if err != nil {
+		return AttachmentSummary{}, err
+	}
+
+	created, err := gql.AttachmentLinkURL(ctx, guard.graphqlClient, LinearAttachmentCreateInput{
+		Title:    optionalString(request.Title),
+		Subtitle: optionalString(request.Subtitle),
+		URL:      request.URL,
+		IssueID:  issue.ID,
 	})
+	if err != nil {
+		return AttachmentSummary{}, fmt.Errorf("link attachment to issue %s: %w", request.IssueID, err)
+	}
+	if !created.AttachmentCreate.Success {
+		return AttachmentSummary{}, fmt.Errorf("%w: attachmentCreate reported no success", ErrMutationFailed)
+	}
+
+	return attachmentSummary(created.AttachmentCreate.Attachment.AttachmentSummaryFields), nil
 }

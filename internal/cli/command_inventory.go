@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"reflect"
 	"sort"
 	"strings"
@@ -257,14 +258,48 @@ func commandTargetArgs(command *cobra.Command) []string {
 
 func collectionKeyForPage[Page any]() string {
 	pageType := reflect.TypeOf((*Page)(nil)).Elem()
-	for pageType.Kind() == reflect.Pointer {
-		pageType = pageType.Elem()
-	}
-	if pageType.Kind() != reflect.Struct {
+	field, err := pageCollectionField(pageType)
+	if err != nil {
 		return ""
 	}
 
-	var collectionKey string
+	return jsonFieldName(field)
+}
+
+func mustCollectionKeyForList[Page any, Item any]() string {
+	pageType := reflect.TypeOf((*Page)(nil)).Elem()
+	field, err := pageCollectionField(pageType)
+	if err != nil {
+		panic(err)
+	}
+	itemsType := reflect.TypeOf((*[]Item)(nil)).Elem()
+	if field.Type != itemsType {
+		panic(fmt.Errorf(
+			"list page %s collection field %q has type %s, not %s",
+			pageType,
+			field.Name,
+			field.Type,
+			itemsType,
+		))
+	}
+
+	return jsonFieldName(field)
+}
+
+func pageCollectionField(pageType reflect.Type) (reflect.StructField, error) {
+	originalType := pageType
+	if pageType.Kind() == reflect.Pointer {
+		pageType = pageType.Elem()
+		if pageType.Kind() != reflect.Struct {
+			return reflect.StructField{}, fmt.Errorf("list page %s must point directly to a struct", originalType)
+		}
+	}
+	if pageType.Kind() != reflect.Struct {
+		return reflect.StructField{}, fmt.Errorf("list page %s must be a struct or pointer to a struct", originalType)
+	}
+
+	var collectionField reflect.StructField
+	found := false
 	for index := range pageType.NumField() {
 		field := pageType.Field(index)
 		if field.PkgPath != "" || field.Type.Kind() != reflect.Slice {
@@ -274,13 +309,22 @@ func collectionKeyForPage[Page any]() string {
 		if key == "" {
 			continue
 		}
-		if collectionKey != "" {
-			return ""
+		if found {
+			return reflect.StructField{}, fmt.Errorf(
+				"list page %s has multiple exported JSON slice fields %q and %q",
+				originalType,
+				collectionField.Name,
+				field.Name,
+			)
 		}
-		collectionKey = key
+		collectionField = field
+		found = true
+	}
+	if !found {
+		return reflect.StructField{}, fmt.Errorf("list page %s has no exported JSON slice field", originalType)
 	}
 
-	return collectionKey
+	return collectionField, nil
 }
 
 func jsonFieldName(field reflect.StructField) string {

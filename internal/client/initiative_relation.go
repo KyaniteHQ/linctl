@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // InitiativeRelationSummary is one parent-child relation between initiatives.
@@ -36,13 +38,13 @@ func ListInitiativeRelations(
 	graphqlClient graphql.Client,
 	limit int,
 ) (InitiativeRelationList, error) {
-	result, err := initiativeRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiativeRelations(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeRelationList{}, fmt.Errorf("list initiative relations: %w", err)
 	}
 
 	relations := mapNodes(result.InitiativeRelations.Nodes, func(
-		relation initiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation,
+		relation gql.XInitiativeRelationsInitiativeRelationsInitiativeRelationConnectionNodesInitiativeRelation,
 	) InitiativeRelationSummary {
 		return initiativeRelationSummary(relation.InitiativeRelationSummaryFields)
 	})
@@ -60,7 +62,7 @@ func GetInitiativeRelationByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (InitiativeRelationSummary, error) {
-	result, err := initiativeRelation(ctx, graphqlClient, id)
+	result, err := gql.XInitiativeRelation(ctx, graphqlClient, id)
 	if err != nil {
 		return InitiativeRelationSummary{}, fmt.Errorf("get initiative relation %s: %w", id, err)
 	}
@@ -68,7 +70,7 @@ func GetInitiativeRelationByID(
 	return initiativeRelationSummary(result.InitiativeRelation.InitiativeRelationSummaryFields), nil
 }
 
-func initiativeRelationSummary(relation InitiativeRelationSummaryFields) InitiativeRelationSummary {
+func initiativeRelationSummary(relation gql.InitiativeRelationSummaryFields) InitiativeRelationSummary {
 	summary := InitiativeRelationSummary{
 		ID:                    relation.Id,
 		ParentInitiativeID:    relation.Initiative.Id,

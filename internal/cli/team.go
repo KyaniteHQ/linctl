@@ -28,13 +28,12 @@ func addTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 
 func addTeamListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamList, client.TeamSummary]{
-		Use:           "list",
-		Short:         "List visible teams",
-		LimitHelp:     "teams",
-		Args:          cobra.NoArgs,
-		Load:          loadTeamList,
-		PageWithItems: teamPageWithItems,
-		WriteItem:     writeTeam,
+		Use:       "list",
+		Short:     "List visible teams",
+		LimitHelp: "teams",
+		Args:      cobra.NoArgs,
+		Load:      loadTeamList,
+		WriteItem: writeTeam,
 	})
 }
 
@@ -61,121 +60,111 @@ func addTeamGetCommand(ctx context.Context, root *cobra.Command, options *rootOp
 
 func addTeamMembersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamMemberList, client.UserSummary]{
-		Use:           "members TEAM_ID",
-		Short:         "List team members",
-		LimitHelp:     "members",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamMemberList,
-		PageWithItems: teamMemberPageWithItems,
-		WriteItem:     writeUser,
+		Use:       "members TEAM_ID",
+		Short:     "List team members",
+		LimitHelp: "members",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamMemberList,
+		WriteItem: writeUser,
 	})
 }
 
 func addTeamCyclesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.CycleList, client.CycleSummary]{
-		Use:           "cycles TEAM_ID",
-		Short:         "List team Cycles",
-		LimitHelp:     "Cycles",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamCycles,
-		PageWithItems: cyclePageWithItems,
-		WriteItem:     writeCycle,
+		Use:       "cycles TEAM_ID",
+		Short:     "List team Cycles",
+		LimitHelp: "Cycles",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamCycles,
+		WriteItem: writeCycle,
 	})
 }
 
 func addTeamIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
-		Use:           "issues TEAM_ID",
-		Short:         "List team issues",
-		LimitHelp:     "issues",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamIssues,
-		PageWithItems: issuePageWithItems,
-		WriteItem:     writeIssue,
+		Use:       "issues TEAM_ID",
+		Short:     "List team issues",
+		LimitHelp: "issues",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamIssues,
+		WriteItem: writeIssue,
 	})
 }
 
 func addTeamLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.LabelList, client.LabelSummary]{
-		Use:           "labels TEAM_ID",
-		Short:         "List team labels",
-		LimitHelp:     "labels",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamLabels,
-		PageWithItems: labelPageWithItems,
-		WriteItem:     writeLabel,
+		Use:       "labels TEAM_ID",
+		Short:     "List team labels",
+		LimitHelp: "labels",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamLabels,
+		WriteItem: writeLabel,
 	})
 }
 
 func addTeamMembershipsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
-		Use:           "memberships TEAM_ID",
-		Short:         "List team memberships",
-		LimitHelp:     "memberships",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamMemberships,
-		PageWithItems: teamMembershipPageWithItems,
-		WriteItem:     writeTeamMembership,
+		Use:       "memberships TEAM_ID",
+		Short:     "List team memberships",
+		LimitHelp: "memberships",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamMemberships,
+		WriteItem: writeTeamMembership,
 	})
 }
 
 func addTeamProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.ProjectList, client.ProjectSummary]{
-		Use:           "projects TEAM_ID",
-		Short:         "List team projects",
-		LimitHelp:     "projects",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamProjects,
-		PageWithItems: projectPageWithItems,
-		WriteItem:     writeProject,
+		Use:       "projects TEAM_ID",
+		Short:     "List team projects",
+		LimitHelp: "projects",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamProjects,
+		WriteItem: writeProject,
 	})
 }
 
 func addTeamReleasePipelinesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.ReleasePipelineList, client.ReleasePipelineSummary]{
-		Use:           "release-pipelines TEAM_ID",
-		Short:         "List team release pipelines",
-		LimitHelp:     "release pipelines",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamReleasePipelines,
-		PageWithItems: releasePipelinePageWithItems,
-		WriteItem:     writeReleasePipeline,
+		Use:       "release-pipelines TEAM_ID",
+		Short:     "List team release pipelines",
+		LimitHelp: "release pipelines",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamReleasePipelines,
+		WriteItem: writeReleasePipeline,
 	})
 }
 
 func addTeamStatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.WorkflowStateList, client.WorkflowStateSummary]{
-		Use:           "states TEAM_ID",
-		Short:         "List team workflow states",
-		LimitHelp:     "workflow states",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamStates,
-		PageWithItems: workflowStatePageWithItems,
-		WriteItem:     writeWorkflowState,
+		Use:       "states TEAM_ID",
+		Short:     "List team workflow states",
+		LimitHelp: "workflow states",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamStates,
+		WriteItem: writeWorkflowState,
 	})
 }
 
 func addTeamGitAutomationStatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.GitAutomationStateList, client.GitAutomationStateSummary]{
-		Use:           "git-automation-states TEAM_ID",
-		Short:         "List team Git automation states",
-		LimitHelp:     "Git automation states",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamGitAutomationStates,
-		PageWithItems: gitAutomationStatePageWithItems,
-		WriteItem:     writeGitAutomationState,
+		Use:       "git-automation-states TEAM_ID",
+		Short:     "List team Git automation states",
+		LimitHelp: "Git automation states",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamGitAutomationStates,
+		WriteItem: writeGitAutomationState,
 	})
 }
 
 func addTeamTemplatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TemplateList, client.TemplateSummary]{
-		Use:           "templates TEAM_ID",
-		Short:         "List team templates",
-		LimitHelp:     "templates",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadTeamTemplates,
-		PageWithItems: templatePageWithItems,
-		WriteItem:     writeTemplate,
+		Use:       "templates TEAM_ID",
+		Short:     "List team templates",
+		LimitHelp: "templates",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadTeamTemplates,
+		WriteItem: writeTemplate,
 	})
 }
 

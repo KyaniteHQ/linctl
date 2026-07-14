@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // AttachmentSummary is the compact attachment model used by read-only commands.
@@ -25,13 +27,13 @@ type AttachmentList struct {
 
 // ListAttachments returns visible issue attachments.
 func ListAttachments(ctx context.Context, graphqlClient graphql.Client, limit int) (AttachmentList, error) {
-	result, err := attachments(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachments(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AttachmentList{}, fmt.Errorf("list attachments: %w", err)
 	}
 
 	summaries := mapNodes(result.Attachments.Nodes, func(
-		node attachmentsAttachmentsAttachmentConnectionNodesAttachment,
+		node gql.XAttachmentsAttachmentsAttachmentConnectionNodesAttachment,
 	) AttachmentSummary {
 		return attachmentSummary(node.AttachmentSummaryFields)
 	})
@@ -50,13 +52,13 @@ func ListAttachmentsForURL(
 	url string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := attachmentsForURL(ctx, graphqlClient, url, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentsForURL(ctx, graphqlClient, url, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AttachmentList{}, fmt.Errorf("list attachments for url %s: %w", url, err)
 	}
 
 	summaries := mapNodes(result.AttachmentsForURL.Nodes, func(
-		node attachmentsForURLAttachmentsForURLAttachmentConnectionNodesAttachment,
+		node gql.XAttachmentsForURLAttachmentsForURLAttachmentConnectionNodesAttachment,
 	) AttachmentSummary {
 		return attachmentSummary(node.AttachmentSummaryFields)
 	})
@@ -74,7 +76,7 @@ func GetAttachmentByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (AttachmentSummary, error) {
-	result, err := attachment(ctx, graphqlClient, id)
+	result, err := gql.XAttachment(ctx, graphqlClient, id)
 	if err != nil {
 		return AttachmentSummary{}, fmt.Errorf("get attachment %s: %w", id, err)
 	}
@@ -84,7 +86,7 @@ func GetAttachmentByID(
 
 // GetAttachmentIssue returns the issue associated with one attachment.
 func GetAttachmentIssue(ctx context.Context, graphqlClient graphql.Client, id string) (IssueSummary, error) {
-	result, err := attachmentIssue(ctx, graphqlClient, id)
+	result, err := gql.XAttachmentIssue(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("get attachment issue %s: %w", id, err)
 	}
@@ -99,13 +101,13 @@ func ListAttachmentIssueAttachments(
 	id string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := attachmentIssue_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AttachmentList{}, fmt.Errorf("list attachment issue attachments %s: %w", id, err)
 	}
 
 	attachments := mapNodes(result.AttachmentIssue.Attachments.Nodes, func(
-		attachment attachmentIssue_attachmentsAttachmentIssueAttachmentsAttachmentConnectionNodesAttachment,
+		attachment gql.IssueAttachmentsProjectionAttachmentsAttachmentConnectionNodesAttachment,
 	) AttachmentSummary {
 		return attachmentSummary(attachment.AttachmentSummaryFields)
 	})
@@ -119,14 +121,14 @@ func ListAttachmentIssueAttachments(
 
 // GetAttachmentIssueBotActor returns the issue bot actor associated with one attachment.
 func GetAttachmentIssueBotActor(ctx context.Context, graphqlClient graphql.Client, id string) (IssueBotActor, error) {
-	result, err := attachmentIssue_botActor(ctx, graphqlClient, id)
+	result, err := gql.XAttachmentIssue_botActor(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueBotActor{}, fmt.Errorf("get attachment issue bot actor %s: %w", id, err)
 	}
 
 	return IssueBotActor{
 		IssueID: result.AttachmentIssue.Id,
-		Bot:     attachmentIssueActorBotSummary(result.AttachmentIssue.BotActor),
+		Bot:     issueActorBotSummary(result.AttachmentIssue.BotActor),
 	}, nil
 }
 
@@ -137,13 +139,13 @@ func ListAttachmentIssueChildren(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := attachmentIssue_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list attachment issue children %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.AttachmentIssue.Children.Nodes, func(
-		issue attachmentIssue_childrenAttachmentIssueChildrenIssueConnectionNodesIssue,
+		issue gql.IssueChildrenProjectionChildrenIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -162,13 +164,13 @@ func ListAttachmentIssueDocuments(
 	id string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := attachmentIssue_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return DocumentList{}, fmt.Errorf("list attachment issue documents %s: %w", id, err)
 	}
 
 	documents := mapNodes(result.AttachmentIssue.Documents.Nodes, func(
-		document attachmentIssue_documentsAttachmentIssueDocumentsDocumentConnectionNodesDocument,
+		document gql.IssueDocumentsProjectionDocumentsDocumentConnectionNodesDocument,
 	) DocumentSummary {
 		return documentSummary(document.DocumentSummaryFields)
 	})
@@ -187,13 +189,13 @@ func ListAttachmentIssueFormerAttachments(
 	id string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := attachmentIssue_formerAttachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_formerAttachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AttachmentList{}, fmt.Errorf("list attachment issue former attachments %s: %w", id, err)
 	}
 
 	attachments := mapNodes(result.AttachmentIssue.FormerAttachments.Nodes, func(
-		attachment attachmentIssue_formerAttachmentsAttachmentIssueFormerAttachmentsAttachmentConnectionNodesAttachment,
+		attachment gql.IssueFormerAttachmentsProjectionFormerAttachmentsAttachmentConnectionNodesAttachment,
 	) AttachmentSummary {
 		return attachmentSummary(attachment.AttachmentSummaryFields)
 	})
@@ -212,13 +214,13 @@ func ListAttachmentIssueComments(
 	id string,
 	limit int,
 ) (IssueCommentMetadataList, error) {
-	result, err := attachmentIssue_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCommentMetadataList{}, fmt.Errorf("list attachment issue comments %s: %w", id, err)
 	}
 
 	comments := mapNodes(result.AttachmentIssue.Comments.Nodes, func(
-		comment attachmentIssue_commentsAttachmentIssueCommentsCommentConnectionNodesComment,
+		comment gql.IssueCommentMetadataProjectionCommentsCommentConnectionNodesComment,
 	) CommentMetadataSummary {
 		return commentMetadataSummary(comment.CommentMetadataFields)
 	})
@@ -239,13 +241,13 @@ func ListAttachmentIssueNeeds(
 	id string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := attachmentIssue_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list attachment issue customer needs %s: %w", id, err)
 	}
 
 	needs := mapNodes(result.AttachmentIssue.Needs.Nodes, func(
-		need attachmentIssue_needsAttachmentIssueNeedsCustomerNeedConnectionNodesCustomerNeed,
+		need gql.IssueNeedsProjectionNeedsCustomerNeedConnectionNodesCustomerNeed,
 	) CustomerNeedMetadataSummary {
 		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
 	})
@@ -266,7 +268,7 @@ func ListAttachmentIssueFormerNeeds(
 	id string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := attachmentIssue_formerNeeds(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_formerNeeds(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
 			"list attachment issue former customer needs %s: %w",
@@ -276,7 +278,7 @@ func ListAttachmentIssueFormerNeeds(
 	}
 
 	needs := mapNodes(result.AttachmentIssue.FormerNeeds.Nodes, func(
-		need attachmentIssue_formerNeedsAttachmentIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
+		need gql.IssueFormerNeedsProjectionFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
 	) CustomerNeedMetadataSummary {
 		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
 	})
@@ -297,12 +299,12 @@ func ListAttachmentIssueHistory(
 	id string,
 	limit int,
 ) (IssueHistoryList, error) {
-	result, err := attachmentIssue_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueHistoryList{}, fmt.Errorf("list attachment issue history %s: %w", id, err)
 	}
 
-	history := mapNodes(result.AttachmentIssue.History.Nodes, attachmentIssueHistorySummary)
+	history := mapNodes(result.AttachmentIssue.History.Nodes, issueHistorySummary)
 
 	return IssueHistoryList{
 		History:     history,
@@ -318,13 +320,13 @@ func ListAttachmentIssueInverseRelations(
 	id string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := attachmentIssue_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueRelationList{}, fmt.Errorf("list attachment issue inverse relations %s: %w", id, err)
 	}
 
 	relations := mapNodes(result.AttachmentIssue.InverseRelations.Nodes, func(
-		node attachmentIssue_inverseRelationsAttachmentIssueInverseRelationsIssueRelationConnectionNodesIssueRelation,
+		node gql.IssueInverseRelationsProjectionInverseRelationsIssueRelationConnectionNodesIssueRelation,
 	) IssueRelationSummary {
 		return issueRelationSummary(node.IssueRelationSummaryFields)
 	})
@@ -343,13 +345,13 @@ func ListAttachmentIssueLabels(
 	id string,
 	limit int,
 ) (LabelList, error) {
-	result, err := attachmentIssue_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return LabelList{}, fmt.Errorf("list attachment issue labels %s: %w", id, err)
 	}
 
 	labels := mapNodes(result.AttachmentIssue.Labels.Nodes, func(
-		label attachmentIssue_labelsAttachmentIssueLabelsIssueLabelConnectionNodesIssueLabel,
+		label gql.IssueLabelsProjectionLabelsIssueLabelConnectionNodesIssueLabel,
 	) LabelSummary {
 		return labelSummary(label.IssueLabelSummaryFields)
 	})
@@ -368,13 +370,13 @@ func ListAttachmentIssueRelations(
 	id string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := attachmentIssue_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueRelationList{}, fmt.Errorf("list attachment issue relations %s: %w", id, err)
 	}
 
 	relations := mapNodes(result.AttachmentIssue.Relations.Nodes, func(
-		relation attachmentIssue_relationsAttachmentIssueRelationsIssueRelationConnectionNodesIssueRelation,
+		relation gql.IssueRelationsProjectionRelationsIssueRelationConnectionNodesIssueRelation,
 	) IssueRelationSummary {
 		return issueRelationSummary(relation.IssueRelationSummaryFields)
 	})
@@ -393,13 +395,13 @@ func ListAttachmentIssueReleases(
 	id string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := attachmentIssue_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseList{}, fmt.Errorf("list attachment issue releases %s: %w", id, err)
 	}
 
 	releases := mapNodes(result.AttachmentIssue.Releases.Nodes, func(
-		release attachmentIssue_releasesAttachmentIssueReleasesReleaseConnectionNodesRelease,
+		release gql.IssueReleasesProjectionReleasesReleaseConnectionNodesRelease,
 	) ReleaseSummary {
 		return releaseSummary(release.ReleaseSummaryFields)
 	})
@@ -417,7 +419,7 @@ func GetAttachmentIssueSharedAccess(
 	graphqlClient graphql.Client,
 	id string,
 ) (IssueSharedAccessSummary, error) {
-	result, err := attachmentIssue_sharedAccess(ctx, graphqlClient, id)
+	result, err := gql.XAttachmentIssue_sharedAccess(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueSharedAccessSummary{}, fmt.Errorf("get attachment issue shared access %s: %w", id, err)
 	}
@@ -436,12 +438,12 @@ func ListAttachmentIssueStateHistory(
 	id string,
 	limit int,
 ) (IssueStateHistoryList, error) {
-	result, err := attachmentIssue_stateHistory(ctx, graphqlClient, id, intPtr(limit), nil)
+	result, err := gql.XAttachmentIssue_stateHistory(ctx, graphqlClient, id, intPtr(limit), nil)
 	if err != nil {
 		return IssueStateHistoryList{}, fmt.Errorf("list attachment issue state history %s: %w", id, err)
 	}
 
-	spans := mapNodes(result.AttachmentIssue.StateHistory.Nodes, attachmentIssueStateSpanSummary)
+	spans := mapNodes(result.AttachmentIssue.StateHistory.Nodes, issueStateSpanSummary)
 
 	return IssueStateHistoryList{
 		IssueID:     result.AttachmentIssue.Id,
@@ -458,13 +460,13 @@ func ListAttachmentIssueSubscribers(
 	id string,
 	limit int,
 ) (UserList, error) {
-	result, err := attachmentIssue_subscribers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAttachmentIssue_subscribers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return UserList{}, fmt.Errorf("list attachment issue subscribers %s: %w", id, err)
 	}
 
 	users := mapNodes(result.AttachmentIssue.Subscribers.Nodes, func(
-		node attachmentIssue_subscribersAttachmentIssueSubscribersUserConnectionNodesUser,
+		node gql.IssueSubscribersProjectionSubscribersUserConnectionNodesUser,
 	) UserSummary {
 		return userSummary(node.UserSummaryFields)
 	})
@@ -476,54 +478,12 @@ func ListAttachmentIssueSubscribers(
 	}, nil
 }
 
-func attachmentSummary(fields AttachmentSummaryFields) AttachmentSummary {
+func attachmentSummary(fields gql.AttachmentSummaryFields) AttachmentSummary {
 	return AttachmentSummary{
 		ID:         fields.Id,
 		Title:      fields.Title,
 		Subtitle:   stringValue(fields.Subtitle),
 		URL:        fields.Url,
 		SourceType: stringValue(fields.SourceType),
-	}
-}
-
-func attachmentIssueActorBotSummary(bot *attachmentIssue_botActorAttachmentIssueBotActorActorBot) *ActorBotSummary {
-	if bot == nil {
-		return nil
-	}
-
-	return actorBotSummary(&bot.ActorBotSummaryFields)
-}
-
-func attachmentIssueHistorySummary(
-	history attachmentIssue_historyAttachmentIssueHistoryIssueHistoryConnectionNodesIssueHistory,
-) IssueHistorySummary {
-	return IssueHistorySummary{
-		ID:                 history.Id,
-		IssueID:            history.Issue.Id,
-		ActorID:            stringValue(history.ActorId),
-		UpdatedDescription: boolValue(history.UpdatedDescription),
-		CreatedAt:          history.CreatedAt,
-		UpdatedAt:          history.UpdatedAt,
-		ArchivedAt:         stringValue(history.ArchivedAt),
-	}
-}
-
-func attachmentIssueStateSpanSummary(
-	span attachmentIssue_stateHistoryAttachmentIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan,
-) IssueStateSpanSummary {
-	stateName := ""
-	stateType := ""
-	if span.State != nil {
-		stateName = span.State.Name
-		stateType = span.State.Type
-	}
-
-	return IssueStateSpanSummary{
-		ID:        span.Id,
-		StateID:   span.StateId,
-		StateName: stateName,
-		StateType: stateType,
-		StartedAt: span.StartedAt,
-		EndedAt:   stringValue(span.EndedAt),
 	}
 }

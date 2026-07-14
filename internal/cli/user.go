@@ -31,13 +31,12 @@ func addUserCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 
 func addUserListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.UserList, client.UserSummary]{
-		Use:           "list",
-		Short:         "List visible users",
-		LimitHelp:     "users",
-		Args:          cobra.NoArgs,
-		Load:          loadUserList,
-		PageWithItems: userPageWithItems,
-		WriteItem:     writeUser,
+		Use:       "list",
+		Short:     "List visible users",
+		LimitHelp: "users",
+		Args:      cobra.NoArgs,
+		Load:      loadUserList,
+		WriteItem: writeUser,
 	})
 }
 
@@ -83,133 +82,122 @@ func addUserMeCommand(ctx context.Context, root *cobra.Command, options *rootOpt
 
 func addUserDraftsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.DraftList, client.DraftSummary]{
-		Use:           "drafts",
-		Short:         "List the authenticated user's saved draft metadata",
-		LimitHelp:     "drafts",
-		Args:          cobra.NoArgs,
-		Load:          loadViewerDraftList,
-		PageWithItems: draftPageWithItems,
-		WriteItem:     writeDraft,
+		Use:       "drafts",
+		Short:     "List the authenticated user's saved draft metadata",
+		LimitHelp: "drafts",
+		Args:      cobra.NoArgs,
+		Load:      loadViewerDraftList,
+		WriteItem: writeDraft,
 	})
 }
 
 func addUserAssignedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
-		Use:           "assigned-issues USER_ID",
-		Short:         "List issues assigned to a User",
-		LimitHelp:     "issues",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadUserAssignedIssues,
-		PageWithItems: issuePageWithItems,
-		WriteItem:     writeIssue,
+		Use:       "assigned-issues USER_ID",
+		Short:     "List issues assigned to a User",
+		LimitHelp: "issues",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadUserAssignedIssues,
+		WriteItem: writeIssue,
 	})
 }
 
 func addUserCreatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
-		Use:           "created-issues USER_ID",
-		Short:         "List issues created by a User",
-		LimitHelp:     "issues",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadUserCreatedIssues,
-		PageWithItems: issuePageWithItems,
-		WriteItem:     writeIssue,
+		Use:       "created-issues USER_ID",
+		Short:     "List issues created by a User",
+		LimitHelp: "issues",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadUserCreatedIssues,
+		WriteItem: writeIssue,
 	})
 }
 
 func addUserDelegatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
-		Use:           "delegated-issues USER_ID",
-		Short:         "List issues delegated to a User",
-		LimitHelp:     "issues",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadUserDelegatedIssues,
-		PageWithItems: issuePageWithItems,
-		WriteItem:     writeIssue,
+		Use:       "delegated-issues USER_ID",
+		Short:     "List issues delegated to a User",
+		LimitHelp: "issues",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadUserDelegatedIssues,
+		WriteItem: writeIssue,
 	})
 }
 
 func addUserTeamMembershipsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
-		Use:           "team-memberships USER_ID",
-		Short:         "List a User's team memberships",
-		LimitHelp:     "memberships",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadUserTeamMemberships,
-		PageWithItems: teamMembershipPageWithItems,
-		WriteItem:     writeTeamMembership,
+		Use:       "team-memberships USER_ID",
+		Short:     "List a User's team memberships",
+		LimitHelp: "memberships",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadUserTeamMemberships,
+		WriteItem: writeTeamMembership,
 	})
 }
 
 func addUserTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamList, client.TeamSummary]{
-		Use:           "teams USER_ID",
-		Short:         "List Teams for a User",
-		LimitHelp:     "teams",
-		Args:          cobra.ExactArgs(1),
-		Load:          loadUserTeams,
-		PageWithItems: teamPageWithItems,
-		WriteItem:     writeTeam,
+		Use:       "teams USER_ID",
+		Short:     "List Teams for a User",
+		LimitHelp: "teams",
+		Args:      cobra.ExactArgs(1),
+		Load:      loadUserTeams,
+		WriteItem: writeTeam,
 	})
 }
 
 func addViewerAssignedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
-		Use:           "my-assigned-issues",
-		Short:         "List issues assigned to the authenticated User",
-		LimitHelp:     "issues",
-		Args:          cobra.NoArgs,
-		Load:          loadViewerAssignedIssues,
-		PageWithItems: issuePageWithItems,
-		WriteItem:     writeIssue,
+		Use:       "my-assigned-issues",
+		Short:     "List issues assigned to the authenticated User",
+		LimitHelp: "issues",
+		Args:      cobra.NoArgs,
+		Load:      loadViewerAssignedIssues,
+		WriteItem: writeIssue,
 	})
 }
 
 func addViewerCreatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
-		Use:           "my-created-issues",
-		Short:         "List issues created by the authenticated User",
-		LimitHelp:     "issues",
-		Args:          cobra.NoArgs,
-		Load:          loadViewerCreatedIssues,
-		PageWithItems: issuePageWithItems,
-		WriteItem:     writeIssue,
+		Use:       "my-created-issues",
+		Short:     "List issues created by the authenticated User",
+		LimitHelp: "issues",
+		Args:      cobra.NoArgs,
+		Load:      loadViewerCreatedIssues,
+		WriteItem: writeIssue,
 	})
 }
 
 func addViewerDelegatedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.IssueList, client.IssueSummary]{
-		Use:           "my-delegated-issues",
-		Short:         "List issues delegated to the authenticated User",
-		LimitHelp:     "issues",
-		Args:          cobra.NoArgs,
-		Load:          loadViewerDelegatedIssues,
-		PageWithItems: issuePageWithItems,
-		WriteItem:     writeIssue,
+		Use:       "my-delegated-issues",
+		Short:     "List issues delegated to the authenticated User",
+		LimitHelp: "issues",
+		Args:      cobra.NoArgs,
+		Load:      loadViewerDelegatedIssues,
+		WriteItem: writeIssue,
 	})
 }
 
 func addViewerTeamMembershipsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamMembershipList, client.TeamMembershipSummary]{
-		Use:           "my-team-memberships",
-		Short:         "List team memberships for the authenticated User",
-		LimitHelp:     "memberships",
-		Args:          cobra.NoArgs,
-		Load:          loadViewerTeamMemberships,
-		PageWithItems: teamMembershipPageWithItems,
-		WriteItem:     writeTeamMembership,
+		Use:       "my-team-memberships",
+		Short:     "List team memberships for the authenticated User",
+		LimitHelp: "memberships",
+		Args:      cobra.NoArgs,
+		Load:      loadViewerTeamMemberships,
+		WriteItem: writeTeamMembership,
 	})
 }
 
 func addViewerTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.TeamList, client.TeamSummary]{
-		Use:           "my-teams",
-		Short:         "List Teams for the authenticated User",
-		LimitHelp:     "teams",
-		Args:          cobra.NoArgs,
-		Load:          loadViewerTeams,
-		PageWithItems: teamPageWithItems,
-		WriteItem:     writeTeam,
+		Use:       "my-teams",
+		Short:     "List Teams for the authenticated User",
+		LimitHelp: "teams",
+		Args:      cobra.NoArgs,
+		Load:      loadViewerTeams,
+		WriteItem: writeTeam,
 	})
 }
 

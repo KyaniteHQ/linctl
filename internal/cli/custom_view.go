@@ -15,16 +15,15 @@ func addCustomViewCommand(ctx context.Context, root *cobra.Command, options *roo
 		root,
 		options,
 		readListGetSpec[client.CustomViewList, client.CustomViewSummary]{
-			Use:           "custom-view",
-			Short:         "Read Linear custom views",
-			ListShort:     "List visible custom views",
-			LimitHelp:     "maximum custom views to return",
-			GetUse:        "get CUSTOM_VIEW_ID",
-			GetShort:      "Get one custom view by id or slug",
-			LoadList:      loadCustomViewList,
-			PageWithItems: customViewPageWithItems,
-			LoadGet:       loadCustomView,
-			WriteItem:     writeCustomView,
+			Use:       "custom-view",
+			Short:     "Read Linear custom views",
+			ListShort: "List visible custom views",
+			LimitHelp: "maximum custom views to return",
+			GetUse:    "get CUSTOM_VIEW_ID",
+			GetShort:  "Get one custom view by id or slug",
+			LoadList:  loadCustomViewList,
+			LoadGet:   loadCustomView,
+			WriteItem: writeCustomView,
 		},
 	)
 	addCustomViewSubscribersCommand(ctx, customViewCommand, options)
@@ -71,13 +70,12 @@ func addCustomViewInitiativesCommand(ctx context.Context, root *cobra.Command, o
 				options,
 				limit,
 				loadCustomViewInitiatives,
-				initiativePageWithItems,
 				writeInitiative,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum initiatives to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadCustomViewInitiatives))
 }
 
 func addCustomViewIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -94,13 +92,12 @@ func addCustomViewIssuesCommand(ctx context.Context, root *cobra.Command, option
 				options,
 				limit,
 				loadCustomViewIssues,
-				issuePageWithItems,
 				writeIssue,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadCustomViewIssues))
 }
 
 func addCustomViewOrganizationPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -158,13 +155,12 @@ func addCustomViewProjectsCommand(ctx context.Context, root *cobra.Command, opti
 				options,
 				limit,
 				loadCustomViewProjects,
-				projectPageWithItems,
 				writeProject,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadCustomViewProjects))
 }
 
 func addCustomViewUserPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

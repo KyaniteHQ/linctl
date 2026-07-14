@@ -24,7 +24,12 @@ func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 
-			return runProjectCreate(ctx, command, options, commandAdapterFor(runtime), request)
+			project, err := client.CreateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProject(command, options, project)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "project name")
@@ -51,7 +56,12 @@ func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *
 				return err
 			}
 
-			return runProjectUpdate(ctx, command, options, commandAdapterFor(runtime), request)
+			project, err := client.UpdateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProject(command, options, project)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "new project name")
@@ -72,52 +82,12 @@ func addProjectArchiveCommand(ctx context.Context, root *cobra.Command, options 
 				return err
 			}
 
-			return runProjectArchive(ctx, command, options, commandAdapterFor(runtime), args[0])
+			project, err := client.ArchiveProject(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+			if err != nil {
+				return err
+			}
+
+			return writeProject(command, options, project)
 		},
 	})
-}
-
-func runProjectCreate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	creator projectCreator,
-	request client.ProjectCreateRequest,
-) error {
-	project, err := creator.CreateProject(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProject(command, options, project)
-}
-
-func runProjectUpdate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	updater projectUpdater,
-	request client.ProjectUpdateRequest,
-) error {
-	project, err := updater.UpdateProject(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProject(command, options, project)
-}
-
-func runProjectArchive(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	archiver projectArchiver,
-	projectID string,
-) error {
-	project, err := archiver.ArchiveProject(ctx, projectID)
-	if err != nil {
-		return err
-	}
-
-	return writeProject(command, options, project)
 }

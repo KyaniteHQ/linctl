@@ -56,6 +56,213 @@ fragment IssueSharedAccessFields on IssueSharedAccess {
   disallowedIssueFields
 }
 
+fragment IssueAttachmentsProjection on Issue {
+  attachments(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...AttachmentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueBotActorProjection on Issue {
+  id
+  botActor {
+    ...ActorBotSummaryFields
+  }
+}
+
+fragment IssueChildrenProjection on Issue {
+  children(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueCommentMetadataProjection on Issue {
+  id
+  identifier
+  comments(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CommentMetadataFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueDocumentsProjection on Issue {
+  documents(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...DocumentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueFormerAttachmentsProjection on Issue {
+  formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...AttachmentSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueFormerNeedsProjection on Issue {
+  id
+  identifier
+  formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CustomerNeedMetadataFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueHistoryProjection on Issue {
+  history(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      actorId
+      updatedDescription
+      issue {
+        id
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueInverseRelationsProjection on Issue {
+  inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueRelationSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueLabelsProjection on Issue {
+  labels(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueLabelSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueNeedsProjection on Issue {
+  id
+  identifier
+  needs(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...CustomerNeedMetadataFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueRelationsProjection on Issue {
+  relations(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...IssueRelationSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueReleasesProjection on Issue {
+  releases(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...ReleaseSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueSharedAccessProjection on Issue {
+  id
+  identifier
+  sharedAccess {
+    ...IssueSharedAccessFields
+  }
+}
+
+fragment IssueStateHistoryProjection on Issue {
+  id
+  stateHistory(first: $first, after: $after) {
+    nodes {
+      id
+      stateId
+      startedAt
+      endedAt
+      state {
+        id
+        name
+        type
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+fragment IssueSubscribersProjection on Issue {
+  id
+  subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
+    nodes {
+      ...UserSummaryFields
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
 fragment ProjectSummaryFields on Project {
   id
   name

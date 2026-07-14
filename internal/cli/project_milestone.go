@@ -35,13 +35,12 @@ func addProjectMilestoneAllCommand(ctx context.Context, root *cobra.Command, opt
 				options,
 				limit,
 				loadAllProjectMilestones,
-				projectMilestonePageWithItems,
 				writeProjectMilestone,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum project milestones to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadAllProjectMilestones))
 }
 
 func addProjectMilestoneIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -58,13 +57,12 @@ func addProjectMilestoneIssuesCommand(ctx context.Context, root *cobra.Command, 
 				options,
 				limit,
 				loadProjectMilestoneIssueList,
-				projectMilestoneIssuePageWithItems,
 				writeIssue,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadProjectMilestoneIssueList))
 }
 
 func addProjectMilestoneListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -81,13 +79,12 @@ func addProjectMilestoneListCommand(ctx context.Context, root *cobra.Command, op
 				options,
 				limit,
 				loadProjectMilestoneList,
-				projectMilestonePageWithItems,
 				writeProjectMilestone,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum project milestones to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadProjectMilestoneList))
 }
 
 func addProjectMilestoneGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {

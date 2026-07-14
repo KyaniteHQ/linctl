@@ -20,24 +20,16 @@ func addProjectMilestoneDeleteCommand(ctx context.Context, root *cobra.Command, 
 				return err
 			}
 
-			return runProjectMilestoneDelete(ctx, command, options, commandAdapterFor(runtime), args[0])
+			deletedID, err := client.DeleteProjectMilestone(
+				ctx, runtime.graphqlClient, runtime.config.Target, args[0],
+			)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectMilestoneDeletion(command, options, deletedID)
 		},
 	})
-}
-
-func runProjectMilestoneDelete(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	deleter projectMilestoneDeleter,
-	projectMilestoneID string,
-) error {
-	deletedID, err := deleter.DeleteProjectMilestone(ctx, projectMilestoneID)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectMilestoneDeletion(command, options, deletedID)
 }
 
 // writeProjectMilestoneDeletion renders the ProjectMilestone delete confirmation.
@@ -73,7 +65,7 @@ func addProjectMilestoneCreateCommand(ctx context.Context, root *cobra.Command, 
 			ctx context.Context,
 			command *cobra.Command,
 			options *rootOptions,
-			adapter commandClientAdapter,
+			runtime commandRuntime,
 			id string,
 			flags projectMilestoneWriteFlags,
 		) error {
@@ -84,7 +76,14 @@ func addProjectMilestoneCreateCommand(ctx context.Context, root *cobra.Command, 
 				TargetDate:  flags.TargetDate,
 			}
 
-			return runProjectMilestoneCreate(ctx, command, options, adapter, request)
+			milestone, err := client.CreateProjectMilestone(
+				ctx, runtime.graphqlClient, runtime.config.Target, request,
+			)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectMilestone(command, options, milestone)
 		},
 	})
 }
@@ -100,7 +99,7 @@ func addProjectMilestoneUpdateCommand(ctx context.Context, root *cobra.Command, 
 			ctx context.Context,
 			command *cobra.Command,
 			options *rootOptions,
-			adapter commandClientAdapter,
+			runtime commandRuntime,
 			id string,
 			flags projectMilestoneWriteFlags,
 		) error {
@@ -111,7 +110,14 @@ func addProjectMilestoneUpdateCommand(ctx context.Context, root *cobra.Command, 
 				TargetDate:  flags.TargetDate,
 			}
 
-			return runProjectMilestoneUpdate(ctx, command, options, adapter, request)
+			milestone, err := client.UpdateProjectMilestone(
+				ctx, runtime.graphqlClient, runtime.config.Target, request,
+			)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectMilestone(command, options, milestone)
 		},
 	})
 }
@@ -132,7 +138,7 @@ type projectMilestoneWriteSpec struct {
 		context.Context,
 		*cobra.Command,
 		*rootOptions,
-		commandClientAdapter,
+		commandRuntime,
 		string,
 		projectMilestoneWriteFlags,
 	) error
@@ -155,41 +161,11 @@ func addProjectMilestoneWriteCommand(
 				return err
 			}
 
-			return spec.Run(ctx, command, options, commandAdapterFor(runtime), args[0], flags)
+			return spec.Run(ctx, command, options, runtime, args[0], flags)
 		},
 	}
 	command.Flags().StringVar(&flags.Name, "name", "", spec.NameHelp)
 	command.Flags().StringVar(&flags.Description, "description", "", spec.DescriptionHelp)
 	command.Flags().StringVar(&flags.TargetDate, "target-date", "", spec.TargetDateHelp)
 	root.AddCommand(command)
-}
-
-func runProjectMilestoneCreate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	creator projectMilestoneCreator,
-	request client.ProjectMilestoneCreateRequest,
-) error {
-	milestone, err := creator.CreateProjectMilestone(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectMilestone(command, options, milestone)
-}
-
-func runProjectMilestoneUpdate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	updater projectMilestoneUpdater,
-	request client.ProjectMilestoneUpdateRequest,
-) error {
-	milestone, err := updater.UpdateProjectMilestone(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectMilestone(command, options, milestone)
 }

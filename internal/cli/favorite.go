@@ -16,16 +16,15 @@ func addFavoriteCommand(ctx context.Context, root *cobra.Command, options *rootO
 		root,
 		options,
 		readListGetSpec[client.FavoriteList, client.FavoriteSummary]{
-			Use:           "favorite",
-			Short:         "Read Linear favorites",
-			ListShort:     "List the authenticated user's favorites",
-			LimitHelp:     "maximum favorites to return",
-			GetUse:        "get FAVORITE_ID",
-			GetShort:      "Get one favorite by id",
-			LoadList:      loadFavoriteList,
-			PageWithItems: favoritePageWithItems,
-			LoadGet:       loadFavorite,
-			WriteItem:     writeFavorite,
+			Use:       "favorite",
+			Short:     "Read Linear favorites",
+			ListShort: "List the authenticated user's favorites",
+			LimitHelp: "maximum favorites to return",
+			GetUse:    "get FAVORITE_ID",
+			GetShort:  "Get one favorite by id",
+			LoadList:  loadFavoriteList,
+			LoadGet:   loadFavorite,
+			WriteItem: writeFavorite,
 		},
 	)
 	addFavoriteChildrenCommand(ctx, favoriteCommand, options)
@@ -45,13 +44,12 @@ func addFavoriteChildrenCommand(ctx context.Context, root *cobra.Command, option
 				options,
 				limit,
 				loadFavoriteChildren,
-				favoritePageWithItems,
 				writeFavorite,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum favorites to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadFavoriteChildren))
 }
 
 func writeFavorite(command *cobra.Command, options *rootOptions, favorite client.FavoriteSummary) error {

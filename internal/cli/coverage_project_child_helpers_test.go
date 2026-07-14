@@ -152,10 +152,6 @@ func Test_ListCommand_covers_pipeline_branches(t *testing.T) {
 				LimitHelp: "children",
 				Args:      cobra.ExactArgs(1),
 				Load:      test.load,
-				PageWithItems: func(page list, items []item) list {
-					page.Items = items
-					return page
-				},
 				WriteItem: test.writeItem,
 			})
 			root.SetOut(&output)

@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // CustomViewSummary is the compact custom view model used by read-only commands.
@@ -72,13 +74,13 @@ type CustomViewPreferencesValues struct {
 
 // ListCustomViews returns visible custom views.
 func ListCustomViews(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomViewList, error) {
-	result, err := customViews(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XCustomViews(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CustomViewList{}, fmt.Errorf("list custom views: %w", err)
 	}
 
 	summaries := mapNodes(result.CustomViews.Nodes, func(
-		node customViewsCustomViewsCustomViewConnectionNodesCustomView,
+		node gql.XCustomViewsCustomViewsCustomViewConnectionNodesCustomView,
 	) CustomViewSummary {
 		return customViewSummary(node.CustomViewSummaryFields)
 	})
@@ -96,7 +98,7 @@ func GetCustomViewByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomViewSummary, error) {
-	result, err := customView(ctx, graphqlClient, id)
+	result, err := gql.XCustomView(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomViewSummary{}, fmt.Errorf("get custom view %s: %w", id, err)
 	}
@@ -110,7 +112,7 @@ func GetCustomViewSubscriberStatus(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomViewSubscriberStatus, error) {
-	result, err := customViewHasSubscribers(ctx, graphqlClient, id)
+	result, err := gql.XCustomViewHasSubscribers(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomViewSubscriberStatus{}, fmt.Errorf("get custom view subscribers %s: %w", id, err)
 	}
@@ -128,13 +130,13 @@ func ListCustomViewInitiatives(
 	id string,
 	limit int,
 ) (InitiativeList, error) {
-	result, err := customView_initiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XCustomView_initiatives(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeList{}, fmt.Errorf("list custom view initiatives %s: %w", id, err)
 	}
 
 	initiatives := mapNodes(result.CustomView.Initiatives.Nodes, func(
-		node customView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative,
+		node gql.XCustomView_initiativesCustomViewInitiativesInitiativeConnectionNodesInitiative,
 	) InitiativeSummary {
 		return initiativeSummary(node.InitiativeSummaryFields)
 	})
@@ -153,13 +155,13 @@ func ListCustomViewIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := customView_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XCustomView_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list custom view issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.CustomView.Issues.Nodes, func(
-		node customView_issuesCustomViewIssuesIssueConnectionNodesIssue,
+		node gql.XCustomView_issuesCustomViewIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(node.IssueSummaryFields)
 	})
@@ -177,7 +179,7 @@ func GetCustomViewOrganizationPreferences(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomViewPreferences, error) {
-	result, err := customView_organizationViewPreferences(ctx, graphqlClient, id)
+	result, err := gql.XCustomView_organizationViewPreferences(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomViewPreferences{}, fmt.Errorf("get custom view organization preferences %s: %w", id, err)
 	}
@@ -189,7 +191,7 @@ func GetCustomViewOrganizationPreferences(
 	return buildCustomViewPreferences(id, fields), nil
 }
 
-func buildCustomViewPreferences(id string, fields CustomViewPreferencesFields) CustomViewPreferences {
+func buildCustomViewPreferences(id string, fields gql.CustomViewPreferencesFields) CustomViewPreferences {
 	return CustomViewPreferences{
 		CustomViewID: id,
 		ID:           fields.Id,
@@ -208,7 +210,7 @@ func GetCustomViewOrganizationPreferenceValues(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomViewPreferencesValues, error) {
-	result, err := customView_organizationViewPreferences_preferences(ctx, graphqlClient, id)
+	result, err := gql.XCustomView_organizationViewPreferences_preferences(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomViewPreferencesValues{}, fmt.Errorf(
 			"get custom view organization preference values %s: %w",
@@ -235,13 +237,13 @@ func ListCustomViewProjects(
 	id string,
 	limit int,
 ) (ProjectList, error) {
-	result, err := customView_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
+	result, err := gql.XCustomView_projects(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(false))
 	if err != nil {
 		return ProjectList{}, fmt.Errorf("list custom view projects %s: %w", id, err)
 	}
 
 	projects := mapNodes(result.CustomView.Projects.Nodes, func(
-		node customView_projectsCustomViewProjectsProjectConnectionNodesProject,
+		node gql.XCustomView_projectsCustomViewProjectsProjectConnectionNodesProject,
 	) ProjectSummary {
 		return projectSummaryFromFields(node.ProjectSummaryFields)
 	})
@@ -259,7 +261,7 @@ func GetCustomViewUserPreferences(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomViewPreferences, error) {
-	result, err := customView_userViewPreferences(ctx, graphqlClient, id)
+	result, err := gql.XCustomView_userViewPreferences(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomViewPreferences{}, fmt.Errorf("get custom view user preferences %s: %w", id, err)
 	}
@@ -277,7 +279,7 @@ func GetCustomViewUserPreferenceValues(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomViewPreferencesValues, error) {
-	result, err := customView_userViewPreferences_preferences(ctx, graphqlClient, id)
+	result, err := gql.XCustomView_userViewPreferences_preferences(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomViewPreferencesValues{}, fmt.Errorf("get custom view user preference values %s: %w", id, err)
 	}
@@ -299,7 +301,7 @@ func GetCustomViewPreferenceValues(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomViewPreferencesValues, error) {
-	result, err := customView_viewPreferencesValues(ctx, graphqlClient, id)
+	result, err := gql.XCustomView_viewPreferencesValues(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomViewPreferencesValues{}, fmt.Errorf("get custom view preference values %s: %w", id, err)
 	}
@@ -309,7 +311,7 @@ func GetCustomViewPreferenceValues(
 	return values, nil
 }
 
-func customViewSummary(fields CustomViewSummaryFields) CustomViewSummary {
+func customViewSummary(fields gql.CustomViewSummaryFields) CustomViewSummary {
 	return CustomViewSummary{
 		ID:          fields.Id,
 		Name:        fields.Name,
@@ -323,7 +325,7 @@ func customViewSummary(fields CustomViewSummaryFields) CustomViewSummary {
 
 func customViewPreferencesValues(
 	id string,
-	fields CustomViewPreferencesValueFields,
+	fields gql.CustomViewPreferencesValueFields,
 ) CustomViewPreferencesValues {
 	return CustomViewPreferencesValues{
 		CustomViewID:              id,

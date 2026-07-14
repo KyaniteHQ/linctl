@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // IssueCommentSummary is the compact read model for issue comments.
@@ -102,13 +104,13 @@ type CommentChildList struct {
 
 // ListComments returns visible comments across parent entity types.
 func ListComments(ctx context.Context, graphqlClient graphql.Client, limit int) (CommentList, error) {
-	commentsPage, err := comments(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	commentsPage, err := gql.XComments(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CommentList{}, fmt.Errorf("list comments: %w", err)
 	}
 
 	summaries := mapNodes(commentsPage.Comments.Nodes, func(
-		node commentsCommentsCommentConnectionNodesComment,
+		node gql.XCommentsCommentsCommentConnectionNodesComment,
 	) CommentSummary {
 		return topLevelCommentSummary(node.TopLevelCommentSummaryFields)
 	})
@@ -122,7 +124,7 @@ func ListComments(ctx context.Context, graphqlClient graphql.Client, limit int) 
 
 // GetCommentByID returns one comment by Linear id.
 func GetCommentByID(ctx context.Context, graphqlClient graphql.Client, id string) (CommentSummary, error) {
-	commentResponse, err := comment(ctx, graphqlClient, stringPtr(id), nil)
+	commentResponse, err := gql.XComment(ctx, graphqlClient, stringPtr(id), nil)
 	if err != nil {
 		return CommentSummary{}, fmt.Errorf("get comment %s: %w", id, err)
 	}
@@ -132,7 +134,7 @@ func GetCommentByID(ctx context.Context, graphqlClient graphql.Client, id string
 
 // GetCommentBotActor returns the bot actor that created a comment, when present.
 func GetCommentBotActor(ctx context.Context, graphqlClient graphql.Client, id string) (CommentBotActor, error) {
-	result, err := comment_botActor(ctx, graphqlClient, stringPtr(id), nil)
+	result, err := gql.XComment_botActor(ctx, graphqlClient, stringPtr(id), nil)
 	if err != nil {
 		return CommentBotActor{}, fmt.Errorf("get comment bot actor %s: %w", id, err)
 	}
@@ -150,13 +152,13 @@ func ListCommentChildren(
 	id string,
 	limit int,
 ) (CommentChildList, error) {
-	result, err := comment_children(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XComment_children(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CommentChildList{}, fmt.Errorf("list comment children %s: %w", id, err)
 	}
 
 	comments := mapNodes(result.Comment.Children.Nodes, func(
-		comment comment_childrenCommentChildrenCommentConnectionNodesComment,
+		comment gql.XComment_childrenCommentChildrenCommentConnectionNodesComment,
 	) CommentMetadataSummary {
 		return commentMetadataSummary(comment.CommentMetadataFields)
 	})
@@ -176,13 +178,13 @@ func ListCommentCreatedIssues(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := comment_createdIssues(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XComment_createdIssues(ctx, graphqlClient, stringPtr(id), nil, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list comment created issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.Comment.CreatedIssues.Nodes, func(
-		issue comment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue,
+		issue gql.XComment_createdIssuesCommentCreatedIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -201,7 +203,7 @@ func ListIssueComments(
 	id string,
 	limit int,
 ) (IssueCommentList, error) {
-	comments, err := issue_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	comments, err := gql.XIssue_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCommentList{}, fmt.Errorf("list issue comments %s: %w", id, err)
 	}
@@ -217,7 +219,7 @@ func ListIssueComments(
 	}, nil
 }
 
-func issueCommentSummary(comment issue_commentsIssueCommentsCommentConnectionNodesComment) IssueCommentSummary {
+func issueCommentSummary(comment gql.XIssue_commentsIssueCommentsCommentConnectionNodesComment) IssueCommentSummary {
 	userID := ""
 	userName := ""
 	displayName := ""
@@ -243,7 +245,7 @@ func issueCommentSummary(comment issue_commentsIssueCommentsCommentConnectionNod
 	}
 }
 
-func topLevelCommentSummary(comment TopLevelCommentSummaryFields) CommentSummary {
+func topLevelCommentSummary(comment gql.TopLevelCommentSummaryFields) CommentSummary {
 	userID := ""
 	userName := ""
 	displayName := ""
@@ -274,7 +276,7 @@ func topLevelCommentSummary(comment TopLevelCommentSummaryFields) CommentSummary
 	}
 }
 
-func commentMetadataSummary(comment CommentMetadataFields) CommentMetadataSummary {
+func commentMetadataSummary(comment gql.CommentMetadataFields) CommentMetadataSummary {
 	userID := ""
 	userName := ""
 	displayName := ""
@@ -304,7 +306,7 @@ func commentMetadataSummary(comment CommentMetadataFields) CommentMetadataSummar
 	}
 }
 
-func actorBotSummary(fields *ActorBotSummaryFields) *ActorBotSummary {
+func actorBotSummary(fields *gql.ActorBotSummaryFields) *ActorBotSummary {
 	if fields == nil {
 		return nil
 	}
@@ -319,7 +321,7 @@ func actorBotSummary(fields *ActorBotSummaryFields) *ActorBotSummary {
 	}
 }
 
-func commentActorBotSummary(bot *comment_botActorCommentBotActorActorBot) *ActorBotSummary {
+func commentActorBotSummary(bot *gql.XComment_botActorCommentBotActorActorBot) *ActorBotSummary {
 	if bot == nil {
 		return nil
 	}

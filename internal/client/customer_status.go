@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // CustomerStatusSummary is the compact customer status model used by read-only commands.
@@ -28,13 +30,13 @@ type CustomerStatusList struct {
 
 // ListCustomerStatuses returns organization customer lifecycle statuses.
 func ListCustomerStatuses(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerStatusList, error) {
-	result, err := customerStatuses(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XCustomerStatuses(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CustomerStatusList{}, fmt.Errorf("list customer statuses: %w", err)
 	}
 
 	summaries := mapNodes(result.CustomerStatuses.Nodes, func(
-		node customerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus,
+		node gql.XCustomerStatusesCustomerStatusesCustomerStatusConnectionNodesCustomerStatus,
 	) CustomerStatusSummary {
 		return customerStatusSummary(node.CustomerStatusSummaryFields)
 	})
@@ -52,7 +54,7 @@ func GetCustomerStatusByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomerStatusSummary, error) {
-	result, err := customerStatus(ctx, graphqlClient, id)
+	result, err := gql.XCustomerStatus(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomerStatusSummary{}, fmt.Errorf("get customer status %s: %w", id, err)
 	}
@@ -60,7 +62,7 @@ func GetCustomerStatusByID(
 	return customerStatusSummary(result.CustomerStatus.CustomerStatusSummaryFields), nil
 }
 
-func customerStatusSummary(fields CustomerStatusSummaryFields) CustomerStatusSummary {
+func customerStatusSummary(fields gql.CustomerStatusSummaryFields) CustomerStatusSummary {
 	return CustomerStatusSummary{
 		ID:          fields.Id,
 		Name:        fields.Name,

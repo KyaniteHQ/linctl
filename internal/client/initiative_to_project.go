@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // InitiativeToProjectSummary is one project association under an Initiative.
@@ -36,13 +38,13 @@ func ListInitiativeToProjects(
 	graphqlClient graphql.Client,
 	limit int,
 ) (InitiativeToProjectList, error) {
-	result, err := initiativeToProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiativeToProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeToProjectList{}, fmt.Errorf("list initiative to projects: %w", err)
 	}
 
 	associations := mapNodes(result.InitiativeToProjects.Nodes, func(
-		association initiativeToProjectsInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject,
+		association gql.XInitiativeToProjectsInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject,
 	) InitiativeToProjectSummary {
 		return initiativeToProjectSummary(association.InitiativeToProjectSummaryFields)
 	})
@@ -60,7 +62,7 @@ func GetInitiativeToProjectByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (InitiativeToProjectSummary, error) {
-	result, err := initiativeToProject(ctx, graphqlClient, id)
+	result, err := gql.XInitiativeToProject(ctx, graphqlClient, id)
 	if err != nil {
 		return InitiativeToProjectSummary{}, fmt.Errorf("get initiative to project %s: %w", id, err)
 	}
@@ -68,7 +70,7 @@ func GetInitiativeToProjectByID(
 	return initiativeToProjectSummary(result.InitiativeToProject.InitiativeToProjectSummaryFields), nil
 }
 
-func initiativeToProjectSummary(association InitiativeToProjectSummaryFields) InitiativeToProjectSummary {
+func initiativeToProjectSummary(association gql.InitiativeToProjectSummaryFields) InitiativeToProjectSummary {
 	return InitiativeToProjectSummary{
 		ID:             association.Id,
 		InitiativeID:   association.Initiative.Id,

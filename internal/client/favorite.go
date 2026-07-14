@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // FavoriteSummary is the compact favorite model used by read-only commands.
@@ -24,13 +26,13 @@ type FavoriteList struct {
 
 // ListFavorites returns the authenticated user's favorites.
 func ListFavorites(ctx context.Context, graphqlClient graphql.Client, limit int) (FavoriteList, error) {
-	result, err := favorites(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XFavorites(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return FavoriteList{}, fmt.Errorf("list favorites: %w", err)
 	}
 
 	summaries := mapNodes(result.Favorites.Nodes, func(
-		node favoritesFavoritesFavoriteConnectionNodesFavorite,
+		node gql.XFavoritesFavoritesFavoriteConnectionNodesFavorite,
 	) FavoriteSummary {
 		return favoriteSummary(node.FavoriteSummaryFields)
 	})
@@ -49,13 +51,13 @@ func ListFavoriteChildren(
 	id string,
 	limit int,
 ) (FavoriteList, error) {
-	result, err := favorite_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XFavorite_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return FavoriteList{}, fmt.Errorf("list favorite children %s: %w", id, err)
 	}
 
 	summaries := mapNodes(result.Favorite.Children.Nodes, func(
-		node favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite,
+		node gql.XFavorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite,
 	) FavoriteSummary {
 		return favoriteSummary(node.FavoriteSummaryFields)
 	})
@@ -73,7 +75,7 @@ func GetFavoriteByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (FavoriteSummary, error) {
-	result, err := favorite(ctx, graphqlClient, id)
+	result, err := gql.XFavorite(ctx, graphqlClient, id)
 	if err != nil {
 		return FavoriteSummary{}, fmt.Errorf("get favorite %s: %w", id, err)
 	}
@@ -81,7 +83,7 @@ func GetFavoriteByID(
 	return favoriteSummary(result.Favorite.FavoriteSummaryFields), nil
 }
 
-func favoriteSummary(fields FavoriteSummaryFields) FavoriteSummary {
+func favoriteSummary(fields gql.FavoriteSummaryFields) FavoriteSummary {
 	return FavoriteSummary{
 		ID:         fields.Id,
 		Type:       fields.Type,

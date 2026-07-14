@@ -3,50 +3,48 @@ package client
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
-type writeGuard struct {
-	target ResolvedTarget
+type guardedClient struct {
+	graphqlClient    graphql.Client
+	target           ResolvedTarget
+	attachableLabels *attachableLabelCache
 }
 
-func newWriteGuard(
+type attachableLabelCache struct {
+	mu  sync.Mutex
+	ids map[string]struct{}
+}
+
+func newGuardedClient(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	expected config.Target,
-) (writeGuard, error) {
+) (*guardedClient, error) {
 	target, err := ResolveTarget(ctx, graphqlClient, expected)
 	if err != nil {
-		return writeGuard{}, err
+		return nil, err
 	}
 
-	return writeGuard{target: target}, nil
+	return &guardedClient{
+		graphqlClient: graphqlClient,
+		target:        target,
+		attachableLabels: &attachableLabelCache{
+			ids: map[string]struct{}{},
+		},
+	}, nil
 }
 
-func guardedMutation[T any](
+func (guard *guardedClient) requireIssue(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	expected config.Target,
-	mutate func(writeGuard) (T, error),
-) (T, error) {
-	var zero T
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
-	if err != nil {
-		return zero, err
-	}
-
-	return mutate(guard)
-}
-
-func (guard writeGuard) requireIssue(
-	ctx context.Context,
-	graphqlClient graphql.Client,
 	issueID string,
 ) (IssueSummary, error) {
-	issue, err := guard.requireIssueDetail(ctx, graphqlClient, issueID)
+	issue, err := guard.requireIssueDetail(ctx, issueID)
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -54,12 +52,11 @@ func (guard writeGuard) requireIssue(
 	return issue.Summary, nil
 }
 
-func (guard writeGuard) requireIssueDetail(
+func (guard *guardedClient) requireIssueDetail(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	issueID string,
 ) (IssueDetail, error) {
-	issue, err := GetIssueDetail(ctx, graphqlClient, issueID)
+	issue, err := GetIssueDetail(ctx, guard.graphqlClient, issueID)
 	if err != nil {
 		return IssueDetail{}, err
 	}
@@ -73,12 +70,11 @@ func (guard writeGuard) requireIssueDetail(
 	return issue, nil
 }
 
-func (guard writeGuard) requireProject(
+func (guard *guardedClient) requireProject(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	projectID string,
 ) error {
-	project, err := GetProjectByID(ctx, graphqlClient, projectID)
+	project, err := GetProjectByID(ctx, guard.graphqlClient, projectID)
 	if err != nil {
 		return err
 	}
@@ -89,12 +85,11 @@ func (guard writeGuard) requireProject(
 	return guard.requireProjectTeam(project)
 }
 
-func (guard writeGuard) requireProjectMilestone(
+func (guard *guardedClient) requireProjectMilestone(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	projectMilestoneID string,
 ) error {
-	milestone, err := GetProjectMilestoneDetail(ctx, graphqlClient, projectMilestoneID)
+	milestone, err := GetProjectMilestoneDetail(ctx, guard.graphqlClient, projectMilestoneID)
 	if err != nil {
 		return err
 	}
@@ -105,12 +100,11 @@ func (guard writeGuard) requireProjectMilestone(
 	return guard.requireProjectTeam(milestone.Project)
 }
 
-func (guard writeGuard) requireCycle(
+func (guard *guardedClient) requireCycle(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	cycleID string,
 ) error {
-	cycle, err := GetCycleByID(ctx, graphqlClient, cycleID)
+	cycle, err := GetCycleByID(ctx, guard.graphqlClient, cycleID)
 	if err != nil {
 		return err
 	}
@@ -123,7 +117,7 @@ func (guard writeGuard) requireCycle(
 
 // teamMismatchError reports a Target Mismatch between the pinned team and the
 // team resolved from an existing entity. It is a hard stop for guarded writes.
-func (guard writeGuard) teamMismatchError(entity string, teamID string, teamKey string) error {
+func (guard *guardedClient) teamMismatchError(entity string, teamID string, teamKey string) error {
 	return fmt.Errorf(
 		"%w: expected team_id=%s team_key=%s resolved %s team_id=%s team_key=%s",
 		ErrTargetMismatch,
@@ -137,7 +131,7 @@ func (guard writeGuard) teamMismatchError(entity string, teamID string, teamKey 
 
 // projectMismatchError reports a Target Mismatch between the pinned project
 // and the project resolved from an existing entity.
-func (guard writeGuard) projectMismatchError(label string, projectID string) error {
+func (guard *guardedClient) projectMismatchError(label string, projectID string) error {
 	return fmt.Errorf(
 		"%w: expected project_id=%s resolved %s=%s",
 		ErrTargetMismatch,
@@ -149,7 +143,7 @@ func (guard writeGuard) projectMismatchError(label string, projectID string) err
 
 // teamNotAttachedError reports a Target Mismatch when a resolved project is
 // not attached to the pinned team.
-func (guard writeGuard) teamNotAttachedError() error {
+func (guard *guardedClient) teamNotAttachedError() error {
 	return fmt.Errorf(
 		"%w: expected team_id=%s team_key=%s",
 		ErrTargetMismatch,
@@ -162,7 +156,7 @@ func (guard writeGuard) teamNotAttachedError() error {
 // entity such as a ProjectLabel) against the guard's resolved organization.
 // It is the Org-Scoped Write hard stop: organization-owned entities have no
 // team to compare, so organization membership is the whole check.
-func (guard writeGuard) requireOrganization(orgID string) error {
+func (guard *guardedClient) requireOrganization(orgID string) error {
 	if orgID != guard.target.Org.ID {
 		return guard.organizationMismatchError(orgID)
 	}
@@ -172,7 +166,7 @@ func (guard writeGuard) requireOrganization(orgID string) error {
 
 // organizationMismatchError reports a Target Mismatch between the pinned
 // organization and the organization resolved from an existing entity.
-func (guard writeGuard) organizationMismatchError(orgID string) error {
+func (guard *guardedClient) organizationMismatchError(orgID string) error {
 	return fmt.Errorf(
 		"%w: expected org_id=%s resolved org_id=%s",
 		ErrTargetMismatch,
@@ -185,13 +179,12 @@ func (guard writeGuard) organizationMismatchError(orgID string) error {
 // retire, restore). A team-scoped label must match the resolved team and must
 // not be combined with orgWide. An organization-wide label (null team)
 // requires orgWide and fails closed otherwise.
-func (guard writeGuard) requireIssueLabel(
+func (guard *guardedClient) requireIssueLabel(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	labelID string,
 	orgWide bool,
 ) error {
-	label, err := GetLabelByID(ctx, graphqlClient, labelID)
+	label, err := GetLabelByID(ctx, guard.graphqlClient, labelID)
 	if err != nil {
 		return err
 	}
@@ -223,13 +216,12 @@ func (guard writeGuard) requireIssueLabel(
 // requireLabelParentScope resolves a candidate parent IssueLabel and confirms
 // it shares the effective scope of the label being created: the resolved team
 // by default, or organization-wide when orgWide is set.
-func (guard writeGuard) requireLabelParentScope(
+func (guard *guardedClient) requireLabelParentScope(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	parentID string,
 	orgWide bool,
 ) error {
-	parent, err := GetLabelByID(ctx, graphqlClient, parentID)
+	parent, err := GetLabelByID(ctx, guard.graphqlClient, parentID)
 	if err != nil {
 		return err
 	}
@@ -255,20 +247,36 @@ func (guard writeGuard) requireLabelParentScope(
 // from an issue: a team-scoped label must match the resolved team, and an
 // organization-wide label (null team) is always attachable within the
 // resolved organization. There is no --org-wide flag for association writes.
-func (guard writeGuard) requireAttachableLabel(
+func (guard *guardedClient) requireAttachableLabel(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	labelID string,
 ) error {
-	label, err := GetLabelByID(ctx, graphqlClient, labelID)
+	guard.attachableLabels.mu.Lock()
+	defer guard.attachableLabels.mu.Unlock()
+	if _, ok := guard.attachableLabels.ids[labelID]; ok {
+		return nil
+	}
+
+	label, err := GetLabelByID(ctx, guard.graphqlClient, labelID)
 	if err != nil {
 		return err
 	}
-	if label.TeamID == "" {
-		return nil
-	}
-	if label.TeamID != guard.target.Team.ID || label.TeamKey != guard.target.Team.Key {
+	if label.TeamID != "" && (label.TeamID != guard.target.Team.ID || label.TeamKey != guard.target.Team.Key) {
 		return guard.teamMismatchError("label", label.TeamID, label.TeamKey)
+	}
+	guard.attachableLabels.ids[labelID] = struct{}{}
+
+	return nil
+}
+
+func (guard *guardedClient) requireAttachableLabels(
+	ctx context.Context,
+	labelIDs []string,
+) error {
+	for _, labelID := range labelIDs {
+		if err := guard.requireAttachableLabel(ctx, labelID); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -277,12 +285,11 @@ func (guard writeGuard) requireAttachableLabel(
 // requireProjectLabel resolves a ProjectLabel and confirms it belongs to the
 // resolved organization. ProjectLabel is organization-owned; there is no team
 // scope to compare.
-func (guard writeGuard) requireProjectLabel(
+func (guard *guardedClient) requireProjectLabel(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	labelID string,
 ) error {
-	label, err := GetProjectLabelByID(ctx, graphqlClient, labelID)
+	label, err := GetProjectLabelByID(ctx, guard.graphqlClient, labelID)
 	if err != nil {
 		return err
 	}
@@ -293,7 +300,7 @@ func (guard writeGuard) requireProjectLabel(
 // requireProjectTeam compares a resolved project's teams against the pinned
 // team. An unmatched result on a truncated team page fails closed instead of
 // silently trusting the first 50 teams.
-func (guard writeGuard) requireProjectTeam(project ProjectSummary) error {
+func (guard *guardedClient) requireProjectTeam(project ProjectSummary) error {
 	if projectHasTeam(project, guard.target.Team.ID, guard.target.Team.Key) {
 		return nil
 	}

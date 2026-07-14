@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ListIssueAttachments returns attachments associated with one issue.
@@ -14,13 +16,13 @@ func ListIssueAttachments(
 	id string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := issue_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_attachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AttachmentList{}, fmt.Errorf("list issue attachments %s: %w", id, err)
 	}
 
 	attachments := mapNodes(result.Issue.Attachments.Nodes, func(
-		attachment issue_attachmentsIssueAttachmentsAttachmentConnectionNodesAttachment,
+		attachment gql.IssueAttachmentsProjectionAttachmentsAttachmentConnectionNodesAttachment,
 	) AttachmentSummary {
 		return attachmentSummary(attachment.AttachmentSummaryFields)
 	})
@@ -34,7 +36,7 @@ func ListIssueAttachments(
 
 // GetIssueBotActor returns the bot actor that created an issue, when present.
 func GetIssueBotActor(ctx context.Context, graphqlClient graphql.Client, id string) (IssueBotActor, error) {
-	result, err := issue_botActor(ctx, graphqlClient, id)
+	result, err := gql.XIssue_botActor(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueBotActor{}, fmt.Errorf("get issue bot actor %s: %w", id, err)
 	}
@@ -52,13 +54,13 @@ func ListIssueChildren(
 	id string,
 	limit int,
 ) (IssueList, error) {
-	result, err := issue_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issue children %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.Issue.Children.Nodes, func(
-		issue issue_childrenIssueChildrenIssueConnectionNodesIssue,
+		issue gql.IssueChildrenProjectionChildrenIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -77,13 +79,13 @@ func ListIssueDocuments(
 	id string,
 	limit int,
 ) (DocumentList, error) {
-	result, err := issue_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_documents(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return DocumentList{}, fmt.Errorf("list issue documents %s: %w", id, err)
 	}
 
 	documents := mapNodes(result.Issue.Documents.Nodes, func(
-		document issue_documentsIssueDocumentsDocumentConnectionNodesDocument,
+		document gql.IssueDocumentsProjectionDocumentsDocumentConnectionNodesDocument,
 	) DocumentSummary {
 		return documentSummary(document.DocumentSummaryFields)
 	})
@@ -102,13 +104,13 @@ func ListIssueFormerAttachments(
 	id string,
 	limit int,
 ) (AttachmentList, error) {
-	result, err := issue_formerAttachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_formerAttachments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AttachmentList{}, fmt.Errorf("list issue former attachments %s: %w", id, err)
 	}
 
 	attachments := mapNodes(result.Issue.FormerAttachments.Nodes, func(
-		attachment issue_formerAttachmentsIssueFormerAttachmentsAttachmentConnectionNodesAttachment,
+		attachment gql.IssueFormerAttachmentsProjectionFormerAttachmentsAttachmentConnectionNodesAttachment,
 	) AttachmentSummary {
 		return attachmentSummary(attachment.AttachmentSummaryFields)
 	})
@@ -127,7 +129,7 @@ func ListIssueHistory(
 	id string,
 	limit int,
 ) (IssueHistoryList, error) {
-	result, err := issue_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_history(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueHistoryList{}, fmt.Errorf("list issue history %s: %w", id, err)
 	}
@@ -148,13 +150,13 @@ func ListIssueInverseRelations(
 	id string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := issue_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_inverseRelations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueRelationList{}, fmt.Errorf("list issue inverse relations %s: %w", id, err)
 	}
 
 	relations := mapNodes(result.Issue.InverseRelations.Nodes, func(
-		relation issue_inverseRelationsIssueInverseRelationsIssueRelationConnectionNodesIssueRelation,
+		relation gql.IssueInverseRelationsProjectionInverseRelationsIssueRelationConnectionNodesIssueRelation,
 	) IssueRelationSummary {
 		return issueRelationSummary(relation.IssueRelationSummaryFields)
 	})
@@ -173,13 +175,13 @@ func ListIssueLabels(
 	id string,
 	limit int,
 ) (LabelList, error) {
-	result, err := issue_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_labels(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return LabelList{}, fmt.Errorf("list issue labels %s: %w", id, err)
 	}
 
 	labels := mapNodes(result.Issue.Labels.Nodes, func(
-		label issue_labelsIssueLabelsIssueLabelConnectionNodesIssueLabel,
+		label gql.IssueLabelsProjectionLabelsIssueLabelConnectionNodesIssueLabel,
 	) LabelSummary {
 		return labelSummary(label.IssueLabelSummaryFields)
 	})
@@ -198,13 +200,13 @@ func ListIssueRelationsForIssue(
 	id string,
 	limit int,
 ) (IssueRelationList, error) {
-	result, err := issue_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_relations(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueRelationList{}, fmt.Errorf("list issue relations %s: %w", id, err)
 	}
 
 	relations := mapNodes(result.Issue.Relations.Nodes, func(
-		relation issue_relationsIssueRelationsIssueRelationConnectionNodesIssueRelation,
+		relation gql.IssueRelationsProjectionRelationsIssueRelationConnectionNodesIssueRelation,
 	) IssueRelationSummary {
 		return issueRelationSummary(relation.IssueRelationSummaryFields)
 	})
@@ -223,13 +225,13 @@ func ListIssueReleases(
 	id string,
 	limit int,
 ) (ReleaseList, error) {
-	result, err := issue_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_releases(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ReleaseList{}, fmt.Errorf("list issue releases %s: %w", id, err)
 	}
 
 	releases := mapNodes(result.Issue.Releases.Nodes, func(
-		release issue_releasesIssueReleasesReleaseConnectionNodesRelease,
+		release gql.IssueReleasesProjectionReleasesReleaseConnectionNodesRelease,
 	) ReleaseSummary {
 		return releaseSummary(release.ReleaseSummaryFields)
 	})
@@ -248,7 +250,7 @@ func ListIssueStateHistory(
 	id string,
 	limit int,
 ) (IssueStateHistoryList, error) {
-	result, err := issue_stateHistory(ctx, graphqlClient, id, intPtr(limit), nil)
+	result, err := gql.XIssue_stateHistory(ctx, graphqlClient, id, intPtr(limit), nil)
 	if err != nil {
 		return IssueStateHistoryList{}, fmt.Errorf("list issue state history %s: %w", id, err)
 	}
@@ -270,13 +272,13 @@ func ListIssueSubscribers(
 	id string,
 	limit int,
 ) (UserList, error) {
-	result, err := issue_subscribers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_subscribers(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return UserList{}, fmt.Errorf("list issue subscribers %s: %w", id, err)
 	}
 
 	users := mapNodes(result.Issue.Subscribers.Nodes, func(
-		node issue_subscribersIssueSubscribersUserConnectionNodesUser,
+		node gql.IssueSubscribersProjectionSubscribersUserConnectionNodesUser,
 	) UserSummary {
 		return userSummary(node.UserSummaryFields)
 	})
@@ -288,7 +290,9 @@ func ListIssueSubscribers(
 	}, nil
 }
 
-func issueHistorySummary(history issue_historyIssueHistoryIssueHistoryConnectionNodesIssueHistory) IssueHistorySummary {
+func issueHistorySummary(
+	history gql.IssueHistoryProjectionHistoryIssueHistoryConnectionNodesIssueHistory,
+) IssueHistorySummary {
 	return IssueHistorySummary{
 		ID:                 history.Id,
 		IssueID:            history.Issue.Id,
@@ -300,7 +304,7 @@ func issueHistorySummary(history issue_historyIssueHistoryIssueHistoryConnection
 	}
 }
 
-func issueActorBotSummary(bot *issue_botActorIssueBotActorActorBot) *ActorBotSummary {
+func issueActorBotSummary(bot *gql.IssueBotActorProjectionBotActorActorBot) *ActorBotSummary {
 	if bot == nil {
 		return nil
 	}
@@ -309,7 +313,7 @@ func issueActorBotSummary(bot *issue_botActorIssueBotActorActorBot) *ActorBotSum
 }
 
 func issueStateSpanSummary(
-	span issue_stateHistoryIssueStateHistoryIssueStateSpanConnectionNodesIssueStateSpan,
+	span gql.IssueStateHistoryProjectionStateHistoryIssueStateSpanConnectionNodesIssueStateSpan,
 ) IssueStateSpanSummary {
 	stateName := ""
 	stateType := ""

@@ -36,6 +36,43 @@ func Test_CreateIssue_returns_created_issue_when_target_matches(t *testing.T) {
 	require.Equal(t, "project-id", issue.ProjectID)
 }
 
+func Test_CreateIssue_refuses_label_from_another_team(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issueLabel": `{"issueLabel":` + issueLabelJSON("label-id", "other", "other-team", "OTHER") + `}`,
+	})}
+
+	_, err := CreateIssue(context.Background(), recorder, matchingTarget(), IssueCreateRequest{
+		Title:    "created",
+		LabelIDs: []string{"label-id"},
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("IssueCreate"))
+}
+
+func Test_UpdateIssue_refuses_label_from_another_team(t *testing.T) {
+	recorder := &mutationRecordingClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "existing",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "state-id",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `}`,
+		"issueLabel": `{"issueLabel":` + issueLabelJSON("label-id", "other", "other-team", "OTHER") + `}`,
+	})}
+
+	_, err := UpdateIssue(context.Background(), recorder, matchingTarget(), IssueUpdateRequest{
+		ID:       "LIT-1",
+		LabelIDs: []string{"label-id"},
+	})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+	require.False(t, recorder.sentOperation("IssueUpdate"))
+}
+
 func Test_UpdateIssue_refuses_when_issue_project_does_not_match_pinned_project(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
@@ -538,6 +575,7 @@ func b1IssueFixture(identifier string) issueFixture {
 func Test_CreateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
+		"issueLabel":  `{"issueLabel":` + issueLabelJSON("label-id", "bug", "team-id", "LIT") + `}`,
 		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-7")) + `}}`,
 	})
 
@@ -573,6 +611,7 @@ func Test_UpdateIssue_sets_assignee_label_and_due_date(t *testing.T) {
 	// Given
 	graphqlClient := issueWriteFakeClient(map[string]string{
 		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"issueLabel":  `{"issueLabel":` + issueLabelJSON("label-id", "bug", "team-id", "LIT") + `}`,
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
 	})
 
@@ -720,6 +759,26 @@ func Test_CreateIssues_resolves_target_once(t *testing.T) {
 	// resolveTarget call, not once per row.
 	require.Equal(t, 1, recorder.countOf("team"), "the direct team lookup should run once, not per row")
 	require.Equal(t, 1, recorder.countOf("Teams"), "the team scan should run once, not per row")
+}
+
+func Test_CreateIssues_validates_each_distinct_label_once(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issueLabel":  `{"issueLabel":` + issueLabelJSON("label-id", "bug", "team-id", "LIT") + `}`,
+		"IssueCreate": `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+	})}
+	requests := []IssueCreateRequest{
+		{Title: "First", LabelIDs: []string{"label-id"}},
+		{Title: "Second", LabelIDs: []string{"label-id"}},
+		{Title: "Third", LabelIDs: []string{"label-id"}},
+	}
+
+	outcomes, err := CreateIssues(context.Background(), recorder, matchingTarget(), requests, 3)
+
+	require.NoError(t, err)
+	for _, outcome := range outcomes {
+		require.NoError(t, outcome.Err)
+	}
+	require.Equal(t, 1, recorder.countOf("issueLabel"))
 }
 
 func Test_CreateIssues_reports_row_outcomes_in_order(t *testing.T) {

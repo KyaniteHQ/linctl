@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // SearchDocumentSummary is a compact document search result.
@@ -76,13 +78,13 @@ func SearchDocuments(
 	term string,
 	limit int,
 ) (SearchDocumentList, error) {
-	result, err := searchDocuments(ctx, graphqlClient, term, intPtr(limit), nil)
+	result, err := gql.XSearchDocuments(ctx, graphqlClient, term, intPtr(limit), nil)
 	if err != nil {
 		return SearchDocumentList{}, fmt.Errorf("search documents: %w", err)
 	}
 
 	documents := mapNodes(result.SearchDocuments.Nodes, func(
-		node searchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult,
+		node gql.XSearchDocumentsSearchDocumentsDocumentSearchPayloadNodesDocumentSearchResult,
 	) SearchDocumentSummary {
 		return searchDocumentSummary(node.SearchDocumentSummaryFields)
 	})
@@ -102,13 +104,13 @@ func SearchIssues(
 	term string,
 	limit int,
 ) (SearchIssueList, error) {
-	result, err := searchIssues(ctx, graphqlClient, term, intPtr(limit), nil)
+	result, err := gql.XSearchIssues(ctx, graphqlClient, term, intPtr(limit), nil)
 	if err != nil {
 		return SearchIssueList{}, fmt.Errorf("search issues: %w", err)
 	}
 
 	issues := mapNodes(result.SearchIssues.Nodes, func(
-		node searchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult,
+		node gql.XSearchIssuesSearchIssuesIssueSearchPayloadNodesIssueSearchResult,
 	) SearchIssueSummary {
 		return typedSearchIssueSummary(node.SearchIssueSummaryFields)
 	})
@@ -128,13 +130,13 @@ func SearchProjects(
 	term string,
 	limit int,
 ) (SearchProjectList, error) {
-	result, err := searchProjects(ctx, graphqlClient, term, intPtr(limit), nil)
+	result, err := gql.XSearchProjects(ctx, graphqlClient, term, intPtr(limit), nil)
 	if err != nil {
 		return SearchProjectList{}, fmt.Errorf("search projects: %w", err)
 	}
 
 	projects := mapNodes(result.SearchProjects.Nodes, func(
-		node searchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult,
+		node gql.XSearchProjectsSearchProjectsProjectSearchPayloadNodesProjectSearchResult,
 	) SearchProjectSummary {
 		return searchProjectSummary(node.SearchProjectSummaryFields)
 	})
@@ -147,7 +149,7 @@ func SearchProjects(
 	}, nil
 }
 
-func searchDocumentSummary(fields SearchDocumentSummaryFields) SearchDocumentSummary {
+func searchDocumentSummary(fields gql.SearchDocumentSummaryFields) SearchDocumentSummary {
 	summary := SearchDocumentSummary{
 		ID:     fields.Id,
 		Title:  fields.Title,
@@ -191,7 +193,7 @@ func searchDocumentSummary(fields SearchDocumentSummaryFields) SearchDocumentSum
 	return summary
 }
 
-func typedSearchIssueSummary(fields SearchIssueSummaryFields) SearchIssueSummary {
+func typedSearchIssueSummary(fields gql.SearchIssueSummaryFields) SearchIssueSummary {
 	summary := SearchIssueSummary{
 		ID:         fields.Id,
 		Identifier: fields.Identifier,
@@ -212,9 +214,9 @@ func typedSearchIssueSummary(fields SearchIssueSummaryFields) SearchIssueSummary
 	return summary
 }
 
-func searchProjectSummary(fields SearchProjectSummaryFields) SearchProjectSummary {
+func searchProjectSummary(fields gql.SearchProjectSummaryFields) SearchProjectSummary {
 	teams := mapNodes(fields.Teams.Nodes, func(
-		team SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam,
+		team gql.SearchProjectSummaryFieldsTeamsTeamConnectionNodesTeam,
 	) ProjectTeam {
 		return ProjectTeam{
 			ID:   team.Id,

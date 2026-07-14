@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // IssueToReleaseSummary is one issue association under a release.
@@ -31,13 +33,13 @@ func ListIssueToReleases(
 	graphqlClient graphql.Client,
 	limit int,
 ) (IssueToReleaseList, error) {
-	result, err := issueToReleases(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueToReleases(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueToReleaseList{}, fmt.Errorf("list issue to releases: %w", err)
 	}
 
 	associations := mapNodes(result.IssueToReleases.Nodes, func(
-		association issueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease,
+		association gql.XIssueToReleasesIssueToReleasesIssueToReleaseConnectionNodesIssueToRelease,
 	) IssueToReleaseSummary {
 		return issueToReleaseSummary(association.IssueToReleaseSummaryFields)
 	})
@@ -55,7 +57,7 @@ func GetIssueToReleaseByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (IssueToReleaseSummary, error) {
-	result, err := issueToRelease(ctx, graphqlClient, id)
+	result, err := gql.XIssueToRelease(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueToReleaseSummary{}, fmt.Errorf("get issue to release %s: %w", id, err)
 	}
@@ -63,7 +65,7 @@ func GetIssueToReleaseByID(
 	return issueToReleaseSummary(result.IssueToRelease.IssueToReleaseSummaryFields), nil
 }
 
-func issueToReleaseSummary(association IssueToReleaseSummaryFields) IssueToReleaseSummary {
+func issueToReleaseSummary(association gql.IssueToReleaseSummaryFields) IssueToReleaseSummary {
 	return IssueToReleaseSummary{
 		ID:         association.Id,
 		IssueID:    association.Issue.Id,

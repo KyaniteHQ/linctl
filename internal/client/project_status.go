@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ProjectStatusSummary is the compact project status model used by read-only commands.
@@ -37,13 +39,13 @@ type ProjectStatusProjectCount struct {
 
 // ListProjectStatuses returns visible Linear project statuses.
 func ListProjectStatuses(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectStatusList, error) {
-	result, err := projectStatuses(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectStatuses(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectStatusList{}, fmt.Errorf("list project statuses: %w", err)
 	}
 
 	statuses := mapNodes(result.ProjectStatuses.Nodes, func(
-		status projectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus,
+		status gql.XProjectStatusesProjectStatusesProjectStatusConnectionNodesProjectStatus,
 	) ProjectStatusSummary {
 		return projectStatusSummary(status.ProjectStatusSummaryFields)
 	})
@@ -61,7 +63,7 @@ func GetProjectStatusByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (ProjectStatusSummary, error) {
-	result, err := projectStatus(ctx, graphqlClient, id)
+	result, err := gql.XProjectStatus(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectStatusSummary{}, fmt.Errorf("get project status %s: %w", id, err)
 	}
@@ -75,7 +77,7 @@ func GetProjectStatusProjectCount(
 	graphqlClient graphql.Client,
 	id string,
 ) (ProjectStatusProjectCount, error) {
-	result, err := projectStatusProjectCount(ctx, graphqlClient, id)
+	result, err := gql.XProjectStatusProjectCount(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectStatusProjectCount{}, fmt.Errorf("get project status project count %s: %w", id, err)
 	}
@@ -89,7 +91,7 @@ func GetProjectStatusProjectCount(
 	}, nil
 }
 
-func projectStatusSummary(fields ProjectStatusSummaryFields) ProjectStatusSummary {
+func projectStatusSummary(fields gql.ProjectStatusSummaryFields) ProjectStatusSummary {
 	return ProjectStatusSummary{
 		ID:          fields.Id,
 		Name:        fields.Name,

@@ -23,7 +23,12 @@ func addProjectLabelCreateCommand(ctx context.Context, root *cobra.Command, opti
 				return err
 			}
 
-			return runProjectLabelCreate(ctx, command, options, commandAdapterFor(runtime), request)
+			label, err := client.CreateProjectLabel(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectLabel(command, options, label)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "project label name")
@@ -46,7 +51,12 @@ func addProjectLabelUpdateCommand(ctx context.Context, root *cobra.Command, opti
 			}
 			request.ID = args[0]
 
-			return runProjectLabelUpdate(ctx, command, options, commandAdapterFor(runtime), request)
+			label, err := client.UpdateProjectLabel(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectLabel(command, options, label)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "new project label name")
@@ -68,7 +78,14 @@ func addProjectLabelRetireCommand(ctx context.Context, root *cobra.Command, opti
 				return err
 			}
 
-			return runProjectLabelRetire(ctx, command, options, commandAdapterFor(runtime), args[0], orgWide)
+			label, err := client.RetireProjectLabel(
+				ctx, runtime.graphqlClient, runtime.config.Target, args[0], orgWide,
+			)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectLabel(command, options, label)
 		},
 	}
 	command.Flags().BoolVar(&orgWide, "org-wide", false, orgWideProjectLabelHelp)
@@ -87,71 +104,16 @@ func addProjectLabelRestoreCommand(ctx context.Context, root *cobra.Command, opt
 				return err
 			}
 
-			return runProjectLabelRestore(ctx, command, options, commandAdapterFor(runtime), args[0], orgWide)
+			label, err := client.RestoreProjectLabel(
+				ctx, runtime.graphqlClient, runtime.config.Target, args[0], orgWide,
+			)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectLabel(command, options, label)
 		},
 	}
 	command.Flags().BoolVar(&orgWide, "org-wide", false, orgWideProjectLabelHelp)
 	root.AddCommand(command)
-}
-
-func runProjectLabelCreate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	creator projectLabelCreator,
-	request client.ProjectLabelCreateRequest,
-) error {
-	label, err := creator.CreateProjectLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectLabel(command, options, label)
-}
-
-func runProjectLabelUpdate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	updater projectLabelUpdater,
-	request client.ProjectLabelUpdateRequest,
-) error {
-	label, err := updater.UpdateProjectLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectLabel(command, options, label)
-}
-
-func runProjectLabelRetire(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	retirer projectLabelRetirer,
-	id string,
-	orgWide bool,
-) error {
-	label, err := retirer.RetireProjectLabel(ctx, id, orgWide)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectLabel(command, options, label)
-}
-
-func runProjectLabelRestore(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	restorer projectLabelRestorer,
-	id string,
-	orgWide bool,
-) error {
-	label, err := restorer.RestoreProjectLabel(ctx, id, orgWide)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectLabel(command, options, label)
 }

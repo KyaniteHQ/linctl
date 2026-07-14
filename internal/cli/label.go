@@ -29,11 +29,11 @@ func addLabelListCommand(ctx context.Context, root *cobra.Command, options *root
 		Short: "List visible labels",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
-			return runReadListCommand(ctx, command, nil, options, limit, loadLabelList, labelPageWithItems, writeLabel)
+			return runReadListCommand(ctx, command, nil, options, limit, loadLabelList, writeLabel)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadLabelList))
 }
 
 func addLabelGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -70,13 +70,12 @@ func addLabelChildrenCommand(ctx context.Context, root *cobra.Command, options *
 				options,
 				limit,
 				loadLabelChildren,
-				labelChildrenPageWithItems,
 				writeLabel,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadLabelChildren))
 }
 
 func addLabelIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -93,13 +92,12 @@ func addLabelIssuesCommand(ctx context.Context, root *cobra.Command, options *ro
 				options,
 				limit,
 				loadLabelIssues,
-				labelIssuesPageWithItems,
 				writeIssue,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum Issues to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadLabelIssues))
 }
 
 func writeLabel(command *cobra.Command, options *rootOptions, label client.LabelSummary) error {

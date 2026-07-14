@@ -43,13 +43,12 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 
 func addProjectListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.ProjectList, client.ProjectSummary]{
-		Use:           "list",
-		Short:         "List projects for the resolved team",
-		LimitHelp:     "projects",
-		Args:          cobra.NoArgs,
-		Load:          loadProjectsByTeam,
-		PageWithItems: projectPageWithItems,
-		WriteItem:     writeProject,
+		Use:       "list",
+		Short:     "List projects for the resolved team",
+		LimitHelp: "projects",
+		Args:      cobra.NoArgs,
+		Load:      loadProjectsByTeam,
+		WriteItem: writeProject,
 	})
 }
 
@@ -70,13 +69,12 @@ func loadProjectsByTeam(
 
 func addProjectAllCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addListCommand(ctx, root, options, listCommandSpec[client.ProjectList, client.ProjectSummary]{
-		Use:           "all",
-		Short:         "List visible Linear projects across the organization",
-		LimitHelp:     "projects",
-		Args:          cobra.NoArgs,
-		Load:          loadProjectsAll,
-		PageWithItems: projectPageWithItems,
-		WriteItem:     writeProject,
+		Use:       "all",
+		Short:     "List visible Linear projects across the organization",
+		LimitHelp: "projects",
+		Args:      cobra.NoArgs,
+		Load:      loadProjectsAll,
+		WriteItem: writeProject,
 	})
 }
 
@@ -124,8 +122,7 @@ func addProjectAttachmentsCommand(ctx context.Context, root *cobra.Command, opti
 			list, err := client.ListProjectAttachments(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Attachments, err
 		},
-		PageWithItems: projectAttachmentPageWithItems,
-		WriteItem:     writeAttachment,
+		WriteItem: writeAttachment,
 	})
 }
 
@@ -141,8 +138,7 @@ func addProjectDocumentsCommand(ctx context.Context, root *cobra.Command, option
 			list, err := client.ListProjectDocuments(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Documents, err
 		},
-		PageWithItems: projectDocumentPageWithItems,
-		WriteItem:     writeDocument,
+		WriteItem: writeDocument,
 	})
 }
 
@@ -158,8 +154,7 @@ func addProjectExternalLinksCommand(ctx context.Context, root *cobra.Command, op
 			list, err := client.ListProjectExternalLinks(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Links, err
 		},
-		PageWithItems: projectExternalLinkPageWithItems,
-		WriteItem:     writeEntityExternalLink,
+		WriteItem: writeEntityExternalLink,
 	}
 	addListCommand(ctx, root, options, spec)
 }
@@ -176,8 +171,7 @@ func addProjectHistoryCommand(ctx context.Context, root *cobra.Command, options 
 			list, err := client.ListProjectHistory(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.History, err
 		},
-		PageWithItems: projectHistoryPageWithItems,
-		WriteItem:     writeProjectHistory,
+		WriteItem: writeProjectHistory,
 	})
 }
 
@@ -193,8 +187,7 @@ func addProjectInitiativeLinksCommand(ctx context.Context, root *cobra.Command, 
 			list, err := client.ListProjectInitiativeToProjects(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Associations, err
 		},
-		PageWithItems: projectInitiativeToProjectPageWithItems,
-		WriteItem:     writeInitiativeToProject,
+		WriteItem: writeInitiativeToProject,
 	}
 	addListCommand(ctx, root, options, spec)
 }
@@ -211,8 +204,7 @@ func addProjectInitiativesCommand(ctx context.Context, root *cobra.Command, opti
 			list, err := client.ListProjectInitiatives(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Initiatives, err
 		},
-		PageWithItems: projectInitiativePageWithItems,
-		WriteItem:     writeInitiative,
+		WriteItem: writeInitiative,
 	})
 }
 
@@ -240,8 +232,7 @@ func addProjectIssuesCommand(ctx context.Context, root *cobra.Command, options *
 			list, err := client.ListProjectIssues(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Issues, err
 		},
-		PageWithItems: projectIssuePageWithItems,
-		WriteItem:     writeIssue,
+		WriteItem: writeIssue,
 	})
 }
 
@@ -257,8 +248,7 @@ func addProjectCommentsCommand(ctx context.Context, root *cobra.Command, options
 			list, err := client.ListProjectComments(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Comments, err
 		},
-		PageWithItems: projectCommentPageWithItems,
-		WriteItem:     writeCommentMetadata,
+		WriteItem: writeCommentMetadata,
 	})
 }
 
@@ -274,8 +264,7 @@ func addProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *
 			list, err := client.ListLabelsForProject(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.ProjectLabels, err
 		},
-		PageWithItems: projectProjectLabelPageWithItems,
-		WriteItem:     writeProjectLabel,
+		WriteItem: writeProjectLabel,
 	})
 }
 
@@ -311,8 +300,7 @@ func addProjectMembersCommand(ctx context.Context, root *cobra.Command, options 
 			list, err := client.ListProjectMembers(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Members, err
 		},
-		PageWithItems: projectMemberPageWithItems,
-		WriteItem:     writeProjectMember,
+		WriteItem: writeProjectMember,
 	})
 }
 
@@ -328,8 +316,7 @@ func addProjectNeedsCommand(ctx context.Context, root *cobra.Command, options *r
 			list, err := client.ListProjectNeeds(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Needs, err
 		},
-		PageWithItems: projectCustomerNeedPageWithItems,
-		WriteItem:     writeCustomerNeed,
+		WriteItem: writeCustomerNeed,
 	})
 }
 
@@ -357,8 +344,7 @@ func addProjectTeamsCommand(ctx context.Context, root *cobra.Command, options *r
 			list, err := client.ListProjectTeams(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Teams, err
 		},
-		PageWithItems: projectTeamPageWithItems,
-		WriteItem:     writeTeam,
+		WriteItem: writeTeam,
 	})
 }
 
@@ -397,8 +383,7 @@ func addProjectUpdatesCommand(ctx context.Context, root *cobra.Command, options 
 			list, err := client.ListProjectUpdates(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Updates, err
 		},
-		PageWithItems: projectUpdatePageWithItems,
-		WriteItem:     writeProjectChildUpdate,
+		WriteItem: writeProjectChildUpdate,
 	})
 }
 
@@ -445,8 +430,7 @@ func addProjectRelationChildListCommand(
 			list, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
 			return list, list.Relations, err
 		},
-		PageWithItems: projectProjectRelationPageWithItems,
-		WriteItem:     writeProjectRelation,
+		WriteItem: writeProjectRelation,
 	}
 	addListCommand(ctx, root, options, spec)
 }

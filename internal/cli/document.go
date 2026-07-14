@@ -15,16 +15,15 @@ func addDocumentCommand(ctx context.Context, root *cobra.Command, options *rootO
 		root,
 		options,
 		readListGetSpec[client.DocumentList, client.DocumentSummary]{
-			Use:           "document",
-			Short:         "Read Linear documents",
-			ListShort:     "List visible documents",
-			LimitHelp:     "maximum documents to return",
-			GetUse:        "get DOCUMENT_ID",
-			GetShort:      "Get one Document by id or slug",
-			LoadList:      loadDocumentList,
-			PageWithItems: documentPageWithItems,
-			LoadGet:       loadDocument,
-			WriteItem:     writeDocument,
+			Use:       "document",
+			Short:     "Read Linear documents",
+			ListShort: "List visible documents",
+			LimitHelp: "maximum documents to return",
+			GetUse:    "get DOCUMENT_ID",
+			GetShort:  "Get one Document by id or slug",
+			LoadList:  loadDocumentList,
+			LoadGet:   loadDocument,
+			WriteItem: writeDocument,
 		},
 	)
 	addDocumentCommentsCommand(ctx, documentCommand, options)
@@ -45,32 +44,21 @@ func addDocumentCreateCommand(ctx context.Context, root *cobra.Command, options 
 				return err
 			}
 
-			return runDocumentCreate(ctx, command, options, commandAdapterFor(runtime), request, contentFile)
+			if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
+				return err
+			}
+			document, err := client.CreateDocument(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeDocument(command, options, document)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "document title")
 	command.Flags().StringVar(&request.Content, "content", "", "document content as markdown; use - to read stdin")
 	command.Flags().StringVar(&contentFile, "content-file", "", "read document content from file")
 	root.AddCommand(command)
-}
-
-func runDocumentCreate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	creator documentCreator,
-	request client.DocumentCreateRequest,
-	contentFile string,
-) error {
-	if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
-		return err
-	}
-	document, err := creator.CreateDocument(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeDocument(command, options, document)
 }
 
 func addDocumentUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -87,32 +75,21 @@ func addDocumentUpdateCommand(ctx context.Context, root *cobra.Command, options 
 			}
 			request.ID = args[0]
 
-			return runDocumentUpdate(ctx, command, options, commandAdapterFor(runtime), request, contentFile)
+			if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
+				return err
+			}
+			document, err := client.UpdateDocument(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeDocument(command, options, document)
 		},
 	}
 	command.Flags().StringVar(&request.Title, "title", "", "new document title")
 	command.Flags().StringVar(&request.Content, "content", "", "new document content as markdown; use - to read stdin")
 	command.Flags().StringVar(&contentFile, "content-file", "", "read new document content from file")
 	root.AddCommand(command)
-}
-
-func runDocumentUpdate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	updater documentUpdater,
-	request client.DocumentUpdateRequest,
-	contentFile string,
-) error {
-	if err := resolveDocumentContent(command, &request.Content, contentFile); err != nil {
-		return err
-	}
-	document, err := updater.UpdateDocument(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeDocument(command, options, document)
 }
 
 // resolveDocumentContent resolves the document content from --content (with "-"
@@ -139,13 +116,12 @@ func addDocumentCommentsCommand(ctx context.Context, root *cobra.Command, option
 				options,
 				limit,
 				loadDocumentCommentList,
-				documentCommentPageWithItems,
 				writeCommentMetadata,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum comments to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadDocumentCommentList))
 }
 
 func writeDocument(command *cobra.Command, options *rootOptions, document client.DocumentSummary) error {

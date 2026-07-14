@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // CustomerTierSummary is the compact customer tier model used by read-only commands.
@@ -28,13 +30,13 @@ type CustomerTierList struct {
 
 // ListCustomerTiers returns organization customer tiers.
 func ListCustomerTiers(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerTierList, error) {
-	result, err := customerTiers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XCustomerTiers(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CustomerTierList{}, fmt.Errorf("list customer tiers: %w", err)
 	}
 
 	summaries := mapNodes(result.CustomerTiers.Nodes, func(
-		node customerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier,
+		node gql.XCustomerTiersCustomerTiersCustomerTierConnectionNodesCustomerTier,
 	) CustomerTierSummary {
 		return customerTierSummary(node.CustomerTierSummaryFields)
 	})
@@ -48,7 +50,7 @@ func ListCustomerTiers(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetCustomerTierByID returns one customer tier by id.
 func GetCustomerTierByID(ctx context.Context, graphqlClient graphql.Client, id string) (CustomerTierSummary, error) {
-	result, err := customerTier(ctx, graphqlClient, id)
+	result, err := gql.XCustomerTier(ctx, graphqlClient, id)
 	if err != nil {
 		return CustomerTierSummary{}, fmt.Errorf("get customer tier %s: %w", id, err)
 	}
@@ -56,7 +58,7 @@ func GetCustomerTierByID(ctx context.Context, graphqlClient graphql.Client, id s
 	return customerTierSummary(result.CustomerTier.CustomerTierSummaryFields), nil
 }
 
-func customerTierSummary(fields CustomerTierSummaryFields) CustomerTierSummary {
+func customerTierSummary(fields gql.CustomerTierSummaryFields) CustomerTierSummary {
 	return CustomerTierSummary{
 		ID:          fields.Id,
 		Name:        fields.Name,

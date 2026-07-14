@@ -12,16 +12,15 @@ import (
 
 func addExternalUserCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.ExternalUserList, client.ExternalUserSummary]{
-		Use:           "external-user",
-		Short:         "Read Linear ExternalUsers",
-		ListShort:     "List Linear ExternalUsers",
-		LimitHelp:     "maximum ExternalUsers to return",
-		GetUse:        "get EXTERNAL_USER_ID",
-		GetShort:      "Get one ExternalUser by id",
-		LoadList:      loadExternalUserList,
-		PageWithItems: externalUserPageWithItems,
-		LoadGet:       loadExternalUser,
-		WriteItem:     writeExternalUser,
+		Use:       "external-user",
+		Short:     "Read Linear ExternalUsers",
+		ListShort: "List Linear ExternalUsers",
+		LimitHelp: "maximum ExternalUsers to return",
+		GetUse:    "get EXTERNAL_USER_ID",
+		GetShort:  "Get one ExternalUser by id",
+		LoadList:  loadExternalUserList,
+		LoadGet:   loadExternalUser,
+		WriteItem: writeExternalUser,
 	})
 }
 

@@ -63,7 +63,7 @@ func main() {
 	upstreamSDKPath := filepath.Join(*upstreamDir, "packages/sdk/src/_generated_sdk.ts")
 	upstreamDocumentsPath := filepath.Join(*upstreamDir, "packages/sdk/src/_generated_documents.graphql")
 	localOperationsPattern := "internal/client/operations/*.graphql"
-	localGeneratedPath := "internal/client/generated.go"
+	localGeneratedPath := "internal/client/internal/gql/generated.go"
 	domainMapPath := "docs/internal/domain-map.md"
 
 	mustValidateUpstreamCheckout(
@@ -134,7 +134,7 @@ func writeHeader(output *bytes.Buffer, upstreamDir string, upstreamSchemaPath st
 	fmt.Fprintf(output, "Sources (paths relative to the upstream Linear SDK checkout):\n\n")
 	fmt.Fprintf(output, "- Upstream SDK methods: `%s`\n", sdkRel)
 	fmt.Fprintf(output, "- Upstream schema roots: `%s`\n", schemaRel)
-	fmt.Fprintf(output, "- Local generated operations: `internal/client/generated.go`\n")
+	fmt.Fprintf(output, "- Local generated operations: `internal/client/internal/gql/generated.go`\n")
 	fmt.Fprintf(output, "- Local GraphQL operations: `internal/client/operations/*.graphql`\n")
 	fmt.Fprintf(output, "- Public CLI commands: Cobra command inventory enriched by `docs/internal/domain-map.md`\n\n")
 	fmt.Fprintf(
@@ -239,7 +239,7 @@ func writeLocalOperationsTable(output *bytes.Buffer, operations []localOperation
 		evidence := "operation is declared but generated function not found"
 		if localOperationNames[operation.Name] {
 			status = "generated"
-			evidence = "`internal/client/generated.go`"
+			evidence = "`internal/client/internal/gql/generated.go`"
 		}
 		fmt.Fprintf(
 			output,

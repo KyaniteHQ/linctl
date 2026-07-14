@@ -31,13 +31,12 @@ func addSearchDocumentsCommand(ctx context.Context, root *cobra.Command, options
 				options,
 				limit,
 				loadSearchDocuments,
-				searchDocumentPageWithItems,
 				writeSearchDocument,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum document search results to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadSearchDocuments))
 }
 
 func addSearchIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -54,13 +53,12 @@ func addSearchIssuesCommand(ctx context.Context, root *cobra.Command, options *r
 				options,
 				limit,
 				loadSearchIssues,
-				searchIssuePageWithItems,
 				writeSearchIssue,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issue search results to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadSearchIssues))
 }
 
 func addSearchProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -77,13 +75,12 @@ func addSearchProjectsCommand(ctx context.Context, root *cobra.Command, options 
 				options,
 				limit,
 				loadSearchProjects,
-				searchProjectPageWithItems,
 				writeSearchProject,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum project search results to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadSearchProjects))
 }
 
 func writeSearchDocument(command *cobra.Command, options *rootOptions, document client.SearchDocumentSummary) error {

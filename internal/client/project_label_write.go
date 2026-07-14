@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -29,24 +30,10 @@ type ProjectLabelUpdateRequest struct {
 	OrgWide     bool
 }
 
-// LinearProjectLabelCreateInput is the sparse Linear projectLabelCreate payload linctl supports.
-type LinearProjectLabelCreateInput struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Color       *string `json:"color,omitempty"`
-}
-
-// LinearProjectLabelUpdateInput is the sparse Linear projectLabelUpdate payload linctl supports.
-type LinearProjectLabelUpdateInput struct {
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Color       *string `json:"color,omitempty"`
-}
-
 // CreateProjectLabel creates a ProjectLabel after confirming --org-wide was
 // passed. ProjectLabel is organization-owned; there is no team scope to
 // materialize, so the Org-Scoped Write comparison is provided by
-// guardedMutation's ResolveTarget call alone.
+// guarded client's target resolution alone.
 func CreateProjectLabel(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -60,21 +47,31 @@ func CreateProjectLabel(
 		return ProjectLabelSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(_ writeGuard) (ProjectLabelSummary, error) {
-		created, err := ProjectLabelCreate(ctx, graphqlClient, LinearProjectLabelCreateInput{
-			Name:        request.Name,
-			Description: optionalString(request.Description),
-			Color:       optionalString(request.Color),
-		})
-		if err != nil {
-			return ProjectLabelSummary{}, fmt.Errorf("create project label: %w", err)
-		}
-		if !created.ProjectLabelCreate.Success {
-			return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelCreate reported no success", ErrMutationFailed)
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectLabelSummary{}, err
+	}
 
-		return projectLabelSummary(created.ProjectLabelCreate.ProjectLabel.ProjectLabelSummaryFields), nil
+	return guard.createProjectLabel(ctx, request)
+}
+
+func (guard *guardedClient) createProjectLabel(
+	ctx context.Context,
+	request ProjectLabelCreateRequest,
+) (ProjectLabelSummary, error) {
+	created, err := gql.ProjectLabelCreate(ctx, guard.graphqlClient, LinearProjectLabelCreateInput{
+		Name:        request.Name,
+		Description: optionalString(request.Description),
+		Color:       optionalString(request.Color),
 	})
+	if err != nil {
+		return ProjectLabelSummary{}, fmt.Errorf("create project label: %w", err)
+	}
+	if !created.ProjectLabelCreate.Success {
+		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelCreate reported no success", ErrMutationFailed)
+	}
+
+	return projectLabelSummary(created.ProjectLabelCreate.ProjectLabel.ProjectLabelSummaryFields), nil
 }
 
 // UpdateProjectLabel updates a ProjectLabel after confirming --org-wide was
@@ -91,25 +88,35 @@ func UpdateProjectLabel(
 		return ProjectLabelSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectLabelSummary, error) {
-		if err := guard.requireProjectLabel(ctx, graphqlClient, request.ID); err != nil {
-			return ProjectLabelSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectLabelSummary{}, err
+	}
 
-		updated, err := ProjectLabelUpdate(ctx, graphqlClient, request.ID, LinearProjectLabelUpdateInput{
-			Name:        optionalString(request.Name),
-			Description: optionalString(request.Description),
-			Color:       optionalString(request.Color),
-		})
-		if err != nil {
-			return ProjectLabelSummary{}, fmt.Errorf("update project label %s: %w", request.ID, err)
-		}
-		if !updated.ProjectLabelUpdate.Success {
-			return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelUpdate reported no success", ErrMutationFailed)
-		}
+	return guard.updateProjectLabel(ctx, request)
+}
 
-		return projectLabelSummary(updated.ProjectLabelUpdate.ProjectLabel.ProjectLabelSummaryFields), nil
+func (guard *guardedClient) updateProjectLabel(
+	ctx context.Context,
+	request ProjectLabelUpdateRequest,
+) (ProjectLabelSummary, error) {
+	if err := guard.requireProjectLabel(ctx, request.ID); err != nil {
+		return ProjectLabelSummary{}, err
+	}
+
+	updated, err := gql.ProjectLabelUpdate(ctx, guard.graphqlClient, request.ID, LinearProjectLabelUpdateInput{
+		Name:        optionalString(request.Name),
+		Description: optionalString(request.Description),
+		Color:       optionalString(request.Color),
 	})
+	if err != nil {
+		return ProjectLabelSummary{}, fmt.Errorf("update project label %s: %w", request.ID, err)
+	}
+	if !updated.ProjectLabelUpdate.Success {
+		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelUpdate reported no success", ErrMutationFailed)
+	}
+
+	return projectLabelSummary(updated.ProjectLabelUpdate.ProjectLabel.ProjectLabelSummaryFields), nil
 }
 
 // RetireProjectLabel retires a ProjectLabel after confirming --org-wide was
@@ -128,21 +135,28 @@ func RetireProjectLabel(
 		return ProjectLabelSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectLabelSummary, error) {
-		if err := guard.requireProjectLabel(ctx, graphqlClient, id); err != nil {
-			return ProjectLabelSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectLabelSummary{}, err
+	}
 
-		retired, err := ProjectLabelRetire(ctx, graphqlClient, id)
-		if err != nil {
-			return ProjectLabelSummary{}, fmt.Errorf("retire project label %s: %w", id, err)
-		}
-		if !retired.ProjectLabelRetire.Success {
-			return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelRetire reported no success", ErrMutationFailed)
-		}
+	return guard.retireProjectLabel(ctx, id)
+}
 
-		return projectLabelSummary(retired.ProjectLabelRetire.ProjectLabel.ProjectLabelSummaryFields), nil
-	})
+func (guard *guardedClient) retireProjectLabel(ctx context.Context, id string) (ProjectLabelSummary, error) {
+	if err := guard.requireProjectLabel(ctx, id); err != nil {
+		return ProjectLabelSummary{}, err
+	}
+
+	retired, err := gql.ProjectLabelRetire(ctx, guard.graphqlClient, id)
+	if err != nil {
+		return ProjectLabelSummary{}, fmt.Errorf("retire project label %s: %w", id, err)
+	}
+	if !retired.ProjectLabelRetire.Success {
+		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelRetire reported no success", ErrMutationFailed)
+	}
+
+	return projectLabelSummary(retired.ProjectLabelRetire.ProjectLabel.ProjectLabelSummaryFields), nil
 }
 
 // RestoreProjectLabel restores a previously retired ProjectLabel after
@@ -162,21 +176,28 @@ func RestoreProjectLabel(
 		return ProjectLabelSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectLabelSummary, error) {
-		if err := guard.requireProjectLabel(ctx, graphqlClient, id); err != nil {
-			return ProjectLabelSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectLabelSummary{}, err
+	}
 
-		restored, err := ProjectLabelRestore(ctx, graphqlClient, id)
-		if err != nil {
-			return ProjectLabelSummary{}, fmt.Errorf("restore project label %s: %w", id, err)
-		}
-		if !restored.ProjectLabelRestore.Success {
-			return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelRestore reported no success", ErrMutationFailed)
-		}
+	return guard.restoreProjectLabel(ctx, id)
+}
 
-		return projectLabelSummary(restored.ProjectLabelRestore.ProjectLabel.ProjectLabelSummaryFields), nil
-	})
+func (guard *guardedClient) restoreProjectLabel(ctx context.Context, id string) (ProjectLabelSummary, error) {
+	if err := guard.requireProjectLabel(ctx, id); err != nil {
+		return ProjectLabelSummary{}, err
+	}
+
+	restored, err := gql.ProjectLabelRestore(ctx, guard.graphqlClient, id)
+	if err != nil {
+		return ProjectLabelSummary{}, fmt.Errorf("restore project label %s: %w", id, err)
+	}
+	if !restored.ProjectLabelRestore.Success {
+		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelRestore reported no success", ErrMutationFailed)
+	}
+
+	return projectLabelSummary(restored.ProjectLabelRestore.ProjectLabel.ProjectLabelSummaryFields), nil
 }
 
 func validateProjectLabelUpdateRequest(request ProjectLabelUpdateRequest) error {

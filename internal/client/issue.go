@@ -7,6 +7,8 @@ import (
 	"sort"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // IssueSummary is the compact issue model used by read-only commands.
@@ -130,12 +132,12 @@ type IssueListFilters struct {
 
 // ListIssues returns issues across every visible Linear team for broad read-only inspection.
 func ListIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	issuePage, err := issues(ctx, graphqlClient, &limit, nil, boolPtr(true))
+	issuePage, err := gql.XIssues(ctx, graphqlClient, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
-	summaries := mapNodes(issuePage.Issues.Nodes, func(issue issuesIssuesIssueConnectionNodesIssue) IssueSummary {
+	summaries := mapNodes(issuePage.Issues.Nodes, func(issue gql.XIssuesIssuesIssueConnectionNodesIssue) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
 
@@ -185,11 +187,13 @@ func ListIssuesByTeam(
 		return listIssuesBlockedByIssue(ctx, graphqlClient, teamID, limit, filters.BlockedBy)
 	}
 
-	issues, err := IssuesByTeam(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeam(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
-	summaries := mapNodes(issues.Issues.Nodes, func(issue IssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
+	summaries := mapNodes(issues.Issues.Nodes, func(
+		issue gql.IssuesByTeamIssuesIssueConnectionNodesIssue,
+	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
 
@@ -207,13 +211,13 @@ func listIssuesByTeamState(
 	limit int,
 	stateType string,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamState(ctx, graphqlClient, teamID, stateType, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamState(ctx, graphqlClient, teamID, stateType, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamStateIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamStateIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -232,13 +236,13 @@ func listIssuesByTeamProject(
 	limit int,
 	projectID string,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamProject(ctx, graphqlClient, teamID, projectID, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamProject(ctx, graphqlClient, teamID, projectID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamProjectIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamProjectIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -257,13 +261,13 @@ func listIssuesByTeamAssignee(
 	limit int,
 	assigneeID string,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamAssignee(ctx, graphqlClient, teamID, assigneeID, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamAssignee(ctx, graphqlClient, teamID, assigneeID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamAssigneeIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamAssigneeIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -282,13 +286,13 @@ func listIssuesByTeamLabel(
 	limit int,
 	labelID string,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamLabel(ctx, graphqlClient, teamID, labelID, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamLabel(ctx, graphqlClient, teamID, labelID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamLabelIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamLabelIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -307,13 +311,13 @@ func listIssuesByTeamCycle(
 	limit int,
 	cycleID string,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamCycle(ctx, graphqlClient, teamID, cycleID, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamCycle(ctx, graphqlClient, teamID, cycleID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamCycleIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamCycleIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -332,13 +336,13 @@ func listIssuesByTeamCreatedAfter(
 	limit int,
 	createdAfter string,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamCreatedAfter(ctx, graphqlClient, teamID, createdAfter, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamCreatedAfter(ctx, graphqlClient, teamID, createdAfter, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamCreatedAfterIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamCreatedAfterIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -357,13 +361,13 @@ func listIssuesByTeamCreatedBefore(
 	limit int,
 	createdBefore string,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamCreatedBefore(ctx, graphqlClient, teamID, createdBefore, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamCreatedBefore(ctx, graphqlClient, teamID, createdBefore, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamCreatedBeforeIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamCreatedBeforeIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -381,13 +385,13 @@ func listIssuesByTeamHasBlockers(
 	teamID string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamHasBlockers(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamHasBlockers(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamHasBlockersIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamHasBlockersIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -405,13 +409,13 @@ func listIssuesByTeamBlocks(
 	teamID string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := IssuesByTeamBlocks(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
+	issues, err := gql.IssuesByTeamBlocks(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
 
 	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue IssuesByTeamBlocksIssuesIssueConnectionNodesIssue,
+		issue gql.IssuesByTeamBlocksIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -430,7 +434,7 @@ func ListNextIssuesByTeam(
 	teamID string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := NextIssuesByTeam(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
+	issues, err := gql.NextIssuesByTeam(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list next issues: %w", err)
 	}
@@ -452,7 +456,7 @@ func listIssuesBlockedByIssue(
 	limit int,
 	blockerIssueID string,
 ) (IssueList, error) {
-	issue, err := IssueBlockedIssues(ctx, graphqlClient, blockerIssueID, &limit, nil, boolPtr(true))
+	issue, err := gql.IssueBlockedIssues(ctx, graphqlClient, blockerIssueID, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("list issues: %w", err)
 	}
@@ -478,7 +482,7 @@ func GetIssueDependencies(
 	id string,
 	limit int,
 ) (IssueDependencyGraph, error) {
-	dependencies, err := IssueDependencies(ctx, graphqlClient, id, &limit, nil, boolPtr(true))
+	dependencies, err := gql.IssueDependencies(ctx, graphqlClient, id, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueDependencyGraph{}, fmt.Errorf("get issue dependencies %s: %w", id, err)
 	}
@@ -503,7 +507,7 @@ func SearchIssuesByTeam(
 	query string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := issueSearch(ctx, graphqlClient, teamID, query, &limit, nil, boolPtr(true))
+	issues, err := gql.XIssueSearch(ctx, graphqlClient, teamID, query, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("search issues: %w", err)
 	}
@@ -524,7 +528,7 @@ func SearchIssuesByFigmaFileKey(
 	fileKey string,
 	limit int,
 ) (IssueList, error) {
-	issues, err := issueFigmaFileKeySearch(ctx, graphqlClient, fileKey, &limit, nil, boolPtr(true))
+	issues, err := gql.XIssueFigmaFileKeySearch(ctx, graphqlClient, fileKey, &limit, nil, boolPtr(true))
 	if err != nil {
 		return IssueList{}, fmt.Errorf("search issues by Figma file key: %w", err)
 	}
@@ -540,13 +544,13 @@ func SearchIssuesByFigmaFileKey(
 
 // ListIssuePriorityValues returns Linear issue priority labels.
 func ListIssuePriorityValues(ctx context.Context, graphqlClient graphql.Client) ([]IssuePriorityValue, error) {
-	result, err := issuePriorityValues(ctx, graphqlClient)
+	result, err := gql.XIssuePriorityValues(ctx, graphqlClient)
 	if err != nil {
 		return nil, fmt.Errorf("list issue priority values: %w", err)
 	}
 
 	values := mapNodes(result.IssuePriorityValues, func(
-		value issuePriorityValuesIssuePriorityValuesIssuePriorityValue,
+		value gql.XIssuePriorityValuesIssuePriorityValuesIssuePriorityValue,
 	) IssuePriorityValue {
 		return IssuePriorityValue(value)
 	})
@@ -562,7 +566,7 @@ func GetIssueFilterSuggestion(
 	teamID string,
 	projectID string,
 ) (IssueFilterSuggestion, error) {
-	suggestion, err := issueFilterSuggestion(
+	suggestion, err := gql.XIssueFilterSuggestion(
 		ctx,
 		graphqlClient,
 		prompt,
@@ -590,7 +594,7 @@ func GetIssueTitleSuggestionFromCustomerRequest(
 	graphqlClient graphql.Client,
 	request string,
 ) (IssueTitleSuggestion, error) {
-	suggestion, err := issueTitleSuggestionFromCustomerRequest(ctx, graphqlClient, request)
+	suggestion, err := gql.XIssueTitleSuggestionFromCustomerRequest(ctx, graphqlClient, request)
 	if err != nil {
 		return IssueTitleSuggestion{}, fmt.Errorf("get issue title suggestion: %w", err)
 	}
@@ -613,7 +617,7 @@ func GetIssueByID(ctx context.Context, graphqlClient graphql.Client, id string) 
 
 // GetIssueDetail returns an issue by Linear id or identifier with mutable text fields.
 func GetIssueDetail(ctx context.Context, graphqlClient graphql.Client, id string) (IssueDetail, error) {
-	issueResult, err := issue(ctx, graphqlClient, id)
+	issueResult, err := gql.XIssue(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueDetail{}, fmt.Errorf("get issue %s: %w", id, err)
 	}
@@ -621,7 +625,7 @@ func GetIssueDetail(ctx context.Context, graphqlClient graphql.Client, id string
 	return detailIssue(issueResult.Issue), nil
 }
 
-func nextIssueSummary(issue NextIssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
+func nextIssueSummary(issue gql.NextIssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
 	summary := issueSummaryFromFields(issue.IssueSummaryFields)
 	summary.CreatedAt = issue.CreatedAt
 	summary.UnblocksCount = nextIssueUnblocksCount(issue.Relations.Nodes)
@@ -630,7 +634,7 @@ func nextIssueSummary(issue NextIssuesByTeamIssuesIssueConnectionNodesIssue) Iss
 }
 
 //nolint:lll // The aliased name is generated by genqlient from the GraphQL selection path.
-type nextIssueRelation = NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation
+type nextIssueRelation = gql.NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation
 
 func nextIssueUnblocksCount(relations []nextIssueRelation) int {
 	count := 0
@@ -670,7 +674,7 @@ func linearPriorityRank(priority float64) float64 {
 	return 5 - priority
 }
 
-func issueDependencyParent(issue *IssueDependenciesIssueParentIssue) *IssueSummary {
+func issueDependencyParent(issue *gql.IssueDependenciesIssueParentIssue) *IssueSummary {
 	if issue == nil {
 		return nil
 	}
@@ -679,8 +683,8 @@ func issueDependencyParent(issue *IssueDependenciesIssueParentIssue) *IssueSumma
 	return &summary
 }
 
-func issueDependencyChildren(issues []IssueDependenciesIssueChildrenIssueConnectionNodesIssue) []IssueSummary {
-	summaries := mapNodes(issues, func(issue IssueDependenciesIssueChildrenIssueConnectionNodesIssue) IssueSummary {
+func issueDependencyChildren(issues []gql.IssueDependenciesIssueChildrenIssueConnectionNodesIssue) []IssueSummary {
+	summaries := mapNodes(issues, func(issue gql.IssueDependenciesIssueChildrenIssueConnectionNodesIssue) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
 
@@ -688,7 +692,7 @@ func issueDependencyChildren(issues []IssueDependenciesIssueChildrenIssueConnect
 }
 
 func issueDependencyBlocks(
-	relations []IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelation,
+	relations []gql.IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelation,
 ) []IssueSummary {
 	summaries := make([]IssueSummary, 0, len(relations))
 	for _, relation := range relations {
@@ -701,7 +705,7 @@ func issueDependencyBlocks(
 }
 
 func issueDependencyBlockedBy(
-	relations []IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelation,
+	relations []gql.IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelation,
 ) []IssueSummary {
 	summaries := make([]IssueSummary, 0, len(relations))
 	for _, relation := range relations {
@@ -713,27 +717,27 @@ func issueDependencyBlockedBy(
 	return summaries
 }
 
-func issueDependencyHasNextPage(issue IssueDependenciesIssue) bool {
+func issueDependencyHasNextPage(issue gql.IssueDependenciesIssue) bool {
 	return issue.Children.PageInfo.HasNextPage ||
 		issue.Relations.PageInfo.HasNextPage ||
 		issue.InverseRelations.PageInfo.HasNextPage
 }
 
-func searchIssueSummary(issue issueSearchIssueSearchIssueConnectionNodesIssue) IssueSummary {
+func searchIssueSummary(issue gql.XIssueSearchIssueSearchIssueConnectionNodesIssue) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
 func figmaFileKeyIssueSummary(
-	issue issueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue,
+	issue gql.XIssueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue,
 ) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
-func detailIssueSummary(issue issueIssue) IssueSummary {
+func detailIssueSummary(issue gql.XIssueIssue) IssueSummary {
 	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
-func detailIssue(issue issueIssue) IssueDetail {
+func detailIssue(issue gql.XIssueIssue) IssueDetail {
 	description := ""
 	if issue.Description != nil {
 		description = *issue.Description
@@ -745,7 +749,7 @@ func detailIssue(issue issueIssue) IssueDetail {
 	}
 }
 
-func issueSummaryFromFields(issue IssueSummaryFields) IssueSummary {
+func issueSummaryFromFields(issue gql.IssueSummaryFields) IssueSummary {
 	assignee := ""
 	if issue.Assignee != nil {
 		assignee = issue.Assignee.DisplayName

@@ -20,7 +20,12 @@ func addLabelCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 				return err
 			}
 
-			return runLabelCreate(ctx, command, options, commandAdapterFor(runtime), request)
+			label, err := client.CreateLabel(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeLabel(command, options, label)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "label name")
@@ -47,7 +52,12 @@ func addLabelUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 			}
 			request.ID = args[0]
 
-			return runLabelUpdate(ctx, command, options, commandAdapterFor(runtime), request)
+			label, err := client.UpdateLabel(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeLabel(command, options, label)
 		},
 	}
 	command.Flags().StringVar(&request.Name, "name", "", "new label name")
@@ -72,7 +82,12 @@ func addLabelRetireCommand(ctx context.Context, root *cobra.Command, options *ro
 				return err
 			}
 
-			return runLabelRetire(ctx, command, options, commandAdapterFor(runtime), args[0], orgWide)
+			label, err := client.RetireLabel(ctx, runtime.graphqlClient, runtime.config.Target, args[0], orgWide)
+			if err != nil {
+				return err
+			}
+
+			return writeLabel(command, options, label)
 		},
 	}
 	command.Flags().BoolVar(
@@ -94,7 +109,12 @@ func addLabelRestoreCommand(ctx context.Context, root *cobra.Command, options *r
 				return err
 			}
 
-			return runLabelRestore(ctx, command, options, commandAdapterFor(runtime), args[0], orgWide)
+			label, err := client.RestoreLabel(ctx, runtime.graphqlClient, runtime.config.Target, args[0], orgWide)
+			if err != nil {
+				return err
+			}
+
+			return writeLabel(command, options, label)
 		},
 	}
 	command.Flags().BoolVar(
@@ -102,66 +122,4 @@ func addLabelRestoreCommand(ctx context.Context, root *cobra.Command, options *r
 		"act on an organization-wide label instead of a team-scoped label",
 	)
 	root.AddCommand(command)
-}
-
-func runLabelCreate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	creator labelCreator,
-	request client.LabelCreateRequest,
-) error {
-	label, err := creator.CreateLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeLabel(command, options, label)
-}
-
-func runLabelUpdate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	updater labelUpdater,
-	request client.LabelUpdateRequest,
-) error {
-	label, err := updater.UpdateLabel(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeLabel(command, options, label)
-}
-
-func runLabelRetire(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	retirer labelRetirer,
-	id string,
-	orgWide bool,
-) error {
-	label, err := retirer.RetireLabel(ctx, id, orgWide)
-	if err != nil {
-		return err
-	}
-
-	return writeLabel(command, options, label)
-}
-
-func runLabelRestore(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	restorer labelRestorer,
-	id string,
-	orgWide bool,
-) error {
-	label, err := restorer.RestoreLabel(ctx, id, orgWide)
-	if err != nil {
-		return err
-	}
-
-	return writeLabel(command, options, label)
 }

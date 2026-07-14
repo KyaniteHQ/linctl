@@ -90,4 +90,6 @@ jobs:
           go mod download
           go mod verify
       - name: Schema drift check
+        env:
+          LINCTL_LINEAR_SDK_REF: master
         run: go tool task schema-drift-check

@@ -16,16 +16,15 @@ func addInitiativeLabelCommand(ctx context.Context, root *cobra.Command, options
 		root,
 		options,
 		readListGetSpec[client.InitiativeLabelList, client.InitiativeLabelSummary]{
-			Use:           "initiative-label",
-			Short:         "Read Linear initiative labels",
-			ListShort:     "List visible Linear initiative labels",
-			LimitHelp:     "maximum initiative labels to return",
-			GetUse:        "get INITIATIVE_LABEL_ID",
-			GetShort:      "Get one initiative label by id",
-			LoadList:      loadInitiativeLabelList,
-			PageWithItems: initiativeLabelPageWithItems,
-			LoadGet:       loadInitiativeLabel,
-			WriteItem:     writeInitiativeLabel,
+			Use:       "initiative-label",
+			Short:     "Read Linear initiative labels",
+			ListShort: "List visible Linear initiative labels",
+			LimitHelp: "maximum initiative labels to return",
+			GetUse:    "get INITIATIVE_LABEL_ID",
+			GetShort:  "Get one initiative label by id",
+			LoadList:  loadInitiativeLabelList,
+			LoadGet:   loadInitiativeLabel,
+			WriteItem: writeInitiativeLabel,
 		},
 	)
 }
@@ -72,12 +71,4 @@ func loadInitiativeLabel(
 	id string,
 ) (client.InitiativeLabelSummary, error) {
 	return client.GetInitiativeLabelByID(ctx, runtime.graphqlClient, id)
-}
-
-func initiativeLabelPageWithItems(
-	page client.InitiativeLabelList,
-	labels []client.InitiativeLabelSummary,
-) client.InitiativeLabelList {
-	page.InitiativeLabels = labels
-	return page
 }

@@ -93,11 +93,24 @@ func Test_CommandRuntime_requires_oauth_token(t *testing.T) {
 	require.Equal(t, string(auth.ErrorCodeNotConfigured), errorCode(err))
 }
 
-func Test_CommandRuntime_reports_local_auth_state_load_error_after_env_token(t *testing.T) {
+func Test_CommandRuntime_does_not_load_local_auth_state_for_env_token(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)
 	paths := configureTestAuthEnvironment(t)
 	t.Setenv("LINCTL_OAUTH_ACCESS_TOKEN", "env-oauth-token")
+	require.NoError(t, os.MkdirAll(filepath.Dir(paths.AppConfigPath), 0o700))
+	require.NoError(t, os.Mkdir(paths.AppConfigPath, 0o700))
+
+	runtime, err := newCommandRuntime(context.Background(), &rootOptions{timeout: time.Second})
+
+	require.NoError(t, err)
+	require.Equal(t, "Bearer env-oauth-token", runtimeGraphQLAuthorizationHeader(t, runtime))
+}
+
+func Test_CommandRuntime_reports_local_auth_state_load_error_without_env_token(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	paths := configureTestAuthEnvironment(t)
 	require.NoError(t, os.MkdirAll(filepath.Dir(paths.AppConfigPath), 0o700))
 	require.NoError(t, os.Mkdir(paths.AppConfigPath, 0o700))
 
@@ -141,7 +154,6 @@ func Test_CommandRuntime_refreshes_expired_authorization_code_token_and_retries_
 		Token:       token,
 		App:         app,
 		Store:       store,
-		Persist:     true,
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -186,7 +198,6 @@ func Test_CommandRuntime_reacquires_expired_client_credentials_token_and_retries
 		Token:       token,
 		App:         app,
 		Store:       store,
-		Persist:     true,
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -224,8 +235,7 @@ func Test_CommandRuntime_returns_non_auth_error_after_pre_request_recovery(t *te
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
 		Token:       token,
 		App:         app,
-		Store:       auth.NewStore(cliAuthTestPaths(t)),
-		Persist:     false,
+		Store:       persistedRuntimeStore(t, "", token),
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -257,8 +267,7 @@ func Test_CommandRuntime_wraps_auth_failure_after_pre_request_recovery(t *testin
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
 		Token:       token,
 		App:         app,
-		Store:       auth.NewStore(cliAuthTestPaths(t)),
-		Persist:     false,
+		Store:       persistedRuntimeStore(t, "", token),
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -278,7 +287,6 @@ func Test_CommandRuntime_returns_non_auth_error_without_recovery(t *testing.T) {
 		Token:     auth.TokenState{AccessToken: "access-token"},
 		App:       auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret"},
 		Store:     auth.NewStore(cliAuthTestPaths(t)),
-		Persist:   true,
 		NewClient: factory.newClient,
 	})
 
@@ -286,6 +294,39 @@ func Test_CommandRuntime_returns_non_auth_error_without_recovery(t *testing.T) {
 
 	require.ErrorIs(t, err, boom)
 	require.Equal(t, []string{"access-token"}, factory.tokens)
+	require.Equal(t, 1, factory.requestCalls)
+}
+
+func Test_CommandRuntime_surfaces_rejected_injected_token_without_identity_substitution(t *testing.T) {
+	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
+		"substituted-app-token",
+		"",
+		"Bearer",
+		time.Now().Add(time.Hour),
+		[]string{"read"},
+	)}
+	factory := &recordingRuntimeClientFactory{errors: []error{client.ErrAuthFailed}}
+	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
+		Token:          auth.TokenState{AccessToken: "injected-access-token"},
+		CredentialKind: auth.CredentialKindInjectedAccessToken,
+		App: auth.AppConfig{
+			ClientID:     "local-client-id",
+			ClientSecret: "local-client-secret",
+		},
+		OAuthClient: fakeOAuth,
+		NewClient:   factory.newClient,
+	})
+
+	err := runtimeClient.MakeRequest(
+		context.Background(),
+		&graphql.Request{Query: "query Test { viewer { id } }"},
+		&graphql.Response{},
+	)
+
+	require.ErrorIs(t, err, client.ErrAuthFailed)
+	require.Zero(t, fakeOAuth.clientCredentialsCalls)
+	require.Zero(t, fakeOAuth.refreshTokenCalls)
+	require.Equal(t, []string{"injected-access-token"}, factory.tokens)
 	require.Equal(t, 1, factory.requestCalls)
 }
 
@@ -317,7 +358,6 @@ func Test_CommandRuntime_reports_token_persist_error_after_recovery(t *testing.T
 			AppConfigPath: filepath.Join(root, "auth-app.json"),
 			TokenPath:     tokenPath,
 		}),
-		Persist:     true,
 		OAuthClient: fakeOAuth,
 		NewClient:   (&recordingRuntimeClientFactory{}).newClient,
 	})
@@ -337,6 +377,7 @@ func Test_CommandRuntime_reacquires_client_credentials_token_after_401_once(t *t
 		Actor:       "app",
 		GrantType:   authGrantClientCredentials,
 	}
+	require.NoError(t, store.SaveTokenState(context.Background(), "", token))
 	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
@@ -349,7 +390,6 @@ func Test_CommandRuntime_reacquires_client_credentials_token_after_401_once(t *t
 		Token:       token,
 		App:         app,
 		Store:       store,
-		Persist:     true,
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -371,6 +411,7 @@ func Test_CommandRuntime_logs_auth_failure_token_recovery_without_secrets(t *tes
 		Actor:       "app",
 		GrantType:   authGrantClientCredentials,
 	}
+	require.NoError(t, store.SaveTokenState(context.Background(), "", token))
 	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
@@ -384,7 +425,6 @@ func Test_CommandRuntime_logs_auth_failure_token_recovery_without_secrets(t *tes
 		Token:       token,
 		App:         app,
 		Store:       store,
-		Persist:     true,
 		Logger:      newDiagnosticLogger(true, false, &logs),
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
@@ -413,6 +453,7 @@ func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_retried_token_is_reje
 		Actor:       "app",
 		GrantType:   authGrantClientCredentials,
 	}
+	require.NoError(t, store.SaveTokenState(context.Background(), "", token))
 	fakeOAuth := &fakeOAuthTokenClient{grant: auth.NewTokenState(
 		"fresh-app-token",
 		"",
@@ -425,7 +466,6 @@ func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_retried_token_is_reje
 		Token:       token,
 		App:         app,
 		Store:       store,
-		Persist:     true,
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -451,8 +491,7 @@ func Test_CommandRuntime_returns_AUTH_REFRESH_FAILED_when_refresh_fails_without_
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
 		Token:       token,
 		App:         auth.AppConfig{ClientID: "client-id"},
-		Store:       auth.NewStore(cliAuthTestPaths(t)),
-		Persist:     true,
+		Store:       persistedRuntimeStore(t, "", token),
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -491,9 +530,8 @@ func Test_CommandRuntime_logs_expired_token_recovery_without_secrets(t *testing.
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
 		Token:       token,
 		App:         app,
-		Store:       auth.NewStore(cliAuthTestPaths(t)),
+		Store:       persistedRuntimeStore(t, "work", token),
 		Profile:     "work",
-		Persist:     false,
 		Logger:      newDiagnosticLogger(true, false, &logs),
 		OAuthClient: fakeOAuth,
 		NewClient:   (&recordingRuntimeClientFactory{}).newClient,
@@ -529,7 +567,7 @@ func Test_CommandRuntime_logs_token_recovery_failure_without_error_details(t *te
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
 		Token:       token,
 		App:         auth.AppConfig{ClientID: "client-id"},
-		Store:       auth.NewStore(cliAuthTestPaths(t)),
+		Store:       persistedRuntimeStore(t, "", token),
 		Logger:      newDiagnosticLogger(true, false, &logs),
 		OAuthClient: fakeOAuth,
 		NewClient:   (&recordingRuntimeClientFactory{}).newClient,
@@ -562,8 +600,7 @@ func Test_CommandRuntime_returns_AUTH_REAUTH_REQUIRED_when_app_reacquire_fails_w
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
 		Token:       token,
 		App:         auth.AppConfig{ClientID: "client-id", ClientSecret: "client-secret"},
-		Store:       auth.NewStore(cliAuthTestPaths(t)),
-		Persist:     true,
+		Store:       persistedRuntimeStore(t, "", token),
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -591,7 +628,6 @@ func Test_CommandRuntime_returns_recovery_error_after_401(t *testing.T) {
 			Scopes:       []string{"read"},
 		},
 		Store:       auth.NewStore(cliAuthTestPaths(t)),
-		Persist:     true,
 		OAuthClient: fakeOAuth,
 		NewClient:   factory.newClient,
 	})
@@ -611,7 +647,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 			Store: auth.NewStore(cliAuthTestPaths(t)),
 		})
 
-		_, err := runtimeClient.refreshAuthorizationCode(context.Background())
+		_, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.token)
 
 		require.Error(t, err)
 		require.Equal(t, string(auth.ErrorCodeReauthRequired), errorCode(err))
@@ -638,7 +674,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 			OAuthClient: fakeOAuth,
 		})
 
-		token, err := runtimeClient.refreshAuthorizationCode(context.Background())
+		token, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.token)
 
 		require.NoError(t, err)
 		require.Equal(t, "old-refresh-token", token.RefreshToken)
@@ -663,7 +699,7 @@ func Test_CommandRuntime_refresh_authorization_code_edge_cases(t *testing.T) {
 			OAuthClient: fakeOAuth,
 		})
 
-		_, err := runtimeClient.refreshAuthorizationCode(context.Background())
+		_, err := runtimeClient.refreshAuthorizationCode(context.Background(), runtimeClient.token)
 
 		require.Error(t, err)
 		require.Equal(t, string(auth.ErrorCodeMissingScope), errorCode(err))
@@ -680,6 +716,19 @@ func Test_CommandRuntime_reacquire_client_credentials_requires_app_config(t *tes
 
 	require.Error(t, err)
 	require.Equal(t, string(auth.ErrorCodeReauthRequired), errorCode(err))
+}
+
+func Test_CommandRuntime_rejects_persisted_token_without_recovery_grant(t *testing.T) {
+	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
+		Token: auth.TokenState{AccessToken: "stale-access-token"},
+	})
+
+	_, err := runtimeClient.recoverCurrentToken(
+		context.Background(),
+		auth.TokenState{AccessToken: "stale-access-token"},
+	)
+
+	require.ErrorContains(t, err, "persisted OAuth token is not recoverable")
 }
 
 func runtimeGraphQLAuthorizationHeader(t *testing.T, runtime commandRuntime) string {
@@ -719,6 +768,14 @@ func configureTestAuthEnvironment(t *testing.T) auth.Paths {
 	require.NoError(t, err)
 
 	return paths
+}
+
+func persistedRuntimeStore(t *testing.T, profile string, token auth.TokenState) auth.Store {
+	t.Helper()
+	store := auth.NewStore(cliAuthTestPaths(t))
+	require.NoError(t, store.SaveTokenState(context.Background(), profile, token))
+
+	return store
 }
 
 type recordingRuntimeClientFactory struct {

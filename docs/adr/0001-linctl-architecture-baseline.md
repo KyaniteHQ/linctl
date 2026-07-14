@@ -2,7 +2,7 @@
 
 **Status**: accepted baseline
 
-**Consolidates**: the previous ADR set from `0001` through `0025`. This file is the only current ADR. It keeps the target-pinned write invariant from the former `0001` and absorbs the later collection-projection and OAuth decisions into one codebase-aligned baseline.
+**Consolidates**: the previous ADR set from `0001` through `0025`. This baseline and ADR 0002 are the current ADRs. This file keeps the target-pinned write invariant from the former `0001` and absorbs the later collection-projection and OAuth decisions into one codebase-aligned baseline.
 
 ## Context
 
@@ -115,13 +115,11 @@ The global output controls are stable product surface:
 
 Auth commands, JSON output, debug logs, diagnostics, tests, and errors must not print OAuth access tokens, refresh tokens, or client secret values. They may report presence as `set` or `missing` and may report non-secret metadata such as actor, scopes, expiry, token type, and target readiness.
 
-### 9. Command Ports Are The Preferred Command Seam
+### 9. Command Seams Follow Behavior
 
 The GraphQL client package owns generated GraphQL operations, transport behavior, target resolution, and the write guard. CLI command logic should not grow around generated response shapes.
 
-For commands with meaningful behavior, the CLI package should define a narrow consumer-owned Command Port. A Command Port returns domain summaries or command request/result types, not generated GraphQL responses. Production adapters should be thin forwarding adapters over the client package. Command tests should prefer in-memory fakes at the Command Port seam.
-
-This is the baseline for new and changed command logic. The migration is intentionally incremental. Existing broad read commands may still call the runtime and client helpers directly until they gain enough behavior to justify a Command Port.
+One-call commands invoke exported `internal/client` functions directly. Guarded writes pass the runtime GraphQL client and pinned target to client functions that enforce target matching before mutation. A consumer-owned Command Port is reserved for multi-call command decisions or external effects that need a stable test seam. ADR 0002 defines the selection rule and retained seams.
 
 ### 10. Collection Projection Stays Type-Derived With A Curated Fallback
 
@@ -142,7 +140,7 @@ OAuth live coverage uses a pre-created Linear OAuth app fixture supplied by envi
 - Missing scopes do not trigger surprise browser windows from ordinary commands.
 - Local auth state is machine-local by design, so moving a repo does not move auth.
 - Live OAuth coverage requires prepared secrets and a matching pinned target.
-- Command Port migration proceeds by behavior pressure, not by a broad rewrite.
+- Command seams reflect behavior: direct calls for one-call commands, narrow ports for multi-call decisions and external effects.
 - The old per-topic ADR files are removed from the working tree. Git history remains the provenance for their exact original wording.
 
 ## Rejected Alternatives
@@ -153,7 +151,8 @@ OAuth live coverage uses a pre-created Linear OAuth app fixture supplied by envi
 - **Automatic browser reauthorization from ordinary commands**: rejected because it is hostile to automation and makes scope escalation implicit.
 - **Generic array-based field projection**: rejected because detail responses can contain arrays that are not the primary collection.
 - **Creating or rotating OAuth apps during live tests**: rejected because it expands the fixture surface into admin behavior and cleanup risk.
-- **Immediate Command Port rewrite for every command**: rejected because thin read commands do not all justify a new seam yet.
+- **One-method forwarding ports for every command**: rejected because they duplicate the client API without isolating a decision or external effect.
+- **Keeping guarded-write safety in CLI adapters**: rejected because every write path must share the same fail-closed client boundary.
 
 ## Code Alignment
 
@@ -168,7 +167,7 @@ OAuth live coverage uses a pre-created Linear OAuth app fixture supplied by envi
 - Runtime token recovery: `internal/cli/runtime.go`.
 - Output and error envelope policy: `internal/cli/output.go`, `internal/cli/root.go`.
 - Command inventory and collection projection: `internal/cli/command_inventory.go`.
-- Command Port examples: `internal/cli/issue_port.go`, `internal/cli/bulk.go`, `internal/cli/comment_port.go`, `internal/cli/cycle_port.go`, `internal/cli/document_port.go`, `internal/cli/project_update_port.go`.
+- Command seam selection: `docs/adr/0002-command-seam-selection.md`.
 - Live OAuth gate and browser login smoke checks: `scripts/live-oauth.sh`, `scripts/browser-login-smoke.sh`, `Taskfile.yml`, `.github/workflows/ci.yml`, `.github/workflows/integration.yml`.
 
 ## Fitness Checks

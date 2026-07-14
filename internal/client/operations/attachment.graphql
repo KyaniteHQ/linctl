@@ -36,240 +36,97 @@ query attachmentIssue($id: String!) {
 
 query attachmentIssue_attachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    attachments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...AttachmentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueAttachmentsProjection
   }
 }
 
 query attachmentIssue_botActor($id: String!) {
   attachmentIssue(id: $id) {
-    id
-    botActor {
-      ...ActorBotSummaryFields
-    }
+    ...IssueBotActorProjection
   }
 }
 
 query attachmentIssue_children($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    children(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueChildrenProjection
   }
 }
 
 query attachmentIssue_comments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    id
-    identifier
-    comments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CommentMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueCommentMetadataProjection
   }
 }
 
 query attachmentIssue_documents($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    documents(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...DocumentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueDocumentsProjection
   }
 }
 
 query attachmentIssue_formerAttachments($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    formerAttachments(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...AttachmentSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueFormerAttachmentsProjection
   }
 }
 
 query attachmentIssue_formerNeeds($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    id
-    identifier
-    formerNeeds(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CustomerNeedMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueFormerNeedsProjection
   }
 }
 
 query attachmentIssue_history($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    history(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        id
-        actorId
-        updatedDescription
-        createdAt
-        updatedAt
-        archivedAt
-        issue {
-          id
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueHistoryProjection
   }
 }
 
 query attachmentIssue_inverseRelations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    inverseRelations(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueRelationSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueInverseRelationsProjection
   }
 }
 
 query attachmentIssue_labels($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    labels(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueLabelSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueLabelsProjection
   }
 }
 
 query attachmentIssue_needs($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    id
-    identifier
-    needs(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...CustomerNeedMetadataFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueNeedsProjection
   }
 }
 
 query attachmentIssue_relations($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    relations(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...IssueRelationSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueRelationsProjection
   }
 }
 
 query attachmentIssue_releases($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    releases(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...ReleaseSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueReleasesProjection
   }
 }
 
 query attachmentIssue_sharedAccess($id: String!) {
   attachmentIssue(id: $id) {
-    id
-    identifier
-    sharedAccess {
-      ...IssueSharedAccessFields
-    }
+    ...IssueSharedAccessProjection
   }
 }
 
 query attachmentIssue_stateHistory($id: String!, $first: Int, $after: String) {
   attachmentIssue(id: $id) {
-    id
-    stateHistory(first: $first, after: $after) {
-      nodes {
-        id
-        stateId
-        startedAt
-        endedAt
-        state {
-          id
-          name
-          type
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueStateHistoryProjection
   }
 }
 
 query attachmentIssue_subscribers($id: String!, $first: Int, $after: String, $includeArchived: Boolean) {
   attachmentIssue(id: $id) {
-    id
-    subscribers(first: $first, after: $after, includeArchived: $includeArchived) {
-      nodes {
-        ...UserSummaryFields
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
+    ...IssueSubscribersProjection
   }
 }
 

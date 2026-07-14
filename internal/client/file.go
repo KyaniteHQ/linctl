@@ -5,6 +5,9 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 // FileUploadHeader is one HTTP header required for the storage PUT request.
@@ -28,6 +31,7 @@ type FileUpload struct {
 func PrepareFileUpload(
 	ctx context.Context,
 	graphqlClient graphql.Client,
+	expected config.Target,
 	filename string,
 	contentType string,
 	size int,
@@ -41,7 +45,21 @@ func PrepareFileUpload(
 	if size <= 0 {
 		return FileUpload{}, fmt.Errorf("%w: file size must be positive", ErrWriteInvalid)
 	}
-	result, err := fileUpload(ctx, graphqlClient, contentType, filename, size)
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return FileUpload{}, err
+	}
+
+	return guard.prepareFileUpload(ctx, filename, contentType, size)
+}
+
+func (guard *guardedClient) prepareFileUpload(
+	ctx context.Context,
+	filename string,
+	contentType string,
+	size int,
+) (FileUpload, error) {
+	result, err := gql.XFileUpload(ctx, guard.graphqlClient, contentType, filename, size)
 	if err != nil {
 		return FileUpload{}, fmt.Errorf("prepare file upload: %w", err)
 	}
@@ -51,7 +69,7 @@ func PrepareFileUpload(
 
 	file := result.FileUpload.UploadFile
 	headers := mapNodes(file.Headers, func(
-		header fileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader,
+		header gql.XFileUploadFileUploadUploadPayloadUploadFileHeadersUploadFileHeader,
 	) FileUploadHeader {
 		return FileUploadHeader(header)
 	})

@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // LabelSummary is the compact IssueLabel model used by label commands.
@@ -46,13 +48,13 @@ type LabelIssueList struct {
 
 // ListLabels returns visible IssueLabels.
 func ListLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (LabelList, error) {
-	labels, err := IssueLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	labels, err := gql.IssueLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return LabelList{}, fmt.Errorf("list labels: %w", err)
 	}
 
 	summaries := mapNodes(labels.IssueLabels.Nodes, func(
-		label IssueLabelsIssueLabelsIssueLabelConnectionNodesIssueLabel,
+		label gql.IssueLabelsIssueLabelsIssueLabelConnectionNodesIssueLabel,
 	) LabelSummary {
 		return labelSummary(label.IssueLabelSummaryFields)
 	})
@@ -66,7 +68,7 @@ func ListLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (L
 
 // GetLabelByID returns one IssueLabel by id.
 func GetLabelByID(ctx context.Context, graphqlClient graphql.Client, id string) (LabelSummary, error) {
-	label, err := issueLabel(ctx, graphqlClient, id)
+	label, err := gql.XIssueLabel(ctx, graphqlClient, id)
 	if err != nil {
 		return LabelSummary{}, fmt.Errorf("get label %s: %w", id, err)
 	}
@@ -81,13 +83,13 @@ func ListLabelChildren(
 	id string,
 	limit int,
 ) (LabelChildList, error) {
-	childPage, err := issueLabel_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	childPage, err := gql.XIssueLabel_children(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return LabelChildList{}, fmt.Errorf("list label children %s: %w", id, err)
 	}
 
 	labels := mapNodes(childPage.IssueLabel.Children.Nodes, func(
-		label issueLabel_childrenIssueLabelChildrenIssueLabelConnectionNodesIssueLabel,
+		label gql.XIssueLabel_childrenIssueLabelChildrenIssueLabelConnectionNodesIssueLabel,
 	) LabelSummary {
 		return labelSummary(label.IssueLabelSummaryFields)
 	})
@@ -103,13 +105,13 @@ func ListLabelChildren(
 
 // ListLabelIssues returns issues associated with one IssueLabel.
 func ListLabelIssues(ctx context.Context, graphqlClient graphql.Client, id string, limit int) (LabelIssueList, error) {
-	issuePage, err := issueLabel_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	issuePage, err := gql.XIssueLabel_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return LabelIssueList{}, fmt.Errorf("list label issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(issuePage.IssueLabel.Issues.Nodes, func(
-		issue issueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue,
+		issue gql.XIssueLabel_issuesIssueLabelIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(issue.IssueSummaryFields)
 	})
@@ -123,7 +125,7 @@ func ListLabelIssues(ctx context.Context, graphqlClient graphql.Client, id strin
 	}, nil
 }
 
-func labelSummary(label IssueLabelSummaryFields) LabelSummary {
+func labelSummary(label gql.IssueLabelSummaryFields) LabelSummary {
 	summary := LabelSummary{
 		ID:          label.Id,
 		Name:        label.Name,

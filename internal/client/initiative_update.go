@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // InitiativeUpdateSummary is one initiative status update.
@@ -41,13 +43,13 @@ type InitiativeUpdateCommentList struct {
 
 // ListInitiativeUpdates returns visible initiative status updates.
 func ListInitiativeUpdates(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeUpdateList, error) {
-	result, err := initiativeUpdates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiativeUpdates(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeUpdateList{}, fmt.Errorf("list initiative updates: %w", err)
 	}
 
 	updates := mapNodes(result.InitiativeUpdates.Nodes, func(
-		update initiativeUpdatesInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate,
+		update gql.XInitiativeUpdatesInitiativeUpdatesInitiativeUpdateConnectionNodesInitiativeUpdate,
 	) InitiativeUpdateSummary {
 		return initiativeUpdateSummary(update.InitiativeUpdateSummaryFields)
 	})
@@ -65,7 +67,7 @@ func GetInitiativeUpdateByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (InitiativeUpdateSummary, error) {
-	result, err := initiativeUpdate(ctx, graphqlClient, id)
+	result, err := gql.XInitiativeUpdate(ctx, graphqlClient, id)
 	if err != nil {
 		return InitiativeUpdateSummary{}, fmt.Errorf("get initiative update %s: %w", id, err)
 	}
@@ -80,13 +82,13 @@ func ListInitiativeUpdateComments(
 	id string,
 	limit int,
 ) (InitiativeUpdateCommentList, error) {
-	result, err := initiativeUpdate_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiativeUpdate_comments(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeUpdateCommentList{}, fmt.Errorf("list initiative update comments %s: %w", id, err)
 	}
 
 	comments := mapNodes(result.InitiativeUpdate.Comments.Nodes, func(
-		node initiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment,
+		node gql.XInitiativeUpdate_commentsInitiativeUpdateCommentsCommentConnectionNodesComment,
 	) CommentMetadataSummary {
 		return commentMetadataSummary(node.CommentMetadataFields)
 	})
@@ -99,7 +101,7 @@ func ListInitiativeUpdateComments(
 	}, nil
 }
 
-func initiativeUpdateSummary(update InitiativeUpdateSummaryFields) InitiativeUpdateSummary {
+func initiativeUpdateSummary(update gql.InitiativeUpdateSummaryFields) InitiativeUpdateSummary {
 	return InitiativeUpdateSummary{
 		ID:             update.Id,
 		Body:           update.Body,

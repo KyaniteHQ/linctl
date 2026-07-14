@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // NotificationSummary is the compact notification model used by read-only commands.
@@ -62,13 +64,13 @@ type NotificationSubscriptionList struct {
 
 // ListNotifications returns the authenticated user's notifications.
 func ListNotifications(ctx context.Context, graphqlClient graphql.Client, limit int) (NotificationList, error) {
-	result, err := notifications(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XNotifications(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return NotificationList{}, fmt.Errorf("list notifications: %w", err)
 	}
 
 	summaries := mapNodes(result.Notifications.Nodes, func(
-		node notificationsNotificationsNotificationConnectionNodesNotification,
+		node gql.XNotificationsNotificationsNotificationConnectionNodesNotification,
 	) NotificationSummary {
 		return notificationSummary(node)
 	})
@@ -82,7 +84,7 @@ func ListNotifications(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetNotificationByID returns one notification by id.
 func GetNotificationByID(ctx context.Context, graphqlClient graphql.Client, id string) (NotificationSummary, error) {
-	result, err := notification(ctx, graphqlClient, id)
+	result, err := gql.XNotification(ctx, graphqlClient, id)
 	if err != nil {
 		return NotificationSummary{}, fmt.Errorf("get notification %s: %w", id, err)
 	}
@@ -92,7 +94,7 @@ func GetNotificationByID(ctx context.Context, graphqlClient graphql.Client, id s
 
 // GetNotificationsUnreadCount returns the authenticated user's unread notification count.
 func GetNotificationsUnreadCount(ctx context.Context, graphqlClient graphql.Client) (int, error) {
-	result, err := notificationsUnreadCount(ctx, graphqlClient)
+	result, err := gql.XNotificationsUnreadCount(ctx, graphqlClient)
 	if err != nil {
 		return 0, fmt.Errorf("get notifications unread count: %w", err)
 	}
@@ -106,7 +108,7 @@ func ListNotificationSubscriptions(
 	graphqlClient graphql.Client,
 	limit int,
 ) (NotificationSubscriptionList, error) {
-	result, err := notificationSubscriptions(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XNotificationSubscriptions(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return NotificationSubscriptionList{}, fmt.Errorf("list notification subscriptions: %w", err)
 	}
@@ -129,7 +131,7 @@ func GetNotificationSubscriptionByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (NotificationSubscriptionSummary, error) {
-	result, err := notificationSubscription(ctx, graphqlClient, id)
+	result, err := gql.XNotificationSubscription(ctx, graphqlClient, id)
 	if err != nil {
 		return NotificationSubscriptionSummary{}, fmt.Errorf("get notification subscription %s: %w", id, err)
 	}
@@ -137,7 +139,7 @@ func GetNotificationSubscriptionByID(
 	return notificationSubscriptionSummary(result.NotificationSubscription), nil
 }
 
-func notificationSummary(fields NotificationSummaryFields) NotificationSummary {
+func notificationSummary(fields gql.NotificationSummaryFields) NotificationSummary {
 	user := fields.GetUser()
 	summary := NotificationSummary{
 		ID:              fields.GetId(),
@@ -168,7 +170,7 @@ func notificationSummary(fields NotificationSummaryFields) NotificationSummary {
 	return summary
 }
 
-func notificationSubscriptionSummary(fields NotificationSubscriptionSummaryFields) NotificationSubscriptionSummary {
+func notificationSubscriptionSummary(fields gql.NotificationSubscriptionSummaryFields) NotificationSubscriptionSummary {
 	subscriber := fields.GetSubscriber()
 	summary := NotificationSubscriptionSummary{
 		ID:                  fields.GetId(),
@@ -186,14 +188,14 @@ func notificationSubscriptionSummary(fields NotificationSubscriptionSummaryField
 	return summary
 }
 
-func contextViewTypeValue(value *ContextViewType) string {
+func contextViewTypeValue(value *gql.ContextViewType) string {
 	if value == nil {
 		return ""
 	}
 	return string(*value)
 }
 
-func userContextViewTypeValue(value *UserContextViewType) string {
+func userContextViewTypeValue(value *gql.UserContextViewType) string {
 	if value == nil {
 		return ""
 	}
@@ -202,7 +204,7 @@ func userContextViewTypeValue(value *UserContextViewType) string {
 
 func setNotificationSubscriptionTarget(
 	summary *NotificationSubscriptionSummary,
-	fields NotificationSubscriptionSummaryFields,
+	fields gql.NotificationSubscriptionSummaryFields,
 ) {
 	if target := fields.GetCustomer(); target != nil {
 		setNotificationSubscriptionTargetValues(summary, "customer", target.Id, target.Name)

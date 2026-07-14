@@ -21,6 +21,7 @@ type fakeBulkCreator struct {
 	results        []client.IssueSummary
 	failAt         int // 1-based row to fail at; 0 never fails
 	failErr        error
+	batchCalls     int
 	calls          int
 	requests       []client.IssueCreateRequest
 	sawConcurrency int
@@ -31,6 +32,7 @@ func (creator *fakeBulkCreator) CreateIssues(
 	requests []client.IssueCreateRequest,
 	concurrency int,
 ) ([]client.IssueCreateOutcome, error) {
+	creator.batchCalls++
 	creator.sawConcurrency = concurrency
 	outcomes := make([]client.IssueCreateOutcome, len(requests))
 	for index, request := range requests {
@@ -61,6 +63,7 @@ func Test_createImportedIssues_creates_each_row_through_the_port(t *testing.T) {
 	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
 
 	require.NoError(t, err)
+	require.Equal(t, 1, creator.batchCalls)
 	require.Equal(t, 2, creator.calls)
 	require.Equal(t, "First", creator.requests[0].Title)
 	require.Equal(t, "Second", creator.requests[1].Title)
@@ -184,7 +187,8 @@ func Test_createImportedIssues_partial_report_with_batch_creator(t *testing.T) {
 	err := createImportedIssues(context.Background(), command, &rootOptions{}, creator, requests)
 
 	require.ErrorContains(t, err, "import completed with 1 failed rows")
-	require.Equal(t, 3, creator.calls, "all rows should go through one batch call, not one call per row")
+	require.Equal(t, 1, creator.batchCalls)
+	require.Equal(t, 3, creator.calls)
 	require.Equal(t, importBatchConcurrency, creator.sawConcurrency)
 	require.Contains(t, stdout.String(), "LIT-1")
 	require.Contains(t, stdout.String(), "LIT-3")

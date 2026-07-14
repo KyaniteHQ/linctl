@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // InitiativeLabelSummary is the compact initiative label model used by read-only commands.
@@ -33,7 +35,7 @@ type InitiativeLabelList struct {
 
 // ListInitiativeLabels returns visible Linear initiative labels.
 func ListInitiativeLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeLabelList, error) {
-	result, err := initiativeLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XInitiativeLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return InitiativeLabelList{}, fmt.Errorf("list initiative labels: %w", err)
 	}
@@ -56,7 +58,7 @@ func GetInitiativeLabelByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (InitiativeLabelSummary, error) {
-	result, err := initiativeLabel(ctx, graphqlClient, id)
+	result, err := gql.XInitiativeLabel(ctx, graphqlClient, id)
 	if err != nil {
 		return InitiativeLabelSummary{}, fmt.Errorf("get initiative label %s: %w", id, err)
 	}
@@ -64,7 +66,7 @@ func GetInitiativeLabelByID(
 	return initiativeLabelSummary(result.InitiativeLabel.InitiativeLabelSummaryFields), nil
 }
 
-func initiativeLabelSummary(fields InitiativeLabelSummaryFields) InitiativeLabelSummary {
+func initiativeLabelSummary(fields gql.InitiativeLabelSummaryFields) InitiativeLabelSummary {
 	label := InitiativeLabelSummary{
 		ID:            fields.Id,
 		Name:          fields.Name,

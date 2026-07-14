@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/KyaniteHQ/linctl/internal/gitctx"
 )
@@ -24,7 +25,12 @@ func addCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 			if err != nil {
 				return err
 			}
-			return runCurrentIssueRead(ctx, command, options, issueAdapterFor(runtime), issueID)
+			issue, err := client.GetIssueByID(ctx, runtime.graphqlClient, issueID)
+			if err != nil {
+				return err
+			}
+
+			return writeIssue(command, options, issue)
 		},
 	}
 	addCommandWithSafety(root, CommandSafetyRead, command)
@@ -50,21 +56,6 @@ func pinnedTeamKeyHint(ctx context.Context, options *rootOptions) string {
 	return strings.TrimSpace(resolvedConfig.Target.TeamKey)
 }
 
-func runCurrentIssueRead(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	reader currentIssueReader,
-	issueID string,
-) error {
-	issue, err := reader.GetIssueByID(ctx, issueID)
-	if err != nil {
-		return err
-	}
-
-	return writeIssue(command, options, issue)
-}
-
 func addDoneCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	root.AddCommand(&cobra.Command{
 		Use:   "done",
@@ -79,7 +70,7 @@ func addDoneCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 			if err != nil {
 				return err
 			}
-			issue, err := issueAdapterFor(runtime).CloseIssue(ctx, issueID)
+			issue, err := client.CloseIssue(ctx, runtime.graphqlClient, runtime.config.Target, issueID)
 			if err != nil {
 				return err
 			}

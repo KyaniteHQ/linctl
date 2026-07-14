@@ -6,6 +6,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -60,22 +61,7 @@ type ProjectMilestoneUpdateRequest struct {
 	TargetDate  string
 }
 
-// LinearProjectMilestoneCreateInput is the sparse Linear projectMilestoneCreate payload linctl supports.
-type LinearProjectMilestoneCreateInput struct {
-	ProjectID   string  `json:"projectId"`
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	TargetDate  *string `json:"targetDate,omitempty"`
-}
-
-// LinearProjectMilestoneUpdateInput is the sparse Linear projectMilestoneUpdate payload linctl supports.
-type LinearProjectMilestoneUpdateInput struct {
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	TargetDate  *string `json:"targetDate,omitempty"`
-}
-
-func projectMilestoneSummary(milestone ProjectMilestoneSummaryFields) ProjectMilestoneSummary {
+func projectMilestoneSummary(milestone gql.ProjectMilestoneSummaryFields) ProjectMilestoneSummary {
 	return ProjectMilestoneSummary{
 		ID:          milestone.Id,
 		Name:        milestone.Name,
@@ -94,13 +80,13 @@ func ListProjectMilestones(
 	id string,
 	limit int,
 ) (ProjectMilestoneList, error) {
-	project, err := project_projectMilestones(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	project, err := gql.XProject_projectMilestones(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectMilestoneList{}, fmt.Errorf("list project milestones %s: %w", id, err)
 	}
 
 	milestones := mapNodes(project.Project.ProjectMilestones.Nodes, func(
-		milestone project_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
+		milestone gql.XProject_projectMilestonesProjectProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
 	) ProjectMilestoneSummary {
 		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
 	})
@@ -120,13 +106,13 @@ func ListAllProjectMilestones(
 	graphqlClient graphql.Client,
 	limit int,
 ) (ProjectMilestoneList, error) {
-	result, err := projectMilestones(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectMilestones(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectMilestoneList{}, fmt.Errorf("list project milestones: %w", err)
 	}
 
 	milestones := mapNodes(result.ProjectMilestones.Nodes, func(
-		milestone projectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
+		milestone gql.XProjectMilestonesProjectMilestonesProjectMilestoneConnectionNodesProjectMilestone,
 	) ProjectMilestoneSummary {
 		return projectMilestoneSummary(milestone.ProjectMilestoneSummaryFields)
 	})
@@ -145,13 +131,13 @@ func ListProjectMilestoneIssues(
 	id string,
 	limit int,
 ) (ProjectMilestoneIssueList, error) {
-	result, err := projectMilestone_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XProjectMilestone_issues(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return ProjectMilestoneIssueList{}, fmt.Errorf("list project milestone issues %s: %w", id, err)
 	}
 
 	issues := mapNodes(result.ProjectMilestone.Issues.Nodes, func(
-		node projectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue,
+		node gql.XProjectMilestone_issuesProjectMilestoneIssuesIssueConnectionNodesIssue,
 	) IssueSummary {
 		return issueSummaryFromFields(node.IssueSummaryFields)
 	})
@@ -185,7 +171,7 @@ func GetProjectMilestoneDetail(
 	graphqlClient graphql.Client,
 	id string,
 ) (ProjectMilestoneDetail, error) {
-	milestone, err := projectMilestone(ctx, graphqlClient, id)
+	milestone, err := gql.XProjectMilestone(ctx, graphqlClient, id)
 	if err != nil {
 		return ProjectMilestoneDetail{}, fmt.Errorf("get project milestone %s: %w", id, err)
 	}
@@ -210,28 +196,38 @@ func CreateProjectMilestone(
 		return ProjectMilestoneSummary{}, fmt.Errorf("%w: name is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectMilestoneSummary, error) {
-		if err := guard.requireProject(ctx, graphqlClient, request.ProjectID); err != nil {
-			return ProjectMilestoneSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectMilestoneSummary{}, err
+	}
 
-		created, err := ProjectMilestoneCreate(ctx, graphqlClient, LinearProjectMilestoneCreateInput{
-			ProjectID:   request.ProjectID,
-			Name:        request.Name,
-			Description: optionalString(request.Description),
-			TargetDate:  optionalString(request.TargetDate),
-		})
-		if err != nil {
-			return ProjectMilestoneSummary{}, fmt.Errorf("create project milestone: %w", err)
-		}
-		if !created.ProjectMilestoneCreate.Success {
-			return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneCreate failed", ErrMutationFailed)
-		}
+	return guard.createProjectMilestone(ctx, request)
+}
 
-		return projectMilestoneSummary(
-			created.ProjectMilestoneCreate.ProjectMilestone.ProjectMilestoneSummaryFields,
-		), nil
+func (guard *guardedClient) createProjectMilestone(
+	ctx context.Context,
+	request ProjectMilestoneCreateRequest,
+) (ProjectMilestoneSummary, error) {
+	if err := guard.requireProject(ctx, request.ProjectID); err != nil {
+		return ProjectMilestoneSummary{}, err
+	}
+
+	created, err := gql.ProjectMilestoneCreate(ctx, guard.graphqlClient, LinearProjectMilestoneCreateInput{
+		ProjectID:   request.ProjectID,
+		Name:        request.Name,
+		Description: optionalString(request.Description),
+		TargetDate:  optionalString(request.TargetDate),
 	})
+	if err != nil {
+		return ProjectMilestoneSummary{}, fmt.Errorf("create project milestone: %w", err)
+	}
+	if !created.ProjectMilestoneCreate.Success {
+		return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneCreate failed", ErrMutationFailed)
+	}
+
+	return projectMilestoneSummary(
+		created.ProjectMilestoneCreate.ProjectMilestone.ProjectMilestoneSummaryFields,
+	), nil
 }
 
 // UpdateProjectMilestone updates a ProjectMilestone after resolving and comparing its project.
@@ -247,27 +243,37 @@ func UpdateProjectMilestone(
 		return ProjectMilestoneSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (ProjectMilestoneSummary, error) {
-		if err := guard.requireProjectMilestone(ctx, graphqlClient, request.ID); err != nil {
-			return ProjectMilestoneSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return ProjectMilestoneSummary{}, err
+	}
 
-		updated, err := ProjectMilestoneUpdate(ctx, graphqlClient, request.ID, LinearProjectMilestoneUpdateInput{
-			Name:        optionalString(request.Name),
-			Description: optionalString(request.Description),
-			TargetDate:  optionalString(request.TargetDate),
-		})
-		if err != nil {
-			return ProjectMilestoneSummary{}, fmt.Errorf("update project milestone %s: %w", request.ID, err)
-		}
-		if !updated.ProjectMilestoneUpdate.Success {
-			return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneUpdate failed", ErrMutationFailed)
-		}
+	return guard.updateProjectMilestone(ctx, request)
+}
 
-		return projectMilestoneSummary(
-			updated.ProjectMilestoneUpdate.ProjectMilestone.ProjectMilestoneSummaryFields,
-		), nil
+func (guard *guardedClient) updateProjectMilestone(
+	ctx context.Context,
+	request ProjectMilestoneUpdateRequest,
+) (ProjectMilestoneSummary, error) {
+	if err := guard.requireProjectMilestone(ctx, request.ID); err != nil {
+		return ProjectMilestoneSummary{}, err
+	}
+
+	updated, err := gql.ProjectMilestoneUpdate(ctx, guard.graphqlClient, request.ID, LinearProjectMilestoneUpdateInput{
+		Name:        optionalString(request.Name),
+		Description: optionalString(request.Description),
+		TargetDate:  optionalString(request.TargetDate),
 	})
+	if err != nil {
+		return ProjectMilestoneSummary{}, fmt.Errorf("update project milestone %s: %w", request.ID, err)
+	}
+	if !updated.ProjectMilestoneUpdate.Success {
+		return ProjectMilestoneSummary{}, fmt.Errorf("%w: projectMilestoneUpdate failed", ErrMutationFailed)
+	}
+
+	return projectMilestoneSummary(
+		updated.ProjectMilestoneUpdate.ProjectMilestone.ProjectMilestoneSummaryFields,
+	), nil
 }
 
 // DeleteProjectMilestone hard deletes a ProjectMilestone after resolving and
@@ -283,21 +289,28 @@ func DeleteProjectMilestone(
 		return "", fmt.Errorf("%w: project milestone id is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (string, error) {
-		if err := guard.requireProjectMilestone(ctx, graphqlClient, projectMilestoneID); err != nil {
-			return "", err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return "", err
+	}
 
-		deleted, err := ProjectMilestoneDelete(ctx, graphqlClient, projectMilestoneID)
-		if err != nil {
-			return "", fmt.Errorf("delete project milestone %s: %w", projectMilestoneID, err)
-		}
-		if !deleted.ProjectMilestoneDelete.Success {
-			return "", fmt.Errorf("%w: projectMilestoneDelete failed", ErrMutationFailed)
-		}
+	return guard.deleteProjectMilestone(ctx, projectMilestoneID)
+}
 
-		return deleted.ProjectMilestoneDelete.EntityId, nil
-	})
+func (guard *guardedClient) deleteProjectMilestone(ctx context.Context, projectMilestoneID string) (string, error) {
+	if err := guard.requireProjectMilestone(ctx, projectMilestoneID); err != nil {
+		return "", err
+	}
+
+	deleted, err := gql.ProjectMilestoneDelete(ctx, guard.graphqlClient, projectMilestoneID)
+	if err != nil {
+		return "", fmt.Errorf("delete project milestone %s: %w", projectMilestoneID, err)
+	}
+	if !deleted.ProjectMilestoneDelete.Success {
+		return "", fmt.Errorf("%w: projectMilestoneDelete failed", ErrMutationFailed)
+	}
+
+	return deleted.ProjectMilestoneDelete.EntityId, nil
 }
 
 func validateProjectMilestoneUpdateRequest(request ProjectMilestoneUpdateRequest) error {

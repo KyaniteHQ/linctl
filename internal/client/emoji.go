@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // EmojiSummary is the compact custom emoji model used by read-only commands.
@@ -24,12 +26,12 @@ type EmojiList struct {
 
 // ListEmojis returns custom emojis visible to the authenticated user.
 func ListEmojis(ctx context.Context, graphqlClient graphql.Client, limit int) (EmojiList, error) {
-	result, err := emojis(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XEmojis(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return EmojiList{}, fmt.Errorf("list emojis: %w", err)
 	}
 
-	summaries := mapNodes(result.Emojis.Nodes, func(node emojisEmojisEmojiConnectionNodesEmoji) EmojiSummary {
+	summaries := mapNodes(result.Emojis.Nodes, func(node gql.XEmojisEmojisEmojiConnectionNodesEmoji) EmojiSummary {
 		return emojiSummary(node.EmojiSummaryFields)
 	})
 
@@ -46,7 +48,7 @@ func GetEmojiByID(
 	graphqlClient graphql.Client,
 	id string,
 ) (EmojiSummary, error) {
-	result, err := emoji(ctx, graphqlClient, id)
+	result, err := gql.XEmoji(ctx, graphqlClient, id)
 	if err != nil {
 		return EmojiSummary{}, fmt.Errorf("get emoji %s: %w", id, err)
 	}
@@ -54,7 +56,7 @@ func GetEmojiByID(
 	return emojiSummary(result.Emoji.EmojiSummaryFields), nil
 }
 
-func emojiSummary(fields EmojiSummaryFields) EmojiSummary {
+func emojiSummary(fields gql.EmojiSummaryFields) EmojiSummary {
 	return EmojiSummary{
 		ID:     fields.Id,
 		Name:   fields.Name,

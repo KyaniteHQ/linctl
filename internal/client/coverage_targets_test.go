@@ -64,11 +64,6 @@ func Test_TargetFailureScenarios_refuse_unpinned_or_mismatched_targets(t *testin
 }
 
 func Test_WriteGuardScenarios_refuse_mismatched_resources(t *testing.T) {
-	guard := writeGuard{
-		target: ResolvedTarget{
-			Team: TargetTeam{ID: "team-id", Key: "LIT"},
-		},
-	}
 	graphqlClient := fakeGraphQLClient{
 		"issue": `{"issue":` + strings.ReplaceAll(issueJSON(issueFixture{
 			Identifier: "ABC-1",
@@ -83,21 +78,110 @@ func Test_WriteGuardScenarios_refuse_mismatched_resources(t *testing.T) {
 			Status: "Backlog",
 		}), `"key":"LIT"`, `"key":"ABC"`) + `}`,
 	}
+	guard := guardedClient{
+		graphqlClient: graphqlClient,
+		target: ResolvedTarget{
+			Team: TargetTeam{ID: "team-id", Key: "LIT"},
+		},
+	}
 
-	_, err := guard.requireIssue(context.Background(), graphqlClient, "ABC-1")
+	_, err := guard.requireIssue(context.Background(), "ABC-1")
 	require.ErrorIs(t, err, ErrTargetMismatch)
 
-	err = guard.requireProject(context.Background(), graphqlClient, "project-id")
+	err = guard.requireProject(context.Background(), "project-id")
 	require.ErrorIs(t, err, ErrTargetMismatch)
 
-	_, err = newWriteGuard(context.Background(), errorGraphQLClient{err: errors.New("resolve failed")}, matchingTarget())
+	_, err = newGuardedClient(context.Background(), errorGraphQLClient{err: errors.New("resolve failed")}, matchingTarget())
 	require.ErrorContains(t, err, "resolve failed")
 
-	_, err = guard.requireIssue(context.Background(), errorGraphQLClient{err: errors.New("read issue failed")}, "LIT-1")
+	guard.graphqlClient = errorGraphQLClient{err: errors.New("read issue failed")}
+	_, err = guard.requireIssue(context.Background(), "LIT-1")
 	require.ErrorContains(t, err, "read issue failed")
 
-	err = guard.requireProject(context.Background(), errorGraphQLClient{err: errors.New("read project failed")}, "project-id")
+	guard.graphqlClient = errorGraphQLClient{err: errors.New("read project failed")}
+	err = guard.requireProject(context.Background(), "project-id")
 	require.ErrorContains(t, err, "read project failed")
+}
+
+func Test_GuardedWrites_return_target_resolution_errors(t *testing.T) {
+	graphqlClient := errorGraphQLClient{err: errors.New("resolve failed")}
+	testCases := []struct {
+		name string
+		run  func() error
+	}{
+		{
+			name: "remove issue label",
+			run: func() error {
+				_, err := RemoveIssueLabel(context.Background(), graphqlClient, matchingTarget(), IssueLabelAssociationRequest{
+					IssueID: "LIT-1",
+					LabelID: "label-id",
+				})
+				return err
+			},
+		},
+		{
+			name: "update label",
+			run: func() error {
+				_, err := UpdateLabel(context.Background(), graphqlClient, matchingTarget(), LabelUpdateRequest{
+					ID: "label-id", Name: "updated",
+				})
+				return err
+			},
+		},
+		{
+			name: "retire label",
+			run: func() error {
+				_, err := RetireLabel(context.Background(), graphqlClient, matchingTarget(), "label-id", false)
+				return err
+			},
+		},
+		{
+			name: "restore label",
+			run: func() error {
+				_, err := RestoreLabel(context.Background(), graphqlClient, matchingTarget(), "label-id", false)
+				return err
+			},
+		},
+		{
+			name: "remove project label",
+			run: func() error {
+				_, err := RemoveProjectLabel(
+					context.Background(), graphqlClient, matchingTarget(),
+					ProjectLabelAssociationRequest{ProjectID: "project-id", LabelID: "label-id"},
+				)
+				return err
+			},
+		},
+		{
+			name: "update project label",
+			run: func() error {
+				_, err := UpdateProjectLabel(context.Background(), graphqlClient, matchingTarget(), ProjectLabelUpdateRequest{
+					ID: "label-id", Name: "updated", OrgWide: true,
+				})
+				return err
+			},
+		},
+		{
+			name: "retire project label",
+			run: func() error {
+				_, err := RetireProjectLabel(context.Background(), graphqlClient, matchingTarget(), "label-id", true)
+				return err
+			},
+		},
+		{
+			name: "restore project label",
+			run: func() error {
+				_, err := RestoreProjectLabel(context.Background(), graphqlClient, matchingTarget(), "label-id", true)
+				return err
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			require.ErrorContains(t, testCase.run(), "resolve failed")
+		})
+	}
 }
 
 func Test_FakeGraphQLClient_respects_context_and_missing_operations(t *testing.T) {
@@ -121,7 +205,7 @@ func Test_TargetScenarios_allow_unpinned_project_and_matching_team(t *testing.T)
 	require.True(t, projectHasTeam(ProjectSummary{Teams: []ProjectTeam{{ID: "team-id", Key: "LIT"}}}, "team-id", "LIT"))
 	require.False(t, projectHasTeam(ProjectSummary{Teams: []ProjectTeam{{ID: "team-id", Key: "ABC"}}}, "team-id", "LIT"))
 
-	guard, err := newWriteGuard(context.Background(), issueWriteFakeClient(map[string]string{}), config.Target{
+	guard, err := newGuardedClient(context.Background(), issueWriteFakeClient(map[string]string{}), config.Target{
 		OrgID:   "org-id",
 		TeamKey: "LIT",
 		TeamID:  "team-id",

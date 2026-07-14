@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // CustomerNeedSummary is the compact customer need model used by read-only commands.
@@ -41,13 +43,13 @@ type CustomerNeedProjectAttachment struct {
 
 // ListCustomerNeeds returns visible Linear customer needs.
 func ListCustomerNeeds(ctx context.Context, graphqlClient graphql.Client, limit int) (CustomerNeedList, error) {
-	result, err := customerNeeds(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XCustomerNeeds(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return CustomerNeedList{}, fmt.Errorf("list customer needs: %w", err)
 	}
 
 	summaries := mapNodes(result.CustomerNeeds.Nodes, func(
-		node customerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed,
+		node gql.XCustomerNeedsCustomerNeedsCustomerNeedConnectionNodesCustomerNeed,
 	) CustomerNeedSummary {
 		return customerNeedSummary(node.CustomerNeedSummaryFields)
 	})
@@ -61,7 +63,7 @@ func ListCustomerNeeds(ctx context.Context, graphqlClient graphql.Client, limit 
 
 // GetCustomerNeedByID returns one Linear customer need by id.
 func GetCustomerNeedByID(ctx context.Context, graphqlClient graphql.Client, id string) (CustomerNeedSummary, error) {
-	result, err := customerNeed(ctx, graphqlClient, &id)
+	result, err := gql.XCustomerNeed(ctx, graphqlClient, &id)
 	if err != nil {
 		return CustomerNeedSummary{}, fmt.Errorf("get customer need %s: %w", id, err)
 	}
@@ -75,7 +77,7 @@ func GetCustomerNeedProjectAttachment(
 	graphqlClient graphql.Client,
 	id string,
 ) (CustomerNeedProjectAttachment, error) {
-	result, err := customerNeed_projectAttachment(ctx, graphqlClient, &id)
+	result, err := gql.XCustomerNeed_projectAttachment(ctx, graphqlClient, &id)
 	if err != nil {
 		return CustomerNeedProjectAttachment{}, fmt.Errorf("get customer need project attachment %s: %w", id, err)
 	}
@@ -92,7 +94,7 @@ func GetCustomerNeedProjectAttachment(
 	}, nil
 }
 
-func customerNeedSummary(fields CustomerNeedSummaryFields) CustomerNeedSummary {
+func customerNeedSummary(fields gql.CustomerNeedSummaryFields) CustomerNeedSummary {
 	summary := CustomerNeedSummary{
 		ID:         fields.Id,
 		CreatedAt:  fields.CreatedAt,

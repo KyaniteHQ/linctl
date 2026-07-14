@@ -15,16 +15,15 @@ func addProjectUpdateReadCommand(ctx context.Context, root *cobra.Command, optio
 		root,
 		options,
 		readListGetSpec[client.ProjectUpdateList, client.ProjectUpdateSummary]{
-			Use:           "project-update",
-			Short:         "Read Linear project updates",
-			ListShort:     "List visible project updates",
-			LimitHelp:     "maximum project updates to return",
-			GetUse:        "get PROJECT_UPDATE_ID",
-			GetShort:      "Get one project update by id",
-			LoadList:      loadProjectUpdateList,
-			PageWithItems: projectUpdatePageWithItems,
-			LoadGet:       loadProjectUpdate,
-			WriteItem:     writeProjectUpdate,
+			Use:       "project-update",
+			Short:     "Read Linear project updates",
+			ListShort: "List visible project updates",
+			LimitHelp: "maximum project updates to return",
+			GetUse:    "get PROJECT_UPDATE_ID",
+			GetShort:  "Get one project update by id",
+			LoadList:  loadProjectUpdateList,
+			LoadGet:   loadProjectUpdate,
+			WriteItem: writeProjectUpdate,
 		},
 	)
 	addProjectUpdateCommentsCommand(ctx, projectUpdateCommand, options)
@@ -46,47 +45,29 @@ func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, opt
 			}
 			request.ProjectID = args[0]
 
-			return runProjectUpdateCreate(
-				ctx, command, options, issueAdapterFor(runtime), request, health, bodyFile,
-			)
+			if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
+				return err
+			}
+			if err := resolveBodyFlag(command, &request.Body); err != nil {
+				return err
+			}
+			normalizedHealth, err := normalizeAndNote(command, "health", health, normalizedHealthValue)
+			if err != nil {
+				return err
+			}
+			request.Health = normalizedHealth
+			update, err := client.CreateProjectUpdate(ctx, runtime.graphqlClient, runtime.config.Target, request)
+			if err != nil {
+				return err
+			}
+
+			return writeProjectUpdate(command, options, update)
 		},
 	}
 	command.Flags().StringVar(&request.Body, "body", "", "update body as markdown; use - to read stdin")
 	command.Flags().StringVar(&bodyFile, "body-file", "", "read update body from file")
 	command.Flags().StringVar(&health, "health", "", "project health: on-track, at-risk, or off-track")
 	root.AddCommand(command)
-}
-
-// runProjectUpdateCreate resolves the body (stdin or file), normalizes the
-// health alias, then posts the update through the Command Port. Splitting it
-// from the cobra wiring makes the port the test surface: the body and health
-// logic is exercised against an in-memory fake, not canned GraphQL JSON.
-func runProjectUpdateCreate(
-	ctx context.Context,
-	command *cobra.Command,
-	options *rootOptions,
-	creator projectUpdateCreator,
-	request client.ProjectUpdateCreateRequest,
-	health string,
-	bodyFile string,
-) error {
-	if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
-		return err
-	}
-	if err := resolveBodyFlag(command, &request.Body); err != nil {
-		return err
-	}
-	normalizedHealth, err := normalizeAndNote(command, "health", health, normalizedHealthValue)
-	if err != nil {
-		return err
-	}
-	request.Health = normalizedHealth
-	update, err := creator.CreateProjectUpdate(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return writeProjectUpdate(command, options, update)
 }
 
 func writeProjectUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {
@@ -135,13 +116,12 @@ func addProjectUpdateCommentsCommand(ctx context.Context, root *cobra.Command, o
 				options,
 				limit,
 				loadProjectUpdateCommentList,
-				projectUpdateCommentPageWithItems,
 				writeCommentMetadata,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum comments to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadProjectUpdateCommentList))
 }
 
 func loadProjectUpdateCommentList(

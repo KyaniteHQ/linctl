@@ -57,16 +57,13 @@ func FuzzRequireTargetMatch(f *testing.F) {
 	})
 }
 
-func Test_guardedMutation_returns_guard_resolution_error(t *testing.T) {
-	_, err := guardedMutation(
+func Test_newGuardedClient_returns_target_resolution_error(t *testing.T) {
+	guard, err := newGuardedClient(
 		context.Background(),
 		errorGraphQLClient{err: errors.New("resolve failed")},
 		matchingTarget(),
-		func(writeGuard) (IssueSummary, error) {
-			t.Fatal("mutation ran before guard resolved")
-			return IssueSummary{}, nil
-		},
 	)
 
 	require.ErrorContains(t, err, "resolve failed")
+	require.Nil(t, guard)
 }

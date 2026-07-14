@@ -553,11 +553,12 @@ func Test_CommandFlows_cover_comment_child_error_and_projection_branches(t *test
 	})
 
 	t.Run("child page projection", func(t *testing.T) {
-		page := commentChildPageWithItems(
+		page, err := pageWithItems(
 			client.CommentChildList{CommentID: "comment-id"},
 			[]client.CommentMetadataSummary{{ID: "child-comment-id"}},
 		)
 
+		require.NoError(t, err)
 		require.Equal(t, "child-comment-id", page.Comments[0].ID)
 	})
 }

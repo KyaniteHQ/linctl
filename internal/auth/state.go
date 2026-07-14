@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
+	"sync"
 	"time"
 )
 
@@ -18,12 +20,42 @@ const (
 )
 
 var (
-	runtimeGOOS   = runtime.GOOS
-	chmodFile     = os.Chmod
-	writeTempFile = (*os.File).Write
-	syncTempFile  = (*os.File).Sync
-	closeTempFile = (*os.File).Close
+	runtimeGOOS    = runtime.GOOS
+	chmodFile      = os.Chmod
+	writeTempFile  = (*os.File).Write
+	syncTempFile   = (*os.File).Sync
+	closeTempFile  = (*os.File).Close
+	lockAuthFile   = lockStateFile
+	unlockAuthFile = unlockStateFile
 )
+
+var authFileLocks = struct {
+	sync.Mutex
+	byPath map[string]*contextLock
+}{byPath: map[string]*contextLock{}}
+
+type contextLock struct {
+	available chan struct{}
+}
+
+func newContextLock() *contextLock {
+	lock := &contextLock{available: make(chan struct{}, 1)}
+	lock.available <- struct{}{}
+	return lock
+}
+
+func (lock *contextLock) acquire(ctx context.Context) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-lock.available:
+		return nil
+	}
+}
+
+func (lock *contextLock) release() {
+	lock.available <- struct{}{}
+}
 
 // Env resolves environment variables by key.
 type Env interface {
@@ -92,6 +124,11 @@ type TokenState struct {
 	ExpiresAt    *time.Time `json:"expires_at,omitempty"`
 	Actor        string     `json:"actor,omitempty"`
 	GrantType    string     `json:"grant_type,omitempty"`
+}
+
+// Equal reports whether all persisted token fields match.
+func (token TokenState) Equal(other TokenState) bool {
+	return reflect.DeepEqual(token, other)
 }
 
 // String redacts secret material for fmt's %v, %+v, and %s verbs.
@@ -172,6 +209,9 @@ type Store struct {
 	paths Paths
 }
 
+// TokenStateTransaction updates one profile's token while its state-file lock is held.
+type TokenStateTransaction func(current TokenState) (TokenState, error)
+
 // NewStore returns a local auth state store.
 func NewStore(paths Paths) Store {
 	return Store{paths: paths}
@@ -218,10 +258,14 @@ func (store Store) Save(ctx context.Context, state State) error {
 		return fmt.Errorf("save auth state context: %w", err)
 	}
 
-	if err := writeJSON(store.paths.AppConfigPath, appConfigFileFromState(state), "auth app config"); err != nil {
+	if err := withAuthFileLock(ctx, store.paths.AppConfigPath, "auth app config", "save auth state", func() error {
+		return writeJSON(store.paths.AppConfigPath, appConfigFileFromState(state), "auth app config")
+	}); err != nil {
 		return err
 	}
-	return writeJSON(store.paths.TokenPath, tokenFileFromState(state), "auth token state")
+	return withAuthFileLock(ctx, store.paths.TokenPath, "auth token state", "save auth state", func() error {
+		return writeJSON(store.paths.TokenPath, tokenFileFromState(state), "auth token state")
+	})
 }
 
 // SaveAppConfig writes OAuth app configuration without touching token state.
@@ -230,20 +274,22 @@ func (store Store) SaveAppConfig(ctx context.Context, profile string, app AppCon
 		return fmt.Errorf("save auth app config context: %w", err)
 	}
 
-	appState, err := readJSON[appConfigFile](store.paths.AppConfigPath, "auth app config")
-	if err != nil {
-		return err
-	}
-	if profile == "" {
-		appState.App = persistedAppConfig(app)
-	} else {
-		if appState.Profiles == nil {
-			appState.Profiles = map[string]persistedAppConfig{}
+	return withAuthFileLock(ctx, store.paths.AppConfigPath, "auth app config", "save auth app config", func() error {
+		appState, err := readJSON[appConfigFile](store.paths.AppConfigPath, "auth app config")
+		if err != nil {
+			return err
 		}
-		appState.Profiles[profile] = persistedAppConfig(app)
-	}
+		if profile == "" {
+			appState.App = persistedAppConfig(app)
+		} else {
+			if appState.Profiles == nil {
+				appState.Profiles = map[string]persistedAppConfig{}
+			}
+			appState.Profiles[profile] = persistedAppConfig(app)
+		}
 
-	return writeJSON(store.paths.AppConfigPath, appState, "auth app config")
+		return writeJSON(store.paths.AppConfigPath, appState, "auth app config")
+	})
 }
 
 // SaveTokenState writes OAuth token state without touching app configuration.
@@ -252,20 +298,56 @@ func (store Store) SaveTokenState(ctx context.Context, profile string, token Tok
 		return fmt.Errorf("save auth token state context: %w", err)
 	}
 
-	tokenState, err := readJSON[tokenFile](store.paths.TokenPath, "auth token state")
-	if err != nil {
-		return err
-	}
-	if profile == "" {
-		tokenState.Token = persistedTokenState(token)
-	} else {
-		if tokenState.Profiles == nil {
-			tokenState.Profiles = map[string]persistedTokenState{}
+	return withAuthFileLock(ctx, store.paths.TokenPath, "auth token state", "save auth token state", func() error {
+		tokenState, err := readJSON[tokenFile](store.paths.TokenPath, "auth token state")
+		if err != nil {
+			return err
 		}
-		tokenState.Profiles[profile] = persistedTokenState(token)
+		if profile == "" {
+			tokenState.Token = persistedTokenState(token)
+		} else {
+			if tokenState.Profiles == nil {
+				tokenState.Profiles = map[string]persistedTokenState{}
+			}
+			tokenState.Profiles[profile] = persistedTokenState(token)
+		}
+
+		return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
+	})
+}
+
+// TransactTokenState reloads, updates, and persists one profile's token under one cross-process lock.
+// The transaction callback must not call Store persistence methods because the lock is not reentrant.
+func (store Store) TransactTokenState(
+	ctx context.Context,
+	profile string,
+	transaction TokenStateTransaction,
+) (TokenState, error) {
+	if err := ctx.Err(); err != nil {
+		return TokenState{}, fmt.Errorf("transact auth token state context: %w", err)
 	}
 
-	return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
+	var result TokenState
+	err := withAuthFileLock(ctx, store.paths.TokenPath, "auth token state", "transact auth token state", func() error {
+		tokenState, err := readJSON[tokenFile](store.paths.TokenPath, "auth token state")
+		if err != nil {
+			return err
+		}
+		current := tokenStateForProfile(tokenState, profile)
+		updated, err := transaction(current)
+		if err != nil {
+			return err
+		}
+		result = updated
+		if current.Equal(updated) {
+			return nil
+		}
+		setTokenStateForProfile(&tokenState, profile, updated)
+
+		return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
+	})
+
+	return result, err
 }
 
 // ClearTokenState removes saved OAuth token material while preserving app config.
@@ -274,16 +356,18 @@ func (store Store) ClearTokenState(ctx context.Context, profile string) error {
 		return fmt.Errorf("clear auth token state context: %w", err)
 	}
 
-	tokenState, err := readJSON[tokenFile](store.paths.TokenPath, "auth token state")
-	if err != nil {
-		return err
-	}
-	if profile == "" {
-		tokenState.Token = persistedTokenState{}
-	} else if tokenState.Profiles != nil {
-		delete(tokenState.Profiles, profile)
-	}
-	return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
+	return withAuthFileLock(ctx, store.paths.TokenPath, "auth token state", "clear auth token state", func() error {
+		tokenState, err := readJSON[tokenFile](store.paths.TokenPath, "auth token state")
+		if err != nil {
+			return err
+		}
+		if profile == "" {
+			tokenState.Token = persistedTokenState{}
+		} else if tokenState.Profiles != nil {
+			delete(tokenState.Profiles, profile)
+		}
+		return writeJSON(store.paths.TokenPath, tokenState, "auth token state")
+	})
 }
 
 // ClearAppConfig removes saved OAuth app configuration while preserving token state.
@@ -292,16 +376,107 @@ func (store Store) ClearAppConfig(ctx context.Context, profile string) error {
 		return fmt.Errorf("clear auth app config context: %w", err)
 	}
 
-	appState, err := readJSON[appConfigFile](store.paths.AppConfigPath, "auth app config")
+	return withAuthFileLock(ctx, store.paths.AppConfigPath, "auth app config", "clear auth app config", func() error {
+		appState, err := readJSON[appConfigFile](store.paths.AppConfigPath, "auth app config")
+		if err != nil {
+			return err
+		}
+		if profile == "" {
+			appState.App = persistedAppConfig{}
+		} else if appState.Profiles != nil {
+			delete(appState.Profiles, profile)
+		}
+		return writeJSON(store.paths.AppConfigPath, appState, "auth app config")
+	})
+}
+
+func withAuthFileLock(
+	ctx context.Context,
+	path string,
+	label string,
+	operation string,
+	action func() error,
+) (err error) {
+	if path == "" {
+		return action()
+	}
+
+	processLock := authFileLock(path)
+	if err := processLock.acquire(ctx); err != nil {
+		return fmt.Errorf("%s context: %w", operation, err)
+	}
+	defer processLock.release()
+
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return fmt.Errorf("create %s lock directory: %w", label, err)
+	}
+	if err := chmodIfSupported(filepath.Dir(path), 0o700); err != nil {
+		return fmt.Errorf("secure %s lock directory: %w", label, err)
+	}
+	lockPath := path + ".lock"
+	//nolint:gosec // Auth paths are resolved from user-specific config/state directories or explicit tests.
+	lockFile, err := os.OpenFile(lockPath, os.O_CREATE|os.O_RDWR, 0o600)
 	if err != nil {
-		return err
+		return fmt.Errorf("open %s lock %s: %w", label, lockPath, err)
 	}
+	defer func() {
+		err = errors.Join(err, lockFile.Close())
+	}()
+	if err := chmodIfSupported(lockPath, 0o600); err != nil {
+		return fmt.Errorf("secure %s lock %s: %w", label, lockPath, err)
+	}
+	if err := lockAuthFile(ctx, lockFile); err != nil {
+		if ctxErr := ctx.Err(); ctxErr != nil && errors.Is(err, ctxErr) {
+			return fmt.Errorf("%s context: %w", operation, ctxErr)
+		}
+		return fmt.Errorf("acquire %s lock %s: %w", label, lockPath, err)
+	}
+	defer func() {
+		err = errors.Join(err, unlockAuthFile(lockFile))
+	}()
+	if err := ctx.Err(); err != nil {
+		return fmt.Errorf("%s context: %w", operation, err)
+	}
+
+	return action()
+}
+
+func tokenStateForProfile(state tokenFile, profile string) TokenState {
 	if profile == "" {
-		appState.App = persistedAppConfig{}
-	} else if appState.Profiles != nil {
-		delete(appState.Profiles, profile)
+		return TokenState(state.Token)
 	}
-	return writeJSON(store.paths.AppConfigPath, appState, "auth app config")
+
+	return TokenState(state.Profiles[profile])
+}
+
+func setTokenStateForProfile(state *tokenFile, profile string, token TokenState) {
+	if profile == "" {
+		state.Token = persistedTokenState(token)
+		return
+	}
+	if state.Profiles == nil {
+		state.Profiles = map[string]persistedTokenState{}
+	}
+	if tokenStateEmpty(token) {
+		delete(state.Profiles, profile)
+		return
+	}
+
+	state.Profiles[profile] = persistedTokenState(token)
+}
+
+func authFileLock(path string) *contextLock {
+	cleanPath := filepath.Clean(path)
+	authFileLocks.Lock()
+	defer authFileLocks.Unlock()
+
+	lock := authFileLocks.byPath[cleanPath]
+	if lock == nil {
+		lock = newContextLock()
+		authFileLocks.byPath[cleanPath] = lock
+	}
+
+	return lock
 }
 
 // Profile returns the auth state selected by a profile name.

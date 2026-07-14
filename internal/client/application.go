@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // ApplicationInfo is public OAuth application metadata returned by Linear.
@@ -20,7 +22,7 @@ type ApplicationInfo struct {
 
 // GetApplicationInfo returns public OAuth application metadata for a client id.
 func GetApplicationInfo(ctx context.Context, graphqlClient graphql.Client, clientID string) (ApplicationInfo, error) {
-	result, err := applicationInfo(ctx, graphqlClient, clientID)
+	result, err := gql.XApplicationInfo(ctx, graphqlClient, clientID)
 	if err != nil {
 		return ApplicationInfo{}, fmt.Errorf("get application info %s: %w", clientID, err)
 	}
@@ -28,7 +30,7 @@ func GetApplicationInfo(ctx context.Context, graphqlClient graphql.Client, clien
 	return applicationInfoSummary(result.ApplicationInfo.ApplicationInfoFields), nil
 }
 
-func applicationInfoSummary(fields ApplicationInfoFields) ApplicationInfo {
+func applicationInfoSummary(fields gql.ApplicationInfoFields) ApplicationInfo {
 	return ApplicationInfo{
 		ID:           fields.Id,
 		ClientID:     fields.ClientId,

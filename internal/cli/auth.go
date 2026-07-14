@@ -19,8 +19,8 @@ import (
 
 const (
 	appActor                   = "app"
-	authGrantAuthorizationCode = "authorization_code"
-	authGrantClientCredentials = "client_credentials"
+	authGrantAuthorizationCode = auth.GrantTypeAuthorizationCode
+	authGrantClientCredentials = auth.GrantTypeClientCredentials
 )
 
 var (
@@ -47,13 +47,15 @@ type authOAuthClient interface {
 }
 
 type authCommandContext struct {
-	paths   auth.Paths
-	store   auth.Store
-	profile string
-	target  config.Target
-	app     auth.AppConfig
-	token   auth.TokenState
-	logger  *slog.Logger
+	paths          auth.Paths
+	store          auth.Store
+	profile        string
+	target         config.Target
+	app            auth.AppConfig
+	token          auth.TokenState
+	localToken     auth.TokenState
+	credentialKind auth.CredentialKind
+	logger         *slog.Logger
 }
 
 type authConfigureFlags struct {
@@ -190,8 +192,28 @@ func addAuthStatusCommand(ctx context.Context, root *cobra.Command, options *roo
 			}
 			app := authContext.app
 			token := authContext.token
-			if token.AccessToken == "" || tokenExpired(token, authNow()) {
+			if token.AccessToken == "" && token.RefreshToken == "" {
 				return writeCurrentOrRefreshedAuthStatus(ctx, command, options, authContext, app, token)
+			}
+			if tokenExpired(token, authNow()) {
+				refreshed, readiness, err := currentOrRefreshedAuthToken(
+					ctx,
+					authContext,
+					app,
+					token,
+					options.timeout,
+				)
+				if err != nil {
+					return err
+				}
+
+				return writeAuthStatus(command, options, newAuthStatusReport(app, refreshed, readiness))
+			}
+			expectedActor := firstNonEmptyString(token.Actor, appActor)
+			requiredTokenScopes := requiredScopes(app)
+			if authContext.credentialKind == auth.CredentialKindInjectedAccessToken {
+				expectedActor = ""
+				requiredTokenScopes = nil
 			}
 
 			readiness, err := requireLoggedAuthReadiness(ctx, authContext.log(), authReadinessRequest{
@@ -199,8 +221,8 @@ func addAuthStatusCommand(ctx context.Context, root *cobra.Command, options *roo
 				TokenActor:     token.Actor,
 				TokenScopes:    token.Scopes,
 				ExpectedTarget: authContext.target,
-				ExpectedActor:  firstNonEmptyString(token.Actor, appActor),
-				RequiredScopes: requiredScopes(app),
+				ExpectedActor:  expectedActor,
+				RequiredScopes: requiredTokenScopes,
 				Timeout:        options.timeout,
 			})
 			if err != nil {
@@ -225,11 +247,8 @@ func addAuthRefreshCommand(ctx context.Context, root *cobra.Command, options *ro
 				return err
 			}
 			app := authContext.app
-			token, readiness, err := refreshAuthTokenState(ctx, authContext, app, authContext.token, options.timeout)
+			token, readiness, err := refreshPersistedAuthToken(ctx, authContext, app, options.timeout)
 			if err != nil {
-				return err
-			}
-			if err := authContext.store.SaveTokenState(ctx, authContext.profile, token); err != nil {
 				return err
 			}
 
@@ -251,13 +270,22 @@ func addAuthLogoutCommand(ctx context.Context, root *cobra.Command, options *roo
 			if err != nil {
 				return err
 			}
-			revoked, revocationFailed := revokeTokenState(
+			var revoked []string
+			var revocationFailed bool
+			_, err = authContext.store.TransactTokenState(
 				ctx,
-				authContext.log(),
-				newAuthOAuthClient(options.timeout),
-				authContext.token,
+				authContext.profile,
+				func(current auth.TokenState) (auth.TokenState, error) {
+					revoked, revocationFailed = revokeTokenState(
+						ctx,
+						authContext.log(),
+						newAuthOAuthClient(options.timeout),
+						current,
+					)
+					return auth.TokenState{}, nil
+				},
 			)
-			if err := authContext.store.ClearTokenState(ctx, authContext.profile); err != nil {
+			if err != nil {
 				return err
 			}
 			appStatus := "kept"
@@ -312,15 +340,22 @@ func loadAuthCommandContext(
 	if err != nil {
 		return authCommandContext{}, err
 	}
-	session, err := auth.SelectSession(ctx, auth.SessionRequest{
+	request := auth.SessionRequest{
 		Store:   authContext.store,
 		Profile: authContext.profile,
-	})
+	}
+	localSession, err := auth.SelectLocalSession(ctx, request)
 	if err != nil {
 		return authCommandContext{}, err
 	}
-	authContext.app = session.App
-	authContext.token = session.Token
+	effectiveSession, err := auth.SelectSession(ctx, request)
+	if err != nil {
+		return authCommandContext{}, err
+	}
+	authContext.app = localSession.App
+	authContext.token = effectiveSession.Token
+	authContext.localToken = localSession.Token
+	authContext.credentialKind = effectiveSession.CredentialKind
 
 	return authContext, nil
 }

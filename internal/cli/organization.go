@@ -45,13 +45,12 @@ func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *r
 				options,
 				limit,
 				loadOrganizationTemplateList,
-				templatePageWithItems,
 				writeTemplate,
 			)
 		},
 	}
 	templatesCommand.Flags().IntVar(&limit, "limit", limit, "maximum organization templates to return")
-	command.AddCommand(templatesCommand)
+	command.AddCommand(preflightReadListCommand(templatesCommand, loadOrganizationTemplateList))
 	root.AddCommand(command)
 }
 
@@ -69,13 +68,12 @@ func addOrganizationLabelsCommand(ctx context.Context, root *cobra.Command, opti
 				options,
 				limit,
 				loadOrganizationLabels,
-				labelPageWithItems,
 				writeLabel,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum labels to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadOrganizationLabels))
 }
 
 func addOrganizationProjectLabelsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -92,13 +90,12 @@ func addOrganizationProjectLabelsCommand(ctx context.Context, root *cobra.Comman
 				options,
 				limit,
 				loadOrganizationProjectLabels,
-				projectLabelPageWithItems,
 				writeProjectLabel,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum project labels to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadOrganizationProjectLabels))
 }
 
 func addOrganizationTeamsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -115,13 +112,12 @@ func addOrganizationTeamsCommand(ctx context.Context, root *cobra.Command, optio
 				options,
 				limit,
 				loadOrganizationTeams,
-				teamPageWithItems,
 				writeTeam,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum teams to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadOrganizationTeams))
 }
 
 func addOrganizationUsersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -138,13 +134,12 @@ func addOrganizationUsersCommand(ctx context.Context, root *cobra.Command, optio
 				options,
 				limit,
 				loadOrganizationUsers,
-				userPageWithItems,
 				writeUser,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum users to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadOrganizationUsers))
 }
 
 func writeOrganizationExists(

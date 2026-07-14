@@ -5,6 +5,7 @@ vars:
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
   GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
+  LINEAR_SDK_REF: 202a5e0fbce142cd1f0cd5c5265c3a310f629702
   INFISICAL_ENV: secrets
   INFISICAL_PATH: /linctl
   # Infisical needs a project id. Export INFISICAL_PROJECT_ID to supply one without
@@ -22,14 +23,15 @@ tasks:
   fmt:
     desc: Format Go files
     cmds:
-      - go tool gofumpt -w cmd internal scripts
-      - go tool goimports -w -local "$(go list -m)" cmd internal scripts
+      - find cmd internal scripts -type f -name '*.go' ! -path 'internal/client/internal/gql/generated.go' -print0 | xargs -0 go tool gofumpt -w
+      - find cmd internal scripts -type f -name '*.go' ! -path 'internal/client/internal/gql/generated.go' -print0 | xargs -0 go tool goimports -w -local "$(go list -m)"
 
   fmt-check:
     desc: Verify Go files are gofumpt formatted without modifying them
     cmds:
       - |
-        files="$(go tool gofumpt -l cmd internal scripts)"
+        files="$(find cmd internal scripts -type f -name '*.go' ! -path 'internal/client/internal/gql/generated.go' -print0 |
+          xargs -0 go tool gofumpt -l)"
         if [[ -n "$files" ]]; then
           printf '%s\n' "$files"
           exit 1
@@ -57,11 +59,32 @@ tasks:
     cmds:
       - go run scripts/gen-skill.go
 
+  generated-client-check:
+    desc: Regenerate the GraphQL client and verify its package boundary is tracked
+    cmds:
+      - go generate ./...
+      - |
+        generated=(
+          internal/client/internal/gql/generated.go
+          internal/client/internal/gql/exports.go
+        )
+        for path in "${generated[@]}"; do
+          if ! git ls-files --error-unmatch "$path" >/dev/null 2>&1; then
+            printf 'generated output is not tracked: %s\n' "$path" >&2
+            exit 1
+          fi
+        done
+        if [[ -e internal/client/generated.go ]] ||
+          git ls-files --error-unmatch internal/client/generated.go >/dev/null 2>&1; then
+          printf 'legacy generated client must be absent and untracked: internal/client/generated.go\n' >&2
+          exit 1
+        fi
+        git diff --exit-code -- "${generated[@]}"
+
   generate-check:
     desc: Regenerate the GraphQL client and command reference and verify they are committed
     cmds:
-      - go generate ./...
-      - git diff --exit-code -- internal/client/generated.go
+      - task: generated-client-check
       - task: gen-skill
       - git diff --exit-code -- skills/linctl/references/commands.md
       - go run scripts/linear_api_coverage*.go -h >/dev/null
@@ -91,7 +114,7 @@ tasks:
       - |
         upstream="${LINCTL_LINEAR_SDK_UPSTREAM:?set LINCTL_LINEAR_SDK_UPSTREAM to a run-local Linear SDK checkout path}"
         remote="https://github.com/linear/linear.git"
-        ref="${LINCTL_LINEAR_SDK_REF:-master}"
+        ref="${LINCTL_LINEAR_SDK_REF:-{{.LINEAR_SDK_REF}}}"
         offline="${LINCTL_LINEAR_SDK_OFFLINE:-}"
         if [[ ! -e "$upstream" ]]; then
           if [[ -n "$offline" ]]; then
@@ -99,7 +122,10 @@ tasks:
             printf 'Set LINCTL_LINEAR_SDK_UPSTREAM to an existing checkout, or unset LINCTL_LINEAR_SDK_OFFLINE to clone.\n' >&2
             exit 1
           fi
-          git clone --depth=1 --branch "$ref" "$remote" "$upstream"
+          git init -q "$upstream"
+          git -C "$upstream" remote add origin "$remote"
+          git -C "$upstream" fetch --depth=1 origin "$ref"
+          git -C "$upstream" checkout --detach FETCH_HEAD
         elif [[ ! -d "$upstream/.git" ]]; then
           printf 'Linear SDK upstream path exists but is not a git checkout: %s\n' "$upstream" >&2
           printf 'Set LINCTL_LINEAR_SDK_UPSTREAM to a Linear repo checkout or remove the path.\n' >&2
@@ -112,7 +138,16 @@ tasks:
             exit 1
           fi
           if [[ -n "$offline" ]]; then
-            printf 'using existing upstream checkout without refresh (LINCTL_LINEAR_SDK_OFFLINE=1)\n' >&2
+            checkout_ref="$ref"
+            if ! git -C "$upstream" rev-parse --verify --quiet "$checkout_ref^{commit}" >/dev/null; then
+              checkout_ref="origin/$ref"
+            fi
+            if ! git -C "$upstream" rev-parse --verify --quiet "$checkout_ref^{commit}" >/dev/null; then
+              printf 'offline Linear SDK checkout does not contain ref %s\n' "$ref" >&2
+              exit 1
+            fi
+            git -C "$upstream" checkout --detach "$checkout_ref"
+            printf 'using existing upstream checkout at %s (LINCTL_LINEAR_SDK_OFFLINE=1)\n' "$ref" >&2
           else
             git -C "$upstream" fetch --depth=1 origin "$ref"
             git -C "$upstream" checkout --detach FETCH_HEAD

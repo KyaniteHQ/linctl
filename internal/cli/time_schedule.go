@@ -12,16 +12,15 @@ import (
 
 func addTimeScheduleCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.TimeScheduleList, client.TimeScheduleSummary]{
-		Use:           "time-schedule",
-		Short:         "Read Linear time schedules",
-		ListShort:     "List visible Linear time schedules",
-		LimitHelp:     "maximum time schedules to return",
-		GetUse:        "get TIME_SCHEDULE_ID",
-		GetShort:      "Get one time schedule by id",
-		LoadList:      loadTimeScheduleList,
-		PageWithItems: timeSchedulePageWithItems,
-		LoadGet:       loadTimeSchedule,
-		WriteItem:     writeTimeSchedule,
+		Use:       "time-schedule",
+		Short:     "Read Linear time schedules",
+		ListShort: "List visible Linear time schedules",
+		LimitHelp: "maximum time schedules to return",
+		GetUse:    "get TIME_SCHEDULE_ID",
+		GetShort:  "Get one time schedule by id",
+		LoadList:  loadTimeScheduleList,
+		LoadGet:   loadTimeSchedule,
+		WriteItem: writeTimeSchedule,
 	})
 }
 

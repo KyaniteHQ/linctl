@@ -72,14 +72,14 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 		fileClient: &http.Client{Timeout: options.timeout},
 		logger:     logger,
 		graphqlClient: newRecoveringGraphQLClient(recoveringGraphQLClientConfig{
-			Token:       authSession.Token,
-			App:         authSession.App,
-			Store:       authStore,
-			Profile:     resolvedConfig.Profile,
-			Timeout:     options.timeout,
-			Persist:     authSession.PersistentToken,
-			Logger:      logger,
-			OAuthClient: newAuthOAuthClient(options.timeout),
+			Token:          authSession.Token,
+			CredentialKind: authSession.CredentialKind,
+			App:            authSession.App,
+			Store:          authStore,
+			Profile:        resolvedConfig.Profile,
+			Timeout:        options.timeout,
+			Logger:         logger,
+			OAuthClient:    newAuthOAuthClient(options.timeout),
 			NewClient: func(accessToken string) graphql.Client {
 				return client.NewTransport(client.TransportConfig{
 					Token:            client.OAuthAccessToken(accessToken),
@@ -92,28 +92,28 @@ func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntim
 }
 
 type recoveringGraphQLClientConfig struct {
-	Token       auth.TokenState
-	App         auth.AppConfig
-	Store       auth.Store
-	Profile     string
-	Timeout     time.Duration
-	Persist     bool
-	Logger      *slog.Logger
-	OAuthClient authOAuthClient
-	NewClient   func(accessToken string) graphql.Client
+	Token          auth.TokenState
+	CredentialKind auth.CredentialKind
+	App            auth.AppConfig
+	Store          auth.Store
+	Profile        string
+	Timeout        time.Duration
+	Logger         *slog.Logger
+	OAuthClient    authOAuthClient
+	NewClient      func(accessToken string) graphql.Client
 }
 
 type recoveringGraphQLClient struct {
-	token       auth.TokenState
-	app         auth.AppConfig
-	store       auth.Store
-	profile     string
-	timeout     time.Duration
-	persist     bool
-	logger      *slog.Logger
-	oauthClient authOAuthClient
-	newClient   func(accessToken string) graphql.Client
-	client      graphql.Client
+	token          auth.TokenState
+	credentialKind auth.CredentialKind
+	app            auth.AppConfig
+	store          auth.Store
+	profile        string
+	timeout        time.Duration
+	logger         *slog.Logger
+	oauthClient    authOAuthClient
+	newClient      func(accessToken string) graphql.Client
+	client         graphql.Client
 }
 
 func newRecoveringGraphQLClient(config recoveringGraphQLClientConfig) *recoveringGraphQLClient {
@@ -134,16 +134,20 @@ func newRecoveringGraphQLClient(config recoveringGraphQLClientConfig) *recoverin
 	if logger == nil {
 		logger = discardLogger
 	}
+	credentialKind := config.CredentialKind
+	if credentialKind == auth.CredentialKindMissing {
+		credentialKind = auth.CredentialKindFromToken(config.Token)
+	}
 	recovering := &recoveringGraphQLClient{
-		token:       config.Token,
-		app:         config.App,
-		store:       config.Store,
-		profile:     config.Profile,
-		timeout:     config.Timeout,
-		persist:     config.Persist,
-		logger:      logger,
-		oauthClient: oauthClient,
-		newClient:   newClient,
+		token:          config.Token,
+		credentialKind: credentialKind,
+		app:            config.App,
+		store:          config.Store,
+		profile:        config.Profile,
+		timeout:        config.Timeout,
+		logger:         logger,
+		oauthClient:    oauthClient,
+		newClient:      newClient,
 	}
 	recovering.client = newClient(config.Token.AccessToken)
 
@@ -156,7 +160,7 @@ func (recovering *recoveringGraphQLClient) MakeRequest(
 	response *graphql.Response,
 ) error {
 	recovered := false
-	if tokenExpired(recovering.token, authNow()) {
+	if recovering.credentialKind.Recoverable() && tokenExpired(recovering.token, authNow()) {
 		if err := recovering.recoverToken(ctx, "expired"); err != nil {
 			return err
 		}
@@ -174,6 +178,9 @@ func (recovering *recoveringGraphQLClient) MakeRequest(
 		return err
 	}
 	if !errors.Is(err, client.ErrAuthFailed) {
+		return err
+	}
+	if !recovering.credentialKind.Recoverable() {
 		return err
 	}
 	if err := recovering.recoverToken(ctx, "auth_failed"); err != nil {
@@ -196,28 +203,22 @@ func (recovering *recoveringGraphQLClient) recoverToken(ctx context.Context, rea
 		"reason", reason,
 		"grant_type", recoveryGrantType,
 		"actor", recovering.token.Actor,
-		"persist", recovering.persist,
 		"profile", recovering.profile,
 	)
 
-	var token auth.TokenState
-	var err error
-	if recovering.token.GrantType == authGrantClientCredentials || recovering.token.RefreshToken == "" {
-		token, err = recovering.reacquireClientCredentials(ctx)
-	} else {
-		token, err = recovering.refreshAuthorizationCode(ctx)
-	}
+	token, err := recovering.store.TransactTokenState(
+		ctx,
+		recovering.profile,
+		func(current auth.TokenState) (auth.TokenState, error) {
+			return recovering.recoverCurrentToken(ctx, current)
+		},
+	)
 	if err != nil {
 		recovering.logTokenRecoveryFailed(ctx, reason, recoveryGrantType, "exchange", err)
 		return err
 	}
-	if recovering.persist {
-		if err := recovering.store.SaveTokenState(ctx, recovering.profile, token); err != nil {
-			recovering.logTokenRecoveryFailed(ctx, reason, recoveryGrantType, "persist", err)
-			return err
-		}
-	}
 	recovering.token = token
+	recovering.credentialKind = auth.CredentialKindFromToken(token)
 	recovering.client = recovering.newClient(token.AccessToken)
 	recovering.logger.DebugContext(
 		ctx,
@@ -225,15 +226,39 @@ func (recovering *recoveringGraphQLClient) recoverToken(ctx context.Context, rea
 		"reason", reason,
 		"grant_type", recoveryGrantType,
 		"actor", token.Actor,
-		"persist", recovering.persist,
 		"profile", recovering.profile,
 	)
 
 	return nil
 }
 
+func (recovering *recoveringGraphQLClient) recoverCurrentToken(
+	ctx context.Context,
+	current auth.TokenState,
+) (auth.TokenState, error) {
+	if current.AccessToken == "" && current.RefreshToken == "" {
+		return auth.TokenState{}, auth.NewError(auth.ErrorCodeReauthRequired, "persisted OAuth session was removed")
+	}
+	if !current.Equal(recovering.token) && tokenUsable(current, authNow()) {
+		return current, nil
+	}
+
+	credentialKind := auth.CredentialKindFromToken(current)
+	if credentialKind == auth.CredentialKindClientCredentials {
+		return recovering.reacquireClientCredentials(ctx)
+	}
+	if credentialKind == auth.CredentialKindAuthorizationCode {
+		return recovering.refreshAuthorizationCode(ctx, current)
+	}
+
+	return auth.TokenState{}, auth.NewError(
+		auth.ErrorCodeReauthRequired,
+		"persisted OAuth token is not recoverable",
+	)
+}
+
 func (recovering *recoveringGraphQLClient) recoveryGrantType() string {
-	if recovering.token.GrantType == authGrantClientCredentials || recovering.token.RefreshToken == "" {
+	if recovering.credentialKind == auth.CredentialKindClientCredentials {
 		return authGrantClientCredentials
 	}
 
@@ -255,13 +280,15 @@ func (recovering *recoveringGraphQLClient) logTokenRecoveryFailed(
 		"phase", phase,
 		"error_code", errorCode(err),
 		"actor", recovering.token.Actor,
-		"persist", recovering.persist,
 		"profile", recovering.profile,
 	)
 }
 
-func (recovering *recoveringGraphQLClient) refreshAuthorizationCode(ctx context.Context) (auth.TokenState, error) {
-	if recovering.token.RefreshToken == "" || recovering.app.ClientID == "" {
+func (recovering *recoveringGraphQLClient) refreshAuthorizationCode(
+	ctx context.Context,
+	token auth.TokenState,
+) (auth.TokenState, error) {
+	if token.RefreshToken == "" || recovering.app.ClientID == "" {
 		return auth.TokenState{}, auth.NewError(auth.ErrorCodeReauthRequired, "run linctl auth login")
 	}
 
@@ -269,9 +296,13 @@ func (recovering *recoveringGraphQLClient) refreshAuthorizationCode(ctx context.
 		ctx,
 		recovering.oauthClient,
 		recovering.app,
-		recovering.token,
+		token,
 		requiredScopes(recovering.app),
 	)
+}
+
+func tokenUsable(token auth.TokenState, now time.Time) bool {
+	return token.AccessToken != "" && !tokenExpired(token, now)
 }
 
 func (recovering *recoveringGraphQLClient) reacquireClientCredentials(ctx context.Context) (auth.TokenState, error) {

@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // AgentActivityContentSummary is the compact content model for an AgentActivity.
@@ -41,13 +43,13 @@ type AgentActivityList struct {
 
 // ListAgentActivities returns AgentActivities visible to the authenticated user.
 func ListAgentActivities(ctx context.Context, graphqlClient graphql.Client, limit int) (AgentActivityList, error) {
-	result, err := agentActivities(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XAgentActivities(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return AgentActivityList{}, fmt.Errorf("list agent activities: %w", err)
 	}
 
 	summaries := mapNodes(result.AgentActivities.Nodes, func(
-		node agentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity,
+		node gql.XAgentActivitiesAgentActivitiesAgentActivityConnectionNodesAgentActivity,
 	) AgentActivitySummary {
 		return agentActivitySummary(node.AgentActivitySummaryFields)
 	})
@@ -61,7 +63,7 @@ func ListAgentActivities(ctx context.Context, graphqlClient graphql.Client, limi
 
 // GetAgentActivityByID returns one AgentActivity by id.
 func GetAgentActivityByID(ctx context.Context, graphqlClient graphql.Client, id string) (AgentActivitySummary, error) {
-	result, err := agentActivity(ctx, graphqlClient, id)
+	result, err := gql.XAgentActivity(ctx, graphqlClient, id)
 	if err != nil {
 		return AgentActivitySummary{}, fmt.Errorf("get agent activity %s: %w", id, err)
 	}
@@ -69,7 +71,7 @@ func GetAgentActivityByID(ctx context.Context, graphqlClient graphql.Client, id 
 	return agentActivitySummary(result.AgentActivity.AgentActivitySummaryFields), nil
 }
 
-func agentActivitySummary(fields AgentActivitySummaryFields) AgentActivitySummary {
+func agentActivitySummary(fields gql.AgentActivitySummaryFields) AgentActivitySummary {
 	summary := AgentActivitySummary{
 		ID:             fields.Id,
 		AgentSessionID: fields.AgentSession.Id,
@@ -92,29 +94,29 @@ func agentActivitySummary(fields AgentActivitySummaryFields) AgentActivitySummar
 }
 
 func agentActivityContentSummary(
-	content AgentActivitySummaryFieldsContentAgentActivityContent,
+	content gql.AgentActivitySummaryFieldsContentAgentActivityContent,
 ) AgentActivityContentSummary {
 	switch value := content.(type) {
-	case *AgentActivitySummaryFieldsContentAgentActivityActionContent:
+	case *gql.AgentActivitySummaryFieldsContentAgentActivityActionContent:
 		return AgentActivityContentSummary{
 			Type:      string(value.Type),
 			Action:    value.Action,
 			Parameter: value.Parameter,
 			Result:    stringValue(value.Result),
 		}
-	case *AgentActivitySummaryFieldsContentAgentActivityElicitationContent:
+	case *gql.AgentActivitySummaryFieldsContentAgentActivityElicitationContent:
 		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
-	case *AgentActivitySummaryFieldsContentAgentActivityErrorContent:
+	case *gql.AgentActivitySummaryFieldsContentAgentActivityErrorContent:
 		return AgentActivityContentSummary{
 			Type:       string(value.Type),
 			Body:       value.Body,
 			ReasonCode: stringValue(value.ReasonCode),
 		}
-	case *AgentActivitySummaryFieldsContentAgentActivityPromptContent:
+	case *gql.AgentActivitySummaryFieldsContentAgentActivityPromptContent:
 		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
-	case *AgentActivitySummaryFieldsContentAgentActivityResponseContent:
+	case *gql.AgentActivitySummaryFieldsContentAgentActivityResponseContent:
 		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
-	case *AgentActivitySummaryFieldsContentAgentActivityThoughtContent:
+	case *gql.AgentActivitySummaryFieldsContentAgentActivityThoughtContent:
 		return AgentActivityContentSummary{Type: string(value.Type), Body: value.Body}
 	default:
 		return AgentActivityContentSummary{}

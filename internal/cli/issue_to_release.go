@@ -14,16 +14,15 @@ func addIssueToReleaseCommand(ctx context.Context, root *cobra.Command, options 
 		client.IssueToReleaseList,
 		client.IssueToReleaseSummary,
 	](ctx, root, options, readListGetSpec[client.IssueToReleaseList, client.IssueToReleaseSummary]{
-		Use:           "issue-to-release",
-		Short:         "Read Linear Issue-to-Release associations",
-		ListShort:     "List visible Issue-to-Release associations",
-		LimitHelp:     "maximum Issue-to-Release associations to return",
-		GetUse:        "get ISSUE_TO_RELEASE_ID",
-		GetShort:      "Get one Issue-to-Release association by id",
-		LoadList:      loadIssueToReleaseList,
-		PageWithItems: issueToReleasePageWithItems,
-		LoadGet:       loadIssueToRelease,
-		WriteItem:     writeIssueToRelease,
+		Use:       "issue-to-release",
+		Short:     "Read Linear Issue-to-Release associations",
+		ListShort: "List visible Issue-to-Release associations",
+		LimitHelp: "maximum Issue-to-Release associations to return",
+		GetUse:    "get ISSUE_TO_RELEASE_ID",
+		GetShort:  "Get one Issue-to-Release association by id",
+		LoadList:  loadIssueToReleaseList,
+		LoadGet:   loadIssueToRelease,
+		WriteItem: writeIssueToRelease,
 	})
 }
 

@@ -15,16 +15,15 @@ func addInitiativeCommand(ctx context.Context, root *cobra.Command, options *roo
 		root,
 		options,
 		readListGetSpec[client.InitiativeList, client.InitiativeSummary]{
-			Use:           "initiative",
-			Short:         "Read Linear initiatives",
-			ListShort:     "List visible initiatives",
-			LimitHelp:     "maximum initiatives to return",
-			GetUse:        "get INITIATIVE_ID",
-			GetShort:      "Get one initiative by id or slug",
-			LoadList:      loadInitiativeList,
-			PageWithItems: initiativePageWithItems,
-			LoadGet:       loadInitiative,
-			WriteItem:     writeInitiative,
+			Use:       "initiative",
+			Short:     "Read Linear initiatives",
+			ListShort: "List visible initiatives",
+			LimitHelp: "maximum initiatives to return",
+			GetUse:    "get INITIATIVE_ID",
+			GetShort:  "Get one initiative by id or slug",
+			LoadList:  loadInitiativeList,
+			LoadGet:   loadInitiative,
+			WriteItem: writeInitiative,
 		},
 	)
 	addInitiativeHistoryCommand(ctx, command, options)
@@ -49,13 +48,12 @@ func addInitiativeHistoryCommand(ctx context.Context, root *cobra.Command, optio
 				options,
 				limit,
 				loadInitiativeHistory,
-				initiativeHistoryPageWithItems,
 				writeInitiativeHistory,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum history records to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadInitiativeHistory))
 }
 
 func addInitiativeLinksCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -72,13 +70,12 @@ func addInitiativeLinksCommand(ctx context.Context, root *cobra.Command, options
 				options,
 				limit,
 				loadInitiativeLinks,
-				releaseLinksPageWithItems,
 				writeEntityExternalLink,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum links to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadInitiativeLinks))
 }
 
 func addSubInitiativesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -95,13 +92,12 @@ func addSubInitiativesCommand(ctx context.Context, root *cobra.Command, options 
 				options,
 				limit,
 				loadSubInitiatives,
-				initiativePageWithItems,
 				writeInitiative,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum sub-initiatives to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadSubInitiatives))
 }
 
 func addInitiativeScopedUpdatesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -118,13 +114,12 @@ func addInitiativeScopedUpdatesCommand(ctx context.Context, root *cobra.Command,
 				options,
 				limit,
 				loadInitiativeScopedUpdates,
-				initiativeUpdatePageWithItems,
 				writeInitiativeUpdate,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum initiative updates to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadInitiativeScopedUpdates))
 }
 
 func addInitiativeDocumentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -141,13 +136,12 @@ func addInitiativeDocumentsCommand(ctx context.Context, root *cobra.Command, opt
 				options,
 				limit,
 				loadInitiativeDocuments,
-				documentPageWithItems,
 				writeDocument,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum documents to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadInitiativeDocuments))
 }
 
 func addInitiativeProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -164,13 +158,12 @@ func addInitiativeProjectsCommand(ctx context.Context, root *cobra.Command, opti
 				options,
 				limit,
 				loadInitiativeProjects,
-				projectPageWithItems,
 				writeProject,
 			)
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum projects to return")
-	root.AddCommand(command)
+	root.AddCommand(preflightReadListCommand(command, loadInitiativeProjects))
 }
 
 func writeInitiative(command *cobra.Command, options *rootOptions, initiative client.InitiativeSummary) error {

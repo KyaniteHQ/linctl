@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // RateLimitStatus is the authenticated client's current Linear rate-limit state.
@@ -25,13 +27,13 @@ type RateLimit struct {
 
 // GetRateLimitStatus returns the authenticated client's current Linear quota state.
 func GetRateLimitStatus(ctx context.Context, graphqlClient graphql.Client) (RateLimitStatus, error) {
-	result, err := rateLimitStatus(ctx, graphqlClient)
+	result, err := gql.XRateLimitStatus(ctx, graphqlClient)
 	if err != nil {
 		return RateLimitStatus{}, err
 	}
 
 	limits := mapNodes(result.RateLimitStatus.Limits, func(
-		limit rateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload,
+		limit gql.XRateLimitStatusRateLimitStatusRateLimitPayloadLimitsRateLimitResultPayload,
 	) RateLimit {
 		return RateLimit(limit)
 	})

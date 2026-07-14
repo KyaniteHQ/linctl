@@ -11,16 +11,15 @@ import (
 
 func addTemplateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.TemplateList, client.TemplateSummary]{
-		Use:           "template",
-		Short:         "Read Linear templates",
-		ListShort:     "List visible Linear templates",
-		LimitHelp:     "maximum templates to print",
-		GetUse:        "get TEMPLATE_ID",
-		GetShort:      "Get one template by id",
-		LoadList:      loadTemplateList,
-		PageWithItems: templatePageWithItems,
-		LoadGet:       loadTemplate,
-		WriteItem:     writeTemplate,
+		Use:       "template",
+		Short:     "Read Linear templates",
+		ListShort: "List visible Linear templates",
+		LimitHelp: "maximum templates to print",
+		GetUse:    "get TEMPLATE_ID",
+		GetShort:  "Get one template by id",
+		LoadList:  loadTemplateList,
+		LoadGet:   loadTemplate,
+		WriteItem: writeTemplate,
 	})
 }
 

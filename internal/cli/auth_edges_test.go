@@ -695,7 +695,7 @@ func Test_AuthLogout_reports_clear_state_errors(t *testing.T) {
 			"logout",
 		})
 
-		require.ErrorContains(t, err, "read auth token state")
+		require.ErrorContains(t, err, "write auth token state")
 	})
 
 	t.Run("app config", func(t *testing.T) {

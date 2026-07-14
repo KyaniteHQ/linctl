@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
+
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
 
 // CustomerNeedMetadataSummary is body-free customer need metadata for issue child reads.
@@ -59,13 +61,13 @@ func ListIssueNeeds(
 	id string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := issue_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_needs(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list issue customer needs %s: %w", id, err)
 	}
 
 	needs := mapNodes(result.Issue.Needs.Nodes, func(
-		need issue_needsIssueNeedsCustomerNeedConnectionNodesCustomerNeed,
+		need gql.IssueNeedsProjectionNeedsCustomerNeedConnectionNodesCustomerNeed,
 	) CustomerNeedMetadataSummary {
 		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
 	})
@@ -86,13 +88,13 @@ func ListIssueFormerNeeds(
 	id string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := issue_formerNeeds(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssue_formerNeeds(ctx, graphqlClient, id, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf("list issue former customer needs %s: %w", id, err)
 	}
 
 	needs := mapNodes(result.Issue.FormerNeeds.Nodes, func(
-		need issue_formerNeedsIssueFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
+		need gql.IssueFormerNeedsProjectionFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
 	) CustomerNeedMetadataSummary {
 		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
 	})
@@ -112,7 +114,7 @@ func GetIssueSharedAccess(
 	graphqlClient graphql.Client,
 	id string,
 ) (IssueSharedAccessSummary, error) {
-	result, err := issue_sharedAccess(ctx, graphqlClient, id)
+	result, err := gql.XIssue_sharedAccess(ctx, graphqlClient, id)
 	if err != nil {
 		return IssueSharedAccessSummary{}, fmt.Errorf("get issue shared access %s: %w", id, err)
 	}
@@ -133,7 +135,7 @@ func ListIssueVCSBranchComments(
 	branchName string,
 	limit int,
 ) (IssueCommentMetadataList, error) {
-	result, err := issueVcsBranchSearch_comments(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_comments(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCommentMetadataList{}, fmt.Errorf("list issue vcs branch comments %s: %w", branchName, err)
 	}
@@ -142,7 +144,7 @@ func ListIssueVCSBranchComments(
 	}
 
 	comments := mapNodes(result.IssueVcsBranchSearch.Comments.Nodes, func(
-		comment issueVcsBranchSearch_commentsIssueVcsBranchSearchIssueCommentsCommentConnectionNodesComment,
+		comment gql.IssueCommentMetadataProjectionCommentsCommentConnectionNodesComment,
 	) CommentMetadataSummary {
 		return commentMetadataSummary(comment.CommentMetadataFields)
 	})
@@ -165,7 +167,7 @@ func ListIssueVCSBranchNeeds(
 	branchName string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := issueVcsBranchSearch_needs(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_needs(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
 	if err != nil {
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
 			"list issue vcs branch customer needs %s: %w",
@@ -178,7 +180,7 @@ func ListIssueVCSBranchNeeds(
 	}
 
 	needs := mapNodes(result.IssueVcsBranchSearch.Needs.Nodes, func(
-		need issueVcsBranchSearch_needsIssueVcsBranchSearchIssueNeedsCustomerNeedConnectionNodesCustomerNeed,
+		need gql.IssueNeedsProjectionNeedsCustomerNeedConnectionNodesCustomerNeed,
 	) CustomerNeedMetadataSummary {
 		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
 	})
@@ -201,7 +203,9 @@ func ListIssueVCSBranchFormerNeeds(
 	branchName string,
 	limit int,
 ) (IssueCustomerNeedMetadataList, error) {
-	result, err := issueVcsBranchSearch_formerNeeds(ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true))
+	result, err := gql.XIssueVcsBranchSearch_formerNeeds(
+		ctx, graphqlClient, branchName, intPtr(limit), nil, boolPtr(true),
+	)
 	if err != nil {
 		return IssueCustomerNeedMetadataList{}, fmt.Errorf(
 			"list issue vcs branch former customer needs %s: %w",
@@ -236,7 +240,7 @@ func GetIssueVCSBranchSharedAccess(
 	graphqlClient graphql.Client,
 	branchName string,
 ) (IssueSharedAccessSummary, error) {
-	result, err := issueVcsBranchSearch_sharedAccess(ctx, graphqlClient, branchName)
+	result, err := gql.XIssueVcsBranchSearch_sharedAccess(ctx, graphqlClient, branchName)
 	if err != nil {
 		return IssueSharedAccessSummary{}, fmt.Errorf("get issue vcs branch shared access %s: %w", branchName, err)
 	}
@@ -251,7 +255,7 @@ func GetIssueVCSBranchSharedAccess(
 	), nil
 }
 
-func customerNeedMetadataSummary(fields CustomerNeedMetadataFields) CustomerNeedMetadataSummary {
+func customerNeedMetadataSummary(fields gql.CustomerNeedMetadataFields) CustomerNeedMetadataSummary {
 	summary := CustomerNeedMetadataSummary{
 		ID:         fields.Id,
 		CreatedAt:  fields.CreatedAt,
@@ -280,7 +284,7 @@ func customerNeedMetadataSummary(fields CustomerNeedMetadataFields) CustomerNeed
 func issueSharedAccessSummary(
 	issueID string,
 	identifier string,
-	fields IssueSharedAccessFields,
+	fields gql.IssueSharedAccessFields,
 ) IssueSharedAccessSummary {
 	return IssueSharedAccessSummary{
 		IssueID:                   issueID,
@@ -292,8 +296,8 @@ func issueSharedAccessSummary(
 	}
 }
 
-func issueSharedAccessDisallowedFields(fields []IssueSharedAccessDisallowedField) []string {
-	values := mapNodes(fields, func(field IssueSharedAccessDisallowedField) string {
+func issueSharedAccessDisallowedFields(fields []gql.IssueSharedAccessDisallowedField) []string {
+	values := mapNodes(fields, func(field gql.IssueSharedAccessDisallowedField) string {
 		return string(field)
 	})
 

@@ -12,16 +12,15 @@ import (
 
 func addAgentSkillCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	addReadListGetCommand(ctx, root, options, readListGetSpec[client.AgentSkillList, client.AgentSkillSummary]{
-		Use:           "agent-skill",
-		Short:         "Read Linear AgentSkills",
-		ListShort:     "List Linear AgentSkills",
-		LimitHelp:     "maximum AgentSkills to return",
-		GetUse:        "get AGENT_SKILL_ID",
-		GetShort:      "Get one AgentSkill by id",
-		LoadList:      loadAgentSkillList,
-		PageWithItems: agentSkillPageWithItems,
-		LoadGet:       loadAgentSkill,
-		WriteItem:     writeAgentSkill,
+		Use:       "agent-skill",
+		Short:     "Read Linear AgentSkills",
+		ListShort: "List Linear AgentSkills",
+		LimitHelp: "maximum AgentSkills to return",
+		GetUse:    "get AGENT_SKILL_ID",
+		GetShort:  "Get one AgentSkill by id",
+		LoadList:  loadAgentSkillList,
+		LoadGet:   loadAgentSkill,
+		WriteItem: writeAgentSkill,
 	})
 }
 

@@ -11,6 +11,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
@@ -64,43 +65,6 @@ type IssueCommentResult struct {
 	Issue IssueSummary `json:"issue"`
 }
 
-// LinearIssueCreateInput is the sparse Linear issueCreate payload linctl supports.
-type LinearIssueCreateInput struct {
-	Title              *string  `json:"title,omitempty"`
-	Description        *string  `json:"description,omitempty"`
-	TeamID             string   `json:"teamId"`
-	ProjectID          *string  `json:"projectId,omitempty"`
-	StateID            *string  `json:"stateId,omitempty"`
-	Priority           *int     `json:"priority,omitempty"`
-	AssigneeID         *string  `json:"assigneeId,omitempty"`
-	LabelIDs           []string `json:"labelIds,omitempty"`
-	DueDate            *string  `json:"dueDate,omitempty"`
-	Estimate           *int     `json:"estimate,omitempty"`
-	ParentID           *string  `json:"parentId,omitempty"`
-	ProjectMilestoneID *string  `json:"projectMilestoneId,omitempty"`
-}
-
-// LinearIssueUpdateInput is the sparse Linear issueUpdate payload linctl supports.
-// DueDate is a RawMessage so an explicit null can clear the date while an absent
-// value leaves it untouched.
-type LinearIssueUpdateInput struct {
-	Title       *string         `json:"title,omitempty"`
-	Description *string         `json:"description,omitempty"`
-	AssigneeID  *string         `json:"assigneeId,omitempty"`
-	StateID     *string         `json:"stateId,omitempty"`
-	Priority    *int            `json:"priority,omitempty"`
-	LabelIDs    []string        `json:"labelIds,omitempty"`
-	DueDate     json.RawMessage `json:"dueDate,omitempty"`
-	Estimate    json.RawMessage `json:"estimate,omitempty"`
-}
-
-// LinearCommentCreateInput is the sparse Linear commentCreate payload linctl supports.
-type LinearCommentCreateInput struct {
-	Body     *string `json:"body,omitempty"`
-	IssueID  *string `json:"issueId,omitempty"`
-	ParentID *string `json:"parentId,omitempty"`
-}
-
 // CreateIssue creates an issue after resolving and comparing the pinned write target.
 func CreateIssue(
 	ctx context.Context,
@@ -115,27 +79,31 @@ func CreateIssue(
 		return IssueSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
-		return createIssueWithGuard(ctx, graphqlClient, guard, request)
-	})
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	return guard.createIssue(ctx, request)
 }
 
-// createIssueWithGuard runs one issue create against an already-resolved write
-// guard. CreateIssue and CreateIssues both call it, so a single-row create and
-// a batch row go through identical input assembly and guard validation.
-func createIssueWithGuard(
+// createIssue runs one issue create through an already-resolved guarded client.
+// CreateIssue and CreateIssues both call it, so a single-row create and a batch
+// row go through identical input assembly and guard validation.
+func (guard *guardedClient) createIssue(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	guard writeGuard,
 	request IssueCreateRequest,
 ) (IssueSummary, error) {
-	if err := validateEstimate(ctx, graphqlClient, guard.target.Team.ID, request.Estimate); err != nil {
+	if err := guard.validateEstimate(ctx, guard.target.Team.ID, request.Estimate); err != nil {
 		return IssueSummary{}, err
 	}
 	if request.ParentID != "" {
-		if _, err := guard.requireIssue(ctx, graphqlClient, request.ParentID); err != nil {
+		if _, err := guard.requireIssue(ctx, request.ParentID); err != nil {
 			return IssueSummary{}, err
 		}
+	}
+	if err := guard.requireAttachableLabels(ctx, request.LabelIDs); err != nil {
+		return IssueSummary{}, err
 	}
 	input := LinearIssueCreateInput{
 		Title:              stringPtr(request.Title),
@@ -151,11 +119,11 @@ func createIssueWithGuard(
 	if guard.target.Project != nil {
 		input.ProjectID = stringPtr(guard.target.Project.ID)
 	}
-	if err := requireCreateMilestone(ctx, graphqlClient, guard, request.ProjectMilestoneID); err != nil {
+	if err := guard.requireCreateMilestone(ctx, request.ProjectMilestoneID); err != nil {
 		return IssueSummary{}, err
 	}
 	if request.StateType != "" {
-		stateID, stateErr := firstStateIDOfType(ctx, graphqlClient, guard.target.Team.ID, request.StateType)
+		stateID, stateErr := firstStateIDOfType(ctx, guard.graphqlClient, guard.target.Team.ID, request.StateType)
 		if stateErr != nil {
 			return IssueSummary{}, stateErr
 		}
@@ -166,7 +134,7 @@ func createIssueWithGuard(
 		return IssueSummary{}, err
 	}
 	input.Priority = priority
-	created, err := IssueCreate(ctx, graphqlClient, input)
+	created, err := gql.IssueCreate(ctx, guard.graphqlClient, input)
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("create issue: %w", err)
 	}
@@ -197,7 +165,7 @@ func CreateIssues(
 	requests []IssueCreateRequest,
 	concurrency int,
 ) ([]IssueCreateOutcome, error) {
-	guard, err := newWriteGuard(ctx, graphqlClient, expected)
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +179,7 @@ func CreateIssues(
 		go func(index int, request IssueCreateRequest) {
 			defer waitGroup.Done()
 			defer func() { <-tokens }()
-			issue, rowErr := createIssueForBatchRow(ctx, graphqlClient, guard, request)
+			issue, rowErr := guard.createIssueForBatchRow(ctx, request)
 			outcomes[index] = IssueCreateOutcome{Index: index, Issue: issue, Err: rowErr}
 		}(index, request)
 	}
@@ -224,10 +192,8 @@ func CreateIssues(
 // (title required, due date well-formed) to one batch row before running it
 // through the shared guard-scoped create, so a malformed row fails as a row
 // error instead of aborting the whole batch.
-func createIssueForBatchRow(
+func (guard *guardedClient) createIssueForBatchRow(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	guard writeGuard,
 	request IssueCreateRequest,
 ) (IssueSummary, error) {
 	if request.Title == "" {
@@ -237,7 +203,7 @@ func createIssueForBatchRow(
 		return IssueSummary{}, err
 	}
 
-	return createIssueWithGuard(ctx, graphqlClient, guard, request)
+	return guard.createIssue(ctx, request)
 }
 
 func clampIssueCreateBatchConcurrency(concurrency int) int {
@@ -253,10 +219,8 @@ func clampIssueCreateBatchConcurrency(concurrency int) int {
 
 // requireCreateMilestone verifies a requested ProjectMilestone assignment on
 // create: it requires a pinned project and a milestone inside the pinned target.
-func requireCreateMilestone(
+func (guard *guardedClient) requireCreateMilestone(
 	ctx context.Context,
-	graphqlClient graphql.Client,
-	guard writeGuard,
 	projectMilestoneID string,
 ) error {
 	if projectMilestoneID == "" {
@@ -266,7 +230,7 @@ func requireCreateMilestone(
 		return fmt.Errorf("%w: --milestone requires a pinned project", ErrWriteInvalid)
 	}
 
-	return guard.requireProjectMilestone(ctx, graphqlClient, projectMilestoneID)
+	return guard.requireProjectMilestone(ctx, projectMilestoneID)
 }
 
 // UpdateIssue updates an issue after resolving and comparing the pinned write target.
@@ -280,33 +244,43 @@ func UpdateIssue(
 		return IssueSummary{}, err
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
-		issue, err := guard.requireIssueDetail(ctx, graphqlClient, request.ID)
-		if err != nil {
-			return IssueSummary{}, err
-		}
-		if err = validateEstimate(ctx, graphqlClient, issue.Summary.TeamID, request.Estimate); err != nil {
-			return IssueSummary{}, err
-		}
-		description := request.Description
-		if request.Append != "" {
-			description = appendIssueDescription(issue.Description, request.Append)
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
 
-		updateInput, err := buildIssueUpdateInput(ctx, graphqlClient, request, issue.Summary.TeamID, description)
-		if err != nil {
-			return IssueSummary{}, err
-		}
-		updated, err := IssueUpdate(ctx, graphqlClient, request.ID, updateInput)
-		if err != nil {
-			return IssueSummary{}, fmt.Errorf("update issue %s: %w", request.ID, err)
-		}
-		if !updated.IssueUpdate.Success || updated.IssueUpdate.Issue == nil {
-			return IssueSummary{}, fmt.Errorf("%w: issueUpdate returned no issue", ErrMutationFailed)
-		}
+	return guard.updateIssue(ctx, request)
+}
 
-		return issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields), nil
-	})
+func (guard *guardedClient) updateIssue(ctx context.Context, request IssueUpdateRequest) (IssueSummary, error) {
+	issue, err := guard.requireIssueDetail(ctx, request.ID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	if err = guard.validateEstimate(ctx, issue.Summary.TeamID, request.Estimate); err != nil {
+		return IssueSummary{}, err
+	}
+	if err = guard.requireAttachableLabels(ctx, request.LabelIDs); err != nil {
+		return IssueSummary{}, err
+	}
+	description := request.Description
+	if request.Append != "" {
+		description = appendIssueDescription(issue.Description, request.Append)
+	}
+
+	updateInput, err := guard.buildIssueUpdateInput(ctx, request, issue.Summary.TeamID, description)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	updated, err := gql.IssueUpdate(ctx, guard.graphqlClient, request.ID, updateInput)
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("update issue %s: %w", request.ID, err)
+	}
+	if !updated.IssueUpdate.Success || updated.IssueUpdate.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issueUpdate returned no issue", ErrMutationFailed)
+	}
+
+	return issueSummaryFromFields(updated.IssueUpdate.Issue.IssueSummaryFields), nil
 }
 
 func validateIssueUpdateRequest(request IssueUpdateRequest) error {
@@ -339,9 +313,8 @@ func issueUpdateHasNoFields(request IssueUpdateRequest) bool {
 		request.Estimate == nil && !request.ClearEstimate
 }
 
-func buildIssueUpdateInput(
+func (guard *guardedClient) buildIssueUpdateInput(
 	ctx context.Context,
-	graphqlClient graphql.Client,
 	request IssueUpdateRequest,
 	teamID string,
 	description string,
@@ -355,7 +328,7 @@ func buildIssueUpdateInput(
 		Estimate:    estimateUpdateJSON(request),
 	}
 	if request.StateType != "" {
-		stateID, err := firstStateIDOfType(ctx, graphqlClient, teamID, request.StateType)
+		stateID, err := firstStateIDOfType(ctx, guard.graphqlClient, teamID, request.StateType)
 		if err != nil {
 			return LinearIssueUpdateInput{}, err
 		}
@@ -385,29 +358,36 @@ func StartIssue(
 	expected config.Target,
 	issueID string,
 ) (IssueSummary, error) {
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
-		issue, err := guard.requireIssue(ctx, graphqlClient, issueID)
-		if err != nil {
-			return IssueSummary{}, err
-		}
-		stateID, err := firstStartedStateID(ctx, graphqlClient, issue.TeamID)
-		if err != nil {
-			return IssueSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
 
-		started, err := IssueUpdate(ctx, graphqlClient, issueID, LinearIssueUpdateInput{
-			AssigneeID: stringPtr(guard.target.Viewer.ID),
-			StateID:    stringPtr(stateID),
-		})
-		if err != nil {
-			return IssueSummary{}, fmt.Errorf("start issue %s: %w", issueID, err)
-		}
-		if !started.IssueUpdate.Success || started.IssueUpdate.Issue == nil {
-			return IssueSummary{}, fmt.Errorf("%w: issue start returned no issue", ErrMutationFailed)
-		}
+	return guard.startIssue(ctx, issueID)
+}
 
-		return issueSummaryFromFields(started.IssueUpdate.Issue.IssueSummaryFields), nil
+func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (IssueSummary, error) {
+	issue, err := guard.requireIssue(ctx, issueID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	stateID, err := firstStartedStateID(ctx, guard.graphqlClient, issue.TeamID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	started, err := gql.IssueUpdate(ctx, guard.graphqlClient, issueID, LinearIssueUpdateInput{
+		AssigneeID: stringPtr(guard.target.Viewer.ID),
+		StateID:    stringPtr(stateID),
 	})
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("start issue %s: %w", issueID, err)
+	}
+	if !started.IssueUpdate.Success || started.IssueUpdate.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issue start returned no issue", ErrMutationFailed)
+	}
+
+	return issueSummaryFromFields(started.IssueUpdate.Issue.IssueSummaryFields), nil
 }
 
 // CommentOnIssue adds a comment after resolving and comparing the pinned write target.
@@ -424,30 +404,40 @@ func CommentOnIssue(
 		return IssueCommentResult{}, fmt.Errorf("%w: body is required", ErrWriteInvalid)
 	}
 
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueCommentResult, error) {
-		if _, err := guard.requireIssue(ctx, graphqlClient, request.ID); err != nil {
-			return IssueCommentResult{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueCommentResult{}, err
+	}
 
-		comment, err := IssueCommentCreate(ctx, graphqlClient, LinearCommentCreateInput{
-			Body:     stringPtr(request.Body),
-			IssueID:  stringPtr(request.ID),
-			ParentID: optionalString(request.ParentID),
-		})
-		if err != nil {
-			return IssueCommentResult{}, fmt.Errorf("comment on issue %s: %w", request.ID, err)
-		}
-		if !comment.CommentCreate.Success || comment.CommentCreate.Comment.Issue == nil {
-			return IssueCommentResult{}, fmt.Errorf("%w: commentCreate returned no issue", ErrMutationFailed)
-		}
+	return guard.commentOnIssue(ctx, request)
+}
 
-		return IssueCommentResult{
-			ID:    comment.CommentCreate.Comment.Id,
-			Body:  comment.CommentCreate.Comment.Body,
-			URL:   comment.CommentCreate.Comment.Url,
-			Issue: issueSummaryFromFields(comment.CommentCreate.Comment.Issue.IssueSummaryFields),
-		}, nil
+func (guard *guardedClient) commentOnIssue(
+	ctx context.Context,
+	request IssueCommentRequest,
+) (IssueCommentResult, error) {
+	if _, err := guard.requireIssue(ctx, request.ID); err != nil {
+		return IssueCommentResult{}, err
+	}
+
+	comment, err := gql.IssueCommentCreate(ctx, guard.graphqlClient, LinearCommentCreateInput{
+		Body:     stringPtr(request.Body),
+		IssueID:  stringPtr(request.ID),
+		ParentID: optionalString(request.ParentID),
 	})
+	if err != nil {
+		return IssueCommentResult{}, fmt.Errorf("comment on issue %s: %w", request.ID, err)
+	}
+	if !comment.CommentCreate.Success || comment.CommentCreate.Comment.Issue == nil {
+		return IssueCommentResult{}, fmt.Errorf("%w: commentCreate returned no issue", ErrMutationFailed)
+	}
+
+	return IssueCommentResult{
+		ID:    comment.CommentCreate.Comment.Id,
+		Body:  comment.CommentCreate.Comment.Body,
+		URL:   comment.CommentCreate.Comment.Url,
+		Issue: issueSummaryFromFields(comment.CommentCreate.Comment.Issue.IssueSummaryFields),
+	}, nil
 }
 
 // CloseIssue moves an issue to the team's completed workflow state after target comparison.
@@ -457,32 +447,39 @@ func CloseIssue(
 	expected config.Target,
 	issueID string,
 ) (IssueSummary, error) {
-	return guardedMutation(ctx, graphqlClient, expected, func(guard writeGuard) (IssueSummary, error) {
-		issue, err := guard.requireIssue(ctx, graphqlClient, issueID)
-		if err != nil {
-			return IssueSummary{}, err
-		}
-		stateID, err := firstCompletedStateID(ctx, graphqlClient, issue.TeamID)
-		if err != nil {
-			return IssueSummary{}, err
-		}
+	guard, err := newGuardedClient(ctx, graphqlClient, expected)
+	if err != nil {
+		return IssueSummary{}, err
+	}
 
-		closed, err := IssueClose(ctx, graphqlClient, issueID, LinearIssueUpdateInput{
-			StateID: stringPtr(stateID),
-		})
-		if err != nil {
-			return IssueSummary{}, fmt.Errorf("close issue %s: %w", issueID, err)
-		}
-		if !closed.IssueUpdate.Success || closed.IssueUpdate.Issue == nil {
-			return IssueSummary{}, fmt.Errorf("%w: issue close returned no issue", ErrMutationFailed)
-		}
+	return guard.closeIssue(ctx, issueID)
+}
 
-		return issueSummaryFromFields(closed.IssueUpdate.Issue.IssueSummaryFields), nil
+func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (IssueSummary, error) {
+	issue, err := guard.requireIssue(ctx, issueID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+	stateID, err := firstCompletedStateID(ctx, guard.graphqlClient, issue.TeamID)
+	if err != nil {
+		return IssueSummary{}, err
+	}
+
+	closed, err := gql.IssueClose(ctx, guard.graphqlClient, issueID, LinearIssueUpdateInput{
+		StateID: stringPtr(stateID),
 	})
+	if err != nil {
+		return IssueSummary{}, fmt.Errorf("close issue %s: %w", issueID, err)
+	}
+	if !closed.IssueUpdate.Success || closed.IssueUpdate.Issue == nil {
+		return IssueSummary{}, fmt.Errorf("%w: issue close returned no issue", ErrMutationFailed)
+	}
+
+	return issueSummaryFromFields(closed.IssueUpdate.Issue.IssueSummaryFields), nil
 }
 
 func firstCompletedStateID(ctx context.Context, graphqlClient graphql.Client, teamID string) (string, error) {
-	states, err := CompletedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
+	states, err := gql.CompletedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
 	if err != nil {
 		return "", fmt.Errorf("list completed workflow states: %w", err)
 	}
@@ -501,7 +498,7 @@ func firstCompletedStateID(ctx context.Context, graphqlClient graphql.Client, te
 }
 
 func firstStartedStateID(ctx context.Context, graphqlClient graphql.Client, teamID string) (string, error) {
-	states, err := StartedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
+	states, err := gql.StartedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
 	if err != nil {
 		return "", fmt.Errorf("list started workflow states: %w", err)
 	}
@@ -525,7 +522,7 @@ func firstStateIDOfType(
 	teamID string,
 	stateType string,
 ) (string, error) {
-	states, err := WorkflowStatesByType(ctx, graphqlClient, teamID, stateType, intPtr(50))
+	states, err := gql.WorkflowStatesByType(ctx, graphqlClient, teamID, stateType, intPtr(50))
 	if err != nil {
 		return "", fmt.Errorf("list %s workflow states: %w", stateType, err)
 	}
@@ -589,14 +586,14 @@ func dueDateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 // that configuration: estimates must be enabled, and a zero estimate is only
 // accepted when the team allows it. Linear remains authoritative for the exact
 // point scale of each estimation type.
-func validateEstimate(ctx context.Context, graphqlClient graphql.Client, teamID string, estimate *int) error {
+func (guard *guardedClient) validateEstimate(ctx context.Context, teamID string, estimate *int) error {
 	if estimate == nil {
 		return nil
 	}
 	if *estimate < 0 {
 		return fmt.Errorf("%w: estimate must not be negative, got %d", ErrWriteInvalid, *estimate)
 	}
-	config, err := teamEstimateConfig(ctx, graphqlClient, teamID)
+	config, err := gql.XTeamEstimateConfig(ctx, guard.graphqlClient, teamID)
 	if err != nil {
 		return fmt.Errorf("read team estimate config for team_id=%s: %w", teamID, err)
 	}
