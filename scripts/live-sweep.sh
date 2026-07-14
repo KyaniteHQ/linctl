@@ -69,7 +69,7 @@ collection, id_field, name_field, prefix, archived_field, status_field = sys.arg
 data = json.load(sys.stdin)
 for item in data.get(collection, []):
     archived = archived_field and item.get(archived_field)
-    terminal = status_field and item.get(status_field, {}).get("type") == "canceled"
+    terminal = status_field and item.get(status_field, {}).get("type") in {"canceled", "completed"}
     active = not archived and not terminal
     if active and item.get(name_field, "").startswith(prefix):
         print(item[id_field])
