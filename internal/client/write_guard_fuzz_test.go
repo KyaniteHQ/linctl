@@ -12,9 +12,10 @@ import (
 
 // FuzzRequireTargetMatch is the property form of the fail-closed invariant from
 // ADR-0001: requireTargetMatch must accept a resolved target only when its
-// org, team id, and team key all equal the pinned target, and otherwise refuse
-// with ErrTargetMismatch. The example-based guard tests cover specific
-// scenarios; this proves the invariant across the whole input space.
+// org and team key equal the pinned target, and its team id also matches when
+// one is pinned. Otherwise it must refuse with ErrTargetMismatch. The
+// example-based guard tests cover specific scenarios; this proves the invariant
+// across the whole input space.
 func FuzzRequireTargetMatch(f *testing.F) {
 	seeds := []struct {
 		expectedOrg, expectedTeamID, expectedTeamKey string
@@ -45,8 +46,8 @@ func FuzzRequireTargetMatch(f *testing.F) {
 		err := requireTargetMatch(expected, resolved)
 
 		matches := resolvedOrg == expectedOrg &&
-			resolvedTeamID == expectedTeamID &&
-			resolvedTeamKey == expectedTeamKey
+			resolvedTeamKey == expectedTeamKey &&
+			(expectedTeamID == "" || resolvedTeamID == expectedTeamID)
 		if matches {
 			require.NoError(t, err)
 
