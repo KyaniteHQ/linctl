@@ -61,16 +61,19 @@ filter_ids_by_prefix() {
   local id_field="$2"
   local name_field="$3"
   local archived_field="${4:-}"
+  local status_field="${5:-}"
   python3 -c '
 import json, sys
 
-collection, id_field, name_field, prefix, archived_field = sys.argv[1:6]
+collection, id_field, name_field, prefix, archived_field, status_field = sys.argv[1:7]
 data = json.load(sys.stdin)
 for item in data.get(collection, []):
-    active = not archived_field or not item.get(archived_field)
+    archived = archived_field and item.get(archived_field)
+    terminal = status_field and item.get(status_field, {}).get("type") == "canceled"
+    active = not archived and not terminal
     if active and item.get(name_field, "").startswith(prefix):
         print(item[id_field])
-' "$collection" "$id_field" "$name_field" "$namespace_prefix" "$archived_field"
+' "$collection" "$id_field" "$name_field" "$namespace_prefix" "$archived_field" "$status_field"
 }
 
 (
@@ -95,7 +98,7 @@ for item in data.get(collection, []):
     [[ -z "$project_id" ]] && continue
     "$binary" project archive "$project_id" >/dev/null
     swept=$((swept + 1))
-  done < <(filter_ids_by_prefix projects id name archived_at <<<"$project_json")
+  done < <(filter_ids_by_prefix projects id name archived_at status <<<"$project_json")
 
   printf 'live-sweep: closed/archived %d namespaced (%s) resource(s)\n' "$swept" "$namespace_prefix"
 )
