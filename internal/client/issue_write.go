@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -19,6 +20,10 @@ const (
 	defaultIssueCreateBatchConcurrency = 4
 	maxIssueCreateBatchConcurrency     = 8
 )
+
+// ErrViewerNotAssignable marks a start request whose authenticated viewer
+// cannot own or receive delegated issue work.
+var ErrViewerNotAssignable = errors.New("viewer is not assignable")
 
 // IssueCreateRequest describes a guarded issue create.
 type IssueCreateRequest struct {
@@ -351,7 +356,8 @@ func appendIssueDescription(description string, note string) string {
 	return strings.TrimRight(description, "\n") + "\n\n" + note
 }
 
-// StartIssue assigns an issue to the viewer and moves it to the team's started workflow state.
+// StartIssue assigns a human viewer, delegates to an app viewer, and moves the
+// issue to the team's started workflow state.
 func StartIssue(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -367,6 +373,13 @@ func StartIssue(
 }
 
 func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (IssueSummary, error) {
+	if guard.target.Viewer.App && !guard.target.Viewer.Assignable {
+		return IssueSummary{}, fmt.Errorf(
+			"%w: the authenticated app requires the app:assignable scope",
+			ErrViewerNotAssignable,
+		)
+	}
+
 	issue, err := guard.requireIssue(ctx, issueID)
 	if err != nil {
 		return IssueSummary{}, err
@@ -376,10 +389,14 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 		return IssueSummary{}, err
 	}
 
-	started, err := gql.IssueUpdate(ctx, guard.graphqlClient, issueID, LinearIssueUpdateInput{
-		AssigneeID: stringPtr(guard.target.Viewer.ID),
-		StateID:    stringPtr(stateID),
-	})
+	input := LinearIssueUpdateInput{StateID: stringPtr(stateID)}
+	if guard.target.Viewer.App {
+		input.DelegateID = stringPtr(guard.target.Viewer.ID)
+	} else {
+		input.AssigneeID = stringPtr(guard.target.Viewer.ID)
+	}
+
+	started, err := gql.IssueUpdate(ctx, guard.graphqlClient, issueID, input)
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("start issue %s: %w", issueID, err)
 	}

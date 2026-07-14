@@ -103,6 +103,7 @@ type LinearIssueUpdateInput struct {
 	Title       *string         `json:"title,omitempty"`
 	Description *string         `json:"description,omitempty"`
 	AssigneeID  *string         `json:"assigneeId,omitempty"`
+	DelegateID  *string         `json:"delegateId,omitempty"`
 	StateID     *string         `json:"stateId,omitempty"`
 	Priority    *int            `json:"priority,omitempty"`
 	LabelIDs    []string        `json:"labelIds,omitempty"`

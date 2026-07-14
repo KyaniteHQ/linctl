@@ -4,6 +4,8 @@ query Viewer {
     name
     displayName
     email
+    app
+    isAssignable
     organization {
       id
       name

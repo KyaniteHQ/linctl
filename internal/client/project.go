@@ -3,12 +3,15 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
 )
+
+const projectListPageSize = 50
 
 // ProjectSummary is the compact project model used by project commands.
 type ProjectSummary struct {
@@ -228,42 +231,72 @@ func ListProjectsByTeam(
 	teamID string,
 	limit int,
 ) (ProjectList, error) {
-	projects, err := gql.Projects(ctx, graphqlClient, teamID, intPtr(limit), nil, boolPtr(true))
-	if err != nil {
-		return ProjectList{}, fmt.Errorf("list projects: %w", err)
-	}
+	return collectProjectPages(limit, func(pageSize int, after *string) (ProjectList, error) {
+		projects, err := gql.Projects(ctx, graphqlClient, teamID, intPtr(pageSize), after, boolPtr(true))
+		if err != nil {
+			return ProjectList{}, err
+		}
 
-	summaries := mapNodes(projects.Team.Projects.Nodes, func(
-		project gql.ProjectsTeamProjectsProjectConnectionNodesProject,
-	) ProjectSummary {
-		return projectSummaryFromFields(project.ProjectSummaryFields)
+		page := projects.Team.Projects
+		return ProjectList{
+			Projects: mapNodes(page.Nodes, func(
+				project gql.ProjectsTeamProjectsProjectConnectionNodesProject,
+			) ProjectSummary {
+				return projectSummaryFromFields(project.ProjectSummaryFields)
+			}),
+			HasNextPage: page.PageInfo.HasNextPage,
+			EndCursor:   page.PageInfo.EndCursor,
+		}, nil
 	})
-
-	return ProjectList{
-		Projects:    summaries,
-		HasNextPage: projects.Team.Projects.PageInfo.HasNextPage,
-		EndCursor:   projects.Team.Projects.PageInfo.EndCursor,
-	}, nil
 }
 
 // ListProjects returns Linear projects visible to the authenticated user.
 func ListProjects(ctx context.Context, graphqlClient graphql.Client, limit int) (ProjectList, error) {
-	result, err := gql.XProjects(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
-	if err != nil {
-		return ProjectList{}, fmt.Errorf("list projects: %w", err)
+	return collectProjectPages(limit, func(pageSize int, after *string) (ProjectList, error) {
+		result, err := gql.XProjects(ctx, graphqlClient, intPtr(pageSize), after, boolPtr(true))
+		if err != nil {
+			return ProjectList{}, err
+		}
+
+		page := result.Projects
+		return ProjectList{
+			Projects: mapNodes(page.Nodes, func(
+				project gql.XProjectsProjectsProjectConnectionNodesProject,
+			) ProjectSummary {
+				return projectSummaryFromFields(project.ProjectSummaryFields)
+			}),
+			HasNextPage: page.PageInfo.HasNextPage,
+			EndCursor:   page.PageInfo.EndCursor,
+		}, nil
+	})
+}
+
+func collectProjectPages(
+	limit int,
+	fetch func(pageSize int, after *string) (ProjectList, error),
+) (ProjectList, error) {
+	if limit < 1 {
+		return ProjectList{}, errors.New("list projects: limit must be positive")
 	}
 
-	summaries := mapNodes(result.Projects.Nodes, func(
-		project gql.XProjectsProjectsProjectConnectionNodesProject,
-	) ProjectSummary {
-		return projectSummaryFromFields(project.ProjectSummaryFields)
-	})
+	projects := make([]ProjectSummary, 0, limit)
+	var after *string
+	for {
+		page, err := fetch(min(projectListPageSize, limit-len(projects)), after)
+		if err != nil {
+			return ProjectList{}, fmt.Errorf("list projects: %w", err)
+		}
+		projects = append(projects, page.Projects...)
 
-	return ProjectList{
-		Projects:    summaries,
-		HasNextPage: result.Projects.PageInfo.HasNextPage,
-		EndCursor:   result.Projects.PageInfo.EndCursor,
-	}, nil
+		if len(projects) >= limit || !page.HasNextPage {
+			page.Projects = projects
+			return page, nil
+		}
+		if page.EndCursor == nil {
+			return ProjectList{}, errors.New("list projects: next page has no end cursor")
+		}
+		after = page.EndCursor
+	}
 }
 
 // GetProjectByID returns a project by Linear id or slug.

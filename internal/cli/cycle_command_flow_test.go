@@ -693,7 +693,7 @@ func cycleCommandFlowPayload(operation string, emptyCycles bool, emptyReport boo
 
 	switch operation {
 	case "Viewer":
-		return `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`, true
+		return `{"viewer":{"id":"user-id","name":"Omer","displayName":"Omer","email":"omer@example.com","app":false,"isAssignable":true,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}}`, true
 	case "Teams":
 		return `{"teams":{"nodes":[{"id":"team-id","key":"LIT","name":"linctl","organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
 	case "TargetProject":

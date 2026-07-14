@@ -138,7 +138,7 @@ func Test_UpdateIssue_succeeds_without_pinned_project_when_team_matches(t *testi
 
 func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_matches(t *testing.T) {
 	// Given
-	graphqlClient := issueWriteFakeClient(map[string]string{
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
 		"issue": `{"issue":` + issueJSON(issueFixture{
 			Identifier: "LIT-5",
 			Title:      "start",
@@ -161,16 +161,66 @@ func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_match
 			State:      "Started",
 			StateType:  "started",
 		}, "Omer") + `}}`,
-	})
+	})}
 
 	// When
-	issue, err := StartIssue(context.Background(), graphqlClient, matchingTarget(), "LIT-5")
+	issue, err := StartIssue(context.Background(), recorder, matchingTarget(), "LIT-5")
 
 	// Then
 	require.NoError(t, err)
 	require.Equal(t, "started", issue.StateType)
 	require.Equal(t, "started-state", issue.StateID)
 	require.Equal(t, "Omer", issue.Assignee)
+	require.JSONEq(t, `{
+		"id": "LIT-5",
+		"input": {"assigneeId": "user-id", "stateId": "started-state"}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
+}
+
+func Test_StartIssue_delegates_to_assignable_app_viewer(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"Viewer": `{"viewer":{
+			"id":"app-user-id","name":"linctl","displayName":"linctl","email":"app@example.com",
+			"app":true,"isAssignable":true,
+			"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}
+		}}`,
+		"issue": `{"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
+			StateID: "todo-state", State: "Todo", StateType: "unstarted",
+		}) + `}`,
+		"StartedWorkflowStates": `{"workflowStates":{"nodes":[
+			{"id":"started-state","name":"Started","type":"started","position":1}
+		]}}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
+			StateID: "started-state", State: "Started", StateType: "started",
+		}) + `}}`,
+	})}
+
+	issue, err := StartIssue(context.Background(), recorder, matchingTarget(), "LIT-5")
+
+	require.NoError(t, err)
+	require.Equal(t, "started", issue.StateType)
+	require.JSONEq(t, `{
+		"id": "LIT-5",
+		"input": {"delegateId": "app-user-id", "stateId": "started-state"}
+	}`, string(recorder.variablesFor(t, "IssueUpdate")))
+}
+
+func Test_StartIssue_rejects_unassignable_app_before_issue_update(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"Viewer": `{"viewer":{
+			"id":"app-user-id","name":"linctl","displayName":"linctl","email":"app@example.com",
+			"app":true,"isAssignable":false,
+			"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}
+		}}`,
+	})}
+
+	_, err := StartIssue(context.Background(), recorder, matchingTarget(), "LIT-5")
+
+	require.ErrorIs(t, err, ErrViewerNotAssignable)
+	require.ErrorContains(t, err, "app:assignable")
+	require.Zero(t, recorder.countOf("IssueUpdate"))
 }
 
 func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testing.T) {
@@ -227,6 +277,8 @@ func (client issueWriteFakeClient) withTargetResponses() map[string]string {
 				"name": "Omer",
 				"displayName": "Omer",
 				"email": "omer@example.com",
+				"app": false,
+				"isAssignable": true,
 				"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
 			}
 		}`,

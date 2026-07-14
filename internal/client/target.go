@@ -38,6 +38,8 @@ type TargetViewer struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"display_name"`
 	Email       string `json:"email"`
+	App         bool   `json:"-"`
+	Assignable  bool   `json:"-"`
 }
 
 // TargetOrg is the resolved Linear organization.
@@ -228,6 +230,8 @@ func newResolvedTarget(
 			Name:        viewer.Name,
 			DisplayName: viewer.DisplayName,
 			Email:       viewer.Email,
+			App:         viewer.App,
+			Assignable:  viewer.IsAssignable,
 		},
 		Org: TargetOrg{
 			ID:     viewer.Organization.Id,

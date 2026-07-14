@@ -31,7 +31,6 @@ jobs:
       LINCTL_OAUTH_REDIRECT_URI: ${{ secrets.LINCTL_OAUTH_REDIRECT_URI }}
       LINCTL_OAUTH_SCOPES: ${{ secrets.LINCTL_OAUTH_SCOPES }}
       LINCTL_OAUTH_EXPECTED_ACTOR: app
-      LINCTL_TEST_ENABLE_WRITES: "1"
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -63,6 +62,8 @@ jobs:
         run: go tool task live-oauth
       - name: Integration tests
         if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''
+        env:
+          LINCTL_TEST_ENABLE_WRITES: "1"
         run: go test -count=1 -tags=integration -timeout 120s ./internal/client
       - name: Live smoke (e2e)
         if: env.LINCTL_OAUTH_CLIENT_ID != '' && env.LINCTL_OAUTH_CLIENT_SECRET != '' && env.LINCTL_OAUTH_REDIRECT_URI != '' && env.LINCTL_OAUTH_SCOPES != '' && env.LINCTL_TEST_ORG_ID != '' && env.LINCTL_TEST_TEAM_KEY != '' && env.LINCTL_TEST_TEAM_ID != ''

@@ -66,7 +66,8 @@ var usageTopics = map[string]usagePayload{
 			"or --description-file FILE; " +
 			"linctl issue update LIT-123 --title \"...\" --description \"...\"; " +
 			"linctl issue update LIT-123 --append \"progress note\" or --append-file FILE; " +
-			"linctl issue start LIT-123 to assign the issue to you and move it to started; " +
+			"linctl issue start LIT-123 to assign it to a human viewer or delegate it to an assignable app, " +
+			"then move it to started; " +
 			"linctl issue comment LIT-123 --body \"...\" or --body-file FILE; " +
 			"linctl issue reply LIT-123 COMMENT_ID --body \"...\" or --body-file FILE; " +
 			"linctl issue close LIT-123. " +

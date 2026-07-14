@@ -24653,6 +24653,10 @@ type ViewerViewerUser struct {
 	DisplayName string `json:"displayName"`
 	// The user's email address.
 	Email string `json:"email"`
+	// Whether the user is an app.
+	App bool `json:"app"`
+	// Whether the user can be assigned to issues. Regular users are always assignable; app users are assignable only if they have the app:assignable scope. The Linear agent also requires coding sessions to be enabled.
+	IsAssignable bool `json:"isAssignable"`
 	// The workspace that the user belongs to.
 	Organization ViewerViewerUserOrganization `json:"organization"`
 }
@@ -24668,6 +24672,12 @@ func (v *ViewerViewerUser) GetDisplayName() string { return v.DisplayName }
 
 // GetEmail returns ViewerViewerUser.Email, and is useful for accessing the field via an interface.
 func (v *ViewerViewerUser) GetEmail() string { return v.Email }
+
+// GetApp returns ViewerViewerUser.App, and is useful for accessing the field via an interface.
+func (v *ViewerViewerUser) GetApp() bool { return v.App }
+
+// GetIsAssignable returns ViewerViewerUser.IsAssignable, and is useful for accessing the field via an interface.
+func (v *ViewerViewerUser) GetIsAssignable() bool { return v.IsAssignable }
 
 // GetOrganization returns ViewerViewerUser.Organization, and is useful for accessing the field via an interface.
 func (v *ViewerViewerUser) GetOrganization() ViewerViewerUserOrganization { return v.Organization }
@@ -78112,6 +78122,8 @@ query Viewer {
 		name
 		displayName
 		email
+		app
+		isAssignable
 		organization {
 			id
 			name

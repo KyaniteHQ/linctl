@@ -5,6 +5,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"strings"
 	"testing"
@@ -186,6 +187,13 @@ func Test_Integration_issueCoordinationWriteRoundTrip_whenTargetPinned(t *testin
 
 	// When
 	started, startErr := StartIssue(ctx, transport, target, source.Identifier)
+	if errors.Is(startErr, ErrViewerNotAssignable) {
+		require.Equal(t, "app", os.Getenv("LINCTL_OAUTH_EXPECTED_ACTOR"))
+		started, startErr = UpdateIssue(ctx, transport, target, IssueUpdateRequest{
+			ID:        source.Identifier,
+			StateType: "started",
+		})
+	}
 	require.NoError(t, startErr)
 	comment, commentErr := CommentOnIssue(ctx, transport, target, IssueCommentRequest{
 		ID:   source.Identifier,

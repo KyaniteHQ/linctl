@@ -141,7 +141,7 @@ Success is pass/fail:
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_reply`.
 
 27. Issue start
-   - Success: `linctl issue start ISSUE` assigns the issue to the authenticated viewer and moves it to the team's first started workflow state through the guarded issue update path.
+   - Success: `linctl issue start ISSUE` assigns a human viewer or delegates to an app viewer with `app:assignable`, then moves the issue to the team's first started workflow state through the guarded issue update path. An app without that scope fails before mutation with actionable guidance.
    - Evidence: `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/issue_start`;
      `go test ./internal/client`, `Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_matches`.
 
