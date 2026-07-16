@@ -19,7 +19,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Upstream SDK root methods with generated local operations | 466 | 150 | 466 |
 | Upstream Query root fields used by generated local operations | 162 | 116 | 162 |
 | Upstream Mutation root fields used by generated local operations | 370 | 36 | 370 |
-| Local generated Go operations declared in GraphQL files | 322 | 322 | 322 |
+| Local generated Go operations declared in GraphQL files | 313 | 313 | 313 |
 | Public CLI commands from command inventory | 435 | 313 | 435 |
 
 ## Upstream SDK Root Methods
@@ -1044,7 +1044,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `CommentResolve` | mutation | `commentResolve` | generated | `internal/client/internal/gql/generated.go` |
 | `CommentUnresolve` | mutation | `commentUnresolve` | generated | `internal/client/internal/gql/generated.go` |
 | `CommentUpdate` | mutation | `commentUpdate` | generated | `internal/client/internal/gql/generated.go` |
-| `CompletedWorkflowStates` | query | `workflowStates` | generated | `internal/client/internal/gql/generated.go` |
 | `CycleArchive` | mutation | `cycleArchive` | generated | `internal/client/internal/gql/generated.go` |
 | `CycleCreate` | mutation | `cycleCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `CycleReport` | query | `cycle` | generated | `internal/client/internal/gql/generated.go` |
@@ -1094,7 +1093,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `ProjectUpdate` | mutation | `projectUpdate` | generated | `internal/client/internal/gql/generated.go` |
 | `ProjectUpdateCreate` | mutation | `projectUpdateCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `Projects` | query | `team` | generated | `internal/client/internal/gql/generated.go` |
-| `StartedWorkflowStates` | query | `workflowStates` | generated | `internal/client/internal/gql/generated.go` |
 | `TargetProject` | query | `project` | generated | `internal/client/internal/gql/generated.go` |
 | `Teams` | query | `teams` | generated | `internal/client/internal/gql/generated.go` |
 | `Viewer` | query | `viewer` | generated | `internal/client/internal/gql/generated.go` |
@@ -1335,13 +1333,6 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `userSettings_notificationDeliveryPreferences` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
 | `userSettings_notificationDeliveryPreferences_mobile` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
 | `userSettings_notificationDeliveryPreferences_mobile_schedule` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_friday` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_monday` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_saturday` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_sunday` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_thursday` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
-| `userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
 | `userSettings_theme` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
 | `userSettings_theme_custom` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
 | `userSettings_theme_custom_sidebar` | query | `userSettings` | generated | `internal/client/internal/gql/generated.go` |
