@@ -1,5 +1,6 @@
 bin/
 dist/
+node_modules/
 linctl-bin
 linctl-bin.exe
 coverage.out
