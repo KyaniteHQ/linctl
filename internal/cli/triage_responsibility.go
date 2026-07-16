@@ -35,22 +35,15 @@ func addTriageResponsibilityManualSelectionCommand(
 	root *cobra.Command,
 	options *rootOptions,
 ) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.TriageResponsibilityManualSelection]{
 		Use:   "manual-selection TRIAGE_RESPONSIBILITY_ID",
 		Short: "Read manual user selection for one triage responsibility",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			selection, err := client.GetTriageResponsibilityManualSelection(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeTriageResponsibilityManualSelection(command, options, selection)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.TriageResponsibilityManualSelection, error) {
+			return client.GetTriageResponsibilityManualSelection(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeTriageResponsibilityManualSelection,
 	})
 }
 

@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"sort"
 
 	"github.com/Khan/genqlient/graphql"
 
 	"github.com/KyaniteHQ/linctl/internal/client/internal/gql"
+	"github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel"
 )
 
 // IssueSummary is the compact issue model used by read-only commands.
@@ -130,25 +130,47 @@ type IssueListFilters struct {
 	BlockedBy     string
 }
 
+// issueListPageSize matches Linear's per-request cap so accumulated issue
+// listing keeps single-request behavior for every limit up to the cap.
+const issueListPageSize = 250
+
 // ListIssues returns issues across every visible Linear team for broad read-only inspection.
 func ListIssues(ctx context.Context, graphqlClient graphql.Client, limit int) (IssueList, error) {
-	issuePage, err := gql.XIssues(ctx, graphqlClient, &limit, nil, boolPtr(true))
+	page, err := collectNodePages(
+		"list issues", limit, issueListPageSize,
+		func(pageSize int, after *string) (nodePage[IssueSummary], error) {
+			issuePage, err := gql.XIssues(ctx, graphqlClient, &pageSize, after, boolPtr(true))
+			if err != nil {
+				return nodePage[IssueSummary]{}, err
+			}
+
+			return issueSummaryNodePage(
+				mapNodes(issuePage.Issues.Nodes, func(issue gql.XIssuesIssuesIssueConnectionNodesIssue) IssueSummary {
+					return issueSummaryFromFields(issue.IssueSummaryFields)
+				}),
+				issuePage.Issues.PageInfo.HasNextPage,
+				issuePage.Issues.PageInfo.EndCursor,
+			), nil
+		},
+	)
 	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
+		return IssueList{}, err
 	}
 
-	summaries := mapNodes(issuePage.Issues.Nodes, func(issue gql.XIssuesIssuesIssueConnectionNodesIssue) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issuePage.Issues.PageInfo.HasNextPage,
-		EndCursor:   issuePage.Issues.PageInfo.EndCursor,
-	}, nil
+	return issueListFromNodePage(page), nil
 }
 
-// ListIssuesByTeam returns issues scoped to a resolved team.
+func issueSummaryNodePage(items []IssueSummary, hasNextPage bool, endCursor *string) nodePage[IssueSummary] {
+	return nodePage[IssueSummary]{Items: items, HasNextPage: hasNextPage, EndCursor: endCursor}
+}
+
+func issueListFromNodePage(page nodePage[IssueSummary]) IssueList {
+	return IssueList{Issues: page.Items, HasNextPage: page.HasNextPage, EndCursor: page.EndCursor}
+}
+
+// ListIssuesByTeam returns issues scoped to a resolved team, composing every
+// set filter into one IssueFilter. The blocked-by filter stays on its own
+// relations-based path because IssueFilter cannot express a relation target.
 func ListIssuesByTeam(
 	ctx context.Context,
 	graphqlClient graphql.Client,
@@ -156,297 +178,74 @@ func ListIssuesByTeam(
 	limit int,
 	filters IssueListFilters,
 ) (IssueList, error) {
-	if filters.StateType != "" {
-		return listIssuesByTeamState(ctx, graphqlClient, teamID, limit, filters.StateType)
-	}
-	if filters.ProjectID != "" {
-		return listIssuesByTeamProject(ctx, graphqlClient, teamID, limit, filters.ProjectID)
-	}
-	if filters.AssigneeID != "" {
-		return listIssuesByTeamAssignee(ctx, graphqlClient, teamID, limit, filters.AssigneeID)
-	}
-	if filters.LabelID != "" {
-		return listIssuesByTeamLabel(ctx, graphqlClient, teamID, limit, filters.LabelID)
-	}
-	if filters.CycleID != "" {
-		return listIssuesByTeamCycle(ctx, graphqlClient, teamID, limit, filters.CycleID)
-	}
-	if filters.CreatedAfter != "" {
-		return listIssuesByTeamCreatedAfter(ctx, graphqlClient, teamID, limit, filters.CreatedAfter)
-	}
-	if filters.CreatedBefore != "" {
-		return listIssuesByTeamCreatedBefore(ctx, graphqlClient, teamID, limit, filters.CreatedBefore)
-	}
-	if filters.HasBlockers {
-		return listIssuesByTeamHasBlockers(ctx, graphqlClient, teamID, limit)
-	}
-	if filters.Blocks {
-		return listIssuesByTeamBlocks(ctx, graphqlClient, teamID, limit)
-	}
 	if filters.BlockedBy != "" {
 		return listIssuesBlockedByIssue(ctx, graphqlClient, teamID, limit, filters.BlockedBy)
 	}
 
-	issues, err := gql.IssuesByTeam(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
+	filter := buildIssueFilter(teamID, filters)
+	page, err := collectNodePages(
+		"list issues", limit, issueListPageSize,
+		func(pageSize int, after *string) (nodePage[IssueSummary], error) {
+			issues, err := gql.IssuesByTeamFiltered(ctx, graphqlClient, filter, &pageSize, after, boolPtr(true))
+			if err != nil {
+				return nodePage[IssueSummary]{}, err
+			}
 
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
+			return issueSummaryNodePage(
+				mapNodes(issues.Issues.Nodes, func(
+					issue gql.IssuesByTeamFilteredIssuesIssueConnectionNodesIssue,
+				) IssueSummary {
+					return issueSummaryFromFields(issue.IssueSummaryFields)
+				}),
+				issues.Issues.PageInfo.HasNextPage,
+				issues.Issues.PageInfo.EndCursor,
+			), nil
+		},
+	)
+	if err != nil {
+		return IssueList{}, err
+	}
+
+	return issueListFromNodePage(page), nil
 }
 
-func listIssuesByTeamState(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-	stateType string,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamState(ctx, graphqlClient, teamID, stateType, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
+func buildIssueFilter(teamID string, filters IssueListFilters) gqlmodel.LinearIssueFilter {
+	filter := gqlmodel.LinearIssueFilter{
+		Team: &gqlmodel.LinearIDFilter{ID: gqlmodel.LinearIDComparator{Eq: teamID}},
+	}
+	if filters.StateType != "" {
+		filter.State = &gqlmodel.LinearWorkflowStateTypeFilter{
+			Type: gqlmodel.LinearStringComparator{Eq: filters.StateType},
+		}
+	}
+	if filters.ProjectID != "" {
+		filter.Project = &gqlmodel.LinearIDFilter{ID: gqlmodel.LinearIDComparator{Eq: filters.ProjectID}}
+	}
+	if filters.AssigneeID != "" {
+		filter.Assignee = &gqlmodel.LinearIDFilter{ID: gqlmodel.LinearIDComparator{Eq: filters.AssigneeID}}
+	}
+	if filters.LabelID != "" {
+		filter.Labels = &gqlmodel.LinearLabelCollectionFilter{
+			Some: gqlmodel.LinearIDFilter{ID: gqlmodel.LinearIDComparator{Eq: filters.LabelID}},
+		}
+	}
+	if filters.CycleID != "" {
+		filter.Cycle = &gqlmodel.LinearIDFilter{ID: gqlmodel.LinearIDComparator{Eq: filters.CycleID}}
+	}
+	if filters.CreatedAfter != "" || filters.CreatedBefore != "" {
+		filter.CreatedAt = &gqlmodel.LinearDateComparator{
+			Gte: optionalString(filters.CreatedAfter),
+			Lte: optionalString(filters.CreatedBefore),
+		}
+	}
+	if filters.HasBlockers {
+		filter.HasBlockedByRelations = &gqlmodel.LinearRelationExistsComparator{Eq: true}
+	}
+	if filters.Blocks {
+		filter.HasBlockingRelations = &gqlmodel.LinearRelationExistsComparator{Eq: true}
 	}
 
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamStateIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamProject(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-	projectID string,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamProject(ctx, graphqlClient, teamID, projectID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamProjectIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamAssignee(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-	assigneeID string,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamAssignee(ctx, graphqlClient, teamID, assigneeID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamAssigneeIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamLabel(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-	labelID string,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamLabel(ctx, graphqlClient, teamID, labelID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamLabelIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamCycle(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-	cycleID string,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamCycle(ctx, graphqlClient, teamID, cycleID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamCycleIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamCreatedAfter(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-	createdAfter string,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamCreatedAfter(ctx, graphqlClient, teamID, createdAfter, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamCreatedAfterIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamCreatedBefore(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-	createdBefore string,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamCreatedBefore(ctx, graphqlClient, teamID, createdBefore, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamCreatedBeforeIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamHasBlockers(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamHasBlockers(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamHasBlockersIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-func listIssuesByTeamBlocks(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-) (IssueList, error) {
-	issues, err := gql.IssuesByTeamBlocks(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, func(
-		issue gql.IssuesByTeamBlocksIssuesIssueConnectionNodesIssue,
-	) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
-}
-
-// ListNextIssuesByTeam returns unstarted issues that are not blocked by another issue.
-func ListNextIssuesByTeam(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	limit int,
-) (IssueList, error) {
-	issues, err := gql.NextIssuesByTeam(ctx, graphqlClient, teamID, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("list next issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.Issues.Nodes, nextIssueSummary)
-	sortNextIssueCandidates(summaries)
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.Issues.PageInfo.HasNextPage,
-		EndCursor:   issues.Issues.PageInfo.EndCursor,
-	}, nil
+	return filter
 }
 
 func listIssuesBlockedByIssue(
@@ -475,73 +274,6 @@ func listIssuesBlockedByIssue(
 	}, nil
 }
 
-// GetIssueDependencies returns parent, child, and blocking relationships for one issue.
-func GetIssueDependencies(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	id string,
-	limit int,
-) (IssueDependencyGraph, error) {
-	dependencies, err := gql.IssueDependencies(ctx, graphqlClient, id, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueDependencyGraph{}, fmt.Errorf("get issue dependencies %s: %w", id, err)
-	}
-
-	issue := dependencies.Issue
-	return IssueDependencyGraph{
-		ID:          issue.Id,
-		Identifier:  issue.Identifier,
-		Parent:      issueDependencyParent(issue.Parent),
-		Children:    issueDependencyChildren(issue.Children.Nodes),
-		Blocks:      issueDependencyBlocks(issue.Relations.Nodes),
-		BlockedBy:   issueDependencyBlockedBy(issue.InverseRelations.Nodes),
-		HasNextPage: issueDependencyHasNextPage(issue),
-	}, nil
-}
-
-// SearchIssuesByTeam searches issue content scoped to a resolved team.
-func SearchIssuesByTeam(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	teamID string,
-	query string,
-	limit int,
-) (IssueList, error) {
-	issues, err := gql.XIssueSearch(ctx, graphqlClient, teamID, query, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("search issues: %w", err)
-	}
-
-	summaries := mapNodes(issues.IssueSearch.Nodes, searchIssueSummary)
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.IssueSearch.PageInfo.HasNextPage,
-		EndCursor:   issues.IssueSearch.PageInfo.EndCursor,
-	}, nil
-}
-
-// SearchIssuesByFigmaFileKey searches issues associated with a Figma file key.
-func SearchIssuesByFigmaFileKey(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	fileKey string,
-	limit int,
-) (IssueList, error) {
-	issues, err := gql.XIssueFigmaFileKeySearch(ctx, graphqlClient, fileKey, &limit, nil, boolPtr(true))
-	if err != nil {
-		return IssueList{}, fmt.Errorf("search issues by Figma file key: %w", err)
-	}
-
-	summaries := mapNodes(issues.IssueFigmaFileKeySearch.Nodes, figmaFileKeyIssueSummary)
-
-	return IssueList{
-		Issues:      summaries,
-		HasNextPage: issues.IssueFigmaFileKeySearch.PageInfo.HasNextPage,
-		EndCursor:   issues.IssueFigmaFileKeySearch.PageInfo.EndCursor,
-	}, nil
-}
-
 // ListIssuePriorityValues returns Linear issue priority labels.
 func ListIssuePriorityValues(ctx context.Context, graphqlClient graphql.Client) ([]IssuePriorityValue, error) {
 	result, err := gql.XIssuePriorityValues(ctx, graphqlClient)
@@ -556,53 +288,6 @@ func ListIssuePriorityValues(ctx context.Context, graphqlClient graphql.Client) 
 	})
 
 	return values, nil
-}
-
-// GetIssueFilterSuggestion returns a JSON issue filter suggestion for a prompt.
-func GetIssueFilterSuggestion(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	prompt string,
-	teamID string,
-	projectID string,
-) (IssueFilterSuggestion, error) {
-	suggestion, err := gql.XIssueFilterSuggestion(
-		ctx,
-		graphqlClient,
-		prompt,
-		optionalString(teamID),
-		optionalString(projectID),
-	)
-	if err != nil {
-		return IssueFilterSuggestion{}, fmt.Errorf("get issue filter suggestion: %w", err)
-	}
-
-	filter := json.RawMessage(nil)
-	if suggestion.IssueFilterSuggestion.Filter != nil {
-		filter = *suggestion.IssueFilterSuggestion.Filter
-	}
-
-	return IssueFilterSuggestion{
-		Filter: filter,
-		LogID:  stringValue(suggestion.IssueFilterSuggestion.LogId),
-	}, nil
-}
-
-// GetIssueTitleSuggestionFromCustomerRequest returns a title suggestion for customer request text.
-func GetIssueTitleSuggestionFromCustomerRequest(
-	ctx context.Context,
-	graphqlClient graphql.Client,
-	request string,
-) (IssueTitleSuggestion, error) {
-	suggestion, err := gql.XIssueTitleSuggestionFromCustomerRequest(ctx, graphqlClient, request)
-	if err != nil {
-		return IssueTitleSuggestion{}, fmt.Errorf("get issue title suggestion: %w", err)
-	}
-
-	return IssueTitleSuggestion{
-		Title: suggestion.IssueTitleSuggestionFromCustomerRequest.Title,
-		LogID: stringValue(suggestion.IssueTitleSuggestionFromCustomerRequest.LogId),
-	}, nil
 }
 
 // GetIssueByID returns a read-only issue by Linear id or identifier.
@@ -623,114 +308,6 @@ func GetIssueDetail(ctx context.Context, graphqlClient graphql.Client, id string
 	}
 
 	return detailIssue(issueResult.Issue), nil
-}
-
-func nextIssueSummary(issue gql.NextIssuesByTeamIssuesIssueConnectionNodesIssue) IssueSummary {
-	summary := issueSummaryFromFields(issue.IssueSummaryFields)
-	summary.CreatedAt = issue.CreatedAt
-	summary.UnblocksCount = nextIssueUnblocksCount(issue.Relations.Nodes)
-
-	return summary
-}
-
-//nolint:lll // The aliased name is generated by genqlient from the GraphQL selection path.
-type nextIssueRelation = gql.NextIssuesByTeamIssuesIssueConnectionNodesIssueRelationsIssueRelationConnectionNodesIssueRelation
-
-func nextIssueUnblocksCount(relations []nextIssueRelation) int {
-	count := 0
-	for _, relation := range relations {
-		if relation.Type == "blocks" && isActiveIssueStateType(relation.RelatedIssue.State.Type) {
-			count++
-		}
-	}
-
-	return count
-}
-
-func isActiveIssueStateType(stateType string) bool {
-	return stateType != "completed" && stateType != "canceled"
-}
-
-func sortNextIssueCandidates(issues []IssueSummary) {
-	sort.SliceStable(issues, func(leftIndex int, rightIndex int) bool {
-		left := issues[leftIndex]
-		right := issues[rightIndex]
-		if left.UnblocksCount != right.UnblocksCount {
-			return left.UnblocksCount > right.UnblocksCount
-		}
-		if left.Priority != right.Priority {
-			return linearPriorityRank(left.Priority) > linearPriorityRank(right.Priority)
-		}
-
-		return left.CreatedAt < right.CreatedAt
-	})
-}
-
-func linearPriorityRank(priority float64) float64 {
-	if priority == 0 {
-		return -1
-	}
-
-	return 5 - priority
-}
-
-func issueDependencyParent(issue *gql.IssueDependenciesIssueParentIssue) *IssueSummary {
-	if issue == nil {
-		return nil
-	}
-
-	summary := issueSummaryFromFields(issue.IssueSummaryFields)
-	return &summary
-}
-
-func issueDependencyChildren(issues []gql.IssueDependenciesIssueChildrenIssueConnectionNodesIssue) []IssueSummary {
-	summaries := mapNodes(issues, func(issue gql.IssueDependenciesIssueChildrenIssueConnectionNodesIssue) IssueSummary {
-		return issueSummaryFromFields(issue.IssueSummaryFields)
-	})
-
-	return summaries
-}
-
-func issueDependencyBlocks(
-	relations []gql.IssueDependenciesIssueRelationsIssueRelationConnectionNodesIssueRelation,
-) []IssueSummary {
-	summaries := make([]IssueSummary, 0, len(relations))
-	for _, relation := range relations {
-		if relation.Type == "blocks" {
-			summaries = append(summaries, issueSummaryFromFields(relation.RelatedIssue.IssueSummaryFields))
-		}
-	}
-
-	return summaries
-}
-
-func issueDependencyBlockedBy(
-	relations []gql.IssueDependenciesIssueInverseRelationsIssueRelationConnectionNodesIssueRelation,
-) []IssueSummary {
-	summaries := make([]IssueSummary, 0, len(relations))
-	for _, relation := range relations {
-		if relation.Type == "blocks" {
-			summaries = append(summaries, issueSummaryFromFields(relation.Issue.IssueSummaryFields))
-		}
-	}
-
-	return summaries
-}
-
-func issueDependencyHasNextPage(issue gql.IssueDependenciesIssue) bool {
-	return issue.Children.PageInfo.HasNextPage ||
-		issue.Relations.PageInfo.HasNextPage ||
-		issue.InverseRelations.PageInfo.HasNextPage
-}
-
-func searchIssueSummary(issue gql.XIssueSearchIssueSearchIssueConnectionNodesIssue) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
-}
-
-func figmaFileKeyIssueSummary(
-	issue gql.XIssueFigmaFileKeySearchIssueFigmaFileKeySearchIssueConnectionNodesIssue,
-) IssueSummary {
-	return issueSummaryFromFields(issue.IssueSummaryFields)
 }
 
 func detailIssueSummary(issue gql.XIssueIssue) IssueSummary {

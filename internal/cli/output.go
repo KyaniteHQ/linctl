@@ -131,6 +131,12 @@ type deletionResult struct {
 // writeDeletion renders the confirmation for a guarded delete across all output
 // modes: id-only, quiet, JSON envelope, then a plain "<id> deleted" line.
 func writeDeletion(command *cobra.Command, options *rootOptions, id string) error {
+	return writeDeletionMessage(command, options, id, id+" deleted")
+}
+
+// writeDeletionMessage is writeDeletion with a caller-supplied human line for
+// deletes that need a stronger warning than the plain confirmation.
+func writeDeletionMessage(command *cobra.Command, options *rootOptions, id string, line string) error {
 	if wrote, err := writeIDOnly(command, options, id); wrote || err != nil {
 		return err
 	}
@@ -141,7 +147,7 @@ func writeDeletion(command *cobra.Command, options *rootOptions, id string) erro
 		return writeJSONValue(command, options, deletionResult{ID: id, Status: "deleted"})
 	}
 
-	return render.WriteLine(command.OutOrStdout(), "%s deleted", id)
+	return render.WriteLine(command.OutOrStdout(), "%s", line)
 }
 
 func ensureNonEmpty(options *rootOptions, count int) error {
@@ -248,14 +254,16 @@ func normalizedHumanFormat(options *rootOptions) (string, error) {
 	}
 }
 
-func projectJSONFields(value any, fields string) (any, error) {
-	return projectJSONFieldsWithCollectionKey(value, fields, "")
-}
-
 func projectJSONFieldsForCommand(command *cobra.Command, value any, fields string) (any, error) {
 	return projectJSONFieldsWithCollectionKey(value, fields, commandCollectionKey(command))
 }
 
+// projectJSONFieldsWithCollectionKey projects --fields over a command's JSON
+// output. A command annotated with a collection key projects per item of that
+// collection; every other command projects the whole object and fails loud on
+// a missing field. There is deliberately no shape-guessing fallback: detail
+// objects may embed incidental arrays (a ProjectSummary's "teams") that share
+// names with list-page collections, so only the explicit annotation decides.
 func projectJSONFieldsWithCollectionKey(value any, fields string, collectionKey string) (any, error) {
 	paths := fieldPaths(fields)
 	if len(paths) == 0 {
@@ -267,8 +275,10 @@ func projectJSONFieldsWithCollectionKey(value any, fields string, collectionKey 
 		return nil, err
 	}
 
-	if projected, ok, err := projectCollection(raw, paths, collectionKey); ok || err != nil {
-		return projected, err
+	if collectionKey != "" {
+		if projected, ok, err := projectCollectionKey(raw, paths, collectionKey); ok || err != nil {
+			return projected, err
+		}
 	}
 
 	projected := map[string]any{}
@@ -313,21 +323,9 @@ func jsonRoundTrip(value any) (map[string]any, error) {
 	return raw, nil
 }
 
-// projectCollection projects --fields over the items of a list-page envelope.
-func projectCollection(raw map[string]any, paths [][]string, collectionKey string) (map[string]any, bool, error) {
-	if collectionKey != "" {
-		return projectCollectionKey(raw, paths, collectionKey)
-	}
-
-	for _, key := range CollectionKeys() {
-		if projected, ok, err := projectCollectionKey(raw, paths, key); ok || err != nil {
-			return projected, ok, err
-		}
-	}
-
-	return nil, false, nil
-}
-
+// projectCollectionKey projects --fields over the items of a list-page
+// envelope's collection array. It reports false when the key is absent or not
+// an array, so callers fall back to whole-object projection.
 func projectCollectionKey(raw map[string]any, paths [][]string, key string) (map[string]any, bool, error) {
 	items, ok := raw[key].([]any)
 	if !ok {

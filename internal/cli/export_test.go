@@ -126,6 +126,15 @@ func Test_runIssueExport_surfaces_note_writer_errors(t *testing.T) {
 	require.Error(t, err)
 }
 
+func Test_writeExportDocument_refuses_identifier_outside_the_linear_grammar(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "export")
+
+	_, err := writeExportDocument(dir, "../escape", "body")
+
+	require.ErrorContains(t, err, "not a valid Linear issue identifier")
+	require.NoDirExists(t, dir)
+}
+
 func Test_writeExportDocument_surfaces_write_errors(t *testing.T) {
 	dir := t.TempDir()
 	require.NoError(t, os.Mkdir(filepath.Join(dir, "LIT-1.md"), 0o750))

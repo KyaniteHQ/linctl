@@ -49,22 +49,13 @@ func loadCyclesByTeam(
 }
 
 func addCycleGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.CycleSummary]{
 		Use:   "get CYCLE_ID",
 		Short: "Get one Cycle by id or slug",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			cycle, err := client.GetCycleByID(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCycle(command, options, cycle)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.CycleSummary, error) {
+			return client.GetCycleByID(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeCycle,
 	})
 }
 

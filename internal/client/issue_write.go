@@ -433,7 +433,11 @@ func (guard *guardedClient) commentOnIssue(
 	ctx context.Context,
 	request IssueCommentRequest,
 ) (IssueCommentResult, error) {
-	if _, err := guard.requireIssue(ctx, request.ID); err != nil {
+	issue, err := guard.requireIssue(ctx, request.ID)
+	if err != nil {
+		return IssueCommentResult{}, err
+	}
+	if err := guard.requireParentCommentOnIssue(ctx, request.ParentID, issue); err != nil {
 		return IssueCommentResult{}, err
 	}
 
@@ -455,6 +459,31 @@ func (guard *guardedClient) commentOnIssue(
 		URL:   comment.CommentCreate.Comment.Url,
 		Issue: issueSummaryFromFields(comment.CommentCreate.Comment.Issue.IssueSummaryFields),
 	}, nil
+}
+
+// requireParentCommentOnIssue verifies a reply's parent comment is attached to
+// the guarded issue itself, so a reply cannot land in a different thread than
+// the issue the target comparison approved.
+func (guard *guardedClient) requireParentCommentOnIssue(
+	ctx context.Context,
+	parentID string,
+	issue IssueSummary,
+) error {
+	if parentID == "" {
+		return nil
+	}
+	parent, err := GetCommentByID(ctx, guard.graphqlClient, parentID)
+	if err != nil {
+		return err
+	}
+	if parent.IssueID != issue.ID {
+		return fmt.Errorf(
+			"%w: parent comment %s is attached to issue id %q, not issue %s",
+			ErrWriteInvalid, parentID, parent.IssueID, issue.Identifier,
+		)
+	}
+
+	return nil
 }
 
 // CloseIssue moves an issue to the team's completed workflow state after target comparison.

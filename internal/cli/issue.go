@@ -45,47 +45,22 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 
 func addIssueListCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	limit := 50
-	stateType := ""
 	status := ""
-	projectID := ""
-	assigneeID := ""
-	labelID := ""
-	cycleID := ""
-	createdAfter := ""
-	createdSince := ""
-	createdBefore := ""
-	hasBlockers := false
-	blocks := false
-	blockedBy := ""
-	allTeams := false
-	mine := false
+	flags := issueListFlagValues{}
 	command := &cobra.Command{
 		Use:   "list",
 		Short: "List issues for the resolved team",
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			normalizedState, err := normalizeAndNote(
-				command, "state", firstNonEmpty(stateType, status), normalizedStateType,
+				command, "state", firstNonEmpty(flags.stateType, status), normalizedStateType,
 			)
 			if err != nil {
 				return err
 			}
-			flags := issueListFlagValues{
-				stateType:     normalizedState,
-				projectID:     projectID,
-				assigneeID:    assigneeID,
-				labelID:       labelID,
-				cycleID:       cycleID,
-				createdAfter:  createdAfter,
-				createdSince:  createdSince,
-				createdBefore: createdBefore,
-				hasBlockers:   hasBlockers,
-				blocks:        blocks,
-				blockedBy:     blockedBy,
-				allTeams:      allTeams,
-				mine:          mine,
-			}
-			if err := validateIssueListFilters(flags); err != nil {
+			resolved := flags
+			resolved.stateType = normalizedState
+			if err := validateIssueListFilters(resolved); err != nil {
 				return err
 			}
 			runtime, err := buildCommandRuntime(ctx, options)
@@ -93,67 +68,44 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 				return err
 			}
 
-			return runIssueList(ctx, command, options, issueListClientFor(runtime), limit, flags)
+			return runIssueList(ctx, command, options, issueListClientFor(runtime), limit, resolved)
 		},
 	}
-	bindIssueListFlags(
-		command,
-		&limit,
-		&stateType,
-		&projectID,
-		&assigneeID,
-		&labelID,
-		&cycleID,
-		&createdAfter,
-		&createdSince,
-		&createdBefore,
-		&hasBlockers,
-		&blocks,
-		&blockedBy,
-		&allTeams,
-		&mine,
-	)
+	bindIssueListFlags(command, &limit, &flags)
 	command.Flags().StringVar(&status, "status", "", "alias for --state")
+	annotateReadCollectionCommand(command, collectionKeyForPage[client.IssueList]())
 	registerStateCompletion(ctx, command, options)
 	root.AddCommand(command)
 }
 
-func bindIssueListFlags(
-	command *cobra.Command,
-	limit *int,
-	stateType *string,
-	projectID *string,
-	assigneeID *string,
-	labelID *string,
-	cycleID *string,
-	createdAfter *string,
-	createdSince *string,
-	createdBefore *string,
-	hasBlockers *bool,
-	blocks *bool,
-	blockedBy *string,
-	allTeams *bool,
-	mine *bool,
-) {
+func bindIssueListFlags(command *cobra.Command, limit *int, flags *issueListFlagValues) {
 	command.Flags().IntVar(limit, "limit", *limit, "maximum issues to return")
-	command.Flags().StringVar(stateType, "state", *stateType, "filter by workflow state type")
-	command.Flags().StringVar(projectID, "project", *projectID, "filter by Linear project id")
-	command.Flags().StringVar(assigneeID, "assignee", *assigneeID, "filter by Linear assignee user id")
-	command.Flags().StringVar(labelID, "label", *labelID, "filter by Linear issue label id")
-	command.Flags().StringVar(cycleID, "cycle", *cycleID, "filter by Linear cycle id")
-	command.Flags().StringVar(createdAfter, "created-after", *createdAfter, "filter by created-at date lower bound")
-	command.Flags().StringVar(createdSince, "created-since", *createdSince, "alias for --created-after")
-	command.Flags().StringVar(createdBefore, "created-before", *createdBefore, "filter by created-at date upper bound")
-	command.Flags().BoolVar(hasBlockers, "has-blockers", *hasBlockers, "filter to issues blocked by another issue")
-	command.Flags().BoolVar(blocks, "blocks", *blocks, "filter to issues blocking another issue")
+	command.Flags().StringVar(&flags.stateType, "state", flags.stateType, "filter by workflow state type")
+	command.Flags().StringVar(&flags.projectID, "project", flags.projectID, "filter by Linear project id")
+	command.Flags().StringVar(&flags.assigneeID, "assignee", flags.assigneeID, "filter by Linear assignee user id")
+	command.Flags().StringVar(&flags.labelID, "label", flags.labelID, "filter by Linear issue label id")
+	command.Flags().StringVar(&flags.cycleID, "cycle", flags.cycleID, "filter by Linear cycle id")
 	command.Flags().StringVar(
-		blockedBy,
+		&flags.createdAfter, "created-after", flags.createdAfter, "filter by created-at date lower bound",
+	)
+	command.Flags().StringVar(&flags.createdSince, "created-since", flags.createdSince, "alias for --created-after")
+	command.Flags().StringVar(
+		&flags.createdBefore, "created-before", flags.createdBefore, "filter by created-at date upper bound",
+	)
+	command.Flags().BoolVar(
+		&flags.hasBlockers, "has-blockers", flags.hasBlockers, "filter to issues blocked by another issue",
+	)
+	command.Flags().BoolVar(&flags.blocks, "blocks", flags.blocks, "filter to issues blocking another issue")
+	command.Flags().StringVar(
+		&flags.blockedBy,
 		"blocked-by",
-		*blockedBy,
+		flags.blockedBy,
 		"filter to issues blocked by an issue id or identifier",
 	)
-	command.Flags().BoolVar(allTeams, "all-teams", *allTeams, "list issues across every visible Linear team")
-	command.Flags().BoolVar(mine, "mine", *mine, "filter to issues assigned to the authenticated user")
+	command.Flags().BoolVar(
+		&flags.allTeams, "all-teams", flags.allTeams, "list issues across every visible Linear team",
+	)
+	command.Flags().BoolVar(&flags.mine, "mine", flags.mine, "filter to issues assigned to the authenticated user")
 }
 
 type issueListFlagValues struct {
@@ -172,8 +124,10 @@ type issueListFlagValues struct {
 	mine          bool
 }
 
+// validateIssueListFilters rejects only genuinely conflicting filter
+// combinations; every remaining combination composes into one IssueFilter.
 func validateIssueListFilters(flags issueListFlagValues) error {
-	filterCount := 0
+	teamScopedCount := 0
 	for _, active := range []bool{
 		flags.stateType != "",
 		flags.projectID != "",
@@ -186,18 +140,24 @@ func validateIssueListFilters(flags issueListFlagValues) error {
 		flags.hasBlockers,
 		flags.blocks,
 		flags.blockedBy != "",
-		flags.allTeams,
 		flags.mine,
 	} {
 		if active {
-			filterCount++
+			teamScopedCount++
 		}
 	}
-	if filterCount > 1 {
+	if flags.allTeams && teamScopedCount > 0 {
+		return errors.New("issue list filters: --all-teams cannot combine with team-scoped filters")
+	}
+	if flags.mine && flags.assigneeID != "" {
+		return errors.New("issue list filters: use only one of --mine or --assignee")
+	}
+	if flags.createdAfter != "" && flags.createdSince != "" {
+		return errors.New("issue list filters: use only one of --created-after or --created-since")
+	}
+	if flags.blockedBy != "" && teamScopedCount > 1 {
 		return errors.New(
-			"issue list filters: use only one of --state, --project, --assignee, " +
-				"--label, --cycle, --created-after, --created-since, --created-before, " +
-				"--has-blockers, --blocks, --blocked-by, --all-teams, or --mine",
+			"issue list filters: --blocked-by resolves issue relations and cannot combine with other filters",
 		)
 	}
 
@@ -287,6 +247,7 @@ func addIssueSearchCommand(ctx context.Context, root *cobra.Command, options *ro
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to return")
+	annotateReadCollectionCommand(command, collectionKeyForPage[client.IssueList]())
 	root.AddCommand(command)
 }
 
@@ -314,7 +275,6 @@ func runIssueSearch(
 		return err
 	}
 	if options.json {
-		annotateReadCollectionCommand(command, collectionKeyForPage[client.IssueList]())
 		return writeJSONValue(command, options, issues)
 	}
 

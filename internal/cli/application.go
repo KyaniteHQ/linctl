@@ -11,22 +11,13 @@ import (
 
 func addApplicationCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	command := newGroupCommand("application", "Read Linear OAuth application metadata")
-	command.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, command, options, readGetSpec[client.ApplicationInfo]{
 		Use:   "info CLIENT_ID",
 		Short: "Get public OAuth application metadata",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			application, err := client.GetApplicationInfo(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeApplicationInfo(command, options, application)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.ApplicationInfo, error) {
+			return client.GetApplicationInfo(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeApplicationInfo,
 	})
 	root.AddCommand(command)
 }

@@ -16,22 +16,15 @@ func addOrganizationCommand(ctx context.Context, root *cobra.Command, options *r
 	addOrganizationProjectLabelsCommand(ctx, command, options)
 	addOrganizationTeamsCommand(ctx, command, options)
 	addOrganizationUsersCommand(ctx, command, options)
-	command.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, command, options, readGetSpec[client.OrganizationExistsStatus]{
 		Use:   "exists URL_KEY",
 		Short: "Check whether a Linear organization URL key exists",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			status, err := client.CheckOrganizationExists(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeOrganizationExists(command, options, status)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.OrganizationExistsStatus, error) {
+			return client.CheckOrganizationExists(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeOrganizationExists,
 	})
 	templatesCommand := &cobra.Command{
 		Use:   "templates",

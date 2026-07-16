@@ -7,17 +7,10 @@ Add `--fields key,nested.key` to project JSON output
 to just the requested keys.
 
 For list-page commands, projection applies to each item in the command's collection array rather than
-to the scalar pagination fields. The current projection collection keys come from
-`internal/cli.CollectionKeys()`:
-
-`issues`, `associations`, `cycles`, `projects`, `members`, `comments`, `updates`, `milestones`,
-`documents`, `labels`, `teams`, `users`, `memberships`, `drafts`, `initiatives`, `notifications`,
-`notification_subscriptions`, `release_pipelines`, `release_stages`, `releases`, `history`,
-`links`, `release_notes`, `customers`, `customer_needs`, `customer_statuses`, `customer_tiers`,
-`relations`, `roadmaps`, `time_schedules`, `triage_responsibilities`, `sla_configurations`,
-`results`, `templates`, `workflow_states`, `agent_activities`, `agent_skills`, `agent_sessions`,
-`external_users`, `audit_entry_types`, `favorites`, `emojis`, `attachments`, `custom_views`,
-`project_labels`, `project_statuses`, `spans`, and `git_automation_states`.
+to the scalar pagination fields. Each list command declares its collection key at registration
+(for example `issues` for `issue list`, `releases` for `release search`); every other command,
+including single-entity `get` commands whose payload embeds an incidental array (a project's
+`teams`), projects the whole object and errors on a field that is not present.
 
 These are the exact keys (from `internal/client/*.go`). Fields marked *optional* are omitted
 when empty.

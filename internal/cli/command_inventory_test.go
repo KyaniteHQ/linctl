@@ -230,7 +230,9 @@ func Test_commandSafety_classifies_annotations_paths_and_descriptions(t *testing
 		require.Equal(t, safety, commandSafety(command))
 	}
 
-	require.Equal(t, CommandSafetyWrite, commandSafety(commandWithPath("document", "create", "Create document")))
+	// Writes classify only through an explicit annotation; an unannotated
+	// mutation-looking command is Unknown so the inventory test fails loud.
+	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("document", "create", "Create document")))
 	require.Equal(t, CommandSafetyRead, commandSafety(commandWithPath("issue", "get", "Get issue")))
 	require.Equal(t, CommandSafetyLocal, commandSafety(commandWithPath("completion", "bash", "Generate completion")))
 	require.Equal(t, CommandSafetyUnknown, commandSafety(commandWithPath("issue", "sync", "Synchronize issue")))

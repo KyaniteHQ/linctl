@@ -68,6 +68,7 @@ func addReleaseSearchCommand(ctx context.Context, root *cobra.Command, options *
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", 20, "maximum releases to return")
+	annotateReadCollectionCommand(command, mustCollectionKeyForList[client.ReleaseList, client.ReleaseSummary]())
 	root.AddCommand(command)
 }
 

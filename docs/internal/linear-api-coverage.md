@@ -19,7 +19,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Upstream SDK root methods with generated local operations | 466 | 150 | 466 |
 | Upstream Query root fields used by generated local operations | 162 | 116 | 162 |
 | Upstream Mutation root fields used by generated local operations | 370 | 36 | 370 |
-| Local generated Go operations declared in GraphQL files | 313 | 313 | 313 |
+| Local generated Go operations declared in GraphQL files | 304 | 304 | 304 |
 | Public CLI commands from command inventory | 435 | 313 | 435 |
 
 ## Upstream SDK Root Methods
@@ -1067,16 +1067,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `IssueRelationDelete` | mutation | `issueRelationDelete` | generated | `internal/client/internal/gql/generated.go` |
 | `IssueRemoveLabel` | mutation | `issueRemoveLabel` | generated | `internal/client/internal/gql/generated.go` |
 | `IssueUpdate` | mutation | `issueUpdate` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeam` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamAssignee` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamBlocks` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamCreatedAfter` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamCreatedBefore` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamCycle` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamHasBlockers` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamLabel` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamProject` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
-| `IssuesByTeamState` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
+| `IssuesByTeamFiltered` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
 | `NextIssuesByTeam` | query | `issues` | generated | `internal/client/internal/gql/generated.go` |
 | `Organization` | query | `organization` | generated | `internal/client/internal/gql/generated.go` |
 | `ProjectAddLabel` | mutation | `projectAddLabel` | generated | `internal/client/internal/gql/generated.go` |
@@ -1443,7 +1434,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Release | `issue-to-release create` | `Mutation.issueToReleaseCreate` | Blocked: association write must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release update` | `Mutation.issueToReleaseUpdate` | Blocked: association update must compare issue and release scope before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Release | `issue-to-release delete` | `Mutation.issueToReleaseDelete` | Blocked: destructive association command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| Issue | `issue list` | `Query.issues`, optionally filtered by `Issue.team.id`, `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, or `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`; `--all-teams` omits the team filter | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Issue | `issue list` | `Query.issues` with one composed `IssueFilter`: `Issue.team.id` plus any combination of `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, and `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`, and combines only with `--limit`; `--all-teams` omits the filter entirely | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue priority-values` | `Query.issuePriorityValues` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
@@ -1489,7 +1480,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Issue | `issue open` | `Query.issue` resolves `Issue.url`, then the platform opener (`xdg-open`/`open`/`rundll32`) launches it with the URL as a discrete argv argument | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue export` | `Query.issue` (`GetIssueDetail`), `Issue.comments`, and `Issue.attachments` are assembled into a single markdown file (`<DIR>/<identifier>.md`) holding the metadata header, description, comments, and attachment URLs; capped at 250 comments/attachments with a stderr note when more pages exist | Read-only, writes only local files | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue import` | Reads a CSV or JSON file (format from extension), normalizes each row's state/priority, rejects any row whose `team` key ≠ the pinned `team_key`, then creates each issue via guarded `Mutation.issueCreate` (`CreateIssue`); `--dry-run` loads only local config, renders the normalized rows locally, and performs no auth, network, or mutation setup | Team-scoped per row; each create re-runs the write guard; `--dry-run` writes nothing | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Issue | `issue bulk-export` | `Query.team`/`Team.issues` (`ListIssuesByTeam`) for the resolved team are written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| Issue | `issue bulk-export` | `Query.issues` filtered to the resolved team (`ListIssuesByTeam` with an empty filter set) written to a CSV or JSON file (format from extension), capped by `--limit` (default 250) | Read-only, writes only the local file | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue branch` | `Query.issue`, `Issue.branchName` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `issue pr` | `Query.issue`; emits a local `gh pr create` title/body plan without calling GitHub | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Issue | `next` | `Query.issues`, filtered by `Issue.team.id`, `Issue.state.type == "unstarted"`, and `Issue.hasBlockedByRelations.eq == false`; fetches `Issue.relations`, `Issue.priority`, and `Issue.createdAt`, then ranks by active unblock count, priority, and age. `--dry-run` prints the top candidate and writes nothing; without it the top candidate is started via guarded `Mutation.issueUpdate` (`StartIssue`); `--checkout` runs `git checkout -b <Issue.branchName>` before starting | `--dry-run` read-only; otherwise resource-scoped start of the picked issue | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |

@@ -89,23 +89,16 @@ func loadProjectsAll(
 }
 
 func addProjectGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
-		Use:               "get PROJECT_ID",
-		Short:             "Get one project by id or slug",
-		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: firstArgCompletion(ctx, options, projectIDCandidates),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			project, err := client.GetProjectByID(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeProject(command, options, project)
+	addReadGetCommand(ctx, root, options, readGetSpec[client.ProjectSummary]{
+		Use:   "get PROJECT_ID",
+		Short: "Get one project by id or slug",
+		Configure: func(command *cobra.Command) {
+			command.ValidArgsFunction = firstArgCompletion(ctx, options, projectIDCandidates)
 		},
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.ProjectSummary, error) {
+			return client.GetProjectByID(ctx, runtime.graphqlClient, id)
+		},
+		Write: writeProject,
 	})
 }
 

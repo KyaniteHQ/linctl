@@ -59,8 +59,8 @@ func (guard *guardedClient) linkIssueAttachment(
 	if err != nil {
 		return AttachmentSummary{}, fmt.Errorf("link attachment to issue %s: %w", request.IssueID, err)
 	}
-	if !created.AttachmentCreate.Success {
-		return AttachmentSummary{}, fmt.Errorf("%w: attachmentCreate reported no success", ErrMutationFailed)
+	if err := mutationSuccess(created.AttachmentCreate.Success, "attachmentCreate"); err != nil {
+		return AttachmentSummary{}, err
 	}
 
 	return attachmentSummary(created.AttachmentCreate.Attachment.AttachmentSummaryFields), nil

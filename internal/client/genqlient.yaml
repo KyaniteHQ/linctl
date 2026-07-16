@@ -25,6 +25,8 @@ bindings:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearDocumentUpdateInput
   IssueCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueCreateInput
+  IssueFilter:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueFilter
   IssueLabelCreateInput:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearIssueLabelCreateInput
   IssueLabelUpdateInput:

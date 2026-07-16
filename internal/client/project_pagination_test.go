@@ -73,19 +73,25 @@ func Test_ListProjects_pages_in_API_safe_chunks(t *testing.T) {
 	require.Equal(t, len(graphqlClient.fixtures), graphqlClient.next)
 }
 
-func Test_collectProjectPages_rejects_invalid_limit(t *testing.T) {
-	_, err := collectProjectPages(0, func(int, *string) (ProjectList, error) {
-		t.Fatal("fetch must not run")
-		return ProjectList{}, nil
-	})
+func Test_collectNodePages_rejects_invalid_limit(t *testing.T) {
+	_, err := collectNodePages(
+		"list projects", 0, projectListPageSize,
+		func(int, *string) (nodePage[ProjectSummary], error) {
+			t.Fatal("fetch must not run")
+			return nodePage[ProjectSummary]{}, nil
+		},
+	)
 
-	require.ErrorContains(t, err, "limit must be positive")
+	require.ErrorContains(t, err, "list projects: limit must be positive")
 }
 
-func Test_collectProjectPages_rejects_missing_next_cursor(t *testing.T) {
-	_, err := collectProjectPages(100, func(int, *string) (ProjectList, error) {
-		return ProjectList{HasNextPage: true}, nil
-	})
+func Test_collectNodePages_rejects_missing_next_cursor(t *testing.T) {
+	_, err := collectNodePages(
+		"list projects", 100, projectListPageSize,
+		func(int, *string) (nodePage[ProjectSummary], error) {
+			return nodePage[ProjectSummary]{HasNextPage: true}, nil
+		},
+	)
 
-	require.ErrorContains(t, err, "next page has no end cursor")
+	require.ErrorContains(t, err, "list projects: next page has no end cursor")
 }

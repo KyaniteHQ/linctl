@@ -10,17 +10,20 @@ import (
 
 func addIssueRelateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	relationType := "related"
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueRelationSummary]{
 		Use:   "relate ISSUE_ID RELATED_ISSUE_ID",
 		Short: "Relate two issues after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			relation, err := client.CreateIssueRelation(
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(
+				&relationType, "type", relationType,
+				"relation type: blocks, duplicate, related, or similar",
+			)
+		},
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueRelationSummary, error) {
+			return client.CreateIssueRelation(
 				ctx, runtime.graphqlClient, runtime.config.Target,
 				client.IssueRelationCreateRequest{
 					IssueID:        args[0],
@@ -28,39 +31,19 @@ func addIssueRelateCommand(ctx context.Context, root *cobra.Command, options *ro
 					Type:           relationType,
 				},
 			)
-			if err != nil {
-				return err
-			}
-
-			return writeIssueRelation(command, options, relation)
 		},
-	}
-	command.Flags().StringVar(
-		&relationType, "type", relationType,
-		"relation type: blocks, duplicate, related, or similar",
-	)
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+		Write: writeIssueRelation,
+	})
 }
 
 func addIssueUnrelateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[string]{
 		Use:   "unrelate ISSUE_RELATION_ID",
 		Short: "Delete an issue relation after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			deletedID, err := client.DeleteIssueRelation(
-				ctx, runtime.graphqlClient, runtime.config.Target, args[0],
-			)
-			if err != nil {
-				return err
-			}
-
-			return writeDeletion(command, options, deletedID)
+		Run: func(ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string) (string, error) {
+			return client.DeleteIssueRelation(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},
+		Write: writeDeletion,
 	})
 }

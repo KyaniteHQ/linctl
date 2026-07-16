@@ -41,22 +41,13 @@ func addUserListCommand(ctx context.Context, root *cobra.Command, options *rootO
 }
 
 func addUserGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.UserSummary]{
 		Use:   "get USER_ID",
 		Short: "Get one User by id",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			user, err := client.GetUserByID(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeUser(command, options, user)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.UserSummary, error) {
+			return client.GetUserByID(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeUser,
 	})
 }
 

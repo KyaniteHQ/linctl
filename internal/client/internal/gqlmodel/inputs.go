@@ -73,6 +73,55 @@ type LinearIssueCreateInput struct {
 	ProjectMilestoneID *string  `json:"projectMilestoneId,omitempty"`
 }
 
+// LinearIssueFilter is the sparse Linear IssueFilter linctl composes for team-scoped issue listing.
+type LinearIssueFilter struct {
+	Team                  *LinearIDFilter                 `json:"team,omitempty"`
+	State                 *LinearWorkflowStateTypeFilter  `json:"state,omitempty"`
+	Project               *LinearIDFilter                 `json:"project,omitempty"`
+	Assignee              *LinearIDFilter                 `json:"assignee,omitempty"`
+	Labels                *LinearLabelCollectionFilter    `json:"labels,omitempty"`
+	Cycle                 *LinearIDFilter                 `json:"cycle,omitempty"`
+	CreatedAt             *LinearDateComparator           `json:"createdAt,omitempty"`
+	HasBlockedByRelations *LinearRelationExistsComparator `json:"hasBlockedByRelations,omitempty"`
+	HasBlockingRelations  *LinearRelationExistsComparator `json:"hasBlockingRelations,omitempty"`
+}
+
+// LinearIDFilter matches an entity by id equality.
+type LinearIDFilter struct {
+	ID LinearIDComparator `json:"id"`
+}
+
+// LinearIDComparator is the sparse Linear IDComparator linctl supports.
+type LinearIDComparator struct {
+	Eq string `json:"eq"`
+}
+
+// LinearWorkflowStateTypeFilter matches workflow states by type equality.
+type LinearWorkflowStateTypeFilter struct {
+	Type LinearStringComparator `json:"type"`
+}
+
+// LinearStringComparator is the sparse Linear StringComparator linctl supports.
+type LinearStringComparator struct {
+	Eq string `json:"eq"`
+}
+
+// LinearLabelCollectionFilter matches issues carrying at least one matching label.
+type LinearLabelCollectionFilter struct {
+	Some LinearIDFilter `json:"some"`
+}
+
+// LinearDateComparator is the sparse Linear DateComparator linctl supports.
+type LinearDateComparator struct {
+	Gte *string `json:"gte,omitempty"`
+	Lte *string `json:"lte,omitempty"`
+}
+
+// LinearRelationExistsComparator is the sparse Linear RelationExistsComparator linctl supports.
+type LinearRelationExistsComparator struct {
+	Eq bool `json:"eq"`
+}
+
 // LinearIssueLabelCreateInput is the sparse Linear issueLabelCreate payload linctl supports.
 type LinearIssueLabelCreateInput struct {
 	Name        string  `json:"name"`

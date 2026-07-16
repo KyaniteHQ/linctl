@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
@@ -165,12 +167,62 @@ func (client commandFlowFakeClient) MakeRequest(
 		return err
 	}
 
-	payload, err := commandFlowPayload(request.OpName, client)
+	operation := request.OpName
+	if operation == "IssuesByTeamFiltered" {
+		operation = filteredIssueListPayloadKey(request)
+	}
+	payload, err := commandFlowPayload(operation, client)
 	if err != nil {
 		return err
 	}
 
 	return json.Unmarshal([]byte(`{"data":`+payload+`}`), response)
+}
+
+// filteredIssueListPayloadKey maps a composed IssuesByTeamFiltered request to a
+// per-clause payload key, so the canned fixtures stay distinct per filter now
+// that one operation serves every team-scoped issue listing. The key is built
+// from the clauses actually present in the request, so combined or unmapped
+// clauses surface as a missing-fixture failure instead of the wrong payload.
+func filteredIssueListPayloadKey(request *graphql.Request) string {
+	payload, err := json.Marshal(request.Variables)
+	if err != nil {
+		return "IssuesByTeamFiltered:unreadable-variables"
+	}
+	var variables struct {
+		Filter map[string]json.RawMessage `json:"filter"`
+	}
+	if err := json.Unmarshal(payload, &variables); err != nil {
+		return "IssuesByTeamFiltered:unreadable-variables"
+	}
+
+	clauses := make([]string, 0, len(variables.Filter))
+	for clause, value := range variables.Filter {
+		if clause == "team" {
+			continue
+		}
+		if clause == "createdAt" {
+			clause = createdAtClauseKey(value)
+		}
+		clauses = append(clauses, clause)
+	}
+	if len(clauses) == 0 {
+		return "IssuesByTeamFiltered:unfiltered"
+	}
+	sort.Strings(clauses)
+
+	return "IssuesByTeamFiltered:" + strings.Join(clauses, "+")
+}
+
+func createdAtClauseKey(window json.RawMessage) string {
+	var comparator struct {
+		Gte *string `json:"gte"`
+	}
+	if json.Unmarshal(window, &comparator) == nil && comparator.Gte != nil {
+		return "createdAfter"
+	}
+
+	return "createdBefore"
 }
 
 func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Request) error {
@@ -327,34 +379,33 @@ func (client commandFlowFakeClient) requireExpectedIssueStartVariables(request *
 }
 
 func (client commandFlowFakeClient) requireExpectedIssueListVariables(request *graphql.Request) error {
-	if client.expectedStateType != "" && request.OpName == "IssuesByTeamState" {
-		return requireRequestVariable(request, []string{"stateType"}, client.expectedStateType, "state type")
-	}
-	if client.expectedProjectID != "" && request.OpName == "IssuesByTeamProject" {
-		return requireRequestVariable(request, []string{"projectID"}, client.expectedProjectID, "project id")
-	}
-	if client.expectedAssigneeID != "" && request.OpName == "IssuesByTeamAssignee" {
-		return requireRequestVariable(request, []string{"assigneeID"}, client.expectedAssigneeID, "assignee id")
-	}
-	if client.expectedLabelID != "" && request.OpName == "IssuesByTeamLabel" {
-		return requireRequestVariable(request, []string{"labelID"}, client.expectedLabelID, "label id")
-	}
-	if client.expectedCycleID != "" && request.OpName == "IssuesByTeamCycle" {
-		return requireRequestVariable(request, []string{"cycleID"}, client.expectedCycleID, "cycle id")
-	}
+	if request.OpName != "IssuesByTeamFiltered" {
+		if client.expectedBlockedBy != "" && request.OpName == "IssueBlockedIssues" {
+			return requireRequestVariable(request, []string{"id"}, client.expectedBlockedBy, "blocked by issue")
+		}
 
-	return client.requireExpectedDependencyIssueListVariables(request)
-}
-
-func (client commandFlowFakeClient) requireExpectedDependencyIssueListVariables(request *graphql.Request) error {
-	if client.expectedCreatedAfter != "" && request.OpName == "IssuesByTeamCreatedAfter" {
-		return requireRequestVariable(request, []string{"createdAfter"}, client.expectedCreatedAfter, "created after")
+		return nil
 	}
-	if client.expectedCreatedBefore != "" && request.OpName == "IssuesByTeamCreatedBefore" {
-		return requireRequestVariable(request, []string{"createdBefore"}, client.expectedCreatedBefore, "created before")
+	checks := []struct {
+		expected string
+		keys     []string
+		label    string
+	}{
+		{client.expectedStateType, []string{"filter", "state", "type", "eq"}, "state type"},
+		{client.expectedProjectID, []string{"filter", "project", "id", "eq"}, "project id"},
+		{client.expectedAssigneeID, []string{"filter", "assignee", "id", "eq"}, "assignee id"},
+		{client.expectedLabelID, []string{"filter", "labels", "some", "id", "eq"}, "label id"},
+		{client.expectedCycleID, []string{"filter", "cycle", "id", "eq"}, "cycle id"},
+		{client.expectedCreatedAfter, []string{"filter", "createdAt", "gte"}, "created after"},
+		{client.expectedCreatedBefore, []string{"filter", "createdAt", "lte"}, "created before"},
 	}
-	if client.expectedBlockedBy != "" && request.OpName == "IssueBlockedIssues" {
-		return requireRequestVariable(request, []string{"id"}, client.expectedBlockedBy, "blocked by issue")
+	for _, check := range checks {
+		if check.expected == "" {
+			continue
+		}
+		if err := requireRequestVariable(request, check.keys, check.expected, check.label); err != nil {
+			return err
+		}
 	}
 
 	return nil

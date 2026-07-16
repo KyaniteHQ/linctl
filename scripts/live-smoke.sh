@@ -232,6 +232,23 @@ PY
   issue_json="$("$binary" issue list --json --limit 5)"
   issue_id="$(first_item_field issues <<<"$issue_json")"
   issue_branch_name="$(first_item_field issues branch_name <<<"$issue_json")"
+  issue_project_id="$(first_item_field issues project_id <<<"$issue_json")"
+  "$binary" issue list --state started --json --limit 5 >/dev/null
+  "$binary" issue list --mine --json --limit 5 >/dev/null
+  "$binary" issue list --assignee "$user_id" --json --limit 5 >/dev/null
+  "$binary" issue list --created-after 2020-01-01 --json --limit 5 >/dev/null
+  "$binary" issue list --created-since 2020-01-01 --json --limit 5 >/dev/null
+  "$binary" issue list --created-before 2100-01-01 --json --limit 5 >/dev/null
+  "$binary" issue list --has-blockers --json --limit 5 >/dev/null
+  "$binary" issue list --blocks --json --limit 5 >/dev/null
+  "$binary" issue list --all-teams --json --limit 5 >/dev/null
+  "$binary" issue list --state started --assignee "$user_id" --created-after 2020-01-01 --json --limit 5 >/dev/null
+  if [[ -n "$issue_id" ]]; then
+    "$binary" issue list --blocked-by "$issue_id" --json --limit 5 >/dev/null
+  fi
+  if [[ -n "$issue_project_id" ]]; then
+    "$binary" issue list --project "$issue_project_id" --json --limit 5 >/dev/null
+  fi
   if [[ -n "$issue_id" ]]; then
     issue_attachment_json="$("$binary" issue attachments "$issue_id" --json --limit 5)"
     attachment_id="$(first_item_field attachments <<<"$issue_attachment_json")"
@@ -334,12 +351,14 @@ PY
   if [[ -n "$label_id" ]]; then
     "$binary" label children "$label_id" --json --limit 5 >/dev/null
     "$binary" label issues "$label_id" --json --limit 5 >/dev/null
+    "$binary" issue list --label "$label_id" --json --limit 5 >/dev/null
   fi
   cycle_json="$("$binary" cycle list --json --limit 5)"
   cycle_id="$(first_item_field cycles <<<"$cycle_json")"
   if [[ -n "$cycle_id" ]]; then
     "$binary" cycle issues "$cycle_id" --json --limit 5 >/dev/null
     "$binary" cycle uncompleted-issues "$cycle_id" --json --limit 5 >/dev/null
+    "$binary" issue list --cycle "$cycle_id" --json --limit 5 >/dev/null
   fi
   "$binary" team cycles "$team_id" --json --limit 5 >/dev/null
   "$binary" team issues "$team_id" --json --limit 5 >/dev/null

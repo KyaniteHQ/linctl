@@ -38,95 +38,68 @@ func addCommentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 func addCommentUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.CommentUpdateRequest{}
 	bodyFile := ""
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.CommentSummary]{
 		Use:   "update COMMENT_ID",
 		Short: "Edit a comment after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Body, "body", "", "new comment body as markdown; use - to read stdin")
+			command.Flags().StringVar(&bodyFile, "body-file", "", "read new comment body from file")
+		},
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
+		) (client.CommentSummary, error) {
 			request.ID = args[0]
 			if err := resolveBodyFlag(command, &request.Body); err != nil {
-				return err
+				return client.CommentSummary{}, err
 			}
 			if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
-				return err
-			}
-			comment, err := client.UpdateComment(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
+				return client.CommentSummary{}, err
 			}
 
-			return writeComment(command, options, comment)
+			return client.UpdateComment(ctx, runtime.graphqlClient, runtime.config.Target, request)
 		},
-	}
-	command.Flags().StringVar(&request.Body, "body", "", "new comment body as markdown; use - to read stdin")
-	command.Flags().StringVar(&bodyFile, "body-file", "", "read new comment body from file")
-	root.AddCommand(command)
+		Write: writeComment,
+	})
 }
 
 func addCommentDeleteCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[string]{
 		Use:   "delete COMMENT_ID",
 		Short: "Delete a comment after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			deletedID, err := client.DeleteComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeDeletion(command, options, deletedID)
+		Run: func(ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string) (string, error) {
+			return client.DeleteComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},
+		Write: writeDeletion,
 	})
 }
 
 func addCommentResolveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.CommentSummary]{
 		Use:   "resolve COMMENT_ID",
 		Short: "Resolve a comment thread after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			comment, err := client.ResolveComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeComment(command, options, comment)
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.CommentSummary, error) {
+			return client.ResolveComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},
+		Write: writeComment,
 	})
 }
 
 func addCommentUnresolveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.CommentSummary]{
 		Use:   "unresolve COMMENT_ID",
 		Short: "Reopen a comment thread after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			comment, err := client.UnresolveComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeComment(command, options, comment)
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.CommentSummary, error) {
+			return client.UnresolveComment(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},
+		Write: writeComment,
 	})
 }
 
@@ -144,22 +117,13 @@ func writeComment(command *cobra.Command, options *rootOptions, comment client.C
 }
 
 func addCommentBotActorCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.CommentBotActor]{
 		Use:   "bot-actor COMMENT_ID",
 		Short: "Show comment bot actor metadata",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			actor, err := client.GetCommentBotActor(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCommentBotActor(command, options, actor)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.CommentBotActor, error) {
+			return client.GetCommentBotActor(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeCommentBotActor,
 	})
 }
 
@@ -208,21 +172,7 @@ func addCommentCreatedIssuesCommand(ctx context.Context, root *cobra.Command, op
 }
 
 func writeCommentBotActor(command *cobra.Command, options *rootOptions, actor client.CommentBotActor) error {
-	return writeItem(command, options, actor, actor.CommentID,
-		func(command *cobra.Command, _ *rootOptions, actor client.CommentBotActor) error {
-			if actor.Bot == nil {
-				return render.WriteLine(command.OutOrStdout(), "%s bot -", actor.CommentID)
-			}
-
-			return render.WriteLine(
-				command.OutOrStdout(),
-				"%s bot %s %s [%s]",
-				actor.CommentID,
-				emptyDash(actor.Bot.ID),
-				emptyDash(actor.Bot.Name),
-				actor.Bot.Type,
-			)
-		})
+	return writeBotActor(command, options, actor, actor.CommentID, actor.Bot)
 }
 
 func loadCommentList(

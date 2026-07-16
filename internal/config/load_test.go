@@ -100,6 +100,30 @@ team_id = "other-team"
 	}, resolved.Target)
 }
 
+func Test_Load_clears_pinned_team_id_when_org_or_team_override_changes_target(t *testing.T) {
+	root := t.TempDir()
+	configPath := filepath.Join(root, "config.toml")
+	require.NoError(t, os.WriteFile(configPath, []byte(`
+[target]
+org_id = "configured-org"
+team_key = "CFG"
+team_id = "configured-team"
+project_id = "configured-project"
+`), 0o600))
+
+	resolved, err := Load(context.Background(), LoadRequest{
+		GlobalPath:     configPath,
+		TargetOverride: Target{TeamKey: "LIT"},
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, Target{
+		OrgID:     "configured-org",
+		TeamKey:   "LIT",
+		ProjectID: "configured-project",
+	}, resolved.Target)
+}
+
 func Test_Load_keeps_profile_targets_separate_when_multiple_targets_exist(t *testing.T) {
 	// Given
 	root := t.TempDir()

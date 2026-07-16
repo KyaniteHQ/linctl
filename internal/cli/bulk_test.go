@@ -108,6 +108,18 @@ func Test_CommandFlows_issue_import_json_result(t *testing.T) {
 	require.Contains(t, stdout, `"identifier": "LIT-2"`)
 }
 
+func Test_CommandFlows_issue_import_json_fields_projects_issues(t *testing.T) {
+	path := writeImportFile(t, "rows.json", `[{"title":"First"}]`)
+
+	stdout, err := runBulkFlow(
+		t, commandFlowFakeClient{}, []string{"--json", "--fields", "identifier", "issue", "import", path},
+	)
+
+	require.NoError(t, err)
+	require.Contains(t, stdout, `"identifier": "LIT-2"`)
+	require.NotContains(t, stdout, `"count"`)
+}
+
 func Test_CommandFlows_issue_import_quiet_result(t *testing.T) {
 	path := writeImportFile(t, "rows.json", `[{"title":"First"}]`)
 
@@ -356,7 +368,7 @@ func Test_CommandFlows_issue_bulk_export_surfaces_errors(t *testing.T) {
 
 	_, err = runBulkFlow(
 		t,
-		commandFlowFakeClient{failOperation: "IssuesByTeam"},
+		commandFlowFakeClient{failOperation: "IssuesByTeamFiltered"},
 		[]string{"issue", "bulk-export", jsonPath},
 	)
 	require.Error(t, err)

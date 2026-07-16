@@ -507,18 +507,23 @@ func Test_CliHelpers_resolve_target_overrides_and_project_ids(t *testing.T) {
 }
 
 func Test_CliHelpers_clear_config_team_id_when_org_or_team_override_changes_target(t *testing.T) {
-	resolved := config.Resolved{Target: config.Target{
-		OrgID:     "configured-org",
-		TeamKey:   "CFG",
-		TeamID:    "configured-team-id",
-		ProjectID: "project-id",
-	}}
+	dir := t.TempDir()
+	t.Chdir(dir)
+	configureTestAuthEnvironment(t)
+	require.NoError(t, os.WriteFile(".linctl.toml", []byte(`
+[target]
+org_id = "configured-org"
+team_key = "CFG"
+team_id = "configured-team-id"
+project_id = "project-id"
+`), 0o600))
 
-	applyTargetOverrideFlagSemantics(&resolved, &rootOptions{team: "LIT"})
+	resolved, err := resolveConfig(context.Background(), &rootOptions{team: "LIT"})
 
+	require.NoError(t, err)
 	require.Equal(t, config.Target{
 		OrgID:     "configured-org",
-		TeamKey:   "CFG",
+		TeamKey:   "LIT",
 		ProjectID: "project-id",
 	}, resolved.Target)
 }

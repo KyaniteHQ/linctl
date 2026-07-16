@@ -122,7 +122,7 @@ func Test_Client_exchanges_authorization_code_with_pkce_form(t *testing.T) {
 	require.Equal(t, now.Add(time.Hour), *token.ExpiresAt)
 }
 
-func Test_Client_refreshes_rotated_token_state_with_basic_client_auth(t *testing.T) {
+func Test_Client_refreshes_rotated_token_state_with_form_client_auth(t *testing.T) {
 	t.Parallel()
 	requests := make(chan tokenRequestSnapshot, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -163,7 +163,6 @@ func Test_Client_refreshes_rotated_token_state_with_basic_client_auth(t *testing
 		RefreshToken: "old-refresh-token",
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
-		UseBasicAuth: true,
 	})
 
 	require.NoError(t, err)
@@ -171,13 +170,11 @@ func Test_Client_refreshes_rotated_token_state_with_basic_client_auth(t *testing
 	require.Equal(t, http.MethodPost, request.Method)
 	require.NoError(t, request.ParseErr)
 	require.Equal(t, "application/x-www-form-urlencoded", request.ContentType)
-	require.True(t, request.HasBasic)
-	require.Equal(t, "client-id", request.BasicUser)
-	require.Equal(t, "client-secret", request.BasicPass)
+	require.False(t, request.HasBasic)
 	require.Equal(t, "refresh_token", request.Form.Get("grant_type"))
 	require.Equal(t, "old-refresh-token", request.Form.Get("refresh_token"))
-	require.Empty(t, request.Form.Get("client_id"))
-	require.Empty(t, request.Form.Get("client_secret"))
+	require.Equal(t, "client-id", request.Form.Get("client_id"))
+	require.Equal(t, "client-secret", request.Form.Get("client_secret"))
 	require.Equal(t, "new-access-token", token.AccessToken)
 	require.Equal(t, "new-refresh-token", token.RefreshToken)
 	require.Equal(t, "Bearer", token.TokenType)

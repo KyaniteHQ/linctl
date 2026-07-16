@@ -67,8 +67,8 @@ func (guard *guardedClient) createProjectLabel(
 	if err != nil {
 		return ProjectLabelSummary{}, fmt.Errorf("create project label: %w", err)
 	}
-	if !created.ProjectLabelCreate.Success {
-		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelCreate reported no success", ErrMutationFailed)
+	if err := mutationSuccess(created.ProjectLabelCreate.Success, "projectLabelCreate"); err != nil {
+		return ProjectLabelSummary{}, err
 	}
 
 	return projectLabelSummary(created.ProjectLabelCreate.ProjectLabel.ProjectLabelSummaryFields), nil
@@ -112,8 +112,8 @@ func (guard *guardedClient) updateProjectLabel(
 	if err != nil {
 		return ProjectLabelSummary{}, fmt.Errorf("update project label %s: %w", request.ID, err)
 	}
-	if !updated.ProjectLabelUpdate.Success {
-		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelUpdate reported no success", ErrMutationFailed)
+	if err := mutationSuccess(updated.ProjectLabelUpdate.Success, "projectLabelUpdate"); err != nil {
+		return ProjectLabelSummary{}, err
 	}
 
 	return projectLabelSummary(updated.ProjectLabelUpdate.ProjectLabel.ProjectLabelSummaryFields), nil
@@ -152,8 +152,8 @@ func (guard *guardedClient) retireProjectLabel(ctx context.Context, id string) (
 	if err != nil {
 		return ProjectLabelSummary{}, fmt.Errorf("retire project label %s: %w", id, err)
 	}
-	if !retired.ProjectLabelRetire.Success {
-		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelRetire reported no success", ErrMutationFailed)
+	if err := mutationSuccess(retired.ProjectLabelRetire.Success, "projectLabelRetire"); err != nil {
+		return ProjectLabelSummary{}, err
 	}
 
 	return projectLabelSummary(retired.ProjectLabelRetire.ProjectLabel.ProjectLabelSummaryFields), nil
@@ -193,8 +193,8 @@ func (guard *guardedClient) restoreProjectLabel(ctx context.Context, id string) 
 	if err != nil {
 		return ProjectLabelSummary{}, fmt.Errorf("restore project label %s: %w", id, err)
 	}
-	if !restored.ProjectLabelRestore.Success {
-		return ProjectLabelSummary{}, fmt.Errorf("%w: projectLabelRestore reported no success", ErrMutationFailed)
+	if err := mutationSuccess(restored.ProjectLabelRestore.Success, "projectLabelRestore"); err != nil {
+		return ProjectLabelSummary{}, err
 	}
 
 	return projectLabelSummary(restored.ProjectLabelRestore.ProjectLabel.ProjectLabelSummaryFields), nil

@@ -259,6 +259,75 @@ func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testi
 	require.Equal(t, "complete-state", issue.StateID)
 }
 
+func Test_CommentOnIssue_refuses_parent_comment_from_another_issue(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue":   relationIssueRead(),
+		"comment": `{"comment":` + commentFieldsJSON("other-issue-id", "parent body") + `}`,
+	})}
+
+	_, err := CommentOnIssue(context.Background(), recorder, matchingTarget(), IssueCommentRequest{
+		ID:       "LIT-1",
+		Body:     "reply",
+		ParentID: "comment-id",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+	require.ErrorContains(t, err, "parent comment comment-id")
+	require.Zero(t, recorder.countOf("IssueCommentCreate"))
+}
+
+func Test_CommentOnIssue_wraps_parent_comment_read_error(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue": relationIssueRead(),
+	})}
+
+	_, err := CommentOnIssue(context.Background(), recorder, matchingTarget(), IssueCommentRequest{
+		ID:       "LIT-1",
+		Body:     "reply",
+		ParentID: "comment-id",
+	})
+
+	require.ErrorContains(t, err, "get comment comment-id")
+	require.Zero(t, recorder.countOf("IssueCommentCreate"))
+}
+
+func Test_CommentOnIssue_replies_when_parent_comment_is_on_the_guarded_issue(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"issue":   relationIssueRead(),
+		"comment": `{"comment":` + commentFieldsJSON("issue-id", "parent body") + `}`,
+		"IssueCommentCreate": `{"commentCreate":{"success":true,"comment":{
+			"id":"reply-id",
+			"body":"reply",
+			"url":"https://linear.app/comment/reply-id",
+			"issue":` + issueJSON(issueFixture{
+			Identifier: "LIT-1",
+			Title:      "First",
+			ProjectID:  "project-id",
+			Project:    "fixture",
+			StateID:    "state-id",
+			State:      "Todo",
+			StateType:  "unstarted",
+		}) + `
+		}}}`,
+	})}
+
+	comment, err := CommentOnIssue(context.Background(), recorder, matchingTarget(), IssueCommentRequest{
+		ID:       "LIT-1",
+		Body:     "reply",
+		ParentID: "comment-id",
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, "reply-id", comment.ID)
+	require.JSONEq(t, `{
+		"input": {
+			"body": "reply",
+			"issueId": "LIT-1",
+			"parentId": "comment-id"
+		}
+	}`, string(recorder.variablesFor(t, "IssueCommentCreate")))
+}
+
 type issueWriteFakeClient map[string]string
 
 func (client issueWriteFakeClient) MakeRequest(

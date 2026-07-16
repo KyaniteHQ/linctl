@@ -112,8 +112,8 @@ func (guard *guardedClient) deleteIssueRelation(ctx context.Context, relationID 
 	if err != nil {
 		return "", fmt.Errorf("delete issue relation %s: %w", relationID, err)
 	}
-	if !deleted.IssueRelationDelete.Success {
-		return "", fmt.Errorf("%w: issueRelationDelete reported no success", ErrMutationFailed)
+	if err := mutationSuccess(deleted.IssueRelationDelete.Success, "issueRelationDelete"); err != nil {
+		return "", err
 	}
 
 	return relation.ID, nil

@@ -36,24 +36,14 @@ func addCustomViewCommand(ctx context.Context, root *cobra.Command, options *roo
 }
 
 func addCustomViewSubscribersCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.CustomViewSubscriberStatus]{
 		Use:   "subscribers CUSTOM_VIEW_ID",
 		Short: "Report whether a custom view has subscribers",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			status, err := client.GetCustomViewSubscriberStatus(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCustomViewSubscriberStatus(command, options, status)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.CustomViewSubscriberStatus, error) {
+			return client.GetCustomViewSubscriberStatus(ctx, runtime.graphqlClient, id)
 		},
-	}
-	addCommandWithSafety(root, CommandSafetyRead, command)
+		Write: writeCustomViewSubscriberStatus,
+	})
 }
 
 func addCustomViewInitiativesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -101,44 +91,25 @@ func addCustomViewIssuesCommand(ctx context.Context, root *cobra.Command, option
 }
 
 func addCustomViewOrganizationPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
+	command := addReadGetCommand(ctx, root, options, readGetSpec[client.CustomViewPreferences]{
 		Use:   "organization-preferences CUSTOM_VIEW_ID",
 		Short: "Read organization default view preferences for a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			preferences, err := client.GetCustomViewOrganizationPreferences(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCustomViewPreferences(command, options, preferences)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.CustomViewPreferences, error) {
+			return client.GetCustomViewOrganizationPreferences(ctx, runtime.graphqlClient, id)
 		},
-	}
+		Write: writeCustomViewPreferences,
+	})
 
-	valuesCommand := &cobra.Command{
+	addReadGetCommand(ctx, command, options, readGetSpec[client.CustomViewPreferencesValues]{
 		Use:   "values CUSTOM_VIEW_ID",
 		Short: "Read organization default view preference values for a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			values, err := client.GetCustomViewOrganizationPreferenceValues(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCustomViewPreferenceValues(command, options, values)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.CustomViewPreferencesValues, error) {
+			return client.GetCustomViewOrganizationPreferenceValues(ctx, runtime.graphqlClient, id)
 		},
-	}
-
-	command.AddCommand(valuesCommand)
-	root.AddCommand(command)
+		Write: writeCustomViewPreferenceValues,
+	})
 }
 
 func addCustomViewProjectsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
@@ -164,65 +135,40 @@ func addCustomViewProjectsCommand(ctx context.Context, root *cobra.Command, opti
 }
 
 func addCustomViewUserPreferencesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
+	command := addReadGetCommand(ctx, root, options, readGetSpec[client.CustomViewPreferences]{
 		Use:   "user-preferences CUSTOM_VIEW_ID",
 		Short: "Read current-user view preferences for a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			preferences, err := client.GetCustomViewUserPreferences(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.CustomViewPreferences, error) {
+			return client.GetCustomViewUserPreferences(ctx, runtime.graphqlClient, id)
+		},
+		Write: func(command *cobra.Command, options *rootOptions, preferences client.CustomViewPreferences) error {
 			return writeCustomViewScopedPreferences(command, options, "user", preferences)
 		},
-	}
+	})
 
-	valuesCommand := &cobra.Command{
+	addReadGetCommand(ctx, command, options, readGetSpec[client.CustomViewPreferencesValues]{
 		Use:   "values CUSTOM_VIEW_ID",
 		Short: "Read current-user view preference values for a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			values, err := client.GetCustomViewUserPreferenceValues(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCustomViewPreferenceValues(command, options, values)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.CustomViewPreferencesValues, error) {
+			return client.GetCustomViewUserPreferenceValues(ctx, runtime.graphqlClient, id)
 		},
-	}
-
-	command.AddCommand(valuesCommand)
-	root.AddCommand(command)
+		Write: writeCustomViewPreferenceValues,
+	})
 }
 
 func addCustomViewPreferenceValuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	command := &cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.CustomViewPreferencesValues]{
 		Use:   "preference-values CUSTOM_VIEW_ID",
 		Short: "Read effective view preference values for a custom view",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			values, err := client.GetCustomViewPreferenceValues(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCustomViewPreferenceValues(command, options, values)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.CustomViewPreferencesValues, error) {
+			return client.GetCustomViewPreferenceValues(ctx, runtime.graphqlClient, id)
 		},
-	}
-	root.AddCommand(command)
+		Write: writeCustomViewPreferenceValues,
+	})
 }
 
 func writeCustomView(command *cobra.Command, options *rootOptions, view client.CustomViewSummary) error {

@@ -96,7 +96,11 @@ func addIssueImportCommand(ctx context.Context, root *cobra.Command, options *ro
 		},
 	}
 	command.Flags().BoolVar(&dryRun, "dry-run", false, "render the rows that would be created without writing")
-	root.AddCommand(command)
+	// The import preview and result envelopes both carry their rows under
+	// "issues"; the collection key is annotated without a read-safety stamp
+	// because import is a guarded write.
+	annotateCollectionKey(command, "issues")
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func runIssueImport(
@@ -454,7 +458,7 @@ func addIssueBulkExportCommand(ctx context.Context, root *cobra.Command, options
 		},
 	}
 	command.Flags().IntVar(&limit, "limit", limit, "maximum issues to export")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func runIssueBulkExport(

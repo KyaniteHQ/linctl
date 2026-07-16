@@ -25,21 +25,15 @@ type commandRuntime struct {
 
 var buildCommandRuntime = newCommandRuntime
 
-// resolveConfig loads the layered configuration and applies the root target
-// override flag semantics: the one config-resolution path every command uses.
+// resolveConfig loads the layered configuration: the one config-resolution
+// path every command uses.
 func resolveConfig(ctx context.Context, options *rootOptions) (config.Resolved, error) {
-	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
+	return config.Load(ctx, config.LoadRequest{
 		GlobalPath:      defaultGlobalConfigPath(),
 		RepoPath:        ".linctl.toml",
 		ProfileOverride: options.profile,
 		TargetOverride:  targetOverride(options),
 	})
-	if err != nil {
-		return config.Resolved{}, err
-	}
-	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
-
-	return resolvedConfig, nil
 }
 
 func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
@@ -216,11 +210,14 @@ func (recovering *recoveringGraphQLClient) recoverToken(ctx context.Context, rea
 		"profile", recovering.profile,
 	)
 
-	token, err := recovering.store.TransactTokenState(
+	token, _, err := transactRecoveredToken(
 		ctx,
+		recovering.store,
 		recovering.profile,
+		auth.NewError(auth.ErrorCodeReauthRequired, "persisted OAuth session was removed"),
+		recovering.token,
 		func(current auth.TokenState) (auth.TokenState, error) {
-			return recovering.recoverCurrentToken(ctx, current)
+			return recovering.exchangeCurrentToken(ctx, current)
 		},
 	)
 	if err != nil {
@@ -242,17 +239,10 @@ func (recovering *recoveringGraphQLClient) recoverToken(ctx context.Context, rea
 	return nil
 }
 
-func (recovering *recoveringGraphQLClient) recoverCurrentToken(
+func (recovering *recoveringGraphQLClient) exchangeCurrentToken(
 	ctx context.Context,
 	current auth.TokenState,
 ) (auth.TokenState, error) {
-	if current.AccessToken == "" && current.RefreshToken == "" {
-		return auth.TokenState{}, auth.NewError(auth.ErrorCodeReauthRequired, "persisted OAuth session was removed")
-	}
-	if !current.Equal(recovering.token) && tokenUsable(current, authNow()) {
-		return current, nil
-	}
-
 	credentialKind := auth.CredentialKindFromToken(current)
 	if credentialKind == auth.CredentialKindClientCredentials {
 		return recovering.reacquireClientCredentials(ctx)
@@ -354,12 +344,4 @@ func targetOverride(options *rootOptions) config.Target {
 		TeamID:    options.teamID,
 		ProjectID: options.project,
 	}
-}
-
-func applyTargetOverrideFlagSemantics(resolved *config.Resolved, options *rootOptions) {
-	if options.orgID == "" && options.team == "" && options.teamID == "" {
-		return
-	}
-
-	resolved.Target.TeamID = options.teamID
 }

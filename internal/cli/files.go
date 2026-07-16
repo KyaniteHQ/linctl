@@ -75,7 +75,7 @@ func addFilesUploadCommand(ctx context.Context, root *cobra.Command, options *ro
 		&contentType, "content-type", "",
 		"MIME type; inferred from the file extension when empty",
 	)
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func runFileUpload(
@@ -170,7 +170,7 @@ func addFilesDownloadCommand(ctx context.Context, root *cobra.Command, options *
 		},
 	}
 	command.Flags().StringVar(&output, "output", "", "local path to write the downloaded file")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func runFileDownload(

@@ -12,22 +12,13 @@ func addIssueVCSBranchSearchCommand(ctx context.Context, root *cobra.Command, op
 	branchCommand := newGroupCommand("vcs-branch-search", "Read the issue matched by a VCS branch")
 	root.AddCommand(branchCommand)
 
-	branchCommand.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, branchCommand, options, readGetSpec[client.IssueSummary]{
 		Use:   "get BRANCH_NAME",
 		Short: "Get the issue matched by a VCS branch",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			issue, err := client.GetIssueByVCSBranch(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.IssueSummary, error) {
+			return client.GetIssueByVCSBranch(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeIssue,
 	})
 	addIssueChildCommands(ctx, branchCommand, options, issueChildCommandBundleForVCSBranch())
 	addIssueVCSBranchCommentsCommand(ctx, branchCommand, options)

@@ -30,22 +30,15 @@ func addCustomerNeedCommand(ctx context.Context, root *cobra.Command, options *r
 }
 
 func addCustomerNeedProjectAttachmentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.CustomerNeedProjectAttachment]{
 		Use:   "project-attachment CUSTOMER_NEED_ID",
 		Short: "Get the project attachment linked to one customer need",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			attachment, err := client.GetCustomerNeedProjectAttachment(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeCustomerNeedProjectAttachment(command, options, attachment)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.CustomerNeedProjectAttachment, error) {
+			return client.GetCustomerNeedProjectAttachment(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeCustomerNeedProjectAttachment,
 	})
 }
 

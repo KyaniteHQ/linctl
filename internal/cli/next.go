@@ -44,7 +44,7 @@ func addNextCommand(ctx context.Context, root *cobra.Command, options *rootOptio
 	command.Flags().BoolVar(&dryRun, "dry-run", dryRun, "preview the pick without starting it or creating a branch")
 	command.Flags().BoolVar(&checkout, "checkout", checkout, "git checkout -b the issue branch before starting it")
 	command.Flags().IntVar(&limit, "limit", limit, "maximum candidate issues to inspect")
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 // nextFlags collects the inputs of the next command.

@@ -49,6 +49,48 @@ func finalizeRefreshedToken(
 	)
 }
 
+// transactRecoveredToken owns the transact-and-recover sequence shared by
+// mid-request recovery and command-time refresh: under the cross-process token
+// lock it rejects a removed session when the caller supplies a missing-session
+// error, adopts a concurrently-recovered usable token that differs from the
+// caller's local copy, and otherwise runs the caller's exchange. The recovered
+// result reports whether the exchange ran, so callers that verify readiness
+// during the exchange know when an adopted token still needs a readiness check.
+func transactRecoveredToken(
+	ctx context.Context,
+	store auth.Store,
+	profile string,
+	missingSession error,
+	localToken auth.TokenState,
+	exchange func(current auth.TokenState) (auth.TokenState, error),
+) (auth.TokenState, bool, error) {
+	recovered := false
+	token, err := store.TransactTokenState(
+		ctx,
+		profile,
+		func(current auth.TokenState) (auth.TokenState, error) {
+			if missingSession != nil && current.AccessToken == "" && current.RefreshToken == "" {
+				return auth.TokenState{}, missingSession
+			}
+			if !current.Equal(localToken) && tokenUsable(current, authNow()) {
+				return current, nil
+			}
+			next, err := exchange(current)
+			if err != nil {
+				return auth.TokenState{}, err
+			}
+			recovered = true
+
+			return next, nil
+		},
+	)
+	if err != nil {
+		return auth.TokenState{}, false, err
+	}
+
+	return token, recovered, nil
+}
+
 func currentOrRefreshedAuthToken(
 	ctx context.Context,
 	authContext authCommandContext,
@@ -76,21 +118,18 @@ func acquirePersistedClientCredentialsToken(
 	timeout time.Duration,
 ) (auth.TokenState, authReadinessReport, error) {
 	var readiness authReadinessReport
-	readinessChecked := false
-	token, err := authContext.store.TransactTokenState(
+	token, recovered, err := transactRecoveredToken(
 		ctx,
+		authContext.store,
 		authContext.profile,
-		func(current auth.TokenState) (auth.TokenState, error) {
-			if tokenUsable(current, authNow()) {
-				return current, nil
-			}
-
+		nil,
+		auth.TokenState{},
+		func(_ auth.TokenState) (auth.TokenState, error) {
 			acquired, checkedReadiness, err := acquireClientCredentialsToken(ctx, authContext, app, timeout)
 			if err != nil {
 				return auth.TokenState{}, err
 			}
 			readiness = checkedReadiness
-			readinessChecked = true
 
 			return acquired, nil
 		},
@@ -98,7 +137,7 @@ func acquirePersistedClientCredentialsToken(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	if readinessChecked {
+	if recovered {
 		return token, readiness, nil
 	}
 
@@ -156,24 +195,18 @@ func refreshPersistedAuthToken(
 	timeout time.Duration,
 ) (auth.TokenState, authReadinessReport, error) {
 	var readiness authReadinessReport
-	readinessChecked := false
-	token, err := authContext.store.TransactTokenState(
+	token, recovered, err := transactRecoveredToken(
 		ctx,
+		authContext.store,
 		authContext.profile,
+		missingPersistedTokenError(authContext.credentialKind),
+		authContext.localToken,
 		func(current auth.TokenState) (auth.TokenState, error) {
-			if current.AccessToken == "" && current.RefreshToken == "" {
-				return auth.TokenState{}, missingPersistedTokenError(authContext.credentialKind)
-			}
-			if !current.Equal(authContext.localToken) && tokenUsable(current, authNow()) {
-				return current, nil
-			}
-
 			refreshed, checkedReadiness, err := refreshAuthTokenState(ctx, authContext, app, current, timeout)
 			if err != nil {
 				return auth.TokenState{}, err
 			}
 			readiness = checkedReadiness
-			readinessChecked = true
 
 			return refreshed, nil
 		},
@@ -181,7 +214,7 @@ func refreshPersistedAuthToken(
 	if err != nil {
 		return auth.TokenState{}, authReadinessReport{}, err
 	}
-	if readinessChecked {
+	if recovered {
 		return token, readiness, nil
 	}
 

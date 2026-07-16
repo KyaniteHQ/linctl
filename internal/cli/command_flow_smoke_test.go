@@ -81,6 +81,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue list has blockers filter", args: []string{"issue", "list", "--has-blockers", "--limit", "1"}, contains: "LIT-21 Blocked issue [Todo]"},
 		{name: "issue list blocks filter", args: []string{"issue", "list", "--blocks", "--limit", "1"}, contains: "LIT-22 Blocking issue [Todo]"},
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1", "--limit", "1"}, contains: "LIT-23 Blocked by issue [Todo]", fake: commandFlowFakeClient{expectedBlockedBy: "LIT-1"}},
+		{name: "issue list combined filters", args: []string{"issue", "list", "--state", "started", "--project", "project-id", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started", expectedProjectID: "project-id"}},
 		{name: "issue list all teams", args: []string{"issue", "list", "--all-teams", "--limit", "1"}, contains: "LIT-20 All-team issue [Todo]"},
 		{name: "issue search", args: []string{"issue", "search", "needle", "--limit", "1"}, contains: "LIT-3 Search result [Todo]", fake: commandFlowFakeClient{expectedSearchQuery: "needle"}},
 		{name: "issue figma file key search", args: []string{"issue", "figma-file-key-search", "figma-key", "--limit", "1"}, contains: "LIT-41 Figma issue [Todo]", fake: commandFlowFakeClient{expectedIssueFigmaFileKey: "figma-key"}},

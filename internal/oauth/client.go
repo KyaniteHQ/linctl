@@ -50,7 +50,6 @@ type RefreshTokenRequest struct {
 	RefreshToken string
 	ClientID     string
 	ClientSecret string
-	UseBasicAuth bool
 }
 
 // ClientCredentialsRequest describes an app actor token exchange.
@@ -58,7 +57,6 @@ type ClientCredentialsRequest struct {
 	ClientID     string
 	ClientSecret string
 	Scopes       []string
-	UseBasicAuth bool
 }
 
 // RevocationRequest describes an OAuth token revocation request.
@@ -101,7 +99,7 @@ func (client *Client) ExchangeAuthorizationCode(
 		form.Set("client_secret", request.ClientSecret)
 	}
 
-	return client.exchange(ctx, form, clientAuthentication{})
+	return client.exchange(ctx, form)
 }
 
 // RefreshToken exchanges a refresh token and returns Linear's rotated token state.
@@ -109,21 +107,14 @@ func (client *Client) RefreshToken(ctx context.Context, request RefreshTokenRequ
 	form := url.Values{}
 	form.Set("grant_type", "refresh_token")
 	form.Set("refresh_token", request.RefreshToken)
-	clientAuth := clientAuthentication{
-		id:       request.ClientID,
-		secret:   request.ClientSecret,
-		useBasic: request.UseBasicAuth,
+	if request.ClientID != "" {
+		form.Set("client_id", request.ClientID)
 	}
-	if !request.UseBasicAuth {
-		if request.ClientID != "" {
-			form.Set("client_id", request.ClientID)
-		}
-		if request.ClientSecret != "" {
-			form.Set("client_secret", request.ClientSecret)
-		}
+	if request.ClientSecret != "" {
+		form.Set("client_secret", request.ClientSecret)
 	}
 
-	return client.exchange(ctx, form, clientAuth)
+	return client.exchange(ctx, form)
 }
 
 // ClientCredentials obtains an app actor access token.
@@ -136,16 +127,10 @@ func (client *Client) ClientCredentials(
 	if len(request.Scopes) > 0 {
 		form.Set("scope", strings.Join(request.Scopes, ","))
 	}
-	if !request.UseBasicAuth {
-		form.Set("client_id", request.ClientID)
-		form.Set("client_secret", request.ClientSecret)
-	}
+	form.Set("client_id", request.ClientID)
+	form.Set("client_secret", request.ClientSecret)
 
-	return client.exchange(ctx, form, clientAuthentication{
-		id:       request.ClientID,
-		secret:   request.ClientSecret,
-		useBasic: request.UseBasicAuth,
-	})
+	return client.exchange(ctx, form)
 }
 
 // RevokeToken revokes an OAuth access or refresh token.
@@ -186,11 +171,7 @@ func (client *Client) RevokeToken(ctx context.Context, request RevocationRequest
 	return nil
 }
 
-func (client *Client) exchange(
-	ctx context.Context,
-	form url.Values,
-	clientAuth clientAuthentication,
-) (auth.TokenState, error) {
+func (client *Client) exchange(ctx context.Context, form url.Values) (auth.TokenState, error) {
 	httpRequest, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
@@ -201,9 +182,6 @@ func (client *Client) exchange(
 		return auth.TokenState{}, fmt.Errorf("create oauth token request: %w", err)
 	}
 	httpRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if clientAuth.useBasic {
-		httpRequest.SetBasicAuth(clientAuth.id, clientAuth.secret)
-	}
 
 	httpResponse, err := client.httpClient.Do(httpRequest)
 	if err != nil {
@@ -230,12 +208,6 @@ func (client *Client) exchange(
 }
 
 const maxTokenResponseBytes = 1 << 20
-
-type clientAuthentication struct {
-	id       string
-	secret   string
-	useBasic bool
-}
 
 type tokenEndpointResponse struct {
 	AccessToken  string    `json:"access_token"`

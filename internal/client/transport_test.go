@@ -104,6 +104,73 @@ func Test_Transport_returns_graphql_error_when_response_contains_errors(t *testi
 	require.ErrorContains(t, err, "BAD_USER_INPUT")
 }
 
+func Test_Transport_maps_missing_entity_graphql_errors_to_not_found(t *testing.T) {
+	tests := []struct {
+		name     string
+		body     string
+		notFound bool
+	}{
+		{
+			name:     "missing issue",
+			body:     `{"errors":[{"message":"issue Entity not found: Issue","extensions":{"code":"INPUT_ERROR"}}]}`,
+			notFound: true,
+		},
+		{
+			name:     "missing project",
+			body:     `{"errors":[{"message":"project Entity not found: Project","extensions":{"code":"INPUT_ERROR"}}]}`,
+			notFound: true,
+		},
+		{
+			name:     "other input error stays graphql",
+			body:     `{"errors":[{"message":"invalid date","extensions":{"code":"INPUT_ERROR"}}]}`,
+			notFound: false,
+		},
+		{
+			name: "mixed errors stay graphql",
+			body: `{"errors":[` +
+				`{"message":"issue Entity not found: Issue","extensions":{"code":"INPUT_ERROR"}},` +
+				`{"message":"bad query","extensions":{"code":"BAD_USER_INPUT"}}]}`,
+			notFound: false,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+				writer.Header().Set("Content-Type", "application/json")
+				if _, err := writer.Write([]byte(testCase.body)); err != nil {
+					t.Errorf("write response: %v", err)
+				}
+			}))
+			defer server.Close()
+			transport := NewTransport(TransportConfig{
+				Endpoint: server.URL,
+				Token:    OAuthAccessToken("test-token"),
+				Timeout:  2 * time.Second,
+			})
+			response := graphql.Response{Data: &testGraphQLData{}}
+
+			err := transport.MakeRequest(
+				context.Background(),
+				&graphql.Request{Query: "query Test { viewer { id } }"},
+				&response,
+			)
+
+			require.Error(t, err)
+			if testCase.notFound {
+				require.ErrorIs(t, err, ErrNotFound)
+				require.NotErrorIs(t, err, ErrGraphQL)
+			} else {
+				require.ErrorIs(t, err, ErrGraphQL)
+				require.NotErrorIs(t, err, ErrNotFound)
+			}
+		})
+	}
+}
+
+func Test_graphQLErrorsSignalMissingEntity_rejects_empty_error_list(t *testing.T) {
+	require.False(t, graphQLErrorsSignalMissingEntity(nil))
+}
+
 func Test_Transport_returns_typed_auth_error_for_401(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if got := request.Header.Get("Authorization"); got != "Bearer expired-token" {

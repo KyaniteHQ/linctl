@@ -7,10 +7,8 @@ import (
 )
 
 // Test_projectJSONFields_projects_list_envelopes guards that --json --fields
-// projects per item for every collection envelope the read commands emit.
-// The favorite/emoji/attachment envelopes were previously absent from the
-// projectCollection dispatch table, so projection fell through to the
-// single-object path and errored on the (missing) leaf field.
+// projects per item of the collection named by a command's annotated
+// collection key, across representative envelope keys.
 func Test_projectJSONFields_projects_list_envelopes(t *testing.T) {
 	cases := []struct {
 		name string
@@ -34,7 +32,7 @@ func Test_projectJSONFields_projects_list_envelopes(t *testing.T) {
 				},
 			}
 
-			projected, err := projectJSONFields(envelope, "id,name")
+			projected, err := projectJSONFieldsWithCollectionKey(envelope, "id,name", testCase.key)
 
 			require.NoError(t, err)
 			result, ok := projected.(map[string]any)
@@ -51,14 +49,11 @@ func Test_projectJSONFields_projects_list_envelopes(t *testing.T) {
 	}
 }
 
-// Test_projectJSONFields_leaves_detail_arrays_whole guards the curation rule in
-// projectCollection: the projected-collection key set is an allowlist, not
-// generic top-level []any detection. A detail object carries scalar fields plus
-// an incidental array that is NOT a collection (a time schedule's "entries"),
-// and a dependency graph carries several arrays at once. Both must project as a
-// single object — projecting per-element would return the wrong entity. If a
-// future change replaces the allowlist with "the single top-level array", these
-// cases fail.
+// Test_projectJSONFields_leaves_detail_arrays_whole guards that a command
+// without an annotated collection key always projects the whole object: a
+// detail object's embedded arrays (a time schedule's "entries", a project's
+// "teams", a dependency graph's several arrays) are never mistaken for a
+// projection collection, no matter what the array is named.
 func Test_projectJSONFields_leaves_detail_arrays_whole(t *testing.T) {
 	t.Run("detail with incidental array", func(t *testing.T) {
 		detail := map[string]any{
@@ -67,7 +62,7 @@ func Test_projectJSONFields_leaves_detail_arrays_whole(t *testing.T) {
 			"entries": []any{map[string]any{"id": "entry-1"}},
 		}
 
-		projected, err := projectJSONFields(detail, "id,name")
+		projected, err := projectJSONFieldsWithCollectionKey(detail, "id,name", "")
 
 		require.NoError(t, err)
 		require.Equal(t, map[string]any{"id": "schedule-1", "name": "On call"}, projected)
@@ -81,9 +76,21 @@ func Test_projectJSONFields_leaves_detail_arrays_whole(t *testing.T) {
 			"blocked_by": []any{},
 		}
 
-		projected, err := projectJSONFields(graph, "id")
+		projected, err := projectJSONFieldsWithCollectionKey(graph, "id", "")
 
 		require.NoError(t, err)
 		require.Equal(t, map[string]any{"id": "issue-1"}, projected)
+	})
+
+	t.Run("detail with collection-named array", func(t *testing.T) {
+		detail := map[string]any{
+			"name":  "the-project",
+			"teams": []any{map[string]any{"name": "team-one"}, map[string]any{"name": "team-two"}},
+		}
+
+		projected, err := projectJSONFieldsWithCollectionKey(detail, "name", "")
+
+		require.NoError(t, err)
+		require.Equal(t, map[string]any{"name": "the-project"}, projected)
 	})
 }

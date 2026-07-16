@@ -88,22 +88,15 @@ func addProjectMilestoneListCommand(ctx context.Context, root *cobra.Command, op
 }
 
 func addProjectMilestoneGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.ProjectMilestoneSummary]{
 		Use:   "get PROJECT_MILESTONE_ID",
 		Short: "Get one ProjectMilestone by id",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			milestone, err := client.GetProjectMilestoneByID(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeProjectMilestone(command, options, milestone)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.ProjectMilestoneSummary, error) {
+			return client.GetProjectMilestoneByID(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeProjectMilestone,
 	})
 }
 

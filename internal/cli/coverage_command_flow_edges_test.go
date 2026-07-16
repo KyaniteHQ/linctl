@@ -108,31 +108,51 @@ func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
 }
 
 func Test_CommandFlows_cover_issue_list_filter_validation(t *testing.T) {
-	tests := [][]string{
-		{"issue", "list", "--state", "started", "--project", "project-id"},
-		{"issue", "list", "--state", "started", "--mine"},
-		{"issue", "list", "--state", "started", "--assignee", "assignee-id"},
-		{"issue", "list", "--state", "started", "--label", "label-id"},
-		{"issue", "list", "--state", "started", "--cycle", "cycle-id"},
-		{"issue", "list", "--state", "started", "--created-after", "2026-06-01"},
-		{"issue", "list", "--state", "started", "--created-since", "2026-06-01"},
-		{"issue", "list", "--created-after", "2026-06-01", "--created-since", "2026-06-01"},
-		{"issue", "list", "--state", "started", "--created-before", "2026-06-30"},
-		{"issue", "list", "--state", "started", "--has-blockers"},
-		{"issue", "list", "--has-blockers", "--blocks"},
-		{"issue", "list", "--blocks", "--blocked-by", "LIT-1"},
-		{"issue", "list", "--state", "started", "--all-teams"},
+	tests := []struct {
+		args []string
+		want string
+	}{
+		{
+			[]string{"issue", "list", "--state", "started", "--all-teams"},
+			"--all-teams cannot combine with team-scoped filters",
+		},
+		{
+			[]string{"issue", "list", "--mine", "--assignee", "assignee-id"},
+			"use only one of --mine or --assignee",
+		},
+		{
+			[]string{"issue", "list", "--created-after", "2026-06-01", "--created-since", "2026-06-01"},
+			"use only one of --created-after or --created-since",
+		},
+		{
+			[]string{"issue", "list", "--blocks", "--blocked-by", "LIT-1"},
+			"--blocked-by resolves issue relations and cannot combine with other filters",
+		},
 	}
-	for _, args := range tests {
-		t.Run(strings.Join(args, " "), func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
 			command := NewRootCommand(context.Background(), BuildInfo{})
-			command.SetArgs(args)
+			command.SetArgs(testCase.args)
 
 			err := command.ExecuteContext(context.Background())
 
-			require.ErrorContains(t, err, "use only one")
+			require.ErrorContains(t, err, testCase.want)
 		})
 	}
+}
+
+func Test_validateIssueListFilters_allows_combined_team_scoped_filters(t *testing.T) {
+	require.NoError(t, validateIssueListFilters(issueListFlagValues{
+		stateType:     "started",
+		projectID:     "project-id",
+		assigneeID:    "user-id",
+		labelID:       "label-id",
+		cycleID:       "cycle-id",
+		createdAfter:  "2026-06-01",
+		createdBefore: "2026-06-30",
+		hasBlockers:   true,
+		blocks:        true,
+	}))
 }
 
 func Test_CommandFlows_cover_issue_current_error_branches(t *testing.T) {

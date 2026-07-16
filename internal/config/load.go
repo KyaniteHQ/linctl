@@ -68,6 +68,12 @@ func Load(ctx context.Context, request LoadRequest) (Resolved, error) {
 		return Resolved{}, err
 	}
 	target := mergeTarget(mergeTarget(mergedConfig.Target, profile.Target), request.TargetOverride)
+	override := request.TargetOverride
+	if override.OrgID != "" || override.TeamKey != "" || override.TeamID != "" {
+		// An explicit org or team override invalidates a pinned team id: the id
+		// only survives when the override itself carries one.
+		target.TeamID = override.TeamID
+	}
 
 	return Resolved{
 		Profile: profileName,

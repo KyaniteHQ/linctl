@@ -34,40 +34,36 @@ func addProjectUpdateCreateCommand(ctx context.Context, root *cobra.Command, opt
 	request := client.ProjectUpdateCreateRequest{}
 	health := ""
 	bodyFile := ""
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectUpdateSummary]{
 		Use:   "create PROJECT_ID",
 		Short: "Post a status update to a project after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Body, "body", "", "update body as markdown; use - to read stdin")
+			command.Flags().StringVar(&bodyFile, "body-file", "", "read update body from file")
+			command.Flags().StringVar(&health, "health", "", "project health: on-track, at-risk, or off-track")
+		},
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
+		) (client.ProjectUpdateSummary, error) {
 			request.ProjectID = args[0]
 
 			if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
-				return err
+				return client.ProjectUpdateSummary{}, err
 			}
 			if err := resolveBodyFlag(command, &request.Body); err != nil {
-				return err
+				return client.ProjectUpdateSummary{}, err
 			}
 			normalizedHealth, err := normalizeAndNote(command, "health", health, normalizedHealthValue)
 			if err != nil {
-				return err
+				return client.ProjectUpdateSummary{}, err
 			}
 			request.Health = normalizedHealth
-			update, err := client.CreateProjectUpdate(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
 
-			return writeProjectUpdate(command, options, update)
+			return client.CreateProjectUpdate(ctx, runtime.graphqlClient, runtime.config.Target, request)
 		},
-	}
-	command.Flags().StringVar(&request.Body, "body", "", "update body as markdown; use - to read stdin")
-	command.Flags().StringVar(&bodyFile, "body-file", "", "read update body from file")
-	command.Flags().StringVar(&health, "health", "", "project health: on-track, at-risk, or off-track")
-	root.AddCommand(command)
+		Write: writeProjectUpdate,
+	})
 }
 
 func writeProjectUpdate(command *cobra.Command, options *rootOptions, update client.ProjectUpdateSummary) error {

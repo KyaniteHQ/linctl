@@ -11,24 +11,15 @@ import (
 func addExternalLinkCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	parentCommand := newGroupCommand("external-link", "Read Linear external links")
 
-	getCommand := &cobra.Command{
+	addReadGetCommand(ctx, parentCommand, options, readGetSpec[client.EntityExternalLinkSummary]{
 		Use:   "get EXTERNAL_LINK_ID",
 		Short: "Get one external link by id",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			link, err := client.GetEntityExternalLinkByID(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeEntityExternalLink(command, options, link)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.EntityExternalLinkSummary, error) {
+			return client.GetEntityExternalLinkByID(ctx, runtime.graphqlClient, id)
 		},
-	}
-
-	parentCommand.AddCommand(getCommand)
+		Write: writeEntityExternalLink,
+	})
 	root.AddCommand(parentCommand)
 }

@@ -80,7 +80,7 @@ func addIssueCreateCommand(ctx context.Context, root *cobra.Command, options *ro
 		"assign to a project milestone id (requires a pinned project)",
 	)
 	registerStateCompletion(ctx, command, options)
-	root.AddCommand(command)
+	addCommandWithSafety(root, CommandSafetyWrite, command)
 }
 
 func issueCreateRequiresRuntime(flags issueCreateFlags) bool {
@@ -129,15 +129,36 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 	request := client.IssueUpdateRequest{}
 	flags := issueUpdateFlags{}
 	estimate := 0
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "update ISSUE_ID",
 		Short: "Update an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Title, "title", "", "new issue title")
+			command.Flags().StringVar(&request.Description, "description", "", "new issue description")
+			command.Flags().StringVar(
+				&flags.descriptionFile, "description-file", "", "read new issue description from file",
+			)
+			command.Flags().StringVar(&request.Append, "append", "", "text to append to the issue description")
+			command.Flags().StringVar(&flags.appendFile, "append-file", "", "read text to append from file")
+			command.Flags().StringVar(&flags.state, "state", "", "set workflow state type (e.g. started, completed)")
+			command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
+			command.Flags().StringVar(
+				&flags.priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)",
+			)
+			command.Flags().StringVar(&request.AssigneeID, "assignee", "", "reassign the issue to a user id")
+			command.Flags().StringArrayVar(
+				&request.LabelIDs, "label", nil, "set labels by id (repeatable, replaces existing)",
+			)
+			command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
+			command.Flags().BoolVar(&request.ClearDueDate, "clear-due-date", false, "clear the due date")
+			command.Flags().IntVar(&estimate, "estimate", 0, "set the estimate (validated against team config)")
+			command.Flags().BoolVar(&request.ClearEstimate, "clear-estimate", false, "clear the estimate")
+			registerStateCompletion(ctx, command, options)
+		},
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueSummary, error) {
 			request.ID = args[0]
 			var resolvedEstimate *int
 			if command.Flags().Changed("estimate") {
@@ -146,32 +167,13 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 
 			assembled, err := assembleIssueUpdate(command, request, flags, resolvedEstimate)
 			if err != nil {
-				return err
-			}
-			issue, err := client.UpdateIssue(ctx, runtime.graphqlClient, runtime.config.Target, assembled)
-			if err != nil {
-				return err
+				return client.IssueSummary{}, err
 			}
 
-			return writeIssue(command, options, issue)
+			return client.UpdateIssue(ctx, runtime.graphqlClient, runtime.config.Target, assembled)
 		},
-	}
-	command.Flags().StringVar(&request.Title, "title", "", "new issue title")
-	command.Flags().StringVar(&request.Description, "description", "", "new issue description")
-	command.Flags().StringVar(&flags.descriptionFile, "description-file", "", "read new issue description from file")
-	command.Flags().StringVar(&request.Append, "append", "", "text to append to the issue description")
-	command.Flags().StringVar(&flags.appendFile, "append-file", "", "read text to append from file")
-	command.Flags().StringVar(&flags.state, "state", "", "set workflow state type (e.g. started, completed)")
-	command.Flags().StringVar(&flags.status, "status", "", "alias for --state")
-	command.Flags().StringVar(&flags.priority, "priority", "", "set priority (urgent/high/medium/low/none or 0-4)")
-	command.Flags().StringVar(&request.AssigneeID, "assignee", "", "reassign the issue to a user id")
-	command.Flags().StringArrayVar(&request.LabelIDs, "label", nil, "set labels by id (repeatable, replaces existing)")
-	command.Flags().StringVar(&request.DueDate, "due-date", "", "set the due date (YYYY-MM-DD)")
-	command.Flags().BoolVar(&request.ClearDueDate, "clear-due-date", false, "clear the due date")
-	command.Flags().IntVar(&estimate, "estimate", 0, "set the estimate (validated against team config)")
-	command.Flags().BoolVar(&request.ClearEstimate, "clear-estimate", false, "clear the estimate")
-	registerStateCompletion(ctx, command, options)
-	root.AddCommand(command)
+		Write: writeIssue,
+	})
 }
 
 func assembleIssueUpdate(
@@ -220,67 +222,59 @@ func applyIssueWriteNormalization(
 }
 
 func addIssueStartCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "start ISSUE_ID",
 		Short: "Assign and start an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			issue, err := client.StartIssue(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueSummary, error) {
+			return client.StartIssue(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},
+		Write: writeIssue,
 	})
 }
 
 func addIssueCommentCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueCommentRequest{}
 	bodyFile := ""
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueCommentResult]{
 		Use:   "comment ISSUE_ID",
 		Short: "Comment on an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Body, "body", "", "comment body")
+			command.Flags().StringVar(&bodyFile, "body-file", "", "read comment body from file")
+		},
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueCommentResult, error) {
 			request.ID = args[0]
 
-			return runIssueBodyWriteCommand(ctx, command, options, runtime, request, bodyFile)
+			return runIssueBodyWrite(ctx, command, runtime, request, bodyFile)
 		},
-	}
-	command.Flags().StringVar(&request.Body, "body", "", "comment body")
-	command.Flags().StringVar(&bodyFile, "body-file", "", "read comment body from file")
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+		Write: writeIssueComment,
+	})
 }
 
-func runIssueBodyWriteCommand(
+func runIssueBodyWrite(
 	ctx context.Context,
 	command *cobra.Command,
-	options *rootOptions,
 	runtime commandRuntime,
 	request client.IssueCommentRequest,
 	bodyFile string,
-) error {
+) (client.IssueCommentResult, error) {
 	if err := resolveFileFlag(command, &request.Body, bodyFile, "body"); err != nil {
-		return err
+		return client.IssueCommentResult{}, err
 	}
 	if err := resolveBodyFlag(command, &request.Body); err != nil {
-		return err
-	}
-	comment, err := client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
-	if err != nil {
-		return err
+		return client.IssueCommentResult{}, err
 	}
 
+	return client.CommentOnIssue(ctx, runtime.graphqlClient, runtime.config.Target, request)
+}
+
+func writeIssueComment(command *cobra.Command, options *rootOptions, comment client.IssueCommentResult) error {
 	return writeItem(command, options, comment, comment.ID,
 		func(command *cobra.Command, _ *rootOptions, comment client.IssueCommentResult) error {
 			return render.WriteLine(command.OutOrStdout(), "comment %s on %s", comment.ID, comment.Issue.Identifier)
@@ -290,44 +284,37 @@ func runIssueBodyWriteCommand(
 func addIssueReplyCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.IssueCommentRequest{}
 	bodyFile := ""
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueCommentResult]{
 		Use:   "reply ISSUE_ID COMMENT_ID",
 		Short: "Reply to an issue comment after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Body, "body", "", "reply body")
+			command.Flags().StringVar(&bodyFile, "body-file", "", "read reply body from file")
+		},
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueCommentResult, error) {
 			request.ID = args[0]
 			request.ParentID = args[1]
 
-			return runIssueBodyWriteCommand(ctx, command, options, runtime, request, bodyFile)
+			return runIssueBodyWrite(ctx, command, runtime, request, bodyFile)
 		},
-	}
-	command.Flags().StringVar(&request.Body, "body", "", "reply body")
-	command.Flags().StringVar(&bodyFile, "body-file", "", "read reply body from file")
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+		Write: writeIssueComment,
+	})
 }
 
 func addIssueCloseCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "close ISSUE_ID",
 		Short: "Move an issue to the completed workflow state",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			issue, err := client.CloseIssue(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueSummary, error) {
+			return client.CloseIssue(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},
+		Write: writeIssue,
 	})
 }
 
@@ -368,31 +355,24 @@ func emptyDash(value string) string {
 
 func addIssueLinkCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.AttachmentLinkRequest{}
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.AttachmentSummary]{
 		Use:   "link URL ISSUE_ID",
 		Short: "Attach a URL to an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Title, "title", "", "attachment title")
+			command.Flags().StringVar(&request.Subtitle, "subtitle", "", "attachment subtitle")
+		},
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.AttachmentSummary, error) {
 			request.URL = args[0]
 			request.IssueID = args[1]
 
-			attachment, err := client.LinkIssueAttachment(
-				ctx, runtime.graphqlClient, runtime.config.Target, request,
-			)
-			if err != nil {
-				return err
-			}
-
-			return writeAttachmentLink(command, options, attachment)
+			return client.LinkIssueAttachment(ctx, runtime.graphqlClient, runtime.config.Target, request)
 		},
-	}
-	command.Flags().StringVar(&request.Title, "title", "", "attachment title")
-	command.Flags().StringVar(&request.Subtitle, "subtitle", "", "attachment subtitle")
-	addCommandWithSafety(root, CommandSafetyWrite, command)
+		Write: writeAttachmentLink,
+	})
 }
 
 func writeAttachmentLink(command *cobra.Command, options *rootOptions, attachment client.AttachmentSummary) error {

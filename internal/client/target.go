@@ -319,10 +319,9 @@ func resolveProject(
 	}
 	projectID := project.Project.Id
 	projectName := project.Project.Name
-	projectTeamPages := []gql.TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
-	after := project.Project.Teams.PageInfo.EndCursor
+	teamsPage := project.Project.Teams
 	for {
-		for _, projectTeam := range projectTeamPageNodes(projectTeamPages) {
+		for _, projectTeam := range teamsPage.Nodes {
 			if projectTeam.Id == team.Id {
 				return ResolvedProject{
 					ID:   projectID,
@@ -331,8 +330,8 @@ func resolveProject(
 			}
 		}
 		next, ok, err := nextTargetPageCursor(
-			projectTeamPages[len(projectTeamPages)-1].PageInfo.HasNextPage,
-			after,
+			teamsPage.PageInfo.HasNextPage,
+			teamsPage.PageInfo.EndCursor,
 			"project teams",
 		)
 		if err != nil {
@@ -345,8 +344,7 @@ func resolveProject(
 		if err != nil {
 			return ResolvedProject{}, false, err
 		}
-		projectTeamPages = []gql.TargetProjectProjectTeamsTeamConnection{project.Project.Teams}
-		after = project.Project.Teams.PageInfo.EndCursor
+		teamsPage = project.Project.Teams
 	}
 
 	return ResolvedProject{}, false, fmt.Errorf(
@@ -384,17 +382,6 @@ func targetProjectPage(
 	}
 
 	return project, nil
-}
-
-func projectTeamPageNodes(
-	pages []gql.TargetProjectProjectTeamsTeamConnection,
-) []gql.TargetProjectProjectTeamsTeamConnectionNodesTeam {
-	teams := []gql.TargetProjectProjectTeamsTeamConnectionNodesTeam{}
-	for _, page := range pages {
-		teams = append(teams, page.Nodes...)
-	}
-
-	return teams
 }
 
 func nextTargetPageCursor(hasNextPage bool, endCursor *string, collection string) (*string, bool, error) {

@@ -51,8 +51,9 @@ func (guard *guardedClient) addIssueLabel(
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("add label to issue %s: %w", request.IssueID, err)
 	}
-	if !updated.IssueAddLabel.Success || updated.IssueAddLabel.Issue == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issueAddLabel reported no success", ErrMutationFailed)
+	succeeded := updated.IssueAddLabel.Success && updated.IssueAddLabel.Issue != nil
+	if err := mutationSuccess(succeeded, "issueAddLabel"); err != nil {
+		return IssueSummary{}, err
 	}
 
 	return issueSummaryFromFields(updated.IssueAddLabel.Issue.IssueSummaryFields), nil
@@ -91,8 +92,9 @@ func (guard *guardedClient) removeIssueLabel(
 	if err != nil {
 		return IssueSummary{}, fmt.Errorf("remove label from issue %s: %w", request.IssueID, err)
 	}
-	if !updated.IssueRemoveLabel.Success || updated.IssueRemoveLabel.Issue == nil {
-		return IssueSummary{}, fmt.Errorf("%w: issueRemoveLabel reported no success", ErrMutationFailed)
+	succeeded := updated.IssueRemoveLabel.Success && updated.IssueRemoveLabel.Issue != nil
+	if err := mutationSuccess(succeeded, "issueRemoveLabel"); err != nil {
+		return IssueSummary{}, err
 	}
 
 	return issueSummaryFromFields(updated.IssueRemoveLabel.Issue.IssueSummaryFields), nil

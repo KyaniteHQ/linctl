@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -92,8 +93,16 @@ func runIssueExport(
 	})
 }
 
+// exportIdentifierPattern pins the Linear issue identifier grammar the export
+// filename is built from; a response value outside it must not reach the
+// filesystem, so the identifier cannot smuggle path separators into the join.
+var exportIdentifierPattern = regexp.MustCompile(`^[A-Z][A-Z0-9]+-[0-9]+$`)
+
 // writeExportDocument creates dir if needed and writes the assembled export.
 func writeExportDocument(dir string, identifier string, document string) (string, error) {
+	if !exportIdentifierPattern.MatchString(identifier) {
+		return "", fmt.Errorf("refusing export: %q is not a valid Linear issue identifier", identifier)
+	}
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return "", fmt.Errorf("create %s: %w", dir, err)
 	}

@@ -50,8 +50,9 @@ func (guard *guardedClient) addProjectLabel(
 	if err != nil {
 		return ProjectSummary{}, fmt.Errorf("add label to project %s: %w", request.ProjectID, err)
 	}
-	if !updated.ProjectAddLabel.Success || updated.ProjectAddLabel.Project == nil {
-		return ProjectSummary{}, fmt.Errorf("%w: projectAddLabel reported no success", ErrMutationFailed)
+	succeeded := updated.ProjectAddLabel.Success && updated.ProjectAddLabel.Project != nil
+	if err := mutationSuccess(succeeded, "projectAddLabel"); err != nil {
+		return ProjectSummary{}, err
 	}
 
 	return projectSummaryFromFields(updated.ProjectAddLabel.Project.ProjectSummaryFields), nil
@@ -89,8 +90,9 @@ func (guard *guardedClient) removeProjectLabel(
 	if err != nil {
 		return ProjectSummary{}, fmt.Errorf("remove label from project %s: %w", request.ProjectID, err)
 	}
-	if !updated.ProjectRemoveLabel.Success || updated.ProjectRemoveLabel.Project == nil {
-		return ProjectSummary{}, fmt.Errorf("%w: projectRemoveLabel reported no success", ErrMutationFailed)
+	succeeded := updated.ProjectRemoveLabel.Success && updated.ProjectRemoveLabel.Project != nil
+	if err := mutationSuccess(succeeded, "projectRemoveLabel"); err != nil {
+		return ProjectSummary{}, err
 	}
 
 	return projectSummaryFromFields(updated.ProjectRemoveLabel.Project.ProjectSummaryFields), nil

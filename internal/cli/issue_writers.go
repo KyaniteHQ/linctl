@@ -10,19 +10,32 @@ import (
 )
 
 func writeIssueBotActor(command *cobra.Command, options *rootOptions, actor client.IssueBotActor) error {
-	return writeItem(command, options, actor, actor.IssueID,
-		func(command *cobra.Command, _ *rootOptions, actor client.IssueBotActor) error {
-			if actor.Bot == nil {
-				return render.WriteLine(command.OutOrStdout(), "%s bot -", actor.IssueID)
+	return writeBotActor(command, options, actor, actor.IssueID, actor.Bot)
+}
+
+// writeBotActor renders one entity's optional bot actor: the full payload goes
+// to JSON output while the human line carries the owning entity id plus the
+// bot identity or a dash when no bot is attached.
+func writeBotActor[T any](
+	command *cobra.Command,
+	options *rootOptions,
+	actor T,
+	entityID string,
+	bot *client.ActorBotSummary,
+) error {
+	return writeItem(command, options, actor, entityID,
+		func(command *cobra.Command, _ *rootOptions, _ T) error {
+			if bot == nil {
+				return render.WriteLine(command.OutOrStdout(), "%s bot -", entityID)
 			}
 
 			return render.WriteLine(
 				command.OutOrStdout(),
 				"%s bot %s %s [%s]",
-				actor.IssueID,
-				emptyDash(actor.Bot.ID),
-				emptyDash(actor.Bot.Name),
-				actor.Bot.Type,
+				entityID,
+				emptyDash(bot.ID),
+				emptyDash(bot.Name),
+				bot.Type,
 			)
 		})
 }

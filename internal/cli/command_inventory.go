@@ -155,8 +155,15 @@ func addCommandWithSafety(root *cobra.Command, safety CommandSafety, command *co
 	root.AddCommand(command)
 }
 
-func annotateReadCollectionCommand(command *cobra.Command, collectionKey string) {
+// annotateCollectionKey records the JSON collection key that --fields projects
+// over, without touching the command's safety class. Write commands that emit
+// a collection envelope (issue import) use it directly.
+func annotateCollectionKey(command *cobra.Command, collectionKey string) {
 	annotateCommand(command, commandCollectionKeyAnnotation, collectionKey)
+}
+
+func annotateReadCollectionCommand(command *cobra.Command, collectionKey string) {
+	annotateCollectionKey(command, collectionKey)
 	annotateCommand(command, commandSafetyAnnotation, string(CommandSafetyRead))
 }
 
@@ -189,28 +196,6 @@ func commandSafety(command *cobra.Command) CommandSafety {
 			return CommandSafetyLocal
 		case CommandSafetyUnknown:
 			return CommandSafetyUnknown
-		}
-	}
-	path := " " + CommandPath(command) + " "
-	for _, action := range []string{
-		" archive ",
-		" bulk-export ",
-		" create ",
-		" delete ",
-		" done ",
-		" download ",
-		" import ",
-		" next ",
-		" resolve ",
-		" restore ",
-		" retire ",
-		" unarchive ",
-		" unresolve ",
-		" update ",
-		" upload ",
-	} {
-		if strings.Contains(path, action) {
-			return CommandSafetyWrite
 		}
 	}
 	for _, prefix := range []string{"Get ", "List ", "Read ", "Search ", "Show ", "Check ", "Suggest "} {
@@ -340,77 +325,4 @@ func jsonFieldName(field reflect.StructField) string {
 	}
 
 	return ""
-}
-
-// CollectionKeys returns the explicit collection field names that list-page
-// envelopes may project over with --fields.
-func CollectionKeys() []string {
-	keys := make([]string, len(collectionKeys))
-	copy(keys, collectionKeys)
-
-	return keys
-}
-
-// collectionKeys is the explicit allowlist of collection field names that list
-// pages emit (each list page carries exactly one such array plus scalar
-// pagination/context fields). It is deliberately NOT generic top-level []any
-// detection: some detail responses embed an incidental array that is not a
-// collection (for example a TimeScheduleSummary's "entries", or a
-// ProjectSummary's "teams"), so treating "the single top-level array" as the
-// collection would wrongly project per-element instead of over the object.
-// Equally, list pages are not all paginated (AuditEntryTypeList,
-// SemanticSearchList, SLAConfigurationList, TemplateList carry no
-// has_next_page), so a pagination marker cannot stand in for the allowlist
-// either. Multi-array responses (IssueDependencyGraph) and detail objects fall
-// through to whole-object projection.
-var collectionKeys = []string{
-	"issues",
-	"associations",
-	"cycles",
-	"projects",
-	"members",
-	"comments",
-	"updates",
-	"milestones",
-	"documents",
-	"labels",
-	"teams",
-	"users",
-	"memberships",
-	"drafts",
-	"initiatives",
-	"notifications",
-	"notification_subscriptions",
-	"release_pipelines",
-	"release_stages",
-	"releases",
-	"history",
-	"links",
-	"release_notes",
-	"customers",
-	"customer_needs",
-	"customer_statuses",
-	"customer_tiers",
-	"relations",
-	"roadmaps",
-	"time_schedules",
-	"triage_responsibilities",
-	"sla_configurations",
-	"results",
-	"templates",
-	"workflow_states",
-	"agent_activities",
-	"agent_skills",
-	"agent_sessions",
-	"external_users",
-	"audit_entry_types",
-	"favorites",
-	"emojis",
-	"attachments",
-	"custom_views",
-	"project_labels",
-	"initiative_labels",
-	"project_statuses",
-	"spans",
-	"git_automation_states",
 }

@@ -56,22 +56,13 @@ func addAttachmentIssueCommand(ctx context.Context, root *cobra.Command, options
 	issueCommand := newGroupCommand("issue", "Read the issue associated with an attachment")
 	root.AddCommand(issueCommand)
 
-	issueCommand.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, issueCommand, options, readGetSpec[client.IssueSummary]{
 		Use:   "get ATTACHMENT_ID",
 		Short: "Get the issue associated with an attachment",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			issue, err := client.GetAttachmentIssue(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.IssueSummary, error) {
+			return client.GetAttachmentIssue(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeIssue,
 	})
 	addIssueChildCommands(ctx, issueCommand, options, issueChildCommandBundleForAttachment())
 	addAttachmentIssueCommentsCommand(ctx, issueCommand, options)

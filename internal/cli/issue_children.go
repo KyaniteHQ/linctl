@@ -142,22 +142,13 @@ func addIssueChildValueCommand[Value any](
 	load issueChildValueFetcher[Value],
 	writeValue readListItemWriter[Value],
 ) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[Value]{
 		Use:   name + " " + argument,
 		Short: short,
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			value, err := load(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeValue(command, options, value)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (Value, error) {
+			return load(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeValue,
 	})
 }
 

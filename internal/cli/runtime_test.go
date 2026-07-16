@@ -723,7 +723,7 @@ func Test_CommandRuntime_rejects_persisted_token_without_recovery_grant(t *testi
 		Token: auth.TokenState{AccessToken: "stale-access-token"},
 	})
 
-	_, err := runtimeClient.recoverCurrentToken(
+	_, err := runtimeClient.exchangeCurrentToken(
 		context.Background(),
 		auth.TokenState{AccessToken: "stale-access-token"},
 	)

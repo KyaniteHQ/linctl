@@ -44,22 +44,15 @@ func writeProjectStatus(command *cobra.Command, options *rootOptions, status cli
 }
 
 func addProjectStatusProjectCountCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.ProjectStatusProjectCount]{
 		Use:   "project-count PROJECT_STATUS_ID",
 		Short: "Show project counts for one project status",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			count, err := client.GetProjectStatusProjectCount(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeProjectStatusProjectCount(command, options, count)
+		Load: func(
+			ctx context.Context, runtime commandRuntime, id string,
+		) (client.ProjectStatusProjectCount, error) {
+			return client.GetProjectStatusProjectCount(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeProjectStatusProjectCount,
 	})
 }
 

@@ -11,83 +11,66 @@ import (
 func addProjectCreateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.ProjectCreateRequest{}
 	var contentFile string
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectSummary]{
 		Use:   "create",
 		Short: "Create a project in the pinned team",
 		Args:  cobra.NoArgs,
-		RunE: func(command *cobra.Command, _ []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			if err := resolveFileFlag(command, &request.Content, contentFile, "content"); err != nil {
-				return err
-			}
-
-			project, err := client.CreateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
-
-			return writeProject(command, options, project)
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Name, "name", "", "project name")
+			command.Flags().StringVar(&request.Description, "description", "", "project description")
+			command.Flags().StringVar(&request.Content, "content", "", "project content as markdown")
+			command.Flags().StringVar(&contentFile, "content-file", "", "read project content markdown from a file")
 		},
-	}
-	command.Flags().StringVar(&request.Name, "name", "", "project name")
-	command.Flags().StringVar(&request.Description, "description", "", "project description")
-	command.Flags().StringVar(&request.Content, "content", "", "project content as markdown")
-	command.Flags().StringVar(&contentFile, "content-file", "", "read project content markdown from a file")
-	root.AddCommand(command)
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, _ []string,
+		) (client.ProjectSummary, error) {
+			if err := resolveFileFlag(command, &request.Content, contentFile, "content"); err != nil {
+				return client.ProjectSummary{}, err
+			}
+
+			return client.CreateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
+		},
+		Write: writeProject,
+	})
 }
 
 func addProjectUpdateCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
 	request := client.ProjectUpdateRequest{}
 	var contentFile string
-	command := &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectSummary]{
 		Use:   "update PROJECT_ID",
 		Short: "Update a project after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.Name, "name", "", "new project name")
+			command.Flags().StringVar(&request.Description, "description", "", "new project description")
+			command.Flags().StringVar(&request.Content, "content", "", "new project content as markdown")
+			command.Flags().StringVar(&contentFile, "content-file", "", "read new project content markdown from a file")
+		},
+		Run: func(
+			ctx context.Context, command *cobra.Command, runtime commandRuntime, args []string,
+		) (client.ProjectSummary, error) {
 			request.ID = args[0]
 			if err := resolveFileFlag(command, &request.Content, contentFile, "content"); err != nil {
-				return err
+				return client.ProjectSummary{}, err
 			}
 
-			project, err := client.UpdateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
-			if err != nil {
-				return err
-			}
-
-			return writeProject(command, options, project)
+			return client.UpdateProject(ctx, runtime.graphqlClient, runtime.config.Target, request)
 		},
-	}
-	command.Flags().StringVar(&request.Name, "name", "", "new project name")
-	command.Flags().StringVar(&request.Description, "description", "", "new project description")
-	command.Flags().StringVar(&request.Content, "content", "", "new project content as markdown")
-	command.Flags().StringVar(&contentFile, "content-file", "", "read new project content markdown from a file")
-	root.AddCommand(command)
+		Write: writeProject,
+	})
 }
 
 func addProjectArchiveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectSummary]{
 		Use:   "archive PROJECT_ID",
 		Short: "Archive a project after pinned-target comparison",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			project, err := client.ArchiveProject(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeProject(command, options, project)
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.ProjectSummary, error) {
+			return client.ArchiveProject(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
 		},
+		Write: writeProject,
 	})
 }

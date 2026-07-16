@@ -71,8 +71,8 @@ func (guard *guardedClient) createLabel(ctx context.Context, request LabelCreate
 	if err != nil {
 		return LabelSummary{}, fmt.Errorf("create label: %w", err)
 	}
-	if !created.IssueLabelCreate.Success {
-		return LabelSummary{}, fmt.Errorf("%w: issueLabelCreate reported no success", ErrMutationFailed)
+	if err := mutationSuccess(created.IssueLabelCreate.Success, "issueLabelCreate"); err != nil {
+		return LabelSummary{}, err
 	}
 
 	return labelSummary(created.IssueLabelCreate.IssueLabel.IssueLabelSummaryFields), nil
@@ -114,8 +114,8 @@ func (guard *guardedClient) updateLabel(ctx context.Context, request LabelUpdate
 	if err != nil {
 		return LabelSummary{}, fmt.Errorf("update label %s: %w", request.ID, err)
 	}
-	if !updated.IssueLabelUpdate.Success {
-		return LabelSummary{}, fmt.Errorf("%w: issueLabelUpdate reported no success", ErrMutationFailed)
+	if err := mutationSuccess(updated.IssueLabelUpdate.Success, "issueLabelUpdate"); err != nil {
+		return LabelSummary{}, err
 	}
 
 	return labelSummary(updated.IssueLabelUpdate.IssueLabel.IssueLabelSummaryFields), nil
@@ -150,8 +150,8 @@ func (guard *guardedClient) retireLabel(ctx context.Context, id string, orgWide 
 	if err != nil {
 		return LabelSummary{}, fmt.Errorf("retire label %s: %w", id, err)
 	}
-	if !retired.IssueLabelRetire.Success {
-		return LabelSummary{}, fmt.Errorf("%w: issueLabelRetire reported no success", ErrMutationFailed)
+	if err := mutationSuccess(retired.IssueLabelRetire.Success, "issueLabelRetire"); err != nil {
+		return LabelSummary{}, err
 	}
 
 	return labelSummary(retired.IssueLabelRetire.IssueLabel.IssueLabelSummaryFields), nil
@@ -187,8 +187,8 @@ func (guard *guardedClient) restoreLabel(ctx context.Context, id string, orgWide
 	if err != nil {
 		return LabelSummary{}, fmt.Errorf("restore label %s: %w", id, err)
 	}
-	if !restored.IssueLabelRestore.Success {
-		return LabelSummary{}, fmt.Errorf("%w: issueLabelRestore reported no success", ErrMutationFailed)
+	if err := mutationSuccess(restored.IssueLabelRestore.Success, "issueLabelRestore"); err != nil {
+		return LabelSummary{}, err
 	}
 
 	return labelSummary(restored.IssueLabelRestore.IssueLabel.IssueLabelSummaryFields), nil

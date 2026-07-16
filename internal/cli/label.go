@@ -37,22 +37,13 @@ func addLabelListCommand(ctx context.Context, root *cobra.Command, options *root
 }
 
 func addLabelGetCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	root.AddCommand(&cobra.Command{
+	addReadGetCommand(ctx, root, options, readGetSpec[client.LabelSummary]{
 		Use:   "get LABEL_ID",
 		Short: "Get one label by id",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-			label, err := client.GetLabelByID(ctx, runtime.graphqlClient, args[0])
-			if err != nil {
-				return err
-			}
-
-			return writeLabel(command, options, label)
+		Load: func(ctx context.Context, runtime commandRuntime, id string) (client.LabelSummary, error) {
+			return client.GetLabelByID(ctx, runtime.graphqlClient, id)
 		},
+		Write: writeLabel,
 	})
 }
 

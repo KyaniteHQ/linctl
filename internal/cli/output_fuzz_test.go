@@ -34,7 +34,7 @@ func FuzzProjectJSONFields(f *testing.F) {
 	}
 
 	f.Fuzz(func(t *testing.T, fields string) {
-		result, err := projectJSONFields(value, fields)
+		result, err := projectJSONFieldsWithCollectionKey(value, fields, "issues")
 		if err != nil {
 			return
 		}

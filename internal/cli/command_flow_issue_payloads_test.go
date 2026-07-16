@@ -349,31 +349,31 @@ func commandFlowIssueListPayload(operation string, fake commandFlowFakeClient) (
 	}
 
 	switch operation {
-	case "IssuesByTeamState":
+	case "IssuesByTeamFiltered:state", "IssuesByTeamFiltered:project+state":
 		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-2", "Started issue", "started-state", "Started", fake.expectedStateType) + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssuesByTeamProject":
+	case "IssuesByTeamFiltered:project":
 		if fake.emptyIssueProject {
 			return emptyCommandIssuesPayload(), true
 		}
 		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-4", "Project issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssuesByTeamAssignee":
+	case "IssuesByTeamFiltered:assignee":
 		return commandFlowAssigneeIssueListPayload(fake), true
-	case "IssuesByTeamLabel":
+	case "IssuesByTeamFiltered:labels":
 		if fake.emptyIssueLabel {
 			return emptyCommandIssuesPayload(), true
 		}
 		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-7", "Labeled issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssuesByTeamCycle":
+	case "IssuesByTeamFiltered:cycle":
 		if fake.emptyIssueCycle {
 			return emptyCommandIssuesPayload(), true
 		}
 		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-8", "Cycle issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssuesByTeamCreatedAfter":
+	case "IssuesByTeamFiltered:createdAfter":
 		if fake.emptyIssueCreatedAfter {
 			return emptyCommandIssuesPayload(), true
 		}
 		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-9", "Recent issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssuesByTeamCreatedBefore":
+	case "IssuesByTeamFiltered:createdBefore":
 		if fake.emptyIssueCreatedBefore {
 			return emptyCommandIssuesPayload(), true
 		}
@@ -385,12 +385,12 @@ func commandFlowIssueListPayload(operation string, fake commandFlowFakeClient) (
 
 func commandFlowDependencyIssueListPayload(operation string, fake commandFlowFakeClient) (string, bool) {
 	switch operation {
-	case "IssuesByTeamHasBlockers":
+	case "IssuesByTeamFiltered:hasBlockedByRelations":
 		if fake.emptyIssueHasBlockers {
 			return emptyCommandIssuesPayload(), true
 		}
 		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-21", "Blocked issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssuesByTeamBlocks":
+	case "IssuesByTeamFiltered:hasBlockingRelations":
 		if fake.emptyIssueBlocks {
 			return emptyCommandIssuesPayload(), true
 		}
@@ -412,7 +412,7 @@ func commandFlowBroadIssueListPayload(operation string, fake commandFlowFakeClie
 			return emptyCommandIssuesPayload(), true
 		}
 		return `{"issues":{"nodes":[` + commandIssueJSON("LIT-20", "All-team issue", "todo-state", "Todo", "unstarted") + `],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
-	case "IssuesByTeam":
+	case "IssuesByTeamFiltered:unfiltered":
 		return commandFlowUnfilteredIssueListPayload(fake), true
 	default:
 		return "", false

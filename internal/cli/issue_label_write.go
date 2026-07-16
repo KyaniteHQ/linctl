@@ -10,49 +10,35 @@ import (
 )
 
 func addIssueAddLabelCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "add-label ISSUE_ID LABEL_ID",
 		Short: "Attach a label to an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			issue, err := client.AddIssueLabel(
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueSummary, error) {
+			return client.AddIssueLabel(
 				ctx, runtime.graphqlClient, runtime.config.Target,
 				client.IssueLabelAssociationRequest{IssueID: args[0], LabelID: args[1]},
 			)
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
 		},
+		Write: writeIssue,
 	})
 }
 
 func addIssueRemoveLabelCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCommandWithSafety(root, CommandSafetyWrite, &cobra.Command{
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
 		Use:   "remove-label ISSUE_ID LABEL_ID",
 		Short: "Detach a label from an issue after pinned-target comparison",
 		Args:  cobra.ExactArgs(2),
-		RunE: func(command *cobra.Command, args []string) error {
-			runtime, err := buildCommandRuntime(ctx, options)
-			if err != nil {
-				return err
-			}
-
-			issue, err := client.RemoveIssueLabel(
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueSummary, error) {
+			return client.RemoveIssueLabel(
 				ctx, runtime.graphqlClient, runtime.config.Target,
 				client.IssueLabelAssociationRequest{IssueID: args[0], LabelID: args[1]},
 			)
-			if err != nil {
-				return err
-			}
-
-			return writeIssue(command, options, issue)
 		},
+		Write: writeIssue,
 	})
 }

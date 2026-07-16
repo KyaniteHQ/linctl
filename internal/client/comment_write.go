@@ -51,8 +51,8 @@ func (guard *guardedClient) updateComment(ctx context.Context, request CommentUp
 	if err != nil {
 		return CommentSummary{}, fmt.Errorf("update comment %s: %w", request.ID, err)
 	}
-	if !updated.CommentUpdate.Success {
-		return CommentSummary{}, fmt.Errorf("%w: commentUpdate reported no success", ErrMutationFailed)
+	if err := mutationSuccess(updated.CommentUpdate.Success, "commentUpdate"); err != nil {
+		return CommentSummary{}, err
 	}
 
 	return topLevelCommentSummary(updated.CommentUpdate.Comment.TopLevelCommentSummaryFields), nil
@@ -88,8 +88,8 @@ func (guard *guardedClient) deleteComment(ctx context.Context, commentID string)
 	if err != nil {
 		return "", fmt.Errorf("delete comment %s: %w", commentID, err)
 	}
-	if !deleted.CommentDelete.Success {
-		return "", fmt.Errorf("%w: commentDelete reported no success", ErrMutationFailed)
+	if err := mutationSuccess(deleted.CommentDelete.Success, "commentDelete"); err != nil {
+		return "", err
 	}
 
 	return commentID, nil
@@ -124,8 +124,8 @@ func (guard *guardedClient) resolveComment(ctx context.Context, commentID string
 	if err != nil {
 		return CommentSummary{}, fmt.Errorf("resolve comment %s: %w", commentID, err)
 	}
-	if !resolved.CommentResolve.Success {
-		return CommentSummary{}, fmt.Errorf("%w: commentResolve reported no success", ErrMutationFailed)
+	if err := mutationSuccess(resolved.CommentResolve.Success, "commentResolve"); err != nil {
+		return CommentSummary{}, err
 	}
 
 	return topLevelCommentSummary(resolved.CommentResolve.Comment.TopLevelCommentSummaryFields), nil
@@ -160,8 +160,8 @@ func (guard *guardedClient) unresolveComment(ctx context.Context, commentID stri
 	if err != nil {
 		return CommentSummary{}, fmt.Errorf("unresolve comment %s: %w", commentID, err)
 	}
-	if !unresolved.CommentUnresolve.Success {
-		return CommentSummary{}, fmt.Errorf("%w: commentUnresolve reported no success", ErrMutationFailed)
+	if err := mutationSuccess(unresolved.CommentUnresolve.Success, "commentUnresolve"); err != nil {
+		return CommentSummary{}, err
 	}
 
 	return topLevelCommentSummary(unresolved.CommentUnresolve.Comment.TopLevelCommentSummaryFields), nil

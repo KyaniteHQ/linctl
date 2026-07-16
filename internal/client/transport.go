@@ -24,6 +24,17 @@ var ErrGraphQL = errors.New("graphql error")
 // ErrMutationFailed marks a mutation payload without success and entity id.
 var ErrMutationFailed = errors.New("mutation failed")
 
+// mutationSuccess converts a mutation payload's success flag (optionally
+// combined with a present-entity check) into the stable ErrMutationFailed
+// error named by the schema mutation field.
+func mutationSuccess(success bool, mutationField string) error {
+	if success {
+		return nil
+	}
+
+	return fmt.Errorf("%w: %s reported no success", ErrMutationFailed, mutationField)
+}
+
 // ErrRateLimited marks a Linear rate-limit response (HTTP 429 or an HTTP 400
 // carrying a RATELIMITED GraphQL error code) that survived all retries.
 var ErrRateLimited = errors.New("rate limited")
@@ -316,8 +327,29 @@ func formatGraphQLErrors(graphqlErrors gqlerror.List) error {
 		}
 		messages = append(messages, graphqlError.Error())
 	}
+	if graphQLErrorsSignalMissingEntity(graphqlErrors) {
+		return fmt.Errorf("%w: %s", ErrNotFound, strings.Join(messages, "; "))
+	}
 
 	return fmt.Errorf("%w: %s", ErrGraphQL, strings.Join(messages, "; "))
+}
+
+// graphQLErrorsSignalMissingEntity reports whether every error in the response
+// is Linear's missing-entity signal: an INPUT_ERROR whose message carries
+// "Entity not found". Reads of a nonexistent id then map to the stable
+// NOT_FOUND error code instead of the generic GRAPHQL_ERROR.
+func graphQLErrorsSignalMissingEntity(graphqlErrors gqlerror.List) bool {
+	if len(graphqlErrors) == 0 {
+		return false
+	}
+	for _, graphqlError := range graphqlErrors {
+		if graphqlError.Extensions["code"] != "INPUT_ERROR" ||
+			!strings.Contains(graphqlError.Message, "Entity not found") {
+			return false
+		}
+	}
+
+	return true
 }
 
 func firstNonEmpty(primary string, fallback string) string {

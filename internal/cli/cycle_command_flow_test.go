@@ -243,6 +243,21 @@ func Test_CycleCommandFlows_report_sprint_json(t *testing.T) {
 	require.Contains(t, output.String(), `"identifier": "LIT-1"`)
 }
 
+func Test_CycleCommandFlows_report_sprint_json_fields_projects_issues(t *testing.T) {
+	output := bytes.Buffer{}
+	restore := useCommandRuntime(t, cycleCommandFlowFakeClient{})
+	defer restore()
+	command := NewRootCommand(context.Background(), BuildInfo{})
+	command.SetOut(&output)
+	command.SetArgs([]string{"--json", "--fields", "identifier", "sprint", "report", "cycle-id", "--limit", "1"})
+
+	err := command.ExecuteContext(context.Background())
+
+	require.NoError(t, err)
+	require.Contains(t, output.String(), `"identifier": "LIT-1"`)
+	require.NotContains(t, output.String(), `"cycle"`)
+}
+
 func Test_CycleCommandFlows_report_sprint_edges(t *testing.T) {
 	tests := []struct {
 		name        string

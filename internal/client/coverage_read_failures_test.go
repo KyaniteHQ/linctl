@@ -25,44 +25,12 @@ func Test_ClientReadFailureScenarios_wrap_graphql_errors(t *testing.T) {
 			return err
 		}, "list issues"},
 		{"ListIssues", func() error { _, err := ListIssues(ctx, graphqlClient, 1); return err }, "list issues"},
-		{"ListIssuesByTeam 2", func() error {
+		{"ListIssuesByTeam filtered", func() error {
 			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{StateType: "started"})
 			return err
 		}, "list issues"},
-		{"ListIssuesByTeam 3", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{ProjectID: "project-id"})
-			return err
-		}, "list issues"},
-		{"ListIssuesByTeam 4", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{AssigneeID: "user-id"})
-			return err
-		}, "list issues"},
-		{"ListIssuesByTeam 5", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{LabelID: "label-id"})
-			return err
-		}, "list issues"},
-		{"ListIssuesByTeam 6", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{CycleID: "cycle-id"})
-			return err
-		}, "list issues"},
-		{"ListIssuesByTeam 7", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{CreatedAfter: "2026-06-01"})
-			return err
-		}, "list issues"},
-		{"ListIssuesByTeam 8", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{CreatedBefore: "2026-06-30"})
-			return err
-		}, "list issues"},
-		{"ListIssuesByTeam 9", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{HasBlockers: true})
-			return err
-		}, "list issues"},
-		{"ListIssuesByTeam 10", func() error {
-			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{Blocks: true})
-			return err
-		}, "list issues"},
 		{"ListNextIssuesByTeam", func() error { _, err := ListNextIssuesByTeam(ctx, graphqlClient, "team-id", 1); return err }, "list next issues"},
-		{"ListIssuesByTeam 11", func() error {
+		{"ListIssuesByTeam blocked-by", func() error {
 			_, err := ListIssuesByTeam(ctx, graphqlClient, "team-id", 1, IssueListFilters{BlockedBy: "LIT-1"})
 			return err
 		}, "list issues"},

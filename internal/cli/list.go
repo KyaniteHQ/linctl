@@ -105,27 +105,62 @@ func addReadListGetCommand[Page any, Item any](
 	annotateReadCollectionCommand(listCommand, mustCollectionKeyForList[Page, Item]())
 	listCommand.Flags().IntVar(&limit, "limit", limit, spec.LimitHelp)
 
-	getCommand := &cobra.Command{
+	parentCommand.AddCommand(listCommand)
+	addReadGetCommand(ctx, parentCommand, options, readGetSpec[Item]{
 		Use:   spec.GetUse,
 		Short: spec.GetShort,
+		Load:  spec.LoadGet,
+		Write: spec.WriteItem,
+	})
+	root.AddCommand(parentCommand)
+
+	return parentCommand
+}
+
+// readGetSpec describes one single-item read command: Load fetches the item
+// named by the command's one argument, and Write renders it. Configure
+// registers flags and completions when the command has any.
+type readGetSpec[T any] struct {
+	Use       string
+	Short     string
+	Configure func(*cobra.Command)
+	Load      readGetLoader[T]
+	Write     readListItemWriter[T]
+}
+
+// addReadGetCommand registers a one-argument read command through the shared
+// pipeline: build the runtime, load the item, write it. Registration stamps
+// the read safety class explicitly. It returns the registered command so
+// callers can attach subcommands.
+func addReadGetCommand[T any](
+	ctx context.Context,
+	root *cobra.Command,
+	options *rootOptions,
+	spec readGetSpec[T],
+) *cobra.Command {
+	command := &cobra.Command{
+		Use:   spec.Use,
+		Short: spec.Short,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(command *cobra.Command, args []string) error {
 			runtime, err := buildCommandRuntime(ctx, options)
 			if err != nil {
 				return err
 			}
-			item, err := spec.LoadGet(ctx, runtime, args[0])
+			item, err := spec.Load(ctx, runtime, args[0])
 			if err != nil {
 				return err
 			}
 
-			return spec.WriteItem(command, options, item)
+			return spec.Write(command, options, item)
 		},
 	}
-	parentCommand.AddCommand(listCommand, getCommand)
-	root.AddCommand(parentCommand)
+	if spec.Configure != nil {
+		spec.Configure(command)
+	}
+	addCommandWithSafety(root, CommandSafetyRead, command)
 
-	return parentCommand
+	return command
 }
 
 func runReadListCommand[Page any, Item any](
@@ -153,7 +188,6 @@ func runReadListCommand[Page any, Item any](
 		return err
 	}
 	if options.json {
-		annotateReadCollectionCommand(command, collectionKeyForPage[Page]())
 		return writePageJSON(command, options, page, items)
 	}
 	for _, item := range items {
