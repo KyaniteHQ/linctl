@@ -621,7 +621,7 @@ type AgentSessionSummaryFields struct {
 	Status AgentSessionStatus `json:"status"`
 	// A human-readable summary of the work performed in this session. Null if no summary has been generated yet.
 	Summary *string `json:"summary"`
-	// The URL to the agent session page in the Linear app. Null for direct chat sessions without an associated issue.
+	// The URL to the agent session page in the Linear app. Null when no issue is associated.
 	Url *string `json:"url"`
 	// The time the agent session transitioned to active status and began work. Null if the session has not yet started.
 	StartedAt *string `json:"startedAt"`
@@ -4838,7 +4838,7 @@ type InitiativeSummaryFields struct {
 	Description *string `json:"description"`
 	// The lifecycle status of the initiative. One of Proposed, Planned, Active, Completed, Canceled.
 	Status InitiativeStatus `json:"status"`
-	// [Internal] The priority of the initiative. 0 = No priority, 1 = Urgent, 2 = High, 3 = Medium, 4 = Low.
+	// The priority of the initiative. 0 = No priority, 1 = Urgent, 2 = High, 3 = Medium, 4 = Low.
 	Priority int `json:"priority"`
 	// The estimated completion date of the initiative. Null if no target date is set.
 	TargetDate *string `json:"targetDate"`
@@ -15049,6 +15049,7 @@ func (v *NotificationSubscriptionSummaryFieldsUserNotificationSubscription) GetU
 // NotificationSummaryFieldsPullRequestNotification
 // NotificationSummaryFieldsUsageAlertNotification
 // NotificationSummaryFieldsWelcomeMessageNotification
+// NotificationSummaryFieldsWorkflowDefinitionNotification
 type NotificationSummaryFields interface {
 	implementsGraphQLInterfaceNotificationSummaryFields()
 	// GetId returns the interface-field "id" from its implementation.
@@ -15163,6 +15164,8 @@ func (v *NotificationSummaryFieldsUsageAlertNotification) implementsGraphQLInter
 }
 func (v *NotificationSummaryFieldsWelcomeMessageNotification) implementsGraphQLInterfaceNotificationSummaryFields() {
 }
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) implementsGraphQLInterfaceNotificationSummaryFields() {
+}
 
 func __unmarshalNotificationSummaryFields(b []byte, v *NotificationSummaryFields) error {
 	if string(b) == "null" {
@@ -15213,6 +15216,9 @@ func __unmarshalNotificationSummaryFields(b []byte, v *NotificationSummaryFields
 		return json.Unmarshal(b, *v)
 	case "WelcomeMessageNotification":
 		*v = new(NotificationSummaryFieldsWelcomeMessageNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkflowDefinitionNotification":
+		*v = new(NotificationSummaryFieldsWorkflowDefinitionNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -15321,6 +15327,14 @@ func __marshalNotificationSummaryFields(v *NotificationSummaryFields) ([]byte, e
 		result := struct {
 			TypeName string `json:"__typename"`
 			*NotificationSummaryFieldsWelcomeMessageNotification
+		}{typename, v}
+		return json.Marshal(result)
+	case *NotificationSummaryFieldsWorkflowDefinitionNotification:
+		typename = "WorkflowDefinitionNotification"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*NotificationSummaryFieldsWorkflowDefinitionNotification
 		}{typename, v}
 		return json.Marshal(result)
 	case nil:
@@ -16674,6 +16688,125 @@ func (v *NotificationSummaryFieldsWelcomeMessageNotification) GetActor() *Notifi
 
 // GetExternalUserActor returns NotificationSummaryFieldsWelcomeMessageNotification.ExternalUserActor, and is useful for accessing the field via an interface.
 func (v *NotificationSummaryFieldsWelcomeMessageNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.ExternalUserActor
+}
+
+// NotificationSummaryFields includes the GraphQL fields of WorkflowDefinitionNotification requested by the fragment NotificationSummaryFields.
+// The GraphQL type's documentation follows.
+//
+// A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
+type NotificationSummaryFieldsWorkflowDefinitionNotification struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+	// Notification type. Determines the kind of event that triggered this notification and which associated entity fields will be populated.
+	Type string `json:"type"`
+	// The category of the notification.
+	Category NotificationCategory `json:"category"`
+	// [Internal] Notification title.
+	Title string `json:"title"`
+	// [Internal] Notification subtitle.
+	Subtitle string `json:"subtitle"`
+	// [Internal] URL to the target of the notification.
+	Url string `json:"url"`
+	// [Internal] Inbox URL for the notification.
+	InboxUrl string `json:"inboxUrl"`
+	// The time at which the entity was created.
+	CreatedAt string `json:"createdAt"`
+	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+	// been updated after creation.
+	UpdatedAt string `json:"updatedAt"`
+	// The time at which the entity was archived. Null if the entity has not been archived.
+	ArchivedAt *string `json:"archivedAt"`
+	// The time at which the user marked the notification as read. Null if the notification is unread.
+	ReadAt *string `json:"readAt"`
+	// The time at which an email reminder for this notification was sent to the user. Null if no email reminder has been sent.
+	EmailedAt *string `json:"emailedAt"`
+	// The time until which a notification is snoozed. After this time, the notification reappears in the user's inbox. Null if the notification is not currently snoozed.
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+	// The time at which a notification was unsnoozed. Null if the notification has not been unsnoozed.
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+	// The recipient user of this notification.
+	User NotificationSummaryFieldsUser `json:"user"`
+	// The user that caused the notification. Null if the notification was triggered by a non-user actor such as an integration, external user, or system event.
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+	// The external user that caused the notification. Populated when the notification was triggered by an external user (e.g., a commenter from a connected integration like Slack or GitHub) rather than a Linear workspace member.
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+// GetId returns NotificationSummaryFieldsWorkflowDefinitionNotification.Id, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetId() string { return v.Id }
+
+// GetType returns NotificationSummaryFieldsWorkflowDefinitionNotification.Type, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetType() string { return v.Type }
+
+// GetCategory returns NotificationSummaryFieldsWorkflowDefinitionNotification.Category, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetCategory() NotificationCategory {
+	return v.Category
+}
+
+// GetTitle returns NotificationSummaryFieldsWorkflowDefinitionNotification.Title, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetTitle() string { return v.Title }
+
+// GetSubtitle returns NotificationSummaryFieldsWorkflowDefinitionNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetSubtitle() string {
+	return v.Subtitle
+}
+
+// GetUrl returns NotificationSummaryFieldsWorkflowDefinitionNotification.Url, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetUrl() string { return v.Url }
+
+// GetInboxUrl returns NotificationSummaryFieldsWorkflowDefinitionNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetInboxUrl() string {
+	return v.InboxUrl
+}
+
+// GetCreatedAt returns NotificationSummaryFieldsWorkflowDefinitionNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetCreatedAt() string {
+	return v.CreatedAt
+}
+
+// GetUpdatedAt returns NotificationSummaryFieldsWorkflowDefinitionNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetUpdatedAt() string {
+	return v.UpdatedAt
+}
+
+// GetArchivedAt returns NotificationSummaryFieldsWorkflowDefinitionNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetArchivedAt() *string {
+	return v.ArchivedAt
+}
+
+// GetReadAt returns NotificationSummaryFieldsWorkflowDefinitionNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetReadAt() *string {
+	return v.ReadAt
+}
+
+// GetEmailedAt returns NotificationSummaryFieldsWorkflowDefinitionNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetEmailedAt() *string {
+	return v.EmailedAt
+}
+
+// GetSnoozedUntilAt returns NotificationSummaryFieldsWorkflowDefinitionNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetSnoozedUntilAt() *string {
+	return v.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns NotificationSummaryFieldsWorkflowDefinitionNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetUnsnoozedAt() *string {
+	return v.UnsnoozedAt
+}
+
+// GetUser returns NotificationSummaryFieldsWorkflowDefinitionNotification.User, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.User
+}
+
+// GetActor returns NotificationSummaryFieldsWorkflowDefinitionNotification.Actor, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.Actor
+}
+
+// GetExternalUserActor returns NotificationSummaryFieldsWorkflowDefinitionNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *NotificationSummaryFieldsWorkflowDefinitionNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
 	return v.ExternalUserActor
 }
 
@@ -43777,6 +43910,7 @@ func (v *issuesResponse) GetIssues() issuesIssuesIssueConnection { return v.Issu
 // notificationNotificationPullRequestNotification
 // notificationNotificationUsageAlertNotification
 // notificationNotificationWelcomeMessageNotification
+// notificationNotificationWorkflowDefinitionNotification
 // The GraphQL type's documentation follows.
 //
 // A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
@@ -43810,6 +43944,8 @@ func (v *notificationNotificationPullRequestNotification) implementsGraphQLInter
 func (v *notificationNotificationUsageAlertNotification) implementsGraphQLInterfacenotificationNotification() {
 }
 func (v *notificationNotificationWelcomeMessageNotification) implementsGraphQLInterfacenotificationNotification() {
+}
+func (v *notificationNotificationWorkflowDefinitionNotification) implementsGraphQLInterfacenotificationNotification() {
 }
 
 func __unmarshalnotificationNotification(b []byte, v *notificationNotification) error {
@@ -43861,6 +43997,9 @@ func __unmarshalnotificationNotification(b []byte, v *notificationNotification) 
 		return json.Unmarshal(b, *v)
 	case "WelcomeMessageNotification":
 		*v = new(notificationNotificationWelcomeMessageNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkflowDefinitionNotification":
+		*v = new(notificationNotificationWorkflowDefinitionNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -44017,6 +44156,18 @@ func __marshalnotificationNotification(v *notificationNotification) ([]byte, err
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalnotificationNotificationWelcomeMessageNotification
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *notificationNotificationWorkflowDefinitionNotification:
+		typename = "WorkflowDefinitionNotification"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalnotificationNotificationWorkflowDefinitionNotification
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case nil:
@@ -46332,6 +46483,200 @@ func (v *notificationNotificationWelcomeMessageNotification) __premarshalJSON() 
 	retval.User = v.NotificationSummaryFieldsWelcomeMessageNotification.User
 	retval.Actor = v.NotificationSummaryFieldsWelcomeMessageNotification.Actor
 	retval.ExternalUserActor = v.NotificationSummaryFieldsWelcomeMessageNotification.ExternalUserActor
+	return &retval, nil
+}
+
+// notificationNotificationWorkflowDefinitionNotification includes the requested fields of the GraphQL type WorkflowDefinitionNotification.
+// The GraphQL type's documentation follows.
+//
+// A notification related to an automation workflow definition (loop), such as runs that failed to start.
+type notificationNotificationWorkflowDefinitionNotification struct {
+	Typename                                                *string `json:"__typename"`
+	NotificationSummaryFieldsWorkflowDefinitionNotification `json:"-"`
+}
+
+// GetTypename returns notificationNotificationWorkflowDefinitionNotification.Typename, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns notificationNotificationWorkflowDefinitionNotification.Id, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetId() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Id
+}
+
+// GetType returns notificationNotificationWorkflowDefinitionNotification.Type, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetType() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Type
+}
+
+// GetCategory returns notificationNotificationWorkflowDefinitionNotification.Category, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetCategory() NotificationCategory {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Category
+}
+
+// GetTitle returns notificationNotificationWorkflowDefinitionNotification.Title, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetTitle() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Title
+}
+
+// GetSubtitle returns notificationNotificationWorkflowDefinitionNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetSubtitle() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Subtitle
+}
+
+// GetUrl returns notificationNotificationWorkflowDefinitionNotification.Url, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetUrl() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Url
+}
+
+// GetInboxUrl returns notificationNotificationWorkflowDefinitionNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetInboxUrl() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.InboxUrl
+}
+
+// GetCreatedAt returns notificationNotificationWorkflowDefinitionNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetCreatedAt() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.CreatedAt
+}
+
+// GetUpdatedAt returns notificationNotificationWorkflowDefinitionNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetUpdatedAt() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.UpdatedAt
+}
+
+// GetArchivedAt returns notificationNotificationWorkflowDefinitionNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetArchivedAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.ArchivedAt
+}
+
+// GetReadAt returns notificationNotificationWorkflowDefinitionNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetReadAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.ReadAt
+}
+
+// GetEmailedAt returns notificationNotificationWorkflowDefinitionNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetEmailedAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.EmailedAt
+}
+
+// GetSnoozedUntilAt returns notificationNotificationWorkflowDefinitionNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetSnoozedUntilAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns notificationNotificationWorkflowDefinitionNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetUnsnoozedAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.UnsnoozedAt
+}
+
+// GetUser returns notificationNotificationWorkflowDefinitionNotification.User, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.User
+}
+
+// GetActor returns notificationNotificationWorkflowDefinitionNotification.Actor, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Actor
+}
+
+// GetExternalUserActor returns notificationNotificationWorkflowDefinitionNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *notificationNotificationWorkflowDefinitionNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.ExternalUserActor
+}
+
+func (v *notificationNotificationWorkflowDefinitionNotification) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*notificationNotificationWorkflowDefinitionNotification
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.notificationNotificationWorkflowDefinitionNotification = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationSummaryFieldsWorkflowDefinitionNotification)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalnotificationNotificationWorkflowDefinitionNotification struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	Category NotificationCategory `json:"category"`
+
+	Title string `json:"title"`
+
+	Subtitle string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	InboxUrl string `json:"inboxUrl"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ReadAt *string `json:"readAt"`
+
+	EmailedAt *string `json:"emailedAt"`
+
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+
+	User NotificationSummaryFieldsUser `json:"user"`
+
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+func (v *notificationNotificationWorkflowDefinitionNotification) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *notificationNotificationWorkflowDefinitionNotification) __premarshalJSON() (*__premarshalnotificationNotificationWorkflowDefinitionNotification, error) {
+	var retval __premarshalnotificationNotificationWorkflowDefinitionNotification
+
+	retval.Typename = v.Typename
+	retval.Id = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Id
+	retval.Type = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Type
+	retval.Category = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Category
+	retval.Title = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Title
+	retval.Subtitle = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Subtitle
+	retval.Url = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Url
+	retval.InboxUrl = v.NotificationSummaryFieldsWorkflowDefinitionNotification.InboxUrl
+	retval.CreatedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.CreatedAt
+	retval.UpdatedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.UpdatedAt
+	retval.ArchivedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ArchivedAt
+	retval.ReadAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ReadAt
+	retval.EmailedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.EmailedAt
+	retval.SnoozedUntilAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.SnoozedUntilAt
+	retval.UnsnoozedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.UnsnoozedAt
+	retval.User = v.NotificationSummaryFieldsWorkflowDefinitionNotification.User
+	retval.Actor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Actor
+	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ExternalUserActor
 	return &retval, nil
 }
 
@@ -51045,6 +51390,7 @@ func (v *notificationsNotificationsNotificationConnectionNodesIssueNotification)
 // notificationsNotificationsNotificationConnectionNodesPullRequestNotification
 // notificationsNotificationsNotificationConnectionNodesUsageAlertNotification
 // notificationsNotificationsNotificationConnectionNodesWelcomeMessageNotification
+// notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification
 // The GraphQL type's documentation follows.
 //
 // A notification delivered to a user's inbox. Notifications are created in response to activity in the workspace such as issue assignments, comments, mentions, and status changes. Each notification has a specific type that determines the associated entity (issue, project, document, etc.) and the nature of the event. Notifications can be read, snoozed, or archived by the user.
@@ -51078,6 +51424,8 @@ func (v *notificationsNotificationsNotificationConnectionNodesPullRequestNotific
 func (v *notificationsNotificationsNotificationConnectionNodesUsageAlertNotification) implementsGraphQLInterfacenotificationsNotificationsNotificationConnectionNodesNotification() {
 }
 func (v *notificationsNotificationsNotificationConnectionNodesWelcomeMessageNotification) implementsGraphQLInterfacenotificationsNotificationsNotificationConnectionNodesNotification() {
+}
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) implementsGraphQLInterfacenotificationsNotificationsNotificationConnectionNodesNotification() {
 }
 
 func __unmarshalnotificationsNotificationsNotificationConnectionNodesNotification(b []byte, v *notificationsNotificationsNotificationConnectionNodesNotification) error {
@@ -51129,6 +51477,9 @@ func __unmarshalnotificationsNotificationsNotificationConnectionNodesNotificatio
 		return json.Unmarshal(b, *v)
 	case "WelcomeMessageNotification":
 		*v = new(notificationsNotificationsNotificationConnectionNodesWelcomeMessageNotification)
+		return json.Unmarshal(b, *v)
+	case "WorkflowDefinitionNotification":
+		*v = new(notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
@@ -51285,6 +51636,18 @@ func __marshalnotificationsNotificationsNotificationConnectionNodesNotification(
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalnotificationsNotificationsNotificationConnectionNodesWelcomeMessageNotification
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification:
+		typename = "WorkflowDefinitionNotification"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalnotificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case nil:
@@ -52650,6 +53013,200 @@ func (v *notificationsNotificationsNotificationConnectionNodesWelcomeMessageNoti
 	retval.User = v.NotificationSummaryFieldsWelcomeMessageNotification.User
 	retval.Actor = v.NotificationSummaryFieldsWelcomeMessageNotification.Actor
 	retval.ExternalUserActor = v.NotificationSummaryFieldsWelcomeMessageNotification.ExternalUserActor
+	return &retval, nil
+}
+
+// notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification includes the requested fields of the GraphQL type WorkflowDefinitionNotification.
+// The GraphQL type's documentation follows.
+//
+// A notification related to an automation workflow definition (loop), such as runs that failed to start.
+type notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification struct {
+	Typename                                                *string `json:"__typename"`
+	NotificationSummaryFieldsWorkflowDefinitionNotification `json:"-"`
+}
+
+// GetTypename returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Typename, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Id, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetId() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Id
+}
+
+// GetType returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Type, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetType() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Type
+}
+
+// GetCategory returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Category, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetCategory() NotificationCategory {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Category
+}
+
+// GetTitle returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Title, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetTitle() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Title
+}
+
+// GetSubtitle returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Subtitle, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetSubtitle() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Subtitle
+}
+
+// GetUrl returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Url, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetUrl() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Url
+}
+
+// GetInboxUrl returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.InboxUrl, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetInboxUrl() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.InboxUrl
+}
+
+// GetCreatedAt returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.CreatedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetCreatedAt() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.CreatedAt
+}
+
+// GetUpdatedAt returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetUpdatedAt() string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.UpdatedAt
+}
+
+// GetArchivedAt returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetArchivedAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.ArchivedAt
+}
+
+// GetReadAt returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.ReadAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetReadAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.ReadAt
+}
+
+// GetEmailedAt returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.EmailedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetEmailedAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.EmailedAt
+}
+
+// GetSnoozedUntilAt returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.SnoozedUntilAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetSnoozedUntilAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.SnoozedUntilAt
+}
+
+// GetUnsnoozedAt returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.UnsnoozedAt, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetUnsnoozedAt() *string {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.UnsnoozedAt
+}
+
+// GetUser returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.User, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetUser() NotificationSummaryFieldsUser {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.User
+}
+
+// GetActor returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.Actor, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetActor() *NotificationSummaryFieldsActorUser {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.Actor
+}
+
+// GetExternalUserActor returns notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification.ExternalUserActor, and is useful for accessing the field via an interface.
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) GetExternalUserActor() *NotificationSummaryFieldsExternalUserActorExternalUser {
+	return v.NotificationSummaryFieldsWorkflowDefinitionNotification.ExternalUserActor
+}
+
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.NotificationSummaryFieldsWorkflowDefinitionNotification)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalnotificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Type string `json:"type"`
+
+	Category NotificationCategory `json:"category"`
+
+	Title string `json:"title"`
+
+	Subtitle string `json:"subtitle"`
+
+	Url string `json:"url"`
+
+	InboxUrl string `json:"inboxUrl"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	ReadAt *string `json:"readAt"`
+
+	EmailedAt *string `json:"emailedAt"`
+
+	SnoozedUntilAt *string `json:"snoozedUntilAt"`
+
+	UnsnoozedAt *string `json:"unsnoozedAt"`
+
+	User NotificationSummaryFieldsUser `json:"user"`
+
+	Actor *NotificationSummaryFieldsActorUser `json:"actor"`
+
+	ExternalUserActor *NotificationSummaryFieldsExternalUserActorExternalUser `json:"externalUserActor"`
+}
+
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *notificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification) __premarshalJSON() (*__premarshalnotificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification, error) {
+	var retval __premarshalnotificationsNotificationsNotificationConnectionNodesWorkflowDefinitionNotification
+
+	retval.Typename = v.Typename
+	retval.Id = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Id
+	retval.Type = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Type
+	retval.Category = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Category
+	retval.Title = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Title
+	retval.Subtitle = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Subtitle
+	retval.Url = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Url
+	retval.InboxUrl = v.NotificationSummaryFieldsWorkflowDefinitionNotification.InboxUrl
+	retval.CreatedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.CreatedAt
+	retval.UpdatedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.UpdatedAt
+	retval.ArchivedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ArchivedAt
+	retval.ReadAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ReadAt
+	retval.EmailedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.EmailedAt
+	retval.SnoozedUntilAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.SnoozedUntilAt
+	retval.UnsnoozedAt = v.NotificationSummaryFieldsWorkflowDefinitionNotification.UnsnoozedAt
+	retval.User = v.NotificationSummaryFieldsWorkflowDefinitionNotification.User
+	retval.Actor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.Actor
+	retval.ExternalUserActor = v.NotificationSummaryFieldsWorkflowDefinitionNotification.ExternalUserActor
 	return &retval, nil
 }
 

@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `202a5e0`.
+Generated from current local sources and upstream Linear SDK commit `addf9ae`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -16,7 +16,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 466 | 150 | 466 |
+| Upstream SDK root methods with generated local operations | 468 | 150 | 468 |
 | Upstream Query root fields used by generated local operations | 162 | 116 | 162 |
 | Upstream Mutation root fields used by generated local operations | 370 | 36 | 370 |
 | Local generated Go operations declared in GraphQL files | 304 | 304 | 304 |
@@ -230,6 +230,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `imageUploadFromUrl` | method | blocked_needs_design | mutation needs product and safety design |
 | `importFileUpload` | method | blocked_needs_design | mutation needs product and safety design |
 | `initiative` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeAddLabel` | method | blocked_needs_design | initiative label mutation needs initiative target pinning and target-mismatch tests |
 | `initiativeFilterSuggestion` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeLabel` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeLabelRestore` | method | accepted_gap | repo-planned or likely useful CLI domain |
@@ -237,6 +238,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeLabels` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeRelations` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeRemoveLabel` | method | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `initiativeToProject` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeToProjects` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeUpdate` | method | generated_operation | local GraphQL operation uses this root |
