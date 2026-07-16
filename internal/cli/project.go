@@ -3,7 +3,6 @@ package cli
 import (
 	"context"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
@@ -209,7 +208,7 @@ func addProjectInitiativesCommand(ctx context.Context, root *cobra.Command, opti
 }
 
 func addProjectInverseRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addProjectRelationChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -217,6 +216,8 @@ func addProjectInverseRelationsCommand(ctx context.Context, root *cobra.Command,
 		"List project inverse relations",
 		"inverse relations",
 		client.ListProjectInverseRelations,
+		projectRelationListItems,
+		writeProjectRelation,
 	)
 }
 
@@ -321,7 +322,7 @@ func addProjectNeedsCommand(ctx context.Context, root *cobra.Command, options *r
 }
 
 func addProjectRelationsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addProjectRelationChildListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -329,6 +330,8 @@ func addProjectRelationsCommand(ctx context.Context, root *cobra.Command, option
 		"List project relations",
 		"relations",
 		client.ListProjectRelationsForProject,
+		projectRelationListItems,
+		writeProjectRelation,
 	)
 }
 
@@ -410,29 +413,8 @@ func writeProjectFilterSuggestion(
 		})
 }
 
-func addProjectRelationChildListCommand(
-	ctx context.Context,
-	root *cobra.Command,
-	options *rootOptions,
-	use string,
-	short string,
-	limitHelp string,
-	fetch func(context.Context, graphql.Client, string, int) (client.ProjectProjectRelationList, error),
-) {
-	spec := listCommandSpec[client.ProjectProjectRelationList, client.ProjectRelationSummary]{
-		Use:       use,
-		Short:     short,
-		LimitHelp: limitHelp,
-		Args:      cobra.ExactArgs(1),
-		Load: func(
-			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.ProjectProjectRelationList, []client.ProjectRelationSummary, error) {
-			list, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Relations, err
-		},
-		WriteItem: writeProjectRelation,
-	}
-	addListCommand(ctx, root, options, spec)
+func projectRelationListItems(list client.ProjectProjectRelationList) []client.ProjectRelationSummary {
+	return list.Relations
 }
 
 func writeProjectHistory(command *cobra.Command, options *rootOptions, history client.ProjectHistorySummary) error {

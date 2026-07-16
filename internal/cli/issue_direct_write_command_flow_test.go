@@ -89,8 +89,9 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 			variables: []expectedWriteVariable{
 				{path: []string{"id"}, value: "LIT-1"},
 				{path: []string{"input", "assigneeId"}, value: "user-id"},
-				{path: []string{"input", "stateId"}, value: "started-state"},
+				{path: []string{"input", "stateId"}, value: "type-state-id"},
 			},
+			stateType: "started",
 		},
 		{
 			name:      "comment",
@@ -116,8 +117,9 @@ func Test_IssueDirectWriteCommandFlows_forward_mutation_variables(t *testing.T) 
 			operation: "IssueClose",
 			variables: []expectedWriteVariable{
 				{path: []string{"id"}, value: "LIT-1"},
-				{path: []string{"input", "stateId"}, value: "done-state"},
+				{path: []string{"input", "stateId"}, value: "type-state-id"},
 			},
+			stateType: "completed",
 		},
 		{
 			name: "link",

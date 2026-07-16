@@ -220,10 +220,11 @@ func ListIssueVCSBranchFormerNeeds(
 		)
 	}
 
-	needs := make([]CustomerNeedMetadataSummary, 0, len(result.IssueVcsBranchSearch.FormerNeeds.Nodes))
-	for _, need := range result.IssueVcsBranchSearch.FormerNeeds.Nodes {
-		needs = append(needs, customerNeedMetadataSummary(need.CustomerNeedMetadataFields))
-	}
+	needs := mapNodes(result.IssueVcsBranchSearch.FormerNeeds.Nodes, func(
+		need gql.IssueFormerNeedsProjectionFormerNeedsCustomerNeedConnectionNodesCustomerNeed,
+	) CustomerNeedMetadataSummary {
+		return customerNeedMetadataSummary(need.CustomerNeedMetadataFields)
+	})
 
 	return IssueCustomerNeedMetadataList{
 		IssueID:     result.IssueVcsBranchSearch.Id,

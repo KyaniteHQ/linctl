@@ -25,23 +25,33 @@ type commandRuntime struct {
 
 var buildCommandRuntime = newCommandRuntime
 
-func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
-	logger := newDiagnosticLogger(options.debug, os.Getenv("LINCTL_DEBUG_JSON") == "1", os.Stderr)
-	override := targetOverride(options)
-	authStatePaths, err := authDefaultPaths(nil)
-	if err != nil {
-		return commandRuntime{}, err
-	}
+// resolveConfig loads the layered configuration and applies the root target
+// override flag semantics: the one config-resolution path every command uses.
+func resolveConfig(ctx context.Context, options *rootOptions) (config.Resolved, error) {
 	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
 		GlobalPath:      defaultGlobalConfigPath(),
 		RepoPath:        ".linctl.toml",
 		ProfileOverride: options.profile,
-		TargetOverride:  override,
+		TargetOverride:  targetOverride(options),
 	})
+	if err != nil {
+		return config.Resolved{}, err
+	}
+	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
+
+	return resolvedConfig, nil
+}
+
+func newCommandRuntime(ctx context.Context, options *rootOptions) (commandRuntime, error) {
+	logger := newDiagnosticLogger(options.debug, os.Getenv("LINCTL_DEBUG_JSON") == "1", os.Stderr)
+	authStatePaths, err := authDefaultPaths(nil)
 	if err != nil {
 		return commandRuntime{}, err
 	}
-	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
+	resolvedConfig, err := resolveConfig(ctx, options)
+	if err != nil {
+		return commandRuntime{}, err
+	}
 	authStore := auth.NewStore(authStatePaths)
 	authSession, err := auth.SelectSession(ctx, auth.SessionRequest{
 		Store:   authStore,
@@ -319,14 +329,6 @@ func (recovering *recoveringGraphQLClient) reacquireClientCredentials(ctx contex
 	}
 
 	return token, nil
-}
-
-func (recovering *recoveringGraphQLClient) authorizationHeader() string {
-	if recovering.token.AccessToken == "" {
-		return ""
-	}
-
-	return "Bearer " + recovering.token.AccessToken
 }
 
 func (runtime commandRuntime) resolveTarget(ctx context.Context) (client.ResolvedTarget, error) {

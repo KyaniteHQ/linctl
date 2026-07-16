@@ -92,20 +92,20 @@ func Test_normalizedStateType_returns_error_for_unknown(t *testing.T) {
 	require.ErrorContains(t, err, "unknown state type")
 }
 
-func Test_mergedStateFlag_returns_state_when_non_empty(t *testing.T) {
-	result := mergedStateFlag("started", "todo")
+func Test_firstNonEmpty_returns_primary_when_non_empty(t *testing.T) {
+	result := firstNonEmpty("started", "todo")
 
 	require.Equal(t, "started", result)
 }
 
-func Test_mergedStateFlag_returns_status_when_state_empty(t *testing.T) {
-	result := mergedStateFlag("", "todo")
+func Test_firstNonEmpty_returns_fallback_when_primary_empty(t *testing.T) {
+	result := firstNonEmpty("", "todo")
 
 	require.Equal(t, "todo", result)
 }
 
-func Test_mergedStateFlag_returns_empty_when_both_empty(t *testing.T) {
-	result := mergedStateFlag("", "")
+func Test_firstNonEmpty_returns_empty_when_both_empty(t *testing.T) {
+	result := firstNonEmpty("", "")
 
 	require.Empty(t, result)
 }

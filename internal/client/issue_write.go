@@ -128,7 +128,7 @@ func (guard *guardedClient) createIssue(
 		return IssueSummary{}, err
 	}
 	if request.StateType != "" {
-		stateID, stateErr := firstStateIDOfType(ctx, guard.graphqlClient, guard.target.Team.ID, request.StateType)
+		stateID, stateErr := guard.stateIDOfType(ctx, guard.target.Team.ID, request.StateType)
 		if stateErr != nil {
 			return IssueSummary{}, stateErr
 		}
@@ -333,7 +333,7 @@ func (guard *guardedClient) buildIssueUpdateInput(
 		Estimate:    estimateUpdateJSON(request),
 	}
 	if request.StateType != "" {
-		stateID, err := firstStateIDOfType(ctx, guard.graphqlClient, teamID, request.StateType)
+		stateID, err := guard.stateIDOfType(ctx, teamID, request.StateType)
 		if err != nil {
 			return LinearIssueUpdateInput{}, err
 		}
@@ -384,7 +384,7 @@ func (guard *guardedClient) startIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := firstStartedStateID(ctx, guard.graphqlClient, issue.TeamID)
+	stateID, err := guard.stateIDOfType(ctx, issue.TeamID, "started")
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -477,7 +477,7 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	if err != nil {
 		return IssueSummary{}, err
 	}
-	stateID, err := firstCompletedStateID(ctx, guard.graphqlClient, issue.TeamID)
+	stateID, err := guard.stateIDOfType(ctx, issue.TeamID, "completed")
 	if err != nil {
 		return IssueSummary{}, err
 	}
@@ -495,42 +495,27 @@ func (guard *guardedClient) closeIssue(ctx context.Context, issueID string) (Iss
 	return issueSummaryFromFields(closed.IssueUpdate.Issue.IssueSummaryFields), nil
 }
 
-func firstCompletedStateID(ctx context.Context, graphqlClient graphql.Client, teamID string) (string, error) {
-	states, err := gql.CompletedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
+// stateIDOfType resolves the lowest-position workflow state of stateType in
+// teamID, memoized per guard so batch writes resolve each team state once.
+func (guard *guardedClient) stateIDOfType(
+	ctx context.Context,
+	teamID string,
+	stateType string,
+) (string, error) {
+	guard.stateIDs.mu.Lock()
+	defer guard.stateIDs.mu.Unlock()
+	key := teamID + "\x00" + stateType
+	if stateID, ok := guard.stateIDs.ids[key]; ok {
+		return stateID, nil
+	}
+
+	stateID, err := firstStateIDOfType(ctx, guard.graphqlClient, teamID, stateType)
 	if err != nil {
-		return "", fmt.Errorf("list completed workflow states: %w", err)
+		return "", err
 	}
-	if len(states.WorkflowStates.Nodes) == 0 {
-		return "", fmt.Errorf("%w: completed workflow state missing for team_id=%s", ErrWriteInvalid, teamID)
-	}
+	guard.stateIDs.ids[key] = stateID
 
-	state := states.WorkflowStates.Nodes[0]
-	for _, candidate := range states.WorkflowStates.Nodes[1:] {
-		if candidate.Position < state.Position {
-			state = candidate
-		}
-	}
-
-	return state.Id, nil
-}
-
-func firstStartedStateID(ctx context.Context, graphqlClient graphql.Client, teamID string) (string, error) {
-	states, err := gql.StartedWorkflowStates(ctx, graphqlClient, teamID, intPtr(50))
-	if err != nil {
-		return "", fmt.Errorf("list started workflow states: %w", err)
-	}
-	if len(states.WorkflowStates.Nodes) == 0 {
-		return "", fmt.Errorf("%w: started workflow state missing for team_id=%s", ErrWriteInvalid, teamID)
-	}
-
-	state := states.WorkflowStates.Nodes[0]
-	for _, candidate := range states.WorkflowStates.Nodes[1:] {
-		if candidate.Position < state.Position {
-			state = candidate
-		}
-	}
-
-	return state.Id, nil
+	return stateID, nil
 }
 
 func firstStateIDOfType(
@@ -597,6 +582,38 @@ func dueDateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	return json.RawMessage(strconv.Quote(request.DueDate))
 }
 
+// teamEstimateConfig is the team-level estimate configuration linctl can
+// verify before a mutation.
+type teamEstimateConfig struct {
+	estimationType string
+	allowZero      bool
+}
+
+// estimateConfigForTeam reads a team's estimate configuration, memoized per
+// guard so batch writes read each team configuration once.
+func (guard *guardedClient) estimateConfigForTeam(
+	ctx context.Context,
+	teamID string,
+) (teamEstimateConfig, error) {
+	guard.estimateConfigs.mu.Lock()
+	defer guard.estimateConfigs.mu.Unlock()
+	if config, ok := guard.estimateConfigs.configs[teamID]; ok {
+		return config, nil
+	}
+
+	result, err := gql.XTeamEstimateConfig(ctx, guard.graphqlClient, teamID)
+	if err != nil {
+		return teamEstimateConfig{}, fmt.Errorf("read team estimate config for team_id=%s: %w", teamID, err)
+	}
+	config := teamEstimateConfig{
+		estimationType: result.Team.IssueEstimationType,
+		allowZero:      result.Team.IssueEstimationAllowZero,
+	}
+	guard.estimateConfigs.configs[teamID] = config
+
+	return config, nil
+}
+
 // validateEstimate fails closed before a mutation when the team cannot accept
 // the requested estimate. It performs a free read of the team's estimate
 // configuration and enforces the team-level constraints linctl can verify from
@@ -610,14 +627,14 @@ func (guard *guardedClient) validateEstimate(ctx context.Context, teamID string,
 	if *estimate < 0 {
 		return fmt.Errorf("%w: estimate must not be negative, got %d", ErrWriteInvalid, *estimate)
 	}
-	config, err := gql.XTeamEstimateConfig(ctx, guard.graphqlClient, teamID)
+	config, err := guard.estimateConfigForTeam(ctx, teamID)
 	if err != nil {
-		return fmt.Errorf("read team estimate config for team_id=%s: %w", teamID, err)
+		return err
 	}
-	if config.Team.IssueEstimationType == "" || config.Team.IssueEstimationType == "notUsed" {
+	if config.estimationType == "" || config.estimationType == "notUsed" {
 		return fmt.Errorf("%w: team team_id=%s has estimates disabled", ErrWriteInvalid, teamID)
 	}
-	if *estimate == 0 && !config.Team.IssueEstimationAllowZero {
+	if *estimate == 0 && !config.allowZero {
 		return fmt.Errorf("%w: team team_id=%s does not allow a zero estimate", ErrWriteInvalid, teamID)
 	}
 

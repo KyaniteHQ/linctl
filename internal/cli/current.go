@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/KyaniteHQ/linctl/internal/gitctx"
 )
 
@@ -42,16 +41,10 @@ func addCurrentCommand(ctx context.Context, root *cobra.Command, options *rootOp
 // keeps Current Issue resolution unfiltered. Any real config problem still
 // surfaces moments later from buildCommandRuntime for commands that need it.
 func pinnedTeamKeyHint(ctx context.Context, options *rootOptions) string {
-	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
-		GlobalPath:      defaultGlobalConfigPath(),
-		RepoPath:        ".linctl.toml",
-		ProfileOverride: options.profile,
-		TargetOverride:  targetOverride(options),
-	})
+	resolvedConfig, err := resolveConfig(ctx, options)
 	if err != nil {
 		return ""
 	}
-	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
 
 	return strings.TrimSpace(resolvedConfig.Target.TeamKey)
 }

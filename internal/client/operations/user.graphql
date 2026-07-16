@@ -190,22 +190,6 @@ query userSettings_notificationCategoryPreferences {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 query userSettings_notificationChannelPreferences {
   userSettings {
     notificationChannelPreferences {
@@ -238,104 +222,6 @@ query userSettings_notificationDeliveryPreferences_mobile_schedule {
       mobile {
         schedule {
           ...NotificationDeliveryPreferencesScheduleFields
-        }
-      }
-    }
-  }
-}
-
-query userSettings_notificationDeliveryPreferences_mobile_schedule_friday {
-  userSettings {
-    notificationDeliveryPreferences {
-      mobile {
-        schedule {
-          friday {
-            ...NotificationDeliveryPreferencesDayFields
-          }
-        }
-      }
-    }
-  }
-}
-
-query userSettings_notificationDeliveryPreferences_mobile_schedule_monday {
-  userSettings {
-    notificationDeliveryPreferences {
-      mobile {
-        schedule {
-          monday {
-            ...NotificationDeliveryPreferencesDayFields
-          }
-        }
-      }
-    }
-  }
-}
-
-query userSettings_notificationDeliveryPreferences_mobile_schedule_saturday {
-  userSettings {
-    notificationDeliveryPreferences {
-      mobile {
-        schedule {
-          saturday {
-            ...NotificationDeliveryPreferencesDayFields
-          }
-        }
-      }
-    }
-  }
-}
-
-query userSettings_notificationDeliveryPreferences_mobile_schedule_sunday {
-  userSettings {
-    notificationDeliveryPreferences {
-      mobile {
-        schedule {
-          sunday {
-            ...NotificationDeliveryPreferencesDayFields
-          }
-        }
-      }
-    }
-  }
-}
-
-query userSettings_notificationDeliveryPreferences_mobile_schedule_thursday {
-  userSettings {
-    notificationDeliveryPreferences {
-      mobile {
-        schedule {
-          thursday {
-            ...NotificationDeliveryPreferencesDayFields
-          }
-        }
-      }
-    }
-  }
-}
-
-query userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday {
-  userSettings {
-    notificationDeliveryPreferences {
-      mobile {
-        schedule {
-          tuesday {
-            ...NotificationDeliveryPreferencesDayFields
-          }
-        }
-      }
-    }
-  }
-}
-
-query userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday {
-  userSettings {
-    notificationDeliveryPreferences {
-      mobile {
-        schedule {
-          wednesday {
-            ...NotificationDeliveryPreferencesDayFields
-          }
         }
       }
     }

@@ -418,6 +418,9 @@ func ListProjectHistory(
 	}, nil
 }
 
+//nolint:lll
+type initiativeToProjectNode = gql.XProject_initiativeToProjectsProjectInitiativeToProjectsInitiativeToProjectConnectionNodesInitiativeToProject
+
 // ListProjectInitiativeToProjects returns Initiative-to-Project associations for one Project.
 func ListProjectInitiativeToProjects(
 	ctx context.Context,
@@ -430,10 +433,10 @@ func ListProjectInitiativeToProjects(
 		return ProjectInitiativeToProjectList{}, fmt.Errorf("list project initiative associations %s: %w", id, err)
 	}
 
-	associations := make([]InitiativeToProjectSummary, 0, len(result.Project.InitiativeToProjects.Nodes))
-	for _, node := range result.Project.InitiativeToProjects.Nodes {
-		associations = append(associations, initiativeToProjectSummary(node.InitiativeToProjectSummaryFields))
-	}
+	associations := mapNodes(result.Project.InitiativeToProjects.Nodes,
+		func(node initiativeToProjectNode) InitiativeToProjectSummary {
+			return initiativeToProjectSummary(node.InitiativeToProjectSummaryFields)
+		})
 
 	return ProjectInitiativeToProjectList{
 		ProjectID:    result.Project.Id,

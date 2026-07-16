@@ -57,8 +57,8 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"StartedWorkflowStates": `{"workflowStates":{"nodes":[{"id":"started-state","name":"Started","type":"started","position":1}]}}`,
-		"IssueUpdate":           "",
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[{"id":"started-state","name":"Started","type":"started","position":1}]}}`,
+		"IssueUpdate":          "",
 	}).withError(operationErr), matchingTarget(), "LIT-40")
 	require.ErrorIs(t, err, operationErr)
 	require.ErrorContains(t, err, "start issue LIT-40")
@@ -73,8 +73,8 @@ func Test_ClientWriteFailureScenarios_wrap_graphql_operation_errors(t *testing.T
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"CompletedWorkflowStates": `{"workflowStates":{"nodes":[{"id":"done-state","name":"Done","type":"completed","position":1}]}}`,
-		"IssueClose":              "",
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[{"id":"done-state","name":"Done","type":"completed","position":1}]}}`,
+		"IssueClose":           "",
 	}).withError(operationErr), matchingTarget(), "LIT-40")
 	require.ErrorIs(t, err, operationErr)
 	require.ErrorContains(t, err, "close issue LIT-40")
@@ -166,7 +166,7 @@ func Test_ClientWriteFailureScenarios_return_guard_read_errors(t *testing.T) {
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"StartedWorkflowStates": "",
+		"WorkflowStatesByType": "",
 	}).withError(operationErr), matchingTarget(), "LIT-51")
 	require.ErrorIs(t, err, operationErr)
 	require.ErrorContains(t, err, "list started workflow states")
@@ -186,7 +186,7 @@ func Test_ClientWriteFailureScenarios_return_guard_read_errors(t *testing.T) {
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"CompletedWorkflowStates": "",
+		"WorkflowStatesByType": "",
 	}).withError(operationErr), matchingTarget(), "LIT-51")
 	require.ErrorIs(t, err, operationErr)
 	require.ErrorContains(t, err, "list completed workflow states")

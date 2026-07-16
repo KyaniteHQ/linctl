@@ -33,6 +33,9 @@ type InitiativeLabelList struct {
 	EndCursor        *string                  `json:"end_cursor,omitempty"`
 }
 
+//nolint:lll
+type initiativeLabelNode = gql.XInitiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesInitiativeLabel
+
 // ListInitiativeLabels returns visible Linear initiative labels.
 func ListInitiativeLabels(ctx context.Context, graphqlClient graphql.Client, limit int) (InitiativeLabelList, error) {
 	result, err := gql.XInitiativeLabels(ctx, graphqlClient, intPtr(limit), nil, boolPtr(true))
@@ -40,10 +43,9 @@ func ListInitiativeLabels(ctx context.Context, graphqlClient graphql.Client, lim
 		return InitiativeLabelList{}, fmt.Errorf("list initiative labels: %w", err)
 	}
 
-	labels := make([]InitiativeLabelSummary, 0, len(result.InitiativeLabels.Nodes))
-	for _, label := range result.InitiativeLabels.Nodes {
-		labels = append(labels, initiativeLabelSummary(label.InitiativeLabelSummaryFields))
-	}
+	labels := mapNodes(result.InitiativeLabels.Nodes, func(label initiativeLabelNode) InitiativeLabelSummary {
+		return initiativeLabelSummary(label.InitiativeLabelSummaryFields)
+	})
 
 	return InitiativeLabelList{
 		InitiativeLabels: labels,

@@ -369,16 +369,10 @@ func loadAuthProfileContext(
 	if err != nil {
 		return authCommandContext{}, err
 	}
-	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
-		GlobalPath:      defaultGlobalConfigPath(),
-		RepoPath:        ".linctl.toml",
-		ProfileOverride: options.profile,
-		TargetOverride:  targetOverride(options),
-	})
+	resolvedConfig, err := resolveConfig(ctx, options)
 	if err != nil {
 		return authCommandContext{}, err
 	}
-	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
 
 	store := auth.NewStore(paths)
 

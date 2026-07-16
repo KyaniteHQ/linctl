@@ -139,7 +139,7 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue update with estimate", args: []string{"issue", "update", "LIT-1", "--estimate", "5"}, contains: "LIT-1 Updated issue [Todo]"},
 		{name: "issue update clear estimate", args: []string{"issue", "update", "LIT-1", "--clear-estimate"}, contains: "LIT-1 Updated issue [Todo]"},
 		{name: "issue list status alias", args: []string{"issue", "list", "--status", "started", "--limit", "1"}, contains: "LIT-2 Started issue [Started]", fake: commandFlowFakeClient{expectedStateType: "started"}},
-		{name: "issue start", args: []string{"issue", "start", "LIT-1"}, contains: "LIT-1 Started issue [Started]", fake: commandFlowFakeClient{expectedStartAssigneeID: "user-id", expectedStartStateID: "started-state"}},
+		{name: "issue start", args: []string{"issue", "start", "LIT-1"}, contains: "LIT-1 Started issue [Started]", fake: commandFlowFakeClient{expectedStartAssigneeID: "user-id", expectedStartStateID: "type-state-id"}},
 		{name: "issue comment", args: []string{"issue", "comment", "LIT-1", "--body", "Looks good"}, contains: "comment comment-id on LIT-1"},
 		{name: "issue reply", args: []string{"issue", "reply", "LIT-1", "comment-id", "--body", "Reply body"}, contains: "comment comment-id on LIT-1", fake: commandFlowFakeClient{expectedCommentBody: "Reply body", expectedCommentParentID: "comment-id"}},
 		{name: "issue comments", args: []string{"issue", "comments", "LIT-1", "--limit", "1"}, contains: "comment-id Omer First comment"},

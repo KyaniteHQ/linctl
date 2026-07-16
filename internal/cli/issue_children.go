@@ -9,13 +9,6 @@ import (
 	"github.com/KyaniteHQ/linctl/internal/client"
 )
 
-type issueChildListFetcher[Page any] func(
-	context.Context,
-	graphql.Client,
-	string,
-	int,
-) (Page, error)
-
 type issueChildValueFetcher[Value any] func(context.Context, graphql.Client, string) (Value, error)
 
 type issueChildCommandText struct {
@@ -39,21 +32,21 @@ type issueChildCommandText struct {
 type issueChildCommandBundle struct {
 	Argument          string
 	Text              issueChildCommandText
-	Attachments       issueChildListFetcher[client.AttachmentList]
+	Attachments       childListFetcher[client.AttachmentList]
 	BotActor          issueChildValueFetcher[client.IssueBotActor]
-	Children          issueChildListFetcher[client.IssueList]
-	Documents         issueChildListFetcher[client.DocumentList]
-	FormerAttachments issueChildListFetcher[client.AttachmentList]
-	FormerNeeds       issueChildListFetcher[client.IssueCustomerNeedMetadataList]
-	History           issueChildListFetcher[client.IssueHistoryList]
-	InverseRelations  issueChildListFetcher[client.IssueRelationList]
-	Labels            issueChildListFetcher[client.LabelList]
-	Needs             issueChildListFetcher[client.IssueCustomerNeedMetadataList]
-	Relations         issueChildListFetcher[client.IssueRelationList]
-	Releases          issueChildListFetcher[client.ReleaseList]
+	Children          childListFetcher[client.IssueList]
+	Documents         childListFetcher[client.DocumentList]
+	FormerAttachments childListFetcher[client.AttachmentList]
+	FormerNeeds       childListFetcher[client.IssueCustomerNeedMetadataList]
+	History           childListFetcher[client.IssueHistoryList]
+	InverseRelations  childListFetcher[client.IssueRelationList]
+	Labels            childListFetcher[client.LabelList]
+	Needs             childListFetcher[client.IssueCustomerNeedMetadataList]
+	Relations         childListFetcher[client.IssueRelationList]
+	Releases          childListFetcher[client.ReleaseList]
 	SharedAccess      issueChildValueFetcher[client.IssueSharedAccessSummary]
-	StateHistory      issueChildListFetcher[client.IssueStateHistoryList]
-	Subscribers       issueChildListFetcher[client.UserList]
+	StateHistory      childListFetcher[client.IssueStateHistoryList]
+	Subscribers       childListFetcher[client.UserList]
 }
 
 func addIssueChildCommands(
@@ -132,23 +125,11 @@ func addIssueChildListCommand[Page any, Item any](
 	argument string,
 	short string,
 	limitHelp string,
-	fetch issueChildListFetcher[Page],
+	fetch childListFetcher[Page],
 	items func(Page) []Item,
 	writeItem readListItemWriter[Item],
 ) {
-	addListCommand(ctx, root, options, listCommandSpec[Page, Item]{
-		Use:       name + " " + argument,
-		Short:     short,
-		LimitHelp: limitHelp,
-		Args:      cobra.ExactArgs(1),
-		Load: func(
-			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (Page, []Item, error) {
-			page, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
-			return page, items(page), err
-		},
-		WriteItem: writeItem,
-	})
+	addChildListCommand(ctx, root, options, name+" "+argument, short, limitHelp, fetch, items, writeItem)
 }
 
 func addIssueChildValueCommand[Value any](

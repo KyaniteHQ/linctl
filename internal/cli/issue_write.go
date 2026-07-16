@@ -207,7 +207,7 @@ func applyIssueWriteNormalization(
 	status string,
 	priority string,
 ) (stateType string, normalizedPriority string, err error) {
-	stateType, err = normalizeAndNote(command, "state", mergedStateFlag(state, status), normalizedStateType)
+	stateType, err = normalizeAndNote(command, "state", firstNonEmpty(state, status), normalizedStateType)
 	if err != nil {
 		return "", "", err
 	}

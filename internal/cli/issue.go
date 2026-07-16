@@ -65,7 +65,7 @@ func addIssueListCommand(ctx context.Context, root *cobra.Command, options *root
 		Args:  cobra.NoArgs,
 		RunE: func(command *cobra.Command, _ []string) error {
 			normalizedState, err := normalizeAndNote(
-				command, "state", mergedStateFlag(stateType, status), normalizedStateType,
+				command, "state", firstNonEmpty(stateType, status), normalizedStateType,
 			)
 			if err != nil {
 				return err
@@ -252,20 +252,12 @@ func issueList(
 			AssigneeID:    issueListAssigneeID(target, flags.assigneeID, flags.mine),
 			LabelID:       flags.labelID,
 			CycleID:       flags.cycleID,
-			CreatedAfter:  issueListCreatedAfter(flags.createdAfter, flags.createdSince),
+			CreatedAfter:  firstNonEmpty(flags.createdAfter, flags.createdSince),
 			CreatedBefore: flags.createdBefore,
 			HasBlockers:   flags.hasBlockers,
 			Blocks:        flags.blocks,
 			BlockedBy:     flags.blockedBy,
 		})
-}
-
-func issueListCreatedAfter(createdAfter string, createdSince string) string {
-	if createdAfter != "" {
-		return createdAfter
-	}
-
-	return createdSince
 }
 
 func issueListAssigneeID(target client.ResolvedTarget, assigneeID string, mine bool) string {
@@ -480,26 +472,6 @@ func issueChildCommandBundleForIssue() issueChildCommandBundle {
 	}
 }
 
-func addIssueCommentMetadataListCommand(
-	ctx context.Context,
-	root *cobra.Command,
-	options *rootOptions,
-	use string,
-	short string,
-	limitHelp string,
-	fetch issueChildListFetcher[client.IssueCommentMetadataList],
-) {
-	addListCommand(ctx, root, options, listCommandSpec[client.IssueCommentMetadataList, client.CommentMetadataSummary]{
-		Use:       use,
-		Short:     short,
-		LimitHelp: limitHelp,
-		Args:      cobra.ExactArgs(1),
-		Load: func(
-			_ context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.IssueCommentMetadataList, []client.CommentMetadataSummary, error) {
-			list, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Comments, err
-		},
-		WriteItem: writeCommentMetadata,
-	})
+func commentMetadataListItems(list client.IssueCommentMetadataList) []client.CommentMetadataSummary {
+	return list.Comments
 }

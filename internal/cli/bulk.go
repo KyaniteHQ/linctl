@@ -15,7 +15,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
-	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
@@ -157,16 +156,10 @@ func runIssueImportDryRun(
 }
 
 func importDryRunTeamKey(ctx context.Context, options *rootOptions) (string, error) {
-	resolvedConfig, err := config.Load(ctx, config.LoadRequest{
-		GlobalPath:      defaultGlobalConfigPath(),
-		RepoPath:        ".linctl.toml",
-		ProfileOverride: options.profile,
-		TargetOverride:  targetOverride(options),
-	})
+	resolvedConfig, err := resolveConfig(ctx, options)
 	if err != nil {
 		return "", err
 	}
-	applyTargetOverrideFlagSemantics(&resolvedConfig, options)
 	if strings.TrimSpace(resolvedConfig.Target.TeamKey) == "" {
 		return "", fmt.Errorf("%w: set team_key in .linctl.toml", client.ErrTargetNotConfigured)
 	}

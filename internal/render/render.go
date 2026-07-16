@@ -7,18 +7,6 @@ import (
 	"io"
 )
 
-// Format selects the output renderer.
-type Format string
-
-const (
-	// FormatHuman writes compact human-readable text.
-	FormatHuman Format = "human"
-	// FormatJSON writes indented JSON.
-	FormatJSON Format = "json"
-	// FormatCompact writes one-line compact text.
-	FormatCompact Format = "compact"
-)
-
 // WriteJSON writes a JSON value.
 func WriteJSON(writer io.Writer, value any, compact bool) error {
 	encoder := json.NewEncoder(writer)

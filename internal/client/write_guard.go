@@ -14,11 +14,27 @@ type guardedClient struct {
 	graphqlClient    graphql.Client
 	target           ResolvedTarget
 	attachableLabels *attachableLabelCache
+	stateIDs         *stateIDCache
+	estimateConfigs  *estimateConfigCache
 }
 
 type attachableLabelCache struct {
 	mu  sync.Mutex
 	ids map[string]struct{}
+}
+
+// stateIDCache memoizes resolved workflow state ids per team and state type so
+// batch writes do not re-issue the same free read per row.
+type stateIDCache struct {
+	mu  sync.Mutex
+	ids map[string]string
+}
+
+// estimateConfigCache memoizes team estimate configurations so batch writes do
+// not re-issue the same free read per row.
+type estimateConfigCache struct {
+	mu      sync.Mutex
+	configs map[string]teamEstimateConfig
 }
 
 func newGuardedClient(
@@ -36,6 +52,12 @@ func newGuardedClient(
 		target:        target,
 		attachableLabels: &attachableLabelCache{
 			ids: map[string]struct{}{},
+		},
+		stateIDs: &stateIDCache{
+			ids: map[string]string{},
+		},
+		estimateConfigs: &estimateConfigCache{
+			configs: map[string]teamEstimateConfig{},
 		},
 	}, nil
 }

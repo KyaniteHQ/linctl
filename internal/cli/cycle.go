@@ -3,7 +3,6 @@ package cli
 import (
 	"context"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/spf13/cobra"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
@@ -70,48 +69,35 @@ func addCycleGetCommand(ctx context.Context, root *cobra.Command, options *rootO
 }
 
 func addCycleIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCycleIssueListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
 		"issues CYCLE_ID",
 		"List Issues assigned to one Cycle",
+		"Issues",
 		client.ListCycleIssues,
+		cycleIssueListItems,
+		writeIssue,
 	)
 }
 
 func addCycleUncompletedIssuesCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addCycleIssueListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
 		"uncompleted-issues CYCLE_ID",
 		"List Issues left open when one Cycle closed",
+		"Issues",
 		client.ListCycleUncompletedIssuesUponClose,
+		cycleIssueListItems,
+		writeIssue,
 	)
 }
 
-func addCycleIssueListCommand(
-	ctx context.Context,
-	root *cobra.Command,
-	options *rootOptions,
-	use string,
-	short string,
-	fetch func(context.Context, graphql.Client, string, int) (client.CycleIssueList, error),
-) {
-	addListCommand(ctx, root, options, listCommandSpec[client.CycleIssueList, client.IssueSummary]{
-		Use:       use,
-		Short:     short,
-		LimitHelp: "Issues",
-		Args:      cobra.ExactArgs(1),
-		Load: func(
-			ctx context.Context, runtime commandRuntime, args []string, limit int,
-		) (client.CycleIssueList, []client.IssueSummary, error) {
-			list, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
-			return list, list.Issues, err
-		},
-		WriteItem: writeIssue,
-	})
+func cycleIssueListItems(list client.CycleIssueList) []client.IssueSummary {
+	return list.Issues
 }
 
 func writeCycle(command *cobra.Command, options *rootOptions, cycle client.CycleSummary) error {

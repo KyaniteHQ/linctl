@@ -148,7 +148,7 @@ func Test_StartIssue_assigns_viewer_and_moves_to_started_state_when_target_match
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"StartedWorkflowStates": `{"workflowStates":{"nodes":[
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
 			{"id":"later-started-state","name":"Later","type":"started","position":2},
 			{"id":"started-state","name":"Started","type":"started","position":1}
 		]}}`,
@@ -188,7 +188,7 @@ func Test_StartIssue_delegates_to_assignable_app_viewer(t *testing.T) {
 			Identifier: "LIT-5", Title: "start", ProjectID: "project-id", Project: "fixture",
 			StateID: "todo-state", State: "Todo", StateType: "unstarted",
 		}) + `}`,
-		"StartedWorkflowStates": `{"workflowStates":{"nodes":[
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
 			{"id":"started-state","name":"Started","type":"started","position":1}
 		]}}`,
 		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(issueFixture{
@@ -235,7 +235,7 @@ func Test_CloseIssue_moves_issue_to_completed_state_when_target_matches(t *testi
 			State:      "Todo",
 			StateType:  "unstarted",
 		}) + `}`,
-		"CompletedWorkflowStates": `{"workflowStates":{"nodes":[
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
 			{"id":"done-state","name":"Done","type":"completed","position":2},
 			{"id":"complete-state","name":"Complete","type":"completed","position":1}
 		]}}`,
@@ -811,6 +811,37 @@ func Test_CreateIssues_resolves_target_once(t *testing.T) {
 	// resolveTarget call, not once per row.
 	require.Equal(t, 1, recorder.countOf("team"), "the direct team lookup should run once, not per row")
 	require.Equal(t, 1, recorder.countOf("Teams"), "the team scan should run once, not per row")
+}
+
+func Test_CreateIssues_resolves_shared_state_and_estimate_config_once(t *testing.T) {
+	recorder := &recordingGraphQLClient{inner: issueWriteFakeClient(map[string]string{
+		"WorkflowStatesByType": `{"workflowStates":{"nodes":[
+			{"id":"started-state","name":"Started","type":"started","position":1}
+		]}}`,
+		"teamEstimateConfig": teamEstimateConfigJSON("fibonacci", false),
+		"IssueCreate":        `{"issueCreate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+	})}
+	estimate := 3
+	requests := []IssueCreateRequest{
+		{Title: "First", StateType: "started", Estimate: &estimate},
+		{Title: "Second", StateType: "started", Estimate: &estimate},
+		{Title: "Third", StateType: "started", Estimate: &estimate},
+	}
+
+	outcomes, err := CreateIssues(context.Background(), recorder, matchingTarget(), requests, 3)
+
+	require.NoError(t, err)
+	for _, outcome := range outcomes {
+		require.NoError(t, outcome.Err)
+	}
+	require.Equal(
+		t, 1, recorder.countOf("WorkflowStatesByType"),
+		"a shared state type should resolve once, not per row",
+	)
+	require.Equal(
+		t, 1, recorder.countOf("teamEstimateConfig"),
+		"the team estimate config should resolve once, not per row",
+	)
 }
 
 func Test_CreateIssues_validates_each_distinct_label_once(t *testing.T) {

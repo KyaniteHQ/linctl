@@ -333,14 +333,8 @@ func cycleSummary(cycle gql.CycleSummaryFields) CycleSummary {
 	if cycle.Name != nil && *cycle.Name != "" {
 		name = *cycle.Name
 	}
-	description := ""
-	if cycle.Description != nil {
-		description = *cycle.Description
-	}
-	completedAt := ""
-	if cycle.CompletedAt != nil {
-		completedAt = *cycle.CompletedAt
-	}
+	description := stringValue(cycle.Description)
+	completedAt := stringValue(cycle.CompletedAt)
 
 	return CycleSummary{
 		ID:          cycle.Id,

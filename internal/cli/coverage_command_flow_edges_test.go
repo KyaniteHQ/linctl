@@ -607,7 +607,7 @@ func Test_CommandFlows_cover_user_settings_error_and_writer_branches(t *testing.
 		{args: []string{"user", "settings", "notification-delivery"}, operation: "userSettings_notificationDeliveryPreferences", contains: "get user settings notification delivery"},
 		{args: []string{"user", "settings", "mobile-delivery"}, operation: "userSettings_notificationDeliveryPreferences_mobile", contains: "get user settings mobile delivery"},
 		{args: []string{"user", "settings", "mobile-schedule"}, operation: "userSettings_notificationDeliveryPreferences_mobile_schedule", contains: "get user settings mobile schedule"},
-		{args: []string{"user", "settings", "mobile-schedule-day", "monday"}, operation: "userSettings_notificationDeliveryPreferences_mobile_schedule_monday", contains: "get user settings mobile schedule monday"},
+		{args: []string{"user", "settings", "mobile-schedule-day", "monday"}, operation: "userSettings_notificationDeliveryPreferences_mobile_schedule", contains: "get user settings mobile schedule monday"},
 		{args: []string{"user", "settings", "theme"}, operation: "userSettings_theme", contains: "get user settings theme"},
 		{args: []string{"user", "settings", "custom-theme"}, operation: "userSettings_theme_custom", contains: "get user settings custom theme"},
 		{args: []string{"user", "settings", "custom-sidebar-theme"}, operation: "userSettings_theme_custom_sidebar", contains: "get user settings custom sidebar theme"},

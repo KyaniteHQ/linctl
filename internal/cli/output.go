@@ -52,13 +52,13 @@ func errorCode(err error) string {
 }
 
 // writeErrorEnvelope emits the structured error envelope (one JSON line) to the
-// given writer. json.Encoder cannot fail to marshal these two strings, so the
-// only error it returns is a write failure.
+// given writer. Marshalling two strings cannot fail, so the only error it
+// returns is a write failure.
 func writeErrorEnvelope(writer io.Writer, err error) error {
-	return json.NewEncoder(writer).Encode(errorEnvelope{
+	return render.WriteJSON(writer, errorEnvelope{
 		ErrorCode: errorCode(err),
 		Message:   err.Error(),
-	})
+	}, true)
 }
 
 func writeJSONValue(command *cobra.Command, options *rootOptions, value any) error {

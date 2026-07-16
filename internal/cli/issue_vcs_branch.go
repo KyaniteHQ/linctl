@@ -34,7 +34,7 @@ func addIssueVCSBranchSearchCommand(ctx context.Context, root *cobra.Command, op
 }
 
 func addIssueVCSBranchCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueCommentMetadataListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -42,6 +42,8 @@ func addIssueVCSBranchCommentsCommand(ctx context.Context, root *cobra.Command, 
 		"List body-free comments for the issue matched by a VCS branch",
 		"comments",
 		client.ListIssueVCSBranchComments,
+		commentMetadataListItems,
+		writeCommentMetadata,
 	)
 }
 

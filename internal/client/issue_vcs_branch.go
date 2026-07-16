@@ -152,10 +152,11 @@ func ListIssueVCSBranchFormerAttachments(
 		return AttachmentList{}, notFoundError("list issue vcs branch former attachments %s", branchName)
 	}
 
-	attachments := make([]AttachmentSummary, 0, len(result.IssueVcsBranchSearch.FormerAttachments.Nodes))
-	for _, attachment := range result.IssueVcsBranchSearch.FormerAttachments.Nodes {
-		attachments = append(attachments, attachmentSummary(attachment.AttachmentSummaryFields))
-	}
+	attachments := mapNodes(result.IssueVcsBranchSearch.FormerAttachments.Nodes, func(
+		attachment gql.IssueFormerAttachmentsProjectionFormerAttachmentsAttachmentConnectionNodesAttachment,
+	) AttachmentSummary {
+		return attachmentSummary(attachment.AttachmentSummaryFields)
+	})
 
 	return AttachmentList{
 		Attachments: attachments,
@@ -210,10 +211,11 @@ func ListIssueVCSBranchInverseRelations(
 		return IssueRelationList{}, notFoundError("list issue vcs branch inverse relations %s", branchName)
 	}
 
-	relations := make([]IssueRelationSummary, 0, len(result.IssueVcsBranchSearch.InverseRelations.Nodes))
-	for _, relation := range result.IssueVcsBranchSearch.InverseRelations.Nodes {
-		relations = append(relations, issueRelationSummary(relation.IssueRelationSummaryFields))
-	}
+	relations := mapNodes(result.IssueVcsBranchSearch.InverseRelations.Nodes, func(
+		relation gql.IssueInverseRelationsProjectionInverseRelationsIssueRelationConnectionNodesIssueRelation,
+	) IssueRelationSummary {
+		return issueRelationSummary(relation.IssueRelationSummaryFields)
+	})
 
 	return IssueRelationList{
 		Relations:   relations,

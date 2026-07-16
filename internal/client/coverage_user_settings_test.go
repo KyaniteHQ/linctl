@@ -21,13 +21,6 @@ func Test_ClientReadScenarios_return_user_settings(t *testing.T) {
 			notificationDeliveryChannelJSON() + `}}}`,
 		"userSettings_notificationDeliveryPreferences_mobile_schedule": `{"userSettings":{"notificationDeliveryPreferences":{"mobile":{"schedule":` +
 			notificationDeliveryScheduleJSON() + `}}}}`,
-		"userSettings_notificationDeliveryPreferences_mobile_schedule_friday":    userSettingsScheduleDayJSON("friday"),
-		"userSettings_notificationDeliveryPreferences_mobile_schedule_monday":    userSettingsScheduleDayJSON("monday"),
-		"userSettings_notificationDeliveryPreferences_mobile_schedule_saturday":  userSettingsScheduleDayJSON("saturday"),
-		"userSettings_notificationDeliveryPreferences_mobile_schedule_sunday":    userSettingsScheduleDayJSON("sunday"),
-		"userSettings_notificationDeliveryPreferences_mobile_schedule_thursday":  userSettingsScheduleDayJSON("thursday"),
-		"userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday":   userSettingsScheduleDayJSON("tuesday"),
-		"userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday": userSettingsScheduleDayJSON("wednesday"),
 		"userSettings_theme":                `{"userSettings":{"theme":` + userSettingsThemeJSON(true) + `}}`,
 		"userSettings_theme_custom":         `{"userSettings":{"theme":{"custom":` + userSettingsCustomThemeJSON(true) + `}}}`,
 		"userSettings_theme_custom_sidebar": `{"userSettings":{"theme":{"custom":{"sidebar":` + userSettingsCustomSidebarThemeJSON() + `}}}}`,
@@ -201,11 +194,10 @@ func Test_ClientReadScenarios_cover_user_settings_error_and_null_branches(t *tes
 	require.NoError(t, err)
 	require.Nil(t, schedule)
 
-	require.Empty(t, notificationDeliveryDayFromMobileFriday(nil))
-	require.Empty(t, notificationDeliveryDayFromMobileMonday(nil))
-	require.Empty(t, notificationDeliveryDayFromMobileSaturday(nil))
-	require.Empty(t, notificationDeliveryDayFromMobileSunday(nil))
-	require.Empty(t, notificationDeliveryDayFromMobileThursday(nil))
-	require.Empty(t, notificationDeliveryDayFromMobileTuesday(nil))
-	require.Empty(t, notificationDeliveryDayFromMobileWednesday(nil))
+	scheduleDay, err := GetUserSettingsMobileScheduleDay(context.Background(), nullClient, "monday")
+	require.NoError(t, err)
+	require.Empty(t, scheduleDay)
+	scheduleDay, err = GetUserSettingsMobileScheduleDay(context.Background(), scheduleNullClient, "monday")
+	require.NoError(t, err)
+	require.Empty(t, scheduleDay)
 }

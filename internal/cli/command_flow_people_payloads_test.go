@@ -161,20 +161,6 @@ func commandFlowUserSettingsPayload(operation string) (string, bool) {
 		return `{"userSettings":{"notificationDeliveryPreferences":{"mobile":` + commandNotificationDeliveryChannelJSON() + `}}}`, true
 	case "userSettings_notificationDeliveryPreferences_mobile_schedule":
 		return `{"userSettings":{"notificationDeliveryPreferences":{"mobile":{"schedule":` + commandNotificationDeliveryScheduleJSON() + `}}}}`, true
-	case "userSettings_notificationDeliveryPreferences_mobile_schedule_friday":
-		return commandUserSettingsScheduleDayPayload("friday"), true
-	case "userSettings_notificationDeliveryPreferences_mobile_schedule_monday":
-		return commandUserSettingsScheduleDayPayload("monday"), true
-	case "userSettings_notificationDeliveryPreferences_mobile_schedule_saturday":
-		return commandUserSettingsScheduleDayPayload("saturday"), true
-	case "userSettings_notificationDeliveryPreferences_mobile_schedule_sunday":
-		return commandUserSettingsScheduleDayPayload("sunday"), true
-	case "userSettings_notificationDeliveryPreferences_mobile_schedule_thursday":
-		return commandUserSettingsScheduleDayPayload("thursday"), true
-	case "userSettings_notificationDeliveryPreferences_mobile_schedule_tuesday":
-		return commandUserSettingsScheduleDayPayload("tuesday"), true
-	case "userSettings_notificationDeliveryPreferences_mobile_schedule_wednesday":
-		return commandUserSettingsScheduleDayPayload("wednesday"), true
 	case "userSettings_theme":
 		return `{"userSettings":{"theme":` + commandUserSettingsThemeJSON(true) + `}}`, true
 	case "userSettings_theme_custom":
@@ -184,9 +170,4 @@ func commandFlowUserSettingsPayload(operation string) (string, bool) {
 	default:
 		return "", false
 	}
-}
-
-func commandUserSettingsScheduleDayPayload(day string) string {
-	return `{"userSettings":{"notificationDeliveryPreferences":{"mobile":{"schedule":{"` + day + `":` +
-		commandNotificationDeliveryDayJSON() + `}}}}}`
 }

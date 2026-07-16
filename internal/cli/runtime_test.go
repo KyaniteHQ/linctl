@@ -122,7 +122,7 @@ func Test_CommandRuntime_reports_local_auth_state_load_error_without_env_token(t
 func Test_NewRecoveringGraphQLClient_uses_defaults_and_empty_authorization(t *testing.T) {
 	runtimeClient := newRecoveringGraphQLClient(recoveringGraphQLClientConfig{})
 
-	require.Empty(t, runtimeClient.authorizationHeader())
+	require.Empty(t, runtimeClient.token.AccessToken)
 	require.NotNil(t, runtimeClient.client)
 	require.NotNil(t, runtimeClient.oauthClient)
 }
@@ -735,7 +735,11 @@ func runtimeGraphQLAuthorizationHeader(t *testing.T, runtime commandRuntime) str
 	t.Helper()
 
 	if client, ok := runtime.graphqlClient.(*recoveringGraphQLClient); ok {
-		return client.authorizationHeader()
+		if client.token.AccessToken == "" {
+			return ""
+		}
+
+		return "Bearer " + client.token.AccessToken
 	}
 	value := reflect.ValueOf(runtime.graphqlClient)
 	require.Equal(t, "*client.Transport", value.Type().String())

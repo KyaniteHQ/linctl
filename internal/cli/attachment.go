@@ -78,7 +78,7 @@ func addAttachmentIssueCommand(ctx context.Context, root *cobra.Command, options
 }
 
 func addAttachmentIssueCommentsCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addIssueCommentMetadataListCommand(
+	addChildListCommand(
 		ctx,
 		root,
 		options,
@@ -86,6 +86,8 @@ func addAttachmentIssueCommentsCommand(ctx context.Context, root *cobra.Command,
 		"List body-free comments for the issue associated with an attachment",
 		"comments",
 		client.ListAttachmentIssueComments,
+		commentMetadataListItems,
+		writeCommentMetadata,
 	)
 }
 

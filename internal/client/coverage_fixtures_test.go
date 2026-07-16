@@ -823,11 +823,6 @@ func notificationDeliveryDayJSON() string {
 	return `{"start":"09:00","end":"18:00"}`
 }
 
-func userSettingsScheduleDayJSON(day string) string {
-	return `{"userSettings":{"notificationDeliveryPreferences":{"mobile":{"schedule":{"` + day + `":` +
-		notificationDeliveryDayJSON() + `}}}}}`
-}
-
 func userSettingsThemeJSON(includeCustom bool) string {
 	custom := "null"
 	if includeCustom {

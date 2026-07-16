@@ -75,7 +75,7 @@ func commandCycleJSON() string {
 		"name":"Planning cycle",
 		"description":"Cycle body",
 		"startsAt":"2026-06-01T00:00:00Z",
-		"endsAt":"2026-07-15T00:00:00Z",
+		"endsAt":"2099-01-01T00:00:00Z",
 		"completedAt":null,
 		"progress":0.5,
 		"team":{"id":"team-id","key":"LIT","name":"linctl"}

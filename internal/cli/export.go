@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/KyaniteHQ/linctl/internal/client"
 	"github.com/KyaniteHQ/linctl/internal/render"
@@ -47,16 +48,26 @@ func runIssueExport(
 	if err != nil {
 		return err
 	}
-	detail, err := client.GetIssueDetail(ctx, runtime.graphqlClient, id)
-	if err != nil {
-		return err
-	}
-	comments, err := client.ListIssueComments(ctx, runtime.graphqlClient, id, exportPageLimit)
-	if err != nil {
-		return err
-	}
-	attachments, err := client.ListIssueAttachments(ctx, runtime.graphqlClient, id, exportPageLimit)
-	if err != nil {
+	detail := client.IssueDetail{}
+	comments := client.IssueCommentList{}
+	attachments := client.AttachmentList{}
+	group, groupCtx := errgroup.WithContext(ctx)
+	group.Go(func() error {
+		var detailErr error
+		detail, detailErr = client.GetIssueDetail(groupCtx, runtime.graphqlClient, id)
+		return detailErr
+	})
+	group.Go(func() error {
+		var commentsErr error
+		comments, commentsErr = client.ListIssueComments(groupCtx, runtime.graphqlClient, id, exportPageLimit)
+		return commentsErr
+	})
+	group.Go(func() error {
+		var attachmentsErr error
+		attachments, attachmentsErr = client.ListIssueAttachments(groupCtx, runtime.graphqlClient, id, exportPageLimit)
+		return attachmentsErr
+	})
+	if err := group.Wait(); err != nil {
 		return err
 	}
 	document := renderIssueExport(detail, comments.Comments, attachments.Attachments)

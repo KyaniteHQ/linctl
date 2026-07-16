@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +20,42 @@ type readListLoader[Page any, Item any] func(
 type readListItemWriter[Item any] func(*cobra.Command, *rootOptions, Item) error
 
 type readGetLoader[Item any] func(context.Context, commandRuntime, string) (Item, error)
+
+type childListFetcher[Page any] func(
+	context.Context,
+	graphql.Client,
+	string,
+	int,
+) (Page, error)
+
+// addChildListCommand registers a one-argument child listing command: fetch a
+// page for the parent entity id, extract its items, and write them through the
+// shared list pipeline.
+func addChildListCommand[Page any, Item any](
+	ctx context.Context,
+	root *cobra.Command,
+	options *rootOptions,
+	use string,
+	short string,
+	limitHelp string,
+	fetch childListFetcher[Page],
+	items func(Page) []Item,
+	writeItem readListItemWriter[Item],
+) {
+	addListCommand(ctx, root, options, listCommandSpec[Page, Item]{
+		Use:       use,
+		Short:     short,
+		LimitHelp: limitHelp,
+		Args:      cobra.ExactArgs(1),
+		Load: func(
+			ctx context.Context, runtime commandRuntime, args []string, limit int,
+		) (Page, []Item, error) {
+			page, err := fetch(ctx, runtime.graphqlClient, args[0], limit)
+			return page, items(page), err
+		},
+		WriteItem: writeItem,
+	})
+}
 
 func preflightReadListCommand[Page any, Item any](
 	command *cobra.Command,

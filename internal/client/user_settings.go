@@ -154,27 +154,6 @@ type userSettingsThemeSource interface {
 	GetCustom() *gql.UserSettingsThemeFieldsCustomUserSettingsCustomTheme
 }
 
-//nolint:lll
-type userSettingsFridayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_fridayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
-
-//nolint:lll
-type userSettingsMondayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_mondayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
-
-//nolint:lll
-type userSettingsSaturdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_saturdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
-
-//nolint:lll
-type userSettingsSundayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_sundayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
-
-//nolint:lll
-type userSettingsThursdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_thursdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
-
-//nolint:lll
-type userSettingsTuesdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_tuesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
-
-//nolint:lll
-type userSettingsWednesdayMobile = gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_wednesdayUserSettingsNotificationDeliveryPreferencesMobileNotificationDeliveryPreferencesChannel
-
 // GetUserSettings returns the authenticated user's compact settings.
 func GetUserSettings(ctx context.Context, graphqlClient graphql.Client) (UserSettingsSummary, error) {
 	result, err := gql.XUserSettings(ctx, graphqlClient)
@@ -320,64 +299,38 @@ func GetUserSettingsMobileSchedule(
 	return notificationDeliverySchedule(mobile.Schedule), nil
 }
 
+// mobileScheduleDayAccessors maps a normalized day key onto its field of the
+// full-week mobile notification delivery schedule.
+var mobileScheduleDayAccessors = map[string]func(NotificationDeliverySchedule) NotificationDeliveryDay{
+	"friday":    func(schedule NotificationDeliverySchedule) NotificationDeliveryDay { return schedule.Friday },
+	"monday":    func(schedule NotificationDeliverySchedule) NotificationDeliveryDay { return schedule.Monday },
+	"saturday":  func(schedule NotificationDeliverySchedule) NotificationDeliveryDay { return schedule.Saturday },
+	"sunday":    func(schedule NotificationDeliverySchedule) NotificationDeliveryDay { return schedule.Sunday },
+	"thursday":  func(schedule NotificationDeliverySchedule) NotificationDeliveryDay { return schedule.Thursday },
+	"tuesday":   func(schedule NotificationDeliverySchedule) NotificationDeliveryDay { return schedule.Tuesday },
+	"wednesday": func(schedule NotificationDeliverySchedule) NotificationDeliveryDay { return schedule.Wednesday },
+}
+
 // GetUserSettingsMobileScheduleDay returns one mobile notification delivery schedule day.
 func GetUserSettingsMobileScheduleDay(
 	ctx context.Context,
 	graphqlClient graphql.Client,
 	day string,
 ) (NotificationDeliveryDay, error) {
-	switch normalizedUserSettingsKey(day) {
-	case "friday":
-		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_friday(ctx, graphqlClient)
-		if err != nil {
-			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
-		}
-		return notificationDeliveryDayFromMobileFriday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
-	case "monday":
-		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_monday(ctx, graphqlClient)
-		if err != nil {
-			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
-		}
-		return notificationDeliveryDayFromMobileMonday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
-	case "saturday":
-		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_saturday(ctx, graphqlClient)
-		if err != nil {
-			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
-		}
-		return notificationDeliveryDayFromMobileSaturday(
-			result.UserSettings.NotificationDeliveryPreferences.Mobile,
-		), nil
-	case "sunday":
-		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_sunday(ctx, graphqlClient)
-		if err != nil {
-			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
-		}
-		return notificationDeliveryDayFromMobileSunday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
-	case "thursday":
-		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_thursday(ctx, graphqlClient)
-		if err != nil {
-			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
-		}
-		return notificationDeliveryDayFromMobileThursday(
-			result.UserSettings.NotificationDeliveryPreferences.Mobile,
-		), nil
-	case "tuesday":
-		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_tuesday(ctx, graphqlClient)
-		if err != nil {
-			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
-		}
-		return notificationDeliveryDayFromMobileTuesday(result.UserSettings.NotificationDeliveryPreferences.Mobile), nil
-	case "wednesday":
-		result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule_wednesday(ctx, graphqlClient)
-		if err != nil {
-			return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
-		}
-		return notificationDeliveryDayFromMobileWednesday(
-			result.UserSettings.NotificationDeliveryPreferences.Mobile,
-		), nil
-	default:
+	dayOfSchedule, ok := mobileScheduleDayAccessors[normalizedUserSettingsKey(day)]
+	if !ok {
 		return NotificationDeliveryDay{}, fmt.Errorf("unknown user settings mobile schedule day %q", day)
 	}
+	result, err := gql.XUserSettings_notificationDeliveryPreferences_mobile_schedule(ctx, graphqlClient)
+	if err != nil {
+		return NotificationDeliveryDay{}, fmt.Errorf("get user settings mobile schedule %s: %w", day, err)
+	}
+	mobile := result.UserSettings.NotificationDeliveryPreferences.Mobile
+	if mobile == nil || mobile.Schedule == nil {
+		return NotificationDeliveryDay{}, nil
+	}
+
+	return dayOfSchedule(*notificationDeliverySchedule(mobile.Schedule)), nil
 }
 
 // GetUserSettingsTheme returns the user's theme for one device and mode.
@@ -563,62 +516,6 @@ func notificationDeliveryDay(source notificationDeliveryDaySource) NotificationD
 		Start: source.GetStart(),
 		End:   source.GetEnd(),
 	}
-}
-
-func notificationDeliveryDayFromMobileFriday(mobile *userSettingsFridayMobile) NotificationDeliveryDay {
-	if mobile == nil || mobile.Schedule == nil {
-		return NotificationDeliveryDay{}
-	}
-
-	return notificationDeliveryDay(&mobile.Schedule.Friday)
-}
-
-func notificationDeliveryDayFromMobileMonday(mobile *userSettingsMondayMobile) NotificationDeliveryDay {
-	if mobile == nil || mobile.Schedule == nil {
-		return NotificationDeliveryDay{}
-	}
-
-	return notificationDeliveryDay(&mobile.Schedule.Monday)
-}
-
-func notificationDeliveryDayFromMobileSaturday(mobile *userSettingsSaturdayMobile) NotificationDeliveryDay {
-	if mobile == nil || mobile.Schedule == nil {
-		return NotificationDeliveryDay{}
-	}
-
-	return notificationDeliveryDay(&mobile.Schedule.Saturday)
-}
-
-func notificationDeliveryDayFromMobileSunday(mobile *userSettingsSundayMobile) NotificationDeliveryDay {
-	if mobile == nil || mobile.Schedule == nil {
-		return NotificationDeliveryDay{}
-	}
-
-	return notificationDeliveryDay(&mobile.Schedule.Sunday)
-}
-
-func notificationDeliveryDayFromMobileThursday(mobile *userSettingsThursdayMobile) NotificationDeliveryDay {
-	if mobile == nil || mobile.Schedule == nil {
-		return NotificationDeliveryDay{}
-	}
-
-	return notificationDeliveryDay(&mobile.Schedule.Thursday)
-}
-
-func notificationDeliveryDayFromMobileTuesday(mobile *userSettingsTuesdayMobile) NotificationDeliveryDay {
-	if mobile == nil || mobile.Schedule == nil {
-		return NotificationDeliveryDay{}
-	}
-
-	return notificationDeliveryDay(&mobile.Schedule.Tuesday)
-}
-
-func notificationDeliveryDayFromMobileWednesday(mobile *userSettingsWednesdayMobile) NotificationDeliveryDay {
-	if mobile == nil || mobile.Schedule == nil {
-		return NotificationDeliveryDay{}
-	}
-
-	return notificationDeliveryDay(&mobile.Schedule.Wednesday)
 }
 
 func userSettingsTheme(source userSettingsThemeSource) *UserSettingsThemeSummary {
