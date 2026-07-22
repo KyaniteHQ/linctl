@@ -41,18 +41,20 @@ type IssueCreateRequest struct {
 
 // IssueUpdateRequest describes a guarded issue update.
 type IssueUpdateRequest struct {
-	ID            string
-	Title         string
-	Description   string
-	Append        string
-	StateType     string
-	Priority      string
-	AssigneeID    string
-	LabelIDs      []string
-	DueDate       string
-	ClearDueDate  bool
-	Estimate      *int
-	ClearEstimate bool
+	ID                 string
+	Title              string
+	Description        string
+	Append             string
+	StateType          string
+	Priority           string
+	AssigneeID         string
+	LabelIDs           []string
+	DueDate            string
+	ClearDueDate       bool
+	Estimate           *int
+	ClearEstimate      bool
+	ProjectMilestoneID string
+	ClearMilestone     bool
 }
 
 // IssueCommentRequest describes a guarded issue comment.
@@ -238,6 +240,20 @@ func (guard *guardedClient) requireCreateMilestone(
 	return guard.requireProjectMilestone(ctx, projectMilestoneID)
 }
 
+// requireUpdateMilestone validates a milestone assignment on update the same way
+// create does; a clear needs no validation because it removes the assignment
+// rather than pointing at one that must exist in the pinned project.
+func (guard *guardedClient) requireUpdateMilestone(
+	ctx context.Context,
+	request IssueUpdateRequest,
+) error {
+	if request.ClearMilestone {
+		return nil
+	}
+
+	return guard.requireCreateMilestone(ctx, request.ProjectMilestoneID)
+}
+
 // UpdateIssue updates an issue after resolving and comparing the pinned write target.
 func UpdateIssue(
 	ctx context.Context,
@@ -266,6 +282,9 @@ func (guard *guardedClient) updateIssue(ctx context.Context, request IssueUpdate
 		return IssueSummary{}, err
 	}
 	if err = guard.requireAttachableLabels(ctx, request.LabelIDs); err != nil {
+		return IssueSummary{}, err
+	}
+	if err = guard.requireUpdateMilestone(ctx, request); err != nil {
 		return IssueSummary{}, err
 	}
 	description := request.Description
@@ -307,6 +326,9 @@ func validateIssueUpdateRequest(request IssueUpdateRequest) error {
 	if request.Estimate != nil && request.ClearEstimate {
 		return fmt.Errorf("%w: estimate and clear-estimate are mutually exclusive", ErrWriteInvalid)
 	}
+	if request.ProjectMilestoneID != "" && request.ClearMilestone {
+		return fmt.Errorf("%w: milestone and clear-milestone are mutually exclusive", ErrWriteInvalid)
+	}
 
 	return validateDueDate(request.DueDate)
 }
@@ -315,7 +337,8 @@ func issueUpdateHasNoFields(request IssueUpdateRequest) bool {
 	return request.Title == "" && request.Description == "" && request.Append == "" &&
 		request.StateType == "" && request.Priority == "" && request.AssigneeID == "" &&
 		len(request.LabelIDs) == 0 && request.DueDate == "" && !request.ClearDueDate &&
-		request.Estimate == nil && !request.ClearEstimate
+		request.Estimate == nil && !request.ClearEstimate &&
+		request.ProjectMilestoneID == "" && !request.ClearMilestone
 }
 
 func (guard *guardedClient) buildIssueUpdateInput(
@@ -325,12 +348,13 @@ func (guard *guardedClient) buildIssueUpdateInput(
 	description string,
 ) (LinearIssueUpdateInput, error) {
 	input := LinearIssueUpdateInput{
-		Title:       optionalString(request.Title),
-		Description: optionalString(description),
-		AssigneeID:  optionalString(request.AssigneeID),
-		LabelIDs:    request.LabelIDs,
-		DueDate:     dueDateUpdateJSON(request),
-		Estimate:    estimateUpdateJSON(request),
+		Title:              optionalString(request.Title),
+		Description:        optionalString(description),
+		AssigneeID:         optionalString(request.AssigneeID),
+		LabelIDs:           request.LabelIDs,
+		DueDate:            dueDateUpdateJSON(request),
+		Estimate:           estimateUpdateJSON(request),
+		ProjectMilestoneID: projectMilestoneUpdateJSON(request),
 	}
 	if request.StateType != "" {
 		stateID, err := guard.stateIDOfType(ctx, teamID, request.StateType)
@@ -681,4 +705,17 @@ func estimateUpdateJSON(request IssueUpdateRequest) json.RawMessage {
 	}
 
 	return json.RawMessage(strconv.Itoa(*request.Estimate))
+}
+
+// projectMilestoneUpdateJSON renders the issueUpdate projectMilestoneId field: an
+// explicit null to clear it, a quoted id to set it, or nil to leave it untouched.
+func projectMilestoneUpdateJSON(request IssueUpdateRequest) json.RawMessage {
+	if request.ClearMilestone {
+		return json.RawMessage("null")
+	}
+	if request.ProjectMilestoneID == "" {
+		return nil
+	}
+
+	return json.RawMessage(strconv.Quote(request.ProjectMilestoneID))
 }

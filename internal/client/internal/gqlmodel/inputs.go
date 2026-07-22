@@ -149,15 +149,16 @@ type LinearIssueRelationCreateInput struct {
 // DueDate and Estimate use RawMessage so explicit null clears the value while
 // an absent value leaves it untouched.
 type LinearIssueUpdateInput struct {
-	Title       *string         `json:"title,omitempty"`
-	Description *string         `json:"description,omitempty"`
-	AssigneeID  *string         `json:"assigneeId,omitempty"`
-	DelegateID  *string         `json:"delegateId,omitempty"`
-	StateID     *string         `json:"stateId,omitempty"`
-	Priority    *int            `json:"priority,omitempty"`
-	LabelIDs    []string        `json:"labelIds,omitempty"`
-	DueDate     json.RawMessage `json:"dueDate,omitempty"`
-	Estimate    json.RawMessage `json:"estimate,omitempty"`
+	Title              *string         `json:"title,omitempty"`
+	Description        *string         `json:"description,omitempty"`
+	AssigneeID         *string         `json:"assigneeId,omitempty"`
+	DelegateID         *string         `json:"delegateId,omitempty"`
+	StateID            *string         `json:"stateId,omitempty"`
+	Priority           *int            `json:"priority,omitempty"`
+	LabelIDs           []string        `json:"labelIds,omitempty"`
+	DueDate            json.RawMessage `json:"dueDate,omitempty"`
+	Estimate           json.RawMessage `json:"estimate,omitempty"`
+	ProjectMilestoneID json.RawMessage `json:"projectMilestoneId,omitempty"`
 }
 
 // LinearProjectCreateInput is the sparse Linear projectCreate payload linctl supports.

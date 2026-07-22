@@ -2022,11 +2022,13 @@ Flags:
       --assignee string           reassign the issue to a user id
       --clear-due-date            clear the due date
       --clear-estimate            clear the estimate
+      --clear-milestone           clear the milestone
       --description string        new issue description
       --description-file string   read new issue description from file
       --due-date string           set the due date (YYYY-MM-DD)
       --estimate int              set the estimate (validated against team config)
       --label stringArray         set labels by id (repeatable, replaces existing)
+      --milestone string          assign to a project milestone id (requires a pinned project)
       --priority string           set priority (urgent/high/medium/low/none or 0-4)
       --state string              set workflow state type (e.g. started, completed)
       --status string             alias for --state
