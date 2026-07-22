@@ -154,6 +154,11 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 			command.Flags().BoolVar(&request.ClearDueDate, "clear-due-date", false, "clear the due date")
 			command.Flags().IntVar(&estimate, "estimate", 0, "set the estimate (validated against team config)")
 			command.Flags().BoolVar(&request.ClearEstimate, "clear-estimate", false, "clear the estimate")
+			command.Flags().StringVar(
+				&request.ProjectMilestoneID, "milestone", "",
+				"assign to a project milestone id (requires a pinned project)",
+			)
+			command.Flags().BoolVar(&request.ClearMilestone, "clear-milestone", false, "clear the milestone")
 			registerStateCompletion(ctx, command, options)
 		},
 		Run: func(
