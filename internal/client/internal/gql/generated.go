@@ -4403,7 +4403,7 @@ func (v *ExternalUserSummaryFields) GetArchivedAt() *string { return v.ArchivedA
 // FavoriteSummaryFields includes the GraphQL fields of Favorite requested by the fragment FavoriteSummaryFields.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, pull requests, and Agent conversations. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type FavoriteSummaryFields struct {
 	// The unique identifier of the entity.
 	Id string `json:"id"`
@@ -36472,7 +36472,7 @@ func (v *externalUsersResponse) GetExternalUsers() externalUsersExternalUsersExt
 // favoriteFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, pull requests, and Agent conversations. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favoriteFavorite struct {
 	FavoriteSummaryFields `json:"-"`
 }
@@ -36554,7 +36554,7 @@ func (v *favoriteResponse) GetFavorite() favoriteFavorite { return v.Favorite }
 // favorite_childrenFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, pull requests, and Agent conversations. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favorite_childrenFavorite struct {
 	// Children of the favorite. Only applies to favorites of type folder.
 	Children favorite_childrenFavoriteChildrenFavoriteConnection `json:"children"`
@@ -36584,7 +36584,7 @@ func (v *favorite_childrenFavoriteChildrenFavoriteConnection) GetPageInfo() favo
 // favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, pull requests, and Agent conversations. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favorite_childrenFavoriteChildrenFavoriteConnectionNodesFavorite struct {
 	FavoriteSummaryFields `json:"-"`
 }
@@ -36708,7 +36708,7 @@ func (v *favoritesFavoritesFavoriteConnection) GetPageInfo() favoritesFavoritesF
 // favoritesFavoritesFavoriteConnectionNodesFavorite includes the requested fields of the GraphQL type Favorite.
 // The GraphQL type's documentation follows.
 //
-// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
+// A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, pull requests, and Agent conversations. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 type favoritesFavoritesFavoriteConnectionNodesFavorite struct {
 	FavoriteSummaryFields `json:"-"`
 }

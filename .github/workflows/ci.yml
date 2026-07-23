@@ -17,7 +17,7 @@ defaults:
     shell: bash
 
 env:
-  LINCTL_LINEAR_SDK_REF: addf9aeaec0af1323ad48dc192999afd5255e67d
+  LINCTL_LINEAR_SDK_REF: 8335e09a17dd8aa351dace3d05a94a55e78dad2a
 
 jobs:
   generated-client:

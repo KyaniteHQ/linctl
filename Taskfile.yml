@@ -5,7 +5,7 @@ vars:
   PKG: ./cmd/linctl
   GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
   GORELEASER: github.com/goreleaser/goreleaser/v2@v2.16.0
-  LINEAR_SDK_REF: addf9aeaec0af1323ad48dc192999afd5255e67d
+  LINEAR_SDK_REF: 8335e09a17dd8aa351dace3d05a94a55e78dad2a
   INFISICAL_ENV: secrets
   INFISICAL_PATH: /linctl
   # Infisical needs a project id. Export INFISICAL_PROJECT_ID to supply one without

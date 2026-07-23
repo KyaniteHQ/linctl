@@ -409,6 +409,10 @@ type AgentActivityPromptContent {
   """
   bodyData: JSONObject!
   """
+  A short title capturing the intent of the prompt.
+  """
+  title: String
+  """
   The type of activity.
   """
   type: AgentActivityType!
@@ -541,6 +545,28 @@ type AgentActivityWebhookPayload {
 }
 
 """
+The outcome of retrying a loop run blocked by its trusted-source policy.
+"""
+type AgentAutomationRetryResolution {
+  """
+  Identifier of the replacement AI conversation. Null when no replacement run was scheduled.
+  """
+  aiConversationId: String
+  """
+  Whether a replacement run was scheduled or the loop could no longer be retried.
+  """
+  status: AgentAutomationRetryResolutionStatus!
+}
+
+"""
+The outcome of reconsidering a loop run blocked by its trusted-source policy.
+"""
+enum AgentAutomationRetryResolutionStatus {
+  notScheduled
+  scheduled
+}
+
+"""
 A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.
 """
 type AgentSession implements Node {
@@ -642,6 +668,10 @@ type AgentSession implements Node {
   """
   plan: JSON
   """
+  The pull request this agent session is anchored to, when started from a pull request.
+  """
+  pullRequest: PullRequest
+  """
   [Internal] Pull requests associated with this agent session.
   """
   pullRequests(
@@ -719,7 +749,7 @@ type AgentSession implements Node {
     The diff's content hash, from the session's `workspaceDiff`.
     """
     contentHash: String!
-  ): [AgentSessionWorkspaceDiffFile!]
+  ): [AgentSessionWorkspaceDiffFile!] @deprecated(reason: "Use Diff.files instead.")
 }
 
 type AgentSessionConnection {
@@ -1396,7 +1426,11 @@ type AiConversation implements Node {
   """
   project: Project
   """
-  The time when the user marked the conversation as read. Null if the user hasn't read the conversation.
+  [Internal] The pull request this shared conversation is attached to. Null if the conversation is private.
+  """
+  pullRequest: PullRequest
+  """
+  The time when the current user marked the conversation as read. Null if the user hasn't read the conversation.
   """
   readAt: DateTime
   """
@@ -1589,11 +1623,19 @@ type AiConversationCreateEntityToolCall implements AiConversationBaseToolCall {
   The result of the tool call.
   """
   rawResult: JSON
+  """
+  The result of the tool call.
+  """
+  result: AiConversationCreateEntityToolCallResult
 }
 
 type AiConversationCreateEntityToolCallArgs {
   count: Float
   type: String!
+}
+
+type AiConversationCreateEntityToolCallResult {
+  startedAgentSessions: [AiConversationSearchEntitiesToolCallResultEntities!]
 }
 
 type AiConversationCreateSandboxToolCall implements AiConversationBaseToolCall {
@@ -1767,6 +1809,7 @@ enum AiConversationEntityCardWidgetArgsType {
   IssueDraft
   Project
   ProjectDraft
+  ProjectMilestone
   ProjectUpdate
   PullRequest
   Release
@@ -1851,6 +1894,7 @@ enum AiConversationEntityListWidgetArgsEntitiesType {
   IssueDraft
   Project
   ProjectDraft
+  ProjectMilestone
   ProjectUpdate
   PullRequest
   Release
@@ -1881,6 +1925,10 @@ type AiConversationErrorPart implements AiConversationBasePart {
   The metadata of the part.
   """
   metadata: AiConversationPartMetadata!
+  """
+  The outcome of retrying this error's loop run. Null when the run has not been reconsidered.
+  """
+  retryResolution: AgentAutomationRetryResolution
   """
   The type of the part.
   """
@@ -2183,6 +2231,31 @@ type AiConversationNavigateToPageToolCallArgsEntities {
 
 type AiConversationNavigateToPageToolCallResult {
   urls: [String!]!
+}
+
+type AiConversationNotifyUsersToolCall implements AiConversationBaseToolCall {
+  """
+  The arguments to the tool call.
+  """
+  args: AiConversationNotifyUsersToolCallArgs
+  displayInfo: AiConversationToolDisplayInfo!
+  """
+  The name of the tool that was called.
+  """
+  name: AiConversationTool!
+  """
+  The arguments of the tool call.
+  """
+  rawArgs: JSON
+  """
+  The result of the tool call.
+  """
+  rawResult: JSON
+}
+
+type AiConversationNotifyUsersToolCallArgs {
+  summary: String
+  userIds: [String!]!
 }
 
 """
@@ -2826,6 +2899,7 @@ enum AiConversationTool {
   InvokeMcpTool
   ListCodingSessions
   NavigateToPage
+  NotifyUsers
   PromptCodingSession
   QueryActivity
   QueryUpdates
@@ -2867,6 +2941,7 @@ union AiConversationToolCall =
   | AiConversationInvokeMcpToolToolCall
   | AiConversationListCodingSessionsToolCall
   | AiConversationNavigateToPageToolCall
+  | AiConversationNotifyUsersToolCall
   | AiConversationPromptCodingSessionToolCall
   | AiConversationQueryActivityToolCall
   | AiConversationQueryUpdatesToolCall
@@ -2994,11 +3069,19 @@ type AiConversationUpdateEntityToolCall implements AiConversationBaseToolCall {
   The result of the tool call.
   """
   rawResult: JSON
+  """
+  The result of the tool call.
+  """
+  result: AiConversationUpdateEntityToolCallResult
 }
 
 type AiConversationUpdateEntityToolCallArgs {
   entities: [AiConversationSearchEntitiesToolCallResultEntities!]
   entity: AiConversationSearchEntitiesToolCallResultEntities
+}
+
+type AiConversationUpdateEntityToolCallResult {
+  startedAgentSessions: [AiConversationSearchEntitiesToolCallResultEntities!]
 }
 
 """
@@ -8967,6 +9050,117 @@ type DeletePayload implements ArchivePayload {
 }
 
 """
+[Internal] A first-class code diff. Starts as the live working-tree state of a coding session and is promoted to a review by linking it to a pull request, while continuing to represent local, uncommitted changes.
+"""
+type Diff implements Node {
+  """
+  [Internal] The total number of added lines across the diff.
+  """
+  additions: Float!
+  """
+  The agent session the diff belongs to.
+  """
+  agentSession: AgentSession
+  """
+  The time at which the entity was archived. Null if the entity has not been archived.
+  """
+  archivedAt: DateTime
+  """
+  [Internal] The opaque content hash identifying the diff's content in code.storage.
+  """
+  contentHash: String!
+  """
+  The time at which the entity was created.
+  """
+  createdAt: DateTime!
+  """
+  The user responsible for the diff.
+  """
+  creator: User
+  """
+  [Internal] The total number of deleted lines across the diff.
+  """
+  deletions: Float!
+  """
+  [Internal] The number of changed files in the diff.
+  """
+  fileCount: Float!
+  """
+  [Internal] Per-file metadata for the diff. Served behind a repository-read-access gate (the synced row carries only aggregate counts); null when the requester lacks repository access or the diff is empty.
+  """
+  files: [DiffFile!]
+  """
+  The unique identifier of the entity.
+  """
+  id: ID!
+  """
+  The workspace the diff belongs to.
+  """
+  organization: Organization!
+  """
+  The pull request the diff was promoted to when opened for review.
+  """
+  pullRequest: PullRequest
+  """
+  [Internal] The diff's unique URL slug.
+  """
+  slugId: String!
+  """
+  [Internal] Whether oversized files were omitted when the diff was computed.
+  """
+  truncated: Boolean!
+  """
+  The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+      been updated after creation.
+  """
+  updatedAt: DateTime!
+}
+
+"""
+[Internal] One changed file in a diff.
+"""
+type DiffFile {
+  """
+  Lines added in this file.
+  """
+  additions: Int!
+  """
+  Lines removed in this file.
+  """
+  deletions: Int!
+  """
+  Previous path, when the file was renamed or copied.
+  """
+  oldPath: String
+  """
+  True when the file's diff was omitted for exceeding the size budget; its contents are not shown.
+  """
+  omitted: Boolean
+  """
+  Path of the changed file (the new path, for renames).
+  """
+  path: String!
+  """
+  The kind of change for this file.
+  """
+  state: DiffFileState!
+}
+
+"""
+[Internal] The kind of change for a file in a diff.
+"""
+enum DiffFileState {
+  added
+  copied
+  deleted
+  modified
+  renamed
+  type_changed
+  unknown
+  unmerged
+}
+
+"""
 A rich-text document that lives within a project, initiative, team, issue, release, or cycle. Documents support collaborative editing via ProseMirror/Yjs and store their content in a separate DocumentContent entity. Each document is associated with exactly one parent entity.
 """
 type Document implements Node {
@@ -9407,6 +9601,10 @@ type DocumentContentRevision implements Node {
   """
   baseContentState: String!
   """
+  Hash of the revision state that should be summarized.
+  """
+  contentHash: String
+  """
   The pending revision content state as a base64-encoded Yjs state update. This represents the revision that has not yet been applied to the live document.
   """
   contentState: String!
@@ -9430,6 +9628,14 @@ type DocumentContentRevision implements Node {
   The unique identifier of the entity.
   """
   id: ID!
+  """
+  A short summary of the pending revision changes.
+  """
+  summary: String
+  """
+  Hash of the revision state that the summary describes.
+  """
+  summaryContentHash: String
   """
   The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
       been updated after creation.
@@ -11279,9 +11485,13 @@ enum FacetPageSource {
 }
 
 """
-A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
+A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, pull requests, and Agent conversations. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 """
 type Favorite implements Node {
+  """
+  [INTERNAL] The favorited Agent conversation.
+  """
+  aiConversation: AiConversation
   """
   The time at which the entity was archived. Null if the entity has not been archived.
   """
@@ -11476,6 +11686,10 @@ type FavoriteConnection {
 Input for creating a favorite. Exactly one target entity must be specified (e.g., issueId, projectId, customViewId, folderName, etc.).
 """
 input FavoriteCreateInput {
+  """
+  [INTERNAL] The identifier of the Agent conversation to favorite.
+  """
+  aiConversationId: String
   """
   The identifier of the custom view to favorite.
   """
@@ -12610,6 +12824,10 @@ type IdentityProvider implements Node {
   X.509 Signing Certificate in string form.
   """
   ssoSigningCert: String
+  """
+  The time at which the current SAML configuration was marked as verified. Null if it has not been verified. Cleared whenever the SAML configuration changes.
+  """
+  ssoVerifiedAt: DateTime
   """
   The type of identity provider.
   """
@@ -16686,6 +16904,10 @@ type Issue implements Node {
     """
     before: String
     """
+    Filter returned suggestions.
+    """
+    filter: IssueSuggestionFilter
+    """
     The number of items to forward paginate (used with after). Defaults to 50.
     """
     first: Int
@@ -20230,6 +20452,10 @@ type IssueSearchResult implements Node {
     """
     before: String
     """
+    Filter returned suggestions.
+    """
+    filter: IssueSuggestionFilter
+    """
     The number of items to forward paginate (used with after). Defaults to 50.
     """
     first: Int
@@ -21804,7 +22030,7 @@ enum LinearAgentMcpServersMode {
 }
 
 """
-How workspace trusted source access is restricted for agent loops.
+How workspace trusted source access is restricted for loops.
 """
 enum LinearAgentTrustedSourcesMode {
   allowlist
@@ -25178,6 +25404,15 @@ type Mutation {
     input: OrganizationUpdateInput!
   ): OrganizationPayload!
   """
+  [INTERNAL] Submits a Startup Program partner application from the website, creating a triage issue for the startup team.
+  """
+  partnerApplicationCreate(
+    """
+    The partner application to submit.
+    """
+    input: PartnerApplicationCreateInput!
+  ): ContactPayload!
+  """
   [INTERNAL] Finish passkey login process.
   """
   passkeyLoginFinish(
@@ -25722,7 +25957,7 @@ type Mutation {
     id: String!
   ): ReleaseStageArchivePayload!
   """
-  Creates a new release stage in a pipeline. Non-started stages must use default names and colors, and only one stage of each non-started type is allowed per pipeline. Started stages can optionally be frozen, but at least one non-frozen started stage must remain.
+  Creates a new release stage in a pipeline. Non-started stages must use default names and colors and are unique by type; creating a canonical duplicate returns the existing stage. Started stages can optionally be frozen, but at least one non-frozen started stage must remain.
   """
   releaseStageCreate(
     """
@@ -29587,6 +29822,10 @@ type Organization implements Node {
   projectUpdatesReminderFrequency: ProjectUpdateReminderFrequency!
     @deprecated(reason: "Use organization.projectUpdatesReminderFrequencyInWeeks instead")
   """
+  How Linear suggests and links issues for pull requests that have none linked: 'off', 'suggest', or 'autoOnMerge'.
+  """
+  pullRequestIssueMode: String!
+  """
   Whether the workspace generates AI Pull Request guides for new pull requests.
   """
   pullRequestTourEnabled: Boolean!
@@ -30267,11 +30506,11 @@ input OrganizationLinearAgentSettingsInput {
   """
   mcpServersMode: LinearAgentMcpServersMode
   """
-  [Internal] Trusted-source allowlist for Linear Agent loops.
+  [Internal] Trusted-source allowlist for loops.
   """
   trustedSourcesAllowlist: [OrganizationLinearAgentTrustedSourcesAllowlistEntryInput!]
   """
-  [Internal] Whether external trusted sources are disabled or restricted to approved sources for agent loops.
+  [Internal] Whether external trusted sources are disabled or restricted to approved sources for loops.
   """
   trustedSourcesMode: LinearAgentTrustedSourcesMode
   """
@@ -30281,11 +30520,11 @@ input OrganizationLinearAgentSettingsInput {
 }
 
 """
-[Internal] A trusted-source entry for the Linear Agent loop allowlist.
+[Internal] A trusted-source entry for the loop allowlist.
 """
 input OrganizationLinearAgentTrustedSourcesAllowlistEntryInput {
   """
-  [Internal] The trusted-source key that Linear Agent loops are allowed to use.
+  [Internal] The trusted-source key that loops are allowed to use.
   """
   key: String!
 }
@@ -30417,7 +30656,7 @@ Input for updating the workspace.
 """
 input OrganizationUpdateInput {
   """
-  [INTERNAL] Whether the workspace has enabled agent loops.
+  [INTERNAL] Whether the workspace has enabled loops.
   """
   agentAutomationEnabled: Boolean
   """
@@ -30556,6 +30795,10 @@ input OrganizationUpdateInput {
   The hour at which project updates are sent.
   """
   projectUpdateRemindersHour: Float
+  """
+  How Linear suggests and links issues for pull requests that have none linked: 'off', 'suggest', or 'autoOnMerge'.
+  """
+  pullRequestIssueMode: String
   """
   Whether the workspace generates AI Pull Request guides for new pull requests.
   """
@@ -30946,6 +31189,102 @@ input PartialNotificationChannelPreferencesInput {
   Whether notifications are currently enabled for Slack.
   """
   slack: Boolean
+}
+
+"""
+[INTERNAL] Input for a Startup Program partner application submitted from the website.
+"""
+input PartnerApplicationCreateInput {
+  """
+  Number of cohorts run per year (accelerators and programs).
+  """
+  cohortsPerYear: String
+  """
+  Number of companies per cohort (accelerators and programs).
+  """
+  companiesPerCohort: String
+  """
+  Whether the applicant confirmed the distribution terms.
+  """
+  consent: Boolean!
+  """
+  One-line description of what the organization does.
+  """
+  description: String!
+  """
+  Channels the organization will use to distribute the offer.
+  """
+  distributionChannels: [String!]
+  """
+  Business email of the applicant.
+  """
+  email: String!
+  """
+  Full name of the applicant.
+  """
+  fullName: String!
+  """
+  Stages the firm primarily invests at (venture capital firms).
+  """
+  investmentStages: [String!]
+  """
+  Number of active members or startups in the network (communities).
+  """
+  networkSize: String
+  """
+  Whether the organization already offers software perks from other companies.
+  """
+  offersSoftwarePerks: String
+  """
+  Name of the partner organization.
+  """
+  organizationName: String!
+  """
+  Type of the partner organization (e.g., venture capital firm, accelerator).
+  """
+  organizationType: String!
+  """
+  Website of the partner organization.
+  """
+  organizationWebsite: String!
+  """
+  Which other software perks the organization offers, when applicable.
+  """
+  otherPerks: String
+  """
+  Number of active portfolio companies (venture capital firms).
+  """
+  portfolioCompanies: String
+  """
+  Primary countries or regions the organization operates in.
+  """
+  region: String!
+  """
+  The applicant's role or title at the organization.
+  """
+  role: String!
+}
+
+"""
+[Internal] Public details of an active partner-program offer.
+"""
+type PartnerOfferDetailsPayload {
+  """
+  The unique identifier of the offer.
+  """
+  id: String!
+  """
+  Display name of the partner.
+  """
+  partnerName: String!
+  """
+  Stable, URL-safe identifier for the partner.
+  """
+  partnerSlug: String!
+  """
+  Short-lived signed token to carry the redemption through signup. Embeds a freshly minted redemption identifier, the offer identifier, and its mint and expiry times.
+  """
+  token: String!
 }
 
 type PasskeyLoginStartResponse {
@@ -35985,6 +36324,10 @@ type PullRequest implements Node {
   """
   archivedAt: DateTime
   """
+  Whether auto-merge is enabled for the pull request.
+  """
+  autoMergeEnabled: Boolean!
+  """
   The Git SHA of the base commit on the target branch that the pull request is compared against. Null if not yet synced.
   """
   baseSha: String
@@ -36120,7 +36463,7 @@ enum PullRequestCheckPresentation {
 """
 type PullRequestCommit {
   """
-  Number of additions in this commit.
+  Number of additions in this commit. 0 when the hosting provider did not report per-commit diff stats.
   """
   additions: Float!
   """
@@ -36140,7 +36483,7 @@ type PullRequestCommit {
   """
   committedAt: String!
   """
-  Number of deletions in this commit.
+  Number of deletions in this commit. 0 when the hosting provider did not report per-commit diff stats.
   """
   deletions: Float!
   """
@@ -37125,6 +37468,15 @@ type Query {
     """
     orderBy: PaginationOrderBy
   ): CycleConnection!
+  """
+  [Internal] A specific diff.
+  """
+  diff(
+    """
+    The identifier of the diff to retrieve.
+    """
+    id: String!
+  ): Diff!
   """
   A specific document by ID or slug.
   """
@@ -38173,6 +38525,15 @@ type Query {
     urlKey: String!
   ): OrganizationMeta
   """
+  [Internal] Fetches public details of an active partner-program offer by its partner slug. Returns null when no active offer matches the slug.
+  """
+  partnerOfferDetails(
+    """
+    The URL-safe partner slug, for example "y_combinator".
+    """
+    slug: String!
+  ): PartnerOfferDetailsPayload
+  """
   Returns a single project by its identifier or URL slug.
   """
   project(id: String!): Project!
@@ -38343,6 +38704,10 @@ type Query {
     The identifier of the project update to retrieve.
     """
     id: String!
+    """
+    The id or URL slug of the project containing the update. When provided, the update is resolved by id or URL slug within that project.
+    """
+    projectId: String
   ): ProjectUpdate!
   """
   Returns all project status updates in the workspace, with optional filtering.
@@ -39858,7 +40223,7 @@ Input for completing a release in a specific pipeline.
 """
 input ReleaseCompleteInput {
   """
-  The commit SHA associated with this completion. If a completed release with this SHA already exists, it will be returned instead of completing a new release.
+  The commit SHA to store when moving a release to completed. With a version, an existing SHA is preserved. Without a version, this SHA replaces the started release's SHA and is used to detect retries.
   """
   commitSha: String
   """
@@ -39892,7 +40257,7 @@ Base input for completing a release. Contains the optional version and commit SH
 """
 input ReleaseCompleteInputBase {
   """
-  The commit SHA associated with this completion. If a completed release with this SHA already exists, it will be returned instead of completing a new release.
+  The commit SHA to store when moving a release to completed. With a version, an existing SHA is preserved. Without a version, this SHA replaces the started release's SHA and is used to detect retries.
   """
   commitSha: String
   """
@@ -42937,6 +43302,10 @@ input SubTypeComparator {
 }
 
 type Subscription {
+  """
+  Triggered when an agent activity is archived
+  """
+  agentActivityArchived: AgentActivity!
   """
   Triggered when an agent activity is created
   """

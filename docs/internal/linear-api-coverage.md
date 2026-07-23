@@ -1,6 +1,6 @@
 # Linear API coverage ledger
 
-Generated from current local sources and upstream Linear SDK commit `addf9ae`.
+Generated from current local sources and upstream Linear SDK commit `8335e09`.
 
 Sources (paths relative to the upstream Linear SDK checkout):
 
@@ -17,8 +17,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
 | Upstream SDK root methods with generated local operations | 468 | 150 | 468 |
-| Upstream Query root fields used by generated local operations | 162 | 116 | 162 |
-| Upstream Mutation root fields used by generated local operations | 370 | 36 | 370 |
+| Upstream Query root fields used by generated local operations | 164 | 116 | 164 |
+| Upstream Mutation root fields used by generated local operations | 371 | 36 | 371 |
 | Local generated Go operations declared in GraphQL files | 304 | 304 | 304 |
 | Public CLI commands from command inventory | 435 | 313 | 435 |
 
@@ -536,6 +536,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `customers` | `CustomerConnection!` | generated_operation | root field used by local GraphQL operation |
 | `cycle` | `Cycle!` | generated_operation | root field used by local GraphQL operation |
 | `cycles` | `CycleConnection!` | generated_operation | root field used by local GraphQL operation |
+| `diff` | `Diff!` | safe_candidate | read operation may fit future CLI coverage |
 | `document` | `Document!` | generated_operation | root field used by local GraphQL operation |
 | `documentContentHistory` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
 | `documentContentHistoryEntries` | `DocumentContentHistoryPayload!` | blocked_needs_design | content, thread, and archive payload reads can expose body/blob data; needs explicit opt-in projection before CLI exposure |
@@ -603,6 +604,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationInviteDetails` | `OrganizationInviteDetailsPayload!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationInvites` | `OrganizationInviteConnection!` | intentionally_excluded | organization invite reads can expose invitee and admin metadata outside an agent-safe CLI surface |
 | `organizationMeta` | `OrganizationMeta` | safe_candidate | read operation may fit future CLI coverage |
+| `partnerOfferDetails` | `PartnerOfferDetailsPayload` | safe_candidate | read operation may fit future CLI coverage |
 | `project` | `Project!` | generated_operation | root field used by local GraphQL operation |
 | `projectFilterSuggestion` | `ProjectFilterSuggestionPayload!` | generated_operation | root field used by local GraphQL operation |
 | `projectLabel` | `ProjectLabel!` | generated_operation | root field used by local GraphQL operation |
@@ -920,6 +922,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `organizationStartTrial` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `organizationStartTrialForPlan` | `OrganizationStartTrialPayload!` | blocked_needs_design | mutation needs product and safety design |
 | `organizationUpdate` | `OrganizationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `partnerApplicationCreate` | `ContactPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `passkeyLoginFinish` | `AuthResolverResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `passkeyLoginStart` | `PasskeyLoginStartResponse!` | blocked_needs_design | mutation needs product and safety design |
 | `projectAddLabel` | `ProjectPayload!` | generated_operation | root field used by local GraphQL operation |
