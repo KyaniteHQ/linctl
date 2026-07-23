@@ -218,6 +218,11 @@ tasks:
         LINCTL_LINEAR_SDK_UPSTREAM="$upstream" go tool task linear-sdk-upstream-checkout
         go run scripts/linear_schema_drift_check.go --upstream "$upstream"
 
+  schema-refresh:
+    desc: Sync vendored Linear schema, SDK ref pins, generated client, and coverage ledger from upstream (not part of ci)
+    cmds:
+      - bash scripts/schema-refresh-from-upstream.sh
+
   graphql-operation-check:
     desc: Validate local GraphQL operations against the upstream Linear SDK schema
     cmds:

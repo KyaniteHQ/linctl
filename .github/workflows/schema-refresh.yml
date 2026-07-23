@@ -1,0 +1,128 @@
+name: schema-refresh
+
+# When the vendored Linear schema lags linear/linear master, open (or update) a
+# chore/schema-refresh PR with the synced schema, pin bump, generated client,
+# and coverage ledger. No auto-merge in v1: a human still reviews and merges.
+#
+# Optional secret SCHEMA_REFRESH_GITHUB_TOKEN (fine-grained PAT with contents +
+# pull-requests write): use it so the opened PR triggers CI. GITHUB_TOKEN alone
+# can open the PR but does not re-trigger workflows (GitHub loop protection).
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: schema-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh vendored schema
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.repository == 'KyaniteHQ/linctl'
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      # Prefer a PAT so the PR triggers ci.yml; fall back to the job token.
+      GH_TOKEN: ${{ secrets.SCHEMA_REFRESH_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      BRANCH: chore/schema-refresh
+      LINCTL_LINEAR_SDK_REF: master
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ secrets.SCHEMA_REFRESH_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
+      - name: Verify dependencies
+        run: |
+          go mod download
+          go mod verify
+      - name: Detect schema drift
+        id: drift
+        run: |
+          set -euo pipefail
+          raw="$(mktemp)"
+          set +e
+          go tool task schema-drift-check >"$raw" 2>&1
+          status=$?
+          set -e
+          cat "$raw"
+          if [[ "$status" -eq 0 ]]; then
+            echo "No schema drift against linear/linear master." >> "$GITHUB_STEP_SUMMARY"
+            echo "has_drift=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # go-task surfaces the inner exit 1 as 201.
+          if [[ "$status" -ne 1 && "$status" -ne 201 ]]; then
+            printf 'schema-drift-check failed unexpectedly with exit %s\n' "$status" >&2
+            exit "$status"
+          fi
+          report="$(mktemp)"
+          # Drop task chatter; keep the semantic drift report for the PR body.
+          if ! sed -n '/^schema drift:/,$p' "$raw" >"$report" || [[ ! -s "$report" ]]; then
+            printf 'schema-drift-check failed without a drift report\n' >&2
+            exit 1
+          fi
+          {
+            echo "has_drift=true"
+            echo 'report<<EOF'
+            cat "$report"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+          breaking=false
+          if grep -qE '^(types removed upstream|fields removed|field types changed|enum values removed) \(' "$report"; then
+            breaking=true
+          fi
+          echo "breaking=$breaking" >> "$GITHUB_OUTPUT"
+      - name: Refresh from upstream SDK schema
+        if: steps.drift.outputs.has_drift == 'true'
+        id: refresh
+        run: |
+          set -euo pipefail
+          # Fresh branch from default branch tip so the PR is always rebased.
+          git fetch origin "${{ github.event.repository.default_branch }}"
+          git checkout -B "$BRANCH" "origin/${{ github.event.repository.default_branch }}"
+          output="$(bash scripts/schema-refresh-from-upstream.sh)"
+          printf '%s\n' "$output"
+          upstream_sha="$(printf '%s\n' "$output" | sed -n 's/^UPSTREAM_SHA=//p')"
+          refreshed="$(printf '%s\n' "$output" | sed -n 's/^REFRESHED=//p')"
+          if [[ -z "$upstream_sha" || -z "$refreshed" ]]; then
+            printf 'schema-refresh-from-upstream.sh did not emit UPSTREAM_SHA/REFRESHED\n' >&2
+            exit 1
+          fi
+          {
+            echo "upstream_sha=$upstream_sha"
+            echo "refreshed=$refreshed"
+            echo "short_sha=${upstream_sha:0:7}"
+          } >> "$GITHUB_OUTPUT"
+      - name: Open or update pull request
+        if: steps.drift.outputs.has_drift == 'true' && steps.refresh.outputs.refreshed == '1'
+        env:
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+          DRIFT_REPORT: ${{ steps.drift.outputs.report }}
+          BREAKING: ${{ steps.drift.outputs.breaking }}
+          UPSTREAM_SHA: ${{ steps.refresh.outputs.upstream_sha }}
+          SHORT_SHA: ${{ steps.refresh.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          url="$(bash scripts/schema-refresh-open-pr.sh)"
+          printf '%s\n' "$url"
+          printf '%s\n' "$url" >> "$GITHUB_STEP_SUMMARY"
+      - name: Note no file changes after refresh
+        if: steps.drift.outputs.has_drift == 'true' && steps.refresh.outputs.refreshed == '0'
+        run: |
+          echo "Drift was reported but the refresh produced no file changes (already synced on this branch tip)." >> "$GITHUB_STEP_SUMMARY"

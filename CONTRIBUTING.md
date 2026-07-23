@@ -104,7 +104,24 @@ it exists to flag when the vendored snapshot has fallen behind. Run it locally w
 go tool task schema-drift-check
 ```
 
-When the nightly job fails, refresh the schema and land the refresh as its own commit:
+A companion nightly `schema-refresh` workflow (`.github/workflows/schema-refresh.yml`) opens
+or updates a `chore/schema-refresh` PR when drift is detected: it copies the upstream SDK
+schema, bumps the SDK ref pins, regenerates the client and coverage ledger, and leaves the
+PR for human review (no auto-merge). Prefer merging that PR over a hand-rolled refresh when
+it is already open.
+
+Optional repo secret `SCHEMA_REFRESH_GITHUB_TOKEN` (fine-grained PAT with contents and
+pull-requests write on this repo): when set, the workflow uses it so the opened PR triggers
+`ci.yml`. With only `GITHUB_TOKEN`, GitHub will not re-trigger workflows on the bot PR.
+
+To refresh manually without OAuth (same path the bot uses):
+
+```bash
+LINCTL_LINEAR_SDK_REF=master go tool task schema-refresh
+go tool task ci
+```
+
+Or via live API introspection (requires a token and managed Node deps):
 
 ```bash
 npm ci
