@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
@@ -244,7 +245,7 @@ func (guard *guardedClient) findTeamByKey(ctx context.Context, teamKey string) (
 			return TeamSummary{}, fmt.Errorf("%w: no visible team with key %s", ErrWriteInvalid, teamKey)
 		}
 		if teams.Teams.PageInfo.EndCursor == nil {
-			return TeamSummary{}, fmt.Errorf("list teams: next page has no end cursor")
+			return TeamSummary{}, errors.New("list teams: next page has no end cursor")
 		}
 		after = teams.Teams.PageInfo.EndCursor
 	}

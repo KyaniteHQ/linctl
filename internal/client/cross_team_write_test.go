@@ -37,7 +37,7 @@ func teamsListWithDestinationJSON() string {
 	}`
 }
 
-func projectJSONWithTwoTeams(project projectFixture, secondID string, secondKey string) string {
+func projectJSONWithTwoTeams(project projectFixture) string {
 	return `{
 		"id":"` + project.ID + `",
 		"name":"` + project.Name + `",
@@ -51,7 +51,7 @@ func projectJSONWithTwoTeams(project projectFixture, secondID string, secondKey 
 		"teams":{
 			"nodes":[
 				{"id":"team-id","key":"LIT","name":"linctl-it"},
-				{"id":"` + secondID + `","key":"` + secondKey + `","name":"` + secondKey + `"}
+				{"id":"ops-team-id","key":"OPS","name":"OPS"}
 			],
 			"pageInfo":{"hasNextPage":false}
 		}
@@ -86,7 +86,6 @@ func Test_AddProjectTeam_merges_destination_without_dropping_existing(t *testing
 		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
 		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTwoTeams(
 			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
-			"ops-team-id", "OPS",
 		) + `}}`,
 	})}
 
@@ -108,7 +107,6 @@ func Test_AddProjectTeam_is_idempotent_when_team_already_attached(t *testing.T) 
 	recorder := &mutationRecordingClient{inner: projectWriteFakeClient(map[string]string{
 		"project": `{"project":` + projectJSONWithTwoTeams(
 			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
-			"ops-team-id", "OPS",
 		) + `}`,
 		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
 	})}
@@ -173,7 +171,6 @@ func Test_AddProjectTeam_resolves_destination_by_key(t *testing.T) {
 		"teams_list": teamsListWithDestinationJSON(),
 		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTwoTeams(
 			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
-			"ops-team-id", "OPS",
 		) + `}}`,
 	})}
 
@@ -213,7 +210,6 @@ func Test_AddProjectTeam_paginates_when_teams_page_is_truncated(t *testing.T) {
 		}`,
 		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTwoTeams(
 			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
-			"ops-team-id", "OPS",
 		) + `}}`,
 	})}
 
