@@ -212,3 +212,11 @@ type LinearProjectUpdateInput struct {
 	Content     *string  `json:"content,omitempty"`
 	TeamIDs     []string `json:"teamIds,omitempty"`
 }
+
+// LinearTeamCreateInput is the sparse Linear teamCreate payload linctl supports.
+type LinearTeamCreateInput struct {
+	Name        string  `json:"name"`
+	Key         *string `json:"key,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Private     *bool   `json:"private,omitempty"`
+}

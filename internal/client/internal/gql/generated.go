@@ -21447,6 +21447,125 @@ type TargetProjectResponse struct {
 // GetProject returns TargetProjectResponse.Project, and is useful for accessing the field via an interface.
 func (v *TargetProjectResponse) GetProject() TargetProjectProject { return v.Project }
 
+// TeamCreateResponse is returned by TeamCreate on success.
+type TeamCreateResponse struct {
+	// Creates a new team. The user who creates the team will automatically be added as a member and owner of the newly created team. Default workflow states, labels, and other team resources are created alongside the team.
+	TeamCreate TeamCreateTeamCreateTeamPayload `json:"teamCreate"`
+}
+
+// GetTeamCreate returns TeamCreateResponse.TeamCreate, and is useful for accessing the field via an interface.
+func (v *TeamCreateResponse) GetTeamCreate() TeamCreateTeamCreateTeamPayload { return v.TeamCreate }
+
+// TeamCreateTeamCreateTeamPayload includes the requested fields of the GraphQL type TeamPayload.
+// The GraphQL type's documentation follows.
+//
+// Team operation response.
+type TeamCreateTeamCreateTeamPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The team that was created or updated.
+	Team *TeamCreateTeamCreateTeamPayloadTeam `json:"team"`
+}
+
+// GetSuccess returns TeamCreateTeamCreateTeamPayload.Success, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayload) GetSuccess() bool { return v.Success }
+
+// GetTeam returns TeamCreateTeamCreateTeamPayload.Team, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayload) GetTeam() *TeamCreateTeamCreateTeamPayloadTeam {
+	return v.Team
+}
+
+// TeamCreateTeamCreateTeamPayloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// A team is the primary organizational unit in Linear. Issues belong to teams, and each team has its own workflow states, cycles, labels, and settings. Teams can be public (visible to all workspace members), private (visible only to team members), or restricted (visible only within an enclosing private-team boundary). Teams can also have sub-teams that inherit settings from their parent.
+type TeamCreateTeamCreateTeamPayloadTeam struct {
+	TeamSummaryFields `json:"-"`
+}
+
+// GetId returns TeamCreateTeamCreateTeamPayloadTeam.Id, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetId() string { return v.TeamSummaryFields.Id }
+
+// GetKey returns TeamCreateTeamCreateTeamPayloadTeam.Key, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetKey() string { return v.TeamSummaryFields.Key }
+
+// GetName returns TeamCreateTeamCreateTeamPayloadTeam.Name, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetName() string { return v.TeamSummaryFields.Name }
+
+// GetDescription returns TeamCreateTeamCreateTeamPayloadTeam.Description, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetDescription() *string {
+	return v.TeamSummaryFields.Description
+}
+
+// GetArchivedAt returns TeamCreateTeamCreateTeamPayloadTeam.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetArchivedAt() *string {
+	return v.TeamSummaryFields.ArchivedAt
+}
+
+// GetOrganization returns TeamCreateTeamCreateTeamPayloadTeam.Organization, and is useful for accessing the field via an interface.
+func (v *TeamCreateTeamCreateTeamPayloadTeam) GetOrganization() TeamSummaryFieldsOrganization {
+	return v.TeamSummaryFields.Organization
+}
+
+func (v *TeamCreateTeamCreateTeamPayloadTeam) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*TeamCreateTeamCreateTeamPayloadTeam
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.TeamCreateTeamCreateTeamPayloadTeam = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.TeamSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalTeamCreateTeamCreateTeamPayloadTeam struct {
+	Id string `json:"id"`
+
+	Key string `json:"key"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	Organization TeamSummaryFieldsOrganization `json:"organization"`
+}
+
+func (v *TeamCreateTeamCreateTeamPayloadTeam) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *TeamCreateTeamCreateTeamPayloadTeam) __premarshalJSON() (*__premarshalTeamCreateTeamCreateTeamPayloadTeam, error) {
+	var retval __premarshalTeamCreateTeamCreateTeamPayloadTeam
+
+	retval.Id = v.TeamSummaryFields.Id
+	retval.Key = v.TeamSummaryFields.Key
+	retval.Name = v.TeamSummaryFields.Name
+	retval.Description = v.TeamSummaryFields.Description
+	retval.ArchivedAt = v.TeamSummaryFields.ArchivedAt
+	retval.Organization = v.TeamSummaryFields.Organization
+	return &retval, nil
+}
+
 // TeamMembershipSummaryFields includes the GraphQL fields of TeamMembership requested by the fragment TeamMembershipSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -23828,6 +23947,14 @@ func (v *__TargetProjectInput) GetFirst() *int { return v.First }
 
 // GetAfter returns __TargetProjectInput.After, and is useful for accessing the field via an interface.
 func (v *__TargetProjectInput) GetAfter() *string { return v.After }
+
+// __TeamCreateInput is used internally by genqlient
+type __TeamCreateInput struct {
+	Input gqlmodel.LinearTeamCreateInput `json:"input"`
+}
+
+// GetInput returns __TeamCreateInput.Input, and is useful for accessing the field via an interface.
+func (v *__TeamCreateInput) GetInput() gqlmodel.LinearTeamCreateInput { return v.Input }
 
 // __TeamsInput is used internally by genqlient
 type __TeamsInput struct {
@@ -75106,6 +75233,55 @@ func TargetProject(
 	}
 
 	data_ = &TargetProjectResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by TeamCreate.
+const TeamCreate_Operation = `
+mutation TeamCreate ($input: TeamCreateInput!) {
+	teamCreate(input: $input) {
+		success
+		team {
+			... TeamSummaryFields
+		}
+	}
+}
+fragment TeamSummaryFields on Team {
+	id
+	key
+	name
+	description
+	archivedAt
+	organization {
+		id
+		name
+		urlKey
+	}
+}
+`
+
+func TeamCreate(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input gqlmodel.LinearTeamCreateInput,
+) (data_ *TeamCreateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TeamCreate",
+		Query:  TeamCreate_Operation,
+		Variables: &__TeamCreateInput{
+			Input: input,
+		},
+	}
+
+	data_ = &TeamCreateResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

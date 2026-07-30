@@ -224,3 +224,12 @@ fragment GitAutomationStateSummaryFields on GitAutomationState {
     isRegex
   }
 }
+
+mutation TeamCreate($input: TeamCreateInput!) {
+  teamCreate(input: $input) {
+    success
+    team {
+      ...TeamSummaryFields
+    }
+  }
+}

@@ -3774,10 +3774,28 @@ linctl target
 
 ### linctl team
 
-Read Linear teams
+Read Linear teams and create one
 
 ```
 linctl team
+```
+
+### linctl team create
+
+Create a team; requires --org-wide (the new team is outside the pinned team by definition)
+
+```
+linctl team create [flags]
+```
+
+Flags:
+
+```
+      --description string   team description
+      --key string           team key (Linear derives one from the name when omitted)
+      --name string          team name
+      --org-wide             required: a Team is organization-owned and is what a pin names, so a create cannot land inside the pinned team; confirms this write adds a team to the organization
+      --private              create the team private
 ```
 
 ### linctl team cycles

@@ -53,5 +53,7 @@ bindings:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectUpdateCreateInput
   ProjectUpdateInput:
     type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearProjectUpdateInput
+  TeamCreateInput:
+    type: github.com/KyaniteHQ/linctl/internal/client/internal/gqlmodel.LinearTeamCreateInput
   TimelessDate:
     type: string

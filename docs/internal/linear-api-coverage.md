@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 468 | 150 | 468 |
+| Upstream SDK root methods with generated local operations | 468 | 151 | 468 |
 | Upstream Query root fields used by generated local operations | 164 | 116 | 164 |
-| Upstream Mutation root fields used by generated local operations | 371 | 36 | 371 |
-| Local generated Go operations declared in GraphQL files | 304 | 304 | 304 |
-| Public CLI commands from command inventory | 435 | 313 | 435 |
+| Upstream Mutation root fields used by generated local operations | 371 | 37 | 371 |
+| Local generated Go operations declared in GraphQL files | 305 | 305 | 305 |
+| Public CLI commands from command inventory | 435 | 314 | 435 |
 
 ## Upstream SDK Root Methods
 
@@ -129,7 +129,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `createReleaseStage` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createRoadmap` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createRoadmapToProject` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
-| `createTeam` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `createTeam` | method | generated_operation | local GraphQL operation uses this root |
 | `createTeamMembership` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createTemplate` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `createTimeSchedule` | method | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -995,7 +995,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `roadmapUnarchive` | `RoadmapArchivePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `roadmapUpdate` | `RoadmapPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `samlTokenUserAccountAuth` | `AuthResolverResponse!` | intentionally_excluded | admin/auth/internal integration surface outside ordinary agent CLI |
-| `teamCreate` | `TeamPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
+| `teamCreate` | `TeamPayload!` | generated_operation | root field used by local GraphQL operation |
 | `teamCyclesDelete` | `TeamPayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `teamDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `teamKeyDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
@@ -1090,6 +1090,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `ProjectUpdateCreate` | mutation | `projectUpdateCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `Projects` | query | `team` | generated | `internal/client/internal/gql/generated.go` |
 | `TargetProject` | query | `project` | generated | `internal/client/internal/gql/generated.go` |
+| `TeamCreate` | mutation | `teamCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `Teams` | query | `teams` | generated | `internal/client/internal/gql/generated.go` |
 | `Viewer` | query | `viewer` | generated | `internal/client/internal/gql/generated.go` |
 | `WorkflowStatesByType` | query | `workflowStates` | generated | `internal/client/internal/gql/generated.go` |
@@ -1599,7 +1600,7 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | Label | `label delete` | `Mutation.issueLabelDelete` | Blocked: hard delete stays excluded; retire/restore is the supported lifecycle | blocked_needs_design | destructive command needs explicit safety semantics |
 | Team | `team list` | `Query.teams` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team get` | `Query.team` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
-| Team | `team create` | `Mutation.teamCreate` | Blocked: organization administration surface needs an explicit admin safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
+| Team | `team create` | `Mutation.teamCreate` | Org-Scoped Write, additive only: `--org-wide` required, and the created Team's organization is compared against the Resolved Target's organization, failing closed on mismatch. A Team is what a pin names, so there is no team comparison to make; membership and metadata writes stay blocked | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | Team | `team update` | `Mutation.teamUpdate` | Blocked: team metadata writes need stronger authority checks than ordinary target comparison | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | Team | `team delete` | `Mutation.teamDelete` | Blocked: destructive command needs explicit safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
 | Team | `team cycles` | `Team.cycles` | Read-only | public_command | `linctl --help` / public CLI tests; no direct GraphQL root in backing |
