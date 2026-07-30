@@ -181,6 +181,27 @@ func addIssueUpdateCommand(ctx context.Context, root *cobra.Command, options *ro
 	})
 }
 
+func addIssueMoveTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.IssueMoveTeamRequest{}
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.IssueSummary]{
+		Use:   "move-team ISSUE_ID",
+		Short: "Move an issue from the pinned team to another team in the same organization",
+		Args:  cobra.ExactArgs(1),
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.TeamKey, "to-team", "", "destination team key")
+			command.Flags().StringVar(&request.TeamID, "to-team-id", "", "destination team id")
+		},
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.IssueSummary, error) {
+			request.IssueID = args[0]
+
+			return client.MoveIssueTeam(ctx, runtime.graphqlClient, runtime.config.Target, request)
+		},
+		Write: writeIssue,
+	})
+}
+
 func assembleIssueUpdate(
 	command *cobra.Command,
 	request client.IssueUpdateRequest,

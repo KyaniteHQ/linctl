@@ -1821,6 +1821,21 @@ Flags:
       --status string           alias for --state
 ```
 
+### linctl issue move-team
+
+Move an issue from the pinned team to another team in the same organization
+
+```
+linctl issue move-team ISSUE_ID [flags]
+```
+
+Flags:
+
+```
+      --to-team string      destination team key
+      --to-team-id string   destination team id
+```
+
 ### linctl issue needs
 
 List body-free issue customer needs
@@ -2644,6 +2659,21 @@ Attach a ProjectLabel to a project after pinned-target comparison
 
 ```
 linctl project add-label PROJECT_ID LABEL_ID
+```
+
+### linctl project add-team
+
+Attach a team to a project without dropping existing teams
+
+```
+linctl project add-team PROJECT_ID [flags]
+```
+
+Flags:
+
+```
+      --to-team string      team key to attach
+      --to-team-id string   team id to attach
 ```
 
 ### linctl project all

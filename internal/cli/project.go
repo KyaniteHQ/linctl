@@ -33,6 +33,7 @@ func addProjectCommand(ctx context.Context, root *cobra.Command, options *rootOp
 	addProjectCreateCommand(ctx, projectCommand, options)
 	addProjectUpdateCommand(ctx, projectCommand, options)
 	addProjectArchiveCommand(ctx, projectCommand, options)
+	addProjectAddTeamCommand(ctx, projectCommand, options)
 	addProjectAddLabelCommand(ctx, projectCommand, options)
 	addProjectRemoveLabelCommand(ctx, projectCommand, options)
 	addProjectOpenCommand(ctx, projectCommand, options)

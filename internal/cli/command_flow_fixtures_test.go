@@ -175,8 +175,72 @@ func (client commandFlowFakeClient) MakeRequest(
 	if err != nil {
 		return err
 	}
+	if crossTeamPayload, ok := commandFlowCrossTeamPayload(request); ok {
+		payload = crossTeamPayload
+	}
 
 	return json.Unmarshal([]byte(`{"data":`+payload+`}`), response)
+}
+
+// commandFlowCrossTeamPayload returns destination-aware fixtures for the
+// project add-team and issue move-team happy paths. The default team/issue
+// fixtures stay on the pinned LIT team, so a move that lands on OPS needs a
+// response that names that destination or the post-write check fails closed.
+func commandFlowCrossTeamPayload(request *graphql.Request) (string, bool) {
+	switch request.OpName {
+	case "team":
+		id, err := requestVariable[string](request, "id")
+		if err != nil || id != "ops-team-id" {
+			return "", false
+		}
+
+		return `{"team":` + commandDestinationTeamJSON("ops-team-id", "OPS") + `}`, true
+	case "IssueUpdate":
+		teamID, err := requestVariable[string](request, "input", "teamId")
+		if err != nil || teamID != "ops-team-id" {
+			return "", false
+		}
+
+		return `{"issueUpdate":{"success":true,"issue":` +
+			commandIssueJSONWithTeam("LIT-1", "Moved issue", "todo-state", "Todo", "unstarted", "ops-team-id", "OPS") +
+			`}}`, true
+	case "ProjectUpdate":
+		if !requestHasTeamID(request, "ops-team-id") {
+			return "", false
+		}
+
+		return `{"projectUpdate":{"success":true,"project":` + commandProjectJSONWithTeams(
+			"Multi-team project", "Started", "started",
+			[]commandProjectTeam{
+				{ID: "team-id", Key: "LIT", Name: "linctl"},
+				{ID: "ops-team-id", Key: "OPS", Name: "OPS"},
+			},
+		) + `}}`, true
+	default:
+		return "", false
+	}
+}
+
+func requestHasTeamID(request *graphql.Request, teamID string) bool {
+	payload, err := json.Marshal(request.Variables)
+	if err != nil {
+		return false
+	}
+	var variables struct {
+		Input struct {
+			TeamIDs []string `json:"teamIds"`
+		} `json:"input"`
+	}
+	if err := json.Unmarshal(payload, &variables); err != nil {
+		return false
+	}
+	for _, id := range variables.Input.TeamIDs {
+		if id == teamID {
+			return true
+		}
+	}
+
+	return false
 }
 
 // filteredIssueListPayloadKey maps a composed IssuesByTeamFiltered request to a

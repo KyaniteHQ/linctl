@@ -24,6 +24,7 @@ func addIssueCommand(ctx context.Context, root *cobra.Command, options *rootOpti
 	addIssuePRCommand(ctx, issueCommand, options)
 	addIssueCreateCommand(ctx, issueCommand, options)
 	addIssueUpdateCommand(ctx, issueCommand, options)
+	addIssueMoveTeamCommand(ctx, issueCommand, options)
 	addIssueStartCommand(ctx, issueCommand, options)
 	addIssueCommentCommand(ctx, issueCommand, options)
 	addIssueReplyCommand(ctx, issueCommand, options)

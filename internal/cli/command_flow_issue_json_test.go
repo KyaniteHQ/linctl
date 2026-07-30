@@ -7,6 +7,18 @@ import (
 )
 
 func commandIssueJSON(identifier string, title string, stateID string, state string, stateType string) string {
+	return commandIssueJSONWithTeam(identifier, title, stateID, state, stateType, "team-id", "LIT")
+}
+
+func commandIssueJSONWithTeam(
+	identifier string,
+	title string,
+	stateID string,
+	state string,
+	stateType string,
+	teamID string,
+	teamKey string,
+) string {
 	return `{
 		"id":"issue-id",
 		"description":"Existing description",
@@ -16,10 +28,51 @@ func commandIssueJSON(identifier string, title string, stateID string, state str
 		"url":"https://linear.app/kyanite/issue/` + identifier + `",
 		"priority":0,
 		"priorityLabel":"No priority",
-		"team":{"id":"team-id","key":"LIT","name":"linctl"},
+		"team":{"id":"` + teamID + `","key":"` + teamKey + `","name":"` + teamKey + `"},
 		"state":{"id":"` + stateID + `","name":"` + state + `","type":"` + stateType + `"},
 		"assignee":null,
 		"project":{"id":"project-id","name":"Pinned project"}
+	}`
+}
+
+func commandDestinationTeamJSON(teamID string, teamKey string) string {
+	return `{
+		"id":"` + teamID + `",
+		"key":"` + teamKey + `",
+		"name":"` + teamKey + `",
+		"description":"destination team",
+		"archivedAt":null,
+		"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}
+	}`
+}
+
+type commandProjectTeam struct {
+	ID   string
+	Key  string
+	Name string
+}
+
+func commandProjectJSONWithTeams(
+	name string,
+	status string,
+	statusType string,
+	teams []commandProjectTeam,
+) string {
+	nodes := make([]string, 0, len(teams))
+	for _, team := range teams {
+		nodes = append(nodes, `{"id":"`+team.ID+`","key":"`+team.Key+`","name":"`+team.Name+`"}`)
+	}
+
+	return `{
+		"id":"project-id",
+		"name":"` + name + `",
+		"description":"description",
+		"slugId":"` + name + `",
+		"url":"https://linear.app/kyanite/project/project-id",
+		"priority":0,
+		"status":{"id":"status-id","name":"` + status + `","type":"` + statusType + `"},
+		"lead":null,
+		"teams":{"nodes":[` + strings.Join(nodes, ",") + `]}
 	}`
 }
 

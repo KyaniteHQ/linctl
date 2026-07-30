@@ -74,3 +74,24 @@ func addProjectArchiveCommand(ctx context.Context, root *cobra.Command, options 
 		Write: writeProject,
 	})
 }
+
+func addProjectAddTeamCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	request := client.ProjectAddTeamRequest{}
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.ProjectSummary]{
+		Use:   "add-team PROJECT_ID",
+		Short: "Attach a team to a project without dropping existing teams",
+		Args:  cobra.ExactArgs(1),
+		Configure: func(command *cobra.Command) {
+			command.Flags().StringVar(&request.TeamKey, "to-team", "", "team key to attach")
+			command.Flags().StringVar(&request.TeamID, "to-team-id", "", "team id to attach")
+		},
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.ProjectSummary, error) {
+			request.ProjectID = args[0]
+
+			return client.AddProjectTeam(ctx, runtime.graphqlClient, runtime.config.Target, request)
+		},
+		Write: writeProject,
+	})
+}
