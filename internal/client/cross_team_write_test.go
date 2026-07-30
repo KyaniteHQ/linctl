@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 func destinationTeamJSON(teamID string, teamKey string, orgID string) string {
@@ -318,4 +320,389 @@ func Test_MoveIssueTeam_resolves_destination_by_key(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, "OPS", issue.Team)
+}
+
+func Test_AddProjectTeam_requires_project_id(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{}), matchingTarget(), ProjectAddTeamRequest{
+		TeamID: "ops-team-id",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_AddProjectTeam_refuses_when_target_unresolved(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{}), config.Target{
+		OrgID: "org-id", TeamKey: "WRONG", TeamID: "wrong-id",
+	}, ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_AddProjectTeam_wraps_project_lookup_error(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{}), matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamID:    "ops-team-id",
+	})
+
+	require.Error(t, err)
+	require.NotErrorIs(t, err, ErrTargetMismatch)
+	require.NotErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_AddProjectTeam_refuses_when_project_lacks_pinned_team(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeam(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}, "other-team", "OTHER") + `}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_AddProjectTeam_wraps_destination_lookup_error(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.Error(t, err)
+	require.NotErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_AddProjectTeam_wraps_mutation_error(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.Error(t, err)
+	require.NotErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_AddProjectTeam_fails_when_mutation_reports_no_success(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"team":          `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":false,"project":null}}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
+func Test_AddProjectTeam_fails_when_destination_missing_after_update(t *testing.T) {
+	// Linear returned success without the destination on the project: that is not a
+	// successful attach, even though the mutation payload claimed success.
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
+func Test_AddProjectTeam_fails_when_update_drops_the_pinned_team(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTeam(
+			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
+			"ops-team-id", "OPS",
+		) + `}}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_AddProjectTeam_refuses_when_team_id_and_key_disagree(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+	}), matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamID:    "ops-team-id",
+		TeamKey:   "WRONG",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_AddProjectTeam_fails_when_destination_key_is_unknown(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"teams_list": `{
+			"teams": {
+				"nodes": [{
+					"id": "team-id",
+					"key": "LIT",
+					"name": "linctl-it",
+					"description": "",
+					"archivedAt": null,
+					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+				}],
+				"pageInfo": {"hasNextPage": false, "endCursor": null}
+			}
+		}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamKey: "MISSING"})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_AddProjectTeam_wraps_team_list_error_when_resolving_by_key(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamKey: "OPS"})
+
+	require.Error(t, err)
+	require.NotErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_AddProjectTeam_pages_team_list_when_destination_is_not_on_first_page(t *testing.T) {
+	// requestKey in the fake GraphQL client appends ":cursor" for after=cursor pages.
+	client := projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"teams_list": `{
+			"teams": {
+				"nodes": [{
+					"id": "team-id",
+					"key": "LIT",
+					"name": "linctl-it",
+					"description": "",
+					"archivedAt": null,
+					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+				}],
+				"pageInfo": {"hasNextPage": true, "endCursor": "team-cursor-1"}
+			}
+		}`,
+		"teams_list:team-cursor-1": teamsListWithDestinationJSON(),
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTwoTeams(
+			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
+		) + `}}`,
+	})
+
+	project, err := AddProjectTeam(context.Background(), client, matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamKey:   "OPS",
+	})
+
+	require.NoError(t, err)
+	require.True(t, projectHasTeam(project, "ops-team-id", "OPS"))
+}
+
+func Test_AddProjectTeam_fails_when_team_list_page_has_no_end_cursor(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"teams_list": `{
+			"teams": {
+				"nodes": [{
+					"id": "team-id",
+					"key": "LIT",
+					"name": "linctl-it",
+					"description": "",
+					"archivedAt": null,
+					"organization": {"id": "org-id", "name": "Kyanite", "urlKey": "kyanite"}
+				}],
+				"pageInfo": {"hasNextPage": true, "endCursor": null}
+			}
+		}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamKey: "OPS"})
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "end cursor")
+}
+
+func Test_AddProjectTeam_refuses_key_lookup_team_in_another_organization(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSON(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}) + `}`,
+		"teams_list": `{
+			"teams": {
+				"nodes": [` + destinationTeamJSON("ops-team-id", "OPS", "other-org") + `],
+				"pageInfo": {"hasNextPage": false, "endCursor": null}
+			}
+		}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamKey: "OPS"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_AddProjectTeam_wraps_project_teams_list_error_when_truncated(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}, "team-id", "LIT", true) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.Error(t, err)
+	require.NotErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_AddProjectTeam_fails_when_truncated_teams_page_is_empty(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}, "team-id", "LIT", true) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"project_teams": `{
+			"project": {
+				"id": "project-id",
+				"name": "Harness",
+				"teams": {
+					"nodes": [],
+					"pageInfo": {"hasNextPage": false, "endCursor": null}
+				}
+			}
+		}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
+func Test_AddProjectTeam_fails_when_project_teams_page_has_no_end_cursor(t *testing.T) {
+	_, err := AddProjectTeam(context.Background(), projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}, "team-id", "LIT", true) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"project_teams": `{
+			"project": {
+				"id": "project-id",
+				"name": "Harness",
+				"teams": {
+					"nodes": [
+						{"id":"team-id","key":"LIT","name":"linctl-it","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}
+					],
+					"pageInfo": {"hasNextPage": true, "endCursor": null}
+				}
+			}
+		}`,
+	}), matchingTarget(), ProjectAddTeamRequest{ProjectID: "project-id", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_AddProjectTeam_continues_project_teams_pagination(t *testing.T) {
+	client := projectWriteFakeClient(map[string]string{
+		"project": `{"project":` + projectJSONWithTeamPage(projectFixture{
+			ID: "project-id", Name: "Harness", Status: "Backlog",
+		}, "team-id", "LIT", true) + `}`,
+		"team": `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"project_teams": `{
+			"project": {
+				"id": "project-id",
+				"name": "Harness",
+				"teams": {
+					"nodes": [
+						{"id":"team-id","key":"LIT","name":"linctl-it","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}
+					],
+					"pageInfo": {"hasNextPage": true, "endCursor": "teams-cursor-1"}
+				}
+			}
+		}`,
+		"project_teams:teams-cursor-1": `{
+			"project": {
+				"id": "project-id",
+				"name": "Harness",
+				"teams": {
+					"nodes": [
+						{"id":"extra-team-id","key":"EXT","name":"Extra","description":"","archivedAt":null,"organization":{"id":"org-id","name":"Kyanite","urlKey":"kyanite"}}
+					],
+					"pageInfo": {"hasNextPage": false, "endCursor": null}
+				}
+			}
+		}`,
+		"ProjectUpdate": `{"projectUpdate":{"success":true,"project":` + projectJSONWithTwoTeams(
+			projectFixture{ID: "project-id", Name: "Harness", Status: "Backlog"},
+		) + `}}`,
+	})
+	recorder := &recordingGraphQLClient{inner: client}
+
+	_, err := AddProjectTeam(context.Background(), recorder, matchingTarget(), ProjectAddTeamRequest{
+		ProjectID: "project-id",
+		TeamID:    "ops-team-id",
+	})
+
+	require.NoError(t, err)
+	require.JSONEq(t, `{
+		"id": "project-id",
+		"input": {"teamIds": ["team-id", "extra-team-id", "ops-team-id"]}
+	}`, string(recorder.variablesFor(t, "ProjectUpdate")))
+}
+
+func Test_MoveIssueTeam_requires_issue_id(t *testing.T) {
+	_, err := MoveIssueTeam(context.Background(), issueWriteFakeClient(map[string]string{}), matchingTarget(), IssueMoveTeamRequest{
+		TeamID: "ops-team-id",
+	})
+
+	require.ErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_MoveIssueTeam_refuses_when_target_unresolved(t *testing.T) {
+	_, err := MoveIssueTeam(context.Background(), issueWriteFakeClient(map[string]string{}), config.Target{
+		OrgID: "org-id", TeamKey: "WRONG", TeamID: "wrong-id",
+	}, IssueMoveTeamRequest{IssueID: "LIT-1", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_MoveIssueTeam_wraps_destination_lookup_error(t *testing.T) {
+	_, err := MoveIssueTeam(context.Background(), issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+	}), matchingTarget(), IssueMoveTeamRequest{IssueID: "LIT-1", TeamID: "ops-team-id"})
+
+	require.Error(t, err)
+	require.NotErrorIs(t, err, ErrWriteInvalid)
+}
+
+func Test_MoveIssueTeam_wraps_mutation_error(t *testing.T) {
+	_, err := MoveIssueTeam(context.Background(), issueWriteFakeClient(map[string]string{
+		"issue": `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"team":  `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+	}), matchingTarget(), IssueMoveTeamRequest{IssueID: "LIT-1", TeamID: "ops-team-id"})
+
+	require.Error(t, err)
+	require.NotErrorIs(t, err, ErrTargetMismatch)
+}
+
+func Test_MoveIssueTeam_fails_when_mutation_reports_no_success(t *testing.T) {
+	_, err := MoveIssueTeam(context.Background(), issueWriteFakeClient(map[string]string{
+		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"team":        `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":false,"issue":null}}`,
+	}), matchingTarget(), IssueMoveTeamRequest{IssueID: "LIT-1", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
+}
+
+func Test_MoveIssueTeam_fails_when_issue_lands_on_the_wrong_team(t *testing.T) {
+	_, err := MoveIssueTeam(context.Background(), issueWriteFakeClient(map[string]string{
+		"issue":       `{"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}`,
+		"team":        `{"team":` + destinationTeamJSON("ops-team-id", "OPS", "org-id") + `}`,
+		"IssueUpdate": `{"issueUpdate":{"success":true,"issue":` + issueJSON(b1IssueFixture("LIT-1")) + `}}`,
+	}), matchingTarget(), IssueMoveTeamRequest{IssueID: "LIT-1", TeamID: "ops-team-id"})
+
+	require.ErrorIs(t, err, ErrMutationFailed)
 }
