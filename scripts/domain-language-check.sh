@@ -9,7 +9,6 @@ if rg -n -i '\bworkspace(-level)?\b' \
   skills/linctl/references/commands.md \
   -g '!docs/internal/domain-map.md' \
   -g '!docs/internal/linear-api-coverage.md' \
-  -g '!docs/prior-art.md' \
   -g '!docs/setup-gap-log.md'; then
   cat <<'MSG'
 Avoid "workspace" in user-facing linctl docs/help. Prefer organization, team,
