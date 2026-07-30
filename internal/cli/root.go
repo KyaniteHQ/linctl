@@ -99,6 +99,7 @@ func addCommands(ctx context.Context, command *cobra.Command, options *rootOptio
 	addUsageCommand(command, options)
 	addAuthCommand(ctx, command, options)
 	addTargetCommand(ctx, command, options)
+	addInitCommand(ctx, command, options)
 	addDoctorCommand(ctx, command, options)
 	addWhoamiCommand(ctx, command, options)
 	addApplicationCommand(ctx, command, options)

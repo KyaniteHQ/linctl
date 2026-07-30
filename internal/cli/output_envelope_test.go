@@ -11,6 +11,7 @@ import (
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/config"
 )
 
 func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
@@ -24,6 +25,7 @@ func Test_errorCode_maps_sentinels_and_fallbacks(t *testing.T) {
 		{name: "rate limited", err: fmt.Errorf("%w: x", client.ErrRateLimited), code: "RATE_LIMITED"},
 		{name: "mutation failed", err: fmt.Errorf("%w: x", client.ErrMutationFailed), code: "MUTATION_FAILED"},
 		{name: "invalid write", err: fmt.Errorf("%w: x", client.ErrWriteInvalid), code: "INVALID_WRITE"},
+		{name: "pin exists", err: fmt.Errorf("%w: x", config.ErrPinExists), code: "INVALID_WRITE"},
 		{name: "graphql", err: fmt.Errorf("%w: x", client.ErrGraphQL), code: "GRAPHQL_ERROR"},
 		{name: "not found", err: fmt.Errorf("get issue LIT-1: %w", client.ErrNotFound), code: "NOT_FOUND"},
 		{name: "auth readiness", err: auth.NewError(auth.ErrorCodeTargetMismatch, "wrong target"), code: "AUTH_TARGET_MISMATCH"},

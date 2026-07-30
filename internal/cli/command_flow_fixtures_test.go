@@ -91,6 +91,8 @@ type commandFlowFakeClient struct {
 	emptyIssueCycle               bool
 	emptyIssueCreatedAfter        bool
 	emptyIssueCreatedBefore       bool
+	emptyIssueUpdatedAfter        bool
+	emptyIssueUpdatedBefore       bool
 	emptyIssueHasBlockers         bool
 	emptyIssueBlocks              bool
 	emptyIssueBlockedBy           bool
@@ -106,6 +108,8 @@ type commandFlowFakeClient struct {
 	expectedCycleID               string
 	expectedCreatedAfter          string
 	expectedCreatedBefore         string
+	expectedUpdatedAfter          string
+	expectedUpdatedBefore         string
 	expectedBlockedBy             string
 	expectedIssueDeps             string
 	expectedSearchQuery           string
@@ -266,7 +270,10 @@ func filteredIssueListPayloadKey(request *graphql.Request) string {
 			continue
 		}
 		if clause == "createdAt" {
-			clause = createdAtClauseKey(value)
+			clause = dateComparatorClauseKey(value, "createdAfter", "createdBefore")
+		}
+		if clause == "updatedAt" {
+			clause = dateComparatorClauseKey(value, "updatedAfter", "updatedBefore")
 		}
 		clauses = append(clauses, clause)
 	}
@@ -278,15 +285,15 @@ func filteredIssueListPayloadKey(request *graphql.Request) string {
 	return "IssuesByTeamFiltered:" + strings.Join(clauses, "+")
 }
 
-func createdAtClauseKey(window json.RawMessage) string {
+func dateComparatorClauseKey(window json.RawMessage, afterKey string, beforeKey string) string {
 	var comparator struct {
 		Gte *string `json:"gte"`
 	}
 	if json.Unmarshal(window, &comparator) == nil && comparator.Gte != nil {
-		return "createdAfter"
+		return afterKey
 	}
 
-	return "createdBefore"
+	return beforeKey
 }
 
 func (client commandFlowFakeClient) requireExpectedVariables(request *graphql.Request) error {
@@ -462,6 +469,8 @@ func (client commandFlowFakeClient) requireExpectedIssueListVariables(request *g
 		{client.expectedCycleID, []string{"filter", "cycle", "id", "eq"}, "cycle id"},
 		{client.expectedCreatedAfter, []string{"filter", "createdAt", "gte"}, "created after"},
 		{client.expectedCreatedBefore, []string{"filter", "createdAt", "lte"}, "created before"},
+		{client.expectedUpdatedAfter, []string{"filter", "updatedAt", "gte"}, "updated after"},
+		{client.expectedUpdatedBefore, []string{"filter", "updatedAt", "lte"}, "updated before"},
 	}
 	for _, check := range checks {
 		if check.expected == "" {

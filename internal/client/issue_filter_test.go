@@ -61,6 +61,21 @@ func Test_ListIssuesByTeam_composes_each_filter_clause(t *testing.T) {
 			IssueListFilters{CreatedAfter: "2026-06-01", CreatedBefore: "2026-06-30"},
 			`{` + team + `, "createdAt": {"gte": "2026-06-01", "lte": "2026-06-30"}}`,
 		},
+		{
+			"updated range",
+			IssueListFilters{UpdatedAfter: "2026-07-01", UpdatedBefore: "2026-07-30"},
+			`{` + team + `, "updatedAt": {"gte": "2026-07-01", "lte": "2026-07-30"}}`,
+		},
+		{
+			"updated after only",
+			IssueListFilters{UpdatedAfter: "2026-07-01"},
+			`{` + team + `, "updatedAt": {"gte": "2026-07-01"}}`,
+		},
+		{
+			"state plus updated after",
+			IssueListFilters{StateType: "started", UpdatedAfter: "2026-07-01"},
+			`{` + team + `, "state": {"type": {"eq": "started"}}, "updatedAt": {"gte": "2026-07-01"}}`,
+		},
 		{"has blockers", IssueListFilters{HasBlockers: true}, `{` + team + `, "hasBlockedByRelations": {"eq": true}}`},
 		{"blocks", IssueListFilters{Blocks: true}, `{` + team + `, "hasBlockingRelations": {"eq": true}}`},
 	}

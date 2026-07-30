@@ -82,6 +82,7 @@ type LinearIssueFilter struct {
 	Labels                *LinearLabelCollectionFilter    `json:"labels,omitempty"`
 	Cycle                 *LinearIDFilter                 `json:"cycle,omitempty"`
 	CreatedAt             *LinearDateComparator           `json:"createdAt,omitempty"`
+	UpdatedAt             *LinearDateComparator           `json:"updatedAt,omitempty"`
 	HasBlockedByRelations *LinearRelationExistsComparator `json:"hasBlockedByRelations,omitempty"`
 	HasBlockingRelations  *LinearRelationExistsComparator `json:"hasBlockingRelations,omitempty"`
 }

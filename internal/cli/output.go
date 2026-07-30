@@ -12,6 +12,7 @@ import (
 
 	"github.com/KyaniteHQ/linctl/internal/auth"
 	"github.com/KyaniteHQ/linctl/internal/client"
+	"github.com/KyaniteHQ/linctl/internal/config"
 	"github.com/KyaniteHQ/linctl/internal/render"
 )
 
@@ -41,6 +42,8 @@ func errorCode(err error) string {
 	case errors.Is(err, client.ErrMutationFailed):
 		return "MUTATION_FAILED"
 	case errors.Is(err, client.ErrWriteInvalid):
+		return "INVALID_WRITE"
+	case errors.Is(err, config.ErrPinExists):
 		return "INVALID_WRITE"
 	case errors.Is(err, client.ErrGraphQL):
 		return "GRAPHQL_ERROR"

@@ -67,19 +67,38 @@ live, so a green status means the credential really works, not just that a file 
 
 Secrets are never printed. Auth output reports them as `set` or `missing`.
 
-## 4. Find your organization and team ids
+## 4. Pin the target
+
+From the repo where your agent will run, scaffold a target-only pin from the active
+credential. Auth material never goes in this file.
 
 ```bash
-linctl user me --json          # your organization
-linctl team list --json        # every team the credential can see
+# one visible team: writes .linctl.toml in the current directory
+linctl init
+
+# multiple teams: pick one (discover with linctl team list --json)
+linctl init --team LIT
+# optional: also pin a project after verifying it belongs to that team
+linctl init --team LIT --project PROJECT_ID
 ```
 
-Note the organization id, and the id and key of the team you want to work in. The key is the
-short prefix on issue numbers, like `LIT` in `LIT-123`.
+`init` refuses to overwrite an existing `.linctl.toml` (edit or remove it; there is no
+`--force`). The file is the whole safety story: *writes from this repo go here and
+nowhere else.* It is safe to commit. It holds no secrets.
 
-## 5. Pin the target
+Confirm the credential actually resolves to it:
 
-Create `.linctl.toml` in the repo where your agent will run:
+```bash
+linctl target --json
+```
+
+<details>
+<summary>Manual pin (when you already know the ids)</summary>
+
+```bash
+linctl user me --json          # organization
+linctl team list --json        # teams the credential can see
+```
 
 ```toml
 [target]
@@ -91,14 +110,7 @@ team_id  = "your-linear-team-id"
 # project_id = "your-linear-project-id"
 ```
 
-This file is the whole safety story. It says: *writes from this repo go here and nowhere else.*
-It is safe to commit. It holds no secrets.
-
-Confirm the credential actually resolves to it:
-
-```bash
-linctl target --json
-```
+</details>
 
 ```json
 {

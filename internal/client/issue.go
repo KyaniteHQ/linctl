@@ -125,6 +125,8 @@ type IssueListFilters struct {
 	CycleID       string
 	CreatedAfter  string
 	CreatedBefore string
+	UpdatedAfter  string
+	UpdatedBefore string
 	HasBlockers   bool
 	Blocks        bool
 	BlockedBy     string
@@ -236,6 +238,12 @@ func buildIssueFilter(teamID string, filters IssueListFilters) gqlmodel.LinearIs
 		filter.CreatedAt = &gqlmodel.LinearDateComparator{
 			Gte: optionalString(filters.CreatedAfter),
 			Lte: optionalString(filters.CreatedBefore),
+		}
+	}
+	if filters.UpdatedAfter != "" || filters.UpdatedBefore != "" {
+		filter.UpdatedAt = &gqlmodel.LinearDateComparator{
+			Gte: optionalString(filters.UpdatedAfter),
+			Lte: optionalString(filters.UpdatedBefore),
 		}
 	}
 	if filters.HasBlockers {

@@ -1226,6 +1226,22 @@ Flags:
       --content-type string   MIME type; inferred from the file extension when empty
 ```
 
+### linctl init
+
+Scaffold a target-only .linctl.toml pin from the active credential
+
+```
+linctl init [flags]
+```
+
+Flags:
+
+```
+      --project string   optional project id to pin after team selection
+      --team string      team key when multiple teams are visible
+      --team-id string   team id when multiple teams are visible
+```
+
 ### linctl initiative
 
 Read Linear initiatives
@@ -1819,6 +1835,8 @@ Flags:
       --project string          filter by Linear project id
       --state string            filter by workflow state type
       --status string           alias for --state
+      --updated-after string    filter by updated-at date lower bound
+      --updated-before string   filter by updated-at date upper bound
 ```
 
 ### linctl issue move-team

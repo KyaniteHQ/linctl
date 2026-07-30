@@ -145,6 +145,8 @@ func Test_CommandFlows_report_operation_errors(t *testing.T) {
 		{name: "issue list created-after filter", args: []string{"issue", "list", "--created-after", "2026-06-01"}, operation: "IssuesByTeamFiltered", contains: "list issues"},
 		{name: "issue list created-since filter", args: []string{"issue", "list", "--created-since", "2026-06-01"}, operation: "IssuesByTeamFiltered", contains: "list issues"},
 		{name: "issue list created-before filter", args: []string{"issue", "list", "--created-before", "2026-06-30"}, operation: "IssuesByTeamFiltered", contains: "list issues"},
+		{name: "issue list updated-after filter", args: []string{"issue", "list", "--updated-after", "2026-07-01"}, operation: "IssuesByTeamFiltered", contains: "list issues"},
+		{name: "issue list updated-before filter", args: []string{"issue", "list", "--updated-before", "2026-07-30"}, operation: "IssuesByTeamFiltered", contains: "list issues"},
 		{name: "issue list has blockers filter", args: []string{"issue", "list", "--has-blockers"}, operation: "IssuesByTeamFiltered", contains: "list issues"},
 		{name: "issue list blocks filter", args: []string{"issue", "list", "--blocks"}, operation: "IssuesByTeamFiltered", contains: "list issues"},
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1"}, operation: "IssueBlockedIssues", contains: "list issues"},

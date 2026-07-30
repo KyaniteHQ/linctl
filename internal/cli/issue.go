@@ -93,6 +93,12 @@ func bindIssueListFlags(command *cobra.Command, limit *int, flags *issueListFlag
 	command.Flags().StringVar(
 		&flags.createdBefore, "created-before", flags.createdBefore, "filter by created-at date upper bound",
 	)
+	command.Flags().StringVar(
+		&flags.updatedAfter, "updated-after", flags.updatedAfter, "filter by updated-at date lower bound",
+	)
+	command.Flags().StringVar(
+		&flags.updatedBefore, "updated-before", flags.updatedBefore, "filter by updated-at date upper bound",
+	)
 	command.Flags().BoolVar(
 		&flags.hasBlockers, "has-blockers", flags.hasBlockers, "filter to issues blocked by another issue",
 	)
@@ -118,6 +124,8 @@ type issueListFlagValues struct {
 	createdAfter  string
 	createdSince  string
 	createdBefore string
+	updatedAfter  string
+	updatedBefore string
 	hasBlockers   bool
 	blocks        bool
 	blockedBy     string
@@ -138,6 +146,8 @@ func validateIssueListFilters(flags issueListFlagValues) error {
 		flags.createdAfter != "",
 		flags.createdSince != "",
 		flags.createdBefore != "",
+		flags.updatedAfter != "",
+		flags.updatedBefore != "",
 		flags.hasBlockers,
 		flags.blocks,
 		flags.blockedBy != "",
@@ -215,6 +225,8 @@ func issueList(
 			CycleID:       flags.cycleID,
 			CreatedAfter:  firstNonEmpty(flags.createdAfter, flags.createdSince),
 			CreatedBefore: flags.createdBefore,
+			UpdatedAfter:  flags.updatedAfter,
+			UpdatedBefore: flags.updatedBefore,
 			HasBlockers:   flags.hasBlockers,
 			Blocks:        flags.blocks,
 			BlockedBy:     flags.blockedBy,

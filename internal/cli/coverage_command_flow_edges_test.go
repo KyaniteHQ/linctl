@@ -82,6 +82,8 @@ func Test_CommandFlows_cover_output_error_and_quiet_branches(t *testing.T) {
 		{name: "issue list created-after", args: []string{"--fail-on-empty", "issue", "list", "--created-after", "2026-06-01"}, fake: commandFlowFakeClient{emptyIssueCreatedAfter: true}},
 		{name: "issue list created-since", args: []string{"--fail-on-empty", "issue", "list", "--created-since", "2026-06-01"}, fake: commandFlowFakeClient{emptyIssueCreatedAfter: true}},
 		{name: "issue list created-before", args: []string{"--fail-on-empty", "issue", "list", "--created-before", "2026-06-30"}, fake: commandFlowFakeClient{emptyIssueCreatedBefore: true}},
+		{name: "issue list updated-after", args: []string{"--fail-on-empty", "issue", "list", "--updated-after", "2026-07-01"}, fake: commandFlowFakeClient{emptyIssueUpdatedAfter: true}},
+		{name: "issue list updated-before", args: []string{"--fail-on-empty", "issue", "list", "--updated-before", "2026-07-30"}, fake: commandFlowFakeClient{emptyIssueUpdatedBefore: true}},
 		{name: "issue list has blockers", args: []string{"--fail-on-empty", "issue", "list", "--has-blockers"}, fake: commandFlowFakeClient{emptyIssueHasBlockers: true}},
 		{name: "issue list blocks", args: []string{"--fail-on-empty", "issue", "list", "--blocks"}, fake: commandFlowFakeClient{emptyIssueBlocks: true}},
 		{name: "issue list blocked by", args: []string{"--fail-on-empty", "issue", "list", "--blocked-by", "LIT-1"}, fake: commandFlowFakeClient{emptyIssueBlockedBy: true}},
@@ -150,6 +152,8 @@ func Test_validateIssueListFilters_allows_combined_team_scoped_filters(t *testin
 		cycleID:       "cycle-id",
 		createdAfter:  "2026-06-01",
 		createdBefore: "2026-06-30",
+		updatedAfter:  "2026-07-01",
+		updatedBefore: "2026-07-30",
 		hasBlockers:   true,
 		blocks:        true,
 	}))

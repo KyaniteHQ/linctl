@@ -78,6 +78,8 @@ func Test_CommandFlows_execute_read_and_write_commands(t *testing.T) {
 		{name: "issue list created-after filter", args: []string{"issue", "list", "--created-after", "2026-06-01", "--limit", "1"}, contains: "LIT-9 Recent issue [Todo]", fake: commandFlowFakeClient{expectedCreatedAfter: "2026-06-01"}},
 		{name: "issue list created-since filter", args: []string{"issue", "list", "--created-since", "2026-06-01", "--limit", "1"}, contains: "LIT-9 Recent issue [Todo]", fake: commandFlowFakeClient{expectedCreatedAfter: "2026-06-01"}},
 		{name: "issue list created-before filter", args: []string{"issue", "list", "--created-before", "2026-06-30", "--limit", "1"}, contains: "LIT-19 Older issue [Todo]", fake: commandFlowFakeClient{expectedCreatedBefore: "2026-06-30"}},
+		{name: "issue list updated-after filter", args: []string{"issue", "list", "--updated-after", "2026-07-01", "--limit", "1"}, contains: "LIT-42 Updated issue [Todo]", fake: commandFlowFakeClient{expectedUpdatedAfter: "2026-07-01"}},
+		{name: "issue list updated-before filter", args: []string{"issue", "list", "--updated-before", "2026-07-30", "--limit", "1"}, contains: "LIT-43 Stale issue [Todo]", fake: commandFlowFakeClient{expectedUpdatedBefore: "2026-07-30"}},
 		{name: "issue list has blockers filter", args: []string{"issue", "list", "--has-blockers", "--limit", "1"}, contains: "LIT-21 Blocked issue [Todo]"},
 		{name: "issue list blocks filter", args: []string{"issue", "list", "--blocks", "--limit", "1"}, contains: "LIT-22 Blocking issue [Todo]"},
 		{name: "issue list blocked by filter", args: []string{"issue", "list", "--blocked-by", "LIT-1", "--limit", "1"}, contains: "LIT-23 Blocked by issue [Todo]", fake: commandFlowFakeClient{expectedBlockedBy: "LIT-1"}},

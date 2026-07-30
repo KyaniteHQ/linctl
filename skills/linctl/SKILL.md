@@ -32,9 +32,11 @@ never through MCP, raw GraphQL, or an ad hoc script.
 Before any write:
 
 1. Read `.linctl.toml` if present; it overlays `~/.config/linctl/config.toml`.
-2. Run `linctl doctor --json` or `linctl target --json`.
-3. Run `linctl usage`, plus the relevant domain usage command before an unfamiliar write.
-4. Use `--json` when another tool or agent will parse output; see `references/json-output.md`.
+2. If the pin is missing, run `linctl init` (or `linctl init --team KEY` when multiple
+   teams are visible). Never put auth material in `.linctl.toml`.
+3. Run `linctl doctor --json` or `linctl target --json`.
+4. Run `linctl usage`, plus the relevant domain usage command before an unfamiliar write.
+5. Use `--json` when another tool or agent will parse output; see `references/json-output.md`.
 
 Completion criterion: command, target, and output format are known before mutation.
 
@@ -90,8 +92,8 @@ Safety rules:
 - Team-scoped writes compare organization and team.
 - Resource-scoped writes resolve the existing resource first and compare pinned `project_id` when configured.
 - `--org`, `--team`, `--team-id`, and `--project` are explicit pinned-target overrides, not bypasses.
-- Configure repo targets in `.linctl.toml`; configure auth with `linctl auth configure`,
-  `linctl auth app`, or `linctl auth login`.
+- Scaffold a repo pin with `linctl init` (target-only `.linctl.toml`); configure auth
+  with `linctl auth configure`, `linctl auth app`, or `linctl auth login`.
 - Use `linctl auth status` for readiness, `linctl auth refresh` for explicit diagnosis,
   and `linctl auth logout` to revoke/remove local token state.
 - Never print secrets. Report OAuth app material as `set` or `missing`.
@@ -238,7 +240,7 @@ Blocked:
 - Use `--json` for agent-readable output.
 - Use `linctl current --json` when the branch carries a Linear issue key.
 - Never print secrets; report OAuth material as `set` or `missing`.
-- Keep writes pinned to `.linctl.toml` `[target]`; do not add bypass flags.
+- Keep writes pinned to `.linctl.toml` `[target]` (scaffold with `linctl init`); do not add bypass flags.
 - Name test resources `linctl-it-<runid>` and close or archive them after verification.
 - For live smoke, prefer `go run github.com/go-task/task/v3/cmd/task@latest live-smoke`.
 - For browser auth smoke, use `go run github.com/go-task/task/v3/cmd/task@latest browser-login-smoke`.

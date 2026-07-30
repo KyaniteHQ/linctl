@@ -9,6 +9,7 @@ Command names below are either implemented CLI surface or intentionally deferred
 | --- | --- | --- |
 | `whoami` | `Query.viewer`, `User` | Reads the authenticated user. |
 | `target` | `Query.organization`, `Query.teams`, `Query.team`, `Query.projects`, `Query.project` | Resolves the active auth credential's organization, team, and optional project. |
+| `init` | `Query.teams` (`teams_list`); optional `Query.project` when `--project` is set; local file write of cwd `.linctl.toml` | Local command: scaffolds a target-only pin from the active credential. Never mutates Linear. Never writes auth material. Refuses to overwrite an existing pin. |
 | `doctor` | `Query.viewer`, `Query.teams`, `TargetProject` (`Query.project`) when `project_id` is pinned | Read-only health check for config load, OAuth auth readiness, and pinned-target confirmation. Does not print secret values. |
 | `application info` | `Query.applicationInfo` | Read-only public OAuth application metadata by client id. |
 | `organization exists` | `Query.organizationExists` | Read-only URL-key existence check for organization lookup. |
@@ -223,7 +224,7 @@ Planned commands:
 
 | Command | Operation backing | Write scope |
 | --- | --- | --- |
-| `issue list` | `Query.issues` with one composed `IssueFilter`: `Issue.team.id` plus any combination of `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.hasBlockedByRelations.eq`, and `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`, and combines only with `--limit`; `--all-teams` omits the filter entirely | Read-only |
+| `issue list` | `Query.issues` with one composed `IssueFilter`: `Issue.team.id` plus any combination of `Issue.state.type` (`--state`, with `--status` as an alias; human state names are normalized to the schema state type before filtering), `Issue.project.id`, `Issue.assignee.id`, `Issue.labels.some.id`, `Issue.cycle.id`, `Issue.createdAt.gte` (`--created-after` / `--created-since`), `Issue.createdAt.lte`, `Issue.updatedAt.gte` (`--updated-after`), `Issue.updatedAt.lte` (`--updated-before`), `Issue.hasBlockedByRelations.eq`, and `Issue.hasBlockingRelations.eq`; `--blocked-by ISSUE` traverses `Issue.relations` with `IssueRelation.type == "blocks"` and returns matching `IssueRelation.relatedIssue`, and combines only with `--limit`; `--all-teams` omits the filter entirely | Read-only |
 | `issue search` | `Query.issues`, filtered by `Issue.searchableContent` | Read-only |
 | `issue figma-file-key-search` | `Query.issueFigmaFileKeySearch`; returns compact issue summaries for a Figma file key | Read-only |
 | `issue priority-values` | `Query.issuePriorityValues` | Read-only |

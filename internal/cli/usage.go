@@ -53,6 +53,8 @@ var usageTopics = map[string]usagePayload{
 			"linctl issue list --created-after DATE for issues created on or after a date, " +
 			"linctl issue list --created-since DATE as an alias for created-after, " +
 			"linctl issue list --created-before DATE for issues created on or before a date, " +
+			"linctl issue list --updated-after DATE for issues updated on or after a date, " +
+			"linctl issue list --updated-before DATE for issues updated on or before a date, " +
 			"linctl issue list --has-blockers for issues blocked by another issue, " +
 			"linctl issue list --blocks for issues blocking another issue, " +
 			"linctl issue list --blocked-by ISSUE for issues blocked by that issue, " +
@@ -90,6 +92,8 @@ var usageTopics = map[string]usagePayload{
 			"linctl issue list --created-after 2026-06-01 --limit 20, " +
 			"linctl issue list --created-since 2026-06-01 --limit 20, " +
 			"linctl issue list --created-before 2026-06-30 --limit 20, " +
+			"linctl issue list --updated-after 2026-07-01 --limit 20, " +
+			"linctl issue list --updated-before 2026-07-30 --limit 20, " +
 			"linctl issue list --has-blockers --limit 20, " +
 			"linctl issue list --blocks --limit 20, " +
 			"linctl issue list --blocked-by LIT-123 --limit 20, " +
