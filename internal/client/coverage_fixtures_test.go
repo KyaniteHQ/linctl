@@ -193,7 +193,8 @@ func subInitiativeJSON() string {
 		"priority":1,
 		"targetDate":"2026-11-30",
 		"slugId":"child-platform",
-		"url":"https://linear.app/kyanite/initiative/child-platform"
+		"url":"https://linear.app/kyanite/initiative/child-platform",
+		"organization":{"id":"org-id"}
 	}`
 }
 

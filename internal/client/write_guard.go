@@ -186,6 +186,43 @@ func (guard *guardedClient) requireOrganization(orgID string) error {
 	return nil
 }
 
+// requireInitiative resolves an organization-owned Initiative and compares its
+// organization to the pinned target. Resource-Scoped: the initiative id pins
+// the resource; pinned project does not participate.
+func (guard *guardedClient) requireInitiative(ctx context.Context, initiativeID string) error {
+	initiative, err := GetInitiativeByID(ctx, guard.graphqlClient, initiativeID)
+	if err != nil {
+		return err
+	}
+
+	return guard.requireOrganization(initiative.OrgID)
+}
+
+// requireNotification resolves a Notification and compares its recipient user
+// to the authenticated viewer. Viewer-Scoped Write hard stop.
+func (guard *guardedClient) requireNotification(ctx context.Context, notificationID string) error {
+	notification, err := GetNotificationByID(ctx, guard.graphqlClient, notificationID)
+	if err != nil {
+		return err
+	}
+	if notification.UserID != guard.target.Viewer.ID {
+		return guard.viewerMismatchError(notification.UserID)
+	}
+
+	return nil
+}
+
+// viewerMismatchError reports a Target Mismatch between the authenticated
+// viewer and the recipient of an actor-owned resource such as a notification.
+func (guard *guardedClient) viewerMismatchError(userID string) error {
+	return fmt.Errorf(
+		"%w: expected viewer_id=%s resolved notification user_id=%s",
+		ErrTargetMismatch,
+		guard.target.Viewer.ID,
+		userID,
+	)
+}
+
 // organizationMismatchError reports a Target Mismatch between the pinned
 // organization and the organization resolved from an existing entity.
 func (guard *guardedClient) organizationMismatchError(orgID string) error {

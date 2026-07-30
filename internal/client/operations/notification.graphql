@@ -66,6 +66,24 @@ fragment NotificationSummaryFields on Notification {
   }
 }
 
+mutation NotificationUpdate($id: String!, $input: NotificationUpdateInput!) {
+  notificationUpdate(id: $id, input: $input) {
+    success
+    notification {
+      ...NotificationSummaryFields
+    }
+  }
+}
+
+mutation NotificationArchive($id: String!) {
+  notificationArchive(id: $id) {
+    success
+    entity {
+      ...NotificationSummaryFields
+    }
+  }
+}
+
 fragment NotificationSubscriptionSummaryFields on NotificationSubscription {
   id
   active

@@ -20,6 +20,7 @@ type InitiativeSummary struct {
 	TargetDate  string `json:"target_date,omitempty"`
 	SlugID      string `json:"slug_id"`
 	URL         string `json:"url"`
+	OrgID       string `json:"org_id"`
 }
 
 // InitiativeList is a page of initiatives.
@@ -242,6 +243,7 @@ func initiativeSummary(fields gql.InitiativeSummaryFields) InitiativeSummary {
 		TargetDate:  stringValue(fields.TargetDate),
 		SlugID:      fields.SlugId,
 		URL:         fields.Url,
+		OrgID:       fields.Organization.Id,
 	}
 }
 

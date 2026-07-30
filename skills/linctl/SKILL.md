@@ -74,6 +74,8 @@ Guarded writes currently cover:
   `comment delete`.
 - Projects: create, update, archive.
 - Project updates: create.
+- Initiative updates: create (organization comparison on the initiative).
+- Notifications: mark-read, archive (Viewer-Scoped; recipient must match the actor).
 - Documents: create, update.
 - Cycles: create, update, archive.
 - ProjectMilestones: create, update.

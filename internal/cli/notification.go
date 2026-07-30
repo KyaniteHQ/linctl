@@ -45,6 +45,8 @@ func addNotificationCommand(ctx context.Context, root *cobra.Command, options *r
 			return writeNotificationUnreadCount(command, options, count)
 		},
 	})
+	addNotificationMarkReadCommand(ctx, parentCommand, options)
+	addNotificationArchiveCommand(ctx, parentCommand, options)
 
 	addReadListGetCommand(
 		ctx,
@@ -74,6 +76,34 @@ func writeNotificationUnreadCount(command *cobra.Command, options *rootOptions, 
 		func(command *cobra.Command, _ *rootOptions, output notificationUnreadCountOutput) error {
 			return render.WriteLine(command.OutOrStdout(), "%d", output.UnreadCount)
 		})
+}
+
+func addNotificationMarkReadCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.NotificationSummary]{
+		Use:   "mark-read NOTIFICATION_ID",
+		Short: "Mark one notification read for the authenticated actor's inbox",
+		Args:  cobra.ExactArgs(1),
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.NotificationSummary, error) {
+			return client.MarkNotificationRead(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+		},
+		Write: writeNotification,
+	})
+}
+
+func addNotificationArchiveCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
+	addGuardedWriteCommand(ctx, root, options, guardedWriteSpec[client.NotificationSummary]{
+		Use:   "archive NOTIFICATION_ID",
+		Short: "Archive one notification for the authenticated actor's inbox",
+		Args:  cobra.ExactArgs(1),
+		Run: func(
+			ctx context.Context, _ *cobra.Command, runtime commandRuntime, args []string,
+		) (client.NotificationSummary, error) {
+			return client.ArchiveNotification(ctx, runtime.graphqlClient, runtime.config.Target, args[0])
+		},
+		Write: writeNotification,
+	})
 }
 
 func writeNotification(command *cobra.Command, options *rootOptions, notification client.NotificationSummary) error {

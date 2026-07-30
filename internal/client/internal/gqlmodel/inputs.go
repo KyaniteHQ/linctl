@@ -207,6 +207,18 @@ type LinearProjectUpdateCreateInput struct {
 	Health    *string `json:"health,omitempty"`
 }
 
+// LinearInitiativeUpdateCreateInput is the sparse Linear initiativeUpdateCreate payload linctl supports.
+type LinearInitiativeUpdateCreateInput struct {
+	InitiativeID string  `json:"initiativeId"`
+	Body         *string `json:"body,omitempty"`
+	Health       *string `json:"health,omitempty"`
+}
+
+// LinearNotificationUpdateInput is the sparse Linear notificationUpdate payload linctl supports.
+type LinearNotificationUpdateInput struct {
+	ReadAt *string `json:"readAt,omitempty"`
+}
+
 // LinearProjectUpdateInput is the sparse Linear projectUpdate payload linctl supports.
 type LinearProjectUpdateInput struct {
 	Name        *string  `json:"name,omitempty"`

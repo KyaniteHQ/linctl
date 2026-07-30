@@ -120,6 +120,10 @@ _Avoid_: Direct update, blind write
 A guarded write against an organization-owned entity that has no team scope, selected by an explicit `--org-wide` flag. The comparison is organization-only and Target Mismatch stays a hard stop; the flag confirms blast radius and is never a bypass, and it is rejected for team-scoped resources.
 _Avoid_: Workspace write, bypass flag, unscoped write
 
+**Viewer-Scoped Write**:
+A guarded write that mutates only state owned by the authenticated actor (for example their inbox). The hard stop is recipient match: the resource's owner user id must equal the resolved viewer id. Pinned team and project do not participate. Target Mismatch stays a hard stop.
+_Avoid_: Unscoped inbox write, bulk ack without design
+
 **Command Port**:
 The narrow, consumer-owned interface for a multi-call command decision or replaceable external effect. A command port returns command or domain types rather than generated GraphQL responses and can be satisfied by an in-memory fake in focused tests. One-call commands invoke exported client functions directly. Guarded-write safety stays fail-closed in the client package and does not depend on whether a command uses a port.
 _Avoid_: forwarding adapter, client alias, gateway, service, mock

@@ -1468,6 +1468,22 @@ Flags:
       --limit int   maximum comments to return (default 50)
 ```
 
+### linctl initiative-update create
+
+Post a status update to an initiative after organization comparison (Resource-Scoped; no --org-wide flag)
+
+```
+linctl initiative-update create INITIATIVE_ID [flags]
+```
+
+Flags:
+
+```
+      --body string        update body as markdown; use - to read stdin
+      --body-file string   read update body from file
+      --health string      initiative health: on-track, at-risk, or off-track (Linear enum aliases)
+```
+
 ### linctl initiative-update get
 
 Get one initiative update by id
@@ -2517,6 +2533,14 @@ Read Linear notifications
 linctl notification
 ```
 
+### linctl notification archive
+
+Archive one notification for the authenticated actor's inbox
+
+```
+linctl notification archive NOTIFICATION_ID
+```
+
 ### linctl notification get
 
 Get one notification by id
@@ -2537,6 +2561,14 @@ Flags:
 
 ```
       --limit int   maximum notifications to return (default 50)
+```
+
+### linctl notification mark-read
+
+Mark one notification read for the authenticated actor's inbox
+
+```
+linctl notification mark-read NOTIFICATION_ID
 ```
 
 ### linctl notification subscription

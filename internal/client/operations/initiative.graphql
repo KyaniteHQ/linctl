@@ -120,6 +120,9 @@ fragment InitiativeSummaryFields on Initiative {
   targetDate
   slugId
   url
+  organization {
+    id
+  }
 }
 
 fragment InitiativeHistorySummaryFields on InitiativeHistory {

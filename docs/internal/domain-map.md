@@ -136,9 +136,10 @@ Planned commands:
 | `notification unread-count` | `Query.notificationsUnreadCount` | Read-only |
 | `notification subscription list` | `Query.notificationSubscriptions` | Read-only |
 | `notification subscription get` | `Query.notificationSubscription` | Read-only |
-| `notification archive` | `Mutation.notificationArchive` | Blocked: mutates the authenticated user's inbox state; needs an explicit viewer-state safety model |
+| `notification mark-read` | `Mutation.notificationUpdate` with `NotificationUpdateInput.readAt` only | Viewer-Scoped Write: recipient `Notification.user.id` must match the authenticated viewer |
+| `notification archive` | `Mutation.notificationArchive` | Viewer-Scoped Write: recipient `Notification.user.id` must match the authenticated viewer |
 | `notification archive all` | `Mutation.notificationArchiveAll` | Blocked: bulk inbox mutation needs explicit safety semantics |
-| `notification update` | `Mutation.notificationUpdate` | Blocked: direct inbox-state mutation needs an explicit viewer-state safety model |
+| `notification update` | `Mutation.notificationUpdate` (general fields beyond mark-read) | Blocked: snooze and other inbox fields need explicit follow-up design |
 | `notification mark read all` | `Mutation.notificationMarkReadAll` | Blocked: bulk inbox mutation needs explicit safety semantics |
 | `notification mark unread all` | `Mutation.notificationMarkUnreadAll` | Blocked: bulk inbox mutation needs explicit safety semantics |
 | `notification snooze all` | `Mutation.notificationSnoozeAll` | Blocked: bulk inbox mutation needs explicit safety semantics |
@@ -148,7 +149,7 @@ Planned commands:
 | `notification subscription update` | `Mutation.notificationSubscriptionUpdate` | Blocked: update must resolve the subscription target before mutation |
 | `notification subscription delete` | `Mutation.notificationSubscriptionDelete` | Blocked: destructive viewer preference command needs explicit safety semantics |
 
-Only the five read commands above are implemented in the current CLI. Notification writes are deferred as viewer-state and preference surface.
+Read commands plus `notification mark-read` and `notification archive` are implemented. Bulk inbox mutations and preference/subscription writes remain deferred.
 
 ## Release
 
@@ -980,12 +981,12 @@ Command status:
 | `initiative-update list` | `Query.initiativeUpdates` | Read-only |
 | `initiative-update get` | `Query.initiativeUpdate` | Read-only |
 | `initiative-update comments` | `InitiativeUpdate.comments` | Read-only, body-free metadata |
-| `initiative-update create` | `Mutation.initiativeUpdateCreate` | Blocked: create must resolve and compare the owning Initiative before posting |
+| `initiative-update create` | `Mutation.initiativeUpdateCreate` | Resource-Scoped Write: resolve Initiative and compare organization only |
 | `initiative-update update` | `Mutation.initiativeUpdateUpdate` | Blocked: update must resolve and compare the owning Initiative before mutation |
 | `initiative-update archive` | `Mutation.initiativeUpdateArchive` | Blocked: destructive command needs explicit safety semantics |
 | `initiative-update unarchive` | `Mutation.initiativeUpdateUnarchive` | Blocked: unarchive needs explicit lifecycle and target semantics |
 
-`initiative-update list`, `initiative-update get`, and `initiative-update comments` are implemented in the current CLI. InitiativeUpdate comment reads omit comment body content by default. InitiativeUpdate writes and reminders are deferred until their guard model is explicit.
+`initiative-update list`, `initiative-update get`, `initiative-update comments`, and `initiative-update create` are implemented. InitiativeUpdate comment reads omit comment body content by default. Edit/archive lifecycle and reminders remain deferred.
 
 ## Roadmap
 

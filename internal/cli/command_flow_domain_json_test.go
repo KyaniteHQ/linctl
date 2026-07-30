@@ -20,7 +20,8 @@ func commandInitiativeJSON() string {
 		"priority":2,
 		"targetDate":"2026-12-31",
 		"slugId":"platform-init",
-		"url":"https://linear.app/kyanite/initiative/platform-init"
+		"url":"https://linear.app/kyanite/initiative/platform-init",
+		"organization":{"id":"org-id"}
 	}`
 }
 
@@ -33,7 +34,8 @@ func commandSubInitiativeJSON() string {
 		"priority":1,
 		"targetDate":"2026-11-30",
 		"slugId":"child-platform",
-		"url":"https://linear.app/kyanite/initiative/child-platform"
+		"url":"https://linear.app/kyanite/initiative/child-platform",
+		"organization":{"id":"org-id"}
 	}`
 }
 

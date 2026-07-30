@@ -50,3 +50,12 @@ fragment InitiativeUpdateSummaryFields on InitiativeUpdate {
     displayName
   }
 }
+
+mutation InitiativeUpdateCreate($input: InitiativeUpdateCreateInput!) {
+  initiativeUpdateCreate(input: $input) {
+    success
+    initiativeUpdate {
+      ...InitiativeUpdateSummaryFields
+    }
+  }
+}
