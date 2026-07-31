@@ -1132,10 +1132,14 @@ Success is pass/fail:
    - Evidence: `go test ./internal/client`, `Test_ResolveComment_resolves_comment_when_target_matches`, `Test_ResolveComment_refuses_comment_without_an_issue_without_mutating`, `Test_UnresolveComment_unresolves_comment_when_target_matches`, `Test_UnresolveComment_refuses_when_issue_team_differs_without_mutating`; `go test ./internal/cli`, `Test_CommandFlows_execute_read_and_write_commands/comment_resolve`, `Test_CommandFlows_execute_read_and_write_commands/comment_unresolve`.
 
 214. Initiative label reads
-   - Success: `linctl initiative-label list --limit N` and `linctl initiative-label get INITIATIVE_LABEL_ID` map organization-level InitiativeLabel responses into compact models, preserve parent-group metadata, and support standard human and machine output controls.
+   - Success: `linctl initiative-label list --limit N` and `linctl initiative-label get INITIATIVE_LABEL_ID` map organization-level InitiativeLabel responses into compact models, preserve parent-group metadata and organization id, and support standard human and machine output controls.
    - Evidence: `go test ./internal/client ./internal/cli`, `Test_InitiativeLabelReads_return_compact_models`, `Test_InitiativeLabelReads_wrap_errors`, `Test_InitiativeLabelCommandFlows_list_get_and_project_fields`, `Test_WriteInitiativeLabel_covers_human_and_machine_modes`.
 
-215. Notification unread count
+215. InitiativeLabel taxonomy writes
+   - Success: `initiative-label retire`/`restore` are Org-Scoped Writes; InitiativeLabel has no team scope, so `--org-wide` is required and every command refuses to run without it, naming the flag in the error. Both commands resolve the existing InitiativeLabel through `requireInitiativeLabel` and compare its organization, failing closed as Target Mismatch when the resolved label belongs to a different organization. A pinned `project_id` does not block these writes. No command exposes `--force` or `--confirm`.
+   - Evidence: `go test ./internal/client`, `Test_RetireInitiativeLabel_refuses_without_org_wide`, `Test_RetireInitiativeLabel_refuses_when_organization_differs`, `Test_RetireInitiativeLabel_proceeds_when_pinned_project_present`, `Test_RestoreInitiativeLabel_refuses_without_org_wide`, `Test_RestoreInitiativeLabel_refuses_when_organization_differs`; `go test ./internal/cli`, `Test_InitiativeLabelFamilyCommands_require_org_wide`, `Test_InitiativeLabelRetire_emits_stable_target_mismatch_output`, `Test_InitiativeLabelFamilyCommands_have_no_bypass_flags`.
+
+216. Notification unread count
    - Success: `linctl notification unread-count` prints the authenticated user's unread notification count as a bare integer, supports `--json` and `--quiet`, and returns operation failures without changing exit-code semantics.
    - Evidence: `go test ./internal/client ./internal/cli`, `Test_GetNotificationsUnreadCount_returns_fake_response`, `Test_GetNotificationsUnreadCount_wraps_operation_errors`, `Test_NotificationUnreadCount_command_outputs_supported_modes`, `Test_NotificationUnreadCount_command_returns_operation_errors`, `Test_NotificationUnreadCount_command_returns_runtime_errors`.
 

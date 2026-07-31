@@ -9,6 +9,9 @@ fragment InitiativeLabelSummaryFields on InitiativeLabel {
   archivedAt
   createdAt
   updatedAt
+  organization {
+    id
+  }
   parent {
     id
     name
@@ -31,5 +34,23 @@ query initiativeLabels($first: Int, $after: String, $includeArchived: Boolean) {
 query initiativeLabel($id: String!) {
   initiativeLabel(id: $id) {
     ...InitiativeLabelSummaryFields
+  }
+}
+
+mutation InitiativeLabelRetire($id: String!) {
+  initiativeLabelRetire(id: $id) {
+    success
+    initiativeLabel {
+      ...InitiativeLabelSummaryFields
+    }
+  }
+}
+
+mutation InitiativeLabelRestore($id: String!) {
+  initiativeLabelRestore(id: $id) {
+    success
+    initiativeLabel {
+      ...InitiativeLabelSummaryFields
+    }
   }
 }

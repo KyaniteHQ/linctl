@@ -88,6 +88,7 @@ type commandFlowFakeClient struct {
 	emptyIssueLabel               bool
 	orgWideLabel                  bool
 	otherOrgProjectLabel          bool
+	otherOrgInitiativeLabel       bool
 	emptyIssueCycle               bool
 	emptyIssueCreatedAfter        bool
 	emptyIssueCreatedBefore       bool

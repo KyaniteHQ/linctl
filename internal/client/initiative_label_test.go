@@ -11,8 +11,9 @@ import (
 func Test_InitiativeLabelReads_return_compact_models(t *testing.T) {
 	endCursor := "cursor-1"
 	graphqlClient := fakeGraphQLClient{
-		"initiativeLabels": `{"initiativeLabels":{"nodes":[{"id":"initiative-label-id","name":"Strategy","description":"Strategic theme","color":"#5e6ad2","isGroup":false,"lastAppliedAt":"2026-07-10T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-07-01T12:00:00Z","updatedAt":"2026-07-10T12:00:00Z","parent":null}],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
-		"initiativeLabel":  `{"initiativeLabel":{"id":"initiative-label-id","name":"Strategy","description":"Strategic theme","color":"#5e6ad2","isGroup":false,"lastAppliedAt":"2026-07-10T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-07-01T12:00:00Z","updatedAt":"2026-07-10T12:00:00Z","parent":{"id":"initiative-label-group-id","name":"Themes","color":"#8a8f98"}}}`,
+		"initiativeLabels": `{"initiativeLabels":{"nodes":[` + initiativeLabelWithOrgJSON("org-id") +
+			`],"pageInfo":{"hasNextPage":true,"endCursor":"` + endCursor + `"}}}`,
+		"initiativeLabel": `{"initiativeLabel":` + initiativeLabelWithParentJSON("org-id") + `}`,
 	}
 
 	labels, err := ListInitiativeLabels(context.Background(), graphqlClient, 2)
@@ -23,8 +24,10 @@ func Test_InitiativeLabelReads_return_compact_models(t *testing.T) {
 	require.True(t, labels.HasNextPage)
 	require.Equal(t, endCursor, *labels.EndCursor)
 	require.Equal(t, "Strategy", labels.InitiativeLabels[0].Name)
+	require.Equal(t, "org-id", labels.InitiativeLabels[0].OrgID)
 	require.Empty(t, labels.InitiativeLabels[0].ParentID)
 	require.Equal(t, "initiative-label-id", label.ID)
+	require.Equal(t, "org-id", label.OrgID)
 	require.Equal(t, "initiative-label-group-id", label.ParentID)
 	require.Equal(t, "Themes", label.ParentName)
 	require.Equal(t, "#8a8f98", label.ParentColor)

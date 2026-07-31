@@ -11,13 +11,13 @@ import (
 )
 
 func addInitiativeLabelCommand(ctx context.Context, root *cobra.Command, options *rootOptions) {
-	addReadListGetCommand(
+	parentCommand := addReadListGetCommand(
 		ctx,
 		root,
 		options,
 		readListGetSpec[client.InitiativeLabelList, client.InitiativeLabelSummary]{
 			Use:       "initiative-label",
-			Short:     "Read Linear initiative labels",
+			Short:     "Read and write Linear initiative labels",
 			ListShort: "List visible Linear initiative labels",
 			LimitHelp: "maximum initiative labels to return",
 			GetUse:    "get INITIATIVE_LABEL_ID",
@@ -27,6 +27,8 @@ func addInitiativeLabelCommand(ctx context.Context, root *cobra.Command, options
 			WriteItem: writeInitiativeLabel,
 		},
 	)
+	addInitiativeLabelRetireCommand(ctx, parentCommand, options)
+	addInitiativeLabelRestoreCommand(ctx, parentCommand, options)
 }
 
 func writeInitiativeLabel(command *cobra.Command, options *rootOptions, label client.InitiativeLabelSummary) error {

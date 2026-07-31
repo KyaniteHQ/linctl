@@ -4610,6 +4610,360 @@ type InitiativeHistorySummaryFieldsInitiative struct {
 // GetId returns InitiativeHistorySummaryFieldsInitiative.Id, and is useful for accessing the field via an interface.
 func (v *InitiativeHistorySummaryFieldsInitiative) GetId() string { return v.Id }
 
+// InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload includes the requested fields of the GraphQL type InitiativeLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an initiative label mutation.
+type InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	InitiativeLabel InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel `json:"initiativeLabel"`
+}
+
+// GetSuccess returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetInitiativeLabel returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload.InitiativeLabel, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload) GetInitiativeLabel() InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel {
+	return v.InitiativeLabel
+}
+
+// InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel includes the requested fields of the GraphQL type InitiativeLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to initiatives for categorization. Initiative labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to initiatives.
+type InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel struct {
+	InitiativeLabelSummaryFields `json:"-"`
+}
+
+// GetId returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetId() string {
+	return v.InitiativeLabelSummaryFields.Id
+}
+
+// GetName returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.Name, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetName() string {
+	return v.InitiativeLabelSummaryFields.Name
+}
+
+// GetDescription returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.Description, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetDescription() *string {
+	return v.InitiativeLabelSummaryFields.Description
+}
+
+// GetColor returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.Color, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetColor() string {
+	return v.InitiativeLabelSummaryFields.Color
+}
+
+// GetIsGroup returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetIsGroup() bool {
+	return v.InitiativeLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetLastAppliedAt() *string {
+	return v.InitiativeLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetRetiredAt() *string {
+	return v.InitiativeLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetArchivedAt() *string {
+	return v.InitiativeLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetCreatedAt() string {
+	return v.InitiativeLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetUpdatedAt() string {
+	return v.InitiativeLabelSummaryFields.UpdatedAt
+}
+
+// GetOrganization returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.Organization, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetOrganization() InitiativeLabelSummaryFieldsOrganization {
+	return v.InitiativeLabelSummaryFields.Organization
+}
+
+// GetParent returns InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel.Parent, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) GetParent() *InitiativeLabelSummaryFieldsParentInitiativeLabel {
+	return v.InitiativeLabelSummaryFields.Parent
+}
+
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.InitiativeLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalInitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Organization InitiativeLabelSummaryFieldsOrganization `json:"organization"`
+
+	Parent *InitiativeLabelSummaryFieldsParentInitiativeLabel `json:"parent"`
+}
+
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel) __premarshalJSON() (*__premarshalInitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel, error) {
+	var retval __premarshalInitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayloadInitiativeLabel
+
+	retval.Id = v.InitiativeLabelSummaryFields.Id
+	retval.Name = v.InitiativeLabelSummaryFields.Name
+	retval.Description = v.InitiativeLabelSummaryFields.Description
+	retval.Color = v.InitiativeLabelSummaryFields.Color
+	retval.IsGroup = v.InitiativeLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.InitiativeLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.InitiativeLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.InitiativeLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.InitiativeLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.InitiativeLabelSummaryFields.UpdatedAt
+	retval.Organization = v.InitiativeLabelSummaryFields.Organization
+	retval.Parent = v.InitiativeLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// InitiativeLabelRestoreResponse is returned by InitiativeLabelRestore on success.
+type InitiativeLabelRestoreResponse struct {
+	// Restores a previously retired initiative label, making it available for use on new initiatives.
+	InitiativeLabelRestore InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload `json:"initiativeLabelRestore"`
+}
+
+// GetInitiativeLabelRestore returns InitiativeLabelRestoreResponse.InitiativeLabelRestore, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRestoreResponse) GetInitiativeLabelRestore() InitiativeLabelRestoreInitiativeLabelRestoreInitiativeLabelPayload {
+	return v.InitiativeLabelRestore
+}
+
+// InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload includes the requested fields of the GraphQL type InitiativeLabelPayload.
+// The GraphQL type's documentation follows.
+//
+// The result of an initiative label mutation.
+type InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload struct {
+	// Whether the operation was successful.
+	Success bool `json:"success"`
+	// The label that was created or updated.
+	InitiativeLabel InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel `json:"initiativeLabel"`
+}
+
+// GetSuccess returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload.Success, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload) GetSuccess() bool {
+	return v.Success
+}
+
+// GetInitiativeLabel returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload.InitiativeLabel, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload) GetInitiativeLabel() InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel {
+	return v.InitiativeLabel
+}
+
+// InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel includes the requested fields of the GraphQL type InitiativeLabel.
+// The GraphQL type's documentation follows.
+//
+// A label that can be applied to initiatives for categorization. Initiative labels are workspace-level and can be organized into groups with a parent-child hierarchy. Only child labels (not group labels) can be directly applied to initiatives.
+type InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel struct {
+	InitiativeLabelSummaryFields `json:"-"`
+}
+
+// GetId returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetId() string {
+	return v.InitiativeLabelSummaryFields.Id
+}
+
+// GetName returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.Name, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetName() string {
+	return v.InitiativeLabelSummaryFields.Name
+}
+
+// GetDescription returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.Description, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetDescription() *string {
+	return v.InitiativeLabelSummaryFields.Description
+}
+
+// GetColor returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.Color, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetColor() string {
+	return v.InitiativeLabelSummaryFields.Color
+}
+
+// GetIsGroup returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.IsGroup, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetIsGroup() bool {
+	return v.InitiativeLabelSummaryFields.IsGroup
+}
+
+// GetLastAppliedAt returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.LastAppliedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetLastAppliedAt() *string {
+	return v.InitiativeLabelSummaryFields.LastAppliedAt
+}
+
+// GetRetiredAt returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.RetiredAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetRetiredAt() *string {
+	return v.InitiativeLabelSummaryFields.RetiredAt
+}
+
+// GetArchivedAt returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.ArchivedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetArchivedAt() *string {
+	return v.InitiativeLabelSummaryFields.ArchivedAt
+}
+
+// GetCreatedAt returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.CreatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetCreatedAt() string {
+	return v.InitiativeLabelSummaryFields.CreatedAt
+}
+
+// GetUpdatedAt returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetUpdatedAt() string {
+	return v.InitiativeLabelSummaryFields.UpdatedAt
+}
+
+// GetOrganization returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.Organization, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetOrganization() InitiativeLabelSummaryFieldsOrganization {
+	return v.InitiativeLabelSummaryFields.Organization
+}
+
+// GetParent returns InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel.Parent, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) GetParent() *InitiativeLabelSummaryFieldsParentInitiativeLabel {
+	return v.InitiativeLabelSummaryFields.Parent
+}
+
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.InitiativeLabelSummaryFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalInitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Description *string `json:"description"`
+
+	Color string `json:"color"`
+
+	IsGroup bool `json:"isGroup"`
+
+	LastAppliedAt *string `json:"lastAppliedAt"`
+
+	RetiredAt *string `json:"retiredAt"`
+
+	ArchivedAt *string `json:"archivedAt"`
+
+	CreatedAt string `json:"createdAt"`
+
+	UpdatedAt string `json:"updatedAt"`
+
+	Organization InitiativeLabelSummaryFieldsOrganization `json:"organization"`
+
+	Parent *InitiativeLabelSummaryFieldsParentInitiativeLabel `json:"parent"`
+}
+
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel) __premarshalJSON() (*__premarshalInitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel, error) {
+	var retval __premarshalInitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayloadInitiativeLabel
+
+	retval.Id = v.InitiativeLabelSummaryFields.Id
+	retval.Name = v.InitiativeLabelSummaryFields.Name
+	retval.Description = v.InitiativeLabelSummaryFields.Description
+	retval.Color = v.InitiativeLabelSummaryFields.Color
+	retval.IsGroup = v.InitiativeLabelSummaryFields.IsGroup
+	retval.LastAppliedAt = v.InitiativeLabelSummaryFields.LastAppliedAt
+	retval.RetiredAt = v.InitiativeLabelSummaryFields.RetiredAt
+	retval.ArchivedAt = v.InitiativeLabelSummaryFields.ArchivedAt
+	retval.CreatedAt = v.InitiativeLabelSummaryFields.CreatedAt
+	retval.UpdatedAt = v.InitiativeLabelSummaryFields.UpdatedAt
+	retval.Organization = v.InitiativeLabelSummaryFields.Organization
+	retval.Parent = v.InitiativeLabelSummaryFields.Parent
+	return &retval, nil
+}
+
+// InitiativeLabelRetireResponse is returned by InitiativeLabelRetire on success.
+type InitiativeLabelRetireResponse struct {
+	// Retires an initiative label. Retired labels remain on existing initiatives but cannot be applied to new ones.
+	InitiativeLabelRetire InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload `json:"initiativeLabelRetire"`
+}
+
+// GetInitiativeLabelRetire returns InitiativeLabelRetireResponse.InitiativeLabelRetire, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelRetireResponse) GetInitiativeLabelRetire() InitiativeLabelRetireInitiativeLabelRetireInitiativeLabelPayload {
+	return v.InitiativeLabelRetire
+}
+
 // InitiativeLabelSummaryFields includes the GraphQL fields of InitiativeLabel requested by the fragment InitiativeLabelSummaryFields.
 // The GraphQL type's documentation follows.
 //
@@ -4636,6 +4990,8 @@ type InitiativeLabelSummaryFields struct {
 	// The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
 	// been updated after creation.
 	UpdatedAt string `json:"updatedAt"`
+	// The workspace that the initiative label belongs to.
+	Organization InitiativeLabelSummaryFieldsOrganization `json:"organization"`
 	// The parent label group. If set, this label is a child within a group. Only one child label from each group can be applied to an initiative at a time.
 	Parent *InitiativeLabelSummaryFieldsParentInitiativeLabel `json:"parent"`
 }
@@ -4670,10 +5026,27 @@ func (v *InitiativeLabelSummaryFields) GetCreatedAt() string { return v.CreatedA
 // GetUpdatedAt returns InitiativeLabelSummaryFields.UpdatedAt, and is useful for accessing the field via an interface.
 func (v *InitiativeLabelSummaryFields) GetUpdatedAt() string { return v.UpdatedAt }
 
+// GetOrganization returns InitiativeLabelSummaryFields.Organization, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelSummaryFields) GetOrganization() InitiativeLabelSummaryFieldsOrganization {
+	return v.Organization
+}
+
 // GetParent returns InitiativeLabelSummaryFields.Parent, and is useful for accessing the field via an interface.
 func (v *InitiativeLabelSummaryFields) GetParent() *InitiativeLabelSummaryFieldsParentInitiativeLabel {
 	return v.Parent
 }
+
+// InitiativeLabelSummaryFieldsOrganization includes the requested fields of the GraphQL type Organization.
+// The GraphQL type's documentation follows.
+//
+// A workspace (referred to as Organization in the API). Workspaces are the root-level container for all teams, users, projects, issues, and settings. Every user belongs to at least one workspace, and all data is scoped within a workspace boundary.
+type InitiativeLabelSummaryFieldsOrganization struct {
+	// The unique identifier of the entity.
+	Id string `json:"id"`
+}
+
+// GetId returns InitiativeLabelSummaryFieldsOrganization.Id, and is useful for accessing the field via an interface.
+func (v *InitiativeLabelSummaryFieldsOrganization) GetId() string { return v.Id }
 
 // InitiativeLabelSummaryFieldsParentInitiativeLabel includes the requested fields of the GraphQL type InitiativeLabel.
 // The GraphQL type's documentation follows.
@@ -29531,6 +29904,22 @@ func (v *__DocumentsInput) GetAfter() *string { return v.After }
 // GetIncludeArchived returns __DocumentsInput.IncludeArchived, and is useful for accessing the field via an interface.
 func (v *__DocumentsInput) GetIncludeArchived() *bool { return v.IncludeArchived }
 
+// __InitiativeLabelRestoreInput is used internally by genqlient
+type __InitiativeLabelRestoreInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __InitiativeLabelRestoreInput.Id, and is useful for accessing the field via an interface.
+func (v *__InitiativeLabelRestoreInput) GetId() string { return v.Id }
+
+// __InitiativeLabelRetireInput is used internally by genqlient
+type __InitiativeLabelRetireInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __InitiativeLabelRetireInput.Id, and is useful for accessing the field via an interface.
+func (v *__InitiativeLabelRetireInput) GetId() string { return v.Id }
+
 // __InitiativeUpdateCreateInput is used internally by genqlient
 type __InitiativeUpdateCreateInput struct {
 	Input gqlmodel.LinearInitiativeUpdateCreateInput `json:"input"`
@@ -43202,6 +43591,11 @@ func (v *initiativeLabelInitiativeLabel) GetUpdatedAt() string {
 	return v.InitiativeLabelSummaryFields.UpdatedAt
 }
 
+// GetOrganization returns initiativeLabelInitiativeLabel.Organization, and is useful for accessing the field via an interface.
+func (v *initiativeLabelInitiativeLabel) GetOrganization() InitiativeLabelSummaryFieldsOrganization {
+	return v.InitiativeLabelSummaryFields.Organization
+}
+
 // GetParent returns initiativeLabelInitiativeLabel.Parent, and is useful for accessing the field via an interface.
 func (v *initiativeLabelInitiativeLabel) GetParent() *InitiativeLabelSummaryFieldsParentInitiativeLabel {
 	return v.InitiativeLabelSummaryFields.Parent
@@ -43253,6 +43647,8 @@ type __premarshalinitiativeLabelInitiativeLabel struct {
 
 	UpdatedAt string `json:"updatedAt"`
 
+	Organization InitiativeLabelSummaryFieldsOrganization `json:"organization"`
+
 	Parent *InitiativeLabelSummaryFieldsParentInitiativeLabel `json:"parent"`
 }
 
@@ -43277,6 +43673,7 @@ func (v *initiativeLabelInitiativeLabel) __premarshalJSON() (*__premarshalinitia
 	retval.ArchivedAt = v.InitiativeLabelSummaryFields.ArchivedAt
 	retval.CreatedAt = v.InitiativeLabelSummaryFields.CreatedAt
 	retval.UpdatedAt = v.InitiativeLabelSummaryFields.UpdatedAt
+	retval.Organization = v.InitiativeLabelSummaryFields.Organization
 	retval.Parent = v.InitiativeLabelSummaryFields.Parent
 	return &retval, nil
 }
@@ -43366,6 +43763,11 @@ func (v *initiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesInitiativ
 	return v.InitiativeLabelSummaryFields.UpdatedAt
 }
 
+// GetOrganization returns initiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesInitiativeLabel.Organization, and is useful for accessing the field via an interface.
+func (v *initiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesInitiativeLabel) GetOrganization() InitiativeLabelSummaryFieldsOrganization {
+	return v.InitiativeLabelSummaryFields.Organization
+}
+
 // GetParent returns initiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesInitiativeLabel.Parent, and is useful for accessing the field via an interface.
 func (v *initiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesInitiativeLabel) GetParent() *InitiativeLabelSummaryFieldsParentInitiativeLabel {
 	return v.InitiativeLabelSummaryFields.Parent
@@ -43417,6 +43819,8 @@ type __premarshalinitiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesI
 
 	UpdatedAt string `json:"updatedAt"`
 
+	Organization InitiativeLabelSummaryFieldsOrganization `json:"organization"`
+
 	Parent *InitiativeLabelSummaryFieldsParentInitiativeLabel `json:"parent"`
 }
 
@@ -43441,6 +43845,7 @@ func (v *initiativeLabelsInitiativeLabelsInitiativeLabelConnectionNodesInitiativ
 	retval.ArchivedAt = v.InitiativeLabelSummaryFields.ArchivedAt
 	retval.CreatedAt = v.InitiativeLabelSummaryFields.CreatedAt
 	retval.UpdatedAt = v.InitiativeLabelSummaryFields.UpdatedAt
+	retval.Organization = v.InitiativeLabelSummaryFields.Organization
 	retval.Parent = v.InitiativeLabelSummaryFields.Parent
 	return &retval, nil
 }
@@ -79156,6 +79561,120 @@ func Documents(
 	return data_, err_
 }
 
+// The mutation executed by InitiativeLabelRestore.
+const InitiativeLabelRestore_Operation = `
+mutation InitiativeLabelRestore ($id: String!) {
+	initiativeLabelRestore(id: $id) {
+		success
+		initiativeLabel {
+			... InitiativeLabelSummaryFields
+		}
+	}
+}
+fragment InitiativeLabelSummaryFields on InitiativeLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	organization {
+		id
+	}
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func InitiativeLabelRestore(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *InitiativeLabelRestoreResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "InitiativeLabelRestore",
+		Query:  InitiativeLabelRestore_Operation,
+		Variables: &__InitiativeLabelRestoreInput{
+			Id: id,
+		},
+	}
+
+	data_ = &InitiativeLabelRestoreResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by InitiativeLabelRetire.
+const InitiativeLabelRetire_Operation = `
+mutation InitiativeLabelRetire ($id: String!) {
+	initiativeLabelRetire(id: $id) {
+		success
+		initiativeLabel {
+			... InitiativeLabelSummaryFields
+		}
+	}
+}
+fragment InitiativeLabelSummaryFields on InitiativeLabel {
+	id
+	name
+	description
+	color
+	isGroup
+	lastAppliedAt
+	retiredAt
+	archivedAt
+	createdAt
+	updatedAt
+	organization {
+		id
+	}
+	parent {
+		id
+		name
+		color
+	}
+}
+`
+
+func InitiativeLabelRetire(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *InitiativeLabelRetireResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "InitiativeLabelRetire",
+		Query:  InitiativeLabelRetire_Operation,
+		Variables: &__InitiativeLabelRetireInput{
+			Id: id,
+		},
+	}
+
+	data_ = &InitiativeLabelRetireResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by InitiativeUpdateCreate.
 const InitiativeUpdateCreate_Operation = `
 mutation InitiativeUpdateCreate ($input: InitiativeUpdateCreateInput!) {
@@ -85863,6 +86382,9 @@ fragment InitiativeLabelSummaryFields on InitiativeLabel {
 	archivedAt
 	createdAt
 	updatedAt
+	organization {
+		id
+	}
 	parent {
 		id
 		name
@@ -85920,6 +86442,9 @@ fragment InitiativeLabelSummaryFields on InitiativeLabel {
 	archivedAt
 	createdAt
 	updatedAt
+	organization {
+		id
+	}
 	parent {
 		id
 		name

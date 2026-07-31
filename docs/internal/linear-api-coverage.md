@@ -16,11 +16,11 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 
 | Surface | Total | Covered/exposed | Classified |
 | --- | ---: | ---: | ---: |
-| Upstream SDK root methods with generated local operations | 468 | 154 | 468 |
+| Upstream SDK root methods with generated local operations | 468 | 156 | 468 |
 | Upstream Query root fields used by generated local operations | 164 | 116 | 164 |
-| Upstream Mutation root fields used by generated local operations | 371 | 40 | 371 |
-| Local generated Go operations declared in GraphQL files | 308 | 308 | 308 |
-| Public CLI commands from command inventory | 439 | 320 | 439 |
+| Upstream Mutation root fields used by generated local operations | 371 | 42 | 371 |
+| Local generated Go operations declared in GraphQL files | 310 | 310 | 310 |
+| Public CLI commands from command inventory | 439 | 322 | 439 |
 
 ## Upstream SDK Root Methods
 
@@ -233,8 +233,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeAddLabel` | method | blocked_needs_design | initiative label mutation needs initiative target pinning and target-mismatch tests |
 | `initiativeFilterSuggestion` | method | safe_candidate | read operation may fit future CLI coverage |
 | `initiativeLabel` | method | generated_operation | local GraphQL operation uses this root |
-| `initiativeLabelRestore` | method | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeLabelRetire` | method | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabelRestore` | method | generated_operation | local GraphQL operation uses this root |
+| `initiativeLabelRetire` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeLabels` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeRelation` | method | generated_operation | local GraphQL operation uses this root |
 | `initiativeRelations` | method | generated_operation | local GraphQL operation uses this root |
@@ -770,8 +770,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `initiativeDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
 | `initiativeLabelCreate` | `InitiativeLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeLabelDelete` | `DeletePayload!` | blocked_needs_design | destructive or access-changing operation needs explicit safety model |
-| `initiativeLabelRestore` | `InitiativeLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
-| `initiativeLabelRetire` | `InitiativeLabelPayload!` | accepted_gap | repo-planned or likely useful CLI domain |
+| `initiativeLabelRestore` | `InitiativeLabelPayload!` | generated_operation | root field used by local GraphQL operation |
+| `initiativeLabelRetire` | `InitiativeLabelPayload!` | generated_operation | root field used by local GraphQL operation |
 | `initiativeLabelUpdate` | `InitiativeLabelPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeLeadTeamUpdate` | `InitiativeLeadTeamUpdatePayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
 | `initiativeRelationCreate` | `InitiativeRelationPayload!` | blocked_needs_design | write operation needs guarded target semantics before exposure |
@@ -1056,6 +1056,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | `DocumentCreate` | mutation | `documentCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `DocumentUpdate` | mutation | `documentUpdate` | generated | `internal/client/internal/gql/generated.go` |
 | `Documents` | query | `documents` | generated | `internal/client/internal/gql/generated.go` |
+| `InitiativeLabelRestore` | mutation | `initiativeLabelRestore` | generated | `internal/client/internal/gql/generated.go` |
+| `InitiativeLabelRetire` | mutation | `initiativeLabelRetire` | generated | `internal/client/internal/gql/generated.go` |
 | `InitiativeUpdateCreate` | mutation | `initiativeUpdateCreate` | generated | `internal/client/internal/gql/generated.go` |
 | `IssueAddLabel` | mutation | `issueAddLabel` | generated | `internal/client/internal/gql/generated.go` |
 | `IssueArchive` | mutation | `issueArchive` | generated | `internal/client/internal/gql/generated.go` |
@@ -1694,8 +1696,8 @@ Status vocabulary is surface-specific: upstream SDK/root tables use `generated_o
 | InitiativeLabel | `initiative-label create` | `Mutation.initiativeLabelCreate` | Blocked: create needs an explicit organization-scoped safety model | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | InitiativeLabel | `initiative-label update` | `Mutation.initiativeLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |
 | InitiativeLabel | `initiative-label delete` | `Mutation.initiativeLabelDelete` | Blocked: destructive command needs explicit InitiativeLabel safety semantics | blocked_needs_design | destructive command needs explicit safety semantics |
-| InitiativeLabel | `initiative-label restore` | `Mutation.initiativeLabelRestore` | Deferred: no approved write semantics | accepted_gap | planned in `docs/internal/domain-map.md` |
-| InitiativeLabel | `initiative-label retire` | `Mutation.initiativeLabelRetire` | Deferred: no approved write semantics | accepted_gap | planned in `docs/internal/domain-map.md` |
+| InitiativeLabel | `initiative-label restore` | `Mutation.initiativeLabelRestore` | Org-Scoped Write, same resolution and comparison as `initiative-label retire` | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
+| InitiativeLabel | `initiative-label retire` | `Mutation.initiativeLabelRetire` | Org-Scoped Write, same resolution and comparison as `project-label retire` | guarded_write_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | InitiativeRelation | `initiative-relation list` | `Query.initiativeRelations` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | InitiativeRelation | `initiative-relation get` | `Query.initiativeRelation` | Read-only | public_command | `linctl --help`, `docs/internal/domain-map.md`, and local GraphQL root |
 | InitiativeRelation | `initiative-relation create` | `Mutation.initiativeRelationCreate` | Blocked: create must resolve and compare both Initiative hierarchy endpoints before mutation | blocked_needs_design | blocked in `docs/internal/domain-map.md` pending explicit safety semantics |

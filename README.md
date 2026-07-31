@@ -89,9 +89,10 @@ honestly up front.
   *inside* the correctly pinned team, the guard has no opinion. It never claimed to.
 - **It does not touch reads.** By design. `linctl issue list --all-teams` reads everything the
   token can see.
-- **Label retire and restore can be organization-wide.** Those entities have no team, so
-  `--org-wide` compares the organization only. It is an explicit flag that makes the blast
-  radius visible, and a mismatch is still a hard stop, but it is not a team-level check.
+- **Label, project-label, and initiative-label retire and restore can be organization-wide.**
+  Those entities have no team, so `--org-wide` compares the organization only. It is an
+  explicit flag that makes the blast radius visible, and a mismatch is still a hard stop, but
+  it is not a team-level check.
 - **The check and the write are separate API calls.** If something moves between them, the
   guard saw the old state. This is a narrow race, not a defense against a determined actor.
 
@@ -255,6 +256,7 @@ If a command changes Linear, it goes through the guard. The complete list:
 | `project-update` | `create` |
 | `project-milestone` | `create`, `update`, **`delete`** |
 | `project-label` | `create`, `update`, `retire`, `restore` |
+| `initiative-label` | `retire`, `restore` |
 | `label` | `create`, `update`, `retire`, `restore` |
 | `cycle` | `create`, `update`, `archive` |
 | `document` | `create`, `update` |

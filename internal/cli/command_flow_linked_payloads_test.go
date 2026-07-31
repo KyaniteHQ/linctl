@@ -84,7 +84,38 @@ func commandFlowInitiativePayload(operation string, fake commandFlowFakeClient) 
 		return `{"initiativeRelation":` + commandInitiativeRelationJSON() + `}`, true
 	}
 
+	if payload, ok := commandFlowInitiativeLabelPayload(operation, fake); ok {
+		return payload, true
+	}
+
 	return commandFlowInitiativeUpdatePayload(operation, fake)
+}
+
+func commandFlowInitiativeLabelPayload(operation string, fake commandFlowFakeClient) (string, bool) {
+	switch operation {
+	case "initiativeLabels":
+		return `{"initiativeLabels":{"nodes":[` +
+			commandInitiativeLabelJSON("Strategy") +
+			`],"pageInfo":{"hasNextPage":false,"endCursor":null}}}`, true
+	case "initiativeLabel":
+		if fake.otherOrgInitiativeLabel {
+			return `{"initiativeLabel":` +
+				commandInitiativeLabelJSONWithOrg("Strategy", "other-org") +
+				`}`, true
+		}
+
+		return `{"initiativeLabel":` + commandInitiativeLabelJSON("Strategy") + `}`, true
+	case "InitiativeLabelRetire":
+		return `{"initiativeLabelRetire":{"success":true,"initiativeLabel":` +
+			commandInitiativeLabelJSON("Retired initiative label") +
+			`}}`, true
+	case "InitiativeLabelRestore":
+		return `{"initiativeLabelRestore":{"success":true,"initiativeLabel":` +
+			commandInitiativeLabelJSON("Restored initiative label") +
+			`}}`, true
+	default:
+		return "", false
+	}
 }
 
 func commandFlowInitiativeUpdatePayload(operation string, fake commandFlowFakeClient) (string, bool) {

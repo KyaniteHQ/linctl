@@ -1358,7 +1358,7 @@ Flags:
 
 ### linctl initiative-label
 
-Read Linear initiative labels
+Read and write Linear initiative labels
 
 ```
 linctl initiative-label
@@ -1384,6 +1384,34 @@ Flags:
 
 ```
       --limit int   maximum initiative labels to return (default 50)
+```
+
+### linctl initiative-label restore
+
+Restore a retired initiative label; requires --org-wide (affects every initiative)
+
+```
+linctl initiative-label restore INITIATIVE_LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --org-wide   required: initiative labels have no team scope; confirms this write affects every initiative in the organization
+```
+
+### linctl initiative-label retire
+
+Retire an initiative label; requires --org-wide (affects every initiative in the organization)
+
+```
+linctl initiative-label retire INITIATIVE_LABEL_ID [flags]
+```
+
+Flags:
+
+```
+      --org-wide   required: initiative labels have no team scope; confirms this write affects every initiative in the organization
 ```
 
 ### linctl initiative-relation

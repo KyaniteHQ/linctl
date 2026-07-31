@@ -356,6 +356,21 @@ func (guard *guardedClient) requireProjectLabel(
 	return guard.requireOrganization(label.OrgID)
 }
 
+// requireInitiativeLabel resolves an InitiativeLabel and confirms it belongs
+// to the resolved organization. InitiativeLabel is organization-owned; there
+// is no team scope to compare.
+func (guard *guardedClient) requireInitiativeLabel(
+	ctx context.Context,
+	labelID string,
+) error {
+	label, err := GetInitiativeLabelByID(ctx, guard.graphqlClient, labelID)
+	if err != nil {
+		return err
+	}
+
+	return guard.requireOrganization(label.OrgID)
+}
+
 // requireProjectTeam compares a resolved project's teams against the pinned
 // team. An unmatched result on a truncated team page fails closed instead of
 // silently trusting the first 50 teams.

@@ -39,7 +39,7 @@ func (initiativeLabelCommandFakeClient) MakeRequest(
 }
 
 func initiativeLabelCommandJSON() string {
-	return `{"id":"initiative-label-id","name":"Strategy","description":"Strategic theme","color":"#5e6ad2","isGroup":false,"lastAppliedAt":"2026-07-10T12:00:00Z","retiredAt":null,"archivedAt":null,"createdAt":"2026-07-01T12:00:00Z","updatedAt":"2026-07-10T12:00:00Z","parent":{"id":"initiative-label-group-id","name":"Themes","color":"#8a8f98"}}`
+	return commandInitiativeLabelJSON("Strategy")
 }
 
 func Test_InitiativeLabelCommandFlows_list_get_and_project_fields(t *testing.T) {

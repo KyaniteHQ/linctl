@@ -219,6 +219,27 @@ func commandProjectLabelJSON(id string, name string, color string) string {
 	}`
 }
 
+func commandInitiativeLabelJSON(name string) string {
+	return commandInitiativeLabelJSONWithOrg(name, "org-id")
+}
+
+func commandInitiativeLabelJSONWithOrg(name string, orgID string) string {
+	return `{
+		"id":"initiative-label-id",
+		"name":"` + name + `",
+		"description":"Strategic theme",
+		"color":"#5e6ad2",
+		"isGroup":false,
+		"lastAppliedAt":"2026-07-10T12:00:00Z",
+		"retiredAt":null,
+		"archivedAt":null,
+		"createdAt":"2026-07-01T12:00:00Z",
+		"updatedAt":"2026-07-10T12:00:00Z",
+		"organization":{"id":"` + orgID + `"},
+		"parent":{"id":"initiative-label-group-id","name":"Themes","color":"#8a8f98"}
+	}`
+}
+
 func commandProjectRelationJSON() string {
 	return `{
 		"id":"project-relation-id",

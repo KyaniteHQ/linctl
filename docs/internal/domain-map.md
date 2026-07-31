@@ -885,10 +885,10 @@ Command status:
 | `initiative-label create` | `Mutation.initiativeLabelCreate` | Blocked: create needs an explicit organization-scoped safety model |
 | `initiative-label update` | `Mutation.initiativeLabelUpdate` | Blocked: update must resolve and compare the owning organization before mutation |
 | `initiative-label delete` | `Mutation.initiativeLabelDelete` | Blocked: destructive command needs explicit InitiativeLabel safety semantics |
-| `initiative-label restore` | `Mutation.initiativeLabelRestore` | Deferred: no approved write semantics |
-| `initiative-label retire` | `Mutation.initiativeLabelRetire` | Deferred: no approved write semantics |
+| `initiative-label restore` | `Mutation.initiativeLabelRestore` | Org-Scoped Write, same resolution and comparison as `initiative-label retire` |
+| `initiative-label retire` | `Mutation.initiativeLabelRetire` | Org-Scoped Write, same resolution and comparison as `project-label retire` |
 
-Only `initiative-label list` and `initiative-label get` are implemented. InitiativeLabel writes remain deferred until their organization guard and lifecycle semantics are explicit.
+`initiative-label list`, `initiative-label get`, `initiative-label retire`, and `initiative-label restore` are implemented in the current CLI. InitiativeLabel has no team scope, so `--org-wide` is required on every taxonomy write and the command refuses to run without it, naming the flag in the error; a resolved label belonging to a different organization fails closed as Target Mismatch. A pinned `project_id` does not block these writes. `initiative-label create` and `initiative-label update` stay blocked pending an explicit organization-scoped create/update model. `initiative-label delete` (hard delete) stays excluded.
 
 ## InitiativeRelation
 

@@ -91,8 +91,9 @@ The guard **narrows a credential**. It cannot be stronger than that credential. 
 - It is a **team boundary, not a correctness check**. The wrong issue inside the right team goes
   through.
 - **Reads are not guarded**, on purpose.
-- **Label retire and restore** can be `--org-wide`. Those entities have no team, so the check is
-  organization-only. Explicit flag, still fail-closed, but not a team-level guarantee.
+- **Label, project-label, and initiative-label retire and restore** can be `--org-wide`. Those
+  entities have no team, so the check is organization-only. Explicit flag, still fail-closed,
+  but not a team-level guarantee.
 - The check and the write are **separate API calls**. If something moves in between, the guard
   is acting on what it saw a moment ago. The window is small, but it is not zero.
 
